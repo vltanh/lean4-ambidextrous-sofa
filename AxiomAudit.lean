@@ -4,8 +4,8 @@ import AmbidextrousSofa
 # Prepared axiom queries — not executed
 
 Regenerate with `python scripts/check_source_policy.py --write-axiom-audit`.
-The source-only inventory lists 7605 explicitly named declarations
-across 510 implementation modules, respecting their namespace scopes.
+The source-only inventory lists 7625 explicitly named declarations
+across 514 implementation modules, respecting their namespace scopes.
 Generated constructors, projections, recursors, and local proof terms are not
 separately enumerated by this lexical inventory.
 
@@ -1689,6 +1689,15 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.IsFullCapMaximizer.capScore_fullCanonicalCap
 #print axioms AmbidextrousSofa.IsFullCapMaximizer.eq_reference_of_fullCanonicalCap_eq
 #print axioms AmbidextrousSofa.IsFullCapMaximizer.eq_reference_translate_of_fullCanonicalCap_horizontal
+
+-- AmbidextrousSofa/Analysis/FullCapRigidity.lean
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.centered_affine_middle_slope_nonpos
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.centered_affine_middle_slope_eq_zero
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.affine_middle_slope_eq_zero
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.affine_middle_eq_one
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.fullCanonicalCap_middle_eq_one
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.eq_reference_translate
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.capScore_eq_half_M
 
 -- AmbidextrousSofa/Analysis/FullCompanionDensity.lean
 #print axioms AmbidextrousSofa.IsFullCapMaximizer.middle_support_vertices
@@ -3690,6 +3699,19 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.CapHausdorffTendsto.backwardFirstCornerSecant_tendsto
 #print axioms AmbidextrousSofa.CapHausdorffTendsto.positiveShadowMargin_tendsto
 #print axioms AmbidextrousSofa.CapHausdorffTendsto.negativeShadowMargin_tendsto
+
+-- AmbidextrousSofa/Analysis/SharpCapBound.lean
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_le_half_M
+#print axioms AmbidextrousSofa.Reference.isFullCapMaximizer_referenceCap
+#print axioms AmbidextrousSofa.Reference.isJointCapMaximizer_referenceCap
+
+-- AmbidextrousSofa/Analysis/SharpCapEquality.lean
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.angle_eq_pi_div_two
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.isFullCapMaximizer
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.eq_reference_translate
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.capScore_eq_half_M
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_lt_half_M_of_proper
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_eq_half_M_iff
 
 -- AmbidextrousSofa/Analysis/SharpCurvatureDensity.lean
 #print axioms AmbidextrousSofa.measureReal_eq_integral_of_restrict_withDensity
@@ -8631,6 +8653,12 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.Reference.integral_projection_referenceNiche
 #print axioms AmbidextrousSofa.Reference.volumeReal_referenceSofa
 #print axioms AmbidextrousSofa.Reference.volume_referenceSofa
+
+-- AmbidextrousSofa/Theorems/Optimality.lean
+#print axioms AmbidextrousSofa.IsAmbidextrous.volumeReal_le_M
+#print axioms AmbidextrousSofa.IsAmbidextrous.eq_rigidImage_referenceSofa_of_volumeReal_eq
+#print axioms AmbidextrousSofa.IsAmbidextrous.volumeReal_eq_M_iff
+#print axioms AmbidextrousSofa.isGreatest_ambidextrous_areas
 
 -- AmbidextrousSofa/Topology/RegularClosed.lean
 #print axioms AmbidextrousSofa.closure_interior_subset_of_measure_sdiff_eq_zero

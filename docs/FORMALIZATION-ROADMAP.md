@@ -2,7 +2,7 @@
 
 ## Current uncompiled-draft publication
 
-The source draft is being published in dependency stages; the detailed roadmap records the completed work and the next publication step. Full source auditing and kernel verification are deferred.
+The source dependency chain through the original-domain final theorems is now present in the uncompiled draft. Full source auditing and kernel verification are deferred.
 
 The current, detailed execution plan is [F7-DRAFT-ROADMAP.md](F7-DRAFT-ROADMAP.md). The longer sections below retain the earlier implementation history.
 
@@ -18,8 +18,9 @@ admissions, custom axioms or CI. F7 has two distinct acceptance items:
    axiom audit. This item is explicitly excluded from the current task by the
    user's instruction not to compile.
 
-Source closure is still in progress. A lexical policy pass alone does not
-close it. No project source has been compiled. The prepared axiom queries
+The requested source draft now includes the full dependency chain. Its
+mathematical and elaboration audit remains deferred; a lexical policy pass alone
+does not verify it. No project source has been compiled. The prepared axiom queries
 remain unexecuted. Every theorem presently declared has an explicit proof
 body; missing mathematics is listed below, not inserted as a hypothesis
 encoding the desired final theorem.
@@ -36,10 +37,10 @@ closures and research-session reviews are distinct from formal verification.
 | F1 | Actual compact hull/caps, attained roofs/supports, complete barriers, measurability and actual area integration | Implemented |
 | F2 | Original two-motion normalization, area invariance, angular reach, genuine terminal constraints and actual-cap score reduction | Implemented for the unchanged `IsAmbidextrous` predicate with continuous real-angle rigid paths |
 | F3 | Actual reference support/hull/body, both feasible passages, regular closedness and exact area `M` | Implemented, including exact reference cap score `M/2` |
-| F4 | Universal full-angle cap score at most `M/2`, including nonsmooth, asymmetric and subunit caps | Horizontal rigidity complete; all tilted first-unit selection, overhang, geometric moments, actual phases and bad-entry lower laws written; common occupation and final actual GF assembly remain |
-| F5 | Universal cap value reduction retaining the whole outgoing wall and independent motion angles | Actual proper reflected excess and strict contradiction complete for a largest-angle joint maximizer; full-cap maxima now also maximize jointly; sharp numerical value awaits F4 |
-| F6 | Every equality cap, inverse canonicalization, individual proper-angle strictness and literal original compact-body recovery | Canonical inverse and original-body recovery written; individual proper equality requires the separate fixed-cap extension/atom argument, and full equality awaits tilted exclusion |
-| F7 source closure | Unconditional original-domain area bound and exact uniqueness, with no missing mathematical input | In progress; depends on F4–F6 |
+| F4 | Universal full-angle bound and classification | Draft implemented through actual common occupation and tilted exclusion |
+| F5 | All-angle cap value bound | Draft implemented through largest-angle reduction and full-cap rigidity |
+| F6 | Individual equality and original-body recovery | Draft implemented, including each proper equality cap and literal rigid-image recovery |
+| F7 source draft | Unconditional original-domain bound, exact uniqueness and attainment | Complete draft published; full audit deferred |
 | F7 kernel check | Elaboration and actual standard-axiom output | Not performed; compilation and CI prohibited for this task |
 
 ## Source already completed since the initial draft

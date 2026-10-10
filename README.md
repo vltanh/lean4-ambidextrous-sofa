@@ -2,11 +2,39 @@
 
 A Lean 4 formalization draft of the ambidextrous moving sofa problem.
 
-**Status: uncompiled source work in progress toward F7.** Every declared
-theorem has an explicit proof body. The universal cap bounds and the final
-unconditional optimality-and-uniqueness theorem still require mathematics
-listed in the [roadmap](docs/FORMALIZATION-ROADMAP.md). No project Lean source
-has been compiled, no axiom queries have been executed, and no CI is included.
+**Status: complete uncompiled F7 source draft; full audit deferred.**
+The draft now includes the actual common occupation, tilted exclusion,
+full and individual proper cap classifications, and unconditional
+original-domain optimality, exact uniqueness, and attainment declarations.
+Every declared theorem has an explicit proof body. The complete source
+chain is supplied for later auditing; successful elaboration and its
+transitive axiom set are not established. No project Lean source has been
+compiled, no axiom query has been executed, and no CI is included.
+
+The [detailed F7 roadmap](docs/F7-DRAFT-ROADMAP.md) records the completed
+source steps and the intentionally deferred full audit. The main result is
+in [Theorems/Optimality.lean](AmbidextrousSofa/Theorems/Optimality.lean).
+
+## Final declarations in the draft
+
+```lean
+theorem IsAmbidextrous.volumeReal_le_M
+    {S : Set Plane} (hS : IsAmbidextrous S) : volume.real S ≤ M
+
+theorem IsAmbidextrous.volumeReal_eq_M_iff
+    {S : Set Plane} (hS : IsAmbidextrous S) :
+    volume.real S = M ↔ ∃ (θ : ℝ) (v : Plane),
+      S = rigidMap θ v '' Reference.referenceSofa
+
+theorem isGreatest_ambidextrous_areas :
+    IsGreatest {a : ℝ | ∃ S : Set Plane,
+      IsAmbidextrous S ∧ volume.real S = a} M
+```
+
+The implementation includes complete source proof bodies and the separate
+forward equality theorem. The area and equality statements retain the
+original admissibility predicate; no cap, occupation, phase, or rigidity
+certificate is added to their public assumptions.
 
 ## Mathematical target
 
@@ -192,7 +220,7 @@ small-height initial-floor tests to actual chord and ordinary-area bounds.
 
 ### Current uncompiled-draft roadmap
 
-The source draft is being published in dependency stages; the detailed roadmap records the completed work and the next publication step. Full source auditing and kernel verification are deferred.
+The source dependency chain through the original-domain final theorems is now present in the uncompiled draft. Full source auditing and kernel verification are deferred.
 
 See the [detailed F7 roadmap](docs/F7-DRAFT-ROADMAP.md) for the source measures,
 occupation identities, tilted contradiction, individual cap equality, and
@@ -235,9 +263,9 @@ python3 scripts/check_source_policy.py
 It checks prohibited tokens, namespace-qualified declaration and audit
 coverage, import cycles, package pins and absence of CI configuration. It
 does not execute Lean or prove that the files elaborate. The
-[source-review record](docs/SOURCE-REVIEW.md) gives the current inventory and
-review scope. F7 source closure and eventual kernel verification remain
-separate acceptance items.
+[source-review record](docs/SOURCE-REVIEW.md) preserves the earlier review
+scope and inventory. The complete current draft is published before its full
+audit, as requested; kernel verification remains excluded from this task.
 
 [manuscript]: https://github.com/vltanh/lean4-moving-sofa/blob/20489723dc8777a82ee70ae60510115dc6f21085/docs/ambidextrous/GATE3-MANUSCRIPT.md
 [research]: https://github.com/vltanh/lean4-moving-sofa/commit/20489723dc8777a82ee70ae60510115dc6f21085

@@ -16,8 +16,8 @@ lexical check as proof verification.
 | Publication stage | Source content | Current status |
 | --- | --- | --- |
 | 1. Actual source measures and individual proper-angle reduction | One joint source, four literal branches, actual RN densities, tangent bounds, graph residual, and fixed-cap terminal regime | Published |
-| 2. Common occupation and tilted exclusion | Shared corner balance and budget, first/core saturation, explicit common coefficients, actual first-unit contradiction | Published in this checkpoint |
-| 3. Original-domain final assembly | Full-cap rigidity, sharp cap bound, individual proper equality, area bound, exact rigid-image equality and attainment | Written; publication next |
+| 2. Common occupation and tilted exclusion | Shared corner balance and budget, first/core saturation, explicit common coefficients, actual first-unit contradiction | Published |
+| 3. Original-domain final assembly | Full-cap rigidity, sharp cap bound, individual proper equality, area bound, exact rigid-image equality and attainment | Published in this checkpoint |
 
 ## 1. Construct the actual source measures
 

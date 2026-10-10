@@ -121,6 +121,7 @@ import AmbidextrousSofa.Analysis.FirstUnitTangency
 import AmbidextrousSofa.Analysis.FirstUnitTopOverhang
 import AmbidextrousSofa.Analysis.FloorContactCurvature
 import AmbidextrousSofa.Analysis.FullCapRecovery
+import AmbidextrousSofa.Analysis.FullCapRigidity
 import AmbidextrousSofa.Analysis.FullCompanionDensity
 import AmbidextrousSofa.Analysis.FullTriangleArea
 import AmbidextrousSofa.Analysis.FullTriangleFloor
@@ -303,6 +304,8 @@ import AmbidextrousSofa.Analysis.SelectedPressureLimit
 import AmbidextrousSofa.Analysis.SelectedSequence
 import AmbidextrousSofa.Analysis.ShadowCurvature
 import AmbidextrousSofa.Analysis.ShadowSecants
+import AmbidextrousSofa.Analysis.SharpCapBound
+import AmbidextrousSofa.Analysis.SharpCapEquality
 import AmbidextrousSofa.Analysis.SharpCurvatureDensity
 import AmbidextrousSofa.Analysis.ShortTailGeometry
 import AmbidextrousSofa.Analysis.ShortWidthExclusion
@@ -506,6 +509,7 @@ import AmbidextrousSofa.Reference.Regularity
 import AmbidextrousSofa.Reference.Stationarity
 import AmbidextrousSofa.Reference.Support
 import AmbidextrousSofa.Reference.Value
+import AmbidextrousSofa.Theorems.Optimality
 import AmbidextrousSofa.Topology.RegularClosed
 import AmbidextrousSofa.Topology.VerticalRegion
 
