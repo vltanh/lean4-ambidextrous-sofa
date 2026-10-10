@@ -30,7 +30,7 @@ closures and research-session reviews are distinct from formal verification.
 | F1 | Actual compact hull/caps, attained roofs/supports, complete barriers, measurability and actual area integration | Implemented |
 | F2 | Original two-motion normalization, area invariance, angular reach, genuine terminal constraints and actual-cap score reduction | Implemented for the unchanged `IsAmbidextrous` predicate with continuous real-angle rigid paths |
 | F3 | Actual reference support/hull/body, both feasible passages, regular closedness and exact area `M` | Implemented, including exact reference cap score `M/2` |
-| F4 | Universal full-angle cap score at most `M/2`, including nonsmooth, asymmetric and subunit caps | Actual sharp wing density, endpoint complementarity/positivity, central niche-height estimate and one-turn survivor added to the completed selection and analytic layers; occupation/Green, unit-wing and tilted sharpness steps remain |
+| F4 | Universal full-angle cap score at most `M/2`, including nonsmooth, asymmetric and subunit caps | Actual regular-domain density/ODE, inner-source interval occupation, negative-corner nullity, endpoint laws, central height, Green/chord limit and one-turn survivor implemented; strict floor-contact unit density implemented; positive-corner, global unit-wing and tilted sharpness steps remain |
 | F5 | Universal proper-angle cap bound retaining the whole outgoing wall, independently for the two motions | Actual joint/largest-angle maximum, top insertion, used-support saturation, unused curvature gaps, low-angle exclusion and genuine three-support relaxation implemented; final terminal comparison remains |
 | F6 | Every equality cap, inverse canonicalization, strict proper-angle inequality and literal original compact-body recovery | Exact deficit, reference regularity and actual inverse canonicalization implemented; sharp cap classification and original-body assembly remain |
 | F7 source closure | Unconditional original-domain area bound and exact uniqueness, with no missing mathematical input | In progress; depends on F4–F6 |
@@ -150,14 +150,20 @@ proved in `AdaptiveGlobalValue` and `AdaptiveGlobalScalar`.
 
 ### F4 — weak source curvature and the full sharp bound
 
-1. Extend the completed local sharp curvature density to the full open
-   nonexceptional normal domain and derive the actual support-tangent and
-   corner-velocity integral identities. Preserve the central facet and top
-   normal explicitly. Endpoint face convergence, complementarity, positivity
-   and the central niche-height estimate are now complete source results.
-2. Identify the required actual source-occupation measures and their exact
-   moments, including disappearing zero-height source intervals and contact
-   ties. Complete the Green identity and the geometric calibration.
+1. The full open nonexceptional normal domain and actual support/tangent
+   and corner-velocity integral identities are now implemented in
+   `RegularCurvatureDomain` and `SupportDensityCalculus`. The central facet
+   and top normal remain explicit. Endpoint face convergence,
+   complementarity, positivity and the central niche-height estimate are
+   complete source results.
+2. `SourceOccupation` now identifies literal finite inner-source interval
+   limits with actual curvature on compact regular sets.
+   `NegativeCornerCurvature` proves actual zero curvature below the floor.
+   `FiniteGraphGreen`, `FiniteSourceBalance`, `SupportHeightControl` and
+   `SelectedGreenLimit` give the exact stationary finite Green limit.
+   `FiniteGraphLength` and `CanonicalWingChord` derive actual wing chord
+   inequalities. Complete the remaining floor-level and positive-corner
+   source laws, fractional occupation and geometric calibration.
 3. Complete strict corner laws, horizontal unit curvature and geometric
    comparison to the analytic functional. Complete all tilted-width/height
    exclusions from the written full-cap proof. `TiltedInitialEnergy` and
@@ -166,6 +172,10 @@ proved in `AdaptiveGlobalValue` and `AdaptiveGlobalScalar`.
    are now written in the `Tilted*` family.
    Their source-occupation hypotheses still need to be derived from actual
    cap geometry. The late-excess and remaining tilted exclusions are open.
+   `DiagonalRelaxation` now gives the literal tilted diagonal integral with
+   both clipped tails. `DiagonalScalar` proves its global supporting-plane
+   bounds and exact short-width stability; the additional actual triangle
+   payments and the later width/height exclusions remain.
 4. Apply the completed analytic global comparison and strict equality
    classification to the actual geometric domain after these reductions.
 
@@ -177,8 +187,10 @@ supplies central fit, and `CanonicalOneTurn` proves the entire niche lies
 below the actual roof. `Topology/VerticalRegion`, `OneTurnSurvivor` and
 `OneTurnArea` establish compactness, connectedness, a genuine continuous
 passage, actual Cavalieri area and the ordinary-area necessary inequality
-`M/2 + C(3-E-3h/2) ≤ 22199/10000`. This application no longer assumes an
-auxiliary body's feasibility or a central height certificate.
+`M/2 + C(3-E-3h/2) ≤ 22199/10000`. `CanonicalWingChord` now also gives
+`sqrt(C²+(1-h/2-E/2)²) + C(3-E-3h/2) ≤ 22199/10000` from the actual
+Green limit. These applications assume neither an auxiliary body's
+feasibility nor a central height certificate.
 
 The 51 files under `Imported` are the complete project-source import closure
 of the earlier ordinary one-turn theorem. Their actual support/curvature
@@ -199,9 +211,17 @@ middle-facet normal. `TerminalWallBound` and `TerminalScalar` exclude
 clipped integral relaxation. `InitialAngleScalar` proves the exact stationary
 value, strict rational margins and subsequent variation budgets.
 
-Complete the actual relaxation's comparison to that value, then the
-terminal-facet/reflected-impulse laws, one-sided angle variation with ties,
-weighted companion bounds and final terminal comparison. The entire first
+`InitialAngleRelaxation` and `InitialAngleCritical` now give the actual
+relaxation and its exact critical clipping/value. `TerminalAngleIntegral`
+proves the integrated one-sided angle variation, retaining all historical
+ties. `PartialInactiveNormals` and `PartialFacetPinning` prove literal
+fixed-angle facet pinning. `TerminalSupportTails` derives the actual missing
+support tails; `NegativeCompletion` completes the specified negative-tilt
+branches on the same cap and excludes them for a largest-angle maximum.
+
+Complete the actual relaxation's global comparison, the remaining
+terminal-facet/reflected-impulse and occupation laws, weighted companion
+bounds and final terminal comparison. The entire first
 terminal wall remains in the objective. The two original motion angles must
 stay independent, all angular endpoints must be covered, and `π/2` must be
 handled by the full-cap theorem.

@@ -4,8 +4,8 @@ import AmbidextrousSofa
 # Prepared axiom queries — not executed
 
 Regenerate with `python scripts/check_source_policy.py --write-axiom-audit`.
-The source-only inventory lists 5231 explicitly named declarations
-across 215 implementation modules, respecting their namespace scopes.
+The source-only inventory lists 5540 explicitly named declarations
+across 245 implementation modules, respecting their namespace scopes.
 Generated constructors, projections, recursors, and local proof terms are not
 separately enumerated by this lexical inventory.
 
@@ -365,6 +365,12 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.coordDot_affineNormalAngle
 #print axioms AmbidextrousSofa.mem_affine_halfMinus_iff
 
+-- AmbidextrousSofa/Analysis/AsymmetricTent.lean
+#print axioms AmbidextrousSofa.integral_positive_asymmetric_tent_full
+#print axioms AmbidextrousSofa.positivePart_square_increment_le
+#print axioms AmbidextrousSofa.max_increment_le_of_floor_le
+#print axioms AmbidextrousSofa.wall_increment_le_shifted_tent
+
 -- AmbidextrousSofa/Analysis/AxisFaces.lean
 #print axioms AmbidextrousSofa.imported_supp_zero
 #print axioms AmbidextrousSofa.IsDownwardCap.imported_supp_pi
@@ -416,6 +422,12 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.middleHalfInterval_eq_centered
 #print axioms AmbidextrousSofa.IsFullCapMaximizer.sweptNiche_le_roof_of_canonical_range
 #print axioms AmbidextrousSofa.IsFullCapMaximizer.ordinary_area_necessary_of_canonical_range
+
+-- AmbidextrousSofa/Analysis/CanonicalWingChord.lean
+#print axioms AmbidextrousSofa.AngularGrid.wing_chords_le_twice_score_of_selected_sequence
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.wing_chords_le_twice_score_of_affine
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.sqrt_chord_le_score_of_canonical
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.ordinary_area_chord_necessary_of_canonical_range
 
 -- AmbidextrousSofa/Analysis/CapCompactness.lean
 #print axioms AmbidextrousSofa.CapHausdorffTendsto
@@ -623,6 +635,17 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.IsDownwardCap.subset_centeredBox_of_endpoints
 #print axioms AmbidextrousSofa.IsDownwardCap.attachedCorner_fst_mem_middle_of_roof_endpoints
 
+-- AmbidextrousSofa/Analysis/CornerDynamics.lean
+#print axioms AmbidextrousSofa.cornerVelocityX
+#print axioms AmbidextrousSofa.cornerVelocityY
+#print axioms AmbidextrousSofa.attachedCorner_fst_eq_support
+#print axioms AmbidextrousSofa.attachedCorner_snd_eq_support
+#print axioms AmbidextrousSofa.IsDownwardCap.hasDerivAt_angleSupport_shift_of_density
+#print axioms AmbidextrousSofa.IsDownwardCap.hasDerivAt_attachedCorner_fst_of_density
+#print axioms AmbidextrousSofa.IsDownwardCap.hasDerivAt_attachedCorner_snd_of_density
+#print axioms AmbidextrousSofa.IsDownwardCap.ae_hasDerivAt_cornerCoordinateVelocities_of_density
+#print axioms AmbidextrousSofa.IsDownwardCap.ae_corner_floor_flatness_of_density
+
 -- AmbidextrousSofa/Analysis/CornerTrigonometry.lean
 #print axioms AmbidextrousSofa.corner_quartic_pos
 #print axioms AmbidextrousSofa.corner_cubic_pos
@@ -630,6 +653,38 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.corner_margin_large_s
 #print axioms AmbidextrousSofa.corner_margin_pos
 #print axioms AmbidextrousSofa.corner_margin_trig_pos
+
+-- AmbidextrousSofa/Analysis/DiagonalDeficit.lean
+#print axioms AmbidextrousSofa.diagonalRoofDeficit
+#print axioms AmbidextrousSofa.IsDownwardCap.diagonalRoofDeficit_eq
+#print axioms AmbidextrousSofa.IsDownwardCap.diagonalRoofDeficit_nonneg
+#print axioms AmbidextrousSofa.IsDownwardCap.tilted_diagonal_tent_integral_le
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_add_diagonalRoofDeficit_le
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_le_tilted_charged_rectangle
+#print axioms AmbidextrousSofa.IsDownwardCap.short_diagonal_geometry
+
+-- AmbidextrousSofa/Analysis/DiagonalRelaxation.lean
+#print axioms AmbidextrousSofa.diagonalRelaxation
+#print axioms AmbidextrousSofa.min_eq_left_sub_positive
+#print axioms AmbidextrousSofa.integral_diagonal_right_roof
+#print axioms AmbidextrousSofa.integral_diagonal_left_roof
+#print axioms AmbidextrousSofa.IsDownwardCap.left_roof_le_middle_height
+#print axioms AmbidextrousSofa.IsDownwardCap.tilted_diagonal_parameters_mem
+#print axioms AmbidextrousSofa.tilted_diagonal_apex_mem
+#print axioms AmbidextrousSofa.integral_tilted_diagonal_tent
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_le_tilted_diagonalRelaxation
+
+-- AmbidextrousSofa/Analysis/DiagonalScalar.lean
+#print axioms AmbidextrousSofa.positive_square_ge_tangent
+#print axioms AmbidextrousSofa.shifted_positive_square_le_displacement
+#print axioms AmbidextrousSofa.diagonalRelaxation_le_tangent
+#print axioms AmbidextrousSofa.diagonalRelaxation_le_critical
+#print axioms AmbidextrousSofa.diagonal_critical_width_mono
+#print axioms AmbidextrousSofa.diagonalRelaxation_le_constrained_right
+#print axioms AmbidextrousSofa.diagonalRelaxation_le_constrained_left
+#print axioms AmbidextrousSofa.sqrt_two_sub_one_quadratic
+#print axioms AmbidextrousSofa.sqrt_two_sub_one_strict_bounds
+#print axioms AmbidextrousSofa.short_diagonal_stability
 
 -- AmbidextrousSofa/Analysis/DiagonalTent.lean
 #print axioms AmbidextrousSofa.diagonalRight
@@ -987,6 +1042,28 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.WallExpr.sourceDensity_single
 #print axioms AmbidextrousSofa.WallExpr.hasDerivAt_integral_single_wall
 
+-- AmbidextrousSofa/Analysis/FiniteGraphGreen.lean
+#print axioms AmbidextrousSofa.WallExpr.sourceIntercept_eq
+#print axioms AmbidextrousSofa.WallExpr.integral_sourceIntercept
+#print axioms AmbidextrousSofa.WallExpr.two_mul_integral_affineGraph
+#print axioms AmbidextrousSofa.finiteSourceVariation_intercepts
+#print axioms AmbidextrousSofa.FinitePolygon.finiteWingMass
+#print axioms AmbidextrousSofa.FinitePolygon.normalArcFactor
+#print axioms AmbidextrousSofa.FinitePolygon.finiteWingLength
+#print axioms AmbidextrousSofa.FinitePolygon.finiteSupportDefect
+#print axioms AmbidextrousSofa.FinitePolygon.finiteWingLength_sub_supportDefect_eq_variation
+#print axioms AmbidextrousSofa.FinitePolygon.finiteSpatialScore_green
+
+-- AmbidextrousSofa/Analysis/FiniteGraphLength.lean
+#print axioms AmbidextrousSofa.norm_complex_pair
+#print axioms AmbidextrousSofa.sqrt_sum_sq_le_sum_weighted_graph_norm
+#print axioms AmbidextrousSofa.WallExpr.finiteGraphLength
+#print axioms AmbidextrousSofa.WallExpr.chord_le_finiteGraphLength
+#print axioms AmbidextrousSofa.FinitePolygon.normalArcFactor_eq_sqrt
+#print axioms AmbidextrousSofa.FinitePolygon.finiteWingLength_eq_graphLengths
+#print axioms AmbidextrousSofa.FinitePolygon.wing_chords_le_finiteWingLength
+#print axioms AmbidextrousSofa.two_mul_sqrt_half_sum_le_chord_sum
+
 -- AmbidextrousSofa/Analysis/FiniteNicheOscillation.lean
 #print axioms AmbidextrousSofa.FinitePolygon.erosionVelocity_add
 #print axioms AmbidextrousSofa.FinitePolygon.affineGraph_barrier
@@ -1019,6 +1096,21 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.FinitePolygon.exists_boxed_selected_polygon
 #print axioms AmbidextrousSofa.IsDownwardCap.capScore_eq_intervalSpatialScore
 
+-- AmbidextrousSofa/Analysis/FiniteSourceBalance.lean
+#print axioms AmbidextrousSofa.abs_le_self_add_two_error
+#print axioms AmbidextrousSofa.sum_weighted_abs_le_of_error
+#print axioms AmbidextrousSofa.max_self_zero_add_max_neg_eq_abs
+#print axioms AmbidextrousSofa.AngularGrid.normalizedExposureDefect
+#print axioms AmbidextrousSofa.AngularGrid.innerSourceMass
+#print axioms AmbidextrousSofa.AngularGrid.innerSourceMass_nonneg
+#print axioms AmbidextrousSofa.AngularGrid.normalizedExposureDefect_le_innerSourceMass
+#print axioms AmbidextrousSofa.AngularGrid.innerSourceMass_dyadic_le
+#print axioms AmbidextrousSofa.AngularGrid.sum_mesh_sources_le_pi
+#print axioms AmbidextrousSofa.AngularGrid.sum_innerSourceMass_dyadic_le
+#print axioms AmbidextrousSofa.AngularGrid.sum_cos_normalizedExposureDefect_eq_moments
+#print axioms AmbidextrousSofa.AngularGrid.IsSelectedPolygon.sum_cos_abs_normalizedExposureDefect_le
+#print axioms AmbidextrousSofa.AngularGrid.IsSelectedPolygon.sum_abs_normalizedExposureDefect_le
+
 -- AmbidextrousSofa/Analysis/FiniteSpatialVariation.lean
 #print axioms AmbidextrousSofa.WallExpr.affineGraph
 #print axioms AmbidextrousSofa.WallExpr.continuous_affineGraph
@@ -1040,6 +1132,18 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.hasDerivAt_nonpos_of_right_max
 #print axioms AmbidextrousSofa.hasDerivAt_finite_intervalSpatialScore
 #print axioms AmbidextrousSofa.finite_selected_exposure_inequality
+
+-- AmbidextrousSofa/Analysis/FloorContactCurvature.lean
+#print axioms AmbidextrousSofa.sourceKappa_le_abs_add_half
+#print axioms AmbidextrousSofa.sourceKappa_lt_one_iff
+#print axioms AmbidextrousSofa.floor_contact_curvature_control
+#print axioms AmbidextrousSofa.IsDownwardCap.ae_floor_curvature_lt_one_on_interval
+#print axioms AmbidextrousSofa.regularCornerDomain
+#print axioms AmbidextrousSofa.isOpen_regularCornerDomain
+#print axioms AmbidextrousSofa.IsDownwardCap.ae_floor_curvature_lt_one_of_density
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.curvature_density_floor_control
+#print axioms AmbidextrousSofa.regularCornerDomain_zero
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.horizontal_curvature_density_floor_control
 
 -- AmbidextrousSofa/Analysis/GlobalCapMaximum.lean
 #print axioms AmbidextrousSofa.IsFullCapMaximizer
@@ -1137,6 +1241,72 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.IsDownwardCap.exists_score_improving_insertion
 #print axioms AmbidextrousSofa.IsFullCapMaximizer.exists_noninactive_normal_on_wing
 
+-- AmbidextrousSofa/Analysis/InitialAngleCalibration.lean
+#print axioms AmbidextrousSofa.initialAngle_wall_pointwise_lower
+#print axioms AmbidextrousSofa.initialAngleRampLoss_tangent
+#print axioms AmbidextrousSofa.initialAngleRightLoss_affine_lower
+#print axioms AmbidextrousSofa.initialAngle_V_integral_affine_lower
+#print axioms AmbidextrousSofa.initialAngle_integral_ramp_centered
+#print axioms AmbidextrousSofa.initialAngle_niche_first_region_lower
+#print axioms AmbidextrousSofa.initialAngleRelaxation_first_region_le
+#print axioms AmbidextrousSofa.initialAngleRelaxation_le_exterior
+#print axioms AmbidextrousSofa.initialAngleRelaxation_le_two_thirds_of_left_apex
+#print axioms AmbidextrousSofa.initialAngleRelaxation_le_two_thirds_of_low_apex
+#print axioms AmbidextrousSofa.initialAngle_V_integral_quadratic
+#print axioms AmbidextrousSofa.initialAngle_niche_second_region_lower
+#print axioms AmbidextrousSofa.initialAngleRightLoss_quadratic_lower
+#print axioms AmbidextrousSofa.initialAngleSecondRegionValue
+#print axioms AmbidextrousSofa.initialAngle_second_region_identity
+#print axioms AmbidextrousSofa.initialAngleRelaxation_second_region_le
+
+-- AmbidextrousSofa/Analysis/InitialAngleCritical.lean
+#print axioms AmbidextrousSofa.initialAngleCriticalB
+#print axioms AmbidextrousSofa.initialAngleCriticalU
+#print axioms AmbidextrousSofa.initialAngleCriticalV
+#print axioms AmbidextrousSofa.initialAngleCriticalP
+#print axioms AmbidextrousSofa.initialAngle_inset_equation
+#print axioms AmbidextrousSofa.initialAngle_inset_pos
+#print axioms AmbidextrousSofa.initialAngle_inset_lt_offset
+#print axioms AmbidextrousSofa.initialAngle_inset_lt_seven_twenty_fifths
+#print axioms AmbidextrousSofa.initialAngle_critical_gap
+#print axioms AmbidextrousSofa.initialAngle_critical_gap_pos
+#print axioms AmbidextrousSofa.initialAngle_critical_clipping
+#print axioms AmbidextrousSofa.initialAngle_integral_affine
+#print axioms AmbidextrousSofa.initialAngle_integral_three_walls_ordered
+#print axioms AmbidextrousSofa.initialAngle_critical_left_loss
+#print axioms AmbidextrousSofa.initialAngle_critical_right_loss
+#print axioms AmbidextrousSofa.initialAngle_critical_niche_loss
+#print axioms AmbidextrousSofa.initialAngleRelaxation_critical_eq_stationary
+#print axioms AmbidextrousSofa.initialAngleRelaxation_critical_eq_of_width_range
+
+-- AmbidextrousSofa/Analysis/InitialAngleRaise.lean
+#print axioms AmbidextrousSofa.integral_positive_wall_difference_full
+#print axioms AmbidextrousSofa.initialAngleNicheLoss_increment_le_area
+#print axioms AmbidextrousSofa.initialAngleNicheLoss_increment_le
+#print axioms AmbidextrousSofa.initialAngleRelaxation_le_raise_left
+
+-- AmbidextrousSofa/Analysis/InitialAngleRelaxation.lean
+#print axioms AmbidextrousSofa.initialAngleRampLoss
+#print axioms AmbidextrousSofa.initialAngleRightLoss
+#print axioms AmbidextrousSofa.initialAngleNicheLoss
+#print axioms AmbidextrousSofa.initialAngleRelaxation
+#print axioms AmbidextrousSofa.initialAngleRampLoss_eq_positive_squares
+#print axioms AmbidextrousSofa.initialAngleRampLoss_eq_affine
+#print axioms AmbidextrousSofa.initialAngleRampLoss_eq_square
+#print axioms AmbidextrousSofa.initialAngleRampLoss_eq_zero
+#print axioms AmbidextrousSofa.initialAngleRampLoss_nonneg
+#print axioms AmbidextrousSofa.initialAngleRightLoss_nonneg
+#print axioms AmbidextrousSofa.initialAngleNicheLoss_nonneg
+#print axioms AmbidextrousSofa.initialAngleRelaxation_le_twice_width
+#print axioms AmbidextrousSofa.initialAngle_right_integrand_ramps
+#print axioms AmbidextrousSofa.initialAngleRightLoss_eq_ramps
+#print axioms AmbidextrousSofa.initialAngleRampLoss_le_rightLoss
+#print axioms AmbidextrousSofa.initialAngle_diagonal_integral_le_nicheLoss
+#print axioms AmbidextrousSofa.initialAngle_diagonal_integral_full
+#print axioms AmbidextrousSofa.initialAngleRelaxation_le_complement_quadratic
+#print axioms AmbidextrousSofa.initialAngleRelaxation_complement_lt
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_le_initialAngleRelaxation
+
 -- AmbidextrousSofa/Analysis/InitialAngleScalar.lean
 #print axioms AmbidextrousSofa.initialAngleStationaryValue
 #print axioms AmbidextrousSofa.initialAngleWidthValue
@@ -1185,6 +1355,10 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.exists_jointCapMaximizer_largest_angle
 #print axioms AmbidextrousSofa.IsJointCapMaximizer.exists_heightOne_affine_middle
 #print axioms AmbidextrousSofa.exists_canonical_jointCapMaximizer_largest_angle
+
+-- AmbidextrousSofa/Analysis/LevelSetDerivative.lean
+#print axioms AmbidextrousSofa.ae_deriv_eq_zero_on_level
+#print axioms AmbidextrousSofa.ae_two_derivatives_eq_zero_on_level
 
 -- AmbidextrousSofa/Analysis/LocalSourceDensity.lean
 #print axioms AmbidextrousSofa.eventually_uniform_upper_of_moving_tendsto
@@ -1273,6 +1447,51 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.IsDownwardCap.backwardAngularSecant_bounds
 #print axioms AmbidextrousSofa.CapHausdorffTendsto.backwardAngularSecant_tendsto
 
+-- AmbidextrousSofa/Analysis/NearDiagonalGeometry.lean
+#print axioms AmbidextrousSofa.nearDiagonalRightDeficit
+#print axioms AmbidextrousSofa.nearDiagonalLeftDeficit
+#print axioms AmbidextrousSofa.IsDownwardCap.nearDiagonalRightDeficit_mem
+#print axioms AmbidextrousSofa.tilted_middle_slope
+#print axioms AmbidextrousSofa.IsDownwardCap.nearDiagonalLeftDeficit_mem
+#print axioms AmbidextrousSofa.IsDownwardCap.capRoof_le_nearDiagonalRight
+#print axioms AmbidextrousSofa.IsDownwardCap.capRoof_le_nearDiagonalLeft
+#print axioms AmbidextrousSofa.IsDownwardCap.exists_diagonalLeft_attainer_on_left_wing
+#print axioms AmbidextrousSofa.IsDownwardCap.diagonalRight_companion_support_ge
+#print axioms AmbidextrousSofa.IsDownwardCap.diagonalLeft_companion_support_ge
+
+-- AmbidextrousSofa/Analysis/NegativeCompletion.lean
+#print axioms AmbidextrousSofa.fixedPoint_firstWall_le_initial
+#print axioms AmbidextrousSofa.fixedPoint_firstWall_nonpos_of_low_height
+#print axioms AmbidextrousSofa.fixedPoint_firstWall_le_max_initial_of_low_height
+#print axioms AmbidextrousSofa.firstWall_eq_fixedPoint_of_support
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.missing_firstWall_le_max_terminal_of_negative_completion
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.full_niche_le_partial_of_negative_completion
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.capScore_le_full_of_negative_completion
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.full_jointMaximizer_of_negative_completion
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.negative_remaining_tail_geometry
+
+-- AmbidextrousSofa/Analysis/NegativeCornerCurvature.lean
+#print axioms AmbidextrousSofa.cornerWall_le_attachedCorner_snd
+#print axioms AmbidextrousSofa.sourceQuarterAngle
+#print axioms AmbidextrousSofa.sourceCornerHeight
+#print axioms AmbidextrousSofa.sourceQuarterAngle_tendsto
+#print axioms AmbidextrousSofa.continuousAt_sourceQuarterAngle
+#print axioms AmbidextrousSofa.continuous_attachedCorner
+#print axioms AmbidextrousSofa.continuousAt_sourceCornerHeight
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.attachedCorner_tendsto
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.sourceCornerHeight_tendsto
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.eventually_sourceCornerHeight_neg_on_compact
+#print axioms AmbidextrousSofa.AngularGrid.sourceQuarterAngle_fullAngle
+#print axioms AmbidextrousSofa.AngularGrid.innerSource_corner_height_nonneg
+#print axioms AmbidextrousSofa.AngularGrid.innerSourceSet_eq_empty_of_corner_neg
+#print axioms AmbidextrousSofa.AngularGrid.innerDensity_eq_zero_of_corner_neg
+#print axioms AmbidextrousSofa.AngularGrid.innerSourceMass_eq_zero_of_corner_neg
+#print axioms AmbidextrousSofa.AngularGrid.innerAngularMass_eq_zero_of_corner_neg
+#print axioms AmbidextrousSofa.AngularGrid.innerAngularMass_eventually_zero_of_compact
+#print axioms AmbidextrousSofa.AngularGrid.upperCurvature_Ioc_eq_zero_of_negative_corners
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.upperCurvature_Ioc_eq_zero_of_negative_corners
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.upperCurvature_negative_corners_eq_zero
+
 -- AmbidextrousSofa/Analysis/NeighborCompanion.lean
 #print axioms AmbidextrousSofa.image_addParameterInterval
 #print axioms AmbidextrousSofa.volume_real_image_addParameterInterval
@@ -1345,6 +1564,15 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.IsDownwardCap.sweptNiche_eq_zero_of_le_left
 #print axioms AmbidextrousSofa.IsDownwardCap.convexOn_sweptNiche_wings_of_roof_endpoints
 
+-- AmbidextrousSofa/Analysis/NonpositiveCornerCurvature.lean
+#print axioms AmbidextrousSofa.measurable_sourceQuarterAngle
+#print axioms AmbidextrousSofa.measurable_sourceCornerHeight
+#print axioms AmbidextrousSofa.ae_density_eq_zero_of_restrict_withDensity_null
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.ae_density_zero_on_negative_corners
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.ae_both_densities_zero_at_negative_corner
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.curvature_density_nonpositive_corner_control
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.horizontal_curvature_density_nonpositive_corner_control
+
 -- AmbidextrousSofa/Analysis/OneTurnArea.lean
 #print axioms AmbidextrousSofa.IsDownwardCap.volumeReal_oneTurnSurvivor_eq_integral
 #print axioms AmbidextrousSofa.IsDownwardCap.volumeReal_oneTurnSurvivor_eq_intervalIntegral
@@ -1412,6 +1640,18 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.CapHausdorffTendsto.middle_partialBarrier_integral_tendsto
 #print axioms AmbidextrousSofa.CapHausdorffTendsto.partialCapScore_tendsto
 #print axioms AmbidextrousSofa.continuous_partialCapScore_on_box
+
+-- AmbidextrousSofa/Analysis/PartialFacetPinning.lean
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.not_affine_wing_triple
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.horizontalProjection_middle_supportFace
+
+-- AmbidextrousSofa/Analysis/PartialInactiveNormals.lean
+#print axioms AmbidextrousSofa.sweptNiche_partial_eq_of_support_eq_or_inactive
+#print axioms AmbidextrousSofa.partialBarrier_eq_of_support_eq_or_inactive
+#print axioms AmbidextrousSofa.IsDownwardCap.exists_inactive_support_insertion_radius
+#print axioms AmbidextrousSofa.IsDownwardCap.exists_inactive_partial_insertion_radius
+#print axioms AmbidextrousSofa.IsDownwardCap.exists_partial_score_improving_insertion
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.exists_noninactive_normal_on_wing
 
 -- AmbidextrousSofa/Analysis/PartialTopInsertion.lean
 #print axioms AmbidextrousSofa.sweptNiche_eq_of_clippedCorner_eq
@@ -1555,6 +1795,19 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.Analysis.QuarterPair.gauge_norm_sq
 #print axioms AmbidextrousSofa.Analysis.QuarterPair.gauge_energy_identity
 
+-- AmbidextrousSofa/Analysis/RegularCurvatureDomain.lean
+#print axioms AmbidextrousSofa.affineNormalAngle_zero
+#print axioms AmbidextrousSofa.cos_add_mul_sin_eq_zero_iff
+#print axioms AmbidextrousSofa.regularCurvatureDomain
+#print axioms AmbidextrousSofa.measurableSet_regularCurvatureDomain
+#print axioms AmbidextrousSofa.regularCurvatureDomain_subset
+#print axioms AmbidextrousSofa.mem_regularCurvatureDomain_iff
+#print axioms AmbidextrousSofa.Ioo_sdiff_pair_eq_three
+#print axioms AmbidextrousSofa.regularCurvatureDomain_eq_three
+#print axioms AmbidextrousSofa.measure_restrict_regularCurvatureDomain_le
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.curvature_density_on_regular_domain
+#print axioms AmbidextrousSofa.curvature_restrict_upper_decomposition
+
 -- AmbidextrousSofa/Analysis/RoofContinuity.lean
 #print axioms AmbidextrousSofa.continuousWithinAt_of_upperSemicontinuousWithinAt_of_lower_support
 #print axioms AmbidextrousSofa.IsDownwardCap.continuousOn_capRoof_Icc
@@ -1613,6 +1866,12 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.AngularGrid.erosionMoment_difference_tendsto
 #print axioms AmbidextrousSofa.AngularGrid.erosionMoments_tendsto
 
+-- AmbidextrousSofa/Analysis/SelectedGreenLimit.lean
+#print axioms AmbidextrousSofa.AngularGrid.IsSelectedPolygon.abs_finiteSupportDefect_le
+#print axioms AmbidextrousSofa.AngularGrid.finiteSupportDefect_tendsto_zero_of_canonical_maximum
+#print axioms AmbidextrousSofa.AngularGrid.score_dyadic_tendsto
+#print axioms AmbidextrousSofa.AngularGrid.finiteWingLength_tendsto_twice_score_of_canonical_maximum
+
 -- AmbidextrousSofa/Analysis/SelectedNicheHeight.lean
 #print axioms AmbidextrousSofa.IsFullCapMaximizer.middle_roof_sum_eq_two_sub_abs_of_affine
 #print axioms AmbidextrousSofa.AngularGrid.selected_niche_oscillation_le
@@ -1654,6 +1913,18 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.AngularGrid.curvature_restrict_le_source_density
 #print axioms AmbidextrousSofa.IsFullCapMaximizer.curvature_density_sharp_on_wing
 #print axioms AmbidextrousSofa.IsFullCapMaximizer.curvature_restrict_le_source_density
+
+-- AmbidextrousSofa/Analysis/SourceOccupation.lean
+#print axioms AmbidextrousSofa.cos_ne_zero_of_upper_ne_top
+#print axioms AmbidextrousSofa.AngularGrid.innerAngularMass
+#print axioms AmbidextrousSofa.AngularGrid.innerAngularMass_nonneg
+#print axioms AmbidextrousSofa.AngularGrid.innerSourceMass_sub_atom_eq
+#print axioms AmbidextrousSofa.AngularGrid.abs_innerAngularMass_sub_curvature_le
+#print axioms AmbidextrousSofa.AngularGrid.sum_cos_abs_normalizedExposureDefect_tendsto_zero_of_canonical_maximum
+#print axioms AmbidextrousSofa.AngularGrid.sum_abs_defect_on_set_le_cos_sum
+#print axioms AmbidextrousSofa.AngularGrid.sum_abs_defect_on_set_tendsto_of_compact
+#print axioms AmbidextrousSofa.AngularGrid.innerAngularMass_sub_curvature_tendsto_of_canonical_maximum
+#print axioms AmbidextrousSofa.AngularGrid.innerAngularMass_Ioc_tendsto_of_canonical_maximum
 
 -- AmbidextrousSofa/Analysis/SourceVelocity.lean
 #print axioms AmbidextrousSofa.sourceKappa
@@ -1697,6 +1968,32 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.IsDownwardCap.angleSupport_right_deriv
 #print axioms AmbidextrousSofa.IsDownwardCap.angleSupport_left_deriv
 
+-- AmbidextrousSofa/Analysis/SupportDensityCalculus.lean
+#print axioms AmbidextrousSofa.supportTangent
+#print axioms AmbidextrousSofa.intervalIntegrable_bounded_real_density
+#print axioms AmbidextrousSofa.absolutelyContinuousOnInterval_of_integral_sub
+#print axioms AmbidextrousSofa.IsDownwardCap.intervalIntegrable_supportTangent
+#print axioms AmbidextrousSofa.IsDownwardCap.angleSupport_sub_eq_integral
+#print axioms AmbidextrousSofa.IsDownwardCap.angleSupport_shift_sub_eq_integral
+#print axioms AmbidextrousSofa.IsDownwardCap.absolutelyContinuousOnInterval_angleSupport_shift
+#print axioms AmbidextrousSofa.IsDownwardCap.absolutelyContinuousOnInterval_angleSupport
+#print axioms AmbidextrousSofa.IsDownwardCap.supportTangent_sub_eq_integral_of_density
+#print axioms AmbidextrousSofa.IsDownwardCap.supportTangent_shift_sub_eq_integral_of_density
+#print axioms AmbidextrousSofa.IsDownwardCap.absolutelyContinuousOnInterval_supportTangent_shift_of_density
+#print axioms AmbidextrousSofa.IsDownwardCap.absolutelyContinuousOnInterval_supportTangent_of_density
+#print axioms AmbidextrousSofa.IsDownwardCap.hasDerivAt_angleSupport_of_density
+#print axioms AmbidextrousSofa.IsDownwardCap.ae_hasDerivAt_supportTangent_shift_of_density
+#print axioms AmbidextrousSofa.IsDownwardCap.ae_hasDerivAt_supportTangent_of_density
+#print axioms AmbidextrousSofa.IsDownwardCap.absolutelyContinuousOnInterval_cornerVelocities_of_density
+#print axioms AmbidextrousSofa.IsDownwardCap.ae_hasDerivAt_cornerVelocities_of_density
+#print axioms AmbidextrousSofa.IsDownwardCap.firstCornerVelocity_sub_eq_integral_of_density
+#print axioms AmbidextrousSofa.IsDownwardCap.secondCornerVelocity_sub_eq_integral_of_density
+
+-- AmbidextrousSofa/Analysis/SupportHeightControl.lean
+#print axioms AmbidextrousSofa.IsDownwardCap.abs_support_sub_height_le_box
+#print axioms AmbidextrousSofa.IsDownwardCap.abs_support_sub_one_le_box
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.capHeight_tendsto
+
 -- AmbidextrousSofa/Analysis/TerminalAngleDerivative.lean
 #print axioms AmbidextrousSofa.terminalFirstRightAbscissa
 #print axioms AmbidextrousSofa.terminalFirstRightAbscissa_eq_frame
@@ -1713,6 +2010,59 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.IsDownwardCap.partialBarrier_right_deriv
 #print axioms AmbidextrousSofa.IsDownwardCap.measurable_terminalBarrierRightDerivative
 
+-- AmbidextrousSofa/Analysis/TerminalAngleIntegral.lean
+#print axioms AmbidextrousSofa.half_le_sin_terminalAngle
+#print axioms AmbidextrousSofa.IsDownwardCap.abs_terminalFirstRightAbscissa_le
+#print axioms AmbidextrousSofa.IsDownwardCap.norm_terminalFirstRightDerivative_le
+#print axioms AmbidextrousSofa.IsDownwardCap.norm_terminalBarrierRightDerivative_le
+#print axioms AmbidextrousSofa.IsDownwardCap.continuousOn_partialBarrier_terminalAngle
+#print axioms AmbidextrousSofa.IsDownwardCap.norm_partialBarrier_sub_le_terminalAngle
+#print axioms AmbidextrousSofa.IsDownwardCap.norm_terminalBarrier_quotient_le_Icc
+#print axioms AmbidextrousSofa.IsDownwardCap.integrableOn_terminalBarrierRightDerivative_Icc
+#print axioms AmbidextrousSofa.IsDownwardCap.integral_partialBarrier_right_deriv
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_right_deriv_terminalAngle
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.terminal_variation_integral_nonneg
+#print axioms AmbidextrousSofa.terminalStrictRegion
+#print axioms AmbidextrousSofa.terminalHistoricalTie
+#print axioms AmbidextrousSofa.IsDownwardCap.measurableSet_terminalStrictRegion
+#print axioms AmbidextrousSofa.IsDownwardCap.measurableSet_terminalHistoricalTie
+#print axioms AmbidextrousSofa.terminalBarrierRightDerivative_eq_moment_indicators
+#print axioms AmbidextrousSofa.IsDownwardCap.integral_terminalBarrierRightDerivative_eq_moments
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.terminal_variation_moments_nonneg
+
+-- AmbidextrousSofa/Analysis/TerminalFacet.lean
+#print axioms AmbidextrousSofa.terminalTailPoint
+#print axioms AmbidextrousSofa.terminalFaceWidth
+#print axioms AmbidextrousSofa.terminalTailInset
+#print axioms AmbidextrousSofa.terminalTailReserve
+#print axioms AmbidextrousSofa.terminalTailZero
+#print axioms AmbidextrousSofa.top_vminus_snd_eq_capHeight
+#print axioms AmbidextrousSofa.IsDownwardCap.top_vminus_fst_ge_of_top
+#print axioms AmbidextrousSofa.IsDownwardCap.terminalTailPoint_mem
+#print axioms AmbidextrousSofa.IsDownwardCap.terminalFaceWidth_nonneg
+#print axioms AmbidextrousSofa.IsDownwardCap.terminalFaceWidth_eq_curvature_atom
+#print axioms AmbidextrousSofa.IsDownwardCap.terminalFaceWidth_eq_projection_measure
+#print axioms AmbidextrousSofa.IsDownwardCap.terminal_vminus_eq
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.terminalTailPoint_bounds
+#print axioms AmbidextrousSofa.IsDownwardCap.terminalTailInset_bounds
+#print axioms AmbidextrousSofa.firstWall_eq_terminalTail
+#print axioms AmbidextrousSofa.partialBarrier_pos_of_lt_terminalTailZero
+
+-- AmbidextrousSofa/Analysis/TerminalHistory.lean
+#print axioms AmbidextrousSofa.terminalFirstLeftAbscissa
+#print axioms AmbidextrousSofa.terminalFirstLeftAbscissa_eq_right_add_width
+#print axioms AmbidextrousSofa.terminalFirstLeftAbscissa_eq_frame
+#print axioms AmbidextrousSofa.IsDownwardCap.firstWall_left_deriv
+#print axioms AmbidextrousSofa.hasDerivWithinAt_left_iff_tendsto_quotient
+#print axioms AmbidextrousSofa.IsDownwardCap.secondWall_continuousAt_angle
+#print axioms AmbidextrousSofa.IsDownwardCap.firstWall_lt_history_between_corner_and_left_endpoint
+#print axioms AmbidextrousSofa.firstWall_neg_of_terminalTailZero_lt
+#print axioms AmbidextrousSofa.IsDownwardCap.terminal_contact_le_corner_of_overlong_facet
+#print axioms AmbidextrousSofa.IsDownwardCap.terminalBarrier_derivative_sign_of_overlong_facet
+#print axioms AmbidextrousSofa.IsDownwardCap.continuous_sweptNiche_terminalAngle
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.partialBarrier_eq_history_of_overlong_facet
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.firstWall_le_history_of_overlong_facet
+
 -- AmbidextrousSofa/Analysis/TerminalScalar.lean
 #print axioms AmbidextrousSofa.terminal_cotangent_scalar_bound
 #print axioms AmbidextrousSofa.terminal_bound_le_arctan_five_fourths
@@ -1722,6 +2072,25 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.terminal_bound_lt_half_M
 #print axioms AmbidextrousSofa.IsDownwardCap.capScore_lt_half_M_of_low_terminal_angle
 #print axioms AmbidextrousSofa.IsJointCapMaximizer.terminal_angle_gt_arctan_five_fourths
+
+-- AmbidextrousSofa/Analysis/TerminalSupportTails.lean
+#print axioms AmbidextrousSofa.support_vertices_of_halfplane_gap
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.support_vertices_first_unused_gap
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.support_vertices_companion_unused_gap
+#print axioms AmbidextrousSofa.unitNormal_affineNormalAngle
+#print axioms AmbidextrousSofa.IsDownwardCap.edge_affineNormalAngle_eq_supportFace
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.middle_support_vertices
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.middle_slope_lt_five_fourths
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.middle_normal_lt_terminal_companion
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.terminal_companion_vplus
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.companion_tail_support
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.first_tail_support_before_middle
+#print axioms AmbidextrousSofa.IsDownwardCap.top_vminus_of_negative_affine_segment
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.top_vminus_of_negative_affine_middle
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.first_tail_support_after_middle
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.first_tail_support_negative
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.first_terminal_vplus_of_no_middle_gap
+#print axioms AmbidextrousSofa.IsJointCapMaximizer.first_terminal_vplus_of_middle_nonneg
 
 -- AmbidextrousSofa/Analysis/TerminalThreeSupports.lean
 #print axioms AmbidextrousSofa.terminalSlope

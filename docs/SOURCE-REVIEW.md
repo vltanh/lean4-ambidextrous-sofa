@@ -9,8 +9,8 @@ This record is not a kernel proof log or an external referee report.
 
 ## Current source inventory
 
-The entry point covers **215 implementation modules**, containing
-**4402 named theorems** and **5231 explicitly named declarations**.
+The entry point covers **245 implementation modules**, containing
+**4675 named theorems** and **5540 explicitly named declarations**.
 Every declared theorem has an explicit proof body. `AxiomAudit.lean` prepares
 one unexecuted `#print axioms` query per explicitly named declaration.
 Generated constructors, projections, recursors and equation lemmas are not
@@ -102,6 +102,36 @@ of the connectedness, movement and actual area calculations. The resulting
 ordinary-area application is a proved statement about an actual compact
 connected survivor, with central fit now discharged by `SelectedNicheHeight`.
 
+The subsequent Green and chord chain received independent source review in
+full. `FiniteGraphGreen` uses the actual selected intercept and AC
+integration by parts, retaining top mass and both endpoint pressure terms.
+`FiniteSourceBalance` bounds both the total and cosine-weighted absolute
+exposure defects. `SupportHeightControl` and `SelectedGreenLimit` eliminate
+the actual support-weighted error using height convergence and endpoint
+stationarity. Review corrected a redundant metric-limit step before
+publication. `FiniteGraphLength` uses the Euclidean complex norm, literal
+source masses and the spatial FTC; `CanonicalWingChord` constructs its own
+selected sequence and gives the stronger actual ordinary-area constraint.
+
+Independent review also covered `RegularCurvatureDomain`,
+`SupportDensityCalculus`, `SourceOccupation` and
+`NegativeCornerCurvature`. It checked the exact two exceptional normals,
+three-wing cover, bounded actual density, support/tangent primitives,
+shifted coupled ODEs, literal inner-source interval limits, and actual
+curvature nullity on the full strictly negative-corner set. No ordinary
+niche-arclength identity is presumed by these results. The subsequent
+`LevelSetDerivative`, `CornerDynamics` and `FloorContactCurvature` chain
+received independent review: countable one-sided isolated level points,
+actual first/second corner derivatives and the sharp source bound give
+strict unit density at almost every actual floor contact.
+
+The integrated terminal-angle variation received independent review against
+the pinned one-sided mean-value and dominated-convergence interfaces. The
+historical-tie term is retained. The actual partial inactive-normal/facet
+proofs, post-terminal support tails and negative-tilt same-cap completion
+also received independent reviews. The exact initial-angle relaxation and
+critical value were reviewed independently. The actual terminal-facet/history proof, asymmetric-tent increments, initial-angle calibration and diagonal-relaxation/scalar modules received independent source reviews. The actual exterior-deficit and near-diagonal geometry modules have complete bodies and author review; their additional peer reviews and geometric applications are continuing.
+
 The first-unit fold-payment/raw-momentum closure and terminal scalar tranches
 have complete bodies. The actual terminal wall integral bound and
 `TerminalScalar` received independent review, including exact rational
@@ -161,9 +191,9 @@ The lexical guard cannot compute actual transitive axiom dependencies or
 establish that any theorem elaborates. The prepared queries have not been
 run and the actual axiom sets are unverified.
 
-The checked snapshot has **217 Lean files**, including entry point and
-audit, **215 implementation modules**, **4402 named theorems**,
-and **5231 prepared queries**. The source-policy guard passed.
+The checked snapshot has **247 Lean files**, including entry point and
+audit, **245 implementation modules**, **4675 named theorems**,
+and **5540 prepared queries**. The source-policy guard passed.
 Whitespace and local documentation links are checked before publication.
 Publication uses GitHub's Git Data API with exact tree/blob comparisons;
 no workflow is added and commits use `[skip ci]`.
@@ -193,10 +223,11 @@ F7 source closure is **not yet achieved**. The current project has actual
 reference attainment and an original-domain reduction, but still lacks the
 universal full and proper-angle sharp cap theorems and their complete
 equality classification. Sharp local source-curvature densities, actual
-endpoint complementarity, the central niche-height estimate and the actual
-one-turn survivor application have been added. Source-occupation/Green
-identification, unit-curvature and tilted/full/terminal exclusions, and
-final original-body assembly remain on the
+endpoint complementarity, the central niche-height estimate, regular-domain
+ODE and source occupation, negative-corner nullity, actual Green/chord limit,
+and stronger one-turn area constraint have been added. Positive-corner
+source laws, global unit-curvature and tilted/full/terminal exclusions, and final
+original-body assembly remain on the
 [critical path](FORMALIZATION-ROADMAP.md).
 
 No unproved global result is installed as an axiom, placeholder or a
@@ -220,11 +251,13 @@ instruction.
 | `AmbidextrousSofa/Analysis/AdaptiveGlobalValue.lean` | 17 | 20 |
 | `AmbidextrousSofa/Analysis/AdaptiveTranslation.lean` | 11 | 14 |
 | `AmbidextrousSofa/Analysis/AffineNormal.lean` | 3 | 4 |
+| `AmbidextrousSofa/Analysis/AsymmetricTent.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/AxisFaces.lean` | 14 | 14 |
 | `AmbidextrousSofa/Analysis/AxisHeightLimit.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/AxisVariation.lean` | 8 | 9 |
 | `AmbidextrousSofa/Analysis/BoxedSecants.lean` | 10 | 10 |
 | `AmbidextrousSofa/Analysis/CanonicalOneTurn.lean` | 3 | 3 |
+| `AmbidextrousSofa/Analysis/CanonicalWingChord.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/CapCompactness.lean` | 14 | 15 |
 | `AmbidextrousSofa/Analysis/CapInsertion.lean` | 10 | 11 |
 | `AmbidextrousSofa/Analysis/CapInteriorRoof.lean` | 4 | 4 |
@@ -239,7 +272,11 @@ instruction.
 | `AmbidextrousSofa/Analysis/Chord.lean` | 24 | 28 |
 | `AmbidextrousSofa/Analysis/Circumscription.lean` | 9 | 10 |
 | `AmbidextrousSofa/Analysis/CornerConfinement.lean` | 9 | 10 |
+| `AmbidextrousSofa/Analysis/CornerDynamics.lean` | 7 | 9 |
 | `AmbidextrousSofa/Analysis/CornerTrigonometry.lean` | 6 | 6 |
+| `AmbidextrousSofa/Analysis/DiagonalDeficit.lean` | 6 | 7 |
+| `AmbidextrousSofa/Analysis/DiagonalRelaxation.lean` | 8 | 9 |
+| `AmbidextrousSofa/Analysis/DiagonalScalar.lean` | 10 | 10 |
 | `AmbidextrousSofa/Analysis/DiagonalTent.lean` | 10 | 12 |
 | `AmbidextrousSofa/Analysis/DirichletEnergy.lean` | 7 | 7 |
 | `AmbidextrousSofa/Analysis/DiscreteCurvature.lean` | 8 | 11 |
@@ -260,11 +297,15 @@ instruction.
 | `AmbidextrousSofa/Analysis/FacetCurvature.lean` | 9 | 9 |
 | `AmbidextrousSofa/Analysis/FacetPinning.lean` | 10 | 10 |
 | `AmbidextrousSofa/Analysis/FiniteEnvelope.lean` | 14 | 20 |
+| `AmbidextrousSofa/Analysis/FiniteGraphGreen.lean` | 6 | 10 |
+| `AmbidextrousSofa/Analysis/FiniteGraphLength.lean` | 7 | 8 |
 | `AmbidextrousSofa/Analysis/FiniteNicheOscillation.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/FiniteRoofVariation.lean` | 11 | 11 |
 | `AmbidextrousSofa/Analysis/FiniteScore.lean` | 11 | 11 |
+| `AmbidextrousSofa/Analysis/FiniteSourceBalance.lean` | 11 | 13 |
 | `AmbidextrousSofa/Analysis/FiniteSpatialVariation.lean` | 7 | 8 |
 | `AmbidextrousSofa/Analysis/FiniteVariation.lean` | 9 | 10 |
+| `AmbidextrousSofa/Analysis/FloorContactCurvature.lean` | 9 | 10 |
 | `AmbidextrousSofa/Analysis/GlobalCapMaximum.lean` | 7 | 8 |
 | `AmbidextrousSofa/Analysis/GridCounting.lean` | 15 | 17 |
 | `AmbidextrousSofa/Analysis/GridNiche.lean` | 15 | 20 |
@@ -272,9 +313,14 @@ instruction.
 | `AmbidextrousSofa/Analysis/GridScore.lean` | 6 | 7 |
 | `AmbidextrousSofa/Analysis/GridSeparation.lean` | 2 | 2 |
 | `AmbidextrousSofa/Analysis/InactiveNormals.lean` | 7 | 8 |
+| `AmbidextrousSofa/Analysis/InitialAngleCalibration.lean` | 15 | 16 |
+| `AmbidextrousSofa/Analysis/InitialAngleCritical.lean` | 14 | 18 |
+| `AmbidextrousSofa/Analysis/InitialAngleRaise.lean` | 4 | 4 |
+| `AmbidextrousSofa/Analysis/InitialAngleRelaxation.lean` | 16 | 20 |
 | `AmbidextrousSofa/Analysis/InitialAngleScalar.lean` | 19 | 21 |
 | `AmbidextrousSofa/Analysis/InverseCanonicalization.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/JointCapMaximum.lean` | 15 | 16 |
+| `AmbidextrousSofa/Analysis/LevelSetDerivative.lean` | 2 | 2 |
 | `AmbidextrousSofa/Analysis/LocalSourceDensity.lean` | 5 | 5 |
 | `AmbidextrousSofa/Analysis/LowHeightAlgebra.lean` | 9 | 11 |
 | `AmbidextrousSofa/Analysis/LowHeightGeometry.lean` | 7 | 8 |
@@ -284,17 +330,23 @@ instruction.
 | `AmbidextrousSofa/Analysis/MiddleMassLimit.lean` | 9 | 11 |
 | `AmbidextrousSofa/Analysis/MiddleNormalStability.lean` | 3 | 3 |
 | `AmbidextrousSofa/Analysis/MovingSupportSecants.lean` | 8 | 10 |
+| `AmbidextrousSofa/Analysis/NearDiagonalGeometry.lean` | 8 | 10 |
+| `AmbidextrousSofa/Analysis/NegativeCompletion.lean` | 9 | 9 |
+| `AmbidextrousSofa/Analysis/NegativeCornerCurvature.lean` | 18 | 20 |
 | `AmbidextrousSofa/Analysis/NeighborCompanion.lean` | 12 | 14 |
 | `AmbidextrousSofa/Analysis/NeighborLength.lean` | 10 | 11 |
 | `AmbidextrousSofa/Analysis/NeighborWalls.lean` | 15 | 22 |
 | `AmbidextrousSofa/Analysis/NicheBoxBounds.lean` | 3 | 3 |
 | `AmbidextrousSofa/Analysis/NicheFit.lean` | 3 | 3 |
 | `AmbidextrousSofa/Analysis/NicheWings.lean` | 7 | 7 |
+| `AmbidextrousSofa/Analysis/NonpositiveCornerCurvature.lean` | 7 | 7 |
 | `AmbidextrousSofa/Analysis/OneTurnArea.lean` | 11 | 11 |
 | `AmbidextrousSofa/Analysis/OneTurnSurvivor.lean` | 12 | 14 |
 | `AmbidextrousSofa/Analysis/OpenWingCurvature.lean` | 7 | 8 |
 | `AmbidextrousSofa/Analysis/OrdinarySofaBound.lean` | 10 | 10 |
 | `AmbidextrousSofa/Analysis/PartialCapContinuity.lean` | 14 | 15 |
+| `AmbidextrousSofa/Analysis/PartialFacetPinning.lean` | 2 | 2 |
+| `AmbidextrousSofa/Analysis/PartialInactiveNormals.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/PartialTopInsertion.lean` | 11 | 11 |
 | `AmbidextrousSofa/Analysis/PersistentPenalty.lean` | 18 | 28 |
 | `AmbidextrousSofa/Analysis/PolygonEnvelope.lean` | 23 | 37 |
@@ -303,19 +355,28 @@ instruction.
 | `AmbidextrousSofa/Analysis/PositiveTent.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/QuadraticEnergy.lean` | 11 | 14 |
 | `AmbidextrousSofa/Analysis/QuarterFunctions.lean` | 4 | 9 |
+| `AmbidextrousSofa/Analysis/RegularCurvatureDomain.lean` | 10 | 11 |
 | `AmbidextrousSofa/Analysis/RoofContinuity.lean` | 3 | 3 |
 | `AmbidextrousSofa/Analysis/RoofGain.lean` | 1 | 1 |
 | `AmbidextrousSofa/Analysis/SelectedCurvature.lean` | 10 | 13 |
 | `AmbidextrousSofa/Analysis/SelectedEndpointMoments.lean` | 15 | 16 |
 | `AmbidextrousSofa/Analysis/SelectedErosionMoments.lean` | 15 | 15 |
+| `AmbidextrousSofa/Analysis/SelectedGreenLimit.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/SelectedNicheHeight.lean` | 3 | 3 |
 | `AmbidextrousSofa/Analysis/SelectedPressureLimit.lean` | 11 | 15 |
 | `AmbidextrousSofa/Analysis/SelectedSequence.lean` | 9 | 10 |
 | `AmbidextrousSofa/Analysis/SharpCurvatureDensity.lean` | 6 | 6 |
+| `AmbidextrousSofa/Analysis/SourceOccupation.lean` | 9 | 10 |
 | `AmbidextrousSofa/Analysis/SourceVelocity.lean` | 22 | 27 |
 | `AmbidextrousSofa/Analysis/SupportCurvature.lean` | 9 | 11 |
+| `AmbidextrousSofa/Analysis/SupportDensityCalculus.lean` | 18 | 19 |
+| `AmbidextrousSofa/Analysis/SupportHeightControl.lean` | 3 | 3 |
 | `AmbidextrousSofa/Analysis/TerminalAngleDerivative.lean` | 12 | 14 |
+| `AmbidextrousSofa/Analysis/TerminalAngleIntegral.lean` | 16 | 18 |
+| `AmbidextrousSofa/Analysis/TerminalFacet.lean` | 11 | 16 |
+| `AmbidextrousSofa/Analysis/TerminalHistory.lean` | 12 | 13 |
 | `AmbidextrousSofa/Analysis/TerminalScalar.lean` | 8 | 8 |
+| `AmbidextrousSofa/Analysis/TerminalSupportTails.lean` | 17 | 17 |
 | `AmbidextrousSofa/Analysis/TerminalThreeSupports.lean` | 22 | 25 |
 | `AmbidextrousSofa/Analysis/TerminalWallBound.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/TiltedFirstUnitClosure.lean` | 1 | 1 |

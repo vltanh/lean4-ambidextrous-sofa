@@ -41,11 +41,16 @@ refereeing and Lean kernel verification are separate from those records.
 | Finite curvature and endpoint limits | Actual facet atoms, neighboring-wall source bounds, finite curvature concentration, punctured-axis mass estimates, moving pressure convergence and exact limits of finite erosion moments | [DiscreteCurvature](AmbidextrousSofa/Analysis/DiscreteCurvature.lean), [DyadicCurvatureMass](AmbidextrousSofa/Analysis/DyadicCurvatureMass.lean), [SelectedErosionMoments](AmbidextrousSofa/Analysis/SelectedErosionMoments.lean) |
 | Actual endpoint stationarity and central niche height | Axis-height limits identified with actual faces, full-maximizer complementarity, strictly positive canonical pressures, vanishing finite erosion moments and the central niche bound `n ≤ (eR+eL)/2` | [EndpointComplementarity](AmbidextrousSofa/Analysis/EndpointComplementarity.lean), [EndpointPositivity](AmbidextrousSofa/Analysis/EndpointPositivity.lean), [SelectedNicheHeight](AmbidextrousSofa/Analysis/SelectedNicheHeight.lean) |
 | Actual sharp wing density | Middle-facet mass vanishes away from its normal; moving support secants and finite source bounds give an actual measurable curvature density bounded by `max |q| ((|q|+1)/2)` | [MiddleMassLimit](AmbidextrousSofa/Analysis/MiddleMassLimit.lean), [SharpCurvatureDensity](AmbidextrousSofa/Analysis/SharpCurvatureDensity.lean) |
+| Regular support calculus and source occupation | One actual sharp density off the two exceptional normals, support/tangent absolute continuity and coupled velocity equations, literal inner-source interval convergence, and zero curvature at strictly negative corners | [RegularCurvatureDomain](AmbidextrousSofa/Analysis/RegularCurvatureDomain.lean), [SupportDensityCalculus](AmbidextrousSofa/Analysis/SupportDensityCalculus.lean), [SourceOccupation](AmbidextrousSofa/Analysis/SourceOccupation.lean), [NegativeCornerCurvature](AmbidextrousSofa/Analysis/NegativeCornerCurvature.lean) |
+| Actual floor-contact curvature | Ordinary level-set derivative nullity, actual corner velocity and acceleration equations, and strict unit density at almost every floor contact | [LevelSetDerivative](AmbidextrousSofa/Analysis/LevelSetDerivative.lean), [CornerDynamics](AmbidextrousSofa/Analysis/CornerDynamics.lean), [FloorContactCurvature](AmbidextrousSofa/Analysis/FloorContactCurvature.lean) |
+| Actual Green and wing chord comparison | Exact finite Green identity including top mass and both endpoint defects; vanishing weighted defect; actual selected wing-length limit; Euclidean chord comparison and the stronger ordinary-area constraint | [FiniteGraphGreen](AmbidextrousSofa/Analysis/FiniteGraphGreen.lean), [SelectedGreenLimit](AmbidextrousSofa/Analysis/SelectedGreenLimit.lean), [CanonicalWingChord](AmbidextrousSofa/Analysis/CanonicalWingChord.lean) |
 | Facet geometry and reference recovery | Whole-angle support inactivity, exact position of a tilted middle facet, and reversal of the actual chord and height operations at the reference | [FacetPinning](AmbidextrousSofa/Analysis/FacetPinning.lean), [InverseCanonicalization](AmbidextrousSofa/Analysis/InverseCanonicalization.lean) |
 | Analytic comparison | Two-endpoint Dirichlet coercivity, exact clipped-functional expansion, fixed-trace strictness, Euler boundary formula, reference stationarity, global sharp value `M/2` for arbitrary support pairs of competitive width, and exact equality up to horizontal translation | [AdaptiveFunctional](AmbidextrousSofa/Analysis/AdaptiveFunctional.lean), [AdaptiveGlobalComparison](AmbidextrousSofa/Analysis/AdaptiveGlobalComparison.lean) |
 | Ordinary one-turn input | Complete retained source dependency, actual continuous-passage bridge, and the rational area bound `22199/10000` | [OrdinarySofaBound](AmbidextrousSofa/Analysis/OrdinarySofaBound.lean), [Imported source map](AmbidextrousSofa/Imported/README.md) |
 | Actual tilted survivor | Exact corner confinement, convex wing niches, actual cap containment, a compact connected survivor with a genuine passage, and its ordinary-area necessary inequality | [CanonicalOneTurn](AmbidextrousSofa/Analysis/CanonicalOneTurn.lean), [OneTurnArea](AmbidextrousSofa/Analysis/OneTurnArea.lean) |
 | Proper-angle maximizer structure | Joint angle/cap continuity, a largest-angle maximum, actual top insertion, used-support saturation, unused curvature gaps, terminal three-support bounds and exclusion of angles through `arctan(5/4)` | [JointCapMaximum](AmbidextrousSofa/Analysis/JointCapMaximum.lean), [UnusedCurvature](AmbidextrousSofa/Analysis/UnusedCurvature.lean), [TerminalThreeSupports](AmbidextrousSofa/Analysis/TerminalThreeSupports.lean), [TerminalScalar](AmbidextrousSofa/Analysis/TerminalScalar.lean) |
+| Actual terminal variation and completion | Integrated one-sided angle derivative with the full historical tie term; genuine partial facet pinning; actual missing-support tails; same-cap completion of the specified negative-tilt branches | [TerminalAngleIntegral](AmbidextrousSofa/Analysis/TerminalAngleIntegral.lean), [PartialFacetPinning](AmbidextrousSofa/Analysis/PartialFacetPinning.lean), [TerminalSupportTails](AmbidextrousSofa/Analysis/TerminalSupportTails.lean), [NegativeCompletion](AmbidextrousSofa/Analysis/NegativeCompletion.lean) |
+| Exact finite-angle comparisons in progress | Actual tilted diagonal relaxation and global supporting-plane bounds; exact critical clipping and value of the initial-angle relaxation | [DiagonalRelaxation](AmbidextrousSofa/Analysis/DiagonalRelaxation.lean), [DiagonalScalar](AmbidextrousSofa/Analysis/DiagonalScalar.lean), [InitialAngleCritical](AmbidextrousSofa/Analysis/InitialAngleCritical.lean) |
 | Geometric equality infrastructure | Exact four-term physical deficit, a.e. partition equality, actual hull recovery and finite-measure regular-closed set recovery | [CapAssembly](AmbidextrousSofa/Measure/CapAssembly.lean), [RegularClosed](AmbidextrousSofa/Topology/RegularClosed.lean) |
 
 All statements in this table refer to source proof bodies, not successful
@@ -86,6 +91,12 @@ selected sequence and outputs the actual sharp curvature density on each
 compactly contained wing interval away from the top and middle-facet normals.
 No supplied density or variational certificate is used.
 
+`IsFullCapMaximizer.wing_chords_le_twice_score_of_affine` derives the
+two-wing chord inequality from actual selected polygons and their exact
+Green identity. `ordinary_area_chord_necessary_of_canonical_range` combines
+it with the genuine one-turn survivor. These statements construct their
+own approximations and do not assume a limiting perimeter identity.
+
 `adaptiveFunctional_sub_halfWidth_le_half_M` proves the sharp analytic
 comparison for every `QuarterPair` with the natural top traces and total
 width at least `8/5`. Its equality theorem gives the reference width and
@@ -111,8 +122,8 @@ from its actual support. The remaining sharp terminal comparison is still
 required.
 
 These results do not yet assemble an upper bound `M` for every ambidextrous
-body. The remaining curvature/exposure, full and partial sharp bounds, and
-equality classifications are substantive obligations.
+body. The remaining floor/positive-corner source laws, full and partial
+sharp bounds, and equality classifications are substantive obligations.
 
 ## Source policy and dependencies
 

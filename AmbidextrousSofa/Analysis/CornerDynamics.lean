@@ -1,0 +1,152 @@
+import AmbidextrousSofa.Analysis.SupportDensityCalculus
+import AmbidextrousSofa.Analysis.NegativeCornerCurvature
+import AmbidextrousSofa.Analysis.LevelSetDerivative
+
+/-!
+# Actual attached-corner velocities and floor-contact flatness
+
+The corner is built from the actual two support values. Its coordinate
+derivatives follow from the support/tangent identities on regular
+intervals. The two velocity derivatives follow from the actual curvature
+density equations. Applying the proved level-set derivative theorem
+twice gives both zero vertical velocity and zero vertical acceleration
+at almost every floor contact.
+-/
+
+noncomputable section
+
+open Set Filter MeasureTheory
+open scoped Topology
+
+namespace AmbidextrousSofa
+
+def cornerVelocityX (U : Set Plane) (t : ℝ) : ℝ :=
+  -secondCornerVelocity U t * Real.cos t - firstCornerVelocity U t * Real.sin t
+
+def cornerVelocityY (U : Set Plane) (t : ℝ) : ℝ :=
+  -secondCornerVelocity U t * Real.sin t + firstCornerVelocity U t * Real.cos t
+
+theorem attachedCorner_fst_eq_support (U : Set Plane) (t : ℝ) :
+    (attachedCorner U t).1 = (angleSupport U t - 1) * Real.cos t -
+      (angleSupport U (t + Real.pi / 2) - 1) * Real.sin t := by
+  simp only [attachedCorner, angleSupport, companionNormal_eq_unitNormal]
+
+theorem attachedCorner_snd_eq_support (U : Set Plane) (t : ℝ) :
+    (attachedCorner U t).2 = (angleSupport U t - 1) * Real.sin t +
+      (angleSupport U (t + Real.pi / 2) - 1) * Real.cos t := by
+  simp only [attachedCorner, angleSupport, companionNormal_eq_unitNormal]
+
+theorem IsDownwardCap.hasDerivAt_angleSupport_shift_of_density
+    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {C a b d x : ℝ}
+    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρC : ∀ t, ρ t ≤ C)
+    (heq : (upperCurvature U).restrict S =
+      (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
+    (hsub : Icc (a + d) (b + d) ⊆ S) (hx : x ∈ Ioo a b) :
+    HasDerivAt (fun t => angleSupport U (t + d)) (supportTangent U (x + d)) x := by
+  have h := hU.hasDerivAt_angleSupport_of_density hρ hρ0 hρC heq hsub
+    (show x + d ∈ Ioo (a + d) (b + d) from
+      ⟨add_lt_add_right hx.1 _, add_lt_add_right hx.2 _⟩)
+  simpa only [Function.comp_def, mul_one] using
+    h.comp x ((hasDerivAt_id x).add_const d)
+
+theorem IsDownwardCap.hasDerivAt_attachedCorner_fst_of_density
+    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {C a b x : ℝ}
+    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρC : ∀ t, ρ t ≤ C)
+    (heq : (upperCurvature U).restrict S =
+      (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
+    (hbase : Icc a b ⊆ S) (hshift : Icc (a + Real.pi / 2) (b + Real.pi / 2) ⊆ S)
+    (hx : x ∈ Ioo a b) :
+    HasDerivAt (fun t => (attachedCorner U t).1) (cornerVelocityX U x) x := by
+  have hf := hU.hasDerivAt_angleSupport_of_density hρ hρ0 hρC heq hbase hx
+  have hg := hU.hasDerivAt_angleSupport_shift_of_density hρ hρ0 hρC heq hshift hx
+  rw [funext (attachedCorner_fst_eq_support U)]
+  apply (((hf.sub_const 1).mul (Real.hasDerivAt_cos x)).sub
+    ((hg.sub_const 1).mul (Real.hasDerivAt_sin x))).congr_deriv
+  change (supportTangent U x * Real.cos x + (angleSupport U x - 1) * (-Real.sin x)) -
+      (supportTangent U (x + Real.pi / 2) * Real.sin x +
+        (angleSupport U (x + Real.pi / 2) - 1) * Real.cos x) =
+    -(angleSupport U (x + Real.pi / 2) - supportTangent U x - 1) * Real.cos x -
+      (angleSupport U x + supportTangent U (x + Real.pi / 2) - 1) * Real.sin x
+  ring
+
+theorem IsDownwardCap.hasDerivAt_attachedCorner_snd_of_density
+    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {C a b x : ℝ}
+    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρC : ∀ t, ρ t ≤ C)
+    (heq : (upperCurvature U).restrict S =
+      (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
+    (hbase : Icc a b ⊆ S) (hshift : Icc (a + Real.pi / 2) (b + Real.pi / 2) ⊆ S)
+    (hx : x ∈ Ioo a b) :
+    HasDerivAt (fun t => (attachedCorner U t).2) (cornerVelocityY U x) x := by
+  have hf := hU.hasDerivAt_angleSupport_of_density hρ hρ0 hρC heq hbase hx
+  have hg := hU.hasDerivAt_angleSupport_shift_of_density hρ hρ0 hρC heq hshift hx
+  rw [funext (attachedCorner_snd_eq_support U)]
+  apply (((hf.sub_const 1).mul (Real.hasDerivAt_sin x)).add
+    ((hg.sub_const 1).mul (Real.hasDerivAt_cos x))).congr_deriv
+  change (supportTangent U x * Real.sin x + (angleSupport U x - 1) * Real.cos x) +
+      (supportTangent U (x + Real.pi / 2) * Real.cos x +
+        (angleSupport U (x + Real.pi / 2) - 1) * (-Real.sin x)) =
+    -(angleSupport U (x + Real.pi / 2) - supportTangent U x - 1) * Real.sin x +
+      (angleSupport U x + supportTangent U (x + Real.pi / 2) - 1) * Real.cos x
+  ring
+
+theorem IsDownwardCap.ae_hasDerivAt_cornerCoordinateVelocities_of_density
+    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {C a b : ℝ}
+    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρC : ∀ t, ρ t ≤ C)
+    (heq : (upperCurvature U).restrict S =
+      (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
+    (hab : a ≤ b) (hbase : Icc a b ⊆ S)
+    (hshift : Icc (a + Real.pi / 2) (b + Real.pi / 2) ⊆ S) :
+    ∀ᵐ x ∂volume.restrict (Ioo a b),
+      HasDerivAt (cornerVelocityX U)
+        ((ρ x - 1) * Real.cos x - (ρ (x + Real.pi / 2) - 1) * Real.sin x -
+          2 * cornerVelocityY U x) x ∧
+      HasDerivAt (cornerVelocityY U)
+        (ρ x * Real.sin x + ρ (x + Real.pi / 2) * Real.cos x -
+          Real.sin x - Real.cos x + 2 * cornerVelocityX U x) x := by
+  filter_upwards [hU.ae_hasDerivAt_cornerVelocities_of_density hρ hρ0 hρC heq hab hbase hshift]
+    with x hv
+  constructor
+  · apply ((hv.2.neg.mul (Real.hasDerivAt_cos x)).sub
+      (hv.1.mul (Real.hasDerivAt_sin x))).congr_deriv
+    change (-(firstCornerVelocity U x + 1 - ρ x) * Real.cos x +
+        (-secondCornerVelocity U x) * (-Real.sin x)) -
+        ((ρ (x + Real.pi / 2) - secondCornerVelocity U x - 1) * Real.sin x +
+          firstCornerVelocity U x * Real.cos x) =
+      (ρ x - 1) * Real.cos x - (ρ (x + Real.pi / 2) - 1) * Real.sin x -
+        2 * (-secondCornerVelocity U x * Real.sin x + firstCornerVelocity U x * Real.cos x)
+    ring
+  · apply ((hv.2.neg.mul (Real.hasDerivAt_sin x)).add
+      (hv.1.mul (Real.hasDerivAt_cos x))).congr_deriv
+    change (-(firstCornerVelocity U x + 1 - ρ x) * Real.sin x +
+        (-secondCornerVelocity U x) * Real.cos x) +
+        ((ρ (x + Real.pi / 2) - secondCornerVelocity U x - 1) * Real.cos x +
+          firstCornerVelocity U x * (-Real.sin x)) =
+      ρ x * Real.sin x + ρ (x + Real.pi / 2) * Real.cos x - Real.sin x - Real.cos x +
+        2 * (-secondCornerVelocity U x * Real.cos x - firstCornerVelocity U x * Real.sin x)
+    ring
+
+/-- The actual corner has zero vertical velocity and acceleration at
+almost every floor contact in each regular interval. This includes
+arbitrary closed or disconnected floor-contact sets. -/
+theorem IsDownwardCap.ae_corner_floor_flatness_of_density
+    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {C a b : ℝ}
+    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρC : ∀ t, ρ t ≤ C)
+    (heq : (upperCurvature U).restrict S =
+      (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
+    (hab : a ≤ b) (hbase : Icc a b ⊆ S)
+    (hshift : Icc (a + Real.pi / 2) (b + Real.pi / 2) ⊆ S) :
+    ∀ᵐ x ∂volume.restrict (Ioo a b), (attachedCorner U x).2 = 0 →
+      cornerVelocityY U x = 0 ∧
+      ρ x * Real.sin x + ρ (x + Real.pi / 2) * Real.cos x -
+        Real.sin x - Real.cos x + 2 * cornerVelocityX U x = 0 := by
+  filter_upwards [ae_restrict_mem measurableSet_Ioo,
+    ae_restrict_of_ae (ae_two_derivatives_eq_zero_on_level
+      (fun t => (attachedCorner U t).2) (cornerVelocityY U)),
+    hU.ae_hasDerivAt_cornerCoordinateVelocities_of_density hρ hρ0 hρC heq hab hbase hshift]
+    with x hx hlevel hvelocity
+  intro hfloor
+  have hd := hU.hasDerivAt_attachedCorner_snd_of_density hρ hρ0 hρC heq hbase hshift hx
+  have hy : cornerVelocityY U x = 0 := hd.deriv.symm.trans (hlevel.1 hfloor)
+  exact ⟨hy, hvelocity.2.deriv.symm.trans (hlevel.2 hy)⟩
+
+end AmbidextrousSofa
