@@ -30,9 +30,9 @@ closures and research-session reviews are distinct from formal verification.
 | F1 | Actual compact hull/caps, attained roofs/supports, complete barriers, measurability and actual area integration | Implemented |
 | F2 | Original two-motion normalization, area invariance, angular reach, genuine terminal constraints and actual-cap score reduction | Implemented for the unchanged `IsAmbidextrous` predicate with continuous real-angle rigid paths |
 | F3 | Actual reference support/hull/body, both feasible passages, regular closedness and exact area `M` | Implemented, including exact reference cap score `M/2` |
-| F4 | Universal full-angle cap score at most `M/2`, including nonsmooth, asymmetric and subunit caps | Actual horizontal unit curvature, geometric calibration and literal rigidity completed; actual tilted IE/ET, exact projection and small-height area tests written; reflected overhang and folded-source GF application remain |
-| F5 | Universal proper-angle cap bound retaining the whole outgoing wall, independently for the two motions | Actual source/density, axis-face and endpoint laws, width `1001/2000<C<37/50`, top projection, reflected active-arc controls and terminal impulse payment written; actual early weighted excess and strict terminal exclusion remain |
-| F6 | Every equality cap, inverse canonicalization, strict proper-angle inequality and literal original compact-body recovery | Actual horizontal rigidity, concrete canonical inverse, exact deficits and original compact-body recovery written; universal application awaits tilted/full and proper classifications |
+| F4 | Universal full-angle cap score at most `M/2`, including nonsmooth, asymmetric and subunit caps | Horizontal rigidity complete; all tilted first-unit selection, overhang, geometric moments, actual phases and bad-entry lower laws written; common occupation and final actual GF assembly remain |
+| F5 | Universal cap value reduction retaining the whole outgoing wall and independent motion angles | Actual proper reflected excess and strict contradiction complete for a largest-angle joint maximizer; full-cap maxima now also maximize jointly; sharp numerical value awaits F4 |
+| F6 | Every equality cap, inverse canonicalization, individual proper-angle strictness and literal original compact-body recovery | Canonical inverse and original-body recovery written; individual proper equality requires the separate fixed-cap extension/atom argument, and full equality awaits tilted exclusion |
 | F7 source closure | Unconditional original-domain area bound and exact uniqueness, with no missing mathematical input | In progress; depends on F4–F6 |
 | F7 kernel check | Elaboration and actual standard-axiom output | Not performed; compilation and CI prohibited for this task |
 
@@ -185,60 +185,67 @@ are completed:
 5. `FirstUnitTangency` constructs the actual middle tangency crossing,
    closed traces and source-box momentum sign under a first-unit density.
 
-Complete the reflected full-cap unit-prefix argument, prove positive
-overhang and the zero low-middle niche, and apply these results to all
-remaining parameter regions. For the GF contradiction, construct the joint
-angle/abscissa source limit and the common fractional corner occupation;
-derive the actual ordered phases, first floor crossing and fold budget;
-then supply the four actual displacement moments to
-`firstUnit_raw_momentum_data_impossible`. Its current analytic premises
-must all be discharged. Finally classify every prescribed full maximum
-and deduce the universal full-cap bound from actual maximum existence.
+The reflected full-cap unit-prefix application is now written in
+`TiltedReflectedControls`, `TiltedReflectedLateUnit` and `TiltedTopOverhang`.
+`TiltedUnitSelection` closes all first-unit parameter regions. The
+generalized `FirstUnitTangency` works for every `C>1/2`.
+`FirstUnitProjection`, `FirstUnitTopOverhang` and
+`FirstUnitGeometricMoments` prove the exact projection, dry left middle,
+positive overhang, four FTC moments and the first-floor abscissa bounds.
+
+`CoreContactGeometry` constructs literal positive core and tangent pieces,
+including angular and tangent plateaus. `FirstSourceFlux`,
+`FirstSourceDensity` and `CoreSourceLowerBounds` supply the actual density
+lower laws. `FirstUnitCrossings`, `FirstUnitPhases`,
+`FirstUnitPrefixEnergy` and `FirstUnitBadEntry` construct the sign phases
+and show that the first possible excess follows the middle crossing with
+second momentum at most one quarter. `FirstUnitLateWindowClosure` handles
+the additional companion-unit event order. `FirstFloorVisibility` and
+`FirstFloorTrapping` close the analytic zero-height boundary case.
+
+`JointSourceMeasure`, `JointSourceLimit` and `JointSourceMarginal` now
+construct a single common source limit with its actual angular marginal.
+`PositiveWallContacts` supplies strict tangent/core contact classification.
+Finish its spatial flux and common fractional occupation; instantiate every
+actual phase/floor/fold input of the two first-unit contradictions; then
+classify every prescribed full maximum and use actual maximum existence.
 
 The 51 imported ordinary-theorem files remain a complete retained source
 dependency, with attribution and the original license. No build or full
 independent review of that imported chain has occurred.
 
-### F5 — complete the proper reflected weighted-excess exclusion
+### F5 — largest-angle value reduction completed in source
 
-The largest-angle maximum, initial-angle exclusion, actual terminal facet
-and exposure bounds, retained full wall, selected source limits, sharp
-cut density, endpoint/erosion moments and top projection are written.
-`PartialAxisCurvature`, `PartialAxisHeightLimit` and
-`PartialEndpointComplementarity` identify the actual proper endpoint
-faces. The `ThreeAngle*` chain and `PartialWidthBounds` prove the actual
-width range `1001/2000<C<37/50`. `TerminalProperComparison` now derives
-the strict lower bound on required weighted excess from the actual cap.
+`TerminalReflectedParameters`, `ProperExcessScalar`, `ProperReflectedEntry`
+and `ProperExcessEnvelope` derive the actual reflected early-excess bounds,
+including the terminal atom and the complete outgoing wall.
+`ProperTerminalExclusion` constructs the actual density, applies the
+strict required-excess comparison, and rules out a proper largest-angle
+joint maximizer. Its endpoints are
+`exists_jointCapMaximizer_full_angle` and
+`IsFullCapMaximizer.isJointCapMaximizer`. Once F4 supplies the sharp full
+value, this proves the universal non-strict cap/angle value bound.
 
-`PartialRegularDomain`, `PartialSourceOccupation`,
-`PartialNegativeCornerCurvature` and `PartialShadowCurvature` supply the
-actual proper local source laws. `PartialWingSupport`,
-`PartialReflectedSupport`, `PartialReflectedControls` and
-`PartialReflectedDynamics` derive the reflected active-arc ODE and controls
-from literal supports. `CornerArcDynamics`, `CornerArcCrossing` and
-`CornerArcExcess` handle actual active intervals without extending their
-equations across the unused gap. `TerminalImpulseEnergy` pays the genuine
-terminal atom explicitly.
+### F6 — individual equality and actual recovery
 
-Complete the actual reflected endpoint parameters and early weighted
-excess estimate, contradict the strict required excess, and obtain strict
-inequality for every proper terminal angle. Keep the two original motion
-angles independent and retain all endpoint cases.
-
-### F6 — apply the completed actual equality recovery
+A largest-angle selection alone does not exclude an individual proper
+equality cap: the full reference already belongs to the joint equality
+set. The manuscript's TB1 argument must be applied to that individual
+cap. `TerminalExtension` already constructs a single same-cap angle
+increase for an overlong terminal facet. Use actual regular curvature at
+the enlarged angle to contradict the unchanged positive charged facet,
+derive its terminal mass bound without a largest-angle premise, and then
+apply the completed quantitative proper comparison. Negative completed
+branches must use the actual full-cap rigidity, once F4 is closed.
 
 `FullCapRecovery` constructs the actual height-saturated middle-chord cap,
 preserves its full-maximizer status, and recovers the original cap from
 reference equality of that concrete canonical cap.
-`Measure/ActualReferenceRecovery` aligns the two literal cap translates
-through the common projection, reconstructs the actual hull, derives body
-containment from the full angular constraints and applies regular-closed
-finite equal-area recovery. It also extracts the two sharp cap scores and
-the zero deficits from the physical equality identity.
-
-Apply those results after the full and proper exclusions are complete.
-Equality must remain literal compact-set equality up to a rigid motion;
-the actual reference passages and exact area supply the converse.
+`Measure/ActualReferenceRecovery` aligns both actual cap translates,
+reconstructs the literal hull and body, and applies finite equal-area
+regular-closed recovery. Apply these after the full and individual proper
+classifications. Exact compact-set equality up to a rigid motion remains
+the final target, with reference feasibility and exact area as converse.
 
 ### F7 — final source assembly and review
 

@@ -53,6 +53,51 @@ theorem firstUnit_source_box_margin {C h k s : ℝ}
       (show 0 ≤ 2 * C + k by linarith only [hCpos, hk0])
     nlinarith only [hprod, hhk, hC0, hkhalf]
 
+/-- The same strict sign margin extends down to every width above one
+half. On small cosines a quadratic lower bound for the sine pays the
+entire linear height term. Two rational boxes cover the other cosines. -/
+theorem firstUnit_source_box_margin_of_half_lt {C h k s : ℝ}
+    (hC0 : 1 / 2 < C) (hC1 : C ≤ 37 / 50) (hh : h ≤ 17 / 50)
+    (hk0 : 0 ≤ k) (hkC : k ≤ C) (hs0 : 0 ≤ s) (hcircle : s ^ 2 + k ^ 2 = 1) :
+    1 - (2 * C + k) * s + h * k < 0 := by
+  by_cases hC : 2 / 3 ≤ C
+  · exact firstUnit_source_box_margin hC hC1 hh hk0 hkC hs0 hcircle
+  have hCsmall : C ≤ 2 / 3 := (lt_of_not_ge hC).le
+  have hhk := mul_le_mul_of_nonneg_right hh hk0
+  have hcoef : 0 ≤ 2 * C + k := by linarith only [hC0, hk0]
+  by_cases hk : k ≤ 1 / 2
+  · have hkSq := mul_nonneg (sub_nonneg.mpr hk)
+      (show 0 ≤ 1 / 2 + k by linarith only [hk0])
+    have hr0 : 0 ≤ 1 - 2 / 3 * k ^ 2 := by nlinarith only [hkSq]
+    have hpay := mul_nonneg (sq_nonneg k)
+      (show 0 ≤ 3 - 4 * k ^ 2 by nlinarith only [hkSq])
+    have hs : 1 - 2 / 3 * k ^ 2 ≤ s := by
+      apply (sq_le_sq₀ hr0 hs0).mp
+      nlinarith only [hcircle, hpay]
+    have hprod := mul_le_mul_of_nonneg_left hs hcoef
+    have hbox : 2 * C + k ≤ 99 / 50 := by linarith only [hC1, hk]
+    have hquad := mul_le_mul_of_nonneg_right hbox (sq_nonneg k)
+    have hksmall := mul_nonneg hk0 (sub_nonneg.mpr hk)
+    have hlinear := mul_nonneg (show 0 ≤ 99 / 50 by norm_num) hksmall
+    nlinarith only [hprod, hquad, hlinear, hhk, hC0]
+  · have hkhalf : 1 / 2 < k := lt_of_not_ge hk
+    by_cases hCshort : C ≤ 3 / 5
+    · have hkSq := mul_nonneg (sub_nonneg.mpr (hkC.trans hCshort))
+        (show 0 ≤ 3 / 5 + k by linarith only [hk0])
+      have hs : 4 / 5 ≤ s := by
+        apply (sq_le_sq₀ (by norm_num : (0 : ℝ) ≤ 4 / 5) hs0).mp
+        nlinarith only [hcircle, hkSq]
+      have hprod := mul_le_mul_of_nonneg_left hs hcoef
+      nlinarith only [hprod, hhk, hC0, hkhalf]
+    · have hCthree : 3 / 5 < C := lt_of_not_ge hCshort
+      have hkSq := mul_nonneg (sub_nonneg.mpr (hkC.trans hCsmall))
+        (show 0 ≤ 2 / 3 + k by linarith only [hk0])
+      have hs : 37 / 50 ≤ s := by
+        apply (sq_le_sq₀ (by norm_num : (0 : ℝ) ≤ 37 / 50) hs0).mp
+        nlinarith only [hcircle, hkSq]
+      have hprod := mul_le_mul_of_nonneg_left hs hcoef
+      nlinarith only [hprod, hhk, hCthree, hkhalf]
+
 end Analysis
 
 section ActualPair
@@ -139,7 +184,7 @@ point lies in the literal cut. These two facts supply a strict sign
 margin even when the companion tangent folds. -/
 theorem fullTiltedSupportQuarterPair_first_momentum_neg_after_middle {C h t : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC0 : 2 / 3 ≤ C) (hC1 : C ≤ 37 / 50) (hh : h ≤ 17 / 50)
+    (hC0 : 1 / 2 < C) (hC1 : C ≤ 37 / 50) (hh : h ≤ 17 / 50)
     (hlow : capRoof U (-C) = 1 - h)
     (ht : t ∈ Icc 0 (Real.pi / 2)) (hB : C ≤ (B t).1) :
     Real.cos t ≤ C ∧ p t < 0 := by
@@ -186,11 +231,12 @@ theorem fullTiltedSupportQuarterPair_first_momentum_neg_after_middle {C h t : �
     rw [hfd]
     nlinarith only [hgF, hXs, hYc]
   exact ⟨hk, hupper.trans_lt
-    (Analysis.firstUnit_source_box_margin hC0 hC1 hh hc hk hs (Real.sin_sq_add_cos_sq t))⟩
+    (Analysis.firstUnit_source_box_margin_of_half_lt hC0 hC1 hh hc hk hs
+      (Real.sin_sq_add_cos_sq t))⟩
 
 theorem fullTiltedSupportQuarterPair_exists_first_middle_crossing {C h : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC0 : 2 / 3 ≤ C) (hC1 : C ≤ 37 / 50) (hh : h ≤ 17 / 50)
+    (hC0 : 1 / 2 < C) (hC1 : C ≤ 37 / 50) (hh : h ≤ 17 / 50)
     (hmpos : 0 < m) (hheight : capHeight U = 1)
     (hlow : capRoof U (-C) = 1 - h)
     (htop : C < (Imported.vminus U (Real.pi / 2)).1)

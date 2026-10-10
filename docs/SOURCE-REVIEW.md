@@ -9,8 +9,8 @@ This record is not a kernel proof log or an external referee report.
 
 ## Current source inventory
 
-The entry point covers **429 implementation modules**, containing
-**5953 named theorems** and **6979 explicitly named declarations**.
+The entry point covers **460 implementation modules**, containing
+**6153 named theorems** and **7206 explicitly named declarations**.
 Every declared theorem has an explicit proof body. `AxiomAudit.lean` prepares
 one unexecuted `#print axioms` query per explicitly named declaration.
 Generated constructors, projections, recursors and equation lemmas are not
@@ -258,14 +258,42 @@ proper shadow/negative-source laws, active support calculus and reflected
 support/control bridge were reviewed, as were the generic
 `CornerArcDynamics` and `CornerArcCrossing` crossing proofs.
 `CornerArcExcess`, `PartialReflectedDynamics`, `TerminalImpulseEnergy` and
-`FirstUnitTangency` are included with completed author review; their next
-independent reviews are pending at this snapshot.
+`FirstUnitTangency` have now also received independent source review.
 
 `FullCapRecovery` and `Measure/ActualReferenceRecovery` received complete
 independent review of the concrete canonical inverse, common-projection
 alignment of the two cap translations, exact hull intersection, original
 body containment and finite equal-area regular-closed recovery. Their
 universal application awaits the remaining actual cap exclusions.
+
+## Proper value and first-unit source checkpoint
+
+Independent source review covers all actual proper endpoint parameters,
+terminal impulse payment, exact excess scalar inequalities, reflected
+entry, envelope integration and the final largest-angle exclusion. The
+result is a full-angle joint maximizer and the joint maximality of every
+full-cap maximum. It is not yet the individual proper-equality theorem.
+
+The actual reflected first-unit selection, top overhang, generalized
+`C>1/2` tangency margin, exact dry projection, four tangent FTC moments,
+first-floor abscissa bounds, literal core/tangent contact geometry,
+finite first-source projection and actual density lower laws received
+independent source review. This includes tangent plateaus and the strict
+separation from the affine normal.
+
+Independent source review covers the actual sign-phase construction,
+first bad-entry energy, its later excess-height bound, and both event
+orders in the companion-unit analytic contradiction. The companion
+baseline, first-floor visibility neighborhood and analytic trapping
+proof were independently reviewed, including a floor touch exactly at
+bad entry. None assumes a future floor sign to establish that neighborhood.
+
+The common finite angle/abscissa source measure, compact weak limit,
+finite-measure Portmanteau lemmas and exact regular angular marginal
+received independent review against the pinned Mathlib source. The
+common fractional occupation itself remains under construction.
+`PositiveWallContacts` is included with author source review at this
+snapshot; its independent review is queued.
 
 ## Source-policy guard
 
@@ -288,9 +316,9 @@ The lexical guard cannot compute actual transitive axiom dependencies or
 establish that any theorem elaborates. The prepared queries have not been
 run and the actual axiom sets are unverified.
 
-The checked snapshot has **431 Lean files**, including entry point and
-audit, **429 implementation modules**, **5953 named theorems**,
-and **6979 prepared queries**. The source-policy guard passed.
+The checked snapshot has **462 Lean files**, including entry point and
+audit, **460 implementation modules**, **6153 named theorems**,
+and **7206 prepared queries**. The source-policy guard passed.
 Whitespace and local documentation links are checked before publication.
 Publication uses GitHub's Git Data API with exact tree/blob comparisons;
 no workflow is added and commits use `[skip ci]`.
@@ -316,17 +344,12 @@ source map in `AmbidextrousSofa/Imported/README.md`.
 
 ## Remaining mathematics
 
-F7 source closure is **not yet achieved**. The horizontal full-cap
-classification is written through literal rigidity. The actual tilted
-IE/ET, exact projection and small-height ordinary-area tests are written.
-The proper actual width and reflected controls are written, and the
-concrete original-body recovery interfaces are in place.
-
-The reflected full overhang application, actual GF joint occupation,
-ordered phases/first-floor/fold assembly, proper reflected weighted-excess
-exclusion and final unconditional original-domain theorem remain on the
-[critical path](FORMALIZATION-ROADMAP.md). No universal optimality or
-uniqueness theorem is claimed before those mathematical dependencies close.
+F7 source closure is **not yet achieved**. The horizontal classification,
+all tilted first-unit selection and actual prefix estimates, and the
+largest-angle proper value reduction are written. Common occupation and
+its final actual GF assembly, individual proper-angle equality exclusion,
+and the unconditional original-domain theorem remain on the
+[critical path](FORMALIZATION-ROADMAP.md).
 
 No unproved global result is installed as an axiom, placeholder or a
 certificate field equivalent to the desired conclusion. Kernel verification
@@ -375,9 +398,13 @@ instruction.
 | `AmbidextrousSofa/Analysis/Circumscription.lean` | 9 | 10 |
 | `AmbidextrousSofa/Analysis/ClippedTailIntegral.lean` | 7 | 7 |
 | `AmbidextrousSofa/Analysis/ClosedSupportPair.lean` | 27 | 30 |
+| `AmbidextrousSofa/Analysis/CompanionBaseline.lean` | 4 | 5 |
 | `AmbidextrousSofa/Analysis/CompanionEndpointEnergy.lean` | 10 | 11 |
+| `AmbidextrousSofa/Analysis/CompanionEndpointKernel.lean` | 1 | 1 |
 | `AmbidextrousSofa/Analysis/CompanionFloorShadow.lean` | 9 | 11 |
 | `AmbidextrousSofa/Analysis/CompanionZero.lean` | 13 | 15 |
+| `AmbidextrousSofa/Analysis/CoreContactGeometry.lean` | 22 | 22 |
+| `AmbidextrousSofa/Analysis/CoreSourceLowerBounds.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/CornerArcCrossing.lean` | 3 | 3 |
 | `AmbidextrousSofa/Analysis/CornerArcDynamics.lean` | 14 | 15 |
 | `AmbidextrousSofa/Analysis/CornerArcExcess.lean` | 2 | 2 |
@@ -428,7 +455,20 @@ instruction.
 | `AmbidextrousSofa/Analysis/FiniteSourceBalance.lean` | 11 | 13 |
 | `AmbidextrousSofa/Analysis/FiniteSpatialVariation.lean` | 7 | 8 |
 | `AmbidextrousSofa/Analysis/FiniteVariation.lean` | 9 | 10 |
-| `AmbidextrousSofa/Analysis/FirstUnitTangency.lean` | 5 | 5 |
+| `AmbidextrousSofa/Analysis/FirstFloorTrapping.lean` | 2 | 3 |
+| `AmbidextrousSofa/Analysis/FirstFloorVisibility.lean` | 5 | 5 |
+| `AmbidextrousSofa/Analysis/FirstSourceDensity.lean` | 4 | 4 |
+| `AmbidextrousSofa/Analysis/FirstSourceFlux.lean` | 7 | 9 |
+| `AmbidextrousSofa/Analysis/FirstUnitBadEntry.lean` | 1 | 1 |
+| `AmbidextrousSofa/Analysis/FirstUnitCrossings.lean` | 9 | 10 |
+| `AmbidextrousSofa/Analysis/FirstUnitGeometricMoments.lean` | 3 | 3 |
+| `AmbidextrousSofa/Analysis/FirstUnitLateWindowClosure.lean` | 4 | 4 |
+| `AmbidextrousSofa/Analysis/FirstUnitNiche.lean` | 6 | 6 |
+| `AmbidextrousSofa/Analysis/FirstUnitPhases.lean` | 4 | 4 |
+| `AmbidextrousSofa/Analysis/FirstUnitPrefixEnergy.lean` | 3 | 3 |
+| `AmbidextrousSofa/Analysis/FirstUnitProjection.lean` | 4 | 4 |
+| `AmbidextrousSofa/Analysis/FirstUnitTangency.lean` | 6 | 6 |
+| `AmbidextrousSofa/Analysis/FirstUnitTopOverhang.lean` | 3 | 3 |
 | `AmbidextrousSofa/Analysis/FloorContactCurvature.lean` | 9 | 10 |
 | `AmbidextrousSofa/Analysis/FullCapRecovery.lean` | 6 | 7 |
 | `AmbidextrousSofa/Analysis/FullCompanionDensity.lean` | 7 | 7 |
@@ -477,6 +517,9 @@ instruction.
 | `AmbidextrousSofa/Analysis/IntermediateTilt.lean` | 7 | 9 |
 | `AmbidextrousSofa/Analysis/InverseCanonicalization.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/JointCapMaximum.lean` | 15 | 16 |
+| `AmbidextrousSofa/Analysis/JointSourceLimit.lean` | 8 | 11 |
+| `AmbidextrousSofa/Analysis/JointSourceMarginal.lean` | 13 | 16 |
+| `AmbidextrousSofa/Analysis/JointSourceMeasure.lean` | 15 | 20 |
 | `AmbidextrousSofa/Analysis/LeftCompanionCap.lean` | 9 | 10 |
 | `AmbidextrousSofa/Analysis/LeftCompanionCurvature.lean` | 9 | 9 |
 | `AmbidextrousSofa/Analysis/LeftCompanionDensity.lean` | 7 | 8 |
@@ -560,6 +603,11 @@ instruction.
 | `AmbidextrousSofa/Analysis/PositivePartCalculus.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/PositivePartialBarrierLimit.lean` | 4 | 5 |
 | `AmbidextrousSofa/Analysis/PositiveTent.lean` | 6 | 6 |
+| `AmbidextrousSofa/Analysis/PositiveWallContacts.lean` | 11 | 11 |
+| `AmbidextrousSofa/Analysis/ProperExcessEnvelope.lean` | 5 | 5 |
+| `AmbidextrousSofa/Analysis/ProperExcessScalar.lean` | 12 | 18 |
+| `AmbidextrousSofa/Analysis/ProperReflectedEntry.lean` | 6 | 6 |
+| `AmbidextrousSofa/Analysis/ProperTerminalExclusion.lean` | 7 | 7 |
 | `AmbidextrousSofa/Analysis/QuadraticEnergy.lean` | 11 | 14 |
 | `AmbidextrousSofa/Analysis/QuarterFunctions.lean` | 4 | 9 |
 | `AmbidextrousSofa/Analysis/RampCutIntegral.lean` | 3 | 3 |
@@ -615,6 +663,7 @@ instruction.
 | `AmbidextrousSofa/Analysis/TerminalImpulseEnergy.lean` | 18 | 19 |
 | `AmbidextrousSofa/Analysis/TerminalLeftComparison.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/TerminalProperComparison.lean` | 1 | 1 |
+| `AmbidextrousSofa/Analysis/TerminalReflectedParameters.lean` | 13 | 13 |
 | `AmbidextrousSofa/Analysis/TerminalScalar.lean` | 8 | 8 |
 | `AmbidextrousSofa/Analysis/TerminalStrictComparison.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/TerminalSupportTails.lean` | 17 | 17 |
@@ -647,11 +696,15 @@ instruction.
 | `AmbidextrousSofa/Analysis/TiltedLateExcessScalar.lean` | 12 | 13 |
 | `AmbidextrousSofa/Analysis/TiltedLeakageMoment.lean` | 11 | 12 |
 | `AmbidextrousSofa/Analysis/TiltedMomentumConvolution.lean` | 13 | 17 |
+| `AmbidextrousSofa/Analysis/TiltedReflectedControls.lean` | 8 | 13 |
+| `AmbidextrousSofa/Analysis/TiltedReflectedLateUnit.lean` | 2 | 2 |
 | `AmbidextrousSofa/Analysis/TiltedSupportControls.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/TiltedSupportPair.lean` | 12 | 13 |
+| `AmbidextrousSofa/Analysis/TiltedTopOverhang.lean` | 2 | 2 |
 | `AmbidextrousSofa/Analysis/TiltedTopProjection.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/TiltedTriangleArea.lean` | 3 | 3 |
 | `AmbidextrousSofa/Analysis/TiltedTriangleScalar.lean` | 5 | 6 |
+| `AmbidextrousSofa/Analysis/TiltedUnitSelection.lean` | 7 | 7 |
 | `AmbidextrousSofa/Analysis/TiltedWingSupport.lean` | 9 | 9 |
 | `AmbidextrousSofa/Analysis/TiltedZeroGeometry.lean` | 7 | 8 |
 | `AmbidextrousSofa/Analysis/TopFacetEndpoints.lean` | 3 | 3 |
@@ -742,6 +795,7 @@ instruction.
 | `AmbidextrousSofa/Measure/CapScore.lean` | 14 | 17 |
 | `AmbidextrousSofa/Measure/ContactVariation.lean` | 6 | 6 |
 | `AmbidextrousSofa/Measure/Fibers.lean` | 31 | 34 |
+| `AmbidextrousSofa/Measure/FiniteMeasurePortmanteau.lean` | 4 | 4 |
 | `AmbidextrousSofa/Measure/GraphIntegral.lean` | 7 | 8 |
 | `AmbidextrousSofa/Measure/Partition.lean` | 23 | 26 |
 | `AmbidextrousSofa/Measure/RigidInvariance.lean` | 11 | 12 |
