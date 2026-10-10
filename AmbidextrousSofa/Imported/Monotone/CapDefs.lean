@@ -1,0 +1,132 @@
+/-
+Adapted source: vltanh/lean4-moving-sofa
+Revision: 20489723dc8777a82ee70ae60510115dc6f21085
+Original file: MovingSofaOptimality/Monotone/CapDefs.lean
+License: Apache-2.0; see LICENSE-lean4-moving-sofa in the Imported directory.
+Changes: project namespace/import paths, ordinary module visibility, and
+public names for previously private helpers. No mathematical premise added.
+This adaptation is uncompiled.
+-/
+
+import AmbidextrousSofa.Imported.Sofa.Defs
+
+/-!
+# Caps and niches: definitions (§2.4, §2.5)
+
+Definitions 2.4.1 (`def:cap`), 2.4.2 (`def:cap-space`), 2.4.4 (`def:fan`), 2.4.5 (`def:niche`),
+2.5.1–2.5.6 (vertices, upper boundary, wedges, wedge endpoints and gaps, mirror reflection), and
+2.5.8 (`def:sofa-area-functional`).
+-/
+
+noncomputable section
+
+open Real Set
+
+namespace AmbidextrousSofa.Imported
+
+/-- `K` is an intersection of closed half-planes whose normal angles lie in `A`. -/
+def IsHalfPlaneInter (K : Set (ℝ × ℝ)) (A : Set ℝ) : Prop :=
+  ∃ (ι : Type) (t c : ι → ℝ), (∀ i, t i ∈ A) ∧ K = ⋂ i, halfMinus (t i) (c i)
+
+/-- A cap with rotation angle `ω ∈ (0, π/2]` (Definition 2.4.1, `def:cap`): a convex body `K`
+with `h_K(ω) = h_K(π/2) = 1`, `h_K(ω + π) = h_K(3π/2) = 0`, which is an intersection of closed
+half-planes with normal angles in `J_ω ∪ {ω + π, 3π/2}`. -/
+def IsCap (K : Set (ℝ × ℝ)) (ω : ℝ) : Prop :=
+  ω ∈ Ioc 0 (π / 2) ∧ IsConvexBody K ∧ supp K ω = 1 ∧ supp K (π / 2) = 1 ∧
+    supp K (ω + π) = 0 ∧ supp K (3 * π / 2) = 0 ∧
+    IsHalfPlaneInter K (jSet ω ∪ {ω + π, 3 * π / 2})
+
+/-- The space of caps `𝒦_ω^c` with rotation angle `ω` (Definition 2.4.2, `def:cap-space`). -/
+def capSpace (ω : ℝ) : Set (Set (ℝ × ℝ)) := {K | IsCap K ω}
+
+/-- The fan `F_ω = H₊(ω, 0) ∩ H₊(π/2, 0)` (Definition 2.4.4, `def:fan`). -/
+def fan (ω : ℝ) : Set (ℝ × ℝ) := halfPlus ω 0 ∩ halfPlus (π / 2) 0
+
+/-- The niche `𝒩(K) = F_ω ∩ ⋃_{t ∈ (0, ω)} Q_K⁻(t)` of a cap (Definition 2.4.5, `def:niche`). -/
+def niche (K : Set (ℝ × ℝ)) (ω : ℝ) : Set (ℝ × ℝ) := fan ω ∩ ⋃ t ∈ Ioo 0 ω, qMinus K t
+
+/-- The vertex `A_K⁺(t) = v_K⁺(t)` (Definition 2.5.1, `def:cap-vertices`). -/
+noncomputable def aPlus (K : Set (ℝ × ℝ)) (t : ℝ) : ℝ × ℝ := vplus K t
+/-- The vertex `A_K⁻(t) = v_K⁻(t)`. -/
+noncomputable def aMinus (K : Set (ℝ × ℝ)) (t : ℝ) : ℝ × ℝ := vminus K t
+/-- The vertex `C_K⁺(t) = v_K⁺(t + π/2)`. -/
+noncomputable def cPlus (K : Set (ℝ × ℝ)) (t : ℝ) : ℝ × ℝ := vplus K (t + π / 2)
+/-- The vertex `C_K⁻(t) = v_K⁻(t + π/2)`. -/
+noncomputable def cMinus (K : Set (ℝ × ℝ)) (t : ℝ) : ℝ × ℝ := vminus K (t + π / 2)
+
+/-- The upper boundary `δK = ⋃_{t ∈ [0, ω + π/2]} e_K(t)` of a cap
+(Definition 2.5.2, `def:upper-boundary-of-cap`). -/
+def upperBoundary (K : Set (ℝ × ℝ)) (ω : ℝ) : Set (ℝ × ℝ) := ⋃ t ∈ Icc 0 (ω + π / 2), edge K t
+
+/-- The wedge `T_K(t) = F_ω ∩ Q_K⁻(t)` (Definition 2.5.3, `def:wedge`). -/
+def wedge (K : Set (ℝ × ℝ)) (ω t : ℝ) : Set (ℝ × ℝ) := fan ω ∩ qMinus K t
+
+/-- `W_K(t)`, the intersection of the lines `b_K(t)` and `l(π/2, 0)` (Definition 2.5.4,
+`def:wedge-endpoints`), by its explicit formula. -/
+noncomputable def wedgeW (K : Set (ℝ × ℝ)) (t : ℝ) : ℝ × ℝ := ((supp K t - 1) / cos t, 0)
+
+/-- `Z_K(t)`, the intersection of the lines `d_K(t)` and `l(ω, 0)` (Definition 2.5.4), by its
+explicit formula. -/
+noncomputable def wedgeZ (K : Set (ℝ × ℝ)) (ω t : ℝ) : ℝ × ℝ :=
+  ((supp K (t + π / 2) - 1) / cos (ω - t)) • vvec ω
+
+/-- The right wedge gap `w_K(t) = (A_K⁻(0) - W_K(t)) · u_0` (Definition 2.5.5,
+`def:wedge-side-lengths`). -/
+noncomputable def wedgeGapW (K : Set (ℝ × ℝ)) (t : ℝ) : ℝ := dot (aMinus K 0 - wedgeW K t) (uvec 0)
+
+/-- The left wedge gap `z_K(t) = (C_K⁺(ω) - Z_K(t)) · v_ω` (Definition 2.5.5). -/
+noncomputable def wedgeGapZ (K : Set (ℝ × ℝ)) (ω t : ℝ) : ℝ :=
+  dot (cPlus K ω - wedgeZ K ω t) (vvec ω)
+
+/-- The reflection `M_ω` across the line through `O` and `o_ω` (Definition 2.5.6,
+`def:mirror-reflection`). That line has angle `π/4 + ω/2`. -/
+noncomputable def mirror (ω : ℝ) (p : ℝ × ℝ) : ℝ × ℝ :=
+  (cos (π / 2 + ω) * p.1 + sin (π / 2 + ω) * p.2, sin (π / 2 + ω) * p.1 - cos (π / 2 + ω) * p.2)
+
+/-- The mirror reflection `K^m = M_ω(K)` of a cap (Definition 2.5.6). -/
+def mirrorCap (K : Set (ℝ × ℝ)) (ω : ℝ) : Set (ℝ × ℝ) := mirror ω '' K
+
+/-- The sofa area functional `𝒜_ω(K) = |K| - |𝒩(K)|` (Definition 2.5.8,
+`def:sofa-area-functional`). -/
+noncomputable def sofaArea (ω : ℝ) (K : Set (ℝ × ℝ)) : ℝ := area K - area (niche K ω)
+
+/-! ### Basic properties of fans and caps -/
+
+lemma mem_fan_iff {ω : ℝ} {p : ℝ × ℝ} : p ∈ fan ω ↔ 0 ≤ dot p (uvec ω) ∧ 0 ≤ p.2 := by
+  rw [← dot_uvec_pi_div_two]; rfl
+
+lemma isClosed_fan (ω : ℝ) : IsClosed (fan ω) :=
+  (isClosed_halfPlus _ _).inter (isClosed_halfPlus _ _)
+
+section Cap
+
+variable {K : Set (ℝ × ℝ)} {ω : ℝ}
+
+lemma IsCap.isConvexBody (hK : IsCap K ω) : IsConvexBody K := hK.2.1
+
+/-- A cap lies in `H₊(ω, 0)`, as `h_K(ω + π) = 0`. -/
+lemma IsCap.dot_omega_nonneg (hK : IsCap K ω) {p : ℝ × ℝ} (hp : p ∈ K) :
+    0 ≤ dot p (uvec ω) := by
+  have h := dot_le_supp hK.2.1.2.1 hp (ω + π)
+  rw [dot_uvec_add_pi, hK.2.2.2.2.1] at h
+  linarith
+
+/-- A cap lies above the `x`-axis, as `h_K(3π/2) = 0`. -/
+lemma IsCap.snd_nonneg (hK : IsCap K ω) {p : ℝ × ℝ} (hp : p ∈ K) : 0 ≤ p.2 := by
+  have h := dot_le_supp hK.2.1.2.1 hp (3 * π / 2)
+  rw [dot_uvec_three_pi_div_two, hK.2.2.2.2.2.1] at h
+  linarith
+
+lemma IsCap.dot_omega_le_one (hK : IsCap K ω) {p : ℝ × ℝ} (hp : p ∈ K) :
+    dot p (uvec ω) ≤ 1 := hK.2.2.1 ▸ dot_le_supp hK.2.1.2.1 hp ω
+
+lemma IsCap.snd_le_one (hK : IsCap K ω) {p : ℝ × ℝ} (hp : p ∈ K) : p.2 ≤ 1 := by
+  simpa [hK.2.2.2.1, dot_uvec_pi_div_two] using dot_le_supp hK.2.1.2.1 hp (π / 2)
+
+/-- A cap lies in the fan `F_ω`. -/
+lemma IsCap.subset_fan (hK : IsCap K ω) : K ⊆ fan ω := fun _ hp =>
+  mem_fan_iff.2 ⟨hK.dot_omega_nonneg hp, hK.snd_nonneg hp⟩
+
+end Cap
+
+end AmbidextrousSofa.Imported

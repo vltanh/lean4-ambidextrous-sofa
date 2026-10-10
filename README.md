@@ -38,7 +38,10 @@ refereeing and Lean kernel verification are separate from those records.
 | Full-cap optimization | Width coercivity; Hausdorff compactness; actual roof, niche and score continuity; global maximum existence; genuine middle-chord and height saturation | [GlobalCapMaximum](AmbidextrousSofa/Analysis/GlobalCapMaximum.lean) |
 | Finite selection and variations | Literal finite min/max source derivatives; floating and axis wall variations; exact support circumscription; uniform dense-grid score approximation; selected polygons converging to any prescribed full maximum | [PolygonExposure](AmbidextrousSofa/Analysis/PolygonExposure.lean), [SelectedSequence](AmbidextrousSofa/Analysis/SelectedSequence.lean) |
 | Endpoint geometry | Actual inward cuts and erosions, exact shortened projections, support perturbation bounds, inward pressures, top insertion, and low-middle-height exclusion | [EndpointPressure](AmbidextrousSofa/Analysis/EndpointPressure.lean), [LowHeightMaximizer](AmbidextrousSofa/Analysis/LowHeightMaximizer.lean) |
+| Finite curvature and endpoint limits | Actual facet atoms, neighboring-wall source bounds, finite curvature concentration, punctured-axis mass estimates, moving pressure convergence and exact limits of finite erosion moments | [DiscreteCurvature](AmbidextrousSofa/Analysis/DiscreteCurvature.lean), [DyadicCurvatureMass](AmbidextrousSofa/Analysis/DyadicCurvatureMass.lean), [SelectedErosionMoments](AmbidextrousSofa/Analysis/SelectedErosionMoments.lean) |
+| Facet geometry and reference recovery | Whole-angle support inactivity, exact position of a tilted middle facet, and reversal of the actual chord and height operations at the reference | [FacetPinning](AmbidextrousSofa/Analysis/FacetPinning.lean), [InverseCanonicalization](AmbidextrousSofa/Analysis/InverseCanonicalization.lean) |
 | Analytic comparison | Two-endpoint Dirichlet coercivity, exact clipped-functional expansion, fixed-trace strictness, Euler boundary formula, reference stationarity, global sharp value `M/2` for arbitrary support pairs of competitive width, and exact equality up to horizontal translation | [AdaptiveFunctional](AmbidextrousSofa/Analysis/AdaptiveFunctional.lean), [AdaptiveGlobalComparison](AmbidextrousSofa/Analysis/AdaptiveGlobalComparison.lean) |
+| Ordinary one-turn input | Complete retained source dependency, actual continuous-passage bridge, and the rational area bound `22199/10000` | [OrdinarySofaBound](AmbidextrousSofa/Analysis/OrdinarySofaBound.lean), [Imported source map](AmbidextrousSofa/Imported/README.md) |
 | Geometric equality infrastructure | Exact four-term physical deficit, a.e. partition equality, actual hull recovery and finite-measure regular-closed set recovery | [CapAssembly](AmbidextrousSofa/Measure/CapAssembly.lean), [RegularClosed](AmbidextrousSofa/Topology/RegularClosed.lean) |
 
 All statements in this table refer to source proof bodies, not successful
@@ -73,6 +76,17 @@ width at least `8/5`. Its equality theorem gives the reference width and
 actual support functions up to a horizontal translation. The geometric
 conditions needed to apply it universally remain to be established.
 
+`IsDownwardCap.eq_reference_of_heightSaturation_middleChordCap_eq` recovers
+an original equality cap from its actual reference canonicalization. The
+proof uses the zero reference niche at the middle endpoints to force zero
+extrusion, then recovers the original middle roof from the unit ceiling.
+The classification of all canonical equality caps is still required.
+
+`volumeReal_le_ordinaryBound_of_lowerPassage` now derives the retained
+ordinary area bound from a genuine compact connected lower passage, with
+its original unrestricted terminal angle. Applying it to an auxiliary
+niche-cut cap still requires proving that body's actual feasibility.
+
 These results do not yet assemble an upper bound `M` for every ambidextrous
 body. The remaining curvature/exposure, full and partial sharp bounds, and
 equality classifications are substantive obligations.
@@ -90,12 +104,14 @@ Mathlib is the sole direct package dependency, pinned to
 `leanprover/lean4:v4.35.0-rc3`. The pinned Mathlib source is used to inspect
 relevant APIs. Package build compatibility remains unchecked.
 
-Four objective-independent convex-body/Stieltjes source modules are adapted
-from the [pinned earlier repository][research] under
-[Imported](AmbidextrousSofa/Imported/SurfaceArea.lean). Their original license,
-source paths, revision and modifications are recorded there. They construct
-the actual surface-area measure; they do not import an optimality theorem.
-The retained ordinary one-turn bound is still a dependency to discharge.
+The complete 51-module transitive source dependency of the retained ordinary
+one-turn theorem is adapted from the [pinned earlier repository][research]
+under [Imported](AmbidextrousSofa/Imported/README.md). It includes the actual
+convex-body/Stieltjes calculus, Gerver parameter existence, ordinary value
+theorem and rational area enclosure. Source paths, revision, namespace/import
+transformations and the original Apache-2.0 license are recorded there.
+No ordinary uniqueness theorem is used. This source adaptation has not been
+compiled or independently re-reviewed in its entirety.
 
 The entry point [AmbidextrousSofa.lean](AmbidextrousSofa.lean) imports every
 implementation module. [AxiomAudit.lean](AxiomAudit.lean) prepares one

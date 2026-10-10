@@ -9,17 +9,19 @@ This record is not a kernel proof log or an external referee report.
 
 ## Current source inventory
 
-The entry point covers **104 implementation modules**, containing
-**1816 named theorems** and **2176 explicitly named declarations**.
+The entry point covers **177 implementation modules**, containing
+**4095 named theorems** and **4893 explicitly named declarations**.
 Every declared theorem has an explicit proof body. `AxiomAudit.lean` prepares
 one unexecuted `#print axioms` query per explicitly named declaration.
 Generated constructors, projections, recursors and equation lemmas are not
 separate source commands in this inventory.
 
-The four adapted objective-independent modules under `Imported` are counted
-in these totals. They retain their source revision, path, modification notice
-and Apache-2.0 license. The original ordinary one-turn optimality theorem is
-not among those four modules.
+The 51 adapted modules under `Imported` are counted in these totals. They
+form the complete transitive project-source dependency of the earlier
+ordinary one-turn theorem. Each retains its source revision, path and
+modification notice, and the original Apache-2.0 license is included.
+The mathematical source was copied with namespace/import transformations;
+the full imported theorem chain has not been independently re-reviewed.
 
 ## Substantive source reviews
 
@@ -47,6 +49,29 @@ interfaces. The following completed reviews cover the principal new chains:
   on the charged middle; strict exterior roof gain; horizontal reflection;
   high-endpoint localization; and the translation/reflection application of
   the low-height estimate.
+- Actual neighboring-wall source alternatives, including axis samples; the
+  two-interval parameter cover and its Lebesgue measure; supporting-face
+  atom bounds from actual support second differences; and the reflected
+  companion construction. The basic neighboring-wall and length modules
+  received an independent review.
+- Finite curvature concentration: actual common corners on every gap in
+  defining normals, Stieltjes nullity on the gap, local nullity away from
+  the finite normal set, and the exact singleton-mass sum. This module
+  received an independent review against the pinned measure APIs.
+- Exact finite erosion and endpoint source moments, actual in-box outward
+  competitors for positive end faces, uniform selected error bounds, local
+  roof convergence at moving interior points, and moving finite-niche
+  pressure convergence. These core endpoint modules received independent
+  review; later weighted moment and punctured-axis applications have
+  complete bodies and author source review.
+- Whole-angle inactive-normal insertion and exact tilted supporting-facet
+  position. The actual reference inverse was independently reviewed: zero
+  niche at a middle endpoint forces zero equal-score extrusion, then the
+  unit ceiling recovers the original chord-cut roof.
+- The ordinary one-turn movement bridge and rational area application.
+  Review checked the coordinate corridors, actual initial-rotation rebase,
+  every movement field, area invariance, proved Gerver parameter existence,
+  and the rational area enclosure. No ordinary uniqueness input is used.
 - The half-angle energy identity, two-endpoint Dirichlet coercivity,
   fixed-trace strictness, clipped-functional first variation, reference Euler
   stationarity, natural width boundary formula and the explicit large-width
@@ -59,16 +84,25 @@ values; the strict scalar maximum; width coverage and the translation of the
 reference equality data. The translation and integral-value modules received
 independent review. A pinned multiplication-inequality rewrite was corrected.
 
+The tilted initial-energy argument and exact rational endpoint-box strips
+also received independent source review. The newer first-unit energy,
+moment and convolution components have complete bodies and focused author
+review. Their actual source-occupation and curvature applications remain
+mathematical obligations; the existence of these analytic lemmas does not
+close the tilted exclusion.
+
 The dense-grid/persistent-penalty selection, actual polygon-curvature atoms,
 vanishing selection defects, moving-envelope derivatives and source moments
 are included with complete proof bodies. Their authors performed focused
 static review; the final independent cross-module review and remaining
 geometric applications are continuing.
 
-The integration scan found two duplicate helper declarations:
-`convex_verticalFiber` and `IsDownwardCap.intervalIntegrable_capRoof`.
+The integration scan found duplicate helper declarations including
+`convex_verticalFiber`, `IsDownwardCap.intervalIntegrable_capRoof`, and two
+different `capRoof_eq_roofEnvelope_of_circumscription` interfaces.
 Their duplicate copies were removed and the existing proved helpers are
-imported. Review also made the affine translation's scalar identity explicit
+imported; the EqOn roof interface received its own distinct name. Review
+also made the affine translation's scalar identity explicit
 and replaced several variable-index rewrite shortcuts by local quantified
 lemmas. These are source corrections; no elaborator was invoked to test them.
 
@@ -93,9 +127,9 @@ The lexical guard cannot compute actual transitive axiom dependencies or
 establish that any theorem elaborates. The prepared queries have not been
 run and the actual axiom sets are unverified.
 
-The checked snapshot has **106 Lean files**, including entry point and
-audit, **104 implementation modules**, **1816 named theorems**,
-and **2176 prepared queries**. The source-policy guard passed.
+The checked snapshot has **179 Lean files**, including entry point and
+audit, **177 implementation modules**, **4095 named theorems**,
+and **4893 prepared queries**. The source-policy guard passed.
 Whitespace and local documentation links are checked before publication.
 Publication uses GitHub's Git Data API with exact tree/blob comparisons;
 no workflow is added and commits use `[skip ci]`.
@@ -108,13 +142,16 @@ source declarations are inspected locally from that exact revision and
 through the GitHub API. The lockfile preserves the exact upstream package
 revisions. No build compatibility or transitive kernel audit is claimed.
 
-The adapted planar convex-body/Stieltjes source is from
+The adapted ordinary theorem and planar convex-body/Stieltjes source are from
 [`20489723dc8777a82ee70ae60510115dc6f21085`][research]. Its project-local
 namespace and import transformations preserve the mathematical definitions;
 private helpers received stable public names for the prepared audit. The
 bridge in `Analysis/SupportCurvature.lean` identifies the actual support
 functions and transfers product-metric Hausdorff convergence to uniform
-angular-support convergence. That import supplies no assumed sharp bound.
+angular-support convergence. `Analysis/OrdinarySofaBound.lean` discharges
+the ordinary area input from its complete retained proof dependency.
+No new axiom or certificate asserting that bound was added. See the complete
+source map in `AmbidextrousSofa/Imported/README.md`.
 
 ## Remaining mathematics
 
@@ -122,8 +159,8 @@ F7 source closure is **not yet achieved**. The current project has actual
 reference attainment and an original-domain reduction, but still lacks the
 universal full and proper-angle sharp cap theorems and their complete
 equality classification. Weak source-curvature and exposure balances,
-tilted/full/terminal exclusions, the retained ordinary one-turn input,
-inverse canonicalization and final original-body assembly remain on the
+tilted/full/terminal exclusions, the actual feasible-body application of
+the ordinary one-turn bound, and final original-body assembly remain on the
 [critical path](FORMALIZATION-ROADMAP.md).
 
 No unproved global result is installed as an axiom, placeholder or a
@@ -146,9 +183,12 @@ instruction.
 | `AmbidextrousSofa/Analysis/AdaptiveGlobalScalar.lean` | 18 | 18 |
 | `AmbidextrousSofa/Analysis/AdaptiveGlobalValue.lean` | 17 | 20 |
 | `AmbidextrousSofa/Analysis/AdaptiveTranslation.lean` | 11 | 14 |
+| `AmbidextrousSofa/Analysis/AxisFaces.lean` | 14 | 14 |
 | `AmbidextrousSofa/Analysis/AxisVariation.lean` | 8 | 9 |
+| `AmbidextrousSofa/Analysis/BoxedSecants.lean` | 10 | 10 |
 | `AmbidextrousSofa/Analysis/CapCompactness.lean` | 14 | 15 |
 | `AmbidextrousSofa/Analysis/CapInsertion.lean` | 10 | 11 |
+| `AmbidextrousSofa/Analysis/CapInteriorRoof.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/CapMaximum.lean` | 5 | 6 |
 | `AmbidextrousSofa/Analysis/CapNicheContinuity.lean` | 16 | 20 |
 | `AmbidextrousSofa/Analysis/CapOrder.lean` | 7 | 7 |
@@ -161,28 +201,41 @@ instruction.
 | `AmbidextrousSofa/Analysis/Circumscription.lean` | 9 | 10 |
 | `AmbidextrousSofa/Analysis/DiagonalTent.lean` | 10 | 12 |
 | `AmbidextrousSofa/Analysis/DirichletEnergy.lean` | 7 | 7 |
+| `AmbidextrousSofa/Analysis/DiscreteCurvature.lean` | 8 | 11 |
+| `AmbidextrousSofa/Analysis/DyadicCurvatureMass.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/DyadicGrid.lean` | 7 | 10 |
+| `AmbidextrousSofa/Analysis/DyadicNeighbors.lean` | 14 | 18 |
 | `AmbidextrousSofa/Analysis/EndpointPolygons.lean` | 8 | 8 |
 | `AmbidextrousSofa/Analysis/EndpointPressure.lean` | 25 | 29 |
 | `AmbidextrousSofa/Analysis/EndpointTrimming.lean` | 66 | 71 |
+| `AmbidextrousSofa/Analysis/ErosionMoments.lean` | 28 | 36 |
 | `AmbidextrousSofa/Analysis/ErosionVariation.lean` | 6 | 7 |
 | `AmbidextrousSofa/Analysis/EulerFlux.lean` | 7 | 11 |
 | `AmbidextrousSofa/Analysis/ExactEstimates.lean` | 3 | 3 |
 | `AmbidextrousSofa/Analysis/ExposureMoments.lean` | 12 | 14 |
 | `AmbidextrousSofa/Analysis/Extrusion.lean` | 22 | 25 |
 | `AmbidextrousSofa/Analysis/FacetCurvature.lean` | 9 | 9 |
+| `AmbidextrousSofa/Analysis/FacetPinning.lean` | 10 | 10 |
 | `AmbidextrousSofa/Analysis/FiniteEnvelope.lean` | 14 | 20 |
 | `AmbidextrousSofa/Analysis/FiniteScore.lean` | 11 | 11 |
 | `AmbidextrousSofa/Analysis/FiniteVariation.lean` | 9 | 10 |
 | `AmbidextrousSofa/Analysis/GlobalCapMaximum.lean` | 7 | 8 |
+| `AmbidextrousSofa/Analysis/GridCounting.lean` | 13 | 15 |
 | `AmbidextrousSofa/Analysis/GridNiche.lean` | 15 | 20 |
 | `AmbidextrousSofa/Analysis/GridPolygon.lean` | 14 | 20 |
 | `AmbidextrousSofa/Analysis/GridScore.lean` | 6 | 7 |
 | `AmbidextrousSofa/Analysis/GridSeparation.lean` | 2 | 2 |
+| `AmbidextrousSofa/Analysis/InactiveNormals.lean` | 7 | 8 |
+| `AmbidextrousSofa/Analysis/InverseCanonicalization.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/LowHeightAlgebra.lean` | 9 | 11 |
 | `AmbidextrousSofa/Analysis/LowHeightGeometry.lean` | 7 | 8 |
 | `AmbidextrousSofa/Analysis/LowHeightMaximizer.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/LowHeightScore.lean` | 9 | 9 |
+| `AmbidextrousSofa/Analysis/MiddleFacetBounds.lean` | 7 | 8 |
+| `AmbidextrousSofa/Analysis/NeighborCompanion.lean` | 12 | 14 |
+| `AmbidextrousSofa/Analysis/NeighborLength.lean` | 10 | 11 |
+| `AmbidextrousSofa/Analysis/NeighborWalls.lean` | 15 | 22 |
+| `AmbidextrousSofa/Analysis/OrdinarySofaBound.lean` | 10 | 10 |
 | `AmbidextrousSofa/Analysis/PersistentPenalty.lean` | 18 | 28 |
 | `AmbidextrousSofa/Analysis/PolygonEnvelope.lean` | 23 | 37 |
 | `AmbidextrousSofa/Analysis/PolygonExposure.lean` | 6 | 8 |
@@ -191,9 +244,19 @@ instruction.
 | `AmbidextrousSofa/Analysis/QuadraticEnergy.lean` | 11 | 14 |
 | `AmbidextrousSofa/Analysis/QuarterFunctions.lean` | 4 | 9 |
 | `AmbidextrousSofa/Analysis/RoofContinuity.lean` | 3 | 3 |
+| `AmbidextrousSofa/Analysis/RoofGain.lean` | 1 | 1 |
 | `AmbidextrousSofa/Analysis/SelectedCurvature.lean` | 10 | 13 |
+| `AmbidextrousSofa/Analysis/SelectedEndpointMoments.lean` | 15 | 16 |
+| `AmbidextrousSofa/Analysis/SelectedErosionMoments.lean` | 15 | 15 |
+| `AmbidextrousSofa/Analysis/SelectedPressureLimit.lean` | 11 | 15 |
 | `AmbidextrousSofa/Analysis/SelectedSequence.lean` | 9 | 10 |
 | `AmbidextrousSofa/Analysis/SupportCurvature.lean` | 9 | 11 |
+| `AmbidextrousSofa/Analysis/TiltedFirstUnitEnergy.lean` | 17 | 23 |
+| `AmbidextrousSofa/Analysis/TiltedFirstUnitMoments.lean` | 8 | 12 |
+| `AmbidextrousSofa/Analysis/TiltedHarmonicMoments.lean` | 4 | 4 |
+| `AmbidextrousSofa/Analysis/TiltedInitialEnergy.lean` | 19 | 25 |
+| `AmbidextrousSofa/Analysis/TiltedInitialEnergyBounds.lean` | 15 | 18 |
+| `AmbidextrousSofa/Analysis/TiltedMomentumConvolution.lean` | 13 | 17 |
 | `AmbidextrousSofa/Analysis/TopFacetEndpoints.lean` | 3 | 3 |
 | `AmbidextrousSofa/Analysis/TopInsertion.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/WideCap.lean` | 10 | 10 |
@@ -212,9 +275,56 @@ instruction.
 | `AmbidextrousSofa/Geometry/RigidMotion.lean` | 18 | 22 |
 | `AmbidextrousSofa/Geometry/Support.lean` | 40 | 45 |
 | `AmbidextrousSofa/Geometry/UpwardSupport.lean` | 5 | 5 |
+| `AmbidextrousSofa/Imported/Angle/HorizontalSide.lean` | 66 | 69 |
+| `AmbidextrousSofa/Imported/Angle/RightAngle.lean` | 43 | 50 |
+| `AmbidextrousSofa/Imported/Balanced/BalancedMaximumSofa.lean` | 21 | 25 |
+| `AmbidextrousSofa/Imported/Balanced/CapGeometry.lean` | 77 | 86 |
+| `AmbidextrousSofa/Imported/Balanced/MaxPolygonCapExists.lean` | 44 | 47 |
+| `AmbidextrousSofa/Imported/Balanced/MaximumPolygonCap.lean` | 43 | 50 |
+| `AmbidextrousSofa/Imported/Balanced/NefPolygon.lean` | 38 | 50 |
+| `AmbidextrousSofa/Imported/Balanced/PolygonCap.lean` | 60 | 77 |
+| `AmbidextrousSofa/Imported/Balanced/Polyline.lean` | 45 | 53 |
+| `AmbidextrousSofa/Imported/Basic/Interval.lean` | 22 | 22 |
+| `AmbidextrousSofa/Imported/Convex/ConvexCurve.lean` | 73 | 82 |
+| `AmbidextrousSofa/Imported/Convex/ConvexDomain.lean` | 23 | 36 |
+| `AmbidextrousSofa/Imported/Convex/CurveArea.lean` | 47 | 55 |
+| `AmbidextrousSofa/Imported/Convex/Mamikon.lean` | 16 | 18 |
 | `AmbidextrousSofa/Imported/ConvexBody.lean` | 67 | 78 |
+| `AmbidextrousSofa/Imported/External/AreaFormula.lean` | 34 | 39 |
+| `AmbidextrousSofa/Imported/External/AreaFormula/Param.lean` | 40 | 44 |
+| `AmbidextrousSofa/Imported/External/Romik.lean` | 37 | 38 |
+| `AmbidextrousSofa/Imported/External/Romik/Calc.lean` | 15 | 15 |
+| `AmbidextrousSofa/Imported/External/Romik/Fix.lean` | 15 | 19 |
+| `AmbidextrousSofa/Imported/External/Romik/Num.lean` | 75 | 123 |
+| `AmbidextrousSofa/Imported/Gerver/AreaBounds.lean` | 101 | 120 |
+| `AmbidextrousSofa/Imported/Gerver/Bounds.lean` | 0 | 1 |
+| `AmbidextrousSofa/Imported/Gerver/Defs.lean` | 0 | 15 |
+| `AmbidextrousSofa/Imported/Gerver/Envelope.lean` | 44 | 52 |
+| `AmbidextrousSofa/Imported/Gerver/EnvelopeArea.lean` | 26 | 30 |
+| `AmbidextrousSofa/Imported/Gerver/Frame.lean` | 162 | 191 |
+| `AmbidextrousSofa/Imported/Gerver/Niche.lean` | 29 | 30 |
+| `AmbidextrousSofa/Imported/Gerver/NicheBounds.lean` | 41 | 43 |
+| `AmbidextrousSofa/Imported/Gerver/Properties.lean` | 142 | 149 |
+| `AmbidextrousSofa/Imported/Gerver/Structure.lean` | 6 | 6 |
+| `AmbidextrousSofa/Imported/Gerver/StructureCap.lean` | 84 | 90 |
+| `AmbidextrousSofa/Imported/Injectivity/ArmLengths.lean` | 37 | 45 |
+| `AmbidextrousSofa/Imported/Injectivity/BoundingArms.lean` | 18 | 21 |
+| `AmbidextrousSofa/Imported/Injectivity/DiscreteIneq.lean` | 44 | 50 |
+| `AmbidextrousSofa/Imported/Injectivity/LimitIneq.lean` | 38 | 42 |
+| `AmbidextrousSofa/Imported/Intro/RotationAngleBound.lean` | 11 | 12 |
 | `AmbidextrousSofa/Imported/LebesgueStieltjes.lean` | 40 | 42 |
+| `AmbidextrousSofa/Imported/Main.lean` | 15 | 16 |
+| `AmbidextrousSofa/Imported/Monotone/CapContainsNiche.lean` | 96 | 96 |
+| `AmbidextrousSofa/Imported/Monotone/CapDefs.lean` | 8 | 26 |
+| `AmbidextrousSofa/Imported/Monotone/CapNiche.lean` | 8 | 8 |
+| `AmbidextrousSofa/Imported/Monotone/MonotoneSofa.lean` | 42 | 42 |
+| `AmbidextrousSofa/Imported/Monotone/SupportingHallway.lean` | 33 | 33 |
+| `AmbidextrousSofa/Imported/Optimality/Concavity.lean` | 40 | 50 |
+| `AmbidextrousSofa/Imported/Optimality/Domain.lean` | 56 | 71 |
+| `AmbidextrousSofa/Imported/Optimality/UpperBound.lean` | 46 | 56 |
+| `AmbidextrousSofa/Imported/Optimality/Variation.lean` | 26 | 34 |
 | `AmbidextrousSofa/Imported/Plane.lean` | 116 | 133 |
+| `AmbidextrousSofa/Imported/Sofa/Defs.lean` | 0 | 41 |
 | `AmbidextrousSofa/Imported/SurfaceArea.lean` | 35 | 41 |
 | `AmbidextrousSofa/Measure/CapAssembly.lean` | 9 | 13 |
 | `AmbidextrousSofa/Measure/CapScore.lean` | 14 | 17 |

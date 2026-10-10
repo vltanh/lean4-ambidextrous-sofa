@@ -32,7 +32,7 @@ closures and research-session reviews are distinct from formal verification.
 | F3 | Actual reference support/hull/body, both feasible passages, regular closedness and exact area `M` | Implemented, including exact reference cap score `M/2` |
 | F4 | Universal full-angle cap score at most `M/2`, including nonsmooth, asymmetric and subunit caps | Global maximizer/canonicalization, prescribed polygon selection, first variations, endpoint cuts, top insertion, low-height exclusion and analytic comparison implemented; remaining curvature/exposure and global sharpness arguments below |
 | F5 | Universal proper-angle cap bound retaining the whole outgoing wall, independently for the two motions | Actual terminal wall and original-motion reduction implemented; sharp terminal analysis remains |
-| F6 | Every equality cap, inverse canonicalization, strict proper-angle inequality and literal original compact-body recovery | Exact deficit and reference regularity/recovery infrastructure implemented; sharp equality classification and assembly remain |
+| F6 | Every equality cap, inverse canonicalization, strict proper-angle inequality and literal original compact-body recovery | Exact deficit, reference regularity and actual inverse canonicalization implemented; sharp cap classification and original-body assembly remain |
 | F7 source closure | Unconditional original-domain area bound and exact uniqueness, with no missing mathematical input | In progress; depends on F4–F6 |
 | F7 kernel check | Elaboration and actual standard-axiom output | Not performed; compilation and CI prohibited for this task |
 
@@ -88,7 +88,14 @@ retightening. `EndpointPressure` derives inward pressure inequalities from
 those actual competitors, including the unpenalized full score.
 `ErosionVariation` proves the exact finite moving-wall/moving-endpoint
 derivative with its quadratic sliver error; `ExposureMoments` proves actual
-source masses and the total translation balance.
+source masses and the total translation balance. `ErosionMoments` and
+`SelectedEndpointMoments` instantiate actual selected inequalities with a
+uniform vanishing error. `CapInteriorRoof` and `SelectedPressureLimit` prove
+the moving middle-roof and niche limits and hence the selected pressure and
+endpoint-height limits. `SelectedErosionMoments` gives the exact limits of
+both erosion moments as the negative parts of the target pressures. The
+identification of endpoint-height limits with the actual target faces is
+still a separate geometric step.
 
 `CapInsertion` and `TopInsertion` prove that inserting a height-one point at
 a middle endpoint can leave the **entire** charged niche unchanged.
@@ -96,6 +103,18 @@ a middle endpoint can leave the **entire** charged niche unchanged.
 affine middle at height one. The exact tent integrals and scalar inequalities
 in `PositiveTent`, `DiagonalTent` and `LowHeight*` then show that both middle
 endpoint roofs of a canonical full maximum exceed one half.
+
+`RoofGain`, `InactiveNormals` and `FacetPinning` prove an actual local
+insertion and pin the maximal tilted supporting facet's horizontal
+projection exactly to the middle interval. Strict one-sided corner laws
+and their subsequent curvature applications are separate remaining steps.
+
+`InverseCanonicalization` now reverses the concrete chord and height
+operations at the reference, including horizontal translation. A positive
+extrusion would strictly increase score because the final reference niche
+vanishes at a middle endpoint. Once the extrusion is zero, the unit strip
+forces recovery of the original middle roof. This does not infer that
+arbitrary equal-score chord clipping is injective.
 
 `QuarterFunctions`, `DirichletEnergy`, `QuadraticEnergy`, `AdaptiveFunctional`
 and `EulerFlux` provide a concrete two-support variational calculus and
@@ -111,30 +130,40 @@ proved in `AdaptiveGlobalValue` and `AdaptiveGlobalScalar`.
 
 ### F4 — weak source curvature and the full sharp bound
 
-1. Complete the neighboring-wall exposure estimates. `FacetCurvature` and
-   `SelectedCurvature` identify literal polygon source lengths with actual
-   supporting-facet atoms, retain the uncharged middle facet, and bound the
-   total selection defect by a quantity tending to zero.
+1. The neighboring-wall exposure estimates are implemented in
+   `NeighborWalls`, `NeighborLength` and `NeighborCompanion`. Actual box
+   secants and dyadic neighbors give uniform source bounds. `DiscreteCurvature`
+   proves concentration on the literal half-plane normals; `GridCounting`
+   and `DyadicCurvatureMass` convert atom bounds into punctured-axis interval
+   estimates. `FacetCurvature` and `SelectedCurvature` retain the uncharged
+   middle facet and a total selection defect tending to zero.
 2. Pass the selected finite estimates to weak limits at the prescribed
    maximizer. Separate the central facet/top normal and preserve disappearing
    zero-height niche source mass. Derive the actual support-curvature density
    bounds and necessary endpoint face convergence.
 3. Complete endpoint complementarity and the exact exposure moments/Green
    identity. Use the low-height result to obtain both positive pressures.
-4. Complete the support-inactivity/facet-pinning argument, horizontal unit
-   curvature and geometric comparison to the analytic functional. Complete
-   all tilted-width/height exclusions from the written full-cap proof.
+4. Complete strict corner laws, horizontal unit curvature and geometric
+   comparison to the analytic functional. Complete all tilted-width/height
+   exclusions from the written full-cap proof. `TiltedInitialEnergy` and
+   its exact rational parameter bounds are implemented; the first-unit
+   energy and convolution modules provide further analytic components.
+   Their source-occupation hypotheses still need to be derived from actual
+   cap geometry. The late-excess and remaining tilted exclusions are open.
 5. Apply the completed analytic global comparison and strict equality
    classification to the actual geometric domain after these reductions.
-6. Discharge the ordinary one-turn area bound and rational Gerver enclosure
-   used by strict exclusion branches, through an appropriate complete source
-   dependency and a bridge from the actual constructed moving body.
+6. Construct the actual compact connected niche-cut one-turn body used by
+   strict exclusion branches. Its eventual area bound can now use
+   `OrdinarySofaBound`, which discharges the ordinary value theorem and
+   rational Gerver enclosure through the complete retained source and an
+   actual continuous-passage bridge.
 
-The four files under `Imported` are objective-independent planar convex-body,
-Lebesgue–Stieltjes and surface-area calculus adapted from the pinned earlier
-repository. Their actual support/curvature definitions are bridged in
-`SupportCurvature`; they do not supply the ordinary one-turn optimality input.
-Source attribution and the original Apache-2.0 license are retained.
+The 51 files under `Imported` are the complete project-source import closure
+of the earlier ordinary one-turn theorem. Their actual support/curvature
+definitions are bridged in `SupportCurvature`; `OrdinarySofaBound` bridges
+the physical movement predicate and rational value bound. The exact source
+map and namespace/import transformations are documented in
+`Imported/README.md`; attribution and the Apache-2.0 license are retained.
 
 ### F5 — proper terminal angles
 
@@ -147,8 +176,8 @@ angles must remain independent. At `π/2`, use the full-cap theorem.
 ### F6 — equality of actual bodies
 
 Classify every prescribed canonical equality cap, including horizontal
-translation. Reverse the actual chord and height operations at the reference;
-prove strict inequality for every proper terminal angle; use the four-term
+translation, then apply the completed actual reference inverse. Prove strict
+inequality for every proper terminal angle; use the four-term
 physical deficit to recover both original cap scores and the actual common
 hull. Apply the proved regular-closed recovery only after containment and
 finite equal area have been established. Equality must be literal equality
