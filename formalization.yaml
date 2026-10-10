@@ -14,7 +14,8 @@ project:
     width that turns right, and also around the corner of a hallway that turns left. Dan Romik
     (Experimental Mathematics, 2018) constructed a shape of area
     M = 1 + 4Y^2 + arctan Y = 1.64495..., where Y = 0.2980... is the positive root of
-    4Y^3 + 3Y = 1, and proposed it as a likely solution.
+    4Y^3 + 3Y = 1, and proposed it as a likely solution; in 2025 Georgiev, Gómez-Serrano, Tao and
+    Wagner listed the problem as open.
 
 
     This entry proves that Romik's ambidextrous sofa is optimal and that it is the only optimal
@@ -27,10 +28,12 @@ project:
     + arctan(((sqrt 2 + 1)^(1/3) - (sqrt 2 - 1)^(1/3))/2).
 
 
-    The proof formalizes the manuscript "Sharp area and exact uniqueness for the ambidextrous moving
-    sofa problem", which has not been peer reviewed. Two of its steps use Jineon Baek's theorem that
-    Gerver's sofa is optimal for the ordinary moving sofa problem (arXiv:2411.19826), which the Lean
-    formalization lean4-moving-sofa proves; this repository depends on it.
+    The proof splits the convex hull of a sofa into two caps, one for each hallway, and bounds the
+    area of the sofa by the sum of their scores. The score of each cap is at most M/2, with equality
+    only for Romik's cap, and when the area is M the sofa is recovered from its caps. Two steps use
+    Jineon Baek's theorem that Gerver's sofa is optimal for the ordinary moving sofa problem
+    (arXiv:2411.19826); its Lean formalization comes from lean4-moving-sofa and is included in the
+    repository.
   authors:
     - "The-Anh Vu-Le"
   license: "Apache-2.0"
@@ -42,20 +45,14 @@ classification:
   msc2020: ["49Q10", "52A10", "52A38", "52A40", "68V20"]
 
 sources:
-  - title: "Sharp area and exact uniqueness for the ambidextrous moving sofa problem"
-    id: "docs/archive/GATE3-MANUSCRIPT.md"
-    type: "manuscript"
-    location: "https://github.com/vltanh/lean4-ambidextrous-sofa/blob/a0595b1316d0192d5315c03484a255be323a8194/docs/archive/GATE3-MANUSCRIPT.md"
-    relationship: formalizes
+  - title: "Optimality and uniqueness of Romik's ambidextrous sofa"
+    type: original-proof
+    relationship: other
     note: >-
-      Written by ChatGPT Pro 6 (OpenAI) at the request of The-Anh Vu-Le, in research sessions from
-      8 to 10 October 2026, in pull request #3 of lean4-moving-sofa (the file
-      docs/ambidextrous/GATE3-MANUSCRIPT.md at commit 20489723dc8777a82ee70ae60510115dc6f21085);
-      this repository keeps it unchanged in docs/archive/. Its main theorem (MS.3, Theorem G3C2) is
-      the optimality and uniqueness of Romik's sofa. It has not been peer reviewed, and no person
-      has checked it. The Lean proofs are ChatGPT Pro 6's Lean draft of its argument, repaired; the
-      draft reaches several of its intermediate results by other arguments (fidelity.divergences).
-    author_endorsement: n/a
+      ChatGPT Pro 6 (OpenAI) found the proof and wrote an uncompiled Lean draft of it, and Claude
+      Opus 5.5 (Anthropic) made the draft compile (automation). The research notes behind it end with
+      a manuscript, which the repository archives in docs/archive/. The proof has not been peer
+      reviewed. The README outlines it.
   - title: "Differential Equations and Exact Solutions in the Moving Sofa Problem"
     authors:
       - "Dan Romik"
@@ -66,10 +63,10 @@ sources:
     note: >-
       Constructs the ambidextrous sofa, the set S_x intersected with its reflection in the line
       y = 1/2 (Section 5 and Theorem 5), gives its area in closed form (Equation (5) and Theorem 5),
-      and calls it a highly plausible candidate for the solution of the ambidextrous problem. The Challenge defines the sofa from the
-      manuscript's formulas for its support function, which are Romik's, and
-      Ambidextrous.value_eq_romik proves that M equals his closed form. The manuscript proves the
-      properties of the sofa that it uses.
+      and calls it a highly plausible candidate for the solution of the ambidextrous problem. The
+      Challenge defines his sofa from the support function of its convex hull, and value_eq_romik
+      proves that its area is his closed form. The properties of the sofa that the proof uses are
+      proved in the repository.
     author_endorsement: not-contacted
   - title: "Optimality of Gerver's Sofa"
     authors:
@@ -79,10 +76,11 @@ sources:
     location: "https://arxiv.org/abs/2411.19826v1"
     relationship: background
     note: >-
-      The manuscript's one external input (MS.18): every moving sofa of the ordinary problem has
-      area at most 22199/10000, from Baek's Theorem 1.1.1 and a bound on the area of Gerver's sofa.
-      It is not assumed: the proof uses MovingSofaOptimality.gm_area_le and
-      MovingSofaOptimality.gerverSofa_area_mem, proved in lean4-moving-sofa.
+      Two steps of the proof use that every moving sofa of the ordinary problem has area at most
+      22199/10000, from Baek's Theorem 1.1.1 and a bound on the area of Gerver's sofa. Neither is
+      assumed: MovingSofaOptimality.gm_area_le and MovingSofaOptimality.gerverSofa_area_mem are
+      proved in the copy of lean4-moving-sofa's library MovingSofaOptimality that the repository
+      includes.
     author_endorsement: not-contacted
   - title: "Mathematical exploration and discovery at scale"
     authors:
@@ -113,26 +111,25 @@ related_formalizations:
     relationship: builds-on
     note: >-
       The formalization of Baek's optimality theorem for the ordinary problem, by the same
-      maintainer, registered in Palomar as PALOMAR-2026-10-02-000008. The Solution depends on it, at
-      commit 1174c5c25c1c66b807e368446d6682e8d0276759, for Baek's theorem and the area of Gerver's
-      sofa; the Challenge does not import it. No earlier formalization of the ambidextrous problem is
+      maintainer, registered in Palomar as PALOMAR-2026-10-02-000008. Its library
+      MovingSofaOptimality, at commit 1174c5c25c1c66b807e368446d6682e8d0276759, is copied into this
+      repository and adapted to Mathlib v4.35.0-rc4, for Baek's theorem and the area of Gerver's
+      sofa; the Challenge does not use it. No earlier formalization of the ambidextrous problem is
       known: the other Lean formalizations of the moving sofa problem (deancureton/MovingSofa,
       RuifengCao/sofa-formal, and Google DeepMind's formal-conjectures) treat the ordinary problem.
 
 status:
   scope: >-
-    Formalized: the main theorem of the manuscript (MS.3, Theorem G3C2), that
-    every ambidextrous sofa has area at most M = 1 + 4Y^2 + arctan Y and has area M if and only if
-    it is the image of Romik's sofa by a rotation and a translation; that Romik's sofa and its images
-    by rotations and translations are ambidextrous sofas, of area M (MS.15); that its convex hull is
-    the convex body given by its support function (MS.14); that 4Y^3 + 3Y = 1 has exactly one
-    positive root; and that M is Romik's closed form. The formalization is unconditional: the proof
-    uses Baek's theorem and a bound on the area of Gerver's sofa (MS.18), which lean4-moving-sofa
-    proves. Not stated as a theorem of
-    record: that both motions of a sofa of area M turn it through exactly a quarter turn, which the
-    proof of uniqueness establishes. Some intermediate results of the manuscript are not
-    formalized, because the Lean proof reaches the next step by another argument
-    (fidelity.divergences, and docs/layout.md, Section 2).
+    Formalized: the optimality of Romik's ambidextrous sofa, that every ambidextrous sofa has area
+    at most M = 1 + 4Y^2 + arctan Y, and its uniqueness, that an ambidextrous sofa has area M if and
+    only if it is the image of Romik's sofa by a rotation and a translation; that Romik's sofa and
+    its images by rotations and translations are ambidextrous sofas, of area M; that its convex hull
+    is the convex body given by its support function; that 4Y^3 + 3Y = 1 has exactly one positive
+    root; and that M is Romik's closed form. The formalization is unconditional: two steps use
+    Baek's theorem and a bound on the area of Gerver's sofa, proved in the copy of lean4-moving-sofa's
+    library that the repository includes. Not stated as a theorem of record: that both motions of a
+    sofa of area M turn it through exactly a quarter turn, which the proof of uniqueness
+    establishes.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
@@ -146,96 +143,83 @@ automation:
         Claude Code 2.1.296, following the formalize-math-paper skill
         (https://github.com/vltanh/formalize-math-paper, its version of 7 October 2026) for an
         existing uncompiled draft, with 44 sub-agents of the same model, at most 20 at once. It
-        replaced the draft's copy of lean4-moving-sofa by a dependency on it, converted the draft to
-        Lean's module system, brought every statement to elaborate, and had 42 sub-agents restore
-        the 849 proofs that failed, by changes of tactics and names; 77 theorems in sections with
-        variable hypotheses got back the hypotheses that Lean had left out of their statements.
-        One sub-agent reviewed the statements of record against the manuscript and Romik's paper,
-        and another mapped the modules to the manuscript. The main session wrote the Challenge, the
-        Solution, the axiom audit, the documentation and the figures.
+        replaced the draft's copy of lean4-moving-sofa's library by a dependency on it, converted the
+        draft to Lean's module system, brought every statement to elaborate, and had 42 sub-agents
+        restore the 849 proofs that failed, by changes of tactics and names; 77 theorems in sections
+        with variable hypotheses got back the hypotheses that Lean had left out of their statements.
+        One sub-agent reviewed the statements of record, and another described the modules. The
+        main session wrote the Challenge, the Solution, the axiom audit, the documentation and the
+        figures, and then moved the project to Mathlib v4.35.0-rc4, copying lean4-moving-sofa's
+        library MovingSofaOptimality into the repository and adapting it.
       cost:
         wall_time: >-
           Making the draft compile, with the Challenge and the Solution: 1 hour 41 minutes
           (2026-10-10 15:27 to 17:08, US Central Time), with about 10.0 hours of sub-agent working
           time. The documentation and this metadata: about 35 minutes (2026-10-10 17:08 to 17:43).
-          docs/CREDITS.md gives the figures.
+          The move to Mathlib v4.35.0-rc4 and the rewrite of the documentation: about 19 minutes
+          (2026-10-10 17:43 to 18:02). docs/CREDITS.md gives the figures.
         spend_usd: "not tracked"
         hardware: "a local machine with 20 cores for the Lean builds"
     - method: agent
       models: ["ChatGPT Pro 6 (OpenAI)"]
       framework: "ChatGPT (OpenAI), committing to the repository through GitHub"
       tool_setup: >-
-        Wrote the research notes and the manuscript in pull request #3 of lean4-moving-sofa (8 to 10
-        October 2026), and the uncompiled Lean draft of its proof in 13 commits of this repository's
-        pull request #1 (2026-10-10, 00:25 to 15:18): 514 modules, 51 of them copies of
-        lean4-moving-sofa's library, about 132,000 lines.
+        Found the proof, in research notes in pull request #3 of lean4-moving-sofa (8 to 10 October
+        2026) whose last document, a manuscript, is archived in docs/archive/, and wrote the
+        uncompiled Lean draft of it in 13 commits of this repository's pull
+        request #1 (2026-10-10, 00:25 to 15:18): 514 modules, 51 of them copies of lean4-moving-sofa's
+        library, about 132,000 lines.
       cost:
         spend_usd: "not tracked"
   spend_usd: "not tracked"
   notes: >-
-    The mathematics and the first Lean code were written by ChatGPT Pro 6; Claude Opus 5.5 made the
-    code compile, at the request of The-Anh Vu-Le, the author and maintainer of this repository,
-    who chose the problem and the scope and decided the publication. Every result is compiled.
-    scripts/Audit.lean checks that each of the 7,474 declarations of the library uses only propext,
+    The proof and the first Lean code were written by ChatGPT Pro 6; Claude Opus 5.5 made the code
+    compile, at the request of The-Anh Vu-Le, the author and maintainer of this repository, who chose
+    the problem and the scope and decided the publication. Every result is compiled.
+    scripts/Audit.lean checks that each declaration of the library uses only propext,
     Classical.choice and Quot.sound, and lake comparator checks this Challenge/Solution pair with
     comparator.json.
 
 fidelity:
   divergences: >-
-    (1) Readings of the manuscript's definitions: the plane is R x R, and area is Lebesgue measure;
-    a passage, the manuscript's continuous path of proper rigid motions, is a continuous angle
+    (1) The problem, which Romik and Georgiev, Gómez-Serrano, Tao and Wagner state informally: the
+    plane is R x R, and area is Lebesgue measure. A passage through a hallway is a continuous angle
     theta(t) and a continuous translation c(t) for t in [0, 1], placing each point p of the body at
     rotate(theta(t)) p + c(t), with the body in the incoming arm at t = 0, in the hallway
-    throughout, and in the outgoing arm at t = 1; the two passages start with the same orientation,
-    rotate(theta_1(0)) = rotate(theta_2(0)), and their translations are independent. As in the
-    manuscript, a passage may pause, turn back and turn through any angle. The second hallway is the
-    reflection of the first in the line y = 1/2.
-    (2) Romik's sofa is defined in the Challenge from the manuscript's formulas (MS.11) for the
-    support function of its convex hull, in three trigonometric phases on each quarter of the
-    circle, with the two niches, the regions swept by the inner corners of the two hallways, written
-    as a supremum over the angles of the turn. The set is placed as in MS.11 and in Romik's paper,
-    with its right end at x = 1; the manuscript's Chapter 5 uses its centered translate, and every
-    theorem of record is invariant under translation. The root Y
-    is a parameter of the theorems, with its defining property; existsUnique_root proves that it is
-    unique. value_eq_romik is Romik's Equation (5), not a claim of the manuscript.
-    (3) The manuscript's "congruent to Sigma_*" is stated as "the image of Romik's sofa by a rotation
-    about the origin followed by a translation". The two agree, because Romik's sofa is symmetric
-    in the line y = 1/2, so that its reflections are also rotated and translated copies.
-    (4) The manuscript also says that both motions of an equality body turn it through a quarter
-    turn; the proof of uniqueness proves it, but the Challenge does not state it.
-    (5) The proofs: the Lean proofs are ChatGPT Pro 6's Lean draft of the manuscript's argument,
-    repaired by changes of tactics and names, with no change of argument; 77 theorems got back
-    hypotheses that Lean had dropped from their statements. The draft follows the manuscript's
-    structure (the reduction of a body to two caps, the bound on the score of a cap, the equality
-    case), but reaches several of its intermediate results by other arguments, listed in
-    docs/layout.md, Section 2: the body is never boxed by the width-five calculation (GA.9-GA.11),
-    since compactness comes at the level of caps; the auxiliary envelopes are not made connected
-    (GA.12-GA.15), since the signed-fiber bound is applied to the body itself; the adaptive
-    functional of Technical proof 4 replaces the switching functionals of Technical proof 3; an
-    explicit family of stationary solutions with fixed-trace uniqueness replaces the Hamiltonian
-    period bound and the existence of an H^1 maximizer at fixed width (Technical proof 4); the
-    horizontal width exclusions of Technical proof 18 come from the width bounds of Technical proof
-    19, which hold for horizontal caps too; and other steps of Technical proofs 16, 19, 21, 33, 39,
-    40 and 46 are replaced, or found unnecessary, as that section says. The manuscript has not been compared with the Lean proofs line by line, so this
-    list may be incomplete; that audit is future work.
+    throughout, and in the outgoing arm at t = 1; it may pause, turn back and turn through any
+    angle. A continuous angle and a continuous translation describe exactly the continuous paths of
+    proper rigid motions. An ambidextrous sofa is a compact connected set with a passage through
+    each hallway, the two starting with the same orientation, rotate(theta_1(0)) =
+    rotate(theta_2(0)); their translations are independent. The hallway that turns left is the
+    reflection of the one that turns right in the line y = 1/2. Without the common orientation,
+    Gerver's sofa, which is symmetric under a reflection in a vertical line, would pass the hallway
+    that turns left after a half turn, and the problem would be the ordinary one.
+    (2) Romik's sofa is defined from the support function of its convex hull, in three trigonometric
+    phases on each quarter of the circle, with the two niches, the regions swept by the inner
+    corners of the two hallways, written as a supremum over the angles of the turn. It is Romik's
+    set of his Theorem 5, in his coordinates: an independent review checked that the formulas are
+    his, and that the definitions reproduce his Table 2. The root Y is a parameter of the theorems,
+    with its defining property; existsUnique_root proves that it is unique.
+    (3) Uniqueness is stated up to a rotation about the origin followed by a translation. Romik's
+    sofa is symmetric in the line y = 1/2, so its reflections are also rotated and translated
+    copies, and this is uniqueness up to congruence.
 review:
   status: "agent-reviewed"
   reviewers:
-    - "A Claude Opus 5.5 sub-agent, separate from the writing agents: a comparison of every definition and theorem of the Challenge with the manuscript and with Romik's paper"
-    - "A Claude Opus 5.5 sub-agent: a map of the 466 modules of the library to the sections of the manuscript (docs/layout.md)"
+    - "A Claude Opus 5.5 sub-agent, separate from the writing agents: a comparison of every definition and theorem of the Challenge with the informal statement of the problem and with Romik's paper"
   notes: >-
-    No person has reviewed the proofs, the statements, the definitions or the manuscript. The
-    review of the Challenge found no error, checked that Romik's Table 2 is reproduced by the
-    definitions of his sofa, and that the hypotheses are satisfiable (the unit square with constant
-    motions is an ambidextrous sofa); its corrections of the documentation, and two more theorems
-    (the convex hull of Romik's sofa and its rotated and translated copies), were made. Lean's
-    kernel checks the proofs, and Comparator checks that the Solution proves the Challenge's
-    statements with the standard axioms only, under Lean's kernel and an independent one.
+    No person has reviewed the proofs, the statements or the definitions. The review found no
+    error; it checked that the definitions of Romik's sofa reproduce his Table 2, and that the
+    hypotheses can be met (the unit square with constant motions is an ambidextrous sofa). Its
+    corrections of the documentation, and two more theorems (the convex hull of Romik's sofa, and
+    its rotated and translated copies), were made. Lean's kernel checks the proofs, and Comparator
+    checks that the Solution proves the Challenge's statements with the standard axioms only, under
+    Lean's kernel and an independent one.
 
 alignment:
   namespace: "Ambidextrous"
   statements:
-    - source: "MS.3 of the manuscript (Theorem G3C2, G3C.3), the bound"
+    - source: "Optimality of Romik's ambidextrous sofa (the main result)"
       lean: "Ambidextrous.volume_le"
       module: "Challenge"
       status: "proved"
@@ -243,7 +227,7 @@ alignment:
         Every ambidextrous sofa (a compact connected subset of R x R that two continuous rigid
         motions, starting in the same orientation, move through the hallway that turns right and
         through the hallway that turns left) has area at most M = 1 + 4Y^2 + arctan Y.
-    - source: "MS.3 of the manuscript (Theorem G3C2, G3C.3), the equality case"
+    - source: "Uniqueness of the optimal ambidextrous sofa (the main result)"
       lean: "Ambidextrous.volume_eq_iff"
       module: "Challenge"
       status: "proved"
@@ -252,32 +236,32 @@ alignment:
         about the origin followed by a translation. With volume_le and isAmbidextrous_referenceSofa,
         Romik's sofa is, up to rotations and translations, the only ambidextrous sofa of largest
         area.
-    - source: "Chapter 1, Section 3 of the manuscript (the motions of the reference body); Romik, Theorem 5"
+    - source: "Romik's sofa is an ambidextrous sofa (Romik 2018, Section 5)"
       lean: "Ambidextrous.isAmbidextrous_referenceSofa"
       module: "Challenge"
       status: "proved"
-      note: "Romik's sofa is an ambidextrous sofa, so the bound M is attained."
-    - source: "MS.15 of the manuscript"
+      note: "Romik's sofa moves through both hallways, so the bound M is attained."
+    - source: "The area of Romik's sofa (Romik 2018, Theorem 5)"
       lean: "Ambidextrous.volume_referenceSofa"
       module: "Challenge"
       status: "proved"
       note: "Romik's sofa has area M = 1 + 4Y^2 + arctan Y."
-    - source: "MS.3 of the manuscript, the converse direction of the equality case"
+    - source: "Rotated and translated copies of Romik's sofa (the converse direction of uniqueness)"
       lean: "Ambidextrous.isAmbidextrous_image_referenceSofa"
       module: "Challenge"
       status: "proved"
       note: >-
         Every image of Romik's sofa by a rotation about the origin followed by a translation is an
         ambidextrous sofa.
-    - source: "MS.14 of the manuscript"
+    - source: "The convex hull of Romik's sofa"
       lean: "Ambidextrous.convexHull_referenceSofa"
       module: "Challenge"
       status: "proved"
       note: >-
         The convex hull of Romik's sofa is the convex body referenceHull Y, the intersection of the
-        half-planes given by the support function of MS.11. This identifies the hull from which
-        the Challenge defines the sofa.
-    - source: "MS.1 and MS.2 of the manuscript (the root Y)"
+        half-planes given by its support function. This identifies the hull from which the
+        Challenge defines the sofa.
+    - source: "The root Y of 4Y^3 + 3Y = 1 (Romik 2018, the abstract)"
       lean: "Ambidextrous.existsUnique_root"
       module: "Challenge"
       status: "proved"
@@ -294,4 +278,5 @@ alignment:
         Challenge's number with Romik's.
 
 acknowledgements: >-
-  Mathlib and the Lean toolchain (Lean 4, Lake, Comparator); lean4-moving-sofa, for Baek's theorem.
+  Mathlib and the Lean toolchain (Lean 4, Lake, Comparator); lean4-moving-sofa, for the
+  formalization of Baek's theorem.

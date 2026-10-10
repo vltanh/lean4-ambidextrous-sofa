@@ -13,17 +13,17 @@ public import AmbidextrousSofa.Measure.ReferenceOrbit
 `ChallengeDefs` restates, with Mathlib only, the definitions that the main theorems need: the
 two hallways, the motions, ambidextrous sofas and Romik's ambidextrous sofa, which it builds from
 any positive root `Y` of `4Y³ + 3Y = 1`. This module proves that each of them is the library's
-definition, and derives the main theorems of the manuscript in that vocabulary:
+definition, and derives the main theorems in that vocabulary:
 
 * `existsUnique_root`: the cubic `4Y³ + 3Y = 1` has exactly one positive root;
-* `volume_le`: every ambidextrous sofa has area at most `M = 1 + 4Y² + arctan Y` (MS.3);
+* `volume_le`: every ambidextrous sofa has area at most `M = 1 + 4Y² + arctan Y`;
 * `value_eq_romik`: `M` is Romik's closed form `∛(3 + 2√2) + ∛(3 - 2√2) - 1 + arctan (…)`;
 * `isAmbidextrous_referenceSofa`, `volume_referenceSofa`: Romik's ambidextrous sofa is an
-  ambidextrous sofa of area `M` (MS.15), and so is each of its images by a rotation and a
+  ambidextrous sofa of area `M`, and so is each of its images by a rotation and a
   translation (`isAmbidextrous_image_referenceSofa`);
-* `convexHull_referenceSofa`: its convex hull is the hull of the Challenge (MS.14);
+* `convexHull_referenceSofa`: its convex hull is the hull of the Challenge;
 * `volume_eq_iff`: an ambidextrous sofa has area `M` if and only if a rotation followed by a
-  translation maps Romik's ambidextrous sofa onto it (the equality case of MS.3).
+  translation maps Romik's ambidextrous sofa onto it.
 
 `Solution.lean` restates them under the names of `Challenge.lean`.
 -/
@@ -163,7 +163,7 @@ theorem referenceSofa_eq {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) :
   rw [eq_Y hY]
   rfl
 
-/-- **MS.3.** Every ambidextrous sofa has area at most `1 + 4Y² + arctan Y`. -/
+/-- **Optimality.** Every ambidextrous sofa has area at most `1 + 4Y² + arctan Y`. -/
 theorem volume_le {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) (S : Set (ℝ × ℝ))
     (hS : Ambidextrous.IsAmbidextrous S) :
     volume.real S ≤ 1 + 4 * Y' ^ 2 + Real.arctan Y' := by
@@ -176,7 +176,7 @@ theorem isAmbidextrous_referenceSofa {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 
   rw [referenceSofa_eq hY, isAmbidextrous_iff]
   exact Reference.isAmbidextrous_referenceSofa
 
-/-- **MS.15.** Romik's ambidextrous sofa has area `1 + 4Y² + arctan Y`. -/
+/-- Romik's ambidextrous sofa has area `1 + 4Y² + arctan Y`. -/
 theorem volume_referenceSofa {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) :
     volume.real (Ambidextrous.referenceSofa Y') = 1 + 4 * Y' ^ 2 + Real.arctan Y' := by
   rw [referenceSofa_eq hY, value_eq hY]
@@ -191,13 +191,13 @@ theorem isAmbidextrous_image_referenceSofa {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 
   rw [referenceSofa_eq hY, image_rotate_add, isAmbidextrous_iff]
   exact Reference.isAmbidextrous_rigidImage_referenceSofa θ v
 
-/-- **MS.14.** The convex hull of Romik's ambidextrous sofa is the hull of the Challenge. -/
+/-- The convex hull of Romik's ambidextrous sofa is the hull of the Challenge. -/
 theorem convexHull_referenceSofa {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) :
     convexHull ℝ (Ambidextrous.referenceSofa Y') = Ambidextrous.referenceHull Y' := by
   rw [referenceSofa_eq hY, eq_Y hY, referenceHull_eq]
   exact Reference.actualHull_referenceSofa
 
-/-- **The equality case of MS.3.** An ambidextrous sofa has area `1 + 4Y² + arctan Y` if and only
+/-- **Uniqueness.** An ambidextrous sofa has area `1 + 4Y² + arctan Y` if and only
 if a rotation about the origin followed by a translation maps Romik's ambidextrous sofa onto it. -/
 theorem volume_eq_iff {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) (S : Set (ℝ × ℝ))
     (hS : Ambidextrous.IsAmbidextrous S) :

@@ -2,9 +2,10 @@ module
 
 public meta import Lean.Elab.Command
 public meta import Lean.DocString
--- One `import all` line per module of the library, so that proofs are visible to the dependency
--- traversal (the module system hides them from a plain `import`). Generate the lines with
---   find AmbidextrousSofa -name '*.lean' | sort | sed 's/\.lean$//; s#/#.#g; s/^/import all /'
+-- One `import all` line per module of the library and of the copied `MovingSofaOptimality`, so that
+-- proofs are visible to the dependency traversal and the axiom check (the module system hides them
+-- from a plain `import`). Generate the lines with
+--   find AmbidextrousSofa MovingSofaOptimality -name '*.lean' | sort | sed 's/\.lean$//; s#/#.#g; s/^/import all /'
 import all AmbidextrousSofa.Algebra.Deficit
 import all AmbidextrousSofa.Analysis.AdaptiveFunctional
 import all AmbidextrousSofa.Analysis.AdaptiveGlobalBoundary
@@ -471,6 +472,57 @@ import all AmbidextrousSofa.Reference.Value
 import all AmbidextrousSofa.Theorems.Optimality
 import all AmbidextrousSofa.Topology.RegularClosed
 import all AmbidextrousSofa.Topology.VerticalRegion
+import all MovingSofaOptimality.Angle.HorizontalSide
+import all MovingSofaOptimality.Angle.RightAngle
+import all MovingSofaOptimality.Balanced.BalancedMaximumSofa
+import all MovingSofaOptimality.Balanced.CapGeometry
+import all MovingSofaOptimality.Balanced.MaxPolygonCapExists
+import all MovingSofaOptimality.Balanced.MaximumPolygonCap
+import all MovingSofaOptimality.Balanced.NefPolygon
+import all MovingSofaOptimality.Balanced.PolygonCap
+import all MovingSofaOptimality.Balanced.Polyline
+import all MovingSofaOptimality.Basic.ConvexBody
+import all MovingSofaOptimality.Basic.Interval
+import all MovingSofaOptimality.Basic.LebesgueStieltjes
+import all MovingSofaOptimality.Basic.Plane
+import all MovingSofaOptimality.Basic.SurfaceArea
+import all MovingSofaOptimality.Convex.ConvexCurve
+import all MovingSofaOptimality.Convex.ConvexDomain
+import all MovingSofaOptimality.Convex.CurveArea
+import all MovingSofaOptimality.Convex.Mamikon
+import all MovingSofaOptimality.External.AreaFormula
+import all MovingSofaOptimality.External.AreaFormula.Param
+import all MovingSofaOptimality.External.Romik
+import all MovingSofaOptimality.External.Romik.Calc
+import all MovingSofaOptimality.External.Romik.Fix
+import all MovingSofaOptimality.External.Romik.Num
+import all MovingSofaOptimality.Gerver.AreaBounds
+import all MovingSofaOptimality.Gerver.Bounds
+import all MovingSofaOptimality.Gerver.Defs
+import all MovingSofaOptimality.Gerver.Envelope
+import all MovingSofaOptimality.Gerver.EnvelopeArea
+import all MovingSofaOptimality.Gerver.Frame
+import all MovingSofaOptimality.Gerver.Niche
+import all MovingSofaOptimality.Gerver.NicheBounds
+import all MovingSofaOptimality.Gerver.Properties
+import all MovingSofaOptimality.Gerver.Structure
+import all MovingSofaOptimality.Gerver.StructureCap
+import all MovingSofaOptimality.Injectivity.ArmLengths
+import all MovingSofaOptimality.Injectivity.BoundingArms
+import all MovingSofaOptimality.Injectivity.DiscreteIneq
+import all MovingSofaOptimality.Injectivity.LimitIneq
+import all MovingSofaOptimality.Intro.RotationAngleBound
+import all MovingSofaOptimality.Main
+import all MovingSofaOptimality.Monotone.CapContainsNiche
+import all MovingSofaOptimality.Monotone.CapDefs
+import all MovingSofaOptimality.Monotone.CapNiche
+import all MovingSofaOptimality.Monotone.MonotoneSofa
+import all MovingSofaOptimality.Monotone.SupportingHallway
+import all MovingSofaOptimality.Optimality.Concavity
+import all MovingSofaOptimality.Optimality.Domain
+import all MovingSofaOptimality.Optimality.UpperBound
+import all MovingSofaOptimality.Optimality.Variation
+import all MovingSofaOptimality.Sofa.Defs
 import all Solution
 
 /-!
@@ -478,19 +530,17 @@ import all Solution
 
 Run with `lake env lean scripts/Audit.lean` after `lake build`.
 
-For every numbered result of the paper, this prints the axioms it depends on and the results from
-prior work (Baek's theorem, from `MovingSofaOptimality`) that it uses, whether proved there or, in a conditional
-formalization, assumed as hypotheses of its statement. It then checks every declaration
-of the library and the theorems that Palomar's comparator checks. The run fails if any of them
+For each main result and each principal step of the proof, this prints the axioms it depends on
+and the results from prior work (Baek's theorem, from `MovingSofaOptimality`) that it uses, whether
+proved there or, in a conditional formalization, assumed as hypotheses of its statement. It then
+checks every declaration of the library and the theorems that Palomar's comparator checks. The run fails if any of them
 depends on an axiom other than Lean's standard `propext`, `Classical.choice` and `Quot.sound` (a
 `sorry` shows up as the axiom `sorryAx`). Its table of results is the source of the report's
 dependency table.
 
-It also writes the *route* of every numbered result to `.lake/route_deps.tsv`: the other
-numbered results that its proof uses, found by following the proof through the library's helper
-lemmas and stopping at numbered results, together with the TeX label that the result's docstring
-names in backticks. `route_check.py` (in the skill's `scripts/`) compares these routes with the
-results that the paper's proofs cite.
+It also writes the *route* of each of these results to `.lake/route_deps.tsv`: the other results
+of the list that its proof uses, found by following the proof through the library's helper lemmas
+and stopping at the results of the list.
 
 The library's modules are imported with `import all`, which makes the proofs of their theorems
 available: the module system does not export them otherwise. The traversal tests membership in a
@@ -514,17 +564,17 @@ meta def externalResults : List (String × Name) :=
   [("Baek, Theorem 1.1.1 (optimality of Gerver's sofa)", ``MovingSofaOptimality.gm_area_le),
    ("Gerver's sofa has area at most 2.2199", ``MovingSofaOptimality.gerverSofa_area_mem)]
 
-/-- The numbered results of the paper, in the order of the paper. -/
+/-- The main results and the principal steps of their proof. -/
 meta def paperResults : List (String × Name) :=
-  [("MS.3, the bound", ``AmbidextrousSofa.IsAmbidextrous.volumeReal_le_M),
-   ("MS.3, the equality case", ``AmbidextrousSofa.IsAmbidextrous.eq_rigidImage_referenceSofa_of_volumeReal_eq),
-   ("MS.3, the bound is attained", ``AmbidextrousSofa.isGreatest_ambidextrous_areas),
-   ("MS.8, the bound", ``AmbidextrousSofa.IsDownwardCap.capScore_le_half_M),
-   ("MS.8, the equality case", ``AmbidextrousSofa.IsDownwardCap.capScore_eq_half_M_iff),
-   ("MS.10", ``AmbidextrousSofa.IsAmbidextrous.original_domain_score_reduction),
-   ("MS.15", ``AmbidextrousSofa.Reference.volumeReal_referenceSofa),
-   ("MS.16", ``AmbidextrousSofa.sqrt_two_lt_M),
-   ("MS.18", ``AmbidextrousSofa.IsAmbidextrous.volumeReal_le_ordinaryBound)]
+  [("Optimality: the area is at most M", ``AmbidextrousSofa.IsAmbidextrous.volumeReal_le_M),
+   ("Uniqueness: the sofas of area M", ``AmbidextrousSofa.IsAmbidextrous.eq_rigidImage_referenceSofa_of_volumeReal_eq),
+   ("M is the greatest area", ``AmbidextrousSofa.isGreatest_ambidextrous_areas),
+   ("The score of a cap is at most M/2", ``AmbidextrousSofa.IsDownwardCap.capScore_le_half_M),
+   ("The caps of score M/2", ``AmbidextrousSofa.IsDownwardCap.capScore_eq_half_M_iff),
+   ("The reduction to two caps", ``AmbidextrousSofa.IsAmbidextrous.original_domain_score_reduction),
+   ("The area of Romik's sofa", ``AmbidextrousSofa.Reference.volumeReal_referenceSofa),
+   ("M > sqrt 2", ``AmbidextrousSofa.sqrt_two_lt_M),
+   ("The ordinary bound 2.2199", ``AmbidextrousSofa.IsAmbidextrous.volumeReal_le_ordinaryBound)]
 
 /-- The theorems that Palomar's comparator checks (`theorem_names` of `comparator.json`). -/
 meta def solutionResults : List Name :=
@@ -539,14 +589,20 @@ meta def standardAxioms : List Name := [``propext, ``Classical.choice, ``Quot.so
 /-- Whether `m` is a module of the library. -/
 meta def isLibraryModule (m : Name) : Bool := (`AmbidextrousSofa).isPrefixOf m
 
-/-- The constants declared in the library. -/
-meta def libraryConstants (env : Environment) : NameSet := Id.run do
+/-- Whether `m` is a module of the copy of lean4-moving-sofa's `MovingSofaOptimality`. -/
+meta def isCopiedModule (m : Name) : Bool := (`MovingSofaOptimality).isPrefixOf m
+
+/-- The constants declared in the modules that `p` selects. -/
+meta def moduleConstants (env : Environment) (p : Name → Bool) : NameSet := Id.run do
   let mut s : NameSet := {}
   for m in env.header.moduleNames, d in env.header.moduleData do
-    if isLibraryModule m then
+    if p m then
       for c in d.constNames do
         s := s.insert c
   return s
+
+/-- The constants declared in the library. -/
+meta def libraryConstants (env : Environment) : NameSet := moduleConstants env isLibraryModule
 
 /-- The constants used by the type and the value of `c`. -/
 meta def usedConstants (env : Environment) (c : Name) : Array Name :=
@@ -642,8 +698,10 @@ elab "#audit" : command => do
   for n in solutionResults ++ externalResults.map (·.2) do
     let axs ← liftCoreM <| collectAxioms n
     if axs.any (!standardAxioms.contains ·) then bad := bad.push n
-  -- Every declaration of the library, including private and auxiliary ones.
-  for c in library do
+  -- Every declaration of the library and of the copied `MovingSofaOptimality`, including private
+  -- and auxiliary ones.
+  let copied := moduleConstants env isCopiedModule
+  for c in library.toList ++ copied.toList do
     let axs ← liftCoreM <| collectAxioms c
     if axs.any (!standardAxioms.contains ·) then bad := bad.push c
   -- The routes: for each numbered result, its docstring's labels and the results it uses.
@@ -657,7 +715,8 @@ elab "#audit" : command => do
   IO.FS.createDirAll ".lake"
   IO.FS.writeFile routeFile ("\n".intercalate routes.toList ++ "\n")
   logInfo ("\n".intercalate rows.toList ++
-    s!"\n\nChecked {library.size} declarations of the library: " ++
+    s!"\n\nChecked {library.size} declarations of the library and {copied.size} of the copied " ++
+    s!"MovingSofaOptimality: " ++
     (if bad.isEmpty then "all use only the standard axioms." else "see the error."))
   unless bad.isEmpty do
     throwError m!"non-standard axioms used by: {bad}"

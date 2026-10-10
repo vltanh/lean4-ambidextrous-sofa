@@ -11,18 +11,18 @@ maxSynthPendingDepth = 3
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
-rev = "v4.35.0-rc3"
+rev = "v4.35.0-rc4"
 
-# The formalization of Jineon Baek's theorem (the optimality of Gerver's sofa), whose upper bound
-# 2.2199 for the area of a moving sofa the manuscript cites (MS.18), and whose convex-body library
-# (support functions, surface area measures) some proofs use: the library MovingSofaOptimality.
-[[require]]
-name = "MovingSofa"
-git = "https://github.com/vltanh/lean4-moving-sofa"
-rev = "1174c5c25c1c66b807e368446d6682e8d0276759"
+# The formalization of Jineon Baek's theorem (the optimality of Gerver's sofa), copied from
+# lean4-moving-sofa and adapted to this Mathlib (MovingSofaOptimality/README.md). Two steps of the
+# proof use its bound 2.2199 for the area of a moving sofa, and some proofs its convex-body library
+# (support functions, surface area measures).
+[[lean_lib]]
+name = "MovingSofaOptimality"
+globs = ["MovingSofaOptimality.+"]
 
-# The formalization of the manuscript. `AmbidextrousSofa.Main` states its main theorems in the
-# vocabulary of the Challenge, whose definitions `AmbidextrousSofa.ChallengeDefs` holds.
+# The proof. `AmbidextrousSofa.Main` states its main theorems in the vocabulary of the Challenge,
+# whose definitions `AmbidextrousSofa.ChallengeDefs` holds.
 [[lean_lib]]
 name = "AmbidextrousSofa"
 globs = ["AmbidextrousSofa.+"]

@@ -16,9 +16,8 @@ of unit width that turns to the right, and also around the corner of the reflect
 turns to the left. Dan Romik (*Differential equations and exact solutions in the moving sofa
 problem*, Experimental Mathematics 27 (2018), 316–330) constructed an ambidextrous sofa of area
 `1.64495…` and proposed it as a likely solution of the problem of the largest ambidextrous sofa. The
-manuscript *Sharp area and exact uniqueness for the ambidextrous moving sofa problem* proves that
-every ambidextrous sofa has area at most that of Romik's, and that every ambidextrous sofa of that
-area is a rotated and translated copy of Romik's.
+theorems below prove that every ambidextrous sofa has area at most that of Romik's, and that every
+ambidextrous sofa of that area is a rotated and translated copy of Romik's.
 
 ## Definitions
 
@@ -49,7 +48,7 @@ ordinary moving sofa problem.
 **Romik's ambidextrous sofa** is built from the positive root `Y = 0.2980…` of `4Y³ + 3Y = 1` (the
 theorems take `Y` with this property; `existsUnique_root` says that it is unique), through
 `β = arctan Y`, `A = 1 / (4 sin β)`, `k = 1 - 4A/3` and `R = cos β / cos (3(π/4 - β)/2)`. Its hull
-`referenceHull Y`, its convex hull by `convexHull_referenceSofa` (MS.14 of the manuscript), is the
+`referenceHull Y`, its convex hull by `convexHull_referenceSofa`, is the
 intersection of the half-planes `p · (cos t, sin t) ≤ h(t)` over the whole circle, where the support
 function `h` is, on the upper half,
 `h(t) = f(t)` and `h(t + π/2) = g(t)` for `t ∈ [0, π/2]`, with, on `[0, β]`, `[β, π/2 - β]` and
@@ -60,8 +59,8 @@ function `h` is, on the upper half,
 * `g(t) = (2A - 1) sin t + cos t / 2 + 1/2`, `R sin (t/2 + π/8) - k sin t + cos t / 2`,
   `(8A/3 - 1) sin t + cos t / 2`;
 
-and on the lower half the reflection of the upper half in the line `y = 1/2`. These are the formulas
-MS.11 of the manuscript. The sofa `referenceSofa Y` is this hull with two open regions removed: the
+and on the lower half the reflection of the upper half in the line `y = 1/2`. The sofa
+`referenceSofa Y` is this hull with two open regions removed: the
 points `(x, y)` with `y < n(x)` and those with `1 - y < n(x)`, where `n = niche (referenceHull Y)` is
 the height, above each abscissa, of the region swept by the open inner corner of the downward-turning
 hallway as the hallway, with its outer walls supporting the hull, turns through the quarter turn about
@@ -235,7 +234,7 @@ theorem isAmbidextrous_image_referenceSofa (Y : ℝ) (hY : 0 < Y ∧ 4 * Y ^ 3 +
     (v : ℝ × ℝ) : IsAmbidextrous ((fun p => rotate θ p + v) '' referenceSofa Y) := by
   sorry
 
-/-- **MS.14.** The convex hull of Romik's ambidextrous sofa is `referenceHull Y`. -/
+/-- The convex hull of Romik's ambidextrous sofa is `referenceHull Y`. -/
 theorem convexHull_referenceSofa (Y : ℝ) (hY : 0 < Y ∧ 4 * Y ^ 3 + 3 * Y = 1) :
     convexHull ℝ (referenceSofa Y) = referenceHull Y := by
   sorry

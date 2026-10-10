@@ -50,7 +50,7 @@ theorem isAmbidextrous_image_referenceSofa (Y : ℝ) (hY : 0 < Y ∧ 4 * Y ^ 3 +
     (v : ℝ × ℝ) : IsAmbidextrous ((fun p => rotate θ p + v) '' referenceSofa Y) :=
   AmbidextrousSofa.Main.isAmbidextrous_image_referenceSofa hY θ v
 
-/-- **MS.14.** The convex hull of Romik's ambidextrous sofa is `referenceHull Y`. -/
+/-- The convex hull of Romik's ambidextrous sofa is `referenceHull Y`. -/
 theorem convexHull_referenceSofa (Y : ℝ) (hY : 0 < Y ∧ 4 * Y ^ 3 + 3 * Y = 1) :
     convexHull ℝ (referenceSofa Y) = referenceHull Y :=
   AmbidextrousSofa.Main.convexHull_referenceSofa hY
