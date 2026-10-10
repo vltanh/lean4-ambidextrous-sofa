@@ -39,9 +39,13 @@ refereeing and Lean kernel verification are separate from those records.
 | Finite selection and variations | Literal finite min/max source derivatives; floating and axis wall variations; exact support circumscription; uniform dense-grid score approximation; selected polygons converging to any prescribed full maximum | [PolygonExposure](AmbidextrousSofa/Analysis/PolygonExposure.lean), [SelectedSequence](AmbidextrousSofa/Analysis/SelectedSequence.lean) |
 | Endpoint geometry | Actual inward cuts and erosions, exact shortened projections, support perturbation bounds, inward pressures, top insertion, and low-middle-height exclusion | [EndpointPressure](AmbidextrousSofa/Analysis/EndpointPressure.lean), [LowHeightMaximizer](AmbidextrousSofa/Analysis/LowHeightMaximizer.lean) |
 | Finite curvature and endpoint limits | Actual facet atoms, neighboring-wall source bounds, finite curvature concentration, punctured-axis mass estimates, moving pressure convergence and exact limits of finite erosion moments | [DiscreteCurvature](AmbidextrousSofa/Analysis/DiscreteCurvature.lean), [DyadicCurvatureMass](AmbidextrousSofa/Analysis/DyadicCurvatureMass.lean), [SelectedErosionMoments](AmbidextrousSofa/Analysis/SelectedErosionMoments.lean) |
+| Actual endpoint stationarity and central niche height | Axis-height limits identified with actual faces, full-maximizer complementarity, strictly positive canonical pressures, vanishing finite erosion moments and the central niche bound `n ≤ (eR+eL)/2` | [EndpointComplementarity](AmbidextrousSofa/Analysis/EndpointComplementarity.lean), [EndpointPositivity](AmbidextrousSofa/Analysis/EndpointPositivity.lean), [SelectedNicheHeight](AmbidextrousSofa/Analysis/SelectedNicheHeight.lean) |
+| Actual sharp wing density | Middle-facet mass vanishes away from its normal; moving support secants and finite source bounds give an actual measurable curvature density bounded by `max |q| ((|q|+1)/2)` | [MiddleMassLimit](AmbidextrousSofa/Analysis/MiddleMassLimit.lean), [SharpCurvatureDensity](AmbidextrousSofa/Analysis/SharpCurvatureDensity.lean) |
 | Facet geometry and reference recovery | Whole-angle support inactivity, exact position of a tilted middle facet, and reversal of the actual chord and height operations at the reference | [FacetPinning](AmbidextrousSofa/Analysis/FacetPinning.lean), [InverseCanonicalization](AmbidextrousSofa/Analysis/InverseCanonicalization.lean) |
 | Analytic comparison | Two-endpoint Dirichlet coercivity, exact clipped-functional expansion, fixed-trace strictness, Euler boundary formula, reference stationarity, global sharp value `M/2` for arbitrary support pairs of competitive width, and exact equality up to horizontal translation | [AdaptiveFunctional](AmbidextrousSofa/Analysis/AdaptiveFunctional.lean), [AdaptiveGlobalComparison](AmbidextrousSofa/Analysis/AdaptiveGlobalComparison.lean) |
 | Ordinary one-turn input | Complete retained source dependency, actual continuous-passage bridge, and the rational area bound `22199/10000` | [OrdinarySofaBound](AmbidextrousSofa/Analysis/OrdinarySofaBound.lean), [Imported source map](AmbidextrousSofa/Imported/README.md) |
+| Actual tilted survivor | Exact corner confinement, convex wing niches, actual cap containment, a compact connected survivor with a genuine passage, and its ordinary-area necessary inequality | [CanonicalOneTurn](AmbidextrousSofa/Analysis/CanonicalOneTurn.lean), [OneTurnArea](AmbidextrousSofa/Analysis/OneTurnArea.lean) |
+| Proper-angle maximizer structure | Joint angle/cap continuity, a largest-angle maximum, actual top insertion, used-support saturation, unused curvature gaps, terminal three-support bounds and exclusion of angles through `arctan(5/4)` | [JointCapMaximum](AmbidextrousSofa/Analysis/JointCapMaximum.lean), [UnusedCurvature](AmbidextrousSofa/Analysis/UnusedCurvature.lean), [TerminalThreeSupports](AmbidextrousSofa/Analysis/TerminalThreeSupports.lean), [TerminalScalar](AmbidextrousSofa/Analysis/TerminalScalar.lean) |
 | Geometric equality infrastructure | Exact four-term physical deficit, a.e. partition equality, actual hull recovery and finite-measure regular-closed set recovery | [CapAssembly](AmbidextrousSofa/Measure/CapAssembly.lean), [RegularClosed](AmbidextrousSofa/Topology/RegularClosed.lean) |
 
 All statements in this table refer to source proof bodies, not successful
@@ -70,6 +74,18 @@ actual finite selected polygons. Neither result presupposes its sharp value.
 `IsFullCapMaximizer.middle_endpoints_gt_half_of_affine` proves both middle
 endpoint roofs exceed one half after the actual canonical reduction.
 
+`IsFullCapMaximizer.endpoint_complementarity` identifies each actual axis
+height with the positive part of its endpoint pressure. In a height-one
+maximum with an affine middle, both pressures are strictly positive.
+`IsFullCapMaximizer.sweptNiche_le_half_endpoint_height_sum_of_affine` then
+bounds the entire central niche using the actual selected polygon moments.
+The construction includes disappearing floor intervals and all source ties.
+
+`IsFullCapMaximizer.curvature_density_sharp_on_wing` constructs its own
+selected sequence and outputs the actual sharp curvature density on each
+compactly contained wing interval away from the top and middle-facet normals.
+No supplied density or variational certificate is used.
+
 `adaptiveFunctional_sub_halfWidth_le_half_M` proves the sharp analytic
 comparison for every `QuarterPair` with the natural top traces and total
 width at least `8/5`. Its equality theorem gives the reference width and
@@ -84,8 +100,15 @@ The classification of all canonical equality caps is still required.
 
 `volumeReal_le_ordinaryBound_of_lowerPassage` now derives the retained
 ordinary area bound from a genuine compact connected lower passage, with
-its original unrestricted terminal angle. Applying it to an auxiliary
-niche-cut cap still requires proving that body's actual feasibility.
+its original unrestricted terminal angle. `CanonicalOneTurn` now applies it
+to the actual niche-cut cap in the required tilted parameter range: the
+source proves its fit, connectedness and actual continuous passage first.
+
+`exists_canonical_jointCapMaximizer_largest_angle` supplies a genuine
+height-one affine-middle maximum over both caps and terminal angles.
+`TerminalThreeSupports` derives the clipped integral relaxation directly
+from its actual support. The remaining sharp terminal comparison is still
+required.
 
 These results do not yet assemble an upper bound `M` for every ambidextrous
 body. The remaining curvature/exposure, full and partial sharp bounds, and

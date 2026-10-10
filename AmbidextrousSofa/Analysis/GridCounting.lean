@@ -142,6 +142,49 @@ theorem sum_mesh_left_sources_le (n : ℕ) {ε : ℝ} (hε : 0 ≤ ε) :
       (reverseGridIndex_injective n) (reverseGridIndex_pos n) (mesh_pos n) hε
       (pi_sub_fullAngle_eq_index_mul_mesh n)
 
+/-- Distinct integer mesh points in a closed interval have at most one
+mesh of endpoint rounding error. No alignment of either endpoint is
+assumed. -/
+theorem count_integer_mesh_interval_le {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (angle : ι → ℝ) (index : ι → ℕ) (hinj : Function.Injective index)
+    {δ a b : ℝ} (hδ : 0 ≤ δ) (hab : a ≤ b)
+    (hangle : ∀ i, angle i = (index i : ℝ) * δ) :
+    ((Finset.univ.filter (fun i => angle i ∈ Icc a b)).card : ℝ) * δ ≤ b - a + δ := by
+  classical
+  let F := Finset.univ.filter (fun i => angle i ∈ Icc a b)
+  by_cases hne : F.Nonempty
+  · obtain ⟨i, hi, hmin⟩ := F.exists_min_image index hne
+    obtain ⟨j, hj, hmax⟩ := F.exists_max_image index hne
+    have hij : index i ≤ index j := hmin j hj
+    have hmap : Set.MapsTo index (F : Set ι) (Finset.Icc (index i) (index j) : Set ℕ) := by
+      intro k hk
+      exact Finset.mem_Icc.mpr ⟨hmin k hk, hmax k hk⟩
+    have hcard := Finset.card_le_card_of_injOn index hmap hinj.injOn
+    rw [Nat.card_Icc] at hcard
+    have hcast : (F.card : ℝ) ≤ (index j : ℝ) + 1 - (index i : ℝ) := by
+      have hc : (F.card : ℝ) ≤ ((index j + 1 - index i : ℕ) : ℝ) := by exact_mod_cast hcard
+      simpa only [Nat.cast_sub (by omega : index i ≤ index j + 1),
+        Nat.cast_add, Nat.cast_one] using hc
+    have hiab := (Finset.mem_filter.mp hi).2
+    have hjab := (Finset.mem_filter.mp hj).2
+    rw [hangle i] at hiab
+    rw [hangle j] at hjab
+    have hmul := mul_le_mul_of_nonneg_right hcast hδ
+    nlinarith [hiab.1, hjab.2]
+  · have hF : F = ∅ := Finset.not_nonempty_iff_eq_empty.mp hne
+    change (F.card : ℝ) * δ ≤ _
+    rw [hF]
+    simp only [Finset.card_empty, Nat.cast_zero, zero_mul]
+    linarith
+
+theorem sum_mesh_interval_sources_le (n : ℕ) {a b : ℝ} (hab : a ≤ b) :
+    (∑ j ∈ Finset.univ.filter (fun j : SourceIndex (dyadic n) =>
+      fullAngle (dyadic n) j ∈ Icc a b), mesh n) ≤ b - a + mesh n := by
+  classical
+  simpa only [Finset.sum_const, nsmul_eq_mul] using
+    count_integer_mesh_interval_le (fullAngle (dyadic n)) (fullGridIndex n)
+      (fullGridIndex_injective n) (mesh_pos n).le hab (fullAngle_eq_index_mul_mesh n)
+
 end AngularGrid
 
 end AmbidextrousSofa

@@ -33,7 +33,7 @@ theorem fullPolygonAngles_filter_eq_source_image (grid : Finset QuarterAngle)
     intro i hi
     have hib := hs hi
     fin_cases i
-    · have h : (0 : ℝ) < 0 := by simpa only [fullPolygonAngle, Matrix.cons_val_zero] using hib.1
+    · have h : (0 : ℝ) < 0 := by simpa [fullPolygonAngle] using hib.1
       exact lt_irrefl _ h
     · apply htop
       simpa [fullPolygonAngle] using hi
