@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.FirstUnitNiche
+module
+
+public import AmbidextrousSofa.Analysis.FirstUnitNiche
+
+@[expose] public section
 
 /-!
 # Earlier companion walls while the tangent stays below the floor

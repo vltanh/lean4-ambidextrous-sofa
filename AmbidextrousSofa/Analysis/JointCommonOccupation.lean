@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.JointCoreVisibility
-import AmbidextrousSofa.Analysis.JointFirstTangentSaturation
-import AmbidextrousSofa.Analysis.JointCompanionTangentDensity
-import AmbidextrousSofa.Analysis.CommonSourceCoefficients
+module
+
+public import AmbidextrousSofa.Analysis.JointCoreVisibility
+public import AmbidextrousSofa.Analysis.JointFirstTangentSaturation
+public import AmbidextrousSofa.Analysis.JointCompanionTangentDensity
+public import AmbidextrousSofa.Analysis.CommonSourceCoefficients
+
+@[expose] public section
 
 /-!
 # Actual common occupation for the tilted first-unit cap
@@ -41,12 +45,17 @@ variable {target : Set Plane} {a b : ℝ} (J : SelectedJointSourceLimit target a
   (hleft : a < horizontalLeft target) (hright : horizontalRight target < b)
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm.le haffine hρ hρ0 hρK heq
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 local notation "v" => (fun t : ℝ => leftCompanionWingDensity m ρ (t + Real.pi / 2))
-local notation "B" => firstTangentPoint F.f F.fD
-local notation "D" => secondTangentPoint F.g F.gD
-local notation "Z" => innerCornerPoint F.f F.g
+set_option quotPrecheck false in
+local notation "B" => firstTangentPoint (F).f (F).fD
+set_option quotPrecheck false in
+local notation "D" => secondTangentPoint (F).g (F).gD
+set_option quotPrecheck false in
+local notation "Z" => innerCornerPoint (F).f (F).g
 local notation "aB" => J.sourceBranchDensity (firstTangentSource target) 0
 local notation "aZ" => J.sourceBranchDensity (firstCornerSource target) 0
 local notation "aD" => J.sourceBranchDensity (secondTangentSource target) (Real.pi / 2)

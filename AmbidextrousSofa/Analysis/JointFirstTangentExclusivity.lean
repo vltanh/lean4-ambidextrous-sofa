@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FirstTangentExclusivity
-import AmbidextrousSofa.Analysis.JointSourceNicheCalculus
+module
+
+public import AmbidextrousSofa.Analysis.FirstTangentExclusivity
+public import AmbidextrousSofa.Analysis.JointSourceNicheCalculus
+
+@[expose] public section
 
 /-!
 # Exclusive first-family support over a positive first tangent
@@ -29,9 +33,12 @@ variable {U : Set Plane} {a b : ℝ} (J : SelectedJointSourceLimit U a b)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "B" => firstTangentPoint F.f F.fD
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "B" => firstTangentPoint (F).f (F).fD
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 
 theorem ae_exclusive_first_source_on_positive_tangent {C α η : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)

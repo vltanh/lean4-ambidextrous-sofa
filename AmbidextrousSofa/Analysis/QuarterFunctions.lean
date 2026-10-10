@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.DirichletEnergy
+module
+
+public import AmbidextrousSofa.Analysis.DirichletEnergy
+
+@[expose] public section
 
 /-!
 # Pairs of continuously differentiable quarter-interval functions
@@ -88,13 +92,13 @@ def QuarterPair.gauge (p : QuarterPair) : QuarterPair where
     have hc := ((hasDerivAt_id t).div_const 2).cos.hasDerivWithinAt (s := Ioi t)
     have hs := ((hasDerivAt_id t).div_const 2).sin.hasDerivWithinAt (s := Ioi t)
     exact ((hc.mul (p.hasDeriv_f t ht)).add (hs.mul (p.hasDeriv_g t ht))).congr_deriv
-      (by ring)
+      (by simp only [id]; ring)
   hasDeriv_g := by
     intro t ht
     have hc := ((hasDerivAt_id t).div_const 2).cos.hasDerivWithinAt (s := Ioi t)
     have hs := ((hasDerivAt_id t).div_const 2).sin.hasDerivWithinAt (s := Ioi t)
     exact ((hc.mul (p.hasDeriv_g t ht)).sub (hs.mul (p.hasDeriv_f t ht))).congr_deriv
-      (by ring)
+      (by simp only [id]; ring)
 
 theorem QuarterPair.gauge_zeroTraces {p : QuarterPair} (h : p.ZeroTraces) :
     p.gauge.ZeroTraces := by

@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.TiltedSupportPair
-import AmbidextrousSofa.Analysis.NonpositiveCornerCurvature
+module
+
+public import AmbidextrousSofa.Analysis.TiltedSupportPair
+public import AmbidextrousSofa.Analysis.NonpositiveCornerCurvature
+
+@[expose] public section
 
 /-!
 # Actual source controls for the tilted support pair
@@ -76,7 +80,7 @@ theorem fullTiltedSupportQuarterPair_q_ge_neg_one
     (heq : (upperCurvature U).restrict (regularCurvatureDomain m) =
       (volume.restrict (regularCurvatureDomain m)).withDensity (fun s => ENNReal.ofReal (ρ s)))
     (ht : t ∈ Icc 0 (Real.pi / 2)) :
-    let F := fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
+    let F := fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq;
     -1 ≤ supportQ F.gD F.f t := by
   let F := fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
   have hp := (fullTiltedSupportQuarterPair_points_mem hU hm haffine hρ hρ0 hρK heq).2 t ht

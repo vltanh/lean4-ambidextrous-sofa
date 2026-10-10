@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.EulerFlux
+module
+
+public import AmbidextrousSofa.Analysis.EulerFlux
+
+@[expose] public section
 
 /-!
 # Width variations for the adaptive functional

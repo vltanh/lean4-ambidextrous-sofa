@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TiltedDiagonalRoof
+module
+
+public import AmbidextrousSofa.Analysis.TiltedDiagonalRoof
+
+@[expose] public section
 
 /-!
 # The actual intermediate-width tilt bound

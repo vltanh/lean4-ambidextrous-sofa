@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.ShortWidthPayment
+module
+
+public import AmbidextrousSofa.Analysis.ShortWidthPayment
+
+@[expose] public section
 
 /-!
 # Positions and companion inequalities for the two short-width tails

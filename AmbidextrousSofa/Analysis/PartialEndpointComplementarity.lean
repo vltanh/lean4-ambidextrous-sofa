@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialAxisHeightLimit
-import AmbidextrousSofa.Analysis.PartialEndpointPositivity
+module
+
+public import AmbidextrousSofa.Analysis.PartialAxisHeightLimit
+public import AmbidextrousSofa.Analysis.PartialEndpointPositivity
+
+@[expose] public section
 
 /-!
 # Endpoint complementarity for actual proper maxima

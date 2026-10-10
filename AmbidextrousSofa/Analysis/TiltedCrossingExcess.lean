@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.TiltedEnergyBarrier
-import AmbidextrousSofa.Analysis.TiltedEndpointBounds
-import AmbidextrousSofa.Analysis.TiltedLateExcessScalar
+module
+
+public import AmbidextrousSofa.Analysis.TiltedEnergyBarrier
+public import AmbidextrousSofa.Analysis.TiltedEndpointBounds
+public import AmbidextrousSofa.Analysis.TiltedLateExcessScalar
+
+@[expose] public section
 
 /-!
 # Excess bounds at the actual first momentum zero
@@ -29,8 +33,10 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 
 /-- All circle, floor, and endpoint estimates are supplied by the
 actual tilted maximum. The first-zero and quadratic inputs are the

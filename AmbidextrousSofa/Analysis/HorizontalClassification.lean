@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.CapNormalization
-import AmbidextrousSofa.Analysis.HorizontalCalibration
-import AmbidextrousSofa.Analysis.HorizontalWidthReduction
+module
+
+public import AmbidextrousSofa.Analysis.CapNormalization
+public import AmbidextrousSofa.Analysis.HorizontalCalibration
+public import AmbidextrousSofa.Analysis.HorizontalWidthReduction
+
+@[expose] public section
 
 /-!
 # Actual horizontal full-cap classification
@@ -27,19 +31,19 @@ theorem IsFullCapMaximizer.horizontal_classification
     (hheight : capHeight U = 1)
     (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1) :
     capScore U (Real.pi / 2) = M / 2 ∧ capWidth U = 8 / 3 * Reference.A ∧
-      ∃ b : ℝ, U = horizontalTranslate Reference.referenceCap b ∨
-        horizontalMirror U = horizontalTranslate Reference.referenceCap b := by
+      ∃ b : ℝ, U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap b ∨
+        AmbidextrousSofa.horizontalMirror U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap b := by
   have hT := hU.centeredCap
-  have hl : horizontalLeft (centeredCap U) = -2 * (capWidth U / 4) := by
+  have hl : horizontalLeft (AmbidextrousSofa.centeredCap U) = -2 * (capWidth U / 4) := by
     rw [horizontalLeft_centeredCap hU.isCap]
     ring
-  have hr : horizontalRight (centeredCap U) = 2 * (capWidth U / 4) := by
+  have hr : horizontalRight (AmbidextrousSofa.centeredCap U) = 2 * (capWidth U / 4) := by
     rw [horizontalRight_centeredCap hU.isCap]
     ring
-  have hTheight : capHeight (centeredCap U) = 1 := by
+  have hTheight : capHeight (AmbidextrousSofa.centeredCap U) = 1 := by
     rw [capHeight_centeredCap hU.isCap, hheight]
-  have hTmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft (centeredCap U))
-      (horizontalRight (centeredCap U)), capRoof (centeredCap U) x = 1 :=
+  have hTmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft (AmbidextrousSofa.centeredCap U))
+      (horizontalRight (AmbidextrousSofa.centeredCap U)), capRoof (AmbidextrousSofa.centeredCap U) x = 1 :=
     hU.isCap.roof_eq_const_on_middle_horizontalTranslate hmiddle _
   obtain ⟨V, hVor, hV, _hlV, _hrV, hVheight, hVwidth, hVscore, hVmiddle,
       ρ, hρ, hρbound, heq⟩ :=
@@ -62,7 +66,7 @@ theorem IsFullCapMaximizer.horizontal_classification
     · rw [hVor] at hshape
       have h := eq_horizontalTranslate_of_horizontalTranslate_eq hshape
       exact ⟨_, Or.inl h⟩
-    · rw [hVor, centeredCap, horizontalMirror_horizontalTranslate] at hshape
+    · rw [hVor, AmbidextrousSofa.centeredCap, horizontalMirror_horizontalTranslate] at hshape
       have h := eq_horizontalTranslate_of_horizontalTranslate_eq hshape
       exact ⟨_, Or.inr h⟩
 

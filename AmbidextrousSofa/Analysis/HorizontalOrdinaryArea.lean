@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.CanonicalWingChord
-import AmbidextrousSofa.Analysis.HorizontalLeakageScalar
-import AmbidextrousSofa.Analysis.FullTriangleWidth
+module
+
+public import AmbidextrousSofa.Analysis.CanonicalWingChord
+public import AmbidextrousSofa.Analysis.HorizontalLeakageScalar
+public import AmbidextrousSofa.Analysis.FullTriangleWidth
+
+@[expose] public section
 
 /-!
 # The actual horizontal one-turn obstruction for a leakage bound

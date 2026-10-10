@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.PartialFacetPinning
-import AmbidextrousSofa.Analysis.UnusedCurvature
-import AmbidextrousSofa.Analysis.AxisFaces
-import AmbidextrousSofa.Analysis.TerminalScalar
+module
+
+public import AmbidextrousSofa.Analysis.PartialFacetPinning
+public import AmbidextrousSofa.Analysis.UnusedCurvature
+public import AmbidextrousSofa.Analysis.AxisFaces
+public import AmbidextrousSofa.Analysis.TerminalScalar
+
+@[expose] public section
 
 /-!
 # Literal support vertices on the unvisited terminal tails
@@ -24,20 +28,20 @@ open Set
 namespace AmbidextrousSofa
 
 theorem support_vertices_of_halfplane_gap {K : Set Plane}
-    (hK : Imported.IsConvexBody K) {ι : Type*} (angle height : ι → ℝ)
-    (hpoly : K = ⋂ i, Imported.halfMinus (angle i) (height i))
+    (hK : MovingSofaOptimality.IsConvexBody K) {ι : Type*} (angle height : ι → ℝ)
+    (hpoly : K = ⋂ i, MovingSofaOptimality.halfMinus (angle i) (height i))
     (hangle : ∀ i, angle i ∈ Icc 0 (2 * Real.pi))
     {a b : ℝ} (ha : 0 ≤ a) (hb : b ≤ Real.pi) (hab : a < b) (hspan : b - a < Real.pi)
     (hgap : ∀ i, angle i ∉ Ioo a b) :
-    Imported.vplus K a = Imported.vminus K b ∧
-      (∀ t ∈ Icc a b, angleSupport K t = coordDot (Imported.vminus K b) (unitNormal t)) ∧
-      (∀ t ∈ Ioo a b, Imported.vplus K t = Imported.vminus K b ∧
-        Imported.vminus K t = Imported.vminus K b) := by
+    MovingSofaOptimality.vplus K a = MovingSofaOptimality.vminus K b ∧
+      (∀ t ∈ Icc a b, angleSupport K t = coordDot (MovingSofaOptimality.vminus K b) (unitNormal t)) ∧
+      (∀ t ∈ Ioo a b, MovingSofaOptimality.vplus K t = MovingSofaOptimality.vminus K b ∧
+        MovingSofaOptimality.vminus K t = MovingSofaOptimality.vminus K b) := by
   have hsin : 0 < Real.sin (b - a) :=
     Real.sin_pos_of_pos_of_lt_pi (sub_pos.mpr hab) hspan
   have hsinGap : ∀ i, ¬(0 < Real.sin (angle i - a) ∧ Real.sin (angle i - b) < 0) := by
     intro i
-    apply Imported.mpc_not_gap hab
+    apply MovingSofaOptimality.mpc_not_gap hab
     by_cases hia : angle i ≤ a
     · right
       exact ⟨by linarith [(hangle i).1, Real.pi_pos], hia⟩
@@ -45,9 +49,9 @@ theorem support_vertices_of_halfplane_gap {K : Set Plane}
       have hbi : b ≤ angle i := le_of_not_gt (fun hib => hgap i ⟨hai, hib⟩)
       left
       exact ⟨hbi, by linarith [(hangle i).2]⟩
-  obtain ⟨q, hq, hqa, hqb⟩ := Imported.mpc_corner hK hpoly hsin hsinGap
+  obtain ⟨q, hq, hqa, hqb⟩ := MovingSofaOptimality.mpc_corner hK hpoly hsin hsinGap
   obtain ⟨hqaVertex, hqbVertex, hsupport, hinterior⟩ :=
-    Imported.mpc_corner_props hK hq hsin hqa hqb
+    MovingSofaOptimality.mpc_corner_props hK hq hsin hqa hqb
   refine ⟨hqaVertex.trans hqbVertex.symm, ?_, ?_⟩
   · intro t ht
     rw [hqbVertex]
@@ -66,14 +70,14 @@ theorem IsJointCapMaximizer.support_vertices_first_unused_gap
       capRoof U x = m * x + c)
     (ha : α ≤ a) (hb : b ≤ Real.pi / 2) (hab : a < b)
     (hgap : affineNormalAngle m ∉ Ioo a b) :
-    Imported.vplus U a = Imported.vminus U b ∧
-      (∀ t ∈ Icc a b, angleSupport U t = coordDot (Imported.vminus U b) (unitNormal t)) ∧
-      (∀ t ∈ Ioo a b, Imported.vplus U t = Imported.vminus U b ∧
-        Imported.vminus U t = Imported.vminus U b) := by
+    MovingSofaOptimality.vplus U a = MovingSofaOptimality.vminus U b ∧
+      (∀ t ∈ Icc a b, angleSupport U t = coordDot (MovingSofaOptimality.vminus U b) (unitNormal t)) ∧
+      (∀ t ∈ Ioo a b, MovingSofaOptimality.vplus U t = MovingSofaOptimality.vminus U b ∧
+        MovingSofaOptimality.vminus U t = MovingSofaOptimality.vminus U b) := by
   let angle := FinitePolygon.fullPolygonAngle (partialCapAngle α m)
   let height := FinitePolygon.fullPolygonHeight (horizontalLeft U) (horizontalRight U)
     (partialCapHeight U α m c)
-  have hpoly : U = ⋂ i, Imported.halfMinus (angle i) (height i) :=
+  have hpoly : U = ⋂ i, MovingSofaOptimality.halfMinus (angle i) (height i) :=
     (hU.eq_usedSupportSaturation_capCut haffine).trans
       (capCut_usedSupportSaturation_eq_halfplanes U α m c)
   apply support_vertices_of_halfplane_gap hU.isCap.imported_isConvexBody angle height hpoly
@@ -92,14 +96,14 @@ theorem IsJointCapMaximizer.support_vertices_companion_unused_gap
       capRoof U x = m * x + c)
     (ha : α + Real.pi / 2 ≤ a) (hb : b ≤ Real.pi) (hab : a < b)
     (hgap : affineNormalAngle m ∉ Ioo a b) :
-    Imported.vplus U a = Imported.vminus U b ∧
-      (∀ t ∈ Icc a b, angleSupport U t = coordDot (Imported.vminus U b) (unitNormal t)) ∧
-      (∀ t ∈ Ioo a b, Imported.vplus U t = Imported.vminus U b ∧
-        Imported.vminus U t = Imported.vminus U b) := by
+    MovingSofaOptimality.vplus U a = MovingSofaOptimality.vminus U b ∧
+      (∀ t ∈ Icc a b, angleSupport U t = coordDot (MovingSofaOptimality.vminus U b) (unitNormal t)) ∧
+      (∀ t ∈ Ioo a b, MovingSofaOptimality.vplus U t = MovingSofaOptimality.vminus U b ∧
+        MovingSofaOptimality.vminus U t = MovingSofaOptimality.vminus U b) := by
   let angle := FinitePolygon.fullPolygonAngle (partialCapAngle α m)
   let height := FinitePolygon.fullPolygonHeight (horizontalLeft U) (horizontalRight U)
     (partialCapHeight U α m c)
-  have hpoly : U = ⋂ i, Imported.halfMinus (angle i) (height i) :=
+  have hpoly : U = ⋂ i, MovingSofaOptimality.halfMinus (angle i) (height i) :=
     (hU.eq_usedSupportSaturation_capCut haffine).trans
       (capCut_usedSupportSaturation_eq_halfplanes U α m c)
   apply support_vertices_of_halfplane_gap hU.isCap.imported_isConvexBody angle height hpoly
@@ -126,7 +130,7 @@ theorem unitNormal_affineNormalAngle (m : ℝ) :
 
 theorem IsDownwardCap.edge_affineNormalAngle_eq_supportFace {U : Set Plane}
     (hU : IsDownwardCap U) (m : ℝ) :
-    Imported.edge U (affineNormalAngle m) = supportFace U (-m, 1) := by
+    MovingSofaOptimality.edge U (affineNormalAngle m) = supportFace U (-m, 1) := by
   ext p
   change (p ∈ U ∧ coordDot p (unitNormal (affineNormalAngle m)) =
       support U (unitNormal (affineNormalAngle m))) ↔
@@ -146,14 +150,14 @@ theorem IsJointCapMaximizer.middle_support_vertices
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α) (hm : m ≠ 0)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    Imported.vplus U (affineNormalAngle m) =
+    MovingSofaOptimality.vplus U (affineNormalAngle m) =
       (horizontalLeft U + capWidth U / 4, capRoof U (horizontalLeft U + capWidth U / 4)) ∧
-    Imported.vminus U (affineNormalAngle m) =
+    MovingSofaOptimality.vminus U (affineNormalAngle m) =
       (horizontalRight U - capWidth U / 4, capRoof U (horizontalRight U - capWidth U / 4)) := by
   have hs : 0 < Real.sin (affineNormalAngle m) :=
     Real.sin_pos_of_pos_of_lt_pi (affineNormalAngle_mem m).1 (affineNormalAngle_mem m).2
-  have hproj : Icc (Imported.vplus U (affineNormalAngle m)).1
-      (Imported.vminus U (affineNormalAngle m)).1 =
+  have hproj : Icc (MovingSofaOptimality.vplus U (affineNormalAngle m)).1
+      (MovingSofaOptimality.vminus U (affineNormalAngle m)).1 =
       middleHalfInterval (horizontalLeft U) (horizontalRight U) := by
     rw [← hU.isCap.horizontalProjection_edge hs.le,
       hU.isCap.edge_affineNormalAngle_eq_supportFace]
@@ -162,11 +166,11 @@ theorem IsJointCapMaximizer.middle_support_vertices
   constructor
   · apply Prod.ext hends.1
     have h := hU.isCap.capRoof_eq_of_mem_upper_edge hs
-      (Imported.vplus_mem_edge hU.isCap.imported_isConvexBody (affineNormalAngle m))
+      (MovingSofaOptimality.vplus_mem_edge hU.isCap.imported_isConvexBody (affineNormalAngle m))
     simpa only [hends.1] using h
   · apply Prod.ext hends.2
     have h := hU.isCap.capRoof_eq_of_mem_upper_edge hs
-      (Imported.vminus_mem_edge hU.isCap.imported_isConvexBody (affineNormalAngle m))
+      (MovingSofaOptimality.vminus_mem_edge hU.isCap.imported_isConvexBody (affineNormalAngle m))
     simpa only [hends.2] using h
 
 theorem IsJointCapMaximizer.middle_slope_lt_five_fourths
@@ -206,7 +210,7 @@ theorem IsJointCapMaximizer.terminal_companion_vplus
     (hαL : α < Real.pi / 2)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    Imported.vplus U (α + Real.pi / 2) =
+    MovingSofaOptimality.vplus U (α + Real.pi / 2) =
       (horizontalLeft U, capRoof U (horizontalLeft U)) := by
   have hm := hU.middle_normal_lt_terminal_companion haffine
   have h := hU.support_vertices_companion_unused_gap haffine le_rfl le_rfl
@@ -262,7 +266,7 @@ theorem IsDownwardCap.top_vminus_of_negative_affine_segment
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (hm : m < 0)
     (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c)
-    (hfa : capRoof U a = 1) : Imported.vminus U (Real.pi / 2) = (a, 1) := by
+    (hfa : capRoof U a = 1) : MovingSofaOptimality.vminus U (Real.pi / 2) = (a, 1) := by
   have htop : (a, (1 : ℝ)) ∈ U := by
     rw [← hfa]
     exact capRoof_mem hU.isCompact ha
@@ -273,35 +277,35 @@ theorem IsDownwardCap.top_vminus_of_negative_affine_segment
         mul_zero, mul_one, zero_add] using (hU.inStrip hp).2
     · simp only [coordDot, unitNormal, Real.cos_pi_div_two, Real.sin_pi_div_two,
         mul_zero, mul_one, zero_add]
-  have hp := Imported.vminus_mem_edge hU.imported_isConvexBody (Real.pi / 2)
-  have hpy : (Imported.vminus U (Real.pi / 2)).2 = 1 := by
+  have hp := MovingSofaOptimality.vminus_mem_edge hU.imported_isConvexBody (Real.pi / 2)
+  have hpy : (MovingSofaOptimality.vminus U (Real.pi / 2)).2 = 1 := by
     have h := hp.2
-    change coordDot (Imported.vminus U (Real.pi / 2)) (unitNormal (Real.pi / 2)) =
+    change coordDot (MovingSofaOptimality.vminus U (Real.pi / 2)) (unitNormal (Real.pi / 2)) =
       angleSupport U (Real.pi / 2) at h
     rw [hHeight] at h
     simpa only [coordDot, unitNormal, Real.cos_pi_div_two, Real.sin_pi_div_two,
       mul_zero, mul_one, zero_add] using h
-  have htopEdge : (a, (1 : ℝ)) ∈ Imported.edge U (Real.pi / 2) := by
+  have htopEdge : (a, (1 : ℝ)) ∈ MovingSofaOptimality.edge U (Real.pi / 2) := by
     refine ⟨htop, ?_⟩
     change coordDot (a, 1) (unitNormal (Real.pi / 2)) = angleSupport U (Real.pi / 2)
     rw [hHeight]
     simp only [coordDot, unitNormal, Real.cos_pi_div_two, Real.sin_pi_div_two,
       mul_zero, mul_one, zero_add]
-  have hleft : a ≤ (Imported.vminus U (Real.pi / 2)).1 := by
-    have h := Imported.dot_vminus_le_dot hU.isCompact htopEdge
-    simp only [Imported.dot, Imported.vvec, Real.sin_pi_div_two, Real.cos_pi_div_two,
+  have hleft : a ≤ (MovingSofaOptimality.vminus U (Real.pi / 2)).1 := by
+    have h := MovingSofaOptimality.dot_vminus_le_dot hU.isCompact htopEdge
+    simp only [MovingSofaOptimality.dot, MovingSofaOptimality.vvec, Real.sin_pi_div_two, Real.cos_pi_div_two,
       mul_neg, mul_one, mul_zero, add_zero] at h
     linarith
-  have hroof : capRoof U (Imported.vminus U (Real.pi / 2)).1 = 1 := by
+  have hroof : capRoof U (MovingSofaOptimality.vminus U (Real.pi / 2)).1 = 1 := by
     have h := hU.capRoof_eq_of_mem_upper_edge
       (show 0 < Real.sin (Real.pi / 2) by rw [Real.sin_pi_div_two]; norm_num) hp
     exact h.symm.trans hpy
   have hceiling := hU.capRoof_le_affine_of_affine_segment ha hb hab haffine
-    (Imported.vminus U (Real.pi / 2)).1 ⟨Imported.vminus U (Real.pi / 2), hp.1, rfl⟩
+    (MovingSofaOptimality.vminus U (Real.pi / 2)).1 ⟨MovingSofaOptimality.vminus U (Real.pi / 2), hp.1, rfl⟩
   rw [hroof] at hceiling
   have hline := haffine a ⟨le_rfl, hab.le⟩
   rw [hfa] at hline
-  have hright : (Imported.vminus U (Real.pi / 2)).1 ≤ a := by
+  have hright : (MovingSofaOptimality.vminus U (Real.pi / 2)).1 ≤ a := by
     by_contra h
     have hax := lt_of_not_ge h
     have hmul := mul_lt_mul_of_neg_left hax hm
@@ -313,7 +317,7 @@ theorem IsJointCapMaximizer.top_vminus_of_negative_affine_middle
     (hheight : capHeight U = 1) (hm : m < 0)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    Imported.vminus U (Real.pi / 2) = (horizontalLeft U + capWidth U / 4, 1) := by
+    MovingSofaOptimality.vminus U (Real.pi / 2) = (horizontalLeft U + capWidth U / 4, 1) := by
   obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints
     (show 0 < capWidth U by linarith [hU.width_bounds.1, one_lt_M])
   exact hU.isCap.top_vminus_of_negative_affine_segment ha hb hab hm haffine
@@ -365,7 +369,7 @@ theorem IsJointCapMaximizer.first_terminal_vplus_of_no_middle_gap
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c)
     (hgap : affineNormalAngle m ∉ Ioo α (Real.pi / 2)) :
-    Imported.vplus U α = Imported.vminus U (Real.pi / 2) :=
+    MovingSofaOptimality.vplus U α = MovingSofaOptimality.vminus U (Real.pi / 2) :=
   (hU.support_vertices_first_unused_gap haffine le_rfl le_rfl hαL hgap).1
 
 theorem IsJointCapMaximizer.first_terminal_vplus_of_middle_nonneg
@@ -373,7 +377,7 @@ theorem IsJointCapMaximizer.first_terminal_vplus_of_middle_nonneg
     (hαL : α < Real.pi / 2) (hm : 0 ≤ m)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    Imported.vplus U α = Imported.vminus U (Real.pi / 2) := by
+    MovingSofaOptimality.vplus U α = MovingSofaOptimality.vminus U (Real.pi / 2) := by
   apply hU.first_terminal_vplus_of_no_middle_gap hαL haffine
   have hm0 := Real.arctan_nonneg.mpr hm
   intro h

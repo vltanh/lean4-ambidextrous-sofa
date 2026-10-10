@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.TiltedEnergyBarrier
-import AmbidextrousSofa.Analysis.TiltedEndpointBounds
+module
+
+public import AmbidextrousSofa.Analysis.TiltedEnergyBarrier
+public import AmbidextrousSofa.Analysis.TiltedEndpointBounds
+
+@[expose] public section
 
 /-!
 # Actual parameter regions for first-wing unit curvature

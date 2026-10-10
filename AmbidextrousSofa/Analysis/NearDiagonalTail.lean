@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.ShortTailGeometry
-import AmbidextrousSofa.Analysis.ClippedTailIntegral
+module
+
+public import AmbidextrousSofa.Analysis.ShortTailGeometry
+public import AmbidextrousSofa.Analysis.ClippedTailIntegral
+
+@[expose] public section
 
 /-!
 # Two literal additional niche tails

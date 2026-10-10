@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.TerminalCompanionMoment
-import AmbidextrousSofa.Analysis.TerminalCompanionLocalization
-import AmbidextrousSofa.Analysis.SupportDensityCalculus
+module
+
+public import AmbidextrousSofa.Analysis.TerminalCompanionMoment
+public import AmbidextrousSofa.Analysis.TerminalCompanionLocalization
+public import AmbidextrousSofa.Analysis.SupportDensityCalculus
+
+@[expose] public section
 
 /-!
 # Actual companion-coordinate moments from the curvature measure
@@ -35,32 +39,32 @@ theorem setIntegral_eq_density_mul_of_restrict_withDensity
   simpa only [ENNReal.toReal_ofReal (hρ0 _), smul_eq_mul] using h
 
 def shiftedCompanionX (U : Set Plane) (t : ℝ) : ℝ :=
-  (Imported.vplus U (t + Real.pi / 2)).1 + Real.sin t
+  (MovingSofaOptimality.vplus U (t + Real.pi / 2)).1 + Real.sin t
 
 def shiftedCompanionY (U : Set Plane) (t : ℝ) : ℝ :=
-  (Imported.vplus U (t + Real.pi / 2)).2 - Real.cos t
+  (MovingSofaOptimality.vplus U (t + Real.pi / 2)).2 - Real.cos t
 
 @[simp] theorem shiftedCompanionX_zero (U : Set Plane) :
-    shiftedCompanionX U 0 = (Imported.vplus U (Real.pi / 2)).1 := by
+    shiftedCompanionX U 0 = (MovingSofaOptimality.vplus U (Real.pi / 2)).1 := by
   simp [shiftedCompanionX]
 
 @[simp] theorem shiftedCompanionY_zero (U : Set Plane) :
-    shiftedCompanionY U 0 = (Imported.vplus U (Real.pi / 2)).2 - 1 := by
+    shiftedCompanionY U 0 = (MovingSofaOptimality.vplus U (Real.pi / 2)).2 - 1 := by
   simp [shiftedCompanionY]
 
 /-- The right-continuous boundary representative leaves the top face
 at its literal left endpoint. Its height is the cap height. -/
 theorem top_vplus_snd_eq_capHeight (U : Set Plane) :
-    (Imported.vplus U (Real.pi / 2)).2 = capHeight U := by
-  have h : coordDot (Imported.vplus U (Real.pi / 2)) (unitNormal (Real.pi / 2)) =
-      angleSupport U (Real.pi / 2) := Imported.dot_vplus_uvec U (Real.pi / 2)
+    (MovingSofaOptimality.vplus U (Real.pi / 2)).2 = capHeight U := by
+  have h : coordDot (MovingSofaOptimality.vplus U (Real.pi / 2)) (unitNormal (Real.pi / 2)) =
+      angleSupport U (Real.pi / 2) := MovingSofaOptimality.dot_vplus_uvec U (Real.pi / 2)
   simpa only [coordDot, unitNormal, angleSupport, capHeight,
     Real.cos_pi_div_two, Real.sin_pi_div_two, mul_zero, mul_one, zero_add] using h
 
 /-- Distance of the actual left top endpoint from the left projection
 endpoint. In the centered proper-terminal notation this is `C - T_L`. -/
 def companionInitialOffset (U : Set Plane) : ℝ :=
-  (Imported.vplus U (Real.pi / 2)).1 - horizontalLeft U
+  (MovingSofaOptimality.vplus U (Real.pi / 2)).1 - horizontalLeft U
 
 def companionInitialDeficit (U : Set Plane) : ℝ := 1 - capHeight U
 
@@ -80,15 +84,15 @@ zero, even when its initial top face has a nonzero atom. -/
 theorem IsDownwardCap.hasDerivWithinAt_companionSupport_zero
     {U : Set Plane} (hU : IsDownwardCap U) :
     HasDerivWithinAt (fun t => angleSupport U (t + Real.pi / 2))
-      (-(Imported.vplus U (Real.pi / 2)).1) (Ici 0) 0 := by
-  have houter := Imported.hasDerivWithinAt_supp_right hU.imported_isConvexBody
+      (-(MovingSofaOptimality.vplus U (Real.pi / 2)).1) (Ici 0) 0 := by
+  have houter := MovingSofaOptimality.hasDerivWithinAt_supp_right hU.imported_isConvexBody
     (0 + Real.pi / 2)
   have hinner : HasDerivWithinAt (fun t : ℝ => t + Real.pi / 2) 1 (Ici 0) 0 :=
     ((hasDerivAt_id (0 : ℝ)).add_const (Real.pi / 2)).hasDerivWithinAt
   have h := houter.comp 0 hinner (fun t ht => by
     simp only [mem_Ici] at ht ⊢
     linarith only [ht])
-  simpa only [zero_add, mul_one, Imported.dot, Imported.vvec,
+  simpa only [zero_add, mul_one, MovingSofaOptimality.dot, MovingSofaOptimality.vvec,
     Real.sin_pi_div_two, Real.cos_pi_div_two, mul_neg, mul_zero, add_zero] using h
 
 /-- Both literal endpoint-coordinate moments. The density domain only
@@ -104,21 +108,21 @@ theorem IsDownwardCap.shiftedCompanion_sub_eq_integral_of_density
         (∫ r in a..b, (1 - ρ (r + Real.pi / 2)) * Real.cos r) ∧
       shiftedCompanionY U b - shiftedCompanionY U a =
         ∫ r in a..b, (1 - ρ (r + Real.pi / 2)) * Real.sin r := by
-  have hvec := Imported.vplus_sub_vplus hU.imported_isConvexBody
+  have hvec := MovingSofaOptimality.vplus_sub_vplus hU.imported_isConvexBody
     (add_le_add_right hab (Real.pi / 2))
-  have hic : IntegrableOn Imported.vvec
-      (Icc (a + Real.pi / 2) (b + Real.pi / 2)) (Imported.sigma U) :=
-    Imported.continuous_vvec.integrableOn_Icc
+  have hic : IntegrableOn MovingSofaOptimality.vvec
+      (Icc (a + Real.pi / 2) (b + Real.pi / 2)) (MovingSofaOptimality.sigma U) :=
+    MovingSofaOptimality.continuous_vvec.integrableOn_Icc
   have hi := hic.mono_set Ioc_subset_Icc_self
   have hx := congrArg Prod.fst hvec
   have hy := congrArg Prod.snd hvec
   rw [fst_integral hi] at hx
   rw [snd_integral hi] at hy
-  change (Imported.vplus U (b + Real.pi / 2)).1 -
-      (Imported.vplus U (a + Real.pi / 2)).1 =
+  change (MovingSofaOptimality.vplus U (b + Real.pi / 2)).1 -
+      (MovingSofaOptimality.vplus U (a + Real.pi / 2)).1 =
         ∫ r in Ioc (a + Real.pi / 2) (b + Real.pi / 2), -Real.sin r ∂upperCurvature U at hx
-  change (Imported.vplus U (b + Real.pi / 2)).2 -
-      (Imported.vplus U (a + Real.pi / 2)).2 =
+  change (MovingSofaOptimality.vplus U (b + Real.pi / 2)).2 -
+      (MovingSofaOptimality.vplus U (a + Real.pi / 2)).2 =
         ∫ r in Ioc (a + Real.pi / 2) (b + Real.pi / 2), Real.cos r ∂upperCurvature U at hy
   rw [setIntegral_eq_density_mul_of_restrict_withDensity hρ hρ0 heq measurableSet_Ioc hsub,
     ← intervalIntegral.integral_of_le (add_le_add_right hab (Real.pi / 2)),

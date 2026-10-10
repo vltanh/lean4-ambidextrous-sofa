@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TerminalThreeSupports
+module
+
+public import AmbidextrousSofa.Analysis.TerminalThreeSupports
+
+@[expose] public section
 
 /-!
 # The exact weighted cubic payment for a late companion excess

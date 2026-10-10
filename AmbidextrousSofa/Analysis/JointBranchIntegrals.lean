@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.JointBranchDensity
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+module
+
+public import AmbidextrousSofa.Analysis.JointBranchDensity
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+
+@[expose] public section
 
 /-!
 # Integrating literal source branches in their angular density

@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FiniteHorizontalMoment
-import AmbidextrousSofa.Analysis.SourceOccupation
+module
+
+public import AmbidextrousSofa.Analysis.FiniteHorizontalMoment
+public import AmbidextrousSofa.Analysis.SourceOccupation
+
+@[expose] public section
 
 /-!
 # Horizontal source mass with the top normal removed
@@ -86,7 +90,7 @@ theorem horizontalOuterDensity_eq_zero_of_no_edge {U : Set Plane}
     (hU : IsDownwardCap U) (grid : Finset QuarterAngle)
     (hpoly : U = circumscription U (normal grid)) (E : Set ℝ)
     {x : ℝ} (hx : x ∈ horizontalProjection U)
-    (hno : ∀ t ∈ E, (x, capRoof U x) ∉ Imported.edge U t) :
+    (hno : ∀ t ∈ E, (x, capRoof U x) ∉ MovingSofaOptimality.edge U t) :
     horizontalOuterDensity U grid E x = 0 := by
   classical
   let v := fun i => wallSlope (normal grid) i * x +
@@ -122,6 +126,7 @@ theorem normal_snd_mul_innerSourceMass_eq {U : Set Plane} (hU : IsDownwardCap U)
   unfold normalizedExposureDefect finiteExposureDefect finiteWingMass
   field_simp [(normal_snd_pos grid j).ne'] <;> ring
 
+open Classical in
 /-- The finite neighboring-wall estimate controls the complete inner
 mass in a small angular interval, with one retained boundary mesh cell. -/
 theorem innerSourceMass_sum_interval_le {U : Set Plane} (hU : IsDownwardCap U)
@@ -139,6 +144,7 @@ theorem innerSourceMass_sum_interval_le {U : Set Plane} (hU : IsDownwardCap U)
           mesh level := by rw [Finset.mul_sum]
     _ ≤ _ := mul_le_mul_of_nonneg_left (sum_mesh_interval_sources_le level hst) (by linarith)
 
+open Classical in
 theorem finitePositiveLength_le_horizontalOuterMass_add_cutoff {U : Set Plane}
     (hU : IsDownwardCap U) (grid : Finset QuarterAngle) {E : Set ℝ} {δ : ℝ}
     (hδ : 0 < δ) (hE : ∀ t ∈ E, δ ≤ |Real.cos t|) :

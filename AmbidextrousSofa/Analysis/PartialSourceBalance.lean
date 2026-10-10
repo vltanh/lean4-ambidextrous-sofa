@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.PartialEndpointPositivity
-import AmbidextrousSofa.Analysis.PartialSourceMass
-import AmbidextrousSofa.Analysis.FiniteSourceBalance
+module
+
+public import AmbidextrousSofa.Analysis.PartialEndpointPositivity
+public import AmbidextrousSofa.Analysis.PartialSourceMass
+public import AmbidextrousSofa.Analysis.FiniteSourceBalance
+
+@[expose] public section
 
 /-!
 # Vanishing horizontal moment of actual proper source errors

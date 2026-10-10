@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.SharpCurvatureDensity
+module
+
+public import AmbidextrousSofa.Analysis.SharpCurvatureDensity
+
+@[expose] public section
 
 /-!
 # Curvature on entire open wings

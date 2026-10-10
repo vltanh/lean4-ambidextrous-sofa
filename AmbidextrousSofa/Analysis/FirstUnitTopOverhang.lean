@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FirstUnitProjection
-import AmbidextrousSofa.Analysis.TiltedTopOverhang
+module
+
+public import AmbidextrousSofa.Analysis.FirstUnitProjection
+public import AmbidextrousSofa.Analysis.TiltedTopOverhang
+
+@[expose] public section
 
 /-!
 # Positive top overhang throughout the first-unit width range
@@ -31,7 +35,7 @@ theorem fullTiltedSupportQuarterPair_companion_unit_of_collapsed_top_small_width
     (hC0 : 0 < C) (hC1 : C ≤ 2 / 3) (hmpos : 0 < m) (hsmall : C + m < 1)
     (hheight : capHeight U = 1) (hhigh : capRoof U C = 1)
     (hκ : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
-    (htop : (Imported.vminus U (Real.pi / 2)).1 = C) :
+    (htop : (MovingSofaOptimality.vminus U (Real.pi / 2)).1 = C) :
     ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)),
       leftCompanionWingDensity m ρ (t + Real.pi / 2) ≤ 1 := by
   let F := fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
@@ -84,7 +88,7 @@ theorem IsFullCapMaximizer.firstUnit_top_overhang_pos
       (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
     (hκ : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
     (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1) :
-    0 < (Imported.vminus U (Real.pi / 2)).1 - C := by
+    0 < (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C := by
   by_cases hwide : 2 / 3 ≤ C
   · exact hU.tilted_top_overhang_pos hl hr hwide hC1 hh0 hh1 hheight haffine hlow hhigh
   have hC : 0 < C := by linarith only [hC0]
@@ -96,7 +100,7 @@ theorem IsFullCapMaximizer.firstUnit_top_overhang_pos
     have hmax := le_max_left (C + companionZero (leftCompanionCap U (-C))) 0
     rw [← hprojection] at hmax
     linarith only [hmax, hTle]
-  have hT0 : (Imported.vminus U (Real.pi / 2)).1 = C := by
+  have hT0 : (MovingSofaOptimality.vminus U (Real.pi / 2)).1 = C := by
     have hnonneg := le_max_right (C + companionZero (leftCompanionCap U (-C))) 0
     rw [← hprojection] at hnonneg
     linarith only [hnonneg, hTle]
@@ -151,7 +155,7 @@ theorem IsFullCapMaximizer.firstUnit_top_overhang_pos
     (by intro s hs; exact ⟨hs.1, by linarith only [hs.2, ht.2]⟩)
     (ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo le_rfl ht.2.le) hcompanion)
   change secondWall (leftCompanionCap U (-C)) t
-    (Imported.vplus (leftCompanionCap U (-C)) (Real.pi / 2)).1 ≤
+    (MovingSofaOptimality.vplus (leftCompanionCap U (-C)) (Real.pi / 2)).1 ≤
       capHeight (leftCompanionCap U (-C)) - 1 at hkernel
   rw [hVtop.2, hVtop.1, hlow] at hkernel
   have hs : 0 ≤ Real.sin t := (Real.sin_pos_of_pos_of_lt_pi ht.1
@@ -180,12 +184,12 @@ theorem IsFullCapMaximizer.firstUnit_dry_left_and_overhang_bounds
       (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
     (hκ : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
     (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1) :
-    let T := (Imported.vminus U (Real.pi / 2)).1 - C
+    let T := (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C
     0 < T ∧ sweptNiche U (Real.pi / 2) (-C) = 0 ∧
       T = C + companionZero (leftCompanionCap U (-C)) ∧
       T ≤ Real.sqrt (h * (2 - h)) ∧
       T ≤ Real.sqrt (1 - capRoof U (horizontalLeft U) ^ 2) - C ∧ T < 1 - C := by
-  let T := (Imported.vminus U (Real.pi / 2)).1 - C
+  let T := (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C
   let V := leftCompanionCap U (-C)
   have hT : 0 < T := hU.firstUnit_top_overhang_pos
     hl hr hC0 hC1 hh0 hh1 hheight haffine hlow hhigh hρ hρ0 hρK heq hκ hunit

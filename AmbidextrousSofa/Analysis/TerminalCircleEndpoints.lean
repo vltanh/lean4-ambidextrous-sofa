@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.CircleAverage
+module
+
+public import AmbidextrousSofa.Analysis.CircleAverage
+
+@[expose] public section
 
 /-!
 # Exact endpoint margins for the terminal circle comparison

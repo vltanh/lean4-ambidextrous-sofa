@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.CoreContactGeometry
-import AmbidextrousSofa.Analysis.FirstSourceDensity
+module
+
+public import AmbidextrousSofa.Analysis.CoreContactGeometry
+public import AmbidextrousSofa.Analysis.FirstSourceDensity
+
+@[expose] public section
 
 /-!
 # First-source lower bounds on the actual tilted core prefix
@@ -28,10 +32,14 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "B" => firstTangentPoint F.f F.fD
-local notation "Z" => innerCornerPoint F.f F.g
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "B" => firstTangentPoint (F).f (F).fD
+set_option quotPrecheck false in
+local notation "Z" => innerCornerPoint (F).f (F).g
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 local notation "v" => (fun t : ℝ => leftCompanionWingDensity m ρ (t + Real.pi / 2))
 
 theorem fullTiltedSupportQuarterPair_core_prefix_regular {C h α τ : ℝ}
@@ -120,7 +128,7 @@ theorem fullTiltedSupportQuarterPair_core_prefix_q_le_one {C h α τ : ℝ}
       hunit hα hτ hpα hphase hcompanion
   have hupper := ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hα hτ.2) hunit
   have hcont : ContinuousOn q (Icc α τ) :=
-    ((F.continuous_gD.add F.continuous_f).sub continuousOn_const).mono (Icc_subset_Icc hα hτ.2)
+    (((F).continuous_gD.add (F).continuous_f).sub continuousOn_const).mono (Icc_subset_Icc hα hτ.2)
   apply hcont.le_on_Icc_of_ae_le_on_Ioo hατ
   filter_upwards [hlower, hupper] with t ht hu
   exact ht.trans hu

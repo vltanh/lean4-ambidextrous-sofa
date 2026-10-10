@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.MiddleNormalStability
-import AmbidextrousSofa.Analysis.DyadicNeighbors
-import AmbidextrousSofa.Analysis.CapScoreContinuity
+module
+
+public import AmbidextrousSofa.Analysis.MiddleNormalStability
+public import AmbidextrousSofa.Analysis.DyadicNeighbors
+public import AmbidextrousSofa.Analysis.CapScoreContinuity
+
+@[expose] public section
 
 /-!
 # Disappearance of the off-facet middle source mass
@@ -74,7 +78,7 @@ theorem outerAngleDensity_le {U : Set Plane} {grid : Finset QuarterAngle} {E : S
 theorem outerAngleDensity_eq_zero_of_no_edge {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (hpoly : U = circumscription U (normal grid))
     (E : Set ℝ) {x : ℝ} (hx : x ∈ horizontalProjection U)
-    (hno : ∀ t ∈ E, (x, capRoof U x) ∉ Imported.edge U t) :
+    (hno : ∀ t ∈ E, (x, capRoof U x) ∉ MovingSofaOptimality.edge U t) :
     outerAngleDensity U grid E x = 0 := by
   classical
   apply Finset.sum_eq_zero
@@ -98,6 +102,7 @@ theorem measurable_middleAngleDensity (U : Set Plane) (grid : Finset QuarterAngl
     Measurable (middleAngleDensity U grid E) :=
   (measurable_outerAngleDensity U grid E).indicator (measurableSet_middleHalfInterval _ _)
 
+open Classical in
 theorem integral_middleAngleDensity {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (E : Set ℝ) :
     (∫ x : ℝ, middleAngleDensity U grid E x) =
@@ -153,6 +158,7 @@ theorem middleAngleDensity_eventually_zero
   · filter_upwards [hmem] with n hn
     exact indicator_of_notMem (fun hxn => hx (hn.mp hxn)) _
 
+open Classical in
 /-- The actual off-facet middle mass tends to zero. No selected maximum
 assumption is needed once the target has an affine middle segment. -/
 theorem middleOuterMass_sum_tendsto
@@ -203,6 +209,7 @@ theorem middleOuterMass_sum_tendsto
   have hIntegral (n : ℕ) := integral_middleAngleDensity (hU n) (grid n) E
   simpa only [hIntegral, integral_zero] using h
 
+open Classical in
 /-- Compact angular sets disjoint from the affine-face normal supply
 the positive sine and perpendicularity margins automatically. -/
 theorem middleOuterMass_sum_tendsto_of_compact

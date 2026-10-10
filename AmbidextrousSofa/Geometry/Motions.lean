@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Geometry.Plane
+module
+
+public import AmbidextrousSofa.Geometry.Plane
+
+@[expose] public section
 
 /-!
 # The original two-passage domain

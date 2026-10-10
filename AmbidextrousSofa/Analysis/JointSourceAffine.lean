@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.JointSourcePositive
-import AmbidextrousSofa.Analysis.JointSourceDensity
-import AmbidextrousSofa.Analysis.TiltedSupportControls
+module
+
+public import AmbidextrousSofa.Analysis.JointSourcePositive
+public import AmbidextrousSofa.Analysis.JointSourceDensity
+public import AmbidextrousSofa.Analysis.TiltedSupportControls
+
+@[expose] public section
 
 /-!
 # The actual source support lies after the affine normal

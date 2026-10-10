@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.HorizontalRigidity
-import AmbidextrousSofa.Analysis.InverseCanonicalization
+module
+
+public import AmbidextrousSofa.Analysis.HorizontalRigidity
+public import AmbidextrousSofa.Analysis.InverseCanonicalization
+
+@[expose] public section
 
 /-!
 # Concrete canonicalization and its inverse at the reference
@@ -64,13 +68,13 @@ theorem IsDownwardCap.capScore_le_fullCanonicalCap {U : Set Plane}
     ((hU.isDownwardCap_middleChordCap hwidth).capScore_le_heightSaturation hα0 hαL)
 
 theorem IsFullCapMaximizer.fullCanonicalCap {U : Set Plane} (hU : IsFullCapMaximizer U) :
-    IsFullCapMaximizer (fullCanonicalCap U) := by
+    IsFullCapMaximizer (AmbidextrousSofa.fullCanonicalCap U) := by
   have hwidth : 0 < capWidth U := lt_trans (by norm_num) hU.two_lt_width
   exact hU.of_score_le (hU.isCap.fullCanonicalCap_data hwidth).1
     (hU.isCap.capScore_le_fullCanonicalCap hwidth (by linarith only [Real.pi_pos]) le_rfl)
 
 theorem IsFullCapMaximizer.capScore_fullCanonicalCap {U : Set Plane} (hU : IsFullCapMaximizer U) :
-    capScore (fullCanonicalCap U) (Real.pi / 2) = capScore U (Real.pi / 2) := by
+    capScore (AmbidextrousSofa.fullCanonicalCap U) (Real.pi / 2) = capScore U (Real.pi / 2) := by
   have hwidth : 0 < capWidth U := lt_trans (by norm_num) hU.two_lt_width
   exact le_antisymm (hU.2 _ hU.fullCanonicalCap.isCap)
     (hU.isCap.capScore_le_fullCanonicalCap hwidth (by linarith only [Real.pi_pos]) le_rfl)
@@ -79,8 +83,8 @@ theorem IsFullCapMaximizer.capScore_fullCanonicalCap {U : Set Plane} (hU : IsFul
 original maximum. Its original score is derived from maximality. -/
 theorem IsFullCapMaximizer.eq_reference_of_fullCanonicalCap_eq
     {U : Set Plane} (hU : IsFullCapMaximizer U) {b : ℝ}
-    (href : fullCanonicalCap U = horizontalTranslate Reference.referenceCap b) :
-    U = horizontalTranslate Reference.referenceCap b := by
+    (href : AmbidextrousSofa.fullCanonicalCap U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap b) :
+    U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap b := by
   have hwidth : 0 < capWidth U := lt_trans (by norm_num) hU.two_lt_width
   have hscore : capScore U (Real.pi / 2) = M / 2 := by
     rw [← hU.capScore_fullCanonicalCap, href,
@@ -93,9 +97,9 @@ horizontal rigidity and the literal inverse recover the original cap.
 The geometric horizontal-middle premise remains explicit here. -/
 theorem IsFullCapMaximizer.eq_reference_translate_of_fullCanonicalCap_horizontal
     {U : Set Plane} (hU : IsFullCapMaximizer U)
-    (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft (fullCanonicalCap U))
-      (horizontalRight (fullCanonicalCap U)), capRoof (fullCanonicalCap U) x = 1) :
-    ∃ b : ℝ, U = horizontalTranslate Reference.referenceCap b := by
+    (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft (AmbidextrousSofa.fullCanonicalCap U))
+      (horizontalRight (AmbidextrousSofa.fullCanonicalCap U)), capRoof (AmbidextrousSofa.fullCanonicalCap U) x = 1) :
+    ∃ b : ℝ, U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap b := by
   have hwidth : 0 < capWidth U := lt_trans (by norm_num) hU.two_lt_width
   have hheight := (hU.isCap.fullCanonicalCap_data hwidth).2.2.1
   obtain ⟨b, hb⟩ := hU.fullCanonicalCap.eq_reference_translate_of_horizontal hheight hmiddle

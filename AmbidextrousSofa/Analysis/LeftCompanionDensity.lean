@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.LeftCompanionCurvature
-import AmbidextrousSofa.Analysis.PartialCurvatureDensity
+module
+
+public import AmbidextrousSofa.Analysis.LeftCompanionCurvature
+public import AmbidextrousSofa.Analysis.PartialCurvatureDensity
+
+@[expose] public section
 
 /-!
 # Actual density of the left charged companion cap
@@ -19,6 +23,7 @@ sign of the middle slope.
 noncomputable section
 
 open Set Filter MeasureTheory
+open scoped ENNReal NNReal
 
 namespace AmbidextrousSofa
 
@@ -38,10 +43,10 @@ theorem IsDownwardCap.leftCompanion_curvature_restrict_open_after_affine
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (haffine : ∀ z ∈ Icc a b, capRoof U z = m * z + c)
     (hmx : affineNormalAngle m ≤ x) :
-    (upperCurvature (leftCompanionCap U a)).restrict (Ioo x Real.pi) =
+    (upperCurvature (AmbidextrousSofa.leftCompanionCap U a)).restrict (Ioo x Real.pi) =
       (upperCurvature U).restrict (Ioo x Real.pi) := by
   have hlocal (r s : ℝ) (hxr : x < r) (hrs : r ≤ s) (hsπ : s < Real.pi) :
-      (upperCurvature (leftCompanionCap U a)).restrict (Ioo r s) =
+      (upperCurvature (AmbidextrousSofa.leftCompanionCap U a)).restrict (Ioo r s) =
         (upperCurvature U).restrict (Ioo r s) := by
     have heq := hU.leftCompanion_curvature_restrict_after_affine ha hb hab haffine
       hrs (hmx.trans hxr.le) hsπ

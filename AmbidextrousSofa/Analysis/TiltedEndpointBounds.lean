@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.HorizontalEndpointBounds
-import AmbidextrousSofa.Analysis.LeftCompanionCap
-import AmbidextrousSofa.Analysis.TiltedInitialEnergyBounds
-import AmbidextrousSofa.Analysis.WideWidthExclusion
+module
+
+public import AmbidextrousSofa.Analysis.HorizontalEndpointBounds
+public import AmbidextrousSofa.Analysis.LeftCompanionCap
+public import AmbidextrousSofa.Analysis.TiltedInitialEnergyBounds
+public import AmbidextrousSofa.Analysis.WideWidthExclusion
+
+@[expose] public section
 
 /-!
 # Actual endpoint bounds for a positively tilted cap
@@ -38,7 +42,7 @@ theorem IsDownwardCap.left_middle_niche_le_tilted_box
   intro t ht
   have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith only [ht.2, Real.pi_pos])
   have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith only [ht.1, Real.pi_pos], ht.2⟩
-  have hsupport : support (leftCompanionCap U (-C)) (companionNormal t) ≤
+  have hsupport : support (AmbidextrousSofa.leftCompanionCap U (-C)) (companionNormal t) ≤
       2 * C * Real.sin t + (1 - h) * Real.cos t := by
     apply support_le_of_forall hV.nonempty
     intro p hp
@@ -55,7 +59,7 @@ theorem IsDownwardCap.left_middle_niche_le_tilted_box
     nlinarith only [hx, hy]
   have hcircle := horizontal_box_circle_bound (s := Real.cos t) (c := Real.sin t)
     hC0.le hC1 (Real.sin_sq_add_cos_sq t)
-  have hwall : secondWall (leftCompanionCap U (-C)) t (-C) ≤
+  have hwall : secondWall (AmbidextrousSofa.leftCompanionCap U (-C)) t (-C) ≤
       Analysis.tiltedBoxHeight C - h := by
     rw [secondWall, div_le_iff₀ hc]
     unfold Analysis.tiltedBoxHeight

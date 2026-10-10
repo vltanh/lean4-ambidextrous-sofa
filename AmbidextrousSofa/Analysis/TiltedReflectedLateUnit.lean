@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.TiltedReflectedControls
-import AmbidextrousSofa.Analysis.ReflectedExcessScalar
-import AmbidextrousSofa.Analysis.TiltedTopProjection
+module
+
+public import AmbidextrousSofa.Analysis.TiltedReflectedControls
+public import AmbidextrousSofa.Analysis.ReflectedExcessScalar
+public import AmbidextrousSofa.Analysis.TiltedTopProjection
+
+@[expose] public section
 
 /-!
 # Actual early companion unit curvature when the top overhang vanishes
@@ -97,7 +101,7 @@ theorem fullTiltedSupportQuarterPair_companion_unit_prefix_of_collapsed_top {C h
     (hheight : capHeight U = 1) (hhigh : capRoof U C = 1)
     (hlow : capRoof U (-C) = 1 - h)
     (hκ : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
-    (htop : (Imported.vminus U (Real.pi / 2)).1 = C) :
+    (htop : (MovingSofaOptimality.vminus U (Real.pi / 2)).1 = C) :
     ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2 - 11 / 15)),
       leftCompanionWingDensity m ρ (t + Real.pi / 2) ≤ 1 := by
   have hC : 0 < C := by linarith only [hC0]

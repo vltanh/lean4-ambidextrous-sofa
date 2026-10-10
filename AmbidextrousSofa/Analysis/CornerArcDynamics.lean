@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.HorizontalLeakageDynamics
-import AmbidextrousSofa.Analysis.TiltedEnergyBarrier
+module
+
+public import AmbidextrousSofa.Analysis.HorizontalLeakageDynamics
+public import AmbidextrousSofa.Analysis.TiltedEnergyBarrier
+
+@[expose] public section
 
 /-!
 # Corner dynamics on an arbitrary closed regular arc

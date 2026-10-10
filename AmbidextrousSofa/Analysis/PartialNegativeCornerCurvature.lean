@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.PartialShadowCurvature
+module
+
+public import AmbidextrousSofa.Analysis.PartialShadowCurvature
+
+@[expose] public section
 
 /-!
 # Actual proper curvature vanishes below the floor
@@ -86,7 +90,7 @@ theorem curvature_Ioc_eq_zero_of_negative_corners
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft target) (horizontalRight target),
       capRoof target x = m * x + c)
     (hab : a ≤ b) (hregular : Icc a b ⊆ regularProperCurvatureDomain α m)
-    (ha : Imported.sigmaAt target a = 0) (hb : Imported.sigmaAt target b = 0)
+    (ha : MovingSofaOptimality.sigmaAt target a = 0) (hb : MovingSofaOptimality.sigmaAt target b = 0)
     (hnegative : ∀ θ ∈ Icc a b, sourceCornerHeight target θ < 0) :
     upperCurvature target (Ioc a b) = 0 := by
   have htop : Real.pi / 2 ∉ Icc a b := by

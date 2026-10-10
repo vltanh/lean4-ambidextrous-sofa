@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TerminalHistory
+module
+
+public import AmbidextrousSofa.Analysis.TerminalHistory
+
+@[expose] public section
 
 /-!
 # A literal fixed-cap increase of terminal angle

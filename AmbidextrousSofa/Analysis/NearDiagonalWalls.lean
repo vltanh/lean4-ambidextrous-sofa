@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.NearDiagonalGeometry
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+module
+
+public import AmbidextrousSofa.Analysis.NearDiagonalGeometry
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+
+@[expose] public section
 
 /-!
 # Actual two-wall competitors at a pair of near-diagonal angles

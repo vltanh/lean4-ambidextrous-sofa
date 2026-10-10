@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Measure.Fibers
-import AmbidextrousSofa.Geometry.Hallway
+module
+
+public import AmbidextrousSofa.Measure.Fibers
+public import AmbidextrousSofa.Geometry.Hallway
+
+@[expose] public section
 
 /-!
 # Horizontal sections of strips and of the wrong-way hallway

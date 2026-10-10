@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TerminalCircleEndpoints
+module
+
+public import AmbidextrousSofa.Analysis.TerminalCircleEndpoints
+
+@[expose] public section
 
 /-!
 # The uniform proper-terminal circle margin

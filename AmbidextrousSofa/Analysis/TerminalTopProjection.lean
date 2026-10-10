@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialHorizontalMoment
-import AmbidextrousSofa.Analysis.TerminalCorner
+module
+
+public import AmbidextrousSofa.Analysis.PartialHorizontalMoment
+public import AmbidextrousSofa.Analysis.TerminalCorner
+
+@[expose] public section
 
 /-!
 # The actual terminal top-projection bound
@@ -19,10 +23,10 @@ open Set MeasureTheory
 namespace AmbidextrousSofa
 
 def topOverhangLeft (U : Set Plane) : ℝ :=
-  max (horizontalLeft U + capWidth U / 4 - (Imported.vplus U (Real.pi / 2)).1) 0
+  max (horizontalLeft U + capWidth U / 4 - (MovingSofaOptimality.vplus U (Real.pi / 2)).1) 0
 
 def topOverhangRight (U : Set Plane) : ℝ :=
-  max ((Imported.vminus U (Real.pi / 2)).1 - (horizontalRight U - capWidth U / 4)) 0
+  max ((MovingSofaOptimality.vminus U (Real.pi / 2)).1 - (horizontalRight U - capWidth U / 4)) 0
 
 theorem topOverhangLeft_nonneg (U : Set Plane) : 0 ≤ topOverhangLeft U := le_max_right _ _
 
@@ -85,18 +89,18 @@ theorem IsJointCapMaximizer.positive_partial_middle_measure_le_width_sub_topOver
       capWidth U / 2 - topOverhangLeft U - topOverhangRight U := by
   let a := horizontalLeft U + capWidth U / 4
   let b := horizontalRight U - capWidth U / 4
-  let s := (Imported.vplus U (Real.pi / 2)).1
-  let t := (Imported.vminus U (Real.pi / 2)).1
-  have hp := Imported.vplus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)
-  have hq := Imported.vminus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)
-  have hpy : (Imported.vplus U (Real.pi / 2)).2 = 1 := by
-    have h : coordDot (Imported.vplus U (Real.pi / 2)) (unitNormal (Real.pi / 2)) =
-        angleSupport U (Real.pi / 2) := Imported.dot_vplus_uvec U (Real.pi / 2)
-    have hy : (Imported.vplus U (Real.pi / 2)).2 = capHeight U := by
+  let s := (MovingSofaOptimality.vplus U (Real.pi / 2)).1
+  let t := (MovingSofaOptimality.vminus U (Real.pi / 2)).1
+  have hp := MovingSofaOptimality.vplus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)
+  have hq := MovingSofaOptimality.vminus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)
+  have hpy : (MovingSofaOptimality.vplus U (Real.pi / 2)).2 = 1 := by
+    have h : coordDot (MovingSofaOptimality.vplus U (Real.pi / 2)) (unitNormal (Real.pi / 2)) =
+        angleSupport U (Real.pi / 2) := MovingSofaOptimality.dot_vplus_uvec U (Real.pi / 2)
+    have hy : (MovingSofaOptimality.vplus U (Real.pi / 2)).2 = capHeight U := by
       simpa only [coordDot, unitNormal, angleSupport, capHeight,
         Real.cos_pi_div_two, Real.sin_pi_div_two, mul_zero, mul_one, zero_add] using h
     exact hy.trans hheight
-  have hqy : (Imported.vminus U (Real.pi / 2)).2 = 1 :=
+  have hqy : (MovingSofaOptimality.vminus U (Real.pi / 2)).2 = 1 :=
     (top_vminus_snd_eq_capHeight U).trans hheight
   have hsTop : (s, 1) ∈ U := by simpa only [s, ← hpy, Prod.mk.eta] using hp.1
   have htTop : (t, 1) ∈ U := by simpa only [t, ← hqy, Prod.mk.eta] using hq.1
@@ -107,7 +111,7 @@ theorem IsJointCapMaximizer.positive_partial_middle_measure_le_width_sub_topOver
     rw [← horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact hU.isCap.convex]
     exact ⟨(t, 1), htTop, rfl⟩
   obtain ⟨z, hz, hzTop⟩ := hU.top_meets_middle hheight
-  have hzEdge : (z, (1 : ℝ)) ∈ Imported.edge U (Real.pi / 2) := by
+  have hzEdge : (z, (1 : ℝ)) ∈ MovingSofaOptimality.edge U (Real.pi / 2) := by
     refine ⟨hzTop, ?_⟩
     change coordDot (z, 1) (unitNormal (Real.pi / 2)) = angleSupport U (Real.pi / 2)
     simp only [coordDot, unitNormal, angleSupport, Real.cos_pi_div_two,
@@ -176,7 +180,7 @@ theorem IsJointCapMaximizer.terminalTailPoint_fst_eq_middle_add_topOverhangRight
     simp only [max_eq_right hneg, add_zero]
   · have hv := hU.first_terminal_vplus_of_middle_nonneg hproper (le_of_not_gt hm) haffine
     have hbound := (hU.terminalTailPoint_bounds_of_tail_regime hregime hproper hheight haffine).1
-    change horizontalRight U - capWidth U / 4 ≤ (Imported.vplus U α).1 at hbound
+    change horizontalRight U - capWidth U / 4 ≤ (MovingSofaOptimality.vplus U α).1 at hbound
     rw [hv] at hbound
     unfold terminalTailPoint topOverhangRight
     rw [hv, max_eq_left (sub_nonneg.mpr hbound)]

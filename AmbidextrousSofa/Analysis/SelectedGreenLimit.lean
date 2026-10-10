@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FiniteSourceBalance
-import AmbidextrousSofa.Analysis.SupportHeightControl
+module
+
+public import AmbidextrousSofa.Analysis.FiniteSourceBalance
+public import AmbidextrousSofa.Analysis.SupportHeightControl
+
+@[expose] public section
 
 /-!
 # The stationary Green limit along the actual selected polygons

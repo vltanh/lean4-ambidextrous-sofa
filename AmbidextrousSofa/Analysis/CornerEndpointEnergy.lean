@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.CornerPropagation
+module
+
+public import AmbidextrousSofa.Analysis.CornerPropagation
+
+@[expose] public section
 
 /-!
 # The actual endpoint energy bound

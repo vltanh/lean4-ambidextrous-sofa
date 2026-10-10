@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.JointBranchProjection
-import AmbidextrousSofa.Analysis.JointBranchDensity
-import AmbidextrousSofa.Analysis.JointSourcePositive
-import AmbidextrousSofa.Analysis.TangencyMeasurable
+module
+
+public import AmbidextrousSofa.Analysis.JointBranchProjection
+public import AmbidextrousSofa.Analysis.JointBranchDensity
+public import AmbidextrousSofa.Analysis.JointSourcePositive
+public import AmbidextrousSofa.Analysis.TangencyMeasurable
+
+@[expose] public section
 
 /-!
 # The actual first tangent occupation density

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.CornerEndpointEnergy
+module
+
+public import AmbidextrousSofa.Analysis.CornerEndpointEnergy
+
+@[expose] public section
 
 /-!
 # The actual companion-quarter endpoint energy

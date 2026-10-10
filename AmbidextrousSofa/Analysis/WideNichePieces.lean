@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.WideSupportCuts
+module
+
+public import AmbidextrousSofa.Analysis.WideSupportCuts
+
+@[expose] public section
 
 /-!
 # Actual additional niche pieces before their baseline zeros

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Measure.Fibers
+module
+
+public import AmbidextrousSofa.Measure.Fibers
+
+@[expose] public section
 
 /-!
 # Integrated spatial partition and its equality conditions

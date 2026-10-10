@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.CornerTrigonometry
-import AmbidextrousSofa.Geometry.BarrierAnalysis
+module
+
+public import AmbidextrousSofa.Analysis.CornerTrigonometry
+public import AmbidextrousSofa.Geometry.BarrierAnalysis
+
+@[expose] public section
 
 /-!
 # Actual attached corners lie over the middle interval

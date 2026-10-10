@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Reference.Stationarity
-import AmbidextrousSofa.Reference.Body
-import AmbidextrousSofa.Measure.SignedRoofIntegral
-import AmbidextrousSofa.Measure.SymmetricBody
+module
+
+public import AmbidextrousSofa.Reference.Stationarity
+public import AmbidextrousSofa.Reference.Body
+public import AmbidextrousSofa.Measure.SignedRoofIntegral
+public import AmbidextrousSofa.Measure.SymmetricBody
+
+@[expose] public section
 
 /-!
 # Exact value and actual area of the reference

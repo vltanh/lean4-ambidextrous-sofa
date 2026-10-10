@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.LowHeightScore
+module
+
+public import AmbidextrousSofa.Analysis.LowHeightScore
+
+@[expose] public section
 
 /-!
 # The actual tilted diagonal relaxation

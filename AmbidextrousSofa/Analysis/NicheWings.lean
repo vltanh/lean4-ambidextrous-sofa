@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.CornerConfinement
-import AmbidextrousSofa.Analysis.Chord
+module
+
+public import AmbidextrousSofa.Analysis.CornerConfinement
+public import AmbidextrousSofa.Analysis.Chord
+
+@[expose] public section
 
 /-!
 # Convexity and endpoint values of the actual wing niche

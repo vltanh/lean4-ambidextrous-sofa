@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.AdaptiveGlobalParameters
+module
+
+public import AmbidextrousSofa.Analysis.AdaptiveGlobalParameters
+
+@[expose] public section
 
 /-!
 # Actual three-phase stationary profiles

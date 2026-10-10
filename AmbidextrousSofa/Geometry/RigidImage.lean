@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Geometry.RigidMotion
+module
+
+public import AmbidextrousSofa.Geometry.RigidMotion
+
+@[expose] public section
 
 /-!
 # The original passage domain under a fixed rigid image

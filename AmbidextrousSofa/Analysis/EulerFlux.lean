@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.AdaptiveFunctional
+module
+
+public import AmbidextrousSofa.Analysis.AdaptiveFunctional
+
+@[expose] public section
 
 /-!
 # Euler flux and the first-variation boundary identity

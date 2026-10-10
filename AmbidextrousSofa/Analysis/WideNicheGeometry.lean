@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.WideGainScalar
-import AmbidextrousSofa.Analysis.NicheBoxBounds
+module
+
+public import AmbidextrousSofa.Analysis.WideGainScalar
+public import AmbidextrousSofa.Analysis.NicheBoxBounds
+
+@[expose] public section
 
 /-!
 # Fitting the actual two wide niche pieces

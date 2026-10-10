@@ -1,8 +1,12 @@
-import AmbidextrousSofa.Analysis.SmallTiltScalar
-import AmbidextrousSofa.Analysis.SplitWingChord
-import AmbidextrousSofa.Analysis.TiltedLeakageMoment
-import AmbidextrousSofa.Analysis.TiltedEndpointBounds
-import AmbidextrousSofa.Analysis.CanonicalOneTurn
+module
+
+public import AmbidextrousSofa.Analysis.SmallTiltScalar
+public import AmbidextrousSofa.Analysis.SplitWingChord
+public import AmbidextrousSofa.Analysis.TiltedLeakageMoment
+public import AmbidextrousSofa.Analysis.TiltedEndpointBounds
+public import AmbidextrousSofa.Analysis.CanonicalOneTurn
+
+@[expose] public section
 
 /-!
 # The actual ordinary-area comparison for small positive tilts
@@ -57,7 +61,7 @@ theorem IsFullCapMaximizer.ordinary_area_ge_score_of_dry_left_and_excess
     (haffine : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c)
     (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1)
     (hnzero : sweptNiche U (Real.pi / 2) (-C) = 0) (hT : 0 ≤ T)
-    (htop : Imported.vminus U (Real.pi / 2) = (C + T, 1))
+    (htop : MovingSofaOptimality.vminus U (Real.pi / 2) = (C + T, 1))
     (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
     (heq : (upperCurvature U).restrict S =
       (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
@@ -101,7 +105,7 @@ theorem IsFullCapMaximizer.smallTilt_initialFloorEnergyConditions_of_actual_geom
     (haffine : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c)
     (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1)
     (hnzero : sweptNiche U (Real.pi / 2) (-C) = 0) (hT : 0 ≤ T)
-    (htop : Imported.vminus U (Real.pi / 2) = (C + T, 1))
+    (htop : MovingSofaOptimality.vminus U (Real.pi / 2) = (C + T, 1))
     (hTs : T ≤ Analysis.initialFloorSine h)
     (hzT : sweptNiche U (Real.pi / 2) C ≤ (10 / 9) * T)
     (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
@@ -125,7 +129,7 @@ theorem IsFullCapMaximizer.smallTilt_initialFloorEnergyConditions_of_actual_geom
   have hTC : T < C := by linarith only [hTs, hs.2.1, hC0]
   have htopmem : (C + T, (1 : ℝ)) ∈ U := by
     rw [← htop]
-    exact (Imported.vminus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)).1
+    exact (MovingSofaOptimality.vminus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)).1
   have htoproof : capRoof U (C + T) = 1 := le_antisymm
     (capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _)
     (le_capRoof hU.isCap.isCompact htopmem)

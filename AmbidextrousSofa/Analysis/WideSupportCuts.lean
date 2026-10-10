@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.WideDiagonalGeometry
-import AmbidextrousSofa.Analysis.RampCutIntegral
+module
+
+public import AmbidextrousSofa.Analysis.WideDiagonalGeometry
+public import AmbidextrousSofa.Analysis.RampCutIntegral
+
+@[expose] public section
 
 /-!
 # The two actual near-vertical cuts of a wide tilted cap

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.BoxedSecants
+module
+
+public import AmbidextrousSofa.Analysis.BoxedSecants
+
+@[expose] public section
 
 /-!
 # Middle facets stay uniformly away from the horizontal axes
@@ -17,7 +21,7 @@ open Set MeasureTheory
 namespace AmbidextrousSofa
 
 theorem IsDownwardCap.middle_face_width_bound {U : Set Plane} (hU : IsDownwardCap U)
-    {t : ℝ} (hs : 0 ≤ Real.sin t) {p : Plane} (hp : p ∈ Imported.edge U t)
+    {t : ℝ} (hs : 0 ≤ Real.sin t) {p : Plane} (hp : p ∈ MovingSofaOptimality.edge U t)
     (hx : p.1 ∈ Icc
       (horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4)
       (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4)) :
@@ -53,7 +57,7 @@ theorem IsDownwardCap.middle_face_projection_eq_empty {U : Set Plane}
     (hsep : Real.sin t < capWidth U / 4 * |Real.cos t|) :
     Ioc (horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4)
       (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4) ∩
-        horizontalProjection (Imported.edge U t) = ∅ := by
+        horizontalProjection (MovingSofaOptimality.edge U t) = ∅ := by
   apply Set.eq_empty_iff_forall_not_mem.mpr
   rintro x ⟨hx, p, hp, hpx⟩
   have hx' : p.1 ∈ Icc
@@ -90,7 +94,7 @@ theorem middleOuterMass_eq_zero_of_axis_separation {U : Set Plane} (hU : IsDownw
     volume.real (Ioc
       (horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4)
       (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4) ∩
-        horizontalProjection (Imported.edge U (fullAngle grid j))) /
+        horizontalProjection (MovingSofaOptimality.edge U (fullAngle grid j))) /
           Real.sin (fullAngle grid j) at h
   rw [hU.middle_face_projection_eq_empty hsin.le hsep] at h
   simpa only [measureReal_empty, zero_div] using h

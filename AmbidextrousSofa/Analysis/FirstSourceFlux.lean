@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.OpenGraphFlux
+module
+
+public import AmbidextrousSofa.Analysis.OpenGraphFlux
+
+@[expose] public section
 
 /-!
 # First-family flux of visible core and tangent pieces

@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.SelectedSequence
-import AmbidextrousSofa.Analysis.SupportCurvature
+module
+
+public import AmbidextrousSofa.Analysis.SelectedSequence
+public import AmbidextrousSofa.Analysis.SupportCurvature
+
+@[expose] public section
 
 /-!
 # Literal facet mass and selected outer-wall exposure
@@ -20,37 +24,37 @@ namespace AmbidextrousSofa
 
 theorem IsDownwardCap.face_fst_order {U : Set Plane} (hU : IsDownwardCap U)
     {t : ℝ} (ht : 0 ≤ Real.sin t) :
-    (Imported.vplus U t).1 ≤ (Imported.vminus U t).1 := by
-  have h := congrArg Prod.fst (Imported.proposition2_1_2 hU.imported_isConvexBody t).2
-  change (Imported.vplus U t).1 = (Imported.vminus U t).1 +
-    Imported.sigmaAt U t * -Real.sin t at h
-  have hmass : 0 ≤ Imported.sigmaAt U t := ENNReal.toReal_nonneg
+    (MovingSofaOptimality.vplus U t).1 ≤ (MovingSofaOptimality.vminus U t).1 := by
+  have h := congrArg Prod.fst (MovingSofaOptimality.proposition2_1_2 hU.imported_isConvexBody t).2
+  change (MovingSofaOptimality.vplus U t).1 = (MovingSofaOptimality.vminus U t).1 +
+    MovingSofaOptimality.sigmaAt U t * -Real.sin t at h
+  have hmass : 0 ≤ MovingSofaOptimality.sigmaAt U t := ENNReal.toReal_nonneg
   nlinarith
 
 theorem IsDownwardCap.horizontalProjection_edge {U : Set Plane} (hU : IsDownwardCap U)
     {t : ℝ} (ht : 0 ≤ Real.sin t) :
-    horizontalProjection (Imported.edge U t) =
-      Icc (Imported.vplus U t).1 (Imported.vminus U t).1 := by
+    horizontalProjection (MovingSofaOptimality.edge U t) =
+      Icc (MovingSofaOptimality.vplus U t).1 (MovingSofaOptimality.vminus U t).1 := by
   unfold horizontalProjection
-  rw [Imported.edge_eq_segment hU.imported_isConvexBody]
+  rw [MovingSofaOptimality.edge_eq_segment hU.imported_isConvexBody]
   change (AffineMap.fst : Plane →ᵃ[ℝ] ℝ) ''
-    segment ℝ (Imported.vminus U t) (Imported.vplus U t) = _
+    segment ℝ (MovingSofaOptimality.vminus U t) (MovingSofaOptimality.vplus U t) = _
   rw [image_segment, segment_symm, segment_eq_Icc (hU.face_fst_order ht)]
 
 theorem IsDownwardCap.upperCurvature_atom_eq_projection {U : Set Plane}
     (hU : IsDownwardCap U) {t : ℝ} (ht : 0 < Real.sin t) :
     (upperCurvature U {t}).toReal =
-      volume.real (horizontalProjection (Imported.edge U t)) / Real.sin t := by
+      volume.real (horizontalProjection (MovingSofaOptimality.edge U t)) / Real.sin t := by
   rw [hU.horizontalProjection_edge ht.le, Real.volume_real_Icc_of_le (hU.face_fst_order ht.le)]
-  have h := congrArg Prod.fst (Imported.proposition2_1_2 hU.imported_isConvexBody t).2
-  change (Imported.vplus U t).1 = (Imported.vminus U t).1 +
+  have h := congrArg Prod.fst (MovingSofaOptimality.proposition2_1_2 hU.imported_isConvexBody t).2
+  change (MovingSofaOptimality.vplus U t).1 = (MovingSofaOptimality.vminus U t).1 +
     (upperCurvature U {t}).toReal * -Real.sin t at h
   apply (eq_div_iff ht.ne').mpr
   nlinarith
 
 theorem IsDownwardCap.capRoof_eq_of_mem_upper_edge {U : Set Plane}
     (hU : IsDownwardCap U) {t : ℝ} (ht : 0 < Real.sin t)
-    {p : Plane} (hp : p ∈ Imported.edge U t) : p.2 = capRoof U p.1 := by
+    {p : Plane} (hp : p ∈ MovingSofaOptimality.edge U t) : p.2 = capRoof U p.1 := by
   have hx : p.1 ∈ horizontalProjection U := ⟨p, hp.1, rfl⟩
   have hroof := coordDot_le_support hU.isCompact (capRoof_mem hU.isCompact hx) (unitNormal t)
   have hface : coordDot p (unitNormal t) = support U (unitNormal t) := hp.2
@@ -90,7 +94,7 @@ theorem outerSource_ae_eq_faceProjection [Fintype ι] [DecidableEq ι]
     (Icc (horizontalLeft U) (horizontalRight U) ∩
       (roofExpr (ι := ι)).sourceSet (wallSlope normal)
         (roofIntercept normal (fun i => support U (normal i))) (some j)) =ᵐ[volume]
-      horizontalProjection (Imported.edge U t) := by
+      horizontalProjection (MovingSofaOptimality.edge U t) := by
   have hsin : 0 < Real.sin t := by simpa only [hangle, unitNormal] using hnormal j
   have hroof (x : ℝ) (hx : x ∈ Icc (horizontalLeft U) (horizontalRight U)) :
       capRoof U x = roofEnvelope normal (fun i => support U (normal i)) x :=
@@ -147,7 +151,7 @@ theorem integral_outerSource_eq_curvature_atom [Fintype ι] [DecidableEq ι]
   have hmeasure : volume.real (Ioc (horizontalLeft U) (horizontalRight U) ∩
       (roofExpr (ι := ι)).sourceSet (wallSlope normal)
         (roofIntercept normal (fun i => support U (normal i))) (some j)) =
-      volume.real (horizontalProjection (Imported.edge U t)) := by
+      volume.real (horizontalProjection (MovingSofaOptimality.edge U t)) := by
     apply congrArg ENNReal.toReal
     apply measure_congr
     filter_upwards [hAE, volume.ae_ne (horizontalLeft U)] with x hx hxl
@@ -175,13 +179,13 @@ theorem integral_outerSource_eq_clipped_projection [Fintype ι] [DecidableEq ι]
     (∫ x in a..b,
       (roofExpr (ι := ι)).sourceDensity (wallSlope normal)
         (roofIntercept normal (fun i => support U (normal i))) (outwardVelocity normal j) x) =
-      volume.real (Ioc a b ∩ horizontalProjection (Imported.edge U t)) / Real.sin t := by
+      volume.real (Ioc a b ∩ horizontalProjection (MovingSofaOptimality.edge U t)) / Real.sin t := by
   rw [integral_sourceDensity_outward _ _ _ _ hab]
   have hAE := outerSource_ae_eq_faceProjection hU normal hnormal hslopes hpoly j hangle
   have hmeasure : volume.real (Ioc a b ∩
       (roofExpr (ι := ι)).sourceSet (wallSlope normal)
         (roofIntercept normal (fun i => support U (normal i))) (some j)) =
-      volume.real (Ioc a b ∩ horizontalProjection (Imported.edge U t)) := by
+      volume.real (Ioc a b ∩ horizontalProjection (MovingSofaOptimality.edge U t)) := by
     apply congrArg ENNReal.toReal
     apply measure_congr
     filter_upwards [hAE] with x hx

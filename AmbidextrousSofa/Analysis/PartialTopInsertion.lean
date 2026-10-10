@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.JointCapMaximum
-import AmbidextrousSofa.Analysis.RoofGain
+module
+
+public import AmbidextrousSofa.Analysis.JointCapMaximum
+public import AmbidextrousSofa.Analysis.RoofGain
+
+@[expose] public section
 
 /-!
 # Top insertion for both orientations at a proper angle

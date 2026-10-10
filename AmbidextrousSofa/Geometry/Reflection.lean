@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Geometry.Support
-import AmbidextrousSofa.Geometry.HullCompact
-import AmbidextrousSofa.Geometry.Motions
+module
+
+public import AmbidextrousSofa.Geometry.Support
+public import AmbidextrousSofa.Geometry.HullCompact
+public import AmbidextrousSofa.Geometry.Motions
+
+@[expose] public section
 
 /-!
 # Reflection, physical projection, and the two actual hull caps

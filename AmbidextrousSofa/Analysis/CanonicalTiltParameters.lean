@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FullTriangleWidth
-import AmbidextrousSofa.Analysis.CapNormalization
+module
+
+public import AmbidextrousSofa.Analysis.FullTriangleWidth
+public import AmbidextrousSofa.Analysis.CapNormalization
+
+@[expose] public section
 
 /-!
 # Actual parameters of a canonical positive tilt
@@ -20,9 +24,9 @@ theorem IsDownwardCap.affine_middle_horizontalTranslate
     {U : Set Plane} (hU : IsDownwardCap U) {m c : ℝ}
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) (a : ℝ) :
-    ∀ x ∈ middleHalfInterval (horizontalLeft (horizontalTranslate U a))
-      (horizontalRight (horizontalTranslate U a)),
-      capRoof (horizontalTranslate U a) x = m * x + (c - m * a) := by
+    ∀ x ∈ middleHalfInterval (horizontalLeft (AmbidextrousSofa.horizontalTranslate U a))
+      (horizontalRight (AmbidextrousSofa.horizontalTranslate U a)),
+      capRoof (AmbidextrousSofa.horizontalTranslate U a) x = m * x + (c - m * a) := by
   intro x hx
   rw [horizontalLeft_horizontalTranslate hU, horizontalRight_horizontalTranslate hU,
     middleHalfInterval_add] at hx

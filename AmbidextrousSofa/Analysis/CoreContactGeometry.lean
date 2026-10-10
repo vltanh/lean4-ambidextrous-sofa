@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.FirstUnitNiche
-import AmbidextrousSofa.Analysis.FirstSourceFlux
-import AmbidextrousSofa.Measure.SignedRoofIntegral
+module
+
+public import AmbidextrousSofa.Analysis.FirstUnitNiche
+public import AmbidextrousSofa.Analysis.FirstSourceFlux
+public import AmbidextrousSofa.Measure.SignedRoofIntegral
+
+@[expose] public section
 
 /-!
 # Actual positive core contacts under a first-unit prefix
@@ -47,11 +51,16 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "B" => firstTangentPoint F.f F.fD
-local notation "D" => secondTangentPoint F.g F.gD
-local notation "Z" => innerCornerPoint F.f F.g
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "B" => firstTangentPoint (F).f (F).fD
+set_option quotPrecheck false in
+local notation "D" => secondTangentPoint (F).g (F).gD
+set_option quotPrecheck false in
+local notation "Z" => innerCornerPoint (F).f (F).g
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 local notation "v" => (fun t : ℝ => leftCompanionWingDensity m ρ (t + Real.pi / 2))
 local notation "V" => leftCompanionCap U (horizontalLeft U + capWidth U / 4)
 
@@ -59,10 +68,10 @@ local notation "V" => leftCompanionCap U (horizontalLeft U + capWidth U / 4)
 at every interior angle, including the cut's joining normal. -/
 theorem fullTiltedSupportQuarterPair_support_derivatives {t : ℝ}
     (ht : t ∈ Ioo 0 (Real.pi / 2)) :
-    HasDerivAt F.f (F.fD t) t ∧ HasDerivAt F.g (F.gD t) t := by
+    HasDerivAt (F).f ((F).fD t) t ∧ HasDerivAt (F).g ((F).gD t) t := by
   have hd : ∀ s ∈ Icc 0 (Real.pi / 2),
-      HasDerivWithinAt F.f (F.fD s) (Icc 0 (Real.pi / 2)) s ∧
-        HasDerivWithinAt F.g (F.gD s) (Icc 0 (Real.pi / 2)) s := by
+      HasDerivWithinAt (F).f ((F).fD s) (Icc 0 (Real.pi / 2)) s ∧
+        HasDerivWithinAt (F).g ((F).gD s) (Icc 0 (Real.pi / 2)) s := by
     unfold fullTiltedSupportQuarterPair
     exact supportQuarterPair_derivatives_on_closed _ _ _ _ _ _ _ _ _ _
   exact ⟨(hd t (Ioo_subset_Icc_self ht)).1.hasDerivAt (Icc_mem_nhds ht.1 ht.2),
@@ -71,10 +80,10 @@ theorem fullTiltedSupportQuarterPair_support_derivatives {t : ℝ}
 theorem fullTiltedSupportQuarterPair_core_continuous :
     ContinuousOn (fun t => (Z t).1) (Icc 0 (Real.pi / 2)) ∧
       ContinuousOn (fun t => (Z t).2) (Icc 0 (Real.pi / 2)) := by
-  exact ⟨((F.continuous_f.sub continuousOn_const).mul Real.continuous_cos.continuousOn).sub
-      ((F.continuous_g.sub continuousOn_const).mul Real.continuous_sin.continuousOn),
-    ((F.continuous_f.sub continuousOn_const).mul Real.continuous_sin.continuousOn).add
-      ((F.continuous_g.sub continuousOn_const).mul Real.continuous_cos.continuousOn)⟩
+  exact ⟨(((F).continuous_f.sub continuousOn_const).mul Real.continuous_cos.continuousOn).sub
+      (((F).continuous_g.sub continuousOn_const).mul Real.continuous_sin.continuousOn),
+    (((F).continuous_f.sub continuousOn_const).mul Real.continuous_sin.continuousOn).add
+      (((F).continuous_g.sub continuousOn_const).mul Real.continuous_cos.continuousOn)⟩
 
 theorem fullTiltedSupportQuarterPair_core_hasDerivAt {t : ℝ}
     (ht : t ∈ Ioo 0 (Real.pi / 2)) :
@@ -102,7 +111,7 @@ theorem fullTiltedSupportQuarterPair_cut_wall_derivative {t : ℝ}
     ⟨by linarith only [ht.1, Real.pi_pos], ht.2⟩).ne'
   have hd := ((hg.sub_const 1).add ((Real.hasDerivAt_sin t).const_mul x)).div
     (Real.hasDerivAt_cos t) hc
-  have hfun : (fun s => (F.g s - 1 + x * Real.sin s) / Real.cos s) =
+  have hfun : (fun s => ((F).g s - 1 + x * Real.sin s) / Real.cos s) =
       fun s => secondWall V s x := by
     funext s
     change (angleSupport V (s + Real.pi / 2) - 1 + x * Real.sin s) / Real.cos s = _
@@ -123,14 +132,14 @@ theorem fullTiltedSupportQuarterPair_walls_core {t : ℝ}
     ⟨by linarith only [ht.1, Real.pi_pos], ht.2⟩).ne'
   constructor
   · rw [firstWall, div_eq_iff hs]
-    change F.f t - 1 - (Z t).1 * Real.cos t = (Z t).2 * Real.sin t
+    change (F).f t - 1 - (Z t).1 * Real.cos t = (Z t).2 * Real.sin t
     dsimp only [innerCornerPoint]
-    nlinarith only [congrArg (fun z : ℝ => (F.f t - 1) * z)
+    nlinarith only [congrArg (fun z : ℝ => ((F).f t - 1) * z)
       (Real.sin_sq_add_cos_sq t)]
   · rw [secondWall, div_eq_iff hc, companionNormal_eq_unitNormal]
-    change F.g t - 1 + (Z t).1 * Real.sin t = (Z t).2 * Real.cos t
+    change (F).g t - 1 + (Z t).1 * Real.sin t = (Z t).2 * Real.cos t
     dsimp only [innerCornerPoint]
-    nlinarith only [congrArg (fun z : ℝ => (F.g t - 1) * z)
+    nlinarith only [congrArg (fun z : ℝ => ((F).g t - 1) * z)
       (Real.sin_sq_add_cos_sq t)]
 
 theorem fullTiltedSupportQuarterPair_companion_tangent_order_on_prefix {τ : ℝ}
@@ -228,15 +237,15 @@ theorem fullTiltedSupportQuarterPair_core_geometry {C h α τ t : ℝ}
       ⟨le_rfl, hτ.1⟩ ⟨htq.1.le, ht.2.le⟩ htq.1.le
   rw [hD0] at hDorder
   have hDgap : (D t).1 < (Z t).1 := by
-    rw [innerCorner_fst_eq_secondTangent F.f F.g F.gD]
+    rw [innerCorner_fst_eq_secondTangent (F).f (F).g (F).gD]
     exact lt_add_of_pos_right _ (mul_pos hq hc)
   have hfloor := fullTiltedSupportQuarterPair_first_tangent_nonneg
     hU hm haffine hρ hρ0 hρK heq hheight hunit (Ioo_subset_Icc_self htq)
   have hy : 0 < (Z t).2 := by
-    rw [innerCorner_snd_eq_firstTangent F.f F.g F.fD]
+    rw [innerCorner_snd_eq_firstTangent (F).f (F).g (F).fD]
     exact sub_pos.mpr ((mul_neg_of_neg_of_pos hp hc).trans_le hfloor)
   have hBgap : (Z t).1 < (B t).1 := by
-    rw [innerCorner_fst_eq_firstTangent F.f F.g F.fD]
+    rw [innerCorner_fst_eq_firstTangent (F).f (F).g (F).fD]
     exact add_lt_of_neg_right _ (mul_neg_of_neg_of_pos hp hs)
   exact ⟨⟨hDorder.trans_lt hDgap, hright⟩, hy, hBgap, hDgap⟩
 
@@ -273,14 +282,14 @@ theorem fullTiltedSupportQuarterPair_core_eq_attachedCorner {t : ℝ}
   rw [secondWall, div_eq_iff hc] at hcut horiginal
   have hsupport : support U (companionNormal t) = support V (companionNormal t) := by
     linarith only [hcut, horiginal]
-  have hg : angleSupport U (t + Real.pi / 2) = F.g t := by
+  have hg : angleSupport U (t + Real.pi / 2) = (F).g t := by
     change support U (unitNormal (t + Real.pi / 2)) =
       support V (unitNormal (t + Real.pi / 2))
     simpa only [companionNormal_eq_unitNormal] using hsupport
   apply Prod.ext
-  · change (angleSupport U t - 1) * Real.cos t - (F.g t - 1) * Real.sin t = _
+  · change (angleSupport U t - 1) * Real.cos t - ((F).g t - 1) * Real.sin t = _
     rw [attachedCorner_fst_eq_support, hg]
-  · change (angleSupport U t - 1) * Real.sin t + (F.g t - 1) * Real.cos t = _
+  · change (angleSupport U t - 1) * Real.sin t + ((F).g t - 1) * Real.cos t = _
     rw [attachedCorner_snd_eq_support, hg]
 
 /-- The high middle point makes every original companion wall
@@ -333,7 +342,7 @@ theorem fullTiltedSupportQuarterPair_first_wall_lt_core_after
   have hsin : 0 < Real.sin t := Real.sin_pos_of_pos_of_lt_pi ht.1
     (by linarith only [ht.2, Real.pi_pos])
   have hgap : (Z t).1 < (B t).1 := by
-    rw [innerCorner_fst_eq_firstTangent F.f F.g F.fD]
+    rw [innerCorner_fst_eq_firstTangent (F).f (F).g (F).fD]
     exact add_lt_of_neg_right _ (mul_neg_of_neg_of_pos hp hsin)
   have hsr : Real.sin r ≠ 0 := (Real.sin_pos_of_pos_of_lt_pi hrq.1
     (by linarith only [hrq.2, Real.pi_pos])).ne'
@@ -359,7 +368,7 @@ theorem fullTiltedSupportQuarterPair_cut_wall_lt_core_before {τ s t : ℝ}
   have hc : 0 < Real.cos t := Real.cos_pos_of_mem_Ioo
     ⟨by linarith only [ht.1, Real.pi_pos], htq.2⟩
   have hgap : (D t).1 < (Z t).1 := by
-    rw [innerCorner_fst_eq_secondTangent F.f F.g F.gD]
+    rw [innerCorner_fst_eq_secondTangent (F).f (F).g (F).gD]
     exact lt_add_of_pos_right _ (mul_pos hq hc)
   have hcr : Real.cos r ≠ 0 := (Real.cos_pos_of_mem_Ioo
     ⟨by linarith only [hrq.1, Real.pi_pos], hrq.2⟩).ne'

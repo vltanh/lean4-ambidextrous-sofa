@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.PositiveTent
+module
+
+public import AmbidextrousSofa.Analysis.PositiveTent
+
+@[expose] public section
 
 /-!
 # Finite increments of clipped affine tents

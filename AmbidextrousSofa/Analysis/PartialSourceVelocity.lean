@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialSourceMass
-import AmbidextrousSofa.Analysis.LocalSourceDensity
+module
+
+public import AmbidextrousSofa.Analysis.PartialSourceMass
+public import AmbidextrousSofa.Analysis.LocalSourceDensity
+
+@[expose] public section
 
 /-!
 # Sharp limits of the actual rescaled proper sources
@@ -67,7 +71,7 @@ theorem cornerSecant_tendsto
     (hangle : Tendsto (fun n =>
       fullAngle α (dyadic (level n)) (scaledSource α (dyadic (level n)) (j n))) atTop (𝓝 t))
     (htop : t ≠ Real.pi / 2)
-    (ht : Imported.sigmaAt K (companionSourceAngle t) = 0) :
+    (ht : MovingSofaOptimality.sigmaAt K (companionSourceAngle t) = 0) :
     Tendsto (fun n => cornerSecant (U n) α (level n) (j n)) atTop
       (𝓝 (upperCornerVelocity K t)) := by
   have hmesh := (mesh_tendsto α).comp hlevel
@@ -120,7 +124,7 @@ theorem sampledCurvatureDensity_tendsto
     (hangle : Tendsto (fun n =>
       fullAngle α (dyadic (level n)) (scaledSource α (dyadic (level n)) (j n))) atTop (𝓝 t))
     (htop : t ≠ Real.pi / 2)
-    (ht : Imported.sigmaAt K (companionSourceAngle t) = 0) :
+    (ht : MovingSofaOptimality.sigmaAt K (companionSourceAngle t) = 0) :
     Tendsto (fun n => finiteCurvatureDensity (cornerSecant (U n) α (level n) (j n))
       (mesh α (level n)) / mesh α (level n)) atTop
         (𝓝 (sourceKappa (upperCornerVelocity K t))) :=
@@ -134,7 +138,7 @@ theorem eventually_sampledCurvatureDensity_lt
     (hB : IsCompact B) (hbox : ∀ n, U n ⊆ B)
     (α : TerminalAngle) {level : ℕ → ℕ} (hlevel : Tendsto level atTop atTop)
     {t ε : ℝ} (htop : t ≠ Real.pi / 2)
-    (ht : Imported.sigmaAt K (companionSourceAngle t) = 0) (hε : 0 < ε) :
+    (ht : MovingSofaOptimality.sigmaAt K (companionSourceAngle t) = 0) (hε : 0 < ε) :
     ∃ δ > 0, ∀ᶠ n in atTop, ∀ j : AngularGrid.SourceIndex (dyadic (level n)),
       |fullAngle α (dyadic (level n)) (scaledSource α (dyadic (level n)) j) - t| < δ →
         finiteCurvatureDensity (cornerSecant (U n) α (level n) j) (mesh α (level n)) /

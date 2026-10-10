@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.FacetPinning
-import AmbidextrousSofa.Analysis.SelectedCurvature
-import AmbidextrousSofa.Analysis.CapCompactness
+module
+
+public import AmbidextrousSofa.Analysis.FacetPinning
+public import AmbidextrousSofa.Analysis.SelectedCurvature
+public import AmbidextrousSofa.Analysis.CapCompactness
+
+@[expose] public section
 
 /-!
 # Stability of supporting normals above an affine middle roof
@@ -26,7 +30,7 @@ theorem affine_face_normal_stability {U K : Set Plane}
     {a b m c ε t : ℝ} {p : Plane}
     (ha : (a, m * a + c) ∈ K) (hb : (b, m * b + c) ∈ K)
     (hface : support K (-m, 1) = c)
-    (hp : p ∈ Imported.edge U t) (hsin : 0 ≤ Real.sin t)
+    (hp : p ∈ MovingSofaOptimality.edge U t) (hsin : 0 ≤ Real.sin t)
     (hε : 0 ≤ ε) (hx : p.1 ∈ Icc (a + ε) (b - ε)) :
     ε * |Real.cos t + m * Real.sin t| ≤
       (|m| + 3) * Metric.hausdorffDist U K := by
@@ -85,7 +89,7 @@ theorem CapHausdorffTendsto.eventually_no_middle_edge
     (ha : (a, m * a + c) ∈ K) (hb : (b, m * b + c) ∈ K)
     (hface : support K (-m, 1) = c) (hx : x ∈ Ioo a b) (hτ : 0 < τ)
     (hE : ∀ t ∈ E, 0 ≤ Real.sin t ∧ τ ≤ |Real.cos t + m * Real.sin t|) :
-    ∀ᶠ n in atTop, ∀ t ∈ E, (x, capRoof (U n) x) ∉ Imported.edge (U n) t := by
+    ∀ᶠ n in atTop, ∀ t ∈ E, (x, capRoof (U n) x) ∉ MovingSofaOptimality.edge (U n) t := by
   let ε := min (x - a) (b - x)
   have hε : 0 < ε := lt_min (sub_pos.mpr hx.1) (sub_pos.mpr hx.2)
   have hC : 0 < |m| + 3 := by positivity
@@ -113,7 +117,7 @@ theorem outerSource_mem_edge {ι : Type*} [Fintype ι] [DecidableEq ι]
     (hx : x ∈ horizontalProjection U)
     (hsource : x ∈ (roofExpr (ι := ι)).sourceSet (wallSlope normal)
       (roofIntercept normal (fun i => support U (normal i))) (some j)) :
-    (x, capRoof U x) ∈ Imported.edge U t := by
+    (x, capRoof U x) ∈ MovingSofaOptimality.edge U t := by
   have hxI : x ∈ Icc (horizontalLeft U) (horizontalRight U) := by
     rwa [← horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
   have hroof := capRoof_eq_roofEnvelope_of_circumscription hU normal hnormal hpoly hxI

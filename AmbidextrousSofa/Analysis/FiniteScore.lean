@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.Circumscription
-import AmbidextrousSofa.Analysis.GridNiche
+module
+
+public import AmbidextrousSofa.Analysis.Circumscription
+public import AmbidextrousSofa.Analysis.GridNiche
+
+@[expose] public section
 
 /-!
 # Continuous finite spatial objectives and actual selected polygons

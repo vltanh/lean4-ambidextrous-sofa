@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Reference.Support
-import AmbidextrousSofa.Geometry.Reflection
+module
+
+public import AmbidextrousSofa.Reference.Support
+public import AmbidextrousSofa.Geometry.Reflection
+
+@[expose] public section
 
 /-!
 # The explicit reference half-plane intersection

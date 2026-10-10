@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.TerminalActualComparison
-import AmbidextrousSofa.Analysis.PartialWidthBounds
+module
+
+public import AmbidextrousSofa.Analysis.TerminalActualComparison
+public import AmbidextrousSofa.Analysis.PartialWidthBounds
+
+@[expose] public section
 
 /-!
 # The actual proper companion must have positive early excess

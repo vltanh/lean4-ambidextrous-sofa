@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.OpenWingCurvature
-import AmbidextrousSofa.Analysis.AffineNormal
+module
+
+public import AmbidextrousSofa.Analysis.OpenWingCurvature
+public import AmbidextrousSofa.Analysis.AffineNormal
+
+@[expose] public section
 
 /-!
 # The actual regular upper curvature domain

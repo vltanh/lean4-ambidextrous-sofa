@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Reference.Parameters
+module
+
+public import AmbidextrousSofa.Reference.Parameters
+
+@[expose] public section
 
 /-!
 # The explicit three-phase reference support formulas

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Geometry.Caps
+module
+
+public import AmbidextrousSofa.Geometry.Caps
+
+@[expose] public section
 
 /-!
 # Compact caps, exact vertical fibers, and roofs

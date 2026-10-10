@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.InactiveNormals
-import AmbidextrousSofa.Analysis.JointCapMaximum
+module
+
+public import AmbidextrousSofa.Analysis.InactiveNormals
+public import AmbidextrousSofa.Analysis.JointCapMaximum
+
+@[expose] public section
 
 /-!
 # Inactive-normal insertion for the actual partial barrier

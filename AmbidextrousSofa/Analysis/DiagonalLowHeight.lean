@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.DiagonalComparisonScore
+module
+
+public import AmbidextrousSofa.Analysis.DiagonalComparisonScore
+
+@[expose] public section
 
 /-!
 # Low middle endpoints are excluded by one actual symmetric tent

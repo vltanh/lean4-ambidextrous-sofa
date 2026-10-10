@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TangencyLoci
+module
+
+public import AmbidextrousSofa.Analysis.TangencyLoci
+
+@[expose] public section
 
 /-!
 # Tangency calculus on actual open regular intervals

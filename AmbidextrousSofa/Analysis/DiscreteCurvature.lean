@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FacetCurvature
-import AmbidextrousSofa.Imported.Balanced.CapGeometry
+module
+
+public import AmbidextrousSofa.Analysis.FacetCurvature
+public import MovingSofaOptimality.Balanced.CapGeometry
+
+@[expose] public section
 
 /-!
 # Surface-area measure of an actual finite half-plane intersection
@@ -20,16 +24,16 @@ open scoped Topology
 namespace AmbidextrousSofa
 
 theorem sigma_Ioo_eq_zero_of_halfplane_gap {K : Set Plane}
-    (hK : Imported.IsConvexBody K) {ι : Type*} (angle height : ι → ℝ)
-    (hKpoly : K = ⋂ i, Imported.halfMinus (angle i) (height i))
+    (hK : MovingSofaOptimality.IsConvexBody K) {ι : Type*} (angle height : ι → ℝ)
+    (hKpoly : K = ⋂ i, MovingSofaOptimality.halfMinus (angle i) (height i))
     (hangle : ∀ i, angle i ∈ Icc 0 (2 * Real.pi))
     {a b : ℝ} (ha : 0 ≤ a) (hb : b ≤ Real.pi) (hab : a < b) (hspan : b - a < Real.pi)
-    (hgap : ∀ i, angle i ∉ Ioo a b) : Imported.sigma K (Ioo a b) = 0 := by
+    (hgap : ∀ i, angle i ∉ Ioo a b) : MovingSofaOptimality.sigma K (Ioo a b) = 0 := by
   have hsin : 0 < Real.sin (b - a) := Real.sin_pos_of_pos_of_lt_pi
     (sub_pos.mpr hab) hspan
   have hsinGap : ∀ i, ¬(0 < Real.sin (angle i - a) ∧ Real.sin (angle i - b) < 0) := by
     intro i
-    apply Imported.mpc_not_gap hab
+    apply MovingSofaOptimality.mpc_not_gap hab
     by_cases hia : angle i ≤ a
     · right
       exact ⟨by linarith [(hangle i).1, Real.pi_pos], hia⟩
@@ -37,10 +41,10 @@ theorem sigma_Ioo_eq_zero_of_halfplane_gap {K : Set Plane}
       have hbi : b ≤ angle i := le_of_not_gt (fun hib => hgap i ⟨hai, hib⟩)
       left
       exact ⟨hbi, by linarith [(hangle i).2]⟩
-  obtain ⟨q, hq, hqa, hqb⟩ := Imported.mpc_corner hK hKpoly hsin hsinGap
+  obtain ⟨q, hq, hqa, hqb⟩ := MovingSofaOptimality.mpc_corner hK hKpoly hsin hsinGap
   obtain ⟨hqaVertex, hqbVertex, hsupport, hinterior⟩ :=
-    Imported.mpc_corner_props hK hq hsin hqa hqb
-  apply Imported.sigma_Ioo_eq_zero_of_vplus_const hK hab
+    MovingSofaOptimality.mpc_corner_props hK hq hsin hqa hqb
+  apply MovingSofaOptimality.sigma_Ioo_eq_zero_of_vplus_const hK hab
   intro t ht
   rcases eq_or_lt_of_le ht.1 with rfl | hat
   · exact hqaVertex
@@ -51,10 +55,10 @@ theorem sigma_Ioo_eq_zero_of_halfplane_gap {K : Set Plane}
 /-- The actual Stieltjes measure of a finite half-plane intersection is
 zero away from its defining directions in the open upper semicircle. -/
 theorem sigma_upper_sdiff_range_eq_zero {K : Set Plane}
-    (hK : Imported.IsConvexBody K) {ι : Type*} [Finite ι] (angle height : ι → ℝ)
-    (hKpoly : K = ⋂ i, Imported.halfMinus (angle i) (height i))
+    (hK : MovingSofaOptimality.IsConvexBody K) {ι : Type*} [Finite ι] (angle height : ι → ℝ)
+    (hKpoly : K = ⋂ i, MovingSofaOptimality.halfMinus (angle i) (height i))
     (hangle : ∀ i, angle i ∈ Icc 0 (2 * Real.pi)) :
-    Imported.sigma K (Ioo 0 Real.pi \ range angle) = 0 := by
+    MovingSofaOptimality.sigma K (Ioo 0 Real.pi \ range angle) = 0 := by
   let S := Ioo 0 Real.pi \ range angle
   have hopen : IsOpen S := isOpen_Ioo.sdiff (finite_range angle).isClosed
   apply measure_null_of_locally_null S
@@ -87,6 +91,7 @@ theorem sigma_upper_sdiff_range_eq_zero {K : Set Plane}
   intro i hi
   exact (hinterval hi).2 (mem_range_self i)
 
+open Classical in
 /-- A finite support description gives a literal sum of singleton masses.
 The argument uses monotonicity and countable additivity, including zero atoms. -/
 theorem measure_eq_sum_singletons_of_sdiff_null (μ : Measure ℝ) (F : Finset ℝ)
@@ -129,7 +134,7 @@ def fullPolygonHeight (l r : ℝ) (height : ι → ℝ) : Fin 4 ⊕ ι → ℝ
 
 theorem upperPolygon_eq_iInter_halfMinus (l r : ℝ) (angle height : ι → ℝ) :
     upperPolygon l r (fun i => unitNormal (angle i)) height =
-      ⋂ i, Imported.halfMinus (fullPolygonAngle angle i) (fullPolygonHeight l r height i) := by
+      ⋂ i, MovingSofaOptimality.halfMinus (fullPolygonAngle angle i) (fullPolygonHeight l r height i) := by
   ext p
   rw [mem_upperPolygon_iff]
   simp only [mem_iInter, Sum.forall]
@@ -139,9 +144,9 @@ theorem upperPolygon_eq_iInter_halfMinus (l r : ℝ) (angle height : ι → ℝ)
     · intro i
       fin_cases i <;>
         simp [fullPolygonAngle, fullPolygonHeight,
-          Imported.halfMinus, Imported.dot_uvec_zero,
-          Imported.dot_uvec_pi_div_two, Imported.dot_uvec_pi,
-          Imported.dot_uvec_three_pi_div_two] <;>
+          MovingSofaOptimality.halfMinus, MovingSofaOptimality.dot_uvec_zero,
+          MovingSofaOptimality.dot_uvec_pi_div_two, MovingSofaOptimality.dot_uvec_pi,
+          MovingSofaOptimality.dot_uvec_three_pi_div_two] <;>
         linarith [hpx.1, hpx.2, hpy.1, hpy.2]
     · intro i
       exact hsupport i
@@ -151,9 +156,9 @@ theorem upperPolygon_eq_iInter_halfMinus (l r : ℝ) (angle height : ι → ℝ)
     have hleft := hbox 2
     have hbottom := hbox 3
     simp [fullPolygonAngle, fullPolygonHeight,
-      Imported.halfMinus, Imported.dot_uvec_zero,
-      Imported.dot_uvec_pi_div_two, Imported.dot_uvec_pi,
-      Imported.dot_uvec_three_pi_div_two] at hright htop hleft hbottom
+      MovingSofaOptimality.halfMinus, MovingSofaOptimality.dot_uvec_zero,
+      MovingSofaOptimality.dot_uvec_pi_div_two, MovingSofaOptimality.dot_uvec_pi,
+      MovingSofaOptimality.dot_uvec_three_pi_div_two] at hright htop hleft hbottom
     exact ⟨⟨by linarith, hright⟩, ⟨by linarith, htop⟩, hsupport⟩
 
 theorem fullPolygonAngle_mem (angle : ι → ℝ)
@@ -188,6 +193,7 @@ theorem upperCurvature_sdiff_fullPolygonAngles [Fintype ι] {U : Set Plane}
   · exact hpoly.trans (upperPolygon_eq_iInter_halfMinus _ _ _ _)
   · exact fullPolygonAngle_mem angle hangle
 
+open Classical in
 /-- Any upper angular set, including half-open intervals, has exactly the
 sum of its actual polygon face atoms. Axes and the top were included when
 proving concentration; intersecting with the set handles them literally. -/

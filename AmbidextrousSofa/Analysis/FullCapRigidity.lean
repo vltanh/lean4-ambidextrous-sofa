@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.TiltedCapExclusion
-import AmbidextrousSofa.Analysis.CanonicalTiltParameters
-import AmbidextrousSofa.Analysis.FullCapRecovery
+module
+
+public import AmbidextrousSofa.Analysis.TiltedCapExclusion
+public import AmbidextrousSofa.Analysis.CanonicalTiltParameters
+public import AmbidextrousSofa.Analysis.FullCapRecovery
+
+@[expose] public section
 
 /-!
 # Full-cap rigidity for each prescribed maximum
@@ -36,24 +40,24 @@ theorem IsFullCapMaximizer.centered_affine_middle_slope_eq_zero
       capRoof U x = m * x + c) : m = 0 := by
   have hm : m ≤ 0 := hU.centered_affine_middle_slope_nonpos hl hr hheight haffine
   have hV := hU.horizontalMirror
-  have hVl : horizontalLeft (horizontalMirror U) = -2 * C := by
+  have hVl : horizontalLeft (AmbidextrousSofa.horizontalMirror U) = -2 * C := by
     rw [horizontalLeft_horizontalMirror hU.isCap, hr]
     ring
-  have hVr : horizontalRight (horizontalMirror U) = 2 * C := by
+  have hVr : horizontalRight (AmbidextrousSofa.horizontalMirror U) = 2 * C := by
     rw [horizontalRight_horizontalMirror hU.isCap, hl]
     ring
-  have hVheight : capHeight (horizontalMirror U) = 1 := by
+  have hVheight : capHeight (AmbidextrousSofa.horizontalMirror U) = 1 := by
     rw [capHeight_horizontalMirror, hheight]
   have hmid : middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
     rw [middleHalfInterval, hl, hr]
     congr 1 <;> ring
-  have hVmid : middleHalfInterval (horizontalLeft (horizontalMirror U))
-      (horizontalRight (horizontalMirror U)) = Icc (-C) C := by
+  have hVmid : middleHalfInterval (horizontalLeft (AmbidextrousSofa.horizontalMirror U))
+      (horizontalRight (AmbidextrousSofa.horizontalMirror U)) = Icc (-C) C := by
     rw [middleHalfInterval, hVl, hVr]
     congr 1 <;> ring
   have hVaffine : ∀ x ∈ middleHalfInterval
-      (horizontalLeft (horizontalMirror U)) (horizontalRight (horizontalMirror U)),
-      capRoof (horizontalMirror U) x = (-m) * x + c := by
+      (horizontalLeft (AmbidextrousSofa.horizontalMirror U)) (horizontalRight (AmbidextrousSofa.horizontalMirror U)),
+      capRoof (AmbidextrousSofa.horizontalMirror U) x = (-m) * x + c := by
     intro x hx
     rw [hVmid] at hx
     have hxU : -x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U) := by
@@ -75,18 +79,18 @@ theorem IsFullCapMaximizer.affine_middle_slope_eq_zero
   let a := -(horizontalLeft U + horizontalRight U) / 2
   let C := capWidth U / 4
   have hV := hU.centeredCap
-  have hl : horizontalLeft (centeredCap U) = -2 * C := by
+  have hl : horizontalLeft (AmbidextrousSofa.centeredCap U) = -2 * C := by
     rw [horizontalLeft_centeredCap hU.isCap]
     dsimp only [C]
     ring
-  have hr : horizontalRight (centeredCap U) = 2 * C := by
+  have hr : horizontalRight (AmbidextrousSofa.centeredCap U) = 2 * C := by
     rw [horizontalRight_centeredCap hU.isCap]
     dsimp only [C]
     ring
-  have hVheight : capHeight (centeredCap U) = 1 := by
+  have hVheight : capHeight (AmbidextrousSofa.centeredCap U) = 1 := by
     rw [capHeight_centeredCap hU.isCap, hheight]
-  have hVaffine : ∀ x ∈ middleHalfInterval (horizontalLeft (centeredCap U))
-      (horizontalRight (centeredCap U)), capRoof (centeredCap U) x = m * x + (c - m * a) :=
+  have hVaffine : ∀ x ∈ middleHalfInterval (horizontalLeft (AmbidextrousSofa.centeredCap U))
+      (horizontalRight (AmbidextrousSofa.centeredCap U)), capRoof (AmbidextrousSofa.centeredCap U) x = m * x + (c - m * a) :=
     hU.isCap.affine_middle_horizontalTranslate haffine a
   exact hV.centered_affine_middle_slope_eq_zero hl hr hVheight hVaffine
 
@@ -112,8 +116,8 @@ theorem IsFullCapMaximizer.affine_middle_eq_one
 
 theorem IsFullCapMaximizer.fullCanonicalCap_middle_eq_one
     {U : Set Plane} (hU : IsFullCapMaximizer U) :
-    ∀ x ∈ middleHalfInterval (horizontalLeft (fullCanonicalCap U))
-      (horizontalRight (fullCanonicalCap U)), capRoof (fullCanonicalCap U) x = 1 := by
+    ∀ x ∈ middleHalfInterval (horizontalLeft (AmbidextrousSofa.fullCanonicalCap U))
+      (horizontalRight (AmbidextrousSofa.fullCanonicalCap U)), capRoof (AmbidextrousSofa.fullCanonicalCap U) x = 1 := by
   have hwidth : 0 < capWidth U := lt_trans (by norm_num) hU.two_lt_width
   have hdata := hU.isCap.fullCanonicalCap_data hwidth
   obtain ⟨m, c, haffine⟩ := hdata.2.2.2
@@ -123,7 +127,7 @@ theorem IsFullCapMaximizer.fullCanonicalCap_middle_eq_one
 height replacement. The translation is the only remaining freedom. -/
 theorem IsFullCapMaximizer.eq_reference_translate
     {U : Set Plane} (hU : IsFullCapMaximizer U) :
-    ∃ b : ℝ, U = horizontalTranslate Reference.referenceCap b :=
+    ∃ b : ℝ, U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap b :=
   hU.eq_reference_translate_of_fullCanonicalCap_horizontal hU.fullCanonicalCap_middle_eq_one
 
 theorem IsFullCapMaximizer.capScore_eq_half_M

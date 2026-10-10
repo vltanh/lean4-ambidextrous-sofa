@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.InitialAngleBound
-import AmbidextrousSofa.Analysis.TerminalScalar
+module
+
+public import AmbidextrousSofa.Analysis.InitialAngleBound
+public import AmbidextrousSofa.Analysis.TerminalScalar
+
+@[expose] public section
 
 /-!
 # The actual preliminary width cut

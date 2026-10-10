@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialPressureLimit
-import AmbidextrousSofa.Analysis.SelectedErosionMoments
+module
+
+public import AmbidextrousSofa.Analysis.PartialPressureLimit
+public import AmbidextrousSofa.Analysis.SelectedErosionMoments
+
+@[expose] public section
 
 /-!
 # Actual proper-angle selected erosion moments

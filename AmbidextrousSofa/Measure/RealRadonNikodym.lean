@@ -1,5 +1,9 @@
-import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-import Mathlib.MeasureTheory.Integral.Lebesgue.Map
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Map
+
+@[expose] public section
 
 /-!
 # Real densities for finite source submeasures
@@ -15,6 +19,7 @@ through a measurable projection without requiring injectivity.
 noncomputable section
 
 open Set Filter MeasureTheory
+open scoped ENNReal NNReal
 
 namespace AmbidextrousSofa
 

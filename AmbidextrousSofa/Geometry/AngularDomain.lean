@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Geometry.Barriers
-import AmbidextrousSofa.Geometry.Reflection
+module
+
+public import AmbidextrousSofa.Geometry.Barriers
+public import AmbidextrousSofa.Geometry.Reflection
+
+@[expose] public section
 
 /-!
 # Continuous passages and their complete angular constraints
@@ -38,16 +42,16 @@ theorem AngularConstraints.partialBarrier_le {S K : Set Plane} {α : ℝ}
 /-- Downward filling changes none of the upward-facing walls used by a passage. -/
 theorem AngularConstraints.upperCap {S K : Set Plane} {α : ℝ}
     (h : AngularConstraints S K α) (hK : IsCompact K) (hne : K.Nonempty)
-    (hK0 : ∀ p ∈ K, 0 ≤ p.2) : AngularConstraints S (upperCap K) α := by
+    (hK0 : ∀ p ∈ K, 0 ≤ p.2) : AngularConstraints S (AmbidextrousSofa.upperCap K) α := by
   refine ⟨h.angle_pos, h.angle_le, ?_, ?_⟩
   · intro θ hθ p hp
     have hs : 0 ≤ Real.sin θ := (Real.sin_pos_of_pos_of_lt_pi hθ.1
       (by linarith [hθ.2, h.angle_le, Real.pi_pos])).le
     have hc : 0 ≤ Real.cos θ := (Real.cos_pos_of_mem_Ioo
       ⟨by linarith [hθ.1, Real.pi_pos], hθ.2.trans_le h.angle_le⟩).le
-    have hu : support (upperCap K) (unitNormal θ) = support K (unitNormal θ) :=
+    have hu : support (AmbidextrousSofa.upperCap K) (unitNormal θ) = support K (unitNormal θ) :=
       support_upperCap hK hne hK0 hs
-    have hv : support (upperCap K) (companionNormal θ) = support K (companionNormal θ) :=
+    have hv : support (AmbidextrousSofa.upperCap K) (companionNormal θ) = support K (companionNormal θ) :=
       support_upperCap hK hne hK0 hc
     simpa only [canonicalHall, hu, hv] using h.inside θ hθ hp
   · intro p hp
@@ -134,8 +138,10 @@ def RigidMotionPath.reflected (path : RigidMotionPath) : RigidMotionPath where
     1 - Real.cos (path.angle t) - (path.shift t).2)
   continuous_angle := path.continuous_angle.neg
   continuous_shift :=
-    (path.continuous_shift.fst.sub path.continuous_angle.sin).prodMk
-      ((continuousOn_const.sub path.continuous_angle.cos).sub path.continuous_shift.snd)
+    (path.continuous_shift.fst.sub
+        (Real.continuous_sin.comp_continuousOn path.continuous_angle)).prodMk
+      ((continuousOn_const.sub (Real.continuous_cos.comp_continuousOn path.continuous_angle)).sub
+        path.continuous_shift.snd)
 
 theorem RigidMotionPath.reflected_placement (path : RigidMotionPath) (t : ℝ) (p : Plane) :
     path.reflected.placement t (reflect p) = reflect (path.placement t p) := by

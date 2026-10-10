@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.CapOrder
-import AmbidextrousSofa.Geometry.HullCompact
+module
+
+public import AmbidextrousSofa.Analysis.CapOrder
+public import AmbidextrousSofa.Geometry.HullCompact
+
+@[expose] public section
 
 /-!
 # Inserting a point into an actual downward cap

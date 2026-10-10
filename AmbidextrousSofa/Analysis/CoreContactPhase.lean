@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.ContactSlopeBounds
-import AmbidextrousSofa.Analysis.FirstUnitPhases
-import AmbidextrousSofa.Analysis.CanonicalTiltParameters
+module
+
+public import AmbidextrousSofa.Analysis.ContactSlopeBounds
+public import AmbidextrousSofa.Analysis.FirstUnitPhases
+public import AmbidextrousSofa.Analysis.CanonicalTiltParameters
+
+@[expose] public section
 
 /-!
 # The actual core contact phase and its strict horizontal order
@@ -32,9 +36,12 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "Z" => innerCornerPoint F.f F.g
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "Z" => innerCornerPoint (F).f (F).g
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 
 theorem fullTiltedSupportQuarterPair_contact_mem_closed_core_phase_of_after_affine
     {α η t g : ℝ}

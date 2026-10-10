@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.ExposureMoments
+module
+
+public import AmbidextrousSofa.Analysis.ExposureMoments
+
+@[expose] public section
 
 /-!
 # Source moments of literal horizontal erosions

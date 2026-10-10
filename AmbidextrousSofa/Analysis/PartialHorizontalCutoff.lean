@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.PartialSourceBalance
-import AmbidextrousSofa.Analysis.PartialSourceCounting
-import AmbidextrousSofa.Analysis.HorizontalCutoff
+module
+
+public import AmbidextrousSofa.Analysis.PartialSourceBalance
+public import AmbidextrousSofa.Analysis.PartialSourceCounting
+public import AmbidextrousSofa.Analysis.HorizontalCutoff
+
+@[expose] public section
 
 /-!
 # Actual proper horizontal source moment away from the top
@@ -27,6 +31,7 @@ theorem fullAngle_mem (α : TerminalAngle) (grid : Finset QuarterAngle)
     (j : SourceIndex α grid) : fullAngle α grid j ∈ Ioo (0 : ℝ) Real.pi :=
   AngularGrid.fullAngle_mem (outerGrid α grid) j
 
+open Classical in
 theorem sum_abs_defect_on_set_le_cos_sum
     (U : Set Plane) (grid : Finset QuarterAngle) {E : Set ℝ} {δ : ℝ}
     (hδ : 0 < δ) (hE : ∀ t ∈ E, δ ≤ |Real.cos t|) :
@@ -98,6 +103,7 @@ theorem normal_snd_mul_innerSourceMass_eq {U : Set Plane} (hU : IsDownwardCap U)
   unfold normalizedExposureDefect finiteExposureDefect finiteWingMass
   field_simp [(normal_snd_pos α grid j).ne'] <;> ring
 
+open Classical in
 theorem finitePositiveLength_le_horizontalOuterMass_add_cutoff {U : Set Plane}
     (hU : IsDownwardCap U) (grid : Finset QuarterAngle) {E : Set ℝ} {δ : ℝ}
     (hδ : 0 < δ) (hE : ∀ t ∈ E, δ ≤ |Real.cos t|) :

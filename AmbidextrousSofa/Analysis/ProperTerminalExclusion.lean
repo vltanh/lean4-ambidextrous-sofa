@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.ProperExcessEnvelope
-import AmbidextrousSofa.Analysis.TerminalProperComparison
+module
+
+public import AmbidextrousSofa.Analysis.ProperExcessEnvelope
+public import AmbidextrousSofa.Analysis.TerminalProperComparison
+
+@[expose] public section
 
 /-!
 # Exclusion of an actual largest-angle proper maximizer

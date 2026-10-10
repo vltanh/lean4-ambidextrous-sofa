@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.TerminalLeftComparison
-import AmbidextrousSofa.Analysis.PartialSharpCurvatureDensity
-import AmbidextrousSofa.Analysis.TerminalTopProjection
+module
+
+public import AmbidextrousSofa.Analysis.TerminalLeftComparison
+public import AmbidextrousSofa.Analysis.PartialSharpCurvatureDensity
+public import AmbidextrousSofa.Analysis.TerminalTopProjection
+
+@[expose] public section
 
 /-!
 # Actual initial data in the proper companion comparison
@@ -26,28 +30,28 @@ theorem IsDownwardCap.top_leftCompanionCap_fst_eq_min_of_affine
     {U : Set Plane} (hU : IsDownwardCap U) {a b m c : ℝ}
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c) :
-    (Imported.vplus (leftCompanionCap U a) (Real.pi / 2)).1 =
-      min a (Imported.vplus U (Real.pi / 2)).1 := by
+    (MovingSofaOptimality.vplus (AmbidextrousSofa.leftCompanionCap U a) (Real.pi / 2)).1 =
+      min a (MovingSofaOptimality.vplus U (Real.pi / 2)).1 := by
   by_cases hm : m ≤ 0
   · have htop := (hU.leftCompanion_initial_data_of_nonpos_affine ha hb hab hm haffine).1
-    have hp := (Imported.vplus_mem_edge (hU.leftCompanionCap ha).imported_isConvexBody
+    have hp := (MovingSofaOptimality.vplus_mem_edge (hU.leftCompanionCap ha).imported_isConvexBody
       (Real.pi / 2)).1
-    have hxa : (Imported.vplus U (Real.pi / 2)).1 ≤ a := by
+    have hxa : (MovingSofaOptimality.vplus U (Real.pi / 2)).1 ≤ a := by
       rw [← htop]
       exact hp.2.2
     rw [htop, min_eq_right hxa]
   · have hm0 : 0 < m := lt_of_not_ge hm
     have htop := (hU.top_leftCompanionCap_of_positive_affine ha hb hab hm0 haffine).2
-    have hp := (Imported.vplus_mem_edge hU.imported_isConvexBody (Real.pi / 2)).1
+    have hp := (MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody (Real.pi / 2)).1
     have hceiling := (le_capRoof hU.isCompact hp).trans
       (hU.capRoof_le_affine_of_affine_segment ha hb hab haffine
-        (Imported.vplus U (Real.pi / 2)).1 ⟨Imported.vplus U (Real.pi / 2), hp, rfl⟩)
+        (MovingSofaOptimality.vplus U (Real.pi / 2)).1 ⟨MovingSofaOptimality.vplus U (Real.pi / 2), hp, rfl⟩)
     have hfa : capRoof U a ≤ capHeight U := by
       have h := coordDot_le_support hU.isCompact (capRoof_mem hU.isCompact ha) (0, 1)
       simpa only [coordDot, capHeight, mul_zero, mul_one, zero_add] using h
     have hpy := top_vplus_snd_eq_capHeight U
     have hline := haffine a ⟨le_rfl, hab.le⟩
-    have hax : a ≤ (Imported.vplus U (Real.pi / 2)).1 := by
+    have hax : a ≤ (MovingSofaOptimality.vplus U (Real.pi / 2)).1 := by
       apply (mul_le_mul_left hm0).mp
       linarith only [hceiling, hfa, hpy, hline]
     rw [htop, min_eq_left hax]
@@ -59,13 +63,13 @@ theorem IsDownwardCap.leftCompanion_initialOffset_eq_quarter_sub_topOverhang
     (hwidth : 0 < capWidth U)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    companionInitialOffset (leftCompanionCap U (horizontalLeft U + capWidth U / 4)) =
+    companionInitialOffset (AmbidextrousSofa.leftCompanionCap U (horizontalLeft U + capWidth U / 4)) =
       capWidth U / 4 - topOverhangLeft U := by
   obtain ⟨ha, hb, hab⟩ := hU.middleChord_endpoints hwidth
   have htop := hU.top_leftCompanionCap_fst_eq_min_of_affine ha hb hab haffine
   unfold companionInitialOffset topOverhangLeft
   rw [htop, horizontalLeft_leftCompanionCap hU ha]
-  by_cases hx : (Imported.vplus U (Real.pi / 2)).1 ≤ horizontalLeft U + capWidth U / 4
+  by_cases hx : (MovingSofaOptimality.vplus U (Real.pi / 2)).1 ≤ horizontalLeft U + capWidth U / 4
   · rw [min_eq_right hx, max_eq_left (sub_nonneg.mpr hx)]
     ring
   · rw [min_eq_left (le_of_not_ge hx), max_eq_right (by linarith only [le_of_not_ge hx])]
@@ -101,7 +105,7 @@ theorem IsJointCapMaximizer.leftCompanion_actual_initial_data
   · unfold companionInitialDeficit
     rw [hVheight]
   · have hderiv := hV.hasDerivWithinAt_companionSupport_zero
-    have hx : (Imported.vplus (leftCompanionCap U (horizontalLeft U + capWidth U / 4))
+    have hx : (MovingSofaOptimality.vplus (leftCompanionCap U (horizontalLeft U + capWidth U / 4))
         (Real.pi / 2)).1 = horizontalLeft U + capWidth U / 4 - topOverhangLeft U := by
       unfold companionInitialOffset at hOffset
       rw [horizontalLeft_leftCompanionCap hU.isCap ha] at hOffset

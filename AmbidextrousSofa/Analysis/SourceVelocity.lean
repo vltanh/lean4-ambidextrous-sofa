@@ -1,6 +1,11 @@
-import AmbidextrousSofa.Analysis.MovingSupportSecants
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
+module
+
+public import AmbidextrousSofa.Analysis.MovingSupportSecants
+public import Mathlib.Analysis.Calculus.Deriv.Slope
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
+public import AmbidextrousSofa.Analysis.SurfaceAreaFacts
+
+@[expose] public section
 
 /-!
 # Actual corner velocities and the sharp finite-density limit
@@ -31,36 +36,36 @@ theorem sourceKappa_le_abs_add_one (q : ℝ) : sourceKappa q ≤ |q| + 1 := by
 theorem sourceKappa_neg (q : ℝ) : sourceKappa (-q) = sourceKappa q := by
   simp only [sourceKappa, abs_neg]
 
-theorem sourceKappa_eq_imported (q : ℝ) : sourceKappa q = Imported.k0 (q + 1) := by
-  simp only [sourceKappa, Imported.k0, add_sub_cancel_right]
+theorem sourceKappa_eq_imported (q : ℝ) : sourceKappa q = MovingSofaOptimality.k0 (q + 1) := by
+  simp only [sourceKappa, MovingSofaOptimality.k0, add_sub_cancel_right]
 
 theorem continuous_sourceKappa : Continuous sourceKappa := by
   unfold sourceKappa
   fun_prop
 
 def firstCornerVelocity (U : Set Plane) (t : ℝ) : ℝ :=
-  Imported.supp U t +
-    Imported.dot (Imported.vplus U (t + Real.pi / 2)) (Imported.vvec (t + Real.pi / 2)) - 1
+  MovingSofaOptimality.supp U t +
+    MovingSofaOptimality.dot (MovingSofaOptimality.vplus U (t + Real.pi / 2)) (MovingSofaOptimality.vvec (t + Real.pi / 2)) - 1
 
 def secondCornerVelocity (U : Set Plane) (t : ℝ) : ℝ :=
-  Imported.supp U (t + Real.pi / 2) -
-    Imported.dot (Imported.vplus U t) (Imported.vvec t) - 1
+  MovingSofaOptimality.supp U (t + Real.pi / 2) -
+    MovingSofaOptimality.dot (MovingSofaOptimality.vplus U t) (MovingSofaOptimality.vvec t) - 1
 
 theorem firstCornerVelocity_eq_gPlus (U : Set Plane) (t : ℝ) :
-    firstCornerVelocity U t = Imported.gPlus U t - 1 := by
-  rw [Imported.inj_gPlus_eq]
+    firstCornerVelocity U t = MovingSofaOptimality.gPlus U t - 1 := by
+  rw [MovingSofaOptimality.inj_gPlus_eq]
   rfl
 
 theorem secondCornerVelocity_eq_fPlus (U : Set Plane) (t : ℝ) :
-    secondCornerVelocity U t = Imported.fPlus U t - 1 := by
-  rw [Imported.inj_fPlus_eq]
+    secondCornerVelocity U t = MovingSofaOptimality.fPlus U t - 1 := by
+  rw [MovingSofaOptimality.inj_fPlus_eq]
   rfl
 
 theorem IsDownwardCap.measurable_supportTangent {U : Set Plane} (hU : IsDownwardCap U) :
-    Measurable (fun t => Imported.dot (Imported.vplus U t) (Imported.vvec t)) :=
-  Imported.continuous_dot_pair.measurable.comp
-    ((Imported.inj_measurable_vplus hU.imported_isConvexBody).prodMk
-      Imported.continuous_vvec.measurable)
+    Measurable (fun t => MovingSofaOptimality.dot (MovingSofaOptimality.vplus U t) (MovingSofaOptimality.vvec t)) :=
+  MovingSofaOptimality.continuous_dot_pair.measurable.comp
+    ((AmbidextrousSofa.measurable_vplus hU.imported_isConvexBody).prodMk
+      MovingSofaOptimality.continuous_vvec.measurable)
 
 theorem IsDownwardCap.measurable_firstCornerVelocity {U : Set Plane} (hU : IsDownwardCap U) :
     Measurable (firstCornerVelocity U) := by
@@ -88,17 +93,17 @@ theorem IsDownwardCap.measurable_upperCornerVelocity {U : Set Plane} (hU : IsDow
     (hU.measurable_secondCornerVelocity.comp (measurable_id.sub_const (Real.pi / 2)))
 
 theorem ae_sigmaAt_add_eq_zero (U : Set Plane) (c : ℝ) :
-    ∀ᵐ t : ℝ, Imported.sigmaAt U (t + c) = 0 := by
-  have hcount : {t : ℝ | Imported.sigma U {t + c} ≠ 0}.Countable :=
-    (Imported.countable_sigma_singleton_ne U).preimage
+    ∀ᵐ t : ℝ, MovingSofaOptimality.sigmaAt U (t + c) = 0 := by
+  have hcount : {t : ℝ | MovingSofaOptimality.sigma U {t + c} ≠ 0}.Countable :=
+    (MovingSofaOptimality.countable_sigma_singleton_ne U).preimage
       (f := fun t : ℝ => t + c) (by intro x y h; linarith)
   filter_upwards [hcount.ae_notMem volume] with t ht
-  have hzero : Imported.sigma U {t + c} = 0 := by
+  have hzero : MovingSofaOptimality.sigma U {t + c} = 0 := by
     simpa only [mem_setOf_eq, not_not] using ht
-  simp only [Imported.sigmaAt, hzero, ENNReal.toReal_zero]
+  simp only [MovingSofaOptimality.sigmaAt, hzero, ENNReal.toReal_zero]
 
 theorem ae_sigmaAt_companionSourceAngle_eq_zero (U : Set Plane) :
-    ∀ᵐ t : ℝ, Imported.sigmaAt U (companionSourceAngle t) = 0 := by
+    ∀ᵐ t : ℝ, MovingSofaOptimality.sigmaAt U (companionSourceAngle t) = 0 := by
   filter_upwards [ae_sigmaAt_add_eq_zero U (Real.pi / 2),
     ae_sigmaAt_add_eq_zero U (-(Real.pi / 2))] with t hp hm
   by_cases ht : t < Real.pi / 2
@@ -109,19 +114,19 @@ namespace AngularGrid
 
 theorem firstCornerSecant_eq_forward (U : Set Plane) (t δ : ℝ) :
     firstCornerSecant U t δ =
-      Imported.supp U t + forwardAngularSecant U (t + Real.pi / 2) δ - 1 := by
+      MovingSofaOptimality.supp U t + forwardAngularSecant U (t + Real.pi / 2) δ - 1 := by
   simp only [firstCornerSecant, forwardAngularSecant, companionNormal_eq_unitNormal]
-  change Imported.supp U t +
-    (Imported.supp U ((t + δ) + Real.pi / 2) -
-      Imported.supp U (t + Real.pi / 2) * Real.cos δ) / Real.sin δ - 1 = _
+  change MovingSofaOptimality.supp U t +
+    (MovingSofaOptimality.supp U ((t + δ) + Real.pi / 2) -
+      MovingSofaOptimality.supp U (t + Real.pi / 2) * Real.cos δ) / Real.sin δ - 1 = _
   rw [show (t + δ) + Real.pi / 2 = (t + Real.pi / 2) + δ by ring]
 
 theorem secondCornerSecant_eq_backward (U : Set Plane) (t δ : ℝ) :
     secondCornerSecant U t δ =
-      Imported.supp U (t + Real.pi / 2) - backwardAngularSecant U t δ - 1 := by
+      MovingSofaOptimality.supp U (t + Real.pi / 2) - backwardAngularSecant U t δ - 1 := by
   simp only [secondCornerSecant, backwardAngularSecant, companionNormal_eq_unitNormal]
-  change Imported.supp U (t + Real.pi / 2) +
-    (Imported.supp U (t - δ) - Imported.supp U t * Real.cos δ) / Real.sin δ - 1 = _
+  change MovingSofaOptimality.supp U (t + Real.pi / 2) +
+    (MovingSofaOptimality.supp U (t - δ) - MovingSofaOptimality.supp U t * Real.cos δ) / Real.sin δ - 1 = _
   ring
 
 theorem tan_div_self_tendsto {δ : ℕ → ℝ} (hδ : Tendsto δ atTop (𝓝 0))
@@ -174,7 +179,7 @@ theorem CapHausdorffTendsto.firstCornerSecant_tendsto
     {angle δ : ℕ → ℝ} {t : ℝ} (hangle : Tendsto angle atTop (𝓝 t))
     (hδ : Tendsto δ atTop (𝓝 0))
     (hsin : ∀ n, 0 < Real.sin (δ n)) (hcos : ∀ n, 0 ≤ Real.cos (δ n))
-    (ht : Imported.sigmaAt K (t + Real.pi / 2) = 0) :
+    (ht : MovingSofaOptimality.sigmaAt K (t + Real.pi / 2) = 0) :
     Tendsto (fun n => AngularGrid.firstCornerSecant (U n) (angle n) (δ n)) atTop
       (𝓝 (firstCornerVelocity K t)) := by
   have hnormal : Tendsto (fun n => unitNormal (angle n)) atTop (𝓝 (unitNormal t)) :=
@@ -193,7 +198,7 @@ theorem CapHausdorffTendsto.secondCornerSecant_tendsto
     {angle δ : ℕ → ℝ} {t : ℝ} (hangle : Tendsto angle atTop (𝓝 t))
     (hδ : Tendsto δ atTop (𝓝 0))
     (hsin : ∀ n, 0 < Real.sin (δ n)) (hcos : ∀ n, 0 ≤ Real.cos (δ n))
-    (ht : Imported.sigmaAt K t = 0) :
+    (ht : MovingSofaOptimality.sigmaAt K t = 0) :
     Tendsto (fun n => AngularGrid.secondCornerSecant (U n) (angle n) (δ n)) atTop
       (𝓝 (secondCornerVelocity K t)) := by
   have hshift := hangle.add_const (Real.pi / 2)
@@ -218,7 +223,7 @@ theorem cornerSecant_tendsto
     (j : ∀ n, SourceIndex (dyadic (level n))) {t : ℝ}
     (hangle : Tendsto (fun n => fullAngle (dyadic (level n)) (j n)) atTop (𝓝 t))
     (htop : t ≠ Real.pi / 2)
-    (ht : Imported.sigmaAt K (companionSourceAngle t) = 0) :
+    (ht : MovingSofaOptimality.sigmaAt K (companionSourceAngle t) = 0) :
     Tendsto (fun n => cornerSecant (U n) (level n) (j n)) atTop
       (𝓝 (upperCornerVelocity K t)) := by
   have hmesh := mesh_tendsto.comp hlevel
@@ -263,7 +268,7 @@ theorem sampledCurvatureDensity_tendsto
     (j : ∀ n, SourceIndex (dyadic (level n))) {t : ℝ}
     (hangle : Tendsto (fun n => fullAngle (dyadic (level n)) (j n)) atTop (𝓝 t))
     (htop : t ≠ Real.pi / 2)
-    (ht : Imported.sigmaAt K (companionSourceAngle t) = 0) :
+    (ht : MovingSofaOptimality.sigmaAt K (companionSourceAngle t) = 0) :
     Tendsto (fun n => finiteCurvatureDensity (cornerSecant (U n) (level n) (j n))
       (mesh (level n)) / mesh (level n)) atTop (𝓝 (sourceKappa (upperCornerVelocity K t))) :=
   finiteCurvatureDensity_div_tendsto

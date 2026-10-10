@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.NicheBoxBounds
-import AmbidextrousSofa.Analysis.EndpointPositivity
-import AmbidextrousSofa.Analysis.OneTurnSurvivor
+module
+
+public import AmbidextrousSofa.Analysis.NicheBoxBounds
+public import AmbidextrousSofa.Analysis.EndpointPositivity
+public import AmbidextrousSofa.Analysis.OneTurnSurvivor
+
+@[expose] public section
 
 /-!
 # From middle niche control to the actual one-turn body

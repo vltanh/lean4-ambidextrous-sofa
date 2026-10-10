@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.LeftCompanionDensity
-import AmbidextrousSofa.Analysis.ShadowCurvature
+module
+
+public import AmbidextrousSofa.Analysis.LeftCompanionDensity
+public import AmbidextrousSofa.Analysis.ShadowCurvature
+
+@[expose] public section
 
 /-!
 # Actual full-maximizer wing densities with the middle atom removed
@@ -21,14 +25,14 @@ theorem IsFullCapMaximizer.middle_support_vertices
     {U : Set Plane} {m c : ℝ} (hU : IsFullCapMaximizer U) (hm : m ≠ 0)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    Imported.vplus U (affineNormalAngle m) =
+    MovingSofaOptimality.vplus U (affineNormalAngle m) =
       (horizontalLeft U + capWidth U / 4, capRoof U (horizontalLeft U + capWidth U / 4)) ∧
-    Imported.vminus U (affineNormalAngle m) =
+    MovingSofaOptimality.vminus U (affineNormalAngle m) =
       (horizontalRight U - capWidth U / 4, capRoof U (horizontalRight U - capWidth U / 4)) := by
   have hs : 0 < Real.sin (affineNormalAngle m) :=
     Real.sin_pos_of_pos_of_lt_pi (affineNormalAngle_mem m).1 (affineNormalAngle_mem m).2
-  have hproj : Icc (Imported.vplus U (affineNormalAngle m)).1
-      (Imported.vminus U (affineNormalAngle m)).1 =
+  have hproj : Icc (MovingSofaOptimality.vplus U (affineNormalAngle m)).1
+      (MovingSofaOptimality.vminus U (affineNormalAngle m)).1 =
       middleHalfInterval (horizontalLeft U) (horizontalRight U) := by
     rw [← hU.isCap.horizontalProjection_edge hs.le,
       hU.isCap.edge_affineNormalAngle_eq_supportFace]
@@ -37,11 +41,11 @@ theorem IsFullCapMaximizer.middle_support_vertices
   constructor
   · apply Prod.ext hends.1
     have h := hU.isCap.capRoof_eq_of_mem_upper_edge hs
-      (Imported.vplus_mem_edge hU.isCap.imported_isConvexBody (affineNormalAngle m))
+      (MovingSofaOptimality.vplus_mem_edge hU.isCap.imported_isConvexBody (affineNormalAngle m))
     simpa only [hends.1] using h
   · apply Prod.ext hends.2
     have h := hU.isCap.capRoof_eq_of_mem_upper_edge hs
-      (Imported.vminus_mem_edge hU.isCap.imported_isConvexBody (affineNormalAngle m))
+      (MovingSofaOptimality.vminus_mem_edge hU.isCap.imported_isConvexBody (affineNormalAngle m))
     simpa only [hends.2] using h
 
 theorem IsFullCapMaximizer.leftCompanion_initial_curvature_zero
@@ -57,7 +61,7 @@ theorem IsFullCapMaximizer.leftCompanion_initial_curvature_zero
   have hLm : Real.pi / 2 ≤ affineNormalAngle m := by
     unfold affineNormalAngle
     linarith only [hm0]
-  apply Imported.sigma_Ioc_eq_zero_of_vplus_const hV.imported_isConvexBody hLm
+  apply MovingSofaOptimality.sigma_Ioc_eq_zero_of_vplus_const hV.imported_isConvexBody hLm
     (p := (horizontalLeft U + capWidth U / 4, capRoof U (horizontalLeft U + capWidth U / 4)))
   intro t ht
   have hs : 0 < Real.sin t := Real.sin_pos_of_pos_of_lt_pi

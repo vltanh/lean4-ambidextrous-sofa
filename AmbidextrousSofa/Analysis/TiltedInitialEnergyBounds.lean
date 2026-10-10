@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TiltedInitialEnergy
+module
+
+public import AmbidextrousSofa.Analysis.TiltedInitialEnergy
+
+@[expose] public section
 
 /-!
 # Exact parameter strips for the initial-floor energy test

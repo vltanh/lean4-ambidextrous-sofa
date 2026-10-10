@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.VisibleGraphFlux
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
+module
+
+public import AmbidextrousSofa.Analysis.VisibleGraphFlux
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
+
+@[expose] public section
 
 /-!
 # The actual companion density lower bound on visible positive corners

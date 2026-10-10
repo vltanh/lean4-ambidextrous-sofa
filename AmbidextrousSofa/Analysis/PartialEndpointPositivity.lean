@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialErosionMoments
-import AmbidextrousSofa.Analysis.PartialLowHeight
+module
+
+public import AmbidextrousSofa.Analysis.PartialErosionMoments
+public import AmbidextrousSofa.Analysis.PartialLowHeight
+
+@[expose] public section
 
 /-!
 # Positive actual proper endpoint pressures and vanishing erosion

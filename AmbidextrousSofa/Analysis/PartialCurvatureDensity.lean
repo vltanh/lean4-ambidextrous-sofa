@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.PartialCurvatureIntervals
-import AmbidextrousSofa.Analysis.OpenWingCurvature
-import AmbidextrousSofa.Analysis.RegularCurvatureDomain
+module
+
+public import AmbidextrousSofa.Analysis.PartialCurvatureIntervals
+public import AmbidextrousSofa.Analysis.OpenWingCurvature
+public import AmbidextrousSofa.Analysis.RegularCurvatureDomain
+
+@[expose] public section
 
 /-!
 # Actual proper-angle curvature density
@@ -46,7 +50,7 @@ theorem curvature_restrict_le_on_wing
   letI : IsFiniteMeasure (ENNReal.ofReal (8 * R + 24) • (volume.restrict (Ioo a b))) :=
     Measure.smul_finite _ ENNReal.ofReal_ne_top
   have hC : 0 ≤ 8 * R + 24 := by linarith
-  apply Imported.inj_measure_le_of_Ioo
+  apply MovingSofaOptimality.inj_measure_le_of_Ioo
   intro x y _
   simp only [Measure.restrict_apply measurableSet_Ioo, Measure.smul_apply, smul_eq_mul]
   have hinter : Ioo x y ∩ Ioo a b = Ioo (max x a) (min y b) := by

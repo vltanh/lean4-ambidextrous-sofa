@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.PositivePartialBarrierLimit
+module
+
+public import AmbidextrousSofa.Analysis.PositivePartialBarrierLimit
+
+@[expose] public section
 
 /-!
 # The actual proper horizontal source inequality

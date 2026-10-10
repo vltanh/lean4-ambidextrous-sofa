@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.JointBranchProjection
-import AmbidextrousSofa.Analysis.JointCoreSourceGeometry
+module
+
+public import AmbidextrousSofa.Analysis.JointBranchProjection
+public import AmbidextrousSofa.Analysis.JointCoreSourceGeometry
+
+@[expose] public section
 
 /-!
 # One horizontal budget for the two corner source branches
@@ -154,9 +158,13 @@ variable (hU : IsFullCapMaximizer target) {C h m c : ℝ}
   (hleft : a < horizontalLeft target) (hright : horizontalRight target < b)
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm.le haffine hρ hρ0 hρK heq
-local notation "Z" => innerCornerPoint F.f F.g
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "Z" => innerCornerPoint (F).f (F).g
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
+set_option quotPrecheck false in
 local notation "X" => (fun t => (Z t).1)
 local notation "XD" => (fun t => p t * Real.cos t - q t * Real.sin t)
 local notation "aZ" => J.sourceBranchDensity (firstCornerSource target) 0

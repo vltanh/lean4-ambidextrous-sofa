@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.ExposureMoments
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
+module
+
+public import AmbidextrousSofa.Analysis.ExposureMoments
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
+
+@[expose] public section
 
 /-!
 # Spatial variation of literal finite wall expressions

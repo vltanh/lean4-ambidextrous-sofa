@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.SmallTiltConstants
+module
+
+public import AmbidextrousSofa.Analysis.SmallTiltConstants
+
+@[expose] public section
 
 /-!
 # Small positive tilts satisfy both initial-floor energy inequalities
@@ -82,13 +86,13 @@ theorem smallTilt_floorTest_le_four_of_area
   have hs1 : s ≤ 63 / 200 := hs.2.1.le
   have hhs : h ≤ (10000 / 19491) * s ^ 2 := hs.2.2
   have hwidth := smallTilt_width_growth_of_floorTest hC hh0 hh1 hz0 hz1 hQ
-  have hλ := smallTilt_tangent_bounds
-  have hλ0 : 0 < 2 + smallTiltTangent := by linarith only [hλ.1]
-  have hwidthmul := mul_lt_mul_of_pos_left hwidth hλ0
+  have hlam := smallTilt_tangent_bounds
+  have hlam0 : 0 < 2 + smallTiltTangent := by linarith only [hlam.1]
+  have hwidthmul := mul_lt_mul_of_pos_left hwidth hlam0
   have hslower := mul_nonneg
-    (show 0 ≤ smallTiltTangent - 8086 / 10000 by linarith only [hλ.1]) hs0.le
+    (show 0 ≤ smallTiltTangent - 8086 / 10000 by linarith only [hlam.1]) hs0.le
   have hqupper := mul_nonneg
-    (show 0 ≤ 8087 / 10000 - smallTiltTangent by linarith only [hλ.2])
+    (show 0 ≤ 8087 / 10000 - smallTiltTangent by linarith only [hlam.2])
     (sq_nonneg (h + z))
   have hzs : z ≤ (10 / 9) * s := hzT.trans
     (mul_le_mul_of_nonneg_left hT (by norm_num))
@@ -175,9 +179,9 @@ theorem smallTilt_radius_le_five_of_area
     · linarith only [hxi, lt_of_not_ge hsmall]
   have hwidth : 3 / 80 < C - smallTiltWidth := by
     linarith only [hCbig, smallTilt_baseline_bounds.2.1]
-  have hλ : 14 / 5 < 2 + smallTiltTangent := by
+  have hlam : 14 / 5 < 2 + smallTiltTangent := by
     linarith only [smallTilt_tangent_bounds.1]
-  have hprod1 := mul_lt_mul_of_pos_right hλ
+  have hprod1 := mul_lt_mul_of_pos_right hlam
     (show 0 < C - smallTiltWidth by linarith only [hwidth])
   have hprod2 := mul_lt_mul_of_pos_left hwidth (show (0 : ℝ) < 14 / 5 by norm_num)
   have hbase : 559 / 240 < smallTiltBaseline +

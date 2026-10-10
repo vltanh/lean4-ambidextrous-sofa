@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.FiniteVariation
+module
+
+public import AmbidextrousSofa.Analysis.FiniteVariation
+
+@[expose] public section
 
 /-!
 # Actual finite polygon support variations

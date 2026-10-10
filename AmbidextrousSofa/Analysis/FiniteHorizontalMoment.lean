@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.FiniteSourceBalance
+module
+
+public import AmbidextrousSofa.Analysis.FiniteSourceBalance
+
+@[expose] public section
 
 /-!
 # The literal finite horizontal source moment

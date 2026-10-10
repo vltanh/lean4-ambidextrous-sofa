@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Geometry.Barriers
+module
+
+public import AmbidextrousSofa.Geometry.Barriers
+
+@[expose] public section
 
 /-!
 # Finite, measurable, and integrable whole-angle barriers

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Geometry.Motions
+module
+
+public import AmbidextrousSofa.Geometry.Motions
+
+@[expose] public section
 
 /-!
 # Rigid changes of body coordinates

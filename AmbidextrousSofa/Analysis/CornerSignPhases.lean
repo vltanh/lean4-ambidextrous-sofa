@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.HorizontalNicheConfinement
+module
+
+public import AmbidextrousSofa.Analysis.HorizontalNicheConfinement
+
+@[expose] public section
 
 /-!
 # Ordered sign phases from actual reverse-corner exclusion

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.NeighborLength
+module
+
+public import AmbidextrousSofa.Analysis.NeighborLength
+
+@[expose] public section
 
 /-!
 # The companion-wall neighboring estimate
@@ -96,25 +100,25 @@ theorem companionPoint_fst (U : Set Plane) (t v : ℝ) :
 theorem dot_companionPoint_first (U : Set Plane) (t v s : ℝ) :
     coordDot (companionPoint U t v) (unitNormal s) =
       v * Real.cos (s - t) + (support U (companionNormal t) - 1) * Real.sin (s - t) := by
-  change Imported.dot
-    (v • Imported.uvec t + (support U (companionNormal t) - 1) • Imported.vvec t)
-      (Imported.uvec s) = _
-  rw [Imported.dot_add_left, Imported.dot_smul_left, Imported.dot_smul_left,
-    Imported.dot_uvec_uvec, Imported.dot_vvec_uvec', Real.cos_sub_comm t s]
+  change MovingSofaOptimality.dot
+    (v • MovingSofaOptimality.uvec t + (support U (companionNormal t) - 1) • MovingSofaOptimality.vvec t)
+      (MovingSofaOptimality.uvec s) = _
+  rw [MovingSofaOptimality.dot_add_left, MovingSofaOptimality.dot_smul_left, MovingSofaOptimality.dot_smul_left,
+    MovingSofaOptimality.dot_uvec_uvec, MovingSofaOptimality.dot_vvec_uvec', Real.cos_sub_comm t s]
 
 theorem dot_companionPoint_companion (U : Set Plane) (t v s : ℝ) :
     coordDot (companionPoint U t v) (companionNormal s) =
       v * Real.sin (t - s) + (support U (companionNormal t) - 1) * Real.cos (t - s) := by
-  change Imported.dot
-    (v • Imported.uvec t + (support U (companionNormal t) - 1) • Imported.vvec t)
-      (Imported.vvec s) = _
-  rw [Imported.dot_add_left, Imported.dot_smul_left, Imported.dot_smul_left,
-    Imported.dot_uvec_vvec', Imported.dot_vvec_vvec]
+  change MovingSofaOptimality.dot
+    (v • MovingSofaOptimality.uvec t + (support U (companionNormal t) - 1) • MovingSofaOptimality.vvec t)
+      (MovingSofaOptimality.vvec s) = _
+  rw [MovingSofaOptimality.dot_add_left, MovingSofaOptimality.dot_smul_left, MovingSofaOptimality.dot_smul_left,
+    MovingSofaOptimality.dot_uvec_vvec', MovingSofaOptimality.dot_vvec_vvec]
 
 theorem point_eq_companionPoint {U : Set Plane} {p : Plane} {t : ℝ}
     (hline : coordDot p (companionNormal t) = support U (companionNormal t) - 1) :
     p = companionPoint U t (coordDot p (unitNormal t)) := by
-  have h := Imported.eq_dot_uvec_smul_add p t
+  have h := MovingSofaOptimality.eq_dot_uvec_smul_add p t
   change p = coordDot p (unitNormal t) • unitNormal t +
     coordDot p (companionNormal t) • companionNormal t at h
   rwa [hline] at h

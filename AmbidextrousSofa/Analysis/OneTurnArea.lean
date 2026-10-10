@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.NicheFit
+module
+
+public import AmbidextrousSofa.Analysis.NicheFit
+
+@[expose] public section
 
 /-!
 # The actual survivor area and the tilted one-turn necessary inequality

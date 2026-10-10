@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.InactiveNormals
-import AmbidextrousSofa.Analysis.TopFacetEndpoints
+module
+
+public import AmbidextrousSofa.Analysis.InactiveNormals
+public import AmbidextrousSofa.Analysis.TopFacetEndpoints
+
+@[expose] public section
 
 /-!
 # Pinning the actual nonhorizontal middle facet

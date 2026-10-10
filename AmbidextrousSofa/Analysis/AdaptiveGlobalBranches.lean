@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.AdaptiveGlobalBoundary
-import AmbidextrousSofa.Analysis.ExactEstimates
+module
+
+public import AmbidextrousSofa.Analysis.AdaptiveGlobalBoundary
+public import AmbidextrousSofa.Analysis.ExactEstimates
+
+@[expose] public section
 
 /-!
 # The width boundary and the explicit large-width branch

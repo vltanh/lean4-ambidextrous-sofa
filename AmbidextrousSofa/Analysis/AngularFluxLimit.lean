@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.WallVisibility
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+module
+
+public import AmbidextrousSofa.Analysis.WallVisibility
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+
+@[expose] public section
 
 /-!
 # The actual angular flux bound on two visible graph pieces

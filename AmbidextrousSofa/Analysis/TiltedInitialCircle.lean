@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.TiltedSupportControls
-import AmbidextrousSofa.Analysis.CompanionFloorShadow
-import AmbidextrousSofa.Analysis.TiltedInitialEnergy
-import AmbidextrousSofa.Measure.SupportAreaAC
+module
+
+public import AmbidextrousSofa.Analysis.TiltedSupportControls
+public import AmbidextrousSofa.Analysis.CompanionFloorShadow
+public import AmbidextrousSofa.Analysis.TiltedInitialEnergy
+public import AmbidextrousSofa.Measure.SupportAreaAC
+
+@[expose] public section
 
 /-!
 # The actual initial circle and its first stopping point
@@ -34,10 +38,14 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
-local notation "D" => secondTangentPoint F.g F.gD
-local notation "B" => firstTangentPoint F.f F.fD
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
+set_option quotPrecheck false in
+local notation "D" => secondTangentPoint (F).g (F).gD
+set_option quotPrecheck false in
+local notation "B" => firstTangentPoint (F).f (F).fD
 
 /-- Coordinate calculus for both actual tangent loci, retaining the
 closed endpoint representatives of the two supporting faces. -/
@@ -117,12 +125,12 @@ theorem fullTiltedSupportQuarterPair_initial_values {C h : ℝ}
     rw [hgD0, hf0, hr]
     ring
   · rw [secondTangentPoint, companionSupportPoint_coordinates]
-    change (F.g 0 - 1) * Real.cos 0 - F.gD 0 * Real.sin 0 = -h
+    change ((F).g 0 - 1) * Real.cos 0 - (F).gD 0 * Real.sin 0 = -h
     rw [hg0, Real.cos_zero, Real.sin_zero]
     ring
   · rw [secondTangentPoint, companionSupportPoint_coordinates]
-    change (F.g (Real.pi / 2) - 1) * Real.cos (Real.pi / 2) -
-      F.gD (Real.pi / 2) * Real.sin (Real.pi / 2) = _
+    change ((F).g (Real.pi / 2) - 1) * Real.cos (Real.pi / 2) -
+      (F).gD (Real.pi / 2) * Real.sin (Real.pi / 2) = _
     rw [hgDL, Real.cos_pi_div_two, Real.sin_pi_div_two]
     ring
 

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.DiagonalRelaxation
+module
+
+public import AmbidextrousSofa.Analysis.DiagonalRelaxation
+
+@[expose] public section
 
 /-!
 # Exact global bounds for the clipped diagonal relaxation

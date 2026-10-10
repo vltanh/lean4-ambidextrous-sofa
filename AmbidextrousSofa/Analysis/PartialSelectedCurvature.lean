@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialSelectedSequence
-import AmbidextrousSofa.Analysis.SelectedCurvature
+module
+
+public import AmbidextrousSofa.Analysis.PartialSelectedSequence
+public import AmbidextrousSofa.Analysis.SelectedCurvature
+
+@[expose] public section
 
 /-!
 # Actual selected proper-angle curvature atoms
@@ -93,14 +97,14 @@ theorem IsSelectedPolygon.curvature_atom_le {target U : Set Plane}
       horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 := by linarith
   by_cases hmass : 0 < (upperCurvature U {θ}).toReal
   · have hcb := hU.isCap.imported_isConvexBody
-    have hp := Imported.vminus_mem_edge hcb θ
-    have hq := Imported.vplus_mem_edge hcb θ
-    have hpq : Imported.vminus U θ ≠ Imported.vplus U θ := by
+    have hp := MovingSofaOptimality.vminus_mem_edge hcb θ
+    have hq := MovingSofaOptimality.vplus_mem_edge hcb θ
+    have hpq : MovingSofaOptimality.vminus U θ ≠ MovingSofaOptimality.vplus U θ := by
       intro heq
       have hzero : (upperCurvature U {θ}).toReal = 0 := by
-        change Imported.sigmaAt U θ = 0
-        rw [(Imported.proposition2_1_2 hcb θ).1, heq, sub_self]
-        simp [Imported.norm2, Imported.dot]
+        change MovingSofaOptimality.sigmaAt U θ = 0
+        rw [(MovingSofaOptimality.proposition2_1_2 hcb θ).1, heq, sub_self]
+        simp [MovingSofaOptimality.norm2, MovingSofaOptimality.dot]
       linarith
     have hmax : ∀ V : Set Plane, IsDownwardCap V →
         horizontalProjection V = Icc (horizontalLeft U) (horizontalRight U) →

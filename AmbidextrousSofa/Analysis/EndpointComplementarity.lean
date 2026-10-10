@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.AxisHeightLimit
+module
+
+public import AmbidextrousSofa.Analysis.AxisHeightLimit
+
+@[expose] public section
 
 /-!
 # Endpoint complementarity for every actual full cap maximum

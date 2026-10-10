@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.PolygonVariation
+module
+
+public import AmbidextrousSofa.Analysis.PolygonVariation
+
+@[expose] public section
 
 /-!
 # Finite expressions for actual polygon roofs and hallway barriers

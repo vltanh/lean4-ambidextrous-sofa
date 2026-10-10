@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.DyadicNeighbors
+module
+
+public import AmbidextrousSofa.Analysis.DyadicNeighbors
+
+@[expose] public section
 
 /-!
 # Counting actual dyadic source angles
@@ -142,6 +146,7 @@ theorem sum_mesh_left_sources_le (n : ℕ) {ε : ℝ} (hε : 0 ≤ ε) :
       (reverseGridIndex_injective n) (reverseGridIndex_pos n) (mesh_pos n) hε
       (pi_sub_fullAngle_eq_index_mul_mesh n)
 
+open Classical in
 /-- Distinct integer mesh points in a closed interval have at most one
 mesh of endpoint rounding error. No alignment of either endpoint is
 assumed. -/
@@ -177,6 +182,7 @@ theorem count_integer_mesh_interval_le {ι : Type*} [Fintype ι] [DecidableEq ι
     simp only [Finset.card_empty, Nat.cast_zero, zero_mul]
     linarith
 
+open Classical in
 theorem sum_mesh_interval_sources_le (n : ℕ) {a b : ℝ} (hab : a ≤ b) :
     (∑ j ∈ Finset.univ.filter (fun j : SourceIndex (dyadic n) =>
       fullAngle (dyadic n) j ∈ Icc a b), mesh n) ≤ b - a + mesh n := by

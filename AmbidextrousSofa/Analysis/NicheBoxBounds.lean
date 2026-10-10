@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.NicheWings
+module
+
+public import AmbidextrousSofa.Analysis.NicheWings
+
+@[expose] public section
 
 /-!
 # Exact middle endpoint niche bounds from the actual box

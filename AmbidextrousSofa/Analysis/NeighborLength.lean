@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.NeighborWalls
+module
+
+public import AmbidextrousSofa.Analysis.NeighborWalls
+
+@[expose] public section
 
 /-!
 # Quantitative neighboring-wall source bounds
@@ -76,17 +80,17 @@ theorem IsDownwardCap.curvature_atom_mul_sin_le {U : Set Plane}
       support U (unitNormal (t - δ)) + support U (unitNormal (t + δ)) -
         2 * Real.cos δ * support U (unitNormal t) := by
   have hK := hU.imported_isConvexBody
-  have hm := Imported.dot_le_supp hU.isCompact (Imported.vminus_mem_edge hK t).1 (t - δ)
-  have hp := Imported.dot_le_supp hU.isCompact (Imported.vplus_mem_edge hK t).1 (t + δ)
-  rw [Imported.dot_uvec_eq_cos_add_sin _ (t - δ) t,
+  have hm := MovingSofaOptimality.dot_le_supp hU.isCompact (MovingSofaOptimality.vminus_mem_edge hK t).1 (t - δ)
+  have hp := MovingSofaOptimality.dot_le_supp hU.isCompact (MovingSofaOptimality.vplus_mem_edge hK t).1 (t + δ)
+  rw [MovingSofaOptimality.dot_uvec_eq_cos_add_sin _ (t - δ) t,
     show t - δ - t = -δ by ring, Real.cos_neg, Real.sin_neg,
-    Imported.dot_vminus_uvec] at hm
-  rw [Imported.dot_uvec_eq_cos_add_sin _ (t + δ) t,
-    show t + δ - t = δ by ring, Imported.dot_vplus_uvec] at hp
-  change Imported.sigmaAt U t * Real.sin δ ≤
-    Imported.supp U (t - δ) + Imported.supp U (t + δ) -
-      2 * Real.cos δ * Imported.supp U t
-  rw [Imported.sigmaAt_eq_dot_sub hK]
+    MovingSofaOptimality.dot_vminus_uvec] at hm
+  rw [MovingSofaOptimality.dot_uvec_eq_cos_add_sin _ (t + δ) t,
+    show t + δ - t = δ by ring, MovingSofaOptimality.dot_vplus_uvec] at hp
+  change MovingSofaOptimality.sigmaAt U t * Real.sin δ ≤
+    MovingSofaOptimality.supp U (t - δ) + MovingSofaOptimality.supp U (t + δ) -
+      2 * Real.cos δ * MovingSofaOptimality.supp U t
+  rw [MovingSofaOptimality.sigmaAt_eq_dot_sub hK]
   nlinarith
 
 theorem IsDownwardCap.support_secondDifference_nonneg {U : Set Plane}
@@ -127,7 +131,7 @@ theorem companion_interval_length_le {f g gm gp δ : ℝ}
     apply add_le_add_left
     apply (div_le_div_iff_of_pos_right hs).mpr
     linarith
-  have hhalf := Imported.tan_half_mul_sin hh
+  have hhalf := MovingSofaOptimality.tan_half_mul_sin hh
   have hh0 : 0 ≤ Real.tan (δ / 2) := by
     apply nonneg_of_mul_nonneg_left _ hs
     rw [hhalf]
@@ -174,7 +178,7 @@ theorem first_interval_length_le_curvature {U : Set Plane} (hU : IsDownwardCap U
       firstLo (support U (unitNormal t)) (support U (unitNormal (t + δ))) δ ≤
         2 * Real.tan (δ / 2) - (upperCurvature U {t}).toReal := by
   have hcur := hU.curvature_atom_mul_sin_le t δ
-  have hhalf := Imported.tan_half_mul_sin hh
+  have hhalf := MovingSofaOptimality.tan_half_mul_sin hh
   have heq :
       (firstHi (support U (unitNormal t)) (support U (unitNormal (t - δ))) δ -
         firstLo (support U (unitNormal t)) (support U (unitNormal (t + δ))) δ) * Real.sin δ =
@@ -225,7 +229,7 @@ theorem integral_first_source_le {U : Set Plane} (hU : IsDownwardCap U)
     (hplus : ∃ s ∈ grid, (s : ℝ) = (t.val : ℝ) + δ) :
     (∫ x in a..b, innerDensity U grid (Sum.inl t) x) ≤
       Real.tan δ * (|firstCornerSecant U t.val δ| + Real.tan (δ / 2)) +
-        max (2 * Real.tan (δ / 2) - (upperCurvature U {t.val}).toReal) 0 := by
+        max (2 * Real.tan (δ / 2) - (upperCurvature U {(t.val : ℝ)}).toReal) 0 := by
   have hraw := integral_first_source_le_parameters hU grid t hc hs hab hminus hplus
   have hcomp := companion_interval_length_le hc hs hh
     (hU.companion_secondDifference_nonneg t.val hs.le)

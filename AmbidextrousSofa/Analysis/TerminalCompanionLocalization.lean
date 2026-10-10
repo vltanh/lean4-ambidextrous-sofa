@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TerminalHistory
+module
+
+public import AmbidextrousSofa.Analysis.TerminalHistory
+
+@[expose] public section
 
 /-!
 # Actual localization of a positive companion-wall maximum
@@ -141,8 +145,8 @@ theorem IsDownwardCap.exists_positive_localized_secondWall_max {U : Set Plane}
     (hpositive : ∃ r ∈ Icc 0 α, 0 < secondWall U r x) :
     ∃ t ∈ Ioo 0 α, t ≤ Real.arcsin B ∧ 0 < secondWall U t x ∧
       IsMaxOn (fun r => secondWall U r x) (Icc 0 α) t ∧
-      (Imported.vplus U (t + Real.pi / 2)).1 + Real.sin t = x ∧
-      secondWall U t x = (Imported.vplus U (t + Real.pi / 2)).2 - Real.cos t := by
+      (MovingSofaOptimality.vplus U (t + Real.pi / 2)).1 + Real.sin t = x ∧
+      secondWall U t x = (MovingSofaOptimality.vplus U (t + Real.pi / 2)).2 - Real.cos t := by
   obtain ⟨t, ht, hmax⟩ := hU.exists_localized_secondWall_max hα0 hαL hB0 hBα hx
   obtain ⟨r, hr, hpos⟩ := hpositive
   have htpos : 0 < secondWall U t x := hpos.trans_le (hmax hr)
@@ -157,11 +161,11 @@ theorem IsDownwardCap.exists_positive_localized_secondWall_max {U : Set Plane}
   have htα : t < α := ht.2.trans_lt hβα
   have hcos (r : ℝ) (hr : r ∈ Icc 0 α) : 0 < Real.cos r :=
     Real.cos_pos_of_mem_Ioo ⟨by linarith [hr.1, Real.pi_pos], hr.2.trans_lt hαL⟩
-  let p := Imported.vplus U (t + Real.pi / 2)
-  have hp : p ∈ U := (Imported.vplus_mem_edge hU.imported_isConvexBody _).1
+  let p := MovingSofaOptimality.vplus U (t + Real.pi / 2)
+  have hp : p ∈ U := (MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody _).1
   have hpSupport : coordDot p (companionNormal t) = support U (companionNormal t) := by
     simpa only [p, companionNormal_eq_unitNormal, angleSupport] using
-      Imported.dot_vplus_uvec U (t + Real.pi / 2)
+      MovingSofaOptimality.dot_vplus_uvec U (t + Real.pi / 2)
   have hpeq := companionPointWall_eq_secondWall_of_support (x := x)
     (hcos t ⟨ht0.le, htα.le⟩).ne' hpSupport
   have hpmax : IsMaxOn (companionPointWall p x) (Icc 0 α) t := by

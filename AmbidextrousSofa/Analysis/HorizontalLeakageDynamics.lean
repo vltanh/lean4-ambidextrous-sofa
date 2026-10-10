@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.CornerEndpointEnergy
-import AmbidextrousSofa.Analysis.HorizontalLeakageIntegral
-import AmbidextrousSofa.Analysis.RampCutIntegral
-import Mathlib.Topology.Piecewise
+module
+
+public import AmbidextrousSofa.Analysis.CornerEndpointEnergy
+public import AmbidextrousSofa.Analysis.HorizontalLeakageIntegral
+public import AmbidextrousSofa.Analysis.RampCutIntegral
+public import Mathlib.Topology.Piecewise
+
+@[expose] public section
 
 /-!
 # Initial crossing and quadratic decay for the horizontal corner

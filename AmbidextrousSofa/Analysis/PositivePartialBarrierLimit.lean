@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialHorizontalCutoff
-import AmbidextrousSofa.Analysis.PositiveNicheLimit
+module
+
+public import AmbidextrousSofa.Analysis.PartialHorizontalCutoff
+public import AmbidextrousSofa.Analysis.PositiveNicheLimit
+
+@[expose] public section
 
 /-!
 # Positive proper-barrier length in the actual selected limit
@@ -35,7 +39,7 @@ theorem measurable_positiveBarrierOverlap {target : Set Plane} (hTarget : IsDown
     Measurable (positiveBarrierOverlap target U α hαL grid) := by
   apply measurable_const.indicator
   exact ((measurableSet_middleHalfInterval _ _).inter
-    (measurableSet_lt measurable_const (measurable_partialBarrier hTarget.isCompact α.pos α.property.2))).inter
+    (measurableSet_lt measurable_const (measurable_partialBarrier hTarget.isCompact (TerminalAngle.pos α) α.property.2))).inter
     (measurableSet_lt measurable_const (continuous_finiteBarrier U _ _ _).measurable)
 
 theorem positiveBarrierOverlap_bounds (target U : Set Plane) (grid : Finset QuarterAngle) (x : ℝ) :
@@ -57,7 +61,7 @@ theorem integral_positiveBarrierOverlap_le {target U : Set Plane}
       {x : ℝ | 0 < partialBarrier target α x} ∩
       {x : ℝ | 0 < finiteBarrier U (normal α grid) (pairList α grid) (some (terminalIndex α hαL grid)) x}) :=
     ((measurableSet_middleHalfInterval _ _).inter
-      (measurableSet_lt measurable_const (measurable_partialBarrier hTarget.isCompact α.pos α.property.2))).inter
+      (measurableSet_lt measurable_const (measurable_partialBarrier hTarget.isCompact (TerminalAngle.pos α) α.property.2))).inter
       (measurableSet_lt measurable_const (continuous_finiteBarrier U _ _ _).measurable)
   change (∫ x in Icc (horizontalLeft U + capWidth U / 4)
     (horizontalRight U - capWidth U / 4), positiveBarrierOverlap target U α hαL grid x) ≤ _
@@ -85,7 +89,7 @@ theorem integral_positiveBarrierOverlap_tendsto
   let P : Set ℝ := middleHalfInterval (horizontalLeft target) (horizontalRight target) ∩
     {x : ℝ | 0 < partialBarrier target α x}
   have hP : MeasurableSet P := (measurableSet_middleHalfInterval _ _).inter
-    (measurableSet_lt measurable_const (measurable_partialBarrier hTarget.isCompact α.pos α.property.2))
+    (measurableSet_lt measurable_const (measurable_partialBarrier hTarget.isCompact (TerminalAngle.pos α) α.property.2))
   have hflim : ∀ᵐ x : ℝ ∂volume,
       Tendsto (fun n => positiveBarrierOverlap target (U n) α hαL (dyadic (level n)) x)
         atTop (𝓝 (P.indicator (fun _ => 1) x)) := by

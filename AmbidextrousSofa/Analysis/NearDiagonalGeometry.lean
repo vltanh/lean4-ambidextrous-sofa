@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.DiagonalDeficit
+module
+
+public import AmbidextrousSofa.Analysis.DiagonalDeficit
+
+@[expose] public section
 
 /-!
 # Actual near-diagonal supports of a tilted cap

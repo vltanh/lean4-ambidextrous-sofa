@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.CapNormalization
-import AmbidextrousSofa.Measure.CapAssembly
-import AmbidextrousSofa.Reference.Regularity
-import AmbidextrousSofa.Reference.Value
+module
+
+public import AmbidextrousSofa.Analysis.CapNormalization
+public import AmbidextrousSofa.Measure.CapAssembly
+public import AmbidextrousSofa.Reference.Regularity
+public import AmbidextrousSofa.Reference.Value
+
+@[expose] public section
 
 /-!
 # Literal recovery from the two original reference caps

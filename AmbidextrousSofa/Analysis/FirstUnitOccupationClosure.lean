@@ -1,8 +1,12 @@
-import AmbidextrousSofa.Analysis.FirstUnitOccupationGeometry
-import AmbidextrousSofa.Analysis.FirstUnitGeometricMoments
-import AmbidextrousSofa.Analysis.FirstUnitSourceSectors
-import AmbidextrousSofa.Analysis.FirstUnitFoldBudget
-import AmbidextrousSofa.Analysis.FirstUnitLateWindowClosure
+module
+
+public import AmbidextrousSofa.Analysis.FirstUnitOccupationGeometry
+public import AmbidextrousSofa.Analysis.FirstUnitGeometricMoments
+public import AmbidextrousSofa.Analysis.FirstUnitSourceSectors
+public import AmbidextrousSofa.Analysis.FirstUnitFoldBudget
+public import AmbidextrousSofa.Analysis.FirstUnitLateWindowClosure
+
+@[expose] public section
 
 /-!
 # Applying one common occupation law to the actual first-unit cap
@@ -32,12 +36,17 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 local notation "v" => (fun t : ℝ => leftCompanionWingDensity m ρ (t + Real.pi / 2))
-local notation "B" => firstTangentPoint F.f F.fD
-local notation "D" => secondTangentPoint F.g F.gD
-local notation "Z" => innerCornerPoint F.f F.g
+set_option quotPrecheck false in
+local notation "B" => firstTangentPoint (F).f (F).fD
+set_option quotPrecheck false in
+local notation "D" => secondTangentPoint (F).g (F).gD
+set_option quotPrecheck false in
+local notation "Z" => innerCornerPoint (F).f (F).g
 
 theorem fullTiltedSupportQuarterPair_false_of_common_occupation
     {C h : ℝ} {b δ χ : ℝ → ℝ}
@@ -89,7 +98,7 @@ theorem fullTiltedSupportQuarterPair_false_of_common_occupation
     simpa only [hmid] using haffine
   have hdry := hU.firstUnit_dry_left_and_overhang_bounds
     hl hr hC0 hC1 hh0 hh1 hheight haff hlow hhigh hρ hρ0 hρK heq hκ hunit
-  let T : ℝ := (Imported.vminus U (Real.pi / 2)).1 - C
+  let T : ℝ := (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C
   let S : ℝ := C + (D γ).1
   let z : ℝ := sweptNiche U (Real.pi / 2) C
   let eR : ℝ := capRoof U (horizontalRight U)

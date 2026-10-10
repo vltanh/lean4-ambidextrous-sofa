@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.ClosedSupportPair
-import AmbidextrousSofa.Measure.SupportAreaAC
+module
+
+public import AmbidextrousSofa.Analysis.ClosedSupportPair
+public import AmbidextrousSofa.Measure.SupportAreaAC
+
+@[expose] public section
 
 /-!
 # Actual horizontal cap area in the closed support pair

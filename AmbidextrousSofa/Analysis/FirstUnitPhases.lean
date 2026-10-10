@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.FirstUnitCrossings
-import AmbidextrousSofa.Analysis.FirstUnitTopOverhang
-import AmbidextrousSofa.Analysis.TiltedLateExcess
+module
+
+public import AmbidextrousSofa.Analysis.FirstUnitCrossings
+public import AmbidextrousSofa.Analysis.FirstUnitTopOverhang
+public import AmbidextrousSofa.Analysis.TiltedLateExcess
+
+@[expose] public section
 
 /-!
 # The actual first-unit tilted corner phases
@@ -28,8 +32,10 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 local notation "v" => (fun t : ℝ => leftCompanionWingDensity m ρ (t + Real.pi / 2))
 
 theorem fullTiltedSupportQuarterPair_exists_strict_sign_phases {C h : ℝ}

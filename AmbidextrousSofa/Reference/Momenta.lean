@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Reference.Realization
+module
+
+public import AmbidextrousSofa.Reference.Realization
+
+@[expose] public section
 
 /-!
 # Exact contact momenta and unit-curvature margins

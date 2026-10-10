@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.ErosionMoments
-import AmbidextrousSofa.Analysis.SelectedCurvature
+module
+
+public import AmbidextrousSofa.Analysis.ErosionMoments
+public import AmbidextrousSofa.Analysis.SelectedCurvature
+
+@[expose] public section
 
 /-!
 # Endpoint estimates for the actual selected polygons

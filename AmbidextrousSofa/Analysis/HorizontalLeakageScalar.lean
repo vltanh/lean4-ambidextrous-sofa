@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.ExactEstimates
+module
+
+public import AmbidextrousSofa.Analysis.ExactEstimates
+
+@[expose] public section
 
 /-!
 # Exact rational bounds for the horizontal leakage exclusion

@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialInactiveNormals
-import AmbidextrousSofa.Analysis.FacetPinning
+module
+
+public import AmbidextrousSofa.Analysis.PartialInactiveNormals
+public import AmbidextrousSofa.Analysis.FacetPinning
+
+@[expose] public section
 
 /-!
 # Pinning the middle facet of an actual partial maximizer

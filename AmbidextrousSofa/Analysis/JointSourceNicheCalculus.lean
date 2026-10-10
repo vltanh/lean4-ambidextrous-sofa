@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.JointBranchDensity
-import AmbidextrousSofa.Analysis.JointSourceAffine
-import AmbidextrousSofa.Analysis.JointNicheDerivative
-import AmbidextrousSofa.Analysis.ContactGraphSlope
+module
+
+public import AmbidextrousSofa.Analysis.JointBranchDensity
+public import AmbidextrousSofa.Analysis.JointSourceAffine
+public import AmbidextrousSofa.Analysis.JointNicheDerivative
+public import AmbidextrousSofa.Analysis.ContactGraphSlope
+
+@[expose] public section
 
 /-!
 # The common niche derivative on every actual source branch

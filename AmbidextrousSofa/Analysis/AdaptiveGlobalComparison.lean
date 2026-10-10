@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.AdaptiveGlobalScalar
-import AmbidextrousSofa.Analysis.AdaptiveGlobalValue
-import AmbidextrousSofa.Analysis.AdaptiveTranslation
+module
+
+public import AmbidextrousSofa.Analysis.AdaptiveGlobalScalar
+public import AmbidextrousSofa.Analysis.AdaptiveGlobalValue
+public import AmbidextrousSofa.Analysis.AdaptiveTranslation
+
+@[expose] public section
 
 /-!
 # Global adaptive comparison at every competitive width

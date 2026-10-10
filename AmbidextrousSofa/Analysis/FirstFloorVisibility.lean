@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.CompanionBaseline
-import AmbidextrousSofa.Analysis.CoreContactGeometry
+module
+
+public import AmbidextrousSofa.Analysis.CompanionBaseline
+public import AmbidextrousSofa.Analysis.CoreContactGeometry
+
+@[expose] public section
 
 /-!
 # Actual corner visibility through an initial nonpositive floor interval
@@ -31,14 +35,18 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "D" => secondTangentPoint F.g F.gD
-local notation "Z" => innerCornerPoint F.f F.g
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "D" => secondTangentPoint (F).g (F).gD
+set_option quotPrecheck false in
+local notation "Z" => innerCornerPoint (F).f (F).g
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 local notation "V" => leftCompanionCap U (horizontalLeft U + capWidth U / 4)
 
 theorem fullTiltedSupportQuarterPair_cut_wall_eq_scalar (t x : ℝ) :
-    secondWall V t x = (F.g t - 1 + x * Real.sin t) / Real.cos t := by
+    secondWall V t x = ((F).g t - 1 + x * Real.sin t) / Real.cos t := by
   change secondWall V t x =
     (angleSupport V (t + Real.pi / 2) - 1 + x * Real.sin t) / Real.cos t
   simp only [secondWall, angleSupport, companionNormal_eq_unitNormal]
@@ -54,7 +62,7 @@ theorem fullTiltedSupportQuarterPair_cut_wall_lt_core_of_initial_floor_nonpos {t
   have h := companion_wall_lt_later_of_initial_tangent_nonpos ht hr
     (fun s hs => (fullTiltedSupportQuarterPair_support_derivatives
       hU hm haffine hρ hρ0 hρK heq hs).2) hfloor
-    (show 0 < (F.g t - 1 + (Z t).1 * Real.sin t) / Real.cos t by
+    (show 0 < ((F).g t - 1 + (Z t).1 * Real.sin t) / Real.cos t by
       rw [← hscalar t (Z t).1, hwall]
       exact hy)
   simpa only [← hscalar r (Z t).1, ← hscalar t (Z t).1, hwall] using h
@@ -94,7 +102,7 @@ theorem fullTiltedSupportQuarterPair_earlier_cut_walls_eventually {t : ℝ}
   have hc : 0 < Real.cos t := Real.cos_pos_of_mem_Ioo
     ⟨by linarith only [ht.1, Real.pi_pos], ht.2⟩
   have hgap : (D t).1 < (Z t).1 := by
-    rw [innerCorner_fst_eq_secondTangent F.f F.g F.gD]
+    rw [innerCorner_fst_eq_secondTangent (F).f (F).g (F).gD]
     exact lt_add_of_pos_right _ (mul_pos hq hc)
   let A := ((Z t).1 + (D t).1) / 2
   have hA0 : (D t).1 < A := by dsimp only [A]; linarith only [hgap]
@@ -112,7 +120,7 @@ theorem fullTiltedSupportQuarterPair_earlier_cut_walls_eventually {t : ℝ}
   have ha : a ∈ Ioo (0 : ℝ) (Real.pi / 2) :=
     (hlocal ⟨hla, hat.trans htu.2⟩).1
   have hscalar := fullTiltedSupportQuarterPair_cut_wall_eq_scalar hU hm haffine hρ hρ0 hρK heq
-  have hg : Continuous F.g :=
+  have hg : Continuous (F).g :=
     hU.isCap_fullLeftCompanion.imported_isConvexBody.continuous_supp.comp
       (continuous_id.add_const (Real.pi / 2))
   have hzero : secondWall V 0 (Z t).1 ≤ 0 := by
@@ -128,7 +136,7 @@ theorem fullTiltedSupportQuarterPair_earlier_cut_walls_eventually {t : ℝ}
     have hcr : Real.cos r ≠ 0 := (Real.cos_pos_of_mem_Ioo
       ⟨by linarith only [hr.1, Real.pi_pos], hr.2.trans_lt ha.2⟩).ne'
     have hfun : (fun z : ℝ × ℝ => secondWall V z.2 (Z z.1).1) =
-        fun z => (F.g z.2 - 1 + (Z z.1).1 * Real.sin z.2) / Real.cos z.2 := by
+        fun z => ((F).g z.2 - 1 + (Z z.1).1 * Real.sin z.2) / Real.cos z.2 := by
       funext z
       exact hscalar z.2 (Z z.1).1
     have hcont : ContinuousAt (fun z : ℝ × ℝ => secondWall V z.2 (Z z.1).1) (t, r) := by
@@ -180,7 +188,7 @@ theorem fullTiltedSupportQuarterPair_core_contact_eventually_of_initial_floor_no
   have hX := hcore.1.continuousAt (Icc_mem_nhds ht.1 ht.2)
   have hY := hcore.2.continuousAt (Icc_mem_nhds ht.1 ht.2)
   have hP : ContinuousAt p t :=
-    (((F.continuous_fD.sub F.continuous_g).add continuousOn_const).continuousAt
+    ((((F).continuous_fD.sub (F).continuous_g).add continuousOn_const).continuousAt
       (Icc_mem_nhds ht.1 ht.2))
   have hearlier := fullTiltedSupportQuarterPair_earlier_cut_walls_eventually
     hU hm haffine hρ hρ0 hρK heq ht hq hy

@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.CoreContactPhase
-import AmbidextrousSofa.Analysis.PositiveWallContacts
+module
+
+public import AmbidextrousSofa.Analysis.CoreContactPhase
+public import AmbidextrousSofa.Analysis.PositiveWallContacts
+
+@[expose] public section
 
 /-!
 # Exclusive source angles above a positive first tangent
@@ -46,10 +50,14 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "B" => firstTangentPoint F.f F.fD
-local notation "Z" => innerCornerPoint F.f F.g
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "B" => firstTangentPoint (F).f (F).fD
+set_option quotPrecheck false in
+local notation "Z" => innerCornerPoint (F).f (F).g
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 local notation "V" => leftCompanionCap U (horizontalLeft U + capWidth U / 4)
 
 theorem fullTiltedSupportQuarterPair_first_wall_strict_at_first_tangency {t : ℝ}
@@ -145,7 +153,7 @@ theorem fullTiltedSupportQuarterPair_strict_first_contact_unique
     have hmatch := (fullTiltedSupportQuarterPair_other_points_after_affine
       hU hm haffine hρ hρ0 hρK heq ⟨hs.1.le, hs.2⟩ hafter).2
     have hleft : (attachedCorner U s).1 < (B s).1 := by
-      rw [← hmatch, innerCorner_fst_eq_firstTangent F.f F.g F.fD]
+      rw [← hmatch, innerCorner_fst_eq_firstTangent (F).f (F).g (F).fD]
       have hsin : 0 < Real.sin s := Real.sin_pos_of_pos_of_lt_pi hs.1
         (by linarith only [hs.2, Real.pi_pos])
       have hprod := mul_neg_of_neg_of_pos (hphase.core_signs s hcore).1 hsin

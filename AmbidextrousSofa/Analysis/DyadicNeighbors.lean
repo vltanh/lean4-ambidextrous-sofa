@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.NeighborCompanion
+module
+
+public import AmbidextrousSofa.Analysis.NeighborCompanion
+
+@[expose] public section
 
 /-!
 # Concrete dyadic curvature inequalities

@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.TerminalCompanionComparison
-import AmbidextrousSofa.Analysis.EndpointTrimming
-import AmbidextrousSofa.Analysis.FacetPinning
+module
+
+public import AmbidextrousSofa.Analysis.TerminalCompanionComparison
+public import AmbidextrousSofa.Analysis.EndpointTrimming
+public import AmbidextrousSofa.Analysis.FacetPinning
+
+@[expose] public section
 
 /-!
 # The actual left charged companion cap
@@ -31,7 +35,7 @@ theorem leftCompanionCap_subset (U : Set Plane) (a : ℝ) : leftCompanionCap U a
   horizontalCut_subset U (horizontalLeft U) a
 
 theorem IsDownwardCap.leftCompanionCap {U : Set Plane} (hU : IsDownwardCap U)
-    {a : ℝ} (ha : a ∈ horizontalProjection U) : IsDownwardCap (leftCompanionCap U a) := by
+    {a : ℝ} (ha : a ∈ horizontalProjection U) : IsDownwardCap (AmbidextrousSofa.leftCompanionCap U a) := by
   have ha' := ha
   rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex] at ha'
   apply hU.horizontalCut ha'.1
@@ -49,7 +53,7 @@ theorem horizontalLeft_leftCompanionCap {U : Set Plane} (hU : IsDownwardCap U)
 
 theorem IsDownwardCap.rightRoof_mem_leftCompanionCap {U : Set Plane}
     (hU : IsDownwardCap U) {a : ℝ} (ha : a ∈ horizontalProjection U) :
-    (a, capRoof U a) ∈ leftCompanionCap U a := by
+    (a, capRoof U a) ∈ AmbidextrousSofa.leftCompanionCap U a := by
   have hpoint := capRoof_mem hU.isCompact ha
   exact ⟨hpoint, (hU.fst_mem_Icc hpoint).1, le_rfl⟩
 
@@ -74,7 +78,7 @@ theorem IsDownwardCap.secondWall_le_leftCompanionCap
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (haffine : ∀ y ∈ Icc a b, capRoof U y = m * y + c)
     (hxb : x ≤ b) (hs : 0 ≤ Real.sin t) (hc : 0 < Real.cos t) :
-    secondWall U t x ≤ max (secondWall (leftCompanionCap U a) t x) 0 := by
+    secondWall U t x ≤ max (secondWall (AmbidextrousSofa.leftCompanionCap U a) t x) 0 := by
   have hV := hU.leftCompanionCap ha
   obtain ⟨p, hp, hsupport⟩ := exists_coordDot_eq_support hU.isCompact hU.nonempty
     (companionNormal t)
@@ -82,7 +86,7 @@ theorem IsDownwardCap.secondWall_le_leftCompanionCap
     (companionPointWall_eq_secondWall_of_support hc.ne' hsupport).symm
   rw [hwall]
   by_cases hpa : p.1 ≤ a
-  · have hpV : p ∈ leftCompanionCap U a := ⟨hp, (hU.fst_mem_Icc hp).1, hpa⟩
+  · have hpV : p ∈ AmbidextrousSofa.leftCompanionCap U a := ⟨hp, (hU.fst_mem_Icc hp).1, hpa⟩
     exact (companionPointWall_le_secondWall hV hpV hc).trans (le_max_left _ _)
   · by_cases hbp : b ≤ p.1
     · exact (companionPointWall_nonpos_of_right (hU.inStrip hp).2
@@ -91,7 +95,7 @@ theorem IsDownwardCap.secondWall_le_leftCompanionCap
       have hpy : p.2 ≤ m * p.1 + c := by
         have h := le_capRoof hU.isCompact (show (p.1, p.2) ∈ U by simpa using hp)
         rwa [haffine p.1 hpx] at h
-      have hpA : (a, m * a + c) ∈ leftCompanionCap U a := by
+      have hpA : (a, m * a + c) ∈ AmbidextrousSofa.leftCompanionCap U a := by
         rw [← haffine a ⟨le_rfl, hab.le⟩]
         exact hU.rightRoof_mem_leftCompanionCap ha
       have hpB : (b, m * b + c) ∈ U := by
@@ -128,14 +132,14 @@ theorem IsDownwardCap.top_leftCompanionCap_of_positive_affine
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (hm : 0 < m)
     (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c) :
-    capHeight (leftCompanionCap U a) = capRoof U a ∧
-      Imported.vplus (leftCompanionCap U a) (Real.pi / 2) = (a, capRoof U a) := by
+    capHeight (AmbidextrousSofa.leftCompanionCap U a) = capRoof U a ∧
+      MovingSofaOptimality.vplus (AmbidextrousSofa.leftCompanionCap U a) (Real.pi / 2) = (a, capRoof U a) := by
   have hV := hU.leftCompanionCap ha
   have hline := haffine a ⟨le_rfl, hab.le⟩
-  have hceiling (p : Plane) (hp : p ∈ leftCompanionCap U a) : p.2 ≤ m * p.1 + c :=
+  have hceiling (p : Plane) (hp : p ∈ AmbidextrousSofa.leftCompanionCap U a) : p.2 ≤ m * p.1 + c :=
     (le_capRoof hU.isCompact (show (p.1, p.2) ∈ U by simpa using hp.1)).trans
       (hU.capRoof_le_affine_of_affine_segment ha hb hab haffine p.1 ⟨p, hp.1, rfl⟩)
-  have hheight : capHeight (leftCompanionCap U a) = capRoof U a := by
+  have hheight : capHeight (AmbidextrousSofa.leftCompanionCap U a) = capRoof U a := by
     refine support_eq_of_mem hV.isCompact
       (q := (a, capRoof U a)) ?_ (hU.rightRoof_mem_leftCompanionCap ha) ?_
     · intro p hp
@@ -144,9 +148,9 @@ theorem IsDownwardCap.top_leftCompanionCap_of_positive_affine
       simpa only [coordDot, mul_zero, mul_one, zero_add] using hy
     · simp only [coordDot, mul_zero, mul_one, zero_add]
   refine ⟨hheight, ?_⟩
-  let p := Imported.vplus (leftCompanionCap U a) (Real.pi / 2)
-  have hp : p ∈ leftCompanionCap U a :=
-    (Imported.vplus_mem_edge hV.imported_isConvexBody _).1
+  let p := MovingSofaOptimality.vplus (AmbidextrousSofa.leftCompanionCap U a) (Real.pi / 2)
+  have hp : p ∈ AmbidextrousSofa.leftCompanionCap U a :=
+    (MovingSofaOptimality.vplus_mem_edge hV.imported_isConvexBody _).1
   have hpy : p.2 = capRoof U a := (top_vplus_snd_eq_capHeight _).trans hheight
   have hax : a ≤ p.1 := by
     apply (mul_le_mul_left hm).mp
@@ -158,9 +162,9 @@ theorem IsDownwardCap.leftCompanion_initial_data_of_positive_affine
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (hm : 0 < m)
     (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c) :
-    companionInitialOffset (leftCompanionCap U a) = a - horizontalLeft U ∧
-      companionInitialDeficit (leftCompanionCap U a) = 1 - capRoof U a ∧
-      HasDerivWithinAt (fun t => angleSupport (leftCompanionCap U a) (t + Real.pi / 2))
+    companionInitialOffset (AmbidextrousSofa.leftCompanionCap U a) = a - horizontalLeft U ∧
+      companionInitialDeficit (AmbidextrousSofa.leftCompanionCap U a) = 1 - capRoof U a ∧
+      HasDerivWithinAt (fun t => angleSupport (AmbidextrousSofa.leftCompanionCap U a) (t + Real.pi / 2))
         (-a) (Ici 0) 0 := by
   obtain ⟨hheight, htop⟩ := hU.top_leftCompanionCap_of_positive_affine ha hb hab hm haffine
   have hderiv := (hU.leftCompanionCap ha).hasDerivWithinAt_companionSupport_zero
@@ -181,33 +185,33 @@ theorem IsDownwardCap.sweptNiche_le_circle_of_leftCompanion_density
     (hab : a < b) (haffine : ∀ y ∈ Icc a b, capRoof U y = m * y + c)
     (hxb : x ≤ b)
     (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (heq : (upperCurvature (leftCompanionCap U a)).restrict S =
+    (heq : (upperCurvature (AmbidextrousSofa.leftCompanionCap U a)).restrict S =
       (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
     (hα0 : 0 < α) (hαL : α < Real.pi / 2)
-    (hA : 0 < companionInitialOffset (leftCompanionCap U a))
-    (hAB : companionInitialOffset (leftCompanionCap U a) ≤ x - horizontalLeft U)
+    (hA : 0 < companionInitialOffset (AmbidextrousSofa.leftCompanionCap U a))
+    (hAB : companionInitialOffset (AmbidextrousSofa.leftCompanionCap U a) ≤ x - horizontalLeft U)
     (hBα : x - horizontalLeft U < Real.sin α)
     (hsub : Ioc (Real.pi / 2)
       (Real.arcsin (x - horizontalLeft U) + Real.pi / 2) ⊆ S) :
     sweptNiche U α x ≤
-      circleHeight (companionInitialOffset (leftCompanionCap U a)) -
+      circleHeight (companionInitialOffset (AmbidextrousSofa.leftCompanionCap U a)) -
         circleHeight (x - horizontalLeft U) +
         terminalWeightedExcess (fun t => ρ (t + Real.pi / 2))
-          (Real.arcsin (companionInitialOffset (leftCompanionCap U a))) := by
+          (Real.arcsin (companionInitialOffset (AmbidextrousSofa.leftCompanionCap U a))) := by
   have hV := hU.leftCompanionCap ha
   have hleft := horizontalLeft_leftCompanionCap hU ha
   have hbound (t : ℝ) (ht : t ∈ Icc 0 α) :
-      max (secondWall (leftCompanionCap U a) t x) 0 ≤
-        circleHeight (companionInitialOffset (leftCompanionCap U a)) -
+      max (secondWall (AmbidextrousSofa.leftCompanionCap U a) t x) 0 ≤
+        circleHeight (companionInitialOffset (AmbidextrousSofa.leftCompanionCap U a)) -
           circleHeight (x - horizontalLeft U) +
           terminalWeightedExcess (fun r => ρ (r + Real.pi / 2))
-            (Real.arcsin (companionInitialOffset (leftCompanionCap U a))) := by
+            (Real.arcsin (companionInitialOffset (AmbidextrousSofa.leftCompanionCap U a))) := by
     have h := hV.max_secondWall_le_circle_of_density hρ hρ0 hρK heq hα0 hαL hA
       (by simpa only [hleft] using hAB) (by simpa only [hleft] using hBα)
       (by simpa only [hleft] using hsub) ht
     simpa only [hleft] using h
   apply sweptNiche_le_of_forall hα0
-    ((le_max_right (secondWall (leftCompanionCap U a) 0 x) 0).trans
+    ((le_max_right (secondWall (AmbidextrousSofa.leftCompanionCap U a) 0 x) 0).trans
       (hbound 0 ⟨le_rfl, hα0.le⟩))
   intro t ht
   have hs : 0 ≤ Real.sin t := Real.sin_nonneg_of_nonneg_of_le_pi ht.1.le

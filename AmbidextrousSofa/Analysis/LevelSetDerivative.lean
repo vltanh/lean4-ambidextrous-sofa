@@ -1,6 +1,10 @@
-import Mathlib.Analysis.Calculus.Deriv.Inverse
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.Topology.Order.LeftRightNhds
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Inverse
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.Topology.Order.LeftRightNhds
+
+@[expose] public section
 
 /-!
 # Derivatives vanish almost everywhere on a fixed level set

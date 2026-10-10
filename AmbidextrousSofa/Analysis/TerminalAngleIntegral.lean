@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.TerminalAngleDerivative
-import AmbidextrousSofa.Analysis.JointCapMaximum
-import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
+module
+
+public import AmbidextrousSofa.Analysis.TerminalAngleDerivative
+public import AmbidextrousSofa.Analysis.JointCapMaximum
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+
+@[expose] public section
 
 /-!
 # Integrated terminal-angle variation
@@ -36,16 +40,16 @@ theorem half_le_sin_terminalAngle {a : ℝ}
 theorem IsDownwardCap.abs_terminalFirstRightAbscissa_le {U : Set Plane}
     (hU : IsDownwardCap U) (a : ℝ) :
     |terminalFirstRightAbscissa U a| ≤ |horizontalLeft U| + |horizontalRight U| + 1 := by
-  have hp : Imported.vplus U a ∈ U :=
-    (Imported.vplus_mem_edge hU.imported_isConvexBody a).1
-  have hx : (Imported.vplus U a).1 ∈ Icc (horizontalLeft U) (horizontalRight U) := by
+  have hp : MovingSofaOptimality.vplus U a ∈ U :=
+    (MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody a).1
+  have hx : (MovingSofaOptimality.vplus U a).1 ∈ Icc (horizontalLeft U) (horizontalRight U) := by
     rw [← horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
-    exact ⟨Imported.vplus U a, hp, rfl⟩
+    exact ⟨MovingSofaOptimality.vplus U a, hp, rfl⟩
   have habs := abs_le_endpoint_sum_of_mem_Icc hx
   unfold terminalFirstRightAbscissa
   apply abs_le.mpr
-  constructor <;> linarith [neg_abs_le (Imported.vplus U a).1,
-    le_abs_self (Imported.vplus U a).1, Real.neg_one_le_cos a, Real.cos_le_one a]
+  constructor <;> linarith [neg_abs_le (MovingSofaOptimality.vplus U a).1,
+    le_abs_self (MovingSofaOptimality.vplus U a).1, Real.neg_one_le_cos a, Real.cos_le_one a]
 
 theorem IsDownwardCap.norm_terminalFirstRightDerivative_le {U : Set Plane}
     (hU : IsDownwardCap U) {a : ℝ} (ha0 : Real.pi / 4 ≤ a)

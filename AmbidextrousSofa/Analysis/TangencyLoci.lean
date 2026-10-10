@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.CornerEnergy
-import Mathlib.Analysis.Calculus.Deriv.MeanValue
+module
+
+public import AmbidextrousSofa.Analysis.CornerEnergy
+public import Mathlib.Analysis.Calculus.Deriv.MeanValue
+
+@[expose] public section
 
 /-!
 # Actual inner-wall tangency loci

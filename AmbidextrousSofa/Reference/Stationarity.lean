@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Reference.Momenta
-import AmbidextrousSofa.Analysis.EulerFlux
+module
+
+public import AmbidextrousSofa.Reference.Momenta
+public import AmbidextrousSofa.Analysis.EulerFlux
+
+@[expose] public section
 
 /-!
 # Actual Euler equations for the explicit reference pair

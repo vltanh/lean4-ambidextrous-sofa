@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FiniteGraphFlux
-import Mathlib.MeasureTheory.Measure.FiniteMeasure
+module
+
+public import AmbidextrousSofa.Analysis.FiniteGraphFlux
+public import Mathlib.MeasureTheory.Measure.FiniteMeasure
+
+@[expose] public section
 
 /-!
 # The literal joint measure of finite inner sources
@@ -91,6 +95,7 @@ theorem innerJointMeasure_apply (U : Set Plane) (grid : Finset QuarterAngle)
     innerSpatialMeasure, Measure.smul_apply, smul_eq_mul,
     Measure.restrict_apply (hE.preimage (measurable_const.prodMk measurable_id))]
 
+open Classical in
 theorem innerJointMeasure_prod (U : Set Plane) (grid : Finset QuarterAngle)
     (l r : ℝ) {E S : Set ℝ} (hE : MeasurableSet E) (hS : MeasurableSet S) :
     innerJointMeasure U grid l r (E ×ˢ S) =

@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.CapInteriorRoof
-import AmbidextrousSofa.Analysis.SelectedEndpointMoments
-import Mathlib.Topology.UniformSpace.UniformApproximation
+module
+
+public import AmbidextrousSofa.Analysis.CapInteriorRoof
+public import AmbidextrousSofa.Analysis.SelectedEndpointMoments
+public import Mathlib.Topology.UniformSpace.UniformApproximation
+
+@[expose] public section
 
 /-!
 # Moving pressure limits for actual selected polygons

@@ -1,4 +1,8 @@
-import Mathlib.MeasureTheory.Measure.Portmanteau
+module
+
+public import Mathlib.MeasureTheory.Measure.Portmanteau
+
+@[expose] public section
 
 /-!
 # Open-set and null-boundary limits for finite measures
@@ -12,6 +16,7 @@ assuming that the finite measures are probability measures.
 noncomputable section
 
 open Set Filter MeasureTheory
+open scoped ENNReal NNReal
 open scoped Topology
 
 namespace AmbidextrousSofa

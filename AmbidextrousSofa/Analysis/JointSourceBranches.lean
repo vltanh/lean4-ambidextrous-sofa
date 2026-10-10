@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.JointSourceDensity
-import AmbidextrousSofa.Analysis.PositiveWallContacts
+module
+
+public import AmbidextrousSofa.Analysis.JointSourceDensity
+public import AmbidextrousSofa.Analysis.PositiveWallContacts
+
+@[expose] public section
 
 /-!
 # The four literal branches of the common source measure

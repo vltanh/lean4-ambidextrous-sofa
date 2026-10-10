@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FullTriangleFloor
-import AmbidextrousSofa.Analysis.IntermediateTilt
+module
+
+public import AmbidextrousSofa.Analysis.FullTriangleFloor
+public import AmbidextrousSofa.Analysis.IntermediateTilt
+
+@[expose] public section
 
 /-!
 # Scalar payment and global supporting plane for three full triangles

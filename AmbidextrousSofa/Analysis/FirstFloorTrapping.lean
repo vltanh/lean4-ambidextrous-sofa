@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FirstUnitCrossings
-import AmbidextrousSofa.Measure.SupportAreaAC
+module
+
+public import AmbidextrousSofa.Analysis.FirstUnitCrossings
+public import AmbidextrousSofa.Measure.SupportAreaAC
+
+@[expose] public section
 
 /-!
 # The visible bad-entry core cannot remain below the floor

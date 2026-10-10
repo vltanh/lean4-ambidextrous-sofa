@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.FirstUnitProjection
+module
+
+public import AmbidextrousSofa.Analysis.FirstUnitProjection
+
+@[expose] public section
 
 /-!
 # Literal tangent displacements and the four first-unit moments
@@ -27,8 +31,10 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "B" => firstTangentPoint F.f F.fD
-local notation "D" => secondTangentPoint F.g F.gD
+set_option quotPrecheck false in
+local notation "B" => firstTangentPoint (F).f (F).fD
+set_option quotPrecheck false in
+local notation "D" => secondTangentPoint (F).g (F).gD
 local notation "v" => (fun t : ℝ => leftCompanionWingDensity m ρ (t + Real.pi / 2))
 local notation "V" => leftCompanionCap U (horizontalLeft U + capWidth U / 4)
 
@@ -66,12 +72,12 @@ theorem fullTiltedSupportQuarterPair_first_floor_right_moments {C h β γ : ℝ}
     (hlow : capRoof U (-C) = 1 - h)
     (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1)
     (hβ : β ∈ Ioo 0 (Real.pi / 2)) (hγ : γ ∈ Icc 0 (Real.pi / 2))
-    (hβx : (B β).1 = C) (hβp : supportP F.fD F.g β ≤ 0)
+    (hβx : (B β).1 = C) (hβp : supportP (F).fD (F).g β ≤ 0)
     (hγy : (D γ).2 = 0) :
     (∫ t in 0..γ, (1 - v t) * Real.cos t) = C + (D γ).1 ∧
       (∫ t in 0..γ, (1 - v t) * Real.sin t) = h ∧
       (∫ t in β..(Real.pi / 2), (1 - ρ t) * Real.sin t) =
-        (Imported.vminus U (Real.pi / 2)).1 - C ∧
+        (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C ∧
       (∫ t in β..(Real.pi / 2), (1 - ρ t) * Real.cos t) =
         sweptNiche U (Real.pi / 2) C := by
   obtain ⟨_hB0, hBL, hD0, _hDL, _hpL, _hqL⟩ :=
@@ -105,10 +111,10 @@ theorem fullTiltedSupportQuarterPair_floor_abscissa_bounds {C h γ : ℝ}
     (hheight : capHeight U = 1)
     (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1)
     (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1)
-    (htop : C < (Imported.vminus U (Real.pi / 2)).1)
+    (htop : C < (MovingSofaOptimality.vminus U (Real.pi / 2)).1)
     (hγ : γ ∈ Ioo 0 (Real.pi / 2)) (hγy : (D γ).2 = 0) :
-    (Imported.vminus U (Real.pi / 2)).1 - C ≤ C + (D γ).1 ∧
-      C + (D γ).1 ≤ 1 ∧ (Imported.vminus U (Real.pi / 2)).1 - C ≤ C := by
+    (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C ≤ C + (D γ).1 ∧
+      C + (D γ).1 ≤ 1 ∧ (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C ≤ C := by
   have hmid : middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
     rw [middleHalfInterval, hl, hr]
     congr 1 <;> ring
@@ -137,7 +143,7 @@ theorem fullTiltedSupportQuarterPair_floor_abscissa_bounds {C h γ : ℝ}
     exact lt_irrefl 0 hnegative
   rw [hj] at hz
   have hright := (hU.isCap.fst_mem_Icc
-    (Imported.vminus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)).1).2
+    (MovingSofaOptimality.vminus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)).1).2
   rw [hr] at hright
   refine ⟨?_, fullTiltedSupportQuarterPair_second_tangency_abscissa_le
     hU hm haffine hρ hρ0 hρK heq hl hr (Ioo_subset_Icc_self hγ), ?_⟩

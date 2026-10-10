@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.LowHeightScore
-import AmbidextrousSofa.Analysis.CapReflection
-import AmbidextrousSofa.Analysis.CapTranslation
-import AmbidextrousSofa.Analysis.ExposureMoments
+module
+
+public import AmbidextrousSofa.Analysis.LowHeightScore
+public import AmbidextrousSofa.Analysis.CapReflection
+public import AmbidextrousSofa.Analysis.CapTranslation
+public import AmbidextrousSofa.Analysis.ExposureMoments
+
+@[expose] public section
 
 /-!
 # The actual diagonal comparison objective

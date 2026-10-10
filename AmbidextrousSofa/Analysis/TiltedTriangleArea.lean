@@ -1,8 +1,12 @@
-import AmbidextrousSofa.Analysis.TiltedTriangleScalar
-import AmbidextrousSofa.Analysis.FullTriangleArea
-import AmbidextrousSofa.Analysis.HorizontalEndpointBounds
-import AmbidextrousSofa.Analysis.TiltedInitialEnergyBounds
-import AmbidextrousSofa.Analysis.WideWidthExclusion
+module
+
+public import AmbidextrousSofa.Analysis.TiltedTriangleScalar
+public import AmbidextrousSofa.Analysis.FullTriangleArea
+public import AmbidextrousSofa.Analysis.HorizontalEndpointBounds
+public import AmbidextrousSofa.Analysis.TiltedInitialEnergyBounds
+public import AmbidextrousSofa.Analysis.WideWidthExclusion
+
+@[expose] public section
 
 /-!
 # Actual triangle exclusion with a dry low middle endpoint

@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.JointSourceMarginal
-import AmbidextrousSofa.Measure.WeightedFiniteMeasure
+module
+
+public import AmbidextrousSofa.Analysis.JointSourceMarginal
+public import AmbidextrousSofa.Measure.WeightedFiniteMeasure
+
+@[expose] public section
 
 /-!
 # Spatial projection of the common source measure
@@ -14,6 +18,7 @@ atoms of the joint source measure.
 noncomputable section
 
 open Set Filter MeasureTheory
+open scoped BoundedContinuousFunction
 open scoped Topology
 
 namespace AmbidextrousSofa
@@ -22,6 +27,7 @@ def sourceSineFunction : Plane →ᵇ ℝ :=
   BoundedContinuousFunction.mkOfBound
     ⟨fun z => Real.sin z.1, Real.continuous_sin.comp continuous_fst⟩ 2 (by
       intro z w
+      show dist (Real.sin z.1) (Real.sin w.1) ≤ 2
       rw [Real.dist_eq]
       apply abs_le.mpr
       constructor <;> linarith only [Real.neg_one_le_sin z.1, Real.sin_le_one z.1,
@@ -31,6 +37,7 @@ def sourceCosineFunction : Plane →ᵇ ℝ :=
   BoundedContinuousFunction.mkOfBound
     ⟨fun z => Real.cos z.1, Real.continuous_cos.comp continuous_fst⟩ 2 (by
       intro z w
+      show dist (Real.cos z.1) (Real.cos w.1) ≤ 2
       rw [Real.dist_eq]
       apply abs_le.mpr
       constructor <;> linarith only [Real.neg_one_le_cos z.1, Real.cos_le_one z.1,
@@ -181,7 +188,7 @@ theorem horizontalProjection_le_volume : (J.horizontalProjection : Measure ℝ) 
   have hdom : (J.horizontalProjection : Measure ℝ) ≤ volume.restrict S := by
     letI : IsFiniteMeasure ((volume : Measure ℝ).restrict S) :=
       isFiniteMeasure_restrict.mpr measure_Ioo_lt_top.ne
-    apply Imported.inj_measure_le_of_Ioo
+    apply MovingSofaOptimality.inj_measure_le_of_Ioo
     intro l r _hlr
     have hinter : Ioo l r ∩ S = Ioo (max l (-(R + 1))) (min r (R + 1)) := by
       ext x

@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.TerminalCorner
-import AmbidextrousSofa.Analysis.EndpointTrimming
+module
+
+public import AmbidextrousSofa.Analysis.TerminalCorner
+public import AmbidextrousSofa.Analysis.EndpointTrimming
+
+@[expose] public section
 
 /-!
 # Actual inward supporting-line cuts with unchanged projection
@@ -42,7 +46,7 @@ theorem IsDownwardCap.capRoof_le_outerSupportingRoof {U : Set Plane}
 theorem IsDownwardCap.outerSupportingRoof_contact {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hs : 0 < Real.sin α) :
     {x ∈ horizontalProjection U | outerSupportingRoof U α x - capRoof U x = 0} =
-      horizontalProjection (Imported.edge U α) := by
+      horizontalProjection (MovingSofaOptimality.edge U α) := by
   ext x
   constructor
   · rintro ⟨hx, heq⟩
@@ -65,7 +69,7 @@ theorem IsDownwardCap.outerSupportingRoof_contact {U : Set Plane}
 can belong to this supporting face. -/
 theorem IsDownwardCap.support_right_baseline_strict {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hs : 0 < Real.sin α)
-    (hface : 0 < (Imported.vminus U α).2) :
+    (hface : 0 < (MovingSofaOptimality.vminus U α).2) :
     horizontalRight U * Real.cos α < support U (unitNormal α) := by
   have hp : (horizontalRight U, 0) ∈ U := hU.baseline_mem_of_mem_projection
     (horizontalRight_mem hU.nonempty hU.isCompact)
@@ -74,18 +78,18 @@ theorem IsDownwardCap.support_right_baseline_strict {U : Set Plane}
       coordDot_le_support hU.isCompact hp (unitNormal α)
   apply lt_of_le_of_ne hle
   intro heq
-  have hedge : (horizontalRight U, 0) ∈ Imported.edge U α := by
+  have hedge : (horizontalRight U, 0) ∈ MovingSofaOptimality.edge U α := by
     refine ⟨hp, ?_⟩
     simpa only [coordDot, unitNormal, zero_mul, add_zero] using heq
-  have hx : horizontalRight U ≤ (Imported.vminus U α).1 := by
-    have hmem : horizontalRight U ∈ horizontalProjection (Imported.edge U α) :=
+  have hx : horizontalRight U ≤ (MovingSofaOptimality.vminus U α).1 := by
+    have hmem : horizontalRight U ∈ horizontalProjection (MovingSofaOptimality.edge U α) :=
       ⟨(horizontalRight U, 0), hedge, rfl⟩
     rw [hU.horizontalProjection_edge hs.le] at hmem
     exact hmem.2
-  have hx' := (hU.fst_mem_Icc (Imported.vminus_mem_edge hU.imported_isConvexBody α).1).2
-  have hline : (Imported.vminus U α).1 * Real.cos α +
-      (Imported.vminus U α).2 * Real.sin α = support U (unitNormal α) :=
-    Imported.dot_vminus_uvec U α
+  have hx' := (hU.fst_mem_Icc (MovingSofaOptimality.vminus_mem_edge hU.imported_isConvexBody α).1).2
+  have hline : (MovingSofaOptimality.vminus U α).1 * Real.cos α +
+      (MovingSofaOptimality.vminus U α).2 * Real.sin α = support U (unitNormal α) :=
+    MovingSofaOptimality.dot_vminus_uvec U α
   have hxeq := le_antisymm hx' hx
   rw [hxeq, ← heq] at hline
   nlinarith only [hline, mul_pos hface hs]
@@ -93,9 +97,9 @@ theorem IsDownwardCap.support_right_baseline_strict {U : Set Plane}
 theorem IsDownwardCap.normalTrim {U : Set Plane} (hU : IsDownwardCap U)
     {α ε : ℝ} (hc : 0 ≤ Real.cos α) (hs : 0 ≤ Real.sin α)
     (hbase : horizontalRight U * Real.cos α ≤ support U (unitNormal α) - ε * Real.sin α) :
-    IsDownwardCap (normalTrim U α ε) := by
+    IsDownwardCap (AmbidextrousSofa.normalTrim U α ε) := by
   have hbaseline (x : ℝ) (hx : x ∈ horizontalProjection U) :
-      (x, 0) ∈ normalTrim U α ε := by
+      (x, 0) ∈ AmbidextrousSofa.normalTrim U α ε := by
     refine ⟨hU.baseline_mem_of_mem_projection hx, ?_⟩
     have hxr : x ≤ horizontalRight U :=
       le_csSup (isCompact_horizontalProjection hU.isCompact).bddAbove hx
@@ -178,16 +182,16 @@ theorem capRoof_normalTrim {U : Set Plane} (hU : IsDownwardCap U)
 theorem support_normalTrim_eq {U : Set Plane} (hU : IsDownwardCap U)
     {α ε : ℝ} (hc : 0 ≤ Real.cos α) (hs : 0 ≤ Real.sin α)
     (hbase : horizontalRight U * Real.cos α ≤ support U (unitNormal α) - ε * Real.sin α)
-    (hε0 : 0 ≤ ε) (hεH : ε ≤ (Imported.vplus U α).2) :
+    (hε0 : 0 ≤ ε) (hεH : ε ≤ (MovingSofaOptimality.vplus U α).2) :
     support (normalTrim U α ε) (unitNormal α) = support U (unitNormal α) - ε * Real.sin α := by
   have hV := hU.normalTrim hc hs hbase
-  let p : Plane := ((Imported.vplus U α).1, (Imported.vplus U α).2 - ε)
-  have hpU : p ∈ U := hU.downward _ (Imported.vplus_mem_edge hU.imported_isConvexBody α).1
+  let p : Plane := ((MovingSofaOptimality.vplus U α).1, (MovingSofaOptimality.vplus U α).2 - ε)
+  have hpU : p ∈ U := hU.downward _ (MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody α).1
     _ (sub_nonneg.mpr hεH) (sub_le_self _ hε0)
   have hline : coordDot p (unitNormal α) = support U (unitNormal α) - ε * Real.sin α := by
-    have h := Imported.dot_vplus_uvec U α
-    change (Imported.vplus U α).1 * Real.cos α +
-      (Imported.vplus U α).2 * Real.sin α = support U (unitNormal α) at h
+    have h := MovingSofaOptimality.dot_vplus_uvec U α
+    change (MovingSofaOptimality.vplus U α).1 * Real.cos α +
+      (MovingSofaOptimality.vplus U α).2 * Real.sin α = support U (unitNormal α) at h
     unfold p coordDot unitNormal
     nlinarith only [h]
   exact support_eq_of_mem hV.isCompact (fun _ hp => hp.2) ⟨hpU, hline.le⟩ hline
@@ -196,12 +200,12 @@ theorem support_normalTrim_eq_of_baseline {U : Set Plane} (hU : IsDownwardCap U)
     {α ε : ℝ} (hc : 0 ≤ Real.cos α) (hs : 0 < Real.sin α) (hε0 : 0 ≤ ε)
     (hbase : horizontalRight U * Real.cos α ≤ support U (unitNormal α) - ε * Real.sin α) :
     support (normalTrim U α ε) (unitNormal α) = support U (unitNormal α) - ε * Real.sin α := by
-  have hx := (hU.fst_mem_Icc (Imported.vplus_mem_edge hU.imported_isConvexBody α).1).2
+  have hx := (hU.fst_mem_Icc (MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody α).1).2
   have hmul := mul_le_mul_of_nonneg_right hx hc
-  have hline : (Imported.vplus U α).1 * Real.cos α +
-      (Imported.vplus U α).2 * Real.sin α = support U (unitNormal α) :=
-    Imported.dot_vplus_uvec U α
-  have hεH : ε ≤ (Imported.vplus U α).2 := by
+  have hline : (MovingSofaOptimality.vplus U α).1 * Real.cos α +
+      (MovingSofaOptimality.vplus U α).2 * Real.sin α = support U (unitNormal α) :=
+    MovingSofaOptimality.dot_vplus_uvec U α
+  have hεH : ε ≤ (MovingSofaOptimality.vplus U α).2 := by
     apply (mul_le_mul_right hs).mp
     nlinarith only [hbase, hmul, hline]
   exact support_normalTrim_eq hU hc hs.le hbase hε0 hεH
@@ -234,7 +238,7 @@ theorem IsJointCapMaximizer.terminal_vminus_height_ge_sin_of_tail_regime
     (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    Real.sin α ≤ (Imported.vminus U α).2 := by
+    Real.sin α ≤ (MovingSofaOptimality.vminus U α).2 := by
   have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi hU.angle_pos
     (by linarith [Real.pi_pos])
   have hc : 0 < Real.cos α := Real.cos_pos_of_mem_Ioo
@@ -253,7 +257,7 @@ theorem IsJointCapMaximizer.terminal_vminus_height_ge_sin
     (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    Real.sin α ≤ (Imported.vminus U α).2 := by
+    Real.sin α ≤ (MovingSofaOptimality.vminus U α).2 := by
   exact IsJointCapMaximizer.terminal_vminus_height_ge_sin_of_tail_regime hU
     (hU.properTailRegime_of_largest hLargest hαL hheight haffine) hαL hheight haffine
 

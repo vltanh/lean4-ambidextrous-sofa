@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.DiagonalComparisonScore
-import AmbidextrousSofa.Analysis.FullTriangleArea
-import AmbidextrousSofa.Analysis.ShortWidthExclusion
-import AmbidextrousSofa.Analysis.InitialAngleExclusion
+module
+
+public import AmbidextrousSofa.Analysis.DiagonalComparisonScore
+public import AmbidextrousSofa.Analysis.FullTriangleArea
+public import AmbidextrousSofa.Analysis.ShortWidthExclusion
+public import AmbidextrousSofa.Analysis.InitialAngleExclusion
+
+@[expose] public section
 
 /-!
 # A literal three-angle comparison objective

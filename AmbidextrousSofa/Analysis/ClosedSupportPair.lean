@@ -1,7 +1,12 @@
-import AmbidextrousSofa.Analysis.SupportDensityCalculus
-import AmbidextrousSofa.Analysis.TangencyEndpoints
-import AmbidextrousSofa.Analysis.QuarterFunctions
-import AmbidextrousSofa.Measure.SupportArea
+module
+
+public import AmbidextrousSofa.Analysis.SupportDensityCalculus
+public import AmbidextrousSofa.Analysis.TangencyEndpoints
+public import AmbidextrousSofa.Analysis.QuarterFunctions
+public import AmbidextrousSofa.Measure.SupportArea
+public import AmbidextrousSofa.Analysis.SurfaceAreaFacts
+
+@[expose] public section
 
 /-!
 # Closed support quarters from actual open curvature densities
@@ -89,13 +94,13 @@ theorem IsDownwardCap.supportTangent_sub_eq_integral_of_density_Ioc
       ∫ t in a..b, ρ t - angleSupport U t := by
   rcases hab.eq_or_lt with rfl | hab
   · simp only [sub_self, intervalIntegral.integral_same]
-  · have hmass : (Imported.sigma U (Ioc a b)).toReal = ∫ t in a..b, ρ t := by
+  · have hmass : (MovingSofaOptimality.sigma U (Ioc a b)).toReal = ∫ t in a..b, ρ t := by
       rw [intervalIntegral.integral_of_le hab.le]
       exact measureReal_eq_integral_of_restrict_withDensity hρ hρ0 heq
         measurableSet_Ioc hsub
-    change Imported.dot (Imported.vplus U b) (Imported.vvec b) -
-      Imported.dot (Imported.vplus U a) (Imported.vvec a) = _
-    rw [Imported.inj_dot_vplus_vvec_sub hU.imported_isConvexBody hab, hmass,
+    change MovingSofaOptimality.dot (MovingSofaOptimality.vplus U b) (MovingSofaOptimality.vvec b) -
+      MovingSofaOptimality.dot (MovingSofaOptimality.vplus U a) (MovingSofaOptimality.vvec a) = _
+    rw [AmbidextrousSofa.dot_vplus_vvec_sub hU.imported_isConvexBody hab, hmass,
       intervalIntegral.integral_sub
         (intervalIntegrable_bounded_real_density hρ hρ0 hρK a b)
         (hU.imported_isConvexBody.continuous_supp.intervalIntegrable a b)]
@@ -128,19 +133,19 @@ theorem IsDownwardCap.closedSupportDerivative_at_end
       (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
     (hsub : Ioo d (d + Real.pi / 2) ⊆ S) :
     closedSupportDerivative U ρ d (Real.pi / 2) =
-      Imported.dot (Imported.vminus U (Real.pi / 2 + d))
-        (Imported.vvec (Real.pi / 2 + d)) := by
-  have hp := (Imported.tendsto_vplus_left hU.imported_isConvexBody
+      MovingSofaOptimality.dot (MovingSofaOptimality.vminus U (Real.pi / 2 + d))
+        (MovingSofaOptimality.vvec (Real.pi / 2 + d)) := by
+  have hp := (MovingSofaOptimality.tendsto_vplus_left hU.imported_isConvexBody
     (Real.pi / 2 + d)).comp (tendsto_add_const_nhdsLT (Real.pi / 2) d)
-  have hv := ((Imported.continuous_vvec.comp (continuous_id.add_const d)).tendsto
+  have hv := ((MovingSofaOptimality.continuous_vvec.comp (continuous_id.add_const d)).tendsto
     (Real.pi / 2)).mono_left (nhdsWithin_le_nhds :
       𝓝[<] (Real.pi / 2) ≤ 𝓝 (Real.pi / 2))
-  have htangent := (Imported.continuous_dot_pair.tendsto
-    (Imported.vminus U (Real.pi / 2 + d), Imported.vvec (Real.pi / 2 + d))).comp
+  have htangent := (MovingSofaOptimality.continuous_dot_pair.tendsto
+    (MovingSofaOptimality.vminus U (Real.pi / 2 + d), MovingSofaOptimality.vvec (Real.pi / 2 + d))).comp
       (hp.prodMk_nhds hv)
   have hclosed : Tendsto (closedSupportDerivative U ρ d) (𝓝[<] (Real.pi / 2))
-      (𝓝 (Imported.dot (Imported.vminus U (Real.pi / 2 + d))
-        (Imported.vvec (Real.pi / 2 + d)))) := by
+      (𝓝 (MovingSofaOptimality.dot (MovingSofaOptimality.vminus U (Real.pi / 2 + d))
+        (MovingSofaOptimality.vvec (Real.pi / 2 + d)))) := by
     apply htangent.congr'
     filter_upwards [Ioo_mem_nhdsLT (show (0 : ℝ) < Real.pi / 2 by linarith [Real.pi_pos])]
       with t ht
@@ -284,14 +289,14 @@ theorem supportQuarterPair_corner_calculus
     ring
 
 theorem supportPoint_eq_of_frame {f fD : ℝ → ℝ} {p : Plane} {t : ℝ}
-    (hf : f t = Imported.dot p (Imported.uvec t))
-    (hfD : fD t = Imported.dot p (Imported.vvec t)) :
+    (hf : f t = MovingSofaOptimality.dot p (MovingSofaOptimality.uvec t))
+    (hfD : fD t = MovingSofaOptimality.dot p (MovingSofaOptimality.vvec t)) :
     Reference.supportPoint f fD t = p := by
-  have hframe := Imported.eq_dot_uvec_smul_add p t
+  have hframe := MovingSofaOptimality.eq_dot_uvec_smul_add p t
   have hx := congrArg Prod.fst hframe
   have hy := congrArg Prod.snd hframe
   simp only [Prod.fst_add, Prod.snd_add, Prod.smul_fst, Prod.smul_snd, smul_eq_mul,
-    Imported.uvec, Imported.vvec] at hx hy
+    MovingSofaOptimality.uvec, MovingSofaOptimality.vvec] at hx hy
   apply Prod.ext
   · change f t * Real.cos t - fD t * Real.sin t = p.1
     rw [hf, hfD]
@@ -324,9 +329,9 @@ variable {U V : Set Plane} (hU : IsDownwardCap U) (hV : IsDownwardCap V)
 local notation "F" => supportQuarterPair hU hV hρ hρ0 hρK hσ hσ0 hσJ hfirst hsecond
 
 theorem supportQuarterPair_first_point {t : ℝ} (ht : t ∈ Ico 0 (Real.pi / 2)) :
-    Reference.supportPoint F.f F.fD t = Imported.vplus U t := by
+    Reference.supportPoint (F).f (F).fD t = MovingSofaOptimality.vplus U t := by
   apply supportPoint_eq_of_frame
-  · exact (Imported.dot_vplus_uvec U t).symm
+  · exact (MovingSofaOptimality.dot_vplus_uvec U t).symm
   · change closedSupportDerivative U ρ 0 t = supportTangent U t
     simpa only [add_zero] using hU.closedSupportDerivative_eq_supportTangent
       hρ hρ0 hρK hfirst (d := 0)
@@ -334,32 +339,32 @@ theorem supportQuarterPair_first_point {t : ℝ} (ht : t ∈ Ico 0 (Real.pi / 2)
         Ioo (0 : ℝ) (Real.pi / 2) ⊆ Ioo 0 (Real.pi / 2))) ht.1 ht.2
 
 theorem supportQuarterPair_second_point {t : ℝ} (ht : t ∈ Ico 0 (Real.pi / 2)) :
-    Reference.companionSupportPoint F.g F.gD t = Imported.vplus V (t + Real.pi / 2) := by
+    Reference.companionSupportPoint (F).g (F).gD t = MovingSofaOptimality.vplus V (t + Real.pi / 2) := by
   rw [companionSupportPoint_eq_shifted_supportPoint]
   apply supportPoint_eq_of_frame
   · simpa only [supportQuarterPair, add_sub_cancel_right] using
-      (Imported.dot_vplus_uvec V (t + Real.pi / 2)).symm
+      (MovingSofaOptimality.dot_vplus_uvec V (t + Real.pi / 2)).symm
   · dsimp only [supportQuarterPair]
     rw [add_sub_cancel_right]
     exact hV.closedSupportDerivative_eq_supportTangent hσ hσ0 hσJ hsecond
       (d := Real.pi / 2) (by intro s hs; exact ⟨hs.1, by linarith [hs.2]⟩) ht.1 ht.2
 
 theorem supportQuarterPair_first_end :
-    Reference.supportPoint F.f F.fD (Real.pi / 2) = Imported.vminus U (Real.pi / 2) := by
+    Reference.supportPoint (F).f (F).fD (Real.pi / 2) = MovingSofaOptimality.vminus U (Real.pi / 2) := by
   apply supportPoint_eq_of_frame
-  · exact (Imported.dot_vminus_uvec U (Real.pi / 2)).symm
+  · exact (MovingSofaOptimality.dot_vminus_uvec U (Real.pi / 2)).symm
   · simpa only [supportQuarterPair, add_zero] using
       hU.closedSupportDerivative_at_end hρ hρ0 hρK hfirst (d := 0)
         (by simpa only [zero_add] using (Subset.rfl :
           Ioo (0 : ℝ) (Real.pi / 2) ⊆ Ioo 0 (Real.pi / 2)))
 
 theorem supportQuarterPair_second_end :
-    Reference.companionSupportPoint F.g F.gD (Real.pi / 2) = Imported.vminus V Real.pi := by
+    Reference.companionSupportPoint (F).g (F).gD (Real.pi / 2) = MovingSofaOptimality.vminus V Real.pi := by
   rw [companionSupportPoint_eq_shifted_supportPoint]
   apply supportPoint_eq_of_frame
   · simpa only [supportQuarterPair, add_sub_cancel_right,
       show Real.pi / 2 + Real.pi / 2 = Real.pi by ring] using
-      (Imported.dot_vminus_uvec V Real.pi).symm
+      (MovingSofaOptimality.dot_vminus_uvec V Real.pi).symm
   · dsimp only [supportQuarterPair]
     rw [add_sub_cancel_right]
     simpa only [show Real.pi / 2 + Real.pi / 2 = Real.pi by ring] using
@@ -367,31 +372,31 @@ theorem supportQuarterPair_second_end :
         (by intro s hs; exact ⟨hs.1, by linarith [hs.2]⟩)
 
 theorem supportQuarterPair_points_mem :
-    (∀ t ∈ Icc 0 (Real.pi / 2), Reference.supportPoint F.f F.fD t ∈ U) ∧
-      ∀ t ∈ Icc 0 (Real.pi / 2), Reference.companionSupportPoint F.g F.gD t ∈ V := by
+    (∀ t ∈ Icc 0 (Real.pi / 2), Reference.supportPoint (F).f (F).fD t ∈ U) ∧
+      ∀ t ∈ Icc 0 (Real.pi / 2), Reference.companionSupportPoint (F).g (F).gD t ∈ V := by
   constructor
   · intro t ht
     rcases ht.2.eq_or_lt with rfl | htL
     · rw [supportQuarterPair_first_end]
-      exact (Imported.vminus_mem_edge hU.imported_isConvexBody _).1
+      exact (MovingSofaOptimality.vminus_mem_edge hU.imported_isConvexBody _).1
     · rw [supportQuarterPair_first_point hU hV hρ hρ0 hρK hσ hσ0 hσJ hfirst hsecond ⟨ht.1, htL⟩]
-      exact (Imported.vplus_mem_edge hU.imported_isConvexBody _).1
+      exact (MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody _).1
   · intro t ht
     rcases ht.2.eq_or_lt with rfl | htL
     · rw [supportQuarterPair_second_end]
-      exact (Imported.vminus_mem_edge hV.imported_isConvexBody _).1
+      exact (MovingSofaOptimality.vminus_mem_edge hV.imported_isConvexBody _).1
     · rw [supportQuarterPair_second_point hU hV hρ hρ0 hρK hσ hσ0 hσJ hfirst hsecond ⟨ht.1, htL⟩]
-      exact (Imported.vplus_mem_edge hV.imported_isConvexBody _).1
+      exact (MovingSofaOptimality.vplus_mem_edge hV.imported_isConvexBody _).1
 
 /-- All four support traces and all four derivative traces. In particular,
 the two top traces are allowed to come from different faces and heights. -/
 theorem supportQuarterPair_traces :
-    F.f 0 = horizontalRight U ∧ F.g 0 = capHeight V ∧
-      F.f (Real.pi / 2) = capHeight U ∧ F.g (Real.pi / 2) = -horizontalLeft V ∧
-      F.fD 0 = capRoof U (horizontalRight U) ∧
-      F.gD 0 = -(Imported.vplus V (Real.pi / 2)).1 ∧
-      F.fD (Real.pi / 2) = -(Imported.vminus U (Real.pi / 2)).1 ∧
-      F.gD (Real.pi / 2) = -capRoof V (horizontalLeft V) := by
+    (F).f 0 = horizontalRight U ∧ (F).g 0 = capHeight V ∧
+      (F).f (Real.pi / 2) = capHeight U ∧ (F).g (Real.pi / 2) = -horizontalLeft V ∧
+      (F).fD 0 = capRoof U (horizontalRight U) ∧
+      (F).gD 0 = -(MovingSofaOptimality.vplus V (Real.pi / 2)).1 ∧
+      (F).fD (Real.pi / 2) = -(MovingSofaOptimality.vminus U (Real.pi / 2)).1 ∧
+      (F).gD (Real.pi / 2) = -capRoof V (horizontalLeft V) := by
   have hfDend := hU.closedSupportDerivative_at_end hρ hρ0 hρK hfirst (d := 0)
     (by simpa only [zero_add] using (Subset.rfl :
       Ioo (0 : ℝ) (Real.pi / 2) ⊆ Ioo 0 (Real.pi / 2)))
@@ -403,20 +408,20 @@ theorem supportQuarterPair_traces :
   · simpa only [zero_add] using imported_supp_pi_div_two V
   · simpa only [hadd] using hV.imported_supp_pi
   · simp only [closedSupportDerivative_zero, supportTangent, hU.axis_vplus_zero,
-      Imported.dot, Imported.vvec, Real.sin_zero, Real.cos_zero, neg_zero,
+      MovingSofaOptimality.dot, MovingSofaOptimality.vvec, Real.sin_zero, Real.cos_zero, neg_zero,
       mul_zero, mul_one, zero_add]
-  · simp only [closedSupportDerivative_zero, supportTangent, Imported.dot, Imported.vvec,
+  · simp only [closedSupportDerivative_zero, supportTangent, MovingSofaOptimality.dot, MovingSofaOptimality.vvec,
       Real.sin_pi_div_two, Real.cos_pi_div_two, mul_neg, mul_one, mul_zero, add_zero]
-  · simpa only [add_zero, Imported.dot, Imported.vvec, Real.sin_pi_div_two,
+  · simpa only [add_zero, MovingSofaOptimality.dot, MovingSofaOptimality.vvec, Real.sin_pi_div_two,
       Real.cos_pi_div_two, mul_neg, mul_one, mul_zero, add_zero] using hfDend
-  · simpa only [hadd, hV.axis_vminus_pi, Imported.dot, Imported.vvec, Real.sin_pi,
+  · simpa only [hadd, hV.axis_vminus_pi, MovingSofaOptimality.dot, MovingSofaOptimality.vvec, Real.sin_pi,
       Real.cos_pi, neg_zero, mul_zero, mul_neg, mul_one, zero_add] using hgDend
 
 theorem supportQuarterPair_absolutelyContinuous :
-    AbsolutelyContinuousOnInterval F.f 0 (Real.pi / 2) ∧
-      AbsolutelyContinuousOnInterval F.g 0 (Real.pi / 2) ∧
-      AbsolutelyContinuousOnInterval F.fD 0 (Real.pi / 2) ∧
-      AbsolutelyContinuousOnInterval F.gD 0 (Real.pi / 2) :=
+    AbsolutelyContinuousOnInterval (F).f 0 (Real.pi / 2) ∧
+      AbsolutelyContinuousOnInterval (F).g 0 (Real.pi / 2) ∧
+      AbsolutelyContinuousOnInterval (F).fD 0 (Real.pi / 2) ∧
+      AbsolutelyContinuousOnInterval (F).gD 0 (Real.pi / 2) :=
   ⟨hU.absolutelyContinuousOnInterval_angleSupport _ _,
     hV.absolutelyContinuousOnInterval_angleSupport_shift _ _ _,
     hU.absolutelyContinuousOnInterval_closedSupportDerivative hρ hρ0 hρK _ _ _,
@@ -424,9 +429,9 @@ theorem supportQuarterPair_absolutelyContinuous :
 
 theorem supportQuarterPair_ae_derivatives :
     ∀ᵐ t ∂volume.restrict (Ioo 0 (Real.pi / 2)),
-      HasDerivAt F.f (F.fD t) t ∧ HasDerivAt F.g (F.gD t) t ∧
-      HasDerivAt F.fD (ρ t - F.f t) t ∧
-      HasDerivAt F.gD (σ (t + Real.pi / 2) - F.g t) t := by
+      HasDerivAt (F).f ((F).fD t) t ∧ HasDerivAt (F).g ((F).gD t) t ∧
+      HasDerivAt (F).fD (ρ t - (F).f t) t ∧
+      HasDerivAt (F).gD (σ (t + Real.pi / 2) - (F).g t) t := by
   have hL : (0 : ℝ) ≤ Real.pi / 2 := by linarith [Real.pi_pos]
   filter_upwards [ae_restrict_mem measurableSet_Ioo,
     hU.ae_hasDerivAt_closedSupportDerivative hρ hρ0 hρK hL 0,
@@ -442,8 +447,8 @@ theorem supportQuarterPair_ae_derivatives :
 
 theorem supportQuarterPair_derivatives_on_closed :
     ∀ t ∈ Icc 0 (Real.pi / 2),
-      HasDerivWithinAt F.f (F.fD t) (Icc 0 (Real.pi / 2)) t ∧
-      HasDerivWithinAt F.g (F.gD t) (Icc 0 (Real.pi / 2)) t := by
+      HasDerivWithinAt (F).f ((F).fD t) (Icc 0 (Real.pi / 2)) t ∧
+      HasDerivWithinAt (F).g ((F).gD t) (Icc 0 (Real.pi / 2)) t := by
   intro t ht
   constructor
   · simpa only [add_zero] using hU.hasDerivWithinAt_shiftedSupport_closed

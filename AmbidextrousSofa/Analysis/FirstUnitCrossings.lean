@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.CornerArcCrossing
-import AmbidextrousSofa.Analysis.TiltedFirstUnitEnergy
+module
+
+public import AmbidextrousSofa.Analysis.CornerArcCrossing
+public import AmbidextrousSofa.Analysis.TiltedFirstUnitEnergy
+
+@[expose] public section
 
 /-!
 # Ordered corner signs and the first possible companion excess

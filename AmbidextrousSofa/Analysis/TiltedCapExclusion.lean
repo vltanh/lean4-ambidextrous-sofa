@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.FirstUnitOccupationClosure
-import AmbidextrousSofa.Analysis.JointCommonOccupation
-import AmbidextrousSofa.Analysis.CanonicalTiltParameters
-import AmbidextrousSofa.Analysis.TiltedUnitSelection
+module
+
+public import AmbidextrousSofa.Analysis.FirstUnitOccupationClosure
+public import AmbidextrousSofa.Analysis.JointCommonOccupation
+public import AmbidextrousSofa.Analysis.CanonicalTiltParameters
+public import AmbidextrousSofa.Analysis.TiltedUnitSelection
+
+@[expose] public section
 
 /-!
 # Exclusion of an actual positive tilted full maximum

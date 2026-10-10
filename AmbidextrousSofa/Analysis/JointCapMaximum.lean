@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialCapContinuity
-import AmbidextrousSofa.Analysis.GlobalCapMaximum
+module
+
+public import AmbidextrousSofa.Analysis.PartialCapContinuity
+public import AmbidextrousSofa.Analysis.GlobalCapMaximum
+
+@[expose] public section
 
 /-!
 # Actual maxima over caps and terminal angles

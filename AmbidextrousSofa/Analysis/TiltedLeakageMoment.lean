@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.TiltedEndpointLeakage
-import AmbidextrousSofa.Analysis.HorizontalLeakageIntegral
-import AmbidextrousSofa.Analysis.TerminalCompanionMoment
-import AmbidextrousSofa.Analysis.OneTurnArea
+module
+
+public import AmbidextrousSofa.Analysis.TiltedEndpointLeakage
+public import AmbidextrousSofa.Analysis.HorizontalLeakageIntegral
+public import AmbidextrousSofa.Analysis.TerminalCompanionMoment
+public import AmbidextrousSofa.Analysis.OneTurnArea
+
+@[expose] public section
 
 /-!
 # The excess moment and the actual outer niche area
@@ -86,7 +90,7 @@ theorem IsDownwardCap.firstWall_nonpos_after_excess_moment
     (heq : (upperCurvature U).restrict S =
       (volume.restrict S).withDensity (fun s => ENNReal.ofReal (ρ s)))
     (hsub : Ioo (0 : ℝ) (Real.pi / 2) ⊆ S)
-    (htop : Imported.vminus U (Real.pi / 2) = (b, 1))
+    (htop : MovingSofaOptimality.vminus U (Real.pi / 2) = (b, 1))
     (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) (hx : b + firstExcessMoment ρ ≤ x) :
     firstWall U t x ≤ 0 := by
   have hkernel := first_density_kernel_le_excess_moment hρ hρ0 hρK ht
@@ -107,7 +111,7 @@ theorem IsDownwardCap.sweptNiche_zero_after_excess_moment
     (heq : (upperCurvature U).restrict S =
       (volume.restrict S).withDensity (fun s => ENNReal.ofReal (ρ s)))
     (hsub : Ioo (0 : ℝ) (Real.pi / 2) ⊆ S)
-    (htop : Imported.vminus U (Real.pi / 2) = (b, 1))
+    (htop : MovingSofaOptimality.vminus U (Real.pi / 2) = (b, 1))
     (hx : b + firstExcessMoment ρ ≤ x) :
     sweptNiche U (Real.pi / 2) x = 0 := by
   apply le_antisymm _ (sweptNiche_nonneg _ _ _)
@@ -159,7 +163,7 @@ theorem IsDownwardCap.right_niche_integral_le_excess_triangle
     (heq : (upperCurvature U).restrict S =
       (volume.restrict S).withDensity (fun s => ENNReal.ofReal (ρ s)))
     (hsub : Ioo (0 : ℝ) (Real.pi / 2) ⊆ S)
-    (htop : Imported.vminus U (Real.pi / 2) = (b, 1))
+    (htop : MovingSofaOptimality.vminus U (Real.pi / 2) = (b, 1))
     (hC0 : 0 ≤ C) (hCb : C ≤ b)
     (hcorner : ∀ t ∈ Ioo (0 : ℝ) (Real.pi / 2), (attachedCorner U t).1 ≤ C) :
     (∫ x in C..(2 * C), sweptNiche U (Real.pi / 2) x) ≤

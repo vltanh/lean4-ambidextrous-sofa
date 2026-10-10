@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.IntermediateTilt
+module
+
+public import AmbidextrousSofa.Analysis.IntermediateTilt
+
+@[expose] public section
 
 /-!
 # Perspective tangents for the actual wide diagonal majorant

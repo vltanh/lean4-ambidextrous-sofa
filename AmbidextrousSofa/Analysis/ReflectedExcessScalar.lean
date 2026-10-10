@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TiltedLateExcessScalar
+module
+
+public import AmbidextrousSofa.Analysis.TiltedLateExcessScalar
+
+@[expose] public section
 
 /-!
 # The exact reflected excess end time

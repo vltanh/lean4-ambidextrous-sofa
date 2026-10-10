@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.LocalSourceDensity
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
+module
+
+public import AmbidextrousSofa.Analysis.LocalSourceDensity
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
+
+@[expose] public section
 
 /-!
 # Sharp densities for the actual wing curvature

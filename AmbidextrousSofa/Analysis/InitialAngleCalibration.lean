@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.InitialAngleCritical
+module
+
+public import AmbidextrousSofa.Analysis.InitialAngleCritical
+
+@[expose] public section
 
 /-!
 # Direct calibration of the three-support relaxation

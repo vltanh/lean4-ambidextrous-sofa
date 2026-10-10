@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.TerminalCompanionCurvature
-import AmbidextrousSofa.Analysis.TerminalCircleMargin
+module
+
+public import AmbidextrousSofa.Analysis.TerminalCompanionCurvature
+public import AmbidextrousSofa.Analysis.TerminalCircleMargin
+
+@[expose] public section
 
 /-!
 # The actual companion-wall circle comparison

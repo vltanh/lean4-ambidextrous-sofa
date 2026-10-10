@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.HorizontalLeakageOccupation
-import AmbidextrousSofa.Analysis.HorizontalEndpointBounds
-import AmbidextrousSofa.Analysis.CapReflection
+module
+
+public import AmbidextrousSofa.Analysis.HorizontalLeakageOccupation
+public import AmbidextrousSofa.Analysis.HorizontalEndpointBounds
+public import AmbidextrousSofa.Analysis.CapReflection
+
+@[expose] public section
 
 /-!
 # The actual endpoint niches satisfy every applicable leakage row
@@ -141,15 +145,15 @@ theorem IsFullCapMaximizer.endpoint_niches_le_horizontalLeakageRow
     (hC : 2 / 3 < C) (haC : R.a ≤ C) (hCb : C ≤ R.b) :
     sweptNiche U (Real.pi / 2) (-C) ≤ R.B ∧
       sweptNiche U (Real.pi / 2) C ≤ R.B := by
-  have hlV : horizontalLeft (horizontalMirror U) = -2 * C := by
+  have hlV : horizontalLeft (AmbidextrousSofa.horizontalMirror U) = -2 * C := by
     rw [horizontalLeft_horizontalMirror hU.isCap, hr]
     ring
-  have hrV : horizontalRight (horizontalMirror U) = 2 * C := by
+  have hrV : horizontalRight (AmbidextrousSofa.horizontalMirror U) = 2 * C := by
     rw [horizontalRight_horizontalMirror hU.isCap, hl]
     ring
   have hmiddleV : ∀ x ∈ middleHalfInterval
-      (horizontalLeft (horizontalMirror U)) (horizontalRight (horizontalMirror U)),
-      capRoof (horizontalMirror U) x = 1 := by
+      (horizontalLeft (AmbidextrousSofa.horizontalMirror U)) (horizontalRight (AmbidextrousSofa.horizontalMirror U)),
+      capRoof (AmbidextrousSofa.horizontalMirror U) x = 1 := by
     intro x hx
     rw [capRoof_horizontalMirror]
     apply hmiddle
@@ -160,7 +164,7 @@ theorem IsFullCapMaximizer.endpoint_niches_le_horizontalLeakageRow
     change -2 * C + (2 * C - -2 * C) / 4 ≤ x ∧
       x ≤ 2 * C - (2 * C - -2 * C) / 4 at hx
     constructor <;> linarith [hx.1, hx.2]
-  have hheightV : capHeight (horizontalMirror U) = 1 := by
+  have hheightV : capHeight (AmbidextrousSofa.horizontalMirror U) = 1 := by
     rw [capHeight_horizontalMirror, hheight]
   have hleft := hU.horizontalMirror.right_endpoint_niche_le_horizontalLeakageRow
     R hlV hrV hheightV hmiddleV hC haC hCb

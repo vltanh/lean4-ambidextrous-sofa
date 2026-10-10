@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.FiniteEnvelope
+module
+
+public import AmbidextrousSofa.Analysis.FiniteEnvelope
+
+@[expose] public section
 
 /-!
 # Finite spatial first variations and moving-window pressures

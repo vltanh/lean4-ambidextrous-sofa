@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Geometry.Hallway
+module
+
+public import AmbidextrousSofa.Geometry.Hallway
+
+@[expose] public section
 
 /-!
 # Whole-angle niches and the actual terminal wall

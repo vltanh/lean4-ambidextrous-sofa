@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.GridPolygon
+module
+
+public import AmbidextrousSofa.Analysis.GridPolygon
+
+@[expose] public section
 
 /-!
 # Uniform recovery of the full spatial objective

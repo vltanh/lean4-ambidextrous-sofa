@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.PositiveTent
-import AmbidextrousSofa.Analysis.InitialAngleScalar
-import AmbidextrousSofa.Analysis.TerminalThreeSupports
+module
+
+public import AmbidextrousSofa.Analysis.PositiveTent
+public import AmbidextrousSofa.Analysis.InitialAngleScalar
+public import AmbidextrousSofa.Analysis.TerminalThreeSupports
+
+@[expose] public section
 
 /-!
 # The actual three-support integral relaxation

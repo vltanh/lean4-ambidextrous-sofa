@@ -1,7 +1,11 @@
-import Mathlib.Analysis.Calculus.FDeriv.Measurable
-import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
-import Mathlib.MeasureTheory.Function.JacobianOneDim
-import Mathlib.MeasureTheory.Measure.WithDensity
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Measurable
+public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+public import Mathlib.MeasureTheory.Function.JacobianOneDim
+public import Mathlib.MeasureTheory.Measure.WithDensity
+
+@[expose] public section
 
 /-!
 # Density bounds from a dominated graph projection

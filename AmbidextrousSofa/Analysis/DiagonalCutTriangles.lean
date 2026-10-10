@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.NearDiagonalGeometry
-import AmbidextrousSofa.Analysis.AsymmetricTent
+module
+
+public import AmbidextrousSofa.Analysis.NearDiagonalGeometry
+public import AmbidextrousSofa.Analysis.AsymmetricTent
+
+@[expose] public section
 
 /-!
 # The actual exterior deficit pays for both near-diagonal cuts

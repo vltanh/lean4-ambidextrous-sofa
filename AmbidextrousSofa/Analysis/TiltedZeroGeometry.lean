@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.CompanionZero
-import AmbidextrousSofa.Analysis.TiltedWingSupport
-import AmbidextrousSofa.Analysis.NichePositiveMiddle
+module
+
+public import AmbidextrousSofa.Analysis.CompanionZero
+public import AmbidextrousSofa.Analysis.TiltedWingSupport
+public import AmbidextrousSofa.Analysis.NichePositiveMiddle
+
+@[expose] public section
 
 /-!
 # The actual positive middle projection of a tilted cap
@@ -24,7 +28,7 @@ namespace AmbidextrousSofa
 theorem IsDownwardCap.capRoof_leftCompanionCap {U : Set Plane}
     (hU : IsDownwardCap U) {a x : ℝ} (ha : a ∈ horizontalProjection U)
     (hx : x ∈ Icc (horizontalLeft U) a) :
-    capRoof (leftCompanionCap U a) x = capRoof U x := by
+    capRoof (AmbidextrousSofa.leftCompanionCap U a) x = capRoof U x := by
   have ha' := ha
   rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex] at ha'
   exact capRoof_horizontalCut hU ha'.1
@@ -57,7 +61,7 @@ theorem IsDownwardCap.sweptNiche_eq_zero_of_le_low_wing_zero
     {U : Set Plane} (hU : IsDownwardCap U) {a b m c x : ℝ}
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (haffine : ∀ y ∈ Icc a b, capRoof U y = m * y + c)
-    (hxb : x ≤ b) (hx : x ≤ companionZero (leftCompanionCap U a)) :
+    (hxb : x ≤ b) (hx : x ≤ companionZero (AmbidextrousSofa.leftCompanionCap U a)) :
     sweptNiche U (Real.pi / 2) x = 0 := by
   apply le_antisymm _ (sweptNiche_nonneg _ _ _)
   apply sweptNiche_le_of_forall (by linarith only [Real.pi_pos]) le_rfl
@@ -80,18 +84,18 @@ theorem IsDownwardCap.sweptNiche_pos_iff_low_wing_zero_lt
     (haffine : ∀ y ∈ Icc (-C) C, capRoof U y = m * y + c)
     (hhigh : capRoof U C = 1) (hlow : capRoof U (-C) < 1)
     (hleft : 0 < capRoof U (horizontalLeft U)) (hx : x ∈ Ioo (-C) C) :
-    0 < sweptNiche U (Real.pi / 2) x ↔ companionZero (leftCompanionCap U (-C)) < x := by
+    0 < sweptNiche U (Real.pi / 2) x ↔ companionZero (AmbidextrousSofa.leftCompanionCap U (-C)) < x := by
   have hproj : horizontalProjection U = Icc (-2 * C) (2 * C) := by
     rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hl, hr]
   have ha : -C ∈ horizontalProjection U := by rw [hproj]; constructor <;> linarith only [hC]
   have hb : C ∈ horizontalProjection U := by rw [hproj]; constructor <;> linarith only [hC]
   have hab : -C < C := by linarith only [hC]
   have hV := hU.leftCompanionCap ha
-  have hVheight : capHeight (leftCompanionCap U (-C)) < 1 := by
+  have hVheight : capHeight (AmbidextrousSofa.leftCompanionCap U (-C)) < 1 := by
     rw [(hU.top_leftCompanionCap_of_positive_affine ha hb hab hm haffine).1]
     exact hlow
-  have hVleft : 0 < capRoof (leftCompanionCap U (-C))
-      (horizontalLeft (leftCompanionCap U (-C))) := by
+  have hVleft : 0 < capRoof (AmbidextrousSofa.leftCompanionCap U (-C))
+      (horizontalLeft (AmbidextrousSofa.leftCompanionCap U (-C))) := by
     rw [horizontalLeft_leftCompanionCap hU ha,
       hU.capRoof_leftCompanionCap ha ⟨le_rfl, by rw [hl]; linarith only [hC]⟩]
     exact hleft
@@ -125,7 +129,7 @@ theorem IsDownwardCap.positive_middle_eq_low_wing_interval
     (hhigh : capRoof U C = 1) (hlow : capRoof U (-C) < 1)
     (hleft : 0 < capRoof U (horizontalLeft U)) :
     Ioo (-C) C ∩ {x : ℝ | 0 < sweptNiche U (Real.pi / 2) x} =
-      Ioo (max (-C) (companionZero (leftCompanionCap U (-C)))) C := by
+      Ioo (max (-C) (companionZero (AmbidextrousSofa.leftCompanionCap U (-C)))) C := by
   ext x
   constructor
   · rintro ⟨hx, hp⟩
@@ -144,7 +148,7 @@ theorem IsDownwardCap.secondWall_neg_of_lt_low_wing_zero
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (haffine : ∀ y ∈ Icc a b, capRoof U y = m * y + c)
     (hhigh : capRoof U b = 1) (hxb : x < b)
-    (hx : x < companionZero (leftCompanionCap U a))
+    (hx : x < companionZero (AmbidextrousSofa.leftCompanionCap U a))
     (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) : secondWall U t x < 0 := by
   have hs : 0 < Real.sin t := Real.sin_pos_of_pos_of_lt_pi ht.1
     (by linarith only [ht.2, Real.pi_pos])
@@ -161,7 +165,7 @@ theorem IsDownwardCap.secondWall_neg_of_lt_low_wing_zero
     nlinarith only [hgap, Real.cos_le_one t]
   · have heq := (hU.companionSupport_and_tangent_leftCut_after_affine ha hb hab haffine
       (le_of_not_ge htm) ht.1.le ht.2).1
-    have hsupport : support (leftCompanionCap U a) (companionNormal t) =
+    have hsupport : support (AmbidextrousSofa.leftCompanionCap U a) (companionNormal t) =
         support U (companionNormal t) := by
       simpa only [angleSupport, ← companionNormal_eq_unitNormal] using heq
     have hlow := (hU.leftCompanionCap ha).secondWall_neg_of_lt_companionZero hx ht
@@ -174,7 +178,7 @@ theorem IsDownwardCap.secondWallNumerator_neg_of_lt_low_wing_zero
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (haffine : ∀ y ∈ Icc a b, capRoof U y = m * y + c)
     (hhigh : capRoof U b = 1) (hxb : x < b)
-    (hx : x < companionZero (leftCompanionCap U a))
+    (hx : x < companionZero (AmbidextrousSofa.leftCompanionCap U a))
     (hxaxis : x < horizontalLeft U + 1)
     (ht : t ∈ Ioc (0 : ℝ) (Real.pi / 2)) : secondWallNumerator U t x < 0 := by
   rcases ht.2.eq_or_lt with htL | htL

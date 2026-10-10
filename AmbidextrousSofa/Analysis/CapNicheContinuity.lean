@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.CapCompactness
-import AmbidextrousSofa.Geometry.BarrierAnalysis
+module
+
+public import AmbidextrousSofa.Analysis.CapCompactness
+public import AmbidextrousSofa.Geometry.BarrierAnalysis
+
+@[expose] public section
 
 /-!
 # Joint continuity of the actual full-turn niche
@@ -41,7 +45,7 @@ theorem continuous_hyperspaceSupport :
   simpa only [sub_add_cancel, zero_add] using hdiff.add hbase
 
 /-- The original compact downward-cap domain, with its Hausdorff topology. -/
-def CompactCap := {K : NonemptyCompacts Plane // IsDownwardCap (K : Set Plane)}
+abbrev CompactCap := {K : NonemptyCompacts Plane // IsDownwardCap (K : Set Plane)}
 
 def CompactCap.carrier (U : CompactCap) : Set Plane := U.val
 

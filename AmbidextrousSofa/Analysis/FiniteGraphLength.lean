@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FiniteGraphGreen
-import Mathlib.Analysis.Complex.Norm
+module
+
+public import AmbidextrousSofa.Analysis.FiniteGraphGreen
+public import Mathlib.Analysis.Complex.Norm
+
+@[expose] public section
 
 /-!
 # Chord bounds for the literal finite wing lengths

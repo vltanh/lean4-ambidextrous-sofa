@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Geometry.CapGeometry
+module
+
+public import AmbidextrousSofa.Geometry.CapGeometry
+
+@[expose] public section
 
 /-!
 # Support functions of actual planar sets

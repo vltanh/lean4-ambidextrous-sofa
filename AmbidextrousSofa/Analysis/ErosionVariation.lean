@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.EndpointPressure
-import Mathlib.Analysis.Asymptotics.Lemmas
+module
+
+public import AmbidextrousSofa.Analysis.EndpointPressure
+public import Mathlib.Analysis.Asymptotics.Lemmas
+
+@[expose] public section
 
 /-!
 # Simultaneous wall and endpoint variations

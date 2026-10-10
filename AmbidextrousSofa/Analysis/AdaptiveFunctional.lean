@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.QuadraticEnergy
+module
+
+public import AmbidextrousSofa.Analysis.QuadraticEnergy
+
+@[expose] public section
 
 /-!
 # The adaptive functional and its exact Taylor remainder

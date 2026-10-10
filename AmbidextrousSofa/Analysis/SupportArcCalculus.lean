@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.ClosedSupportPair
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
+module
+
+public import AmbidextrousSofa.Analysis.ClosedSupportPair
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
+
+@[expose] public section
 
 /-!
 # Closed support derivatives on a proper initial arc
@@ -73,14 +77,14 @@ theorem IsDownwardCap.closedSupportDerivative_at_arc_end
     (heq : (upperCurvature U).restrict S =
       (volume.restrict S).withDensity (fun s => ENNReal.ofReal (ρ s)))
     (hb : 0 < b) (hsub : Ioo (0 : ℝ) b ⊆ S) :
-    closedSupportDerivative U ρ 0 b = Imported.dot (Imported.vminus U b) (Imported.vvec b) := by
-  have hp := Imported.tendsto_vplus_left hU.imported_isConvexBody b
-  have hv := (Imported.continuous_vvec.tendsto b).mono_left
+    closedSupportDerivative U ρ 0 b = MovingSofaOptimality.dot (MovingSofaOptimality.vminus U b) (MovingSofaOptimality.vvec b) := by
+  have hp := MovingSofaOptimality.tendsto_vplus_left hU.imported_isConvexBody b
+  have hv := (MovingSofaOptimality.continuous_vvec.tendsto b).mono_left
     (nhdsWithin_le_nhds : 𝓝[<] b ≤ 𝓝 b)
-  have htangent := (Imported.continuous_dot_pair.tendsto
-    (Imported.vminus U b, Imported.vvec b)).comp (hp.prodMk_nhds hv)
+  have htangent := (MovingSofaOptimality.continuous_dot_pair.tendsto
+    (MovingSofaOptimality.vminus U b, MovingSofaOptimality.vvec b)).comp (hp.prodMk_nhds hv)
   have hclosed : Tendsto (closedSupportDerivative U ρ 0) (𝓝[<] b)
-      (𝓝 (Imported.dot (Imported.vminus U b) (Imported.vvec b))) := by
+      (𝓝 (MovingSofaOptimality.dot (MovingSofaOptimality.vminus U b) (MovingSofaOptimality.vvec b))) := by
     apply htangent.congr'
     filter_upwards [Ioo_mem_nhdsLT hb] with t ht
     exact (hU.closedSupportDerivative_eq_supportTangent_on_arc

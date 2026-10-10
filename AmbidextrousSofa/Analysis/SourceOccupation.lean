@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FiniteSourceBalance
-import AmbidextrousSofa.Analysis.RegularCurvatureDomain
+module
+
+public import AmbidextrousSofa.Analysis.FiniteSourceBalance
+public import AmbidextrousSofa.Analysis.RegularCurvatureDomain
+
+@[expose] public section
 
 /-!
 # Actual selected inner-source occupation on regular wings
@@ -69,6 +73,7 @@ theorem innerSourceMass_sub_atom_eq {U : Set Plane} (hU : IsDownwardCap U)
   dsimp only [innerSourceMass, normalizedExposureDefect, middleOuterMass]
   linarith
 
+open Classical in
 theorem abs_innerAngularMass_sub_curvature_le {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (hpoly : U = circumscription U (normal grid))
     {E : Set ℝ} (hupper : E ⊆ Ioo (0 : ℝ) Real.pi) (htop : Real.pi / 2 ∉ E) :
@@ -118,6 +123,7 @@ theorem sum_cos_abs_normalizedExposureDefect_tendsto_zero_of_canonical_maximum
     (fun n => (hU n).sum_cos_abs_normalizedExposureDefect_le (hc n))
   simpa only [zero_add, mul_zero] using (hD.1.add hD.2).add (herr.const_mul 2)
 
+open Classical in
 theorem sum_abs_defect_on_set_le_cos_sum
     (U : Set Plane) (grid : Finset QuarterAngle) {E : Set ℝ} {δ : ℝ}
     (hδ : 0 < δ) (hE : ∀ t ∈ E, δ ≤ |Real.cos t|) :
@@ -141,6 +147,7 @@ theorem sum_abs_defect_on_set_le_cos_sum
     _ ≤ _ := Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _)
       (fun j _ _ => mul_nonneg (abs_nonneg _) (abs_nonneg _))
 
+open Classical in
 /-- Away from the top normal, the actual vanishing cosine moment controls
 the full absolute exposure defect, including every tie-selected source. -/
 theorem sum_abs_defect_on_set_tendsto_of_compact
@@ -237,16 +244,16 @@ theorem innerAngularMass_Ioc_tendsto_of_canonical_maximum
     hTarget hheight haffine hTargetBox hU hHausdorff hlevel hc hrate hleft hright
     isCompact_Icc Ioc_subset_Icc_self hregular
   obtain ⟨ρ, hρ, hρbounds, _, heq⟩ := hTarget.curvature_density_on_regular_domain haffine
-  have hnonatom (x : ℝ) (hx : x ∈ Icc s t) : Imported.sigmaAt target x = 0 := by
+  have hnonatom (x : ℝ) (hx : x ∈ Icc s t) : MovingSofaOptimality.sigmaAt target x = 0 := by
     have h := measureReal_eq_integral_of_restrict_withDensity hρ (fun y => (hρbounds y).1)
       heq (measurableSet_singleton x) (singleton_subset_iff.mpr (hregular hx))
-    simpa [Imported.sigmaAt, upperCurvature, measureReal_def, integral_singleton] using h
+    simpa [MovingSofaOptimality.sigmaAt, upperCurvature, measureReal_def, integral_singleton] using h
   have hcap : ∀ n, IsDownwardCap (U n) := fun n => (hU n).isCap
-  have hcb : ∀ n, Imported.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
+  have hcb : ∀ n, MovingSofaOptimality.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
   have hlim := hHausdorff.imported_hausdorffTendsto hcap hTarget.isCap
-  have hleftLim := Imported.ang_tendsto_sigmaFun hcb hTarget.isCap.imported_isConvexBody hlim
+  have hleftLim := MovingSofaOptimality.ang_tendsto_sigmaFun hcb hTarget.isCap.imported_isConvexBody hlim
     (hnonatom s ⟨le_rfl, hst⟩)
-  have hrightLim := Imported.ang_tendsto_sigmaFun hcb hTarget.isCap.imported_isConvexBody hlim
+  have hrightLim := MovingSofaOptimality.ang_tendsto_sigmaFun hcb hTarget.isCap.imported_isConvexBody hlim
     (hnonatom t ⟨hst, le_rfl⟩)
   have hmass : Tendsto (fun n => (upperCurvature (U n)).real (Ioc s t)) atTop
       (𝓝 ((upperCurvature target).real (Ioc s t))) := by

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.CapCompactness
+module
+
+public import AmbidextrousSofa.Analysis.CapCompactness
+
+@[expose] public section
 
 /-!
 # Area continuity for compact convex caps

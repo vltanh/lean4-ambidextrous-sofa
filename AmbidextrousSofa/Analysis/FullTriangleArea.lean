@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FullTriangleParameters
-import AmbidextrousSofa.Analysis.NicheBoxBounds
+module
+
+public import AmbidextrousSofa.Analysis.FullTriangleParameters
+public import AmbidextrousSofa.Analysis.NicheBoxBounds
+
+@[expose] public section
 
 /-!
 # Actual exterior and niche area payments for three full triangles

@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.PartialSourceCounting
-import AmbidextrousSofa.Analysis.MiddleMassLimit
-import AmbidextrousSofa.Analysis.AxisHeightLimit
+module
+
+public import AmbidextrousSofa.Analysis.PartialSourceCounting
+public import AmbidextrousSofa.Analysis.MiddleMassLimit
+public import AmbidextrousSofa.Analysis.AxisHeightLimit
+
+@[expose] public section
 
 /-!
 # Actual proper-angle curvature bounds on regular intervals
@@ -38,15 +42,15 @@ theorem curvature_Ioc_le_of_nonatoms
     (hab : a ≤ b) (hupper : Icc a b ⊆ Ioo 0 Real.pi)
     (htop : Real.pi / 2 ∉ Icc a b) (hterminal : (α : ℝ) ∉ Icc a b)
     (hperp : ∀ t ∈ Icc a b, Real.cos t + m * Real.sin t ≠ 0)
-    (ha : Imported.sigmaAt target a = 0) (hb : Imported.sigmaAt target b = 0) :
+    (ha : MovingSofaOptimality.sigmaAt target a = 0) (hb : MovingSofaOptimality.sigmaAt target b = 0) :
     (upperCurvature target).real (Ioc a b) ≤ (8 * R + 24) * (b - a) := by
   have hcap : ∀ n, IsDownwardCap (U n) := fun n => (hU n).isCap
-  have hcb : ∀ n, Imported.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
+  have hcb : ∀ n, MovingSofaOptimality.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
   have hlim := hHausdorff.imported_hausdorffTendsto hcap hTarget
   have hmass : Tendsto (fun n => (upperCurvature (U n)).real (Ioc a b)) atTop
       (𝓝 ((upperCurvature target).real (Ioc a b))) := by
-    have hleft := Imported.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim ha
-    have hright := Imported.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim hb
+    have hleft := MovingSofaOptimality.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim ha
+    have hright := MovingSofaOptimality.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim hb
     have hFormula (n : ℕ) := (hcap n).upperCurvature_real_Ioc hab
     simpa only [hFormula, hTarget.upperCurvature_real_Ioc hab] using hright.sub hleft
   have hmiddle := AngularGrid.middleOuterMass_sum_tendsto_of_compact hHausdorff hcap hTarget

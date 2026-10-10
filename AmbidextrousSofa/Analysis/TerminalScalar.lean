@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.ExactEstimates
-import AmbidextrousSofa.Analysis.TerminalWallBound
-import AmbidextrousSofa.Analysis.JointCapMaximum
+module
+
+public import AmbidextrousSofa.Analysis.ExactEstimates
+public import AmbidextrousSofa.Analysis.TerminalWallBound
+public import AmbidextrousSofa.Analysis.JointCapMaximum
+
+@[expose] public section
 
 /-!
 # Exact exclusion of low terminal angles

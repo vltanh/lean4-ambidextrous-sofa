@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.LowHeightGeometry
+module
+
+public import AmbidextrousSofa.Analysis.LowHeightGeometry
+
+@[expose] public section
 
 /-!
 # Strict score exclusion for a low middle endpoint

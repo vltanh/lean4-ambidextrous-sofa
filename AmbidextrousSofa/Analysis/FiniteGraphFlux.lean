@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FiniteHorizontalMoment
-import AmbidextrousSofa.Analysis.SourceOccupation
+module
+
+public import AmbidextrousSofa.Analysis.FiniteHorizontalMoment
+public import AmbidextrousSofa.Analysis.SourceOccupation
+
+@[expose] public section
 
 /-!
 # Literal finite graph flux on spatial subintervals

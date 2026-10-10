@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FirstUnitNiche
-import AmbidextrousSofa.Analysis.TiltedTopProjection
+module
+
+public import AmbidextrousSofa.Analysis.FirstUnitNiche
+public import AmbidextrousSofa.Analysis.TiltedTopProjection
+
+@[expose] public section
 
 /-!
 # Exact positive projection for every first-unit tilted width
@@ -29,7 +33,8 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "B" => firstTangentPoint F.f F.fD
+set_option quotPrecheck false in
+local notation "B" => firstTangentPoint (F).f (F).fD
 
 theorem fullTiltedSupportQuarterPair_first_wall_pos_left {C h x t : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
@@ -159,10 +164,10 @@ theorem IsFullCapMaximizer.firstUnit_top_projection_eq
     (heq : (upperCurvature U).restrict (regularCurvatureDomain m) =
       (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
     (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1) :
-    (Imported.vminus U (Real.pi / 2)).1 - C =
+    (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C =
       max (C + companionZero (leftCompanionCap U (-C))) 0 := by
   let z := companionZero (leftCompanionCap U (-C))
-  let b := (Imported.vminus U (Real.pi / 2)).1
+  let b := (MovingSofaOptimality.vminus U (Real.pi / 2)).1
   have hC : 0 < C := by linarith only [hC0]
   have hm := positive_affine_slope_of_middle_heights hC hh0 haffine hlow hhigh
   have hproj : horizontalProjection U = Icc (-2 * C) (2 * C) := by
@@ -175,7 +180,7 @@ theorem IsFullCapMaximizer.firstUnit_top_projection_eq
   have htop := hU.isCap.top_points_after_positive_affine ha hb hab hm hheight haffine hhigh
   have hCb : C ≤ b := (htop (C, 1) hhighPoint rfl).2
   have htopPoint : (b, 1) ∈ U := by
-    have hpoint := (Imported.vminus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)).1
+    have hpoint := (MovingSofaOptimality.vminus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)).1
     have hy := (top_vminus_snd_eq_capHeight U).trans hheight
     simpa only [b, ← hy, Prod.mk.eta] using hpoint
   have hbR : b ≤ 2 * C := by

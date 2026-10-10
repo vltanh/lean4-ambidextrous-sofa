@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.SupportDensityCalculus
-import AmbidextrousSofa.Analysis.NegativeCornerCurvature
-import AmbidextrousSofa.Analysis.LevelSetDerivative
+module
+
+public import AmbidextrousSofa.Analysis.SupportDensityCalculus
+public import AmbidextrousSofa.Analysis.NegativeCornerCurvature
+public import AmbidextrousSofa.Analysis.LevelSetDerivative
+
+@[expose] public section
 
 /-!
 # Actual attached-corner velocities and floor-contact flatness

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.AxisVariation
+module
+
+public import AmbidextrousSofa.Analysis.AxisVariation
+
+@[expose] public section
 
 /-!
 # Actual finite support circumscription

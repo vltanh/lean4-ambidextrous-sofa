@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.QuarterFunctions
+module
+
+public import AmbidextrousSofa.Analysis.QuarterFunctions
+
+@[expose] public section
 
 /-!
 # Strict quadratic energy on the quarter interval

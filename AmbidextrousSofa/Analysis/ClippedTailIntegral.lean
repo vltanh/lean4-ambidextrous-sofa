@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.DiagonalCutTriangles
+module
+
+public import AmbidextrousSofa.Analysis.DiagonalCutTriangles
+
+@[expose] public section
 
 /-!
 # Exact one-sided clipping of an extra niche triangle

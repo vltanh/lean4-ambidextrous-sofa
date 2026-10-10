@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.CanonicalWingChord
+module
+
+public import AmbidextrousSofa.Analysis.CanonicalWingChord
+
+@[expose] public section
 
 /-!
 # The actual top segment and the two remaining wing chords
@@ -113,13 +117,13 @@ theorem split_wing_chords_le_twice_score_of_selected_sequence
     rw [hl, hr]; ring
   let q : ℕ → ℝ := fun n => (horizontalRight (U n) - horizontalLeft (U n)) / 4
   let x : ℕ → ℝ := fun n => horizontalRight (U n) - q n + (T / C) * q n
-  have hλ0 : 0 ≤ T / C := div_nonneg hT0 hC.le
-  have hλ1 : T / C ≤ 1 := (div_le_iff₀ hC).mpr (by linarith only [hTC])
+  have hlam0 : 0 ≤ T / C := div_nonneg hT0 hC.le
+  have hlam1 : T / C ≤ 1 := (div_le_iff₀ hC).mpr (by linarith only [hTC])
   have hxmem (n : ℕ) : x n ∈ Icc (horizontalRight (U n) - q n) (horizontalRight (U n)) := by
     have hq0 : 0 ≤ q n := div_nonneg (sub_nonneg.mpr
       (horizontalLeft_le_horizontalRight (hcap n).nonempty (hcap n).isCompact)) (by norm_num)
-    have hprod := mul_nonneg hλ0 hq0
-    have hle := mul_le_mul_of_nonneg_right hλ1 hq0
+    have hprod := mul_nonneg hlam0 hq0
+    have hle := mul_le_mul_of_nonneg_right hlam1 hq0
     dsimp only [x]
     constructor <;> linarith only [hprod, hle]
   have hxproj (n : ℕ) : x n ∈ horizontalProjection (U n) := by

@@ -1,8 +1,12 @@
-import AmbidextrousSofa.Analysis.TiltedTopOverhang
-import AmbidextrousSofa.Analysis.SmallTiltArea
-import AmbidextrousSofa.Analysis.TiltedInitialUnitRegions
-import AmbidextrousSofa.Analysis.TiltedTriangleArea
-import AmbidextrousSofa.Analysis.TiltedLateExcess
+module
+
+public import AmbidextrousSofa.Analysis.TiltedTopOverhang
+public import AmbidextrousSofa.Analysis.SmallTiltArea
+public import AmbidextrousSofa.Analysis.TiltedInitialUnitRegions
+public import AmbidextrousSofa.Analysis.TiltedTriangleArea
+public import AmbidextrousSofa.Analysis.TiltedLateExcess
+
+@[expose] public section
 
 /-!
 # First-wing unit density in every remaining actual tilted region
@@ -102,7 +106,7 @@ theorem IsFullCapMaximizer.tilted_middle_niche_le_ten_ninths_overhang
     (haffine : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c)
     (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1) :
     sweptNiche U (Real.pi / 2) C ≤
-      (10 / 9) * ((Imported.vminus U (Real.pi / 2)).1 - C) := by
+      (10 / 9) * ((MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C) := by
   have hm := positive_affine_slope_of_middle_heights (by linarith only [hC0]) hh0
     haffine hlow hhigh
   have haff : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
@@ -112,19 +116,19 @@ theorem IsFullCapMaximizer.tilted_middle_niche_le_ten_ninths_overhang
     hU.exists_tilted_first_density_with_late_controls
       hl hr hC0 hC1 hh0 hh1 hheight haff hhigh hlow
   have hT := hU.tilted_top_overhang_pos hl hr hC0.le hC1.le hh0 hh1 hheight haffine hlow hhigh
-  have htop : Imported.vminus U (Real.pi / 2) =
-      ((Imported.vminus U (Real.pi / 2)).1, (1 : ℝ)) :=
+  have htop : MovingSofaOptimality.vminus U (Real.pi / 2) =
+      ((MovingSofaOptimality.vminus U (Real.pi / 2)).1, (1 : ℝ)) :=
     Prod.ext rfl ((top_vminus_snd_eq_capHeight U).trans hheight)
   have hn := hU.isCap.middle_niche_le_top_overhang_of_late_unit hρ
     (fun s => (hbounds s).1) hcoarse heq
     (firstQuarter_subset_regularCurvatureDomain_of_nonneg hm.le) hr
     (by linarith only [hC0]) hC1.le (by linarith only [hT]) htop hlate
-  have hλ := mul_le_mul_of_nonneg_left
+  have hlam := mul_le_mul_of_nonneg_left
     (Analysis.width_over_circleHeight_le_ten_ninths (by linarith only [hC0]) hC1.le) hT.le
-  have hλ' : ((Imported.vminus U (Real.pi / 2)).1 - C) * C /
-      Real.sqrt (1 - C ^ 2) ≤ (10 / 9) * ((Imported.vminus U (Real.pi / 2)).1 - C) := by
-    simpa only [mul_div_assoc, mul_comm] using hλ
-  exact hn.trans hλ'
+  have hlam' : ((MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C) * C /
+      Real.sqrt (1 - C ^ 2) ≤ (10 / 9) * ((MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C) := by
+    simpa only [mul_div_assoc, mul_comm] using hlam
+  exact hn.trans hlam'
 
 /-- The small-height scalar test now has no external projection,
 excess, endpoint niche, or ordinary-area assumptions. -/
@@ -137,7 +141,7 @@ theorem IsFullCapMaximizer.smallTilt_initial_floor_conditions
     (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1) :
     Analysis.InitialFloorEnergyConditions (3 * C)
       (capRoof U (horizontalRight U) - 1 + h) h := by
-  let T := (Imported.vminus U (Real.pi / 2)).1 - C
+  let T := (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C
   have hhmax : h < 17 / 50 := by linarith only [hh1]
   have hm := positive_affine_slope_of_middle_heights (by linarith only [hC0]) hh0
     haffine hlow hhigh
@@ -152,7 +156,7 @@ theorem IsFullCapMaximizer.smallTilt_initial_floor_conditions
       hl hr hC0 hC1 hh0 hhmax hheight haff hhigh hlow
   have hzT := hU.tilted_middle_niche_le_ten_ninths_overhang
     hl hr hC0 hC1 hh0 hhmax hheight haffine hlow hhigh
-  have htop : Imported.vminus U (Real.pi / 2) = (C + T, (1 : ℝ)) := by
+  have htop : MovingSofaOptimality.vminus U (Real.pi / 2) = (C + T, (1 : ℝ)) := by
     apply Prod.ext
     · dsimp only [T]
       ring

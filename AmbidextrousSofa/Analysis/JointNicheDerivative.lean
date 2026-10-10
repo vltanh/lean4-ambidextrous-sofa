@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.JointSourceFlux
-import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
+module
+
+public import AmbidextrousSofa.Analysis.JointSourceFlux
+public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
+
+@[expose] public section
 
 /-!
 # The actual niche derivative from the common spatial flux
@@ -16,6 +20,8 @@ every measurable spatial subset. No niche differentiability is assumed.
 noncomputable section
 
 open Set Filter MeasureTheory
+open scoped BoundedContinuousFunction
+open scoped ENNReal NNReal
 open scoped Topology
 
 namespace AmbidextrousSofa

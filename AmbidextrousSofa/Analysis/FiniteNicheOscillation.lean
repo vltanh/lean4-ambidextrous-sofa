@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FiniteRoofVariation
-import AmbidextrousSofa.Analysis.ErosionMoments
+module
+
+public import AmbidextrousSofa.Analysis.FiniteRoofVariation
+public import AmbidextrousSofa.Analysis.ErosionMoments
+
+@[expose] public section
 
 /-!
 # Finite niche oscillation and the actual erosion moments

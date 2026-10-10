@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.TerminalCompanionComparison
-import AmbidextrousSofa.Analysis.TerminalExposure
-import AmbidextrousSofa.Analysis.CanonicalOneTurn
+module
+
+public import AmbidextrousSofa.Analysis.TerminalCompanionComparison
+public import AmbidextrousSofa.Analysis.TerminalExposure
+public import AmbidextrousSofa.Analysis.CanonicalOneTurn
+
+@[expose] public section
 
 /-!
 # Strict terminal exposure from the actual companion moments

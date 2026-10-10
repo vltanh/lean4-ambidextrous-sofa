@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.NegativeCompletion
+module
+
+public import AmbidextrousSofa.Analysis.NegativeCompletion
+
+@[expose] public section
 
 /-!
 # The local proper-tail regime

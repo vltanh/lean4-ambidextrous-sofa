@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FullTriangleArea
-import AmbidextrousSofa.Analysis.FullWidthCeiling
+module
+
+public import AmbidextrousSofa.Analysis.FullTriangleArea
+public import AmbidextrousSofa.Analysis.FullWidthCeiling
+
+@[expose] public section
 
 /-!
 # The actual three-triangle width exclusion
@@ -182,15 +186,15 @@ theorem IsFullCapMaximizer.centered_half_width_lt_thirty_seven_twenty_fifths_of_
   · exact hU.centered_half_width_lt_thirty_seven_twenty_fifths_of_affine_nonneg
       hl hr hheight hm haffine
   · have hV := hU.horizontalMirror
-    have hVl : horizontalLeft (horizontalMirror U) = -a := by
+    have hVl : horizontalLeft (AmbidextrousSofa.horizontalMirror U) = -a := by
       rw [horizontalLeft_horizontalMirror hU.isCap, hr]
-    have hVr : horizontalRight (horizontalMirror U) = a := by
+    have hVr : horizontalRight (AmbidextrousSofa.horizontalMirror U) = a := by
       rw [horizontalRight_horizontalMirror hU.isCap, hl, neg_neg]
-    have hVheight : capHeight (horizontalMirror U) = 1 := by
+    have hVheight : capHeight (AmbidextrousSofa.horizontalMirror U) = 1 := by
       rw [capHeight_horizontalMirror, hheight]
     have hVaffine : ∀ x ∈ middleHalfInterval
-        (horizontalLeft (horizontalMirror U)) (horizontalRight (horizontalMirror U)),
-        capRoof (horizontalMirror U) x = (-m) * x + c := by
+        (horizontalLeft (AmbidextrousSofa.horizontalMirror U)) (horizontalRight (AmbidextrousSofa.horizontalMirror U)),
+        capRoof (AmbidextrousSofa.horizontalMirror U) x = (-m) * x + c := by
       intro x hx
       rw [hVl, hVr, middleHalfInterval_centered] at hx
       have hxU : -x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U) := by
@@ -203,17 +207,17 @@ theorem IsFullCapMaximizer.centered_half_width_lt_thirty_seven_twenty_fifths_of_
 
 theorem IsFullCapMaximizer.quarter_width_lt_thirty_seven_fiftieths
     {U : Set Plane} (hU : IsFullCapMaximizer U) : capWidth U / 4 < (37 / 50 : ℝ) := by
-  have hcenter : IsFullCapMaximizer (centeredCap U) :=
+  have hcenter : IsFullCapMaximizer (AmbidextrousSofa.centeredCap U) :=
     hU.of_score_le hU.isCap.centeredCap (by rw [capScore_centeredCap hU.isCap])
   obtain ⟨V, hV, hproj, hheight, _, m, c, haffine⟩ := hcenter.exists_heightOne_affine_middle
   let a := capWidth U / 2
   have hl : horizontalLeft V = -a := by
     calc
-      _ = horizontalLeft (centeredCap U) := by unfold horizontalLeft; rw [hproj]
+      _ = horizontalLeft (AmbidextrousSofa.centeredCap U) := by unfold horizontalLeft; rw [hproj]
       _ = _ := by rw [horizontalLeft_centeredCap hU.isCap]; dsimp [a]; ring
   have hr : horizontalRight V = a := by
     calc
-      _ = horizontalRight (centeredCap U) := by unfold horizontalRight; rw [hproj]
+      _ = horizontalRight (AmbidextrousSofa.centeredCap U) := by unfold horizontalRight; rw [hproj]
       _ = _ := horizontalRight_centeredCap hU.isCap
   have h := hV.centered_half_width_lt_thirty_seven_twenty_fifths_of_affine hl hr hheight haffine
   dsimp [a] at h

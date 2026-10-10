@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.FiniteNicheOscillation
+module
+
+public import AmbidextrousSofa.Analysis.FiniteNicheOscillation
+
+@[expose] public section
 
 /-!
 # Exact Green identities for the literal finite graphs

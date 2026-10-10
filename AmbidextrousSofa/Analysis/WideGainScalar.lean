@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.WideNichePieces
+module
+
+public import AmbidextrousSofa.Analysis.WideNichePieces
+
+@[expose] public section
 
 /-!
 # Exact scalar payment for the two retained wide niche pieces

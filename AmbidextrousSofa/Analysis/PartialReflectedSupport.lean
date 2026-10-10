@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.PartialWingSupport
-import AmbidextrousSofa.Analysis.SupportArcCalculus
-import AmbidextrousSofa.Analysis.TiltedSupportPair
-import AmbidextrousSofa.Analysis.TiltedInitialEnergy
+module
+
+public import AmbidextrousSofa.Analysis.PartialWingSupport
+public import AmbidextrousSofa.Analysis.SupportArcCalculus
+public import AmbidextrousSofa.Analysis.TiltedSupportPair
+public import AmbidextrousSofa.Analysis.TiltedInitialEnergy
+
+@[expose] public section
 
 /-!
 # The actual reflected support system after the terminal impulse
@@ -259,7 +263,7 @@ theorem IsJointCapMaximizer.properReflected_terminal_values_of_tail_regime
         1 + (terminalReflectedHeight U α - 1) * Real.sin α - terminalReflectedSpan U α * Real.cos α ∧
       properReflectedQ U m ρ (Real.pi / 2 - α) + 1 =
         terminalReflectedSpan U α * Real.sin α +
-          (terminalReflectedHeight U α - 1) * Real.cos α + Imported.sigmaAt U α := by
+          (terminalReflectedHeight U α - 1) * Real.cos α + MovingSofaOptimality.sigmaAt U α := by
   obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints
     (show 0 < capWidth U by linarith only [hU.width_bounds.1, one_lt_M])
   have hmα : Real.arctan m ≤ α := by
@@ -280,23 +284,23 @@ theorem IsJointCapMaximizer.properReflected_terminal_values_of_tail_regime
     hU.angle_pos.le hproper
   have hcomp := hU.terminal_companion_vplus hproper haffine
   have hfs : angleSupport U α = (terminalTailPoint U α).1 * Real.cos α +
-      (terminalTailPoint U α).2 * Real.sin α := (Imported.dot_vplus_uvec U α).symm
+      (terminalTailPoint U α).2 * Real.sin α := (MovingSofaOptimality.dot_vplus_uvec U α).symm
   have hgs : angleSupport U (α + Real.pi / 2) =
       -horizontalLeft U * Real.sin α + capRoof U (horizontalLeft U) * Real.cos α := by
-    rw [← Imported.dot_vplus_uvec, hcomp]
-    simp only [Imported.dot, Imported.uvec, Real.cos_add_pi_div_two, Real.sin_add_pi_div_two]
+    rw [← MovingSofaOptimality.dot_vplus_uvec, hcomp]
+    simp only [MovingSofaOptimality.dot, MovingSofaOptimality.uvec, Real.cos_add_pi_div_two, Real.sin_add_pi_div_two]
     ring
   have hgt : supportTangent U (α + Real.pi / 2) =
       -horizontalLeft U * Real.cos α - capRoof U (horizontalLeft U) * Real.sin α := by
     rw [supportTangent, hcomp]
-    simp only [Imported.dot, Imported.vvec, Real.sin_add_pi_div_two, Real.cos_add_pi_div_two]
+    simp only [MovingSofaOptimality.dot, MovingSofaOptimality.vvec, Real.sin_add_pi_div_two, Real.cos_add_pi_div_two]
     ring
-  have hft : Imported.dot (Imported.vminus U α) (Imported.vvec α) =
+  have hft : MovingSofaOptimality.dot (MovingSofaOptimality.vminus U α) (MovingSofaOptimality.vvec α) =
       -(terminalTailPoint U α).1 * Real.sin α +
-        (terminalTailPoint U α).2 * Real.cos α - Imported.sigmaAt U α := by
-    have h := Imported.sigmaAt_eq_dot_sub hU.isCap.imported_isConvexBody α
-    dsimp only [Imported.dot, Imported.vvec] at h
-    dsimp only [Imported.dot, Imported.vvec, terminalTailPoint]
+        (terminalTailPoint U α).2 * Real.cos α - MovingSofaOptimality.sigmaAt U α := by
+    have h := MovingSofaOptimality.sigmaAt_eq_dot_sub hU.isCap.imported_isConvexBody α
+    dsimp only [MovingSofaOptimality.dot, MovingSofaOptimality.vvec] at h
+    dsimp only [MovingSofaOptimality.dot, MovingSofaOptimality.vvec, terminalTailPoint]
     linarith only [h]
   constructor
   · dsimp only [properReflectedP, properUsedQ, supportQ]
@@ -322,7 +326,7 @@ theorem IsJointCapMaximizer.properReflected_terminal_values
         1 + (terminalReflectedHeight U α - 1) * Real.sin α - terminalReflectedSpan U α * Real.cos α ∧
       properReflectedQ U m ρ (Real.pi / 2 - α) + 1 =
         terminalReflectedSpan U α * Real.sin α +
-          (terminalReflectedHeight U α - 1) * Real.cos α + Imported.sigmaAt U α := by
+          (terminalReflectedHeight U α - 1) * Real.cos α + MovingSofaOptimality.sigmaAt U α := by
   exact IsJointCapMaximizer.properReflected_terminal_values_of_tail_regime hU
     (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine hρ hρ0
     hρK heq
@@ -342,7 +346,7 @@ theorem IsJointCapMaximizer.properReflected_terminal_impulse_of_tail_regime
           (terminalReflectedHeight U α - 1) (Real.pi / 2 - α) ∧
       properReflectedQ U m ρ (Real.pi / 2 - α) =
         Analysis.initialFloorCircleQ (terminalReflectedSpan U α)
-          (terminalReflectedHeight U α - 1) (Real.pi / 2 - α) + Imported.sigmaAt U α := by
+          (terminalReflectedHeight U α - 1) (Real.pi / 2 - α) + MovingSofaOptimality.sigmaAt U α := by
   have h := hU.properReflected_terminal_values_of_tail_regime hregime hproper hheight haffine hρ hρ0 hρK heq
   simp only [Analysis.initialFloorCircleP, Analysis.initialFloorCircleQ,
     Real.cos_pi_div_two_sub, Real.sin_pi_div_two_sub]
@@ -363,7 +367,7 @@ theorem IsJointCapMaximizer.properReflected_terminal_impulse
           (terminalReflectedHeight U α - 1) (Real.pi / 2 - α) ∧
       properReflectedQ U m ρ (Real.pi / 2 - α) =
         Analysis.initialFloorCircleQ (terminalReflectedSpan U α)
-          (terminalReflectedHeight U α - 1) (Real.pi / 2 - α) + Imported.sigmaAt U α := by
+          (terminalReflectedHeight U α - 1) (Real.pi / 2 - α) + MovingSofaOptimality.sigmaAt U α := by
   exact IsJointCapMaximizer.properReflected_terminal_impulse_of_tail_regime hU
     (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine hρ hρ0
     hρK heq

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.GridScore
+module
+
+public import AmbidextrousSofa.Analysis.GridScore
+
+@[expose] public section
 
 /-!
 # Persistent selection weights on the actual dyadic walls

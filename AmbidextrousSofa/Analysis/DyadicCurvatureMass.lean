@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.DiscreteCurvature
-import AmbidextrousSofa.Analysis.MiddleFacetBounds
-import AmbidextrousSofa.Analysis.GridCounting
+module
+
+public import AmbidextrousSofa.Analysis.DiscreteCurvature
+public import AmbidextrousSofa.Analysis.MiddleFacetBounds
+public import AmbidextrousSofa.Analysis.GridCounting
+
+@[expose] public section
 
 /-!
 # Actual polygon curvature mass near the axes
@@ -22,6 +26,7 @@ namespace AngularGrid
 
 open FinitePolygon
 
+open Classical in
 theorem fullPolygonAngles_filter_eq_source_image (grid : Finset QuarterAngle)
     {s : Set ℝ} [DecidablePred (fun t => t ∈ s)] (hs : s ⊆ Ioo 0 Real.pi)
     (htop : Real.pi / 2 ∉ s) :
@@ -52,6 +57,7 @@ theorem fullPolygonAngles_filter_eq_source_image (grid : Finset QuarterAngle)
   · rintro ⟨j, hj, rfl⟩
     exact ⟨⟨Sum.inr j, rfl⟩, hj⟩
 
+open Classical in
 theorem upperCurvature_eq_sum_sources {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (hpoly : U = circumscription U (normal grid))
     {s : Set ℝ} [DecidablePred (fun t => t ∈ s)] (hs : s ⊆ Ioo 0 Real.pi)
@@ -67,6 +73,7 @@ theorem upperCurvature_eq_sum_sources {U : Set Plane} (hU : IsDownwardCap U)
     Finset.sum_image (fun i _ j _ hij => fullAngle_injective grid hij)] at h
   exact h
 
+open Classical in
 theorem upperCurvature_real_eq_sum_sources {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (hpoly : U = circumscription U (normal grid))
     {s : Set ℝ} [DecidablePred (fun t => t ∈ s)] (hs : s ⊆ Ioo 0 Real.pi)
@@ -79,6 +86,7 @@ theorem upperCurvature_real_eq_sum_sources {U : Set Plane} (hU : IsDownwardCap U
   rw [upperCurvature_eq_sum_sources hU grid hpoly hs htop]
   exact ENNReal.toReal_sum (fun _ _ => isCompact_singleton.measure_ne_top)
 
+open Classical in
 theorem upperCurvature_real_le_mesh_sum {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (hpoly : U = circumscription U (normal grid))
     {s : Set ℝ} [DecidablePred (fun t => t ∈ s)] (hs : s ⊆ Ioo 0 Real.pi)

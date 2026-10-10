@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TiltedFirstUnitMoments
+module
+
+public import AmbidextrousSofa.Analysis.TiltedFirstUnitMoments
+
+@[expose] public section
 
 /-!
 # Harmonic reconstruction from the actual momentum ODE

@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.JointSourceNicheCalculus
-import AmbidextrousSofa.Analysis.JointBranchIntegrals
-import AmbidextrousSofa.Analysis.CoreContactPhase
+module
+
+public import AmbidextrousSofa.Analysis.JointSourceNicheCalculus
+public import AmbidextrousSofa.Analysis.JointBranchIntegrals
+public import AmbidextrousSofa.Analysis.CoreContactPhase
+
+@[expose] public section
 
 /-!
 # The actual graph and phase of both corner source restrictions
@@ -30,25 +34,28 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "Z" => innerCornerPoint F.f F.g
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "Z" => innerCornerPoint (F).f (F).g
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 
 theorem fullTiltedSupportQuarterPair_core_continuous_global :
     Continuous (fun t => (Z t).1) ∧ Continuous (fun t => (Z t).2) := by
-  have hf : Continuous F.f := hU.isCap.imported_isConvexBody.continuous_supp
-  have hg : Continuous F.g :=
+  have hf : Continuous (F).f := hU.isCap.imported_isConvexBody.continuous_supp
+  have hg : Continuous (F).g :=
     hU.isCap_fullLeftCompanion.imported_isConvexBody.continuous_supp.comp
       (continuous_id.add_const (Real.pi / 2))
   constructor <;> dsimp only [innerCornerPoint] <;> fun_prop
 
 theorem fullTiltedSupportQuarterPair_momenta_continuous : Continuous p ∧ Continuous q := by
-  have hf : Continuous F.f := hU.isCap.imported_isConvexBody.continuous_supp
-  have hg : Continuous F.g :=
+  have hf : Continuous (F).f := hU.isCap.imported_isConvexBody.continuous_supp
+  have hg : Continuous (F).g :=
     hU.isCap_fullLeftCompanion.imported_isConvexBody.continuous_supp.comp
       (continuous_id.add_const (Real.pi / 2))
-  have hfD : Continuous F.fD := hU.isCap.continuous_closedSupportDerivative hρ hρ0 hρK 0
-  have hgD : Continuous F.gD := hU.isCap_fullLeftCompanion.continuous_closedSupportDerivative
+  have hfD : Continuous (F).fD := hU.isCap.continuous_closedSupportDerivative hρ hρ0 hρK 0
+  have hgD : Continuous (F).gD := hU.isCap_fullLeftCompanion.continuous_closedSupportDerivative
     (measurable_leftCompanionWingDensity hρ m)
     (fun t => (leftCompanionWingDensity_bounds hρ0 hρK t).1)
     (fun t => (leftCompanionWingDensity_bounds hρ0 hρK t).2) (Real.pi / 2)
@@ -94,9 +101,13 @@ variable {target : Set Plane} {a b : ℝ} (J : SelectedJointSourceLimit target a
   (hleft : a < horizontalLeft target) (hright : horizontalRight target < b)
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm.le haffine hρ hρ0 hρK heq
-local notation "Z" => innerCornerPoint F.f F.g
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "Z" => innerCornerPoint (F).f (F).g
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
+set_option quotPrecheck false in
 local notation "X" => (fun t => (Z t).1)
 local notation "XD" => (fun t => p t * Real.cos t - q t * Real.sin t)
 

@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FirstUnitEventSelection
-import AmbidextrousSofa.Analysis.FirstFloorOrder
+module
+
+public import AmbidextrousSofa.Analysis.FirstUnitEventSelection
+public import AmbidextrousSofa.Analysis.FirstFloorOrder
+
+@[expose] public section
 
 /-!
 # Actual contact geometry for the common occupation law
@@ -28,11 +32,15 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 local notation "v" => (fun t : ℝ => leftCompanionWingDensity m ρ (t + Real.pi / 2))
-local notation "B" => firstTangentPoint F.f F.fD
-local notation "Z" => innerCornerPoint F.f F.g
+set_option quotPrecheck false in
+local notation "B" => firstTangentPoint (F).f (F).fD
+set_option quotPrecheck false in
+local notation "Z" => innerCornerPoint (F).f (F).g
 
 theorem fullTiltedSupportQuarterPair_first_window_positive_contact {C h α β η t : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)

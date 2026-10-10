@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.ProperExcessScalar
-import AmbidextrousSofa.Analysis.ProperReflectedEntry
+module
+
+public import AmbidextrousSofa.Analysis.ProperExcessScalar
+public import AmbidextrousSofa.Analysis.ProperReflectedEntry
+
+@[expose] public section
 
 /-!
 # The actual reflected proper-wing excess envelopes

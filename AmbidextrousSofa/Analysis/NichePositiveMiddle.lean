@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.NearDiagonalWalls
-import AmbidextrousSofa.Analysis.CapReflection
+module
+
+public import AmbidextrousSofa.Analysis.NearDiagonalWalls
+public import AmbidextrousSofa.Analysis.CapReflection
+
+@[expose] public section
 
 /-!
 # Actual positive niche from a top point and a baseline endpoint
@@ -69,10 +73,10 @@ theorem IsDownwardCap.sweptNiche_pos_of_top_point_right
     {U : Set Plane} (hU : IsDownwardCap U) {b x : ℝ}
     (htop : (b, 1) ∈ U) (hxb : x < b) (hlx : horizontalLeft U + 1 < x) :
     0 < sweptNiche U (Real.pi / 2) x := by
-  have htop' : (-b, 1) ∈ horizontalMirror U := by
+  have htop' : (-b, 1) ∈ AmbidextrousSofa.horizontalMirror U := by
     rw [mem_horizontalMirror_iff]
     simpa only [horizontalReflection, neg_neg] using htop
-  have hbound : -x < horizontalRight (horizontalMirror U) - 1 := by
+  have hbound : -x < horizontalRight (AmbidextrousSofa.horizontalMirror U) - 1 := by
     rw [horizontalRight_horizontalMirror hU]
     linarith only [hlx]
   have h := hU.horizontalMirror.sweptNiche_pos_of_top_point_left htop'

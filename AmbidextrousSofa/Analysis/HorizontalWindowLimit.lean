@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.HorizontalCutoff
+module
+
+public import AmbidextrousSofa.Analysis.HorizontalCutoff
+
+@[expose] public section
 
 /-!
 # Spatial domination away from an actual top segment

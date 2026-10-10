@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.HorizontalWindowLimit
+module
+
+public import AmbidextrousSofa.Analysis.HorizontalWindowLimit
+
+@[expose] public section
 
 /-!
 # The lower spatial limit of positive niche length

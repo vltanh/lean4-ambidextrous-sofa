@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.InitialAngleRelaxation
+module
+
+public import AmbidextrousSofa.Analysis.InitialAngleRelaxation
+
+@[expose] public section
 
 /-!
 # Exact clipping and integrals at the three-support critical point

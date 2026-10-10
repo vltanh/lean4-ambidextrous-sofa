@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.RegularTangency
-import AmbidextrousSofa.Analysis.SourceLocalization
-import Mathlib.Analysis.Calculus.LocalExtr.Basic
+module
+
+public import AmbidextrousSofa.Analysis.RegularTangency
+public import AmbidextrousSofa.Analysis.SourceLocalization
+public import Mathlib.Analysis.Calculus.LocalExtr.Basic
+
+@[expose] public section
 
 /-!
 # Globally visible parts of the actual two-wall niche

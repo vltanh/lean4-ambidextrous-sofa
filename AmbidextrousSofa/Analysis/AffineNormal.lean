@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Geometry.Support
-import AmbidextrousSofa.Imported.Plane
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+module
+
+public import AmbidextrousSofa.Geometry.Support
+public import MovingSofaOptimality.Basic.Plane
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+
+@[expose] public section
 
 /-!
 # The upward normal of an affine roof
@@ -34,7 +38,7 @@ theorem coordDot_affineNormalAngle (p : Plane) (m : ℝ) :
   ring
 
 theorem mem_affine_halfMinus_iff (p : Plane) (m c : ℝ) :
-    p ∈ Imported.halfMinus (affineNormalAngle m) (c * Real.cos (Real.arctan m)) ↔
+    p ∈ MovingSofaOptimality.halfMinus (affineNormalAngle m) (c * Real.cos (Real.arctan m)) ↔
       p.2 ≤ m * p.1 + c := by
   change coordDot p (unitNormal (affineNormalAngle m)) ≤
     c * Real.cos (Real.arctan m) ↔ _

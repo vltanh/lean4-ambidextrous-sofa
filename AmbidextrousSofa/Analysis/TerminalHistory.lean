@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.TerminalFacet
-import AmbidextrousSofa.Analysis.TerminalAngleIntegral
-import AmbidextrousSofa.Analysis.CornerConfinement
-import Mathlib.MeasureTheory.Measure.OpenPos
+module
+
+public import AmbidextrousSofa.Analysis.TerminalFacet
+public import AmbidextrousSofa.Analysis.TerminalAngleIntegral
+public import AmbidextrousSofa.Analysis.CornerConfinement
+public import Mathlib.MeasureTheory.Measure.OpenPos
+
+@[expose] public section
 
 /-!
 # The actual terminal facet and strict historical shadow
@@ -26,7 +30,7 @@ open scoped Topology
 namespace AmbidextrousSofa
 
 def terminalFirstLeftAbscissa (U : Set Plane) (α : ℝ) : ℝ :=
-  (Imported.vminus U α).1 - Real.cos α
+  (MovingSofaOptimality.vminus U α).1 - Real.cos α
 
 theorem terminalFirstLeftAbscissa_eq_right_add_width (U : Set Plane) (α : ℝ) :
     terminalFirstLeftAbscissa U α =
@@ -37,12 +41,12 @@ theorem terminalFirstLeftAbscissa_eq_right_add_width (U : Set Plane) (α : ℝ) 
 theorem terminalFirstLeftAbscissa_eq_frame (U : Set Plane) (α : ℝ) :
     terminalFirstLeftAbscissa U α =
       (angleSupport U α - 1) * Real.cos α -
-        coordDot (Imported.vminus U α) (Imported.vvec α) * Real.sin α := by
-  have hframe := Imported.eq_dot_uvec_smul_add (Imported.vminus U α) α
-  rw [Imported.dot_vminus_uvec] at hframe
+        coordDot (MovingSofaOptimality.vminus U α) (MovingSofaOptimality.vvec α) * Real.sin α := by
+  have hframe := MovingSofaOptimality.eq_dot_uvec_smul_add (MovingSofaOptimality.vminus U α) α
+  rw [MovingSofaOptimality.dot_vminus_uvec] at hframe
   have h := congrArg Prod.fst hframe
-  change (Imported.vminus U α).1 = angleSupport U α * Real.cos α +
-    coordDot (Imported.vminus U α) (Imported.vvec α) * (-Real.sin α) at h
+  change (MovingSofaOptimality.vminus U α).1 = angleSupport U α * Real.cos α +
+    coordDot (MovingSofaOptimality.vminus U α) (MovingSofaOptimality.vvec α) * (-Real.sin α) at h
   unfold terminalFirstLeftAbscissa
   linarith
 
@@ -54,7 +58,7 @@ theorem IsDownwardCap.firstWall_left_deriv {U : Set Plane}
     (((Real.hasDerivAt_cos α).const_mul x).hasDerivWithinAt)
   have h := hn.div (Real.hasDerivAt_sin α).hasDerivWithinAt hs
   change HasDerivWithinAt (fun t => firstWall U t x)
-    (((coordDot (Imported.vminus U α) (Imported.vvec α) - x * (-Real.sin α)) *
+    (((coordDot (MovingSofaOptimality.vminus U α) (MovingSofaOptimality.vvec α) - x * (-Real.sin α)) *
       Real.sin α - (angleSupport U α - 1 - x * Real.cos α) * Real.cos α) /
       Real.sin α ^ 2) (Iic α) α at h
   apply h.congr_deriv

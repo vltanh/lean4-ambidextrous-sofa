@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.WallVisibility
-import AmbidextrousSofa.Analysis.RegularCorner
-import Mathlib.Analysis.Calculus.DerivativeTest
+module
+
+public import AmbidextrousSofa.Analysis.WallVisibility
+public import AmbidextrousSofa.Analysis.RegularCorner
+public import Mathlib.Analysis.Calculus.DerivativeTest
+
+@[expose] public section
 
 /-!
 # The actual positive wall contacts

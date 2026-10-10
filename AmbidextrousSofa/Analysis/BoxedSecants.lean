@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.DyadicNeighbors
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+module
+
+public import AmbidextrousSofa.Analysis.DyadicNeighbors
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+
+@[expose] public section
 
 /-!
 # Uniform bounds for actual sampled support secants
@@ -18,11 +22,11 @@ namespace AmbidextrousSofa
 
 theorem abs_dot_companion_le_box {U : Set Plane} {R : ℝ}
     (hbox : U ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1) {p : Plane} (hp : p ∈ U) (t : ℝ) :
-    |Imported.dot p (Imported.vvec t)| ≤ R + 1 := by
+    |MovingSofaOptimality.dot p (MovingSofaOptimality.vvec t)| ≤ R + 1 := by
   have hx := abs_le.mpr (hbox hp).1
   have hy : |p.2| ≤ 1 := abs_le.mpr ⟨by linarith [(hbox hp).2.1], (hbox hp).2.2⟩
-  have h := Imported.abs_dot_uvec_le p (t + Real.pi / 2)
-  have heq : Imported.uvec (t + Real.pi / 2) = Imported.vvec t :=
+  have h := MovingSofaOptimality.abs_dot_uvec_le p (t + Real.pi / 2)
+  have heq : MovingSofaOptimality.uvec (t + Real.pi / 2) = MovingSofaOptimality.vvec t :=
     (companionNormal_eq_unitNormal t).symm
   rw [heq] at h
   linarith
@@ -32,21 +36,21 @@ theorem IsDownwardCap.abs_support_rotated_difference_le_box {U : Set Plane}
     (t δ : ℝ) (hc : 0 ≤ Real.cos δ) :
     |support U (unitNormal (t + δ)) - support U (unitNormal t) * Real.cos δ| ≤
       |Real.sin δ| * (R + 1) := by
-  obtain ⟨p, hp, hpt⟩ := Imported.exists_dot_eq_supp hU.isCompact hU.nonempty t
-  obtain ⟨q, hq, hqt⟩ := Imported.exists_dot_eq_supp hU.isCompact hU.nonempty (t + δ)
-  have hlo := Imported.dot_le_supp hU.isCompact hp (t + δ)
-  rw [Imported.dot_uvec_eq_cos_add_sin _ (t + δ) t,
+  obtain ⟨p, hp, hpt⟩ := MovingSofaOptimality.exists_dot_eq_supp hU.isCompact hU.nonempty t
+  obtain ⟨q, hq, hqt⟩ := MovingSofaOptimality.exists_dot_eq_supp hU.isCompact hU.nonempty (t + δ)
+  have hlo := MovingSofaOptimality.dot_le_supp hU.isCompact hp (t + δ)
+  rw [MovingSofaOptimality.dot_uvec_eq_cos_add_sin _ (t + δ) t,
     show t + δ - t = δ by ring, hpt] at hlo
-  have hqframe := Imported.dot_uvec_eq_cos_add_sin q (t + δ) t
+  have hqframe := MovingSofaOptimality.dot_uvec_eq_cos_add_sin q (t + δ) t
   rw [show t + δ - t = δ by ring, hqt] at hqframe
-  have hnormal := mul_le_mul_of_nonneg_left (Imported.dot_le_supp hU.isCompact hq t) hc
-  have hpbound : |Real.sin δ * Imported.dot p (Imported.vvec t)| ≤ |Real.sin δ| * (R + 1) := by
+  have hnormal := mul_le_mul_of_nonneg_left (MovingSofaOptimality.dot_le_supp hU.isCompact hq t) hc
+  have hpbound : |Real.sin δ * MovingSofaOptimality.dot p (MovingSofaOptimality.vvec t)| ≤ |Real.sin δ| * (R + 1) := by
     simpa only [abs_mul] using mul_le_mul_of_nonneg_left
       (abs_dot_companion_le_box hbox hp t) (abs_nonneg (Real.sin δ))
-  have hqbound : |Real.sin δ * Imported.dot q (Imported.vvec t)| ≤ |Real.sin δ| * (R + 1) := by
+  have hqbound : |Real.sin δ * MovingSofaOptimality.dot q (MovingSofaOptimality.vvec t)| ≤ |Real.sin δ| * (R + 1) := by
     simpa only [abs_mul] using mul_le_mul_of_nonneg_left
       (abs_dot_companion_le_box hbox hq t) (abs_nonneg (Real.sin δ))
-  change |Imported.supp U (t + δ) - Imported.supp U t * Real.cos δ| ≤ _
+  change |MovingSofaOptimality.supp U (t + δ) - MovingSofaOptimality.supp U t * Real.cos δ| ≤ _
   apply abs_le.mpr
   constructor
   · linarith [(abs_le.mp hpbound).1]
@@ -67,7 +71,7 @@ theorem abs_firstCornerSecant_le_box {U : Set Plane} (hU : IsDownwardCap U)
     {R : ℝ} (hbox : U ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1) (t δ : ℝ)
     (hc : 0 ≤ Real.cos δ) (hs : Real.sin δ ≠ 0) :
     |firstCornerSecant U t δ| ≤ 2 * R + 3 := by
-  have hsupport := Imported.abs_supp_le_box hU.imported_isConvexBody hbox t
+  have hsupport := MovingSofaOptimality.abs_supp_le_box hU.imported_isConvexBody hbox t
   have hsecant := hU.abs_support_secant_le_box hbox (t + Real.pi / 2) δ hc hs
   rw [show t + Real.pi / 2 + δ = (t + δ) + Real.pi / 2 by ring] at hsecant
   simp only [← companionNormal_eq_unitNormal] at hsecant
@@ -81,7 +85,7 @@ theorem abs_secondCornerSecant_le_box {U : Set Plane} (hU : IsDownwardCap U)
     {R : ℝ} (hbox : U ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1) (t δ : ℝ)
     (hc : 0 ≤ Real.cos δ) (hs : Real.sin δ ≠ 0) :
     |secondCornerSecant U t δ| ≤ 2 * R + 3 := by
-  have hsupport := Imported.abs_supp_le_box hU.imported_isConvexBody hbox (t + Real.pi / 2)
+  have hsupport := MovingSofaOptimality.abs_supp_le_box hU.imported_isConvexBody hbox (t + Real.pi / 2)
   change |support U (unitNormal (t + Real.pi / 2))| ≤ R + 1 at hsupport
   rw [← companionNormal_eq_unitNormal] at hsupport
   have hsecant := hU.abs_support_secant_le_box hbox t (-δ)

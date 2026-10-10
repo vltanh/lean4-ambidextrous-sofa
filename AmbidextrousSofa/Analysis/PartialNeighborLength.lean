@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.PartialNeighborWalls
+module
+
+public import AmbidextrousSofa.Analysis.PartialNeighborWalls
+
+@[expose] public section
 
 /-!
 # Quantitative proper-history source estimates
@@ -58,7 +62,7 @@ theorem integral_first_source_le {U : Set Plane} (hU : IsDownwardCap U)
     (hplus : ∃ s ∈ grid, (scaleAngle α s : ℝ) = (scaleAngle α t.val : ℝ) + δ) :
     (∫ x in a..b, innerDensity U α hαL grid (scaledSource α grid (Sum.inl t)) x) ≤
       Real.tan δ * (|firstCornerSecant U (scaleAngle α t.val) δ| + Real.tan (δ / 2)) +
-        max (2 * Real.tan (δ / 2) - (upperCurvature U {(scaleAngle α t.val)}).toReal) 0 := by
+        max (2 * Real.tan (δ / 2) - (upperCurvature U {((scaleAngle α t.val : QuarterAngle) : ℝ)}).toReal) 0 := by
   have hraw := integral_first_source_le_parameters hU α hαL grid t hc hs hab hminus hplus
   have hcomp := companion_interval_length_le hc hs hh
     (hU.companion_secondDifference_nonneg (scaleAngle α t.val) hs.le)

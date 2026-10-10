@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.CapReflection
+module
+
+public import AmbidextrousSofa.Analysis.CapReflection
+
+@[expose] public section
 
 /-!
 # Reversible horizontal normalization of actual caps
@@ -57,8 +61,8 @@ theorem IsDownwardCap.roof_eq_const_on_middle_horizontalTranslate
     {U : Set Plane} (hU : IsDownwardCap U) {H : ℝ}
     (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = H)
     (a : ℝ) :
-    ∀ x ∈ middleHalfInterval (horizontalLeft (horizontalTranslate U a))
-      (horizontalRight (horizontalTranslate U a)), capRoof (horizontalTranslate U a) x = H := by
+    ∀ x ∈ middleHalfInterval (horizontalLeft (AmbidextrousSofa.horizontalTranslate U a))
+      (horizontalRight (AmbidextrousSofa.horizontalTranslate U a)), capRoof (AmbidextrousSofa.horizontalTranslate U a) x = H := by
   intro x hx
   rw [horizontalLeft_horizontalTranslate hU, horizontalRight_horizontalTranslate hU,
     middleHalfInterval_add] at hx
@@ -67,10 +71,10 @@ theorem IsDownwardCap.roof_eq_const_on_middle_horizontalTranslate
   exact hmiddle y hy
 
 theorem IsFullCapMaximizer.horizontalTranslate {U : Set Plane}
-    (hU : IsFullCapMaximizer U) (a : ℝ) : IsFullCapMaximizer (horizontalTranslate U a) :=
+    (hU : IsFullCapMaximizer U) (a : ℝ) : IsFullCapMaximizer (AmbidextrousSofa.horizontalTranslate U a) :=
   hU.of_score_le (hU.isCap.horizontalTranslate a) (capScore_horizontalTranslate hU.isCap a _).ge
 
 theorem IsFullCapMaximizer.centeredCap {U : Set Plane} (hU : IsFullCapMaximizer U) :
-    IsFullCapMaximizer (centeredCap U) := hU.horizontalTranslate _
+    IsFullCapMaximizer (AmbidextrousSofa.centeredCap U) := hU.horizontalTranslate _
 
 end AmbidextrousSofa

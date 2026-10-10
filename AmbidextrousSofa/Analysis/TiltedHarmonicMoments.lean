@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TiltedMomentumConvolution
+module
+
+public import AmbidextrousSofa.Analysis.TiltedMomentumConvolution
+
+@[expose] public section
 
 /-!
 # Exact harmonic first-floor and right-window moments

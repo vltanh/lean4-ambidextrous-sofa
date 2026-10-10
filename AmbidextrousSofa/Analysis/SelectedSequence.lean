@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.PersistentPenalty
-import AmbidextrousSofa.Analysis.GridSeparation
-import AmbidextrousSofa.Analysis.GlobalCapMaximum
+module
+
+public import AmbidextrousSofa.Analysis.PersistentPenalty
+public import AmbidextrousSofa.Analysis.GridSeparation
+public import AmbidextrousSofa.Analysis.GlobalCapMaximum
+
+@[expose] public section
 
 /-!
 # Actual selected polygon sequences for a prescribed spatial maximum

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.AngularFluxLimit
+module
+
+public import AmbidextrousSofa.Analysis.AngularFluxLimit
+
+@[expose] public section
 
 /-!
 # Removing spatial endpoint cutoffs from the actual graph flux

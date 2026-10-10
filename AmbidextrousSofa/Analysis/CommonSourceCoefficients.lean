@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Measure.RealRadonNikodym
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Tactic
+module
+
+public import AmbidextrousSofa.Measure.RealRadonNikodym
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Tactic
+
+@[expose] public section
 
 /-!
 # One bounded family of source coefficients

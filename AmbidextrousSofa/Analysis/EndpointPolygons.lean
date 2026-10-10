@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.EndpointTrimming
-import AmbidextrousSofa.Analysis.PolygonEnvelope
+module
+
+public import AmbidextrousSofa.Analysis.EndpointTrimming
+public import AmbidextrousSofa.Analysis.PolygonEnvelope
+
+@[expose] public section
 
 /-!
 # Inward endpoint operations preserve the finite polygon class

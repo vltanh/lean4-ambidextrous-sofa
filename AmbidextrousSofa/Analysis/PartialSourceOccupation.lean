@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.PartialRegularDomain
-import AmbidextrousSofa.Analysis.PartialHorizontalCutoff
-import AmbidextrousSofa.Analysis.SourceOccupation
+module
+
+public import AmbidextrousSofa.Analysis.PartialRegularDomain
+public import AmbidextrousSofa.Analysis.PartialHorizontalCutoff
+public import AmbidextrousSofa.Analysis.SourceOccupation
+
+@[expose] public section
 
 /-!
 # Actual source occupation for proper selected polygons
@@ -61,6 +65,7 @@ theorem innerSourceMass_sub_atom_eq {U : Set Plane} (hU : IsDownwardCap U)
     AngularGrid.middleOuterMass, capWidth]
   linarith only [hdef, htotal, hleft, hright]
 
+open Classical in
 theorem abs_innerAngularMass_sub_curvature_le {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (hpoly : U = circumscription U (normal α grid))
     {E : Set ℝ} (hupper : E ⊆ Ioo (0 : ℝ) Real.pi) (htop : Real.pi / 2 ∉ E) :
@@ -88,6 +93,7 @@ theorem abs_innerAngularMass_sub_curvature_le {U : Set Plane} (hU : IsDownwardCa
         abs_add_le (normalizedExposureDefect U α hαL grid j) (-(middleOuterMass U α grid j))
     _ = _ := by rw [abs_neg, abs_of_nonneg (middleOuterMass_nonneg hU α grid j)]
 
+open Classical in
 theorem sum_abs_defect_on_set_tendsto_of_compact
     {U : ℕ → Set Plane} {grid : ℕ → Finset QuarterAngle} {E F : Set ℝ}
     (hcos : Tendsto (fun n => ∑ j : SourceIndex α (grid n),
@@ -182,14 +188,14 @@ theorem innerAngularMass_Ioc_tendsto_of_canonical_maximum
   have herror := innerAngularMass_sub_curvature_tendsto_of_canonical_maximum
     hTarget hheight haffine hTargetBox hU hHausdorff hlevel hc hrate hleft hright
     isCompact_Icc Ioc_subset_Icc_self hregular
-  have hnonatom (x : ℝ) (hx : x ∈ Icc s t) : Imported.sigmaAt target x = 0 :=
+  have hnonatom (x : ℝ) (hx : x ∈ Icc s t) : MovingSofaOptimality.sigmaAt target x = 0 :=
     hTarget.sigmaAt_eq_zero_on_regular_proper_domain hαL haffine (hregular hx)
   have hcap : ∀ n, IsDownwardCap (U n) := fun n => (hU n).isCap
-  have hcb : ∀ n, Imported.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
+  have hcb : ∀ n, MovingSofaOptimality.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
   have hlim := hHausdorff.imported_hausdorffTendsto hcap hTarget.isCap
-  have hleftLim := Imported.ang_tendsto_sigmaFun hcb hTarget.isCap.imported_isConvexBody hlim
+  have hleftLim := MovingSofaOptimality.ang_tendsto_sigmaFun hcb hTarget.isCap.imported_isConvexBody hlim
     (hnonatom s ⟨le_rfl, hst⟩)
-  have hrightLim := Imported.ang_tendsto_sigmaFun hcb hTarget.isCap.imported_isConvexBody hlim
+  have hrightLim := MovingSofaOptimality.ang_tendsto_sigmaFun hcb hTarget.isCap.imported_isConvexBody hlim
     (hnonatom t ⟨hst, le_rfl⟩)
   have hmass : Tendsto (fun n => (upperCurvature (U n)).real (Ioc s t)) atTop
       (𝓝 ((upperCurvature target).real (Ioc s t))) := by

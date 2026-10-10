@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialReflectedSupport
-import AmbidextrousSofa.Analysis.TiltedSupportControls
+module
+
+public import AmbidextrousSofa.Analysis.PartialReflectedSupport
+public import AmbidextrousSofa.Analysis.TiltedSupportControls
+
+@[expose] public section
 
 /-!
 # Actual source controls for the reflected proper arcs

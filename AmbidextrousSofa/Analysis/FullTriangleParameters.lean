@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FullTriangleScalar
-import AmbidextrousSofa.Analysis.WideNicheGeometry
+module
+
+public import AmbidextrousSofa.Analysis.FullTriangleScalar
+public import AmbidextrousSofa.Analysis.WideNicheGeometry
+
+@[expose] public section
 
 /-!
 # Parameters of the actual three-angle niche comparison

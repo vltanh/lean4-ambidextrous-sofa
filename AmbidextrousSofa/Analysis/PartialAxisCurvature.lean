@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.PartialSourceCounting
+module
+
+public import AmbidextrousSofa.Analysis.PartialSourceCounting
+
+@[expose] public section
 
 /-!
 # Punctured-axis curvature bounds for the actual proper polygons

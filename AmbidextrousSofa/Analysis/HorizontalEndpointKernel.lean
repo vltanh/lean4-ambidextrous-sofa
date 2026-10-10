@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.TangencyEndpoints
-import AmbidextrousSofa.Analysis.TerminalCompanionCurvature
-import AmbidextrousSofa.Imported.Convex.ConvexCurve
+module
+
+public import AmbidextrousSofa.Analysis.TangencyEndpoints
+public import AmbidextrousSofa.Analysis.TerminalCompanionCurvature
+public import MovingSofaOptimality.Convex.ConvexCurve
+
+@[expose] public section
 
 /-!
 # The actual horizontal endpoint leakage kernel
@@ -25,20 +29,20 @@ theorem IsDownwardCap.firstWall_eq_horizontal_density_kernel
       (volume.restrict S).withDensity (fun s => ENNReal.ofReal (ρ s)))
     (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2))
     (hsub : Ioo t (Real.pi / 2) ⊆ S)
-    (htop : Imported.vminus U (Real.pi / 2) = (C, 1)) :
+    (htop : MovingSofaOptimality.vminus U (Real.pi / 2) = (C, 1)) :
     firstWall U t C =
       (∫ s in t..(Real.pi / 2), Real.sin (s - t) * (ρ s - 1)) / Real.sin t := by
-  have hvec := Imported.cvx_integral_vvec_Ioo hU.imported_isConvexBody ht.2
-  have hi : IntegrableOn Imported.vvec (Ioo t (Real.pi / 2)) (Imported.sigma U) :=
-    Imported.continuous_vvec.integrableOn_Icc.mono_set Ioo_subset_Icc_self
+  have hvec := MovingSofaOptimality.cvx_integral_vvec_Ioo hU.imported_isConvexBody ht.2
+  have hi : IntegrableOn MovingSofaOptimality.vvec (Ioo t (Real.pi / 2)) (MovingSofaOptimality.sigma U) :=
+    MovingSofaOptimality.continuous_vvec.integrableOn_Icc.mono_set Ioo_subset_Icc_self
   have hx := congrArg Prod.fst hvec
   have hy := congrArg Prod.snd hvec
   rw [fst_integral hi, htop] at hx
   rw [snd_integral hi, htop] at hy
   change (∫ s in Ioo t (Real.pi / 2), -Real.sin s ∂upperCurvature U) =
-    C - (Imported.vplus U t).1 at hx
+    C - (MovingSofaOptimality.vplus U t).1 at hx
   change (∫ s in Ioo t (Real.pi / 2), Real.cos s ∂upperCurvature U) =
-    1 - (Imported.vplus U t).2 at hy
+    1 - (MovingSofaOptimality.vplus U t).2 at hy
   rw [setIntegral_eq_density_mul_of_restrict_withDensity hρ hρ0 heq
     measurableSet_Ioo hsub, ← integral_Ioc_eq_integral_Ioo,
     ← intervalIntegral.integral_of_le ht.2.le] at hx hy
@@ -46,12 +50,12 @@ theorem IsDownwardCap.firstWall_eq_horizontal_density_kernel
   have hsin := hρi.mul_continuousOn Real.continuous_sin.continuousOn
   have hcos := hρi.mul_continuousOn Real.continuous_cos.continuousOn
   have hx' : (∫ s in t..(Real.pi / 2), ρ s * Real.sin s) =
-      (Imported.vplus U t).1 - C := by
+      (MovingSofaOptimality.vplus U t).1 - C := by
     simp only [mul_neg, intervalIntegral.integral_neg] at hx
     linarith only [hx]
   have hkernel : (∫ s in t..(Real.pi / 2), Real.sin (s - t) * (ρ s - 1)) =
-      Real.cos t * ((Imported.vplus U t).1 - C - Real.cos t) -
-        Real.sin t * (1 - (Imported.vplus U t).2 - (1 - Real.sin t)) := by
+      Real.cos t * ((MovingSofaOptimality.vplus U t).1 - C - Real.cos t) -
+        Real.sin t * (1 - (MovingSofaOptimality.vplus U t).2 - (1 - Real.sin t)) := by
     calc
       _ = ∫ s in t..(Real.pi / 2),
           Real.cos t * (ρ s * Real.sin s - Real.sin s) -
@@ -69,9 +73,9 @@ theorem IsDownwardCap.firstWall_eq_horizontal_density_kernel
           intervalIntegral.integral_sub hcos (Real.continuous_cos.intervalIntegrable _ _),
           hx', hy, intervalIntegral.integral_sin, intervalIntegral.integral_cos,
           Real.sin_pi_div_two, Real.cos_pi_div_two, sub_zero]
-  have hsupp := Imported.dot_vplus_uvec U t
-  change (Imported.vplus U t).1 * Real.cos t +
-    (Imported.vplus U t).2 * Real.sin t = support U (unitNormal t) at hsupp
+  have hsupp := MovingSofaOptimality.dot_vplus_uvec U t
+  change (MovingSofaOptimality.vplus U t).1 * Real.cos t +
+    (MovingSofaOptimality.vplus U t).2 * Real.sin t = support U (unitNormal t) at hsupp
   unfold firstWall
   congr 1
   nlinarith [Real.sin_sq_add_cos_sq t]

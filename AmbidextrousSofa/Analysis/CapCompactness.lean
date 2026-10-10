@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.RoofContinuity
-import AmbidextrousSofa.Geometry.Support
+module
+
+public import AmbidextrousSofa.Analysis.RoofContinuity
+public import AmbidextrousSofa.Geometry.Support
+
+@[expose] public section
 
 /-!
 # Hausdorff compactness of the actual cap domain

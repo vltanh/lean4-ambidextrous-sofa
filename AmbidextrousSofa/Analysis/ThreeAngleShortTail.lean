@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.ThreeAngleDeficit
+module
+
+public import AmbidextrousSofa.Analysis.ThreeAngleDeficit
+
+@[expose] public section
 
 /-!
 # Both short-width tails in the literal three-angle barrier

@@ -1,4 +1,9 @@
-import AmbidextrousSofa.Geometry.Support
+module
+
+public import AmbidextrousSofa.Geometry.Support
+public import AmbidextrousSofa.Geometry.Hallway
+
+@[expose] public section
 
 /-!
 # Determination of a downward cap by its upward supports

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TiltedFirstUnitEnergy
+module
+
+public import AmbidextrousSofa.Analysis.TiltedFirstUnitEnergy
+
+@[expose] public section
 
 /-!
 # Actual moment bounds for the first-unit energy

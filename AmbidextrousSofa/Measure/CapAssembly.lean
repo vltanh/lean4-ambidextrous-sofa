@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Geometry.AngularDomain
-import AmbidextrousSofa.Measure.CapScore
+module
+
+public import AmbidextrousSofa.Geometry.AngularDomain
+public import AmbidextrousSofa.Measure.CapScore
+
+@[expose] public section
 
 /-!
 # The actual two-cap area inequality and exact deficit

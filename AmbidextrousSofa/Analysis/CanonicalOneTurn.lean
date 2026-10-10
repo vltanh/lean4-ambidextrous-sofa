@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.SelectedNicheHeight
-import AmbidextrousSofa.Analysis.OneTurnArea
+module
+
+public import AmbidextrousSofa.Analysis.SelectedNicheHeight
+public import AmbidextrousSofa.Analysis.OneTurnArea
+
+@[expose] public section
 
 /-!
 # Actual one-turn geometry of a canonical tilted full maximum

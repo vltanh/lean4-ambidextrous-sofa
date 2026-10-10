@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.OpenGraphFlux
-import AmbidextrousSofa.Analysis.RegularCorner
-import AmbidextrousSofa.Analysis.TangencyOrder
+module
+
+public import AmbidextrousSofa.Analysis.OpenGraphFlux
+public import AmbidextrousSofa.Analysis.RegularCorner
+public import AmbidextrousSofa.Analysis.TangencyOrder
+
+@[expose] public section
 
 /-!
 # Actual visible tangency and corner flux

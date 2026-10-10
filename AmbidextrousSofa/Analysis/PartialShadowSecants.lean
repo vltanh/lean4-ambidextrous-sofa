@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialNeighborShadowing
-import AmbidextrousSofa.Analysis.ShadowCurvature
+module
+
+public import AmbidextrousSofa.Analysis.PartialNeighborShadowing
+public import AmbidextrousSofa.Analysis.ShadowCurvature
+
+@[expose] public section
 
 /-!
 # Actual proper source shadowing at vanishing mesh
@@ -61,7 +65,7 @@ theorem negative_shadow_source_bounds {U : Set Plane} (hU : IsDownwardCap U)
     (hmargin : 0 < negativeShadowMargin U (scaleAngle α t.val) δ) :
     innerSourceSet U α hαL grid (scaledSource α grid (Sum.inr t)) = ∅ ∧
       (∫ x in a..b, innerDensity U α hαL grid (scaledSource α grid (Sum.inl t)) x) ≤
-        max (2 * Real.tan (δ / 2) - (upperCurvature U {(scaleAngle α t.val)}).toReal) 0 := by
+        max (2 * Real.tan (δ / 2) - (upperCurvature U {((scaleAngle α t.val : QuarterAngle) : ℝ)}).toReal) 0 := by
   have hm := lt_min_iff.mp hmargin
   have htan : 0 < Real.tan δ := by rw [Real.tan_eq_sin_div_cos]; exact div_pos hs hc
   have hg1 := second_backward_shadow_gap U (scaleAngle α t.val) hs.ne' hh
@@ -84,7 +88,7 @@ theorem negative_shadow_source_bounds {U : Set Plane} (hU : IsDownwardCap U)
 theorem mesh_half_tan_nonneg (α : TerminalAngle) (n : ℕ) :
     0 ≤ Real.tan (mesh α n / 2) := by
   apply nonneg_of_mul_nonneg_left _ (mesh_sin_pos α n)
-  rw [Imported.tan_half_mul_sin (mesh_half_cos_ne α n)]
+  rw [MovingSofaOptimality.tan_half_mul_sin (mesh_half_cos_ne α n)]
   linarith only [Real.cos_le_one (mesh α n)]
 
 theorem IsSelectedPolygon.positive_shadow_atoms {target U : Set Plane}
@@ -92,7 +96,7 @@ theorem IsSelectedPolygon.positive_shadow_atoms {target U : Set Plane}
     (hU : IsSelectedPolygon target α hαL a b level coefficient U) (hc : 0 ≤ coefficient)
     (t : InteriorPoint (dyadic level))
     (hmargin : 0 < positiveShadowMargin U (scaleAngle α t.val) (mesh α level)) :
-    (upperCurvature U {(scaleAngle α t.val)}).toReal ≤
+    (upperCurvature U {((scaleAngle α t.val : QuarterAngle) : ℝ)}).toReal ≤
         middleOuterMass U α (dyadic level) (scaledSource α (dyadic level) (Sum.inl t)) +
         selectionDefect target U α level coefficient (scaledSource α (dyadic level) (Sum.inl t)) ∧
       (upperCurvature U {(scaleAngle α t.val : ℝ) + Real.pi / 2}).toReal ≤
@@ -116,7 +120,7 @@ theorem IsSelectedPolygon.negative_shadow_atoms {target U : Set Plane}
     (upperCurvature U {(scaleAngle α t.val : ℝ) + Real.pi / 2}).toReal ≤
         middleOuterMass U α (dyadic level) (scaledSource α (dyadic level) (Sum.inr t)) +
         selectionDefect target U α level coefficient (scaledSource α (dyadic level) (Sum.inr t)) ∧
-      (upperCurvature U {(scaleAngle α t.val)}).toReal ≤ Real.tan (mesh α level / 2) +
+      (upperCurvature U {((scaleAngle α t.val : QuarterAngle) : ℝ)}).toReal ≤ Real.tan (mesh α level / 2) +
         middleOuterMass U α (dyadic level) (scaledSource α (dyadic level) (Sum.inl t)) +
         selectionDefect target U α level coefficient (scaledSource α (dyadic level) (Sum.inl t)) := by
   obtain ⟨hm, hp⟩ := dyadic_neighbors α level t
@@ -189,8 +193,8 @@ theorem eventually_sameSignShadowMargin_pos
     (hB : IsCompact B) (hbox : ∀ n, U n ⊆ B) (positive : Bool)
     {level : ℕ → ℕ} (hlevel : Tendsto level atTop atTop) {t : ℝ}
     (htop : t ≠ Real.pi / 2)
-    (ht : Imported.sigmaAt K (sourceQuarterAngle t) = 0)
-    (htcomp : Imported.sigmaAt K (sourceQuarterAngle t + Real.pi / 2) = 0)
+    (ht : MovingSofaOptimality.sigmaAt K (sourceQuarterAngle t) = 0)
+    (htcomp : MovingSofaOptimality.sigmaAt K (sourceQuarterAngle t + Real.pi / 2) = 0)
     (hmargin : 0 < sameSignVelocityMargin positive K (sourceQuarterAngle t)) :
     ∃ δ > 0, ∀ᶠ n in atTop, ∀ j : AngularGrid.SourceIndex (dyadic (level n)),
       |fullAngle α (dyadic (level n)) (scaledSource α (dyadic (level n)) j) - t| < δ →
@@ -225,8 +229,8 @@ theorem eventually_shadow_atoms_le
     (hHausdorff : CapHausdorffTendsto U target) (hlevel : Tendsto level atTop atTop)
     (hc : ∀ n, 0 ≤ coefficient n) (hB : IsCompact B) (hbox : ∀ n, U n ⊆ B)
     (positive : Bool) {t ε : ℝ} (htop : t ≠ Real.pi / 2)
-    (ht : Imported.sigmaAt target (sourceQuarterAngle t) = 0)
-    (htcomp : Imported.sigmaAt target (sourceQuarterAngle t + Real.pi / 2) = 0)
+    (ht : MovingSofaOptimality.sigmaAt target (sourceQuarterAngle t) = 0)
+    (htcomp : MovingSofaOptimality.sigmaAt target (sourceQuarterAngle t + Real.pi / 2) = 0)
     (hmargin : 0 < sameSignVelocityMargin positive target (sourceQuarterAngle t))
     (hε : 0 < ε) :
     ∃ δ > 0, ∀ᶠ n in atTop, ∀ j : AngularGrid.SourceIndex (dyadic (level n)),

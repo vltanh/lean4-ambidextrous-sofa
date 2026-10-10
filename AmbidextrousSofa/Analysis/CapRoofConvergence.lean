@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.CapVolumeContinuity
-import AmbidextrousSofa.Measure.CapScore
+module
+
+public import AmbidextrousSofa.Analysis.CapVolumeContinuity
+public import AmbidextrousSofa.Measure.CapScore
+
+@[expose] public section
 
 /-!
 # Almost-everywhere convergence of actual cap roofs

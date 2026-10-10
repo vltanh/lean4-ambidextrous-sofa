@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.RoofGain
+module
+
+public import AmbidextrousSofa.Analysis.RoofGain
+
+@[expose] public section
 
 /-!
 # Actual point insertion in inactive supporting directions

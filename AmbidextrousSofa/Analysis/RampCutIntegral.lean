@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.AsymmetricTent
+module
+
+public import AmbidextrousSofa.Analysis.AsymmetricTent
+
+@[expose] public section
 
 /-!
 # Ordinary one-sided triangular area payments

@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.Chord
-import AmbidextrousSofa.Analysis.EndpointPressure
-import AmbidextrousSofa.Analysis.CapTranslation
-import AmbidextrousSofa.Reference.Value
+module
+
+public import AmbidextrousSofa.Analysis.Chord
+public import AmbidextrousSofa.Analysis.EndpointPressure
+public import AmbidextrousSofa.Analysis.CapTranslation
+public import AmbidextrousSofa.Reference.Value
+
+@[expose] public section
 
 /-!
 # Recovering the original cap from its reference canonicalization
@@ -128,10 +132,10 @@ general claim that extrusion is strictly score improving. -/
 theorem IsDownwardCap.verticalExtrusion_eq_reference_of_score_eq
     {U : Set Plane} (hU : IsDownwardCap U) {ε c : ℝ} (hε : 0 ≤ ε)
     (hheight : ∀ p ∈ U, p.2 + ε ≤ 1)
-    (href : verticalExtrusion U ε = horizontalTranslate Reference.referenceCap c)
+    (href : verticalExtrusion U ε = AmbidextrousSofa.horizontalTranslate Reference.referenceCap c)
     (hscore : capScore U (Real.pi / 2) =
       capScore (verticalExtrusion U ε) (Real.pi / 2)) :
-    ε = 0 ∧ U = horizontalTranslate Reference.referenceCap c := by
+    ε = 0 ∧ U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap c := by
   have hproj := hU.horizontalProjection_verticalExtrusion hε
   have hleft : horizontalLeft U = horizontalLeft Reference.referenceCap + c := by
     have h := congrArg sInf hproj
@@ -195,8 +199,8 @@ theorem IsDownwardCap.eq_reference_of_heightSaturation_middleChordCap_eq
     {U : Set Plane} (hU : IsDownwardCap U) (hwidth : 0 < capWidth U) {c : ℝ}
     (hscore : capScore U (Real.pi / 2) = M / 2)
     (href : heightSaturation (middleChordCap U) =
-      horizontalTranslate Reference.referenceCap c) :
-    U = horizontalTranslate Reference.referenceCap c := by
+      AmbidextrousSofa.horizontalTranslate Reference.referenceCap c) :
+    U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap c := by
   let V := middleChordCap U
   have hV : IsDownwardCap V := hU.isDownwardCap_middleChordCap hwidth
   have hα0 : 0 < Real.pi / 2 := by linarith [Real.pi_pos]

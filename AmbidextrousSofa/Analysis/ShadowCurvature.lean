@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.ShadowSecants
-import AmbidextrousSofa.Analysis.AtomIntervalLimit
+module
+
+public import AmbidextrousSofa.Analysis.ShadowSecants
+public import AmbidextrousSofa.Analysis.AtomIntervalLimit
+
+@[expose] public section
 
 /-!
 # The actual same-sign source law
@@ -107,7 +111,7 @@ theorem CapHausdorffTendsto.sameSignShadowMargin_tendsto
     {angle δ : ℕ → ℝ} {t : ℝ} (hangle : Tendsto angle atTop (𝓝 t))
     (hδ : Tendsto δ atTop (𝓝 0))
     (hsin : ∀ n, 0 < Real.sin (δ n)) (hcos : ∀ n, 0 ≤ Real.cos (δ n))
-    (ht : Imported.sigmaAt K t = 0) (htcomp : Imported.sigmaAt K (t + Real.pi / 2) = 0) :
+    (ht : MovingSofaOptimality.sigmaAt K t = 0) (htcomp : MovingSofaOptimality.sigmaAt K (t + Real.pi / 2) = 0) :
     Tendsto (fun n => AngularGrid.sameSignShadowMargin positive (U n) (angle n) (δ n)) atTop
       (𝓝 (sameSignVelocityMargin positive K t)) := by
   cases positive with
@@ -122,8 +126,8 @@ theorem eventually_sameSignShadowMargin_pos
     (hB : IsCompact B) (hbox : ∀ n, U n ⊆ B) (positive : Bool)
     {level : ℕ → ℕ} (hlevel : Tendsto level atTop atTop) {t : ℝ}
     (htop : t ≠ Real.pi / 2)
-    (ht : Imported.sigmaAt K (sourceQuarterAngle t) = 0)
-    (htcomp : Imported.sigmaAt K (sourceQuarterAngle t + Real.pi / 2) = 0)
+    (ht : MovingSofaOptimality.sigmaAt K (sourceQuarterAngle t) = 0)
+    (htcomp : MovingSofaOptimality.sigmaAt K (sourceQuarterAngle t + Real.pi / 2) = 0)
     (hmargin : 0 < sameSignVelocityMargin positive K (sourceQuarterAngle t)) :
     ∃ δ > 0, ∀ᶠ n in atTop, ∀ j : SourceIndex (dyadic (level n)),
       |fullAngle (dyadic (level n)) j - t| < δ →
@@ -154,8 +158,8 @@ theorem eventually_shadow_atoms_le
     (hHausdorff : CapHausdorffTendsto U target) (hlevel : Tendsto level atTop atTop)
     (hc : ∀ n, 0 ≤ coefficient n) (hB : IsCompact B) (hbox : ∀ n, U n ⊆ B)
     (positive : Bool) {t ε : ℝ} (htop : t ≠ Real.pi / 2)
-    (ht : Imported.sigmaAt target (sourceQuarterAngle t) = 0)
-    (htcomp : Imported.sigmaAt target (sourceQuarterAngle t + Real.pi / 2) = 0)
+    (ht : MovingSofaOptimality.sigmaAt target (sourceQuarterAngle t) = 0)
+    (htcomp : MovingSofaOptimality.sigmaAt target (sourceQuarterAngle t + Real.pi / 2) = 0)
     (hmargin : 0 < sameSignVelocityMargin positive target (sourceQuarterAngle t))
     (hε : 0 < ε) :
     ∃ δ > 0, ∀ᶠ n in atTop, ∀ j : SourceIndex (dyadic (level n)),

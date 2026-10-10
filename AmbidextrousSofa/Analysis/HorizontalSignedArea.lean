@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.ClosedSupportPair
-import AmbidextrousSofa.Analysis.CornerSignPhases
-import AmbidextrousSofa.Analysis.HorizontalNicheGraphs
-import AmbidextrousSofa.Measure.SignedRoofIntegralAC
+module
+
+public import AmbidextrousSofa.Analysis.ClosedSupportPair
+public import AmbidextrousSofa.Analysis.CornerSignPhases
+public import AmbidextrousSofa.Analysis.HorizontalNicheGraphs
+public import AmbidextrousSofa.Measure.SignedRoofIntegralAC
+
+@[expose] public section
 
 /-!
 # The actual horizontal signed niche integral

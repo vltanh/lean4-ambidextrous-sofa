@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.FullCompanionDensity
-import AmbidextrousSofa.Analysis.NegativeCornerCurvature
-import AmbidextrousSofa.Analysis.SupportDensityCalculus
+module
+
+public import AmbidextrousSofa.Analysis.FullCompanionDensity
+public import AmbidextrousSofa.Analysis.NegativeCornerCurvature
+public import AmbidextrousSofa.Analysis.SupportDensityCalculus
+
+@[expose] public section
 
 /-!
 # The literal support geometry at the start of a tilted wing
@@ -74,10 +78,10 @@ theorem IsDownwardCap.companionSupport_leftCut_eq_low_of_affine
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c)
     (hc : 0 ≤ Real.cos t) (hcoef : 0 ≤ m * Real.cos t - Real.sin t) :
-    angleSupport (leftCompanionCap U a) (t + Real.pi / 2) =
+    angleSupport (AmbidextrousSofa.leftCompanionCap U a) (t + Real.pi / 2) =
       -a * Real.sin t + capRoof U a * Real.cos t := by
   have hV := hU.leftCompanionCap ha
-  change support (leftCompanionCap U a) (unitNormal (t + Real.pi / 2)) = _
+  change support (AmbidextrousSofa.leftCompanionCap U a) (unitNormal (t + Real.pi / 2)) = _
   rw [← companionNormal_eq_unitNormal]
   have hline := haffine a ⟨le_rfl, hab.le⟩
   refine support_eq_of_mem hV.isCompact ?_ (hU.rightRoof_mem_leftCompanionCap ha) ?_
@@ -98,9 +102,9 @@ theorem IsDownwardCap.companionSupport_and_tangent_leftCut_after_affine
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c)
     (htm : Real.arctan m ≤ t) (ht0 : 0 ≤ t) (htL : t < Real.pi / 2) :
-    angleSupport (leftCompanionCap U a) (t + Real.pi / 2) =
+    angleSupport (AmbidextrousSofa.leftCompanionCap U a) (t + Real.pi / 2) =
         angleSupport U (t + Real.pi / 2) ∧
-      supportTangent (leftCompanionCap U a) (t + Real.pi / 2) =
+      supportTangent (AmbidextrousSofa.leftCompanionCap U a) (t + Real.pi / 2) =
         supportTangent U (t + Real.pi / 2) := by
   have hθ0 : 0 < t + Real.pi / 2 := by linarith only [ht0, Real.pi_pos]
   have hθπ : t + Real.pi / 2 < Real.pi := by linarith only [htL]
@@ -111,8 +115,8 @@ theorem IsDownwardCap.companionSupport_and_tangent_leftCut_after_affine
     (Real.sin_pos_of_pos_of_lt_pi hθ0 hθπ)
     (affineNormal_coefficient_nonpos_after hθm hθπ.le)
   constructor
-  · change Imported.supp (leftCompanionCap U a) _ = Imported.supp U _
-    rw [← Imported.dot_vplus_uvec, ← Imported.dot_vplus_uvec, hv]
+  · change MovingSofaOptimality.supp (AmbidextrousSofa.leftCompanionCap U a) _ = MovingSofaOptimality.supp U _
+    rw [← MovingSofaOptimality.dot_vplus_uvec, ← MovingSofaOptimality.dot_vplus_uvec, hv]
   · simp only [supportTangent, hv]
 
 theorem IsDownwardCap.companionTangent_leftCut_before_affine
@@ -120,7 +124,7 @@ theorem IsDownwardCap.companionTangent_leftCut_before_affine
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c)
     (ht0 : 0 ≤ t) (htm : t < Real.arctan m) :
-    supportTangent (leftCompanionCap U a) (t + Real.pi / 2) =
+    supportTangent (AmbidextrousSofa.leftCompanionCap U a) (t + Real.pi / 2) =
       -a * Real.cos t - capRoof U a * Real.sin t := by
   have hθ0 : 0 < t + Real.pi / 2 := by linarith only [ht0, Real.pi_pos]
   have hθm : t + Real.pi / 2 < affineNormalAngle m := by
@@ -131,7 +135,7 @@ theorem IsDownwardCap.companionTangent_leftCut_before_affine
     (Real.sin_pos_of_pos_of_lt_pi hθ0 (hθm.trans (affineNormalAngle_mem m).2))
     (affineNormal_coefficient_pos_before hθ0.le hθm)
   rw [supportTangent, hv]
-  dsimp only [Imported.dot, Imported.vvec]
+  dsimp only [MovingSofaOptimality.dot, MovingSofaOptimality.vvec]
   rw [Real.sin_add_pi_div_two, Real.cos_add_pi_div_two]
   ring
 

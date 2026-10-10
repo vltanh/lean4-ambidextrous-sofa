@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.CapNicheContinuity
-import Mathlib.Topology.Maps.Proper.Basic
-import Mathlib.Algebra.Order.Archimedean.Basic
+module
+
+public import AmbidextrousSofa.Analysis.CapNicheContinuity
+public import Mathlib.Topology.Maps.Proper.Basic
+public import Mathlib.Algebra.Order.Archimedean.Basic
+
+@[expose] public section
 
 /-!
 # Measurability of unique actual wall contact

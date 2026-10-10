@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.FiniteSpatialVariation
-import AmbidextrousSofa.Analysis.PolygonEnvelope
-import AmbidextrousSofa.Analysis.Chord
+module
+
+public import AmbidextrousSofa.Analysis.FiniteSpatialVariation
+public import AmbidextrousSofa.Analysis.PolygonEnvelope
+public import AmbidextrousSofa.Analysis.Chord
+
+@[expose] public section
 
 /-!
 # Absolute spatial variation of finite concave roofs

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.RoofContinuity
+module
+
+public import AmbidextrousSofa.Analysis.RoofContinuity
+
+@[expose] public section
 
 /-!
 # Exact differentiation of finite wall envelopes
@@ -20,6 +24,7 @@ maximum at a tie or convergence of polygonal arclength is assumed.
 noncomputable section
 
 open Set Filter MeasureTheory
+open scoped ENNReal NNReal
 open scoped Topology
 
 namespace AmbidextrousSofa

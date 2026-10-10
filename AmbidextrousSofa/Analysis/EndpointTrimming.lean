@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.CapTranslation
-import AmbidextrousSofa.Analysis.CapCompactness
-import AmbidextrousSofa.Analysis.CapOrder
+module
+
+public import AmbidextrousSofa.Analysis.CapTranslation
+public import AmbidextrousSofa.Analysis.CapCompactness
+public import AmbidextrousSofa.Analysis.CapOrder
+
+@[expose] public section
 
 /-!
 # Actual inward cuts and horizontal erosions
@@ -56,7 +60,7 @@ theorem horizontalCut_subset (U : Set Plane) (a b : ℝ) :
 
 theorem IsDownwardCap.horizontalCut {U : Set Plane} (hU : IsDownwardCap U)
     {a b : ℝ} (hab : a ≤ b) (hsub : Icc a b ⊆ horizontalProjection U) :
-    IsDownwardCap (horizontalCut U a b) := by
+    IsDownwardCap (AmbidextrousSofa.horizontalCut U a b) := by
   refine ⟨?_, ?_, ?_, fun _ hp => hU.inStrip hp.1, ?_⟩
   · exact ⟨(a, 0), hU.baseline_mem_of_mem_projection (hsub ⟨le_rfl, hab⟩),
       le_rfl, hab⟩
@@ -145,11 +149,11 @@ theorem leftTrim_interval_subset {U : Set Plane} (hU : IsDownwardCap U)
   exact ⟨(le_add_of_nonneg_right hε).trans hx.1, hx.2⟩
 
 theorem IsDownwardCap.rightTrim {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) : IsDownwardCap (rightTrim U ε) :=
+    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) : IsDownwardCap (AmbidextrousSofa.rightTrim U ε) :=
   hU.horizontalCut (by unfold capWidth at hεW; linarith) (rightTrim_interval_subset hU hε0)
 
 theorem IsDownwardCap.leftTrim {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) : IsDownwardCap (leftTrim U ε) :=
+    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) : IsDownwardCap (AmbidextrousSofa.leftTrim U ε) :=
   hU.horizontalCut (by unfold capWidth at hεW; linarith) (leftTrim_interval_subset hU hε0)
 
 theorem horizontalProjection_rightTrim {U : Set Plane} (hU : IsDownwardCap U)
@@ -259,7 +263,7 @@ theorem leftErosion_subset_leftTrim {U : Set Plane} (hU : IsDownwardCap U) (ε :
 
 theorem IsDownwardCap.rightErosion {U : Set Plane} (hU : IsDownwardCap U)
     {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) :
-    IsDownwardCap (rightErosion U ε) := by
+    IsDownwardCap (AmbidextrousSofa.rightErosion U ε) := by
   rw [rightErosion_eq_inter_horizontalTranslate]
   apply hU.inter (hU.horizontalTranslate (-ε))
   refine ⟨(horizontalLeft U, 0),
@@ -273,7 +277,7 @@ theorem IsDownwardCap.rightErosion {U : Set Plane} (hU : IsDownwardCap U)
 
 theorem IsDownwardCap.leftErosion {U : Set Plane} (hU : IsDownwardCap U)
     {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) :
-    IsDownwardCap (leftErosion U ε) := by
+    IsDownwardCap (AmbidextrousSofa.leftErosion U ε) := by
   rw [leftErosion_eq_inter_horizontalTranslate]
   apply hU.inter (hU.horizontalTranslate ε)
   refine ⟨(horizontalRight U, 0),
@@ -440,9 +444,9 @@ theorem support_leftErosion_le {U : Set Plane} (hU : IsDownwardCap U)
 
 /-- Coordinate distance to a contraction toward any baseline point. -/
 theorem dist_baseline_contraction_le {U : Set Plane} (hU : IsDownwardCap U)
-    {p : Plane} (hp : p ∈ U) {a λ : ℝ}
-    (ha : a ∈ Icc (horizontalLeft U) (horizontalRight U)) (hλ : 0 ≤ λ) :
-    dist p ((1 - λ) • p + λ • (a, 0)) ≤ λ * max (capWidth U) 1 := by
+    {p : Plane} (hp : p ∈ U) {a lam : ℝ}
+    (ha : a ∈ Icc (horizontalLeft U) (horizontalRight U)) (hlam : 0 ≤ lam) :
+    dist p ((1 - lam) • p + lam • (a, 0)) ≤ lam * max (capWidth U) 1 := by
   have hpx := hU.fst_mem_Icc hp
   have hpy := hU.inStrip hp
   have hx : |p.1 - a| ≤ capWidth U := by
@@ -453,76 +457,76 @@ theorem dist_baseline_contraction_le {U : Set Plane} (hU : IsDownwardCap U)
     rw [abs_of_nonneg hpy.1]
     exact hpy.2
   rw [Prod.dist_eq, Real.dist_eq, Real.dist_eq]
-  change max |p.1 - ((1 - λ) * p.1 + λ * a)|
-    |p.2 - ((1 - λ) * p.2 + λ * 0)| ≤ λ * max (capWidth U) 1
-  have hxf : p.1 - ((1 - λ) * p.1 + λ * a) = λ * (p.1 - a) := by ring
-  have hyf : p.2 - ((1 - λ) * p.2 + λ * 0) = λ * p.2 := by ring
-  rw [hxf, hyf, abs_mul, abs_mul, abs_of_nonneg hλ]
+  change max |p.1 - ((1 - lam) * p.1 + lam * a)|
+    |p.2 - ((1 - lam) * p.2 + lam * 0)| ≤ lam * max (capWidth U) 1
+  have hxf : p.1 - ((1 - lam) * p.1 + lam * a) = lam * (p.1 - a) := by ring
+  have hyf : p.2 - ((1 - lam) * p.2 + lam * 0) = lam * p.2 := by ring
+  rw [hxf, hyf, abs_mul, abs_mul, abs_of_nonneg hlam]
   exact max_le
-    ((mul_le_mul_of_nonneg_left hx hλ).trans
-      (mul_le_mul_of_nonneg_left (le_max_left _ _) hλ))
-    ((mul_le_mul_of_nonneg_left hy hλ).trans
-      (mul_le_mul_of_nonneg_left (le_max_right _ _) hλ))
+    ((mul_le_mul_of_nonneg_left hx hlam).trans
+      (mul_le_mul_of_nonneg_left (le_max_left _ _) hlam))
+    ((mul_le_mul_of_nonneg_left hy hlam).trans
+      (mul_le_mul_of_nonneg_left (le_max_right _ _) hlam))
 
 theorem exists_rightErosion_point_dist_le {U : Set Plane} (hU : IsDownwardCap U)
     (hW : 0 < capWidth U) {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U)
     {p : Plane} (hp : p ∈ U) :
     ∃ q ∈ rightErosion U ε,
       dist p q ≤ (ε / capWidth U) * max (capWidth U) 1 := by
-  let λ := ε / capWidth U
-  have hλ0 : 0 ≤ λ := div_nonneg hε0 hW.le
-  have hλ1 : λ ≤ 1 := (div_le_one hW).mpr hεW
-  have hλW : λ * (horizontalRight U - horizontalLeft U) = ε := by
+  let lam := ε / capWidth U
+  have hlam0 : 0 ≤ lam := div_nonneg hε0 hW.le
+  have hlam1 : lam ≤ 1 := (div_le_one hW).mpr hεW
+  have hlamW : lam * (horizontalRight U - horizontalLeft U) = ε := by
     change ε / capWidth U * capWidth U = ε
     exact div_mul_cancel₀ ε hW.ne'
-  let q : Plane := (1 - λ) • p + λ • (horizontalLeft U, 0)
+  let q : Plane := (1 - lam) • p + lam • (horizontalLeft U, 0)
   have hleft := hU.baseline_mem_of_mem_projection
     (horizontalLeft_mem hU.nonempty hU.isCompact)
   have hright := hU.baseline_mem_of_mem_projection
     (horizontalRight_mem hU.nonempty hU.isCompact)
-  have hq : q ∈ U := hU.convex hp hleft (sub_nonneg.mpr hλ1) hλ0 (by ring)
+  have hq : q ∈ U := hU.convex hp hleft (sub_nonneg.mpr hlam1) hlam0 (by ring)
   have hshift : (q.1 + ε, q.2) =
-      (1 - λ) • p + λ • (horizontalRight U, 0) := by
+      (1 - lam) • p + lam • (horizontalRight U, 0) := by
     apply Prod.ext
-    · change (1 - λ) * p.1 + λ * horizontalLeft U + ε =
-        (1 - λ) * p.1 + λ * horizontalRight U
-      nlinarith [hλW]
+    · change (1 - lam) * p.1 + lam * horizontalLeft U + ε =
+        (1 - lam) * p.1 + lam * horizontalRight U
+      nlinarith [hlamW]
     · simp only [q, Prod.snd_add, Prod.smul_snd]
   refine ⟨q, ⟨hq, ?_⟩, ?_⟩
   · rw [hshift]
-    exact hU.convex hp hright (sub_nonneg.mpr hλ1) hλ0 (by ring)
+    exact hU.convex hp hright (sub_nonneg.mpr hlam1) hlam0 (by ring)
   · exact dist_baseline_contraction_le hU hp
-      ⟨le_rfl, horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact⟩ hλ0
+      ⟨le_rfl, horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact⟩ hlam0
 
 theorem exists_leftErosion_point_dist_le {U : Set Plane} (hU : IsDownwardCap U)
     (hW : 0 < capWidth U) {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U)
     {p : Plane} (hp : p ∈ U) :
     ∃ q ∈ leftErosion U ε,
       dist p q ≤ (ε / capWidth U) * max (capWidth U) 1 := by
-  let λ := ε / capWidth U
-  have hλ0 : 0 ≤ λ := div_nonneg hε0 hW.le
-  have hλ1 : λ ≤ 1 := (div_le_one hW).mpr hεW
-  have hλW : λ * (horizontalRight U - horizontalLeft U) = ε := by
+  let lam := ε / capWidth U
+  have hlam0 : 0 ≤ lam := div_nonneg hε0 hW.le
+  have hlam1 : lam ≤ 1 := (div_le_one hW).mpr hεW
+  have hlamW : lam * (horizontalRight U - horizontalLeft U) = ε := by
     change ε / capWidth U * capWidth U = ε
     exact div_mul_cancel₀ ε hW.ne'
-  let q : Plane := (1 - λ) • p + λ • (horizontalRight U, 0)
+  let q : Plane := (1 - lam) • p + lam • (horizontalRight U, 0)
   have hleft := hU.baseline_mem_of_mem_projection
     (horizontalLeft_mem hU.nonempty hU.isCompact)
   have hright := hU.baseline_mem_of_mem_projection
     (horizontalRight_mem hU.nonempty hU.isCompact)
-  have hq : q ∈ U := hU.convex hp hright (sub_nonneg.mpr hλ1) hλ0 (by ring)
+  have hq : q ∈ U := hU.convex hp hright (sub_nonneg.mpr hlam1) hlam0 (by ring)
   have hshift : (q.1 - ε, q.2) =
-      (1 - λ) • p + λ • (horizontalLeft U, 0) := by
+      (1 - lam) • p + lam • (horizontalLeft U, 0) := by
     apply Prod.ext
-    · change (1 - λ) * p.1 + λ * horizontalRight U - ε =
-        (1 - λ) * p.1 + λ * horizontalLeft U
-      nlinarith [hλW]
+    · change (1 - lam) * p.1 + lam * horizontalRight U - ε =
+        (1 - lam) * p.1 + lam * horizontalLeft U
+      nlinarith [hlamW]
     · simp only [q, Prod.snd_add, Prod.smul_snd]
   refine ⟨q, ⟨hq, ?_⟩, ?_⟩
   · rw [hshift]
-    exact hU.convex hp hleft (sub_nonneg.mpr hλ1) hλ0 (by ring)
+    exact hU.convex hp hleft (sub_nonneg.mpr hlam1) hlam0 (by ring)
   · exact dist_baseline_contraction_le hU hp
-      ⟨horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact, le_rfl⟩ hλ0
+      ⟨horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact, le_rfl⟩ hlam0
 
 theorem hausdorffDist_rightErosion_le {U : Set Plane} (hU : IsDownwardCap U)
     (hW : 0 < capWidth U) {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) :

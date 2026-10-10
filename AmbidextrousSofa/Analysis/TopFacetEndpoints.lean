@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.TopInsertion
-import AmbidextrousSofa.Analysis.CapReflection
+module
+
+public import AmbidextrousSofa.Analysis.TopInsertion
+public import AmbidextrousSofa.Analysis.CapReflection
+
+@[expose] public section
 
 /-!
 # The high endpoint of an affine middle roof is at height one
@@ -82,11 +86,11 @@ theorem IsFullCapMaximizer.middle_left_eq_one_of_affine_nonpos
       capRoof U x = m * x + c) :
     capRoof U (horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4) = 1 := by
   have hV := hU.horizontalMirror
-  have hheightV : capHeight (horizontalMirror U) = 1 := by
+  have hheightV : capHeight (AmbidextrousSofa.horizontalMirror U) = 1 := by
     rw [capHeight_horizontalMirror, hheight]
   have haffineV : ∀ x ∈ middleHalfInterval
-      (horizontalLeft (horizontalMirror U)) (horizontalRight (horizontalMirror U)),
-      capRoof (horizontalMirror U) x = (-m) * x + c := by
+      (horizontalLeft (AmbidextrousSofa.horizontalMirror U)) (horizontalRight (AmbidextrousSofa.horizontalMirror U)),
+      capRoof (AmbidextrousSofa.horizontalMirror U) x = (-m) * x + c := by
     intro x hx
     rw [horizontalLeft_horizontalMirror hU.isCap,
       horizontalRight_horizontalMirror hU.isCap] at hx

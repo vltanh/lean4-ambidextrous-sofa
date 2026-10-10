@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Reference.Body
+module
+
+public import AmbidextrousSofa.Reference.Body
+
+@[expose] public section
 
 /-!
 # The reference body's actual hull and regular closedness

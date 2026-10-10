@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.NeighborShadowing
-import AmbidextrousSofa.Analysis.SourceVelocity
+module
+
+public import AmbidextrousSofa.Analysis.NeighborShadowing
+public import AmbidextrousSofa.Analysis.SourceVelocity
+
+@[expose] public section
 
 /-!
 # Shrinking secants give strict source shadowing
@@ -23,7 +27,7 @@ namespace AngularGrid
 theorem firstLo_eq_secant_sub_tan {f fp δ : ℝ}
     (hs : Real.sin δ ≠ 0) (hh : Real.cos (δ / 2) ≠ 0) :
     firstLo f fp δ = (fp - f * Real.cos δ) / Real.sin δ - Real.tan (δ / 2) := by
-  have hhalf := Imported.tan_half_mul_sin hh
+  have hhalf := MovingSofaOptimality.tan_half_mul_sin hh
   unfold firstLo
   rw [div_eq_iff hs, sub_mul, div_mul_cancel₀ _ hs, hhalf]
   ring
@@ -31,7 +35,7 @@ theorem firstLo_eq_secant_sub_tan {f fp δ : ℝ}
 theorem firstHi_eq_secant_add_tan {f fm δ : ℝ}
     (hs : Real.sin δ ≠ 0) (hh : Real.cos (δ / 2) ≠ 0) :
     firstHi f fm δ = (f * Real.cos δ - fm) / Real.sin δ + Real.tan (δ / 2) := by
-  have hhalf := Imported.tan_half_mul_sin hh
+  have hhalf := MovingSofaOptimality.tan_half_mul_sin hh
   unfold firstHi
   rw [div_eq_iff hs, add_mul, div_mul_cancel₀ _ hs, hhalf]
   ring
@@ -40,7 +44,7 @@ theorem companionPlus_sub_eq_secant {f g gp δ : ℝ}
     (hc : Real.cos δ ≠ 0) (hs : Real.sin δ ≠ 0) (hh : Real.cos (δ / 2) ≠ 0) :
     companionPlus f gp δ - (g - 1) = Real.tan δ *
       (f + (gp - g * Real.cos δ) / Real.sin δ - 1 - Real.tan (δ / 2)) := by
-  have hhalf := Imported.tan_half_mul_sin hh
+  have hhalf := MovingSofaOptimality.tan_half_mul_sin hh
   have htan : Real.tan δ * Real.cos δ = Real.sin δ := by
     rw [Real.tan_eq_sin_div_cos, div_mul_cancel₀ _ hc]
   have hsec : Real.sin δ * ((gp - g * Real.cos δ) / Real.sin δ) =
@@ -62,7 +66,7 @@ theorem companionMinus_sub_eq_secant {f g gm δ : ℝ}
     (hc : Real.cos δ ≠ 0) (hs : Real.sin δ ≠ 0) (hh : Real.cos (δ / 2) ≠ 0) :
     companionMinus f gm δ - (g - 1) = -Real.tan δ *
       (f + (g * Real.cos δ - gm) / Real.sin δ - 1 + Real.tan (δ / 2)) := by
-  have hhalf := Imported.tan_half_mul_sin hh
+  have hhalf := MovingSofaOptimality.tan_half_mul_sin hh
   have htan : Real.tan δ * Real.cos δ = Real.sin δ := by
     rw [Real.tan_eq_sin_div_cos, div_mul_cancel₀ _ hc]
   have hsec : Real.sin δ * ((g * Real.cos δ - gm) / Real.sin δ) =
@@ -81,10 +85,10 @@ theorem companionMinus_sub_eq_secant {f g gm δ : ℝ}
       ring
 
 def forwardSecondCornerSecant (U : Set Plane) (t δ : ℝ) : ℝ :=
-  Imported.supp U (t + Real.pi / 2) - forwardAngularSecant U t δ - 1
+  MovingSofaOptimality.supp U (t + Real.pi / 2) - forwardAngularSecant U t δ - 1
 
 def backwardFirstCornerSecant (U : Set Plane) (t δ : ℝ) : ℝ :=
-  Imported.supp U t + backwardAngularSecant U (t + Real.pi / 2) δ - 1
+  MovingSofaOptimality.supp U t + backwardAngularSecant U (t + Real.pi / 2) δ - 1
 
 def positiveShadowMargin (U : Set Plane) (t δ : ℝ) : ℝ :=
   min (-forwardSecondCornerSecant U t δ - Real.tan (δ / 2))
@@ -104,8 +108,8 @@ theorem first_forward_shadow_gap (U : Set Plane) (t : ℝ) {δ : ℝ}
       (support U (companionNormal t) - 1) =
         -forwardSecondCornerSecant U t δ - Real.tan (δ / 2) := by
   rw [firstLo_eq_secant_sub_tan hs hh, companionNormal_eq_unitNormal]
-  change (Imported.supp U (t + δ) - Imported.supp U t * Real.cos δ) / Real.sin δ -
-    Real.tan (δ / 2) - (Imported.supp U (t + Real.pi / 2) - 1) = _
+  change (MovingSofaOptimality.supp U (t + δ) - MovingSofaOptimality.supp U t * Real.cos δ) / Real.sin δ -
+    Real.tan (δ / 2) - (MovingSofaOptimality.supp U (t + Real.pi / 2) - 1) = _
   unfold forwardSecondCornerSecant forwardAngularSecant
   ring
 
@@ -123,8 +127,8 @@ theorem second_companion_forward_shadow_gap (U : Set Plane) (t : ℝ) {δ : ℝ}
       (support U (unitNormal t) - 1) =
         Real.tan δ * (-forwardSecondCornerSecant U t δ - Real.tan (δ / 2)) := by
   rw [companionMinus_sub_eq_secant hc hs hh, companionNormal_eq_unitNormal]
-  change -Real.tan δ * (Imported.supp U (t + Real.pi / 2) +
-    (Imported.supp U t * Real.cos δ - Imported.supp U (t + δ)) / Real.sin δ - 1 +
+  change -Real.tan δ * (MovingSofaOptimality.supp U (t + Real.pi / 2) +
+    (MovingSofaOptimality.supp U t * Real.cos δ - MovingSofaOptimality.supp U (t + δ)) / Real.sin δ - 1 +
       Real.tan (δ / 2)) = _
   unfold forwardSecondCornerSecant forwardAngularSecant
   ring
@@ -150,9 +154,9 @@ theorem second_backward_shadow_gap (U : Set Plane) (t : ℝ) {δ : ℝ}
   rw [firstLo_eq_secant_sub_tan hs hh]
   simp only [companionNormal_eq_unitNormal,
     show (t - δ) + Real.pi / 2 = (t + Real.pi / 2) - δ by ring]
-  change (Imported.supp U ((t + Real.pi / 2) - δ) -
-    Imported.supp U (t + Real.pi / 2) * Real.cos δ) / Real.sin δ -
-      Real.tan (δ / 2) - (Imported.supp U t - 1) = _
+  change (MovingSofaOptimality.supp U ((t + Real.pi / 2) - δ) -
+    MovingSofaOptimality.supp U (t + Real.pi / 2) * Real.cos δ) / Real.sin δ -
+      Real.tan (δ / 2) - (MovingSofaOptimality.supp U t - 1) = _
   unfold backwardFirstCornerSecant backwardAngularSecant
   ring
 
@@ -172,9 +176,9 @@ theorem first_companion_backward_shadow_gap (U : Set Plane) (t : ℝ) {δ : ℝ}
   rw [companionMinus_sub_eq_secant hc hs hh]
   simp only [companionNormal_eq_unitNormal,
     show (t - δ) + Real.pi / 2 = (t + Real.pi / 2) - δ by ring]
-  change -Real.tan δ * (Imported.supp U t +
-    (Imported.supp U (t + Real.pi / 2) * Real.cos δ -
-      Imported.supp U ((t + Real.pi / 2) - δ)) / Real.sin δ - 1 + Real.tan (δ / 2)) = _
+  change -Real.tan δ * (MovingSofaOptimality.supp U t +
+    (MovingSofaOptimality.supp U (t + Real.pi / 2) * Real.cos δ -
+      MovingSofaOptimality.supp U ((t + Real.pi / 2) - δ)) / Real.sin δ - 1 + Real.tan (δ / 2)) = _
   unfold backwardFirstCornerSecant backwardAngularSecant
   ring
 
@@ -229,7 +233,7 @@ theorem negative_shadow_source_bounds {U : Set Plane} (hU : IsDownwardCap U)
     (hmargin : 0 < negativeShadowMargin U t.val δ) :
     innerSourceSet U grid (Sum.inr t) = ∅ ∧
       (∫ x in a..b, innerDensity U grid (Sum.inl t) x) ≤
-        max (2 * Real.tan (δ / 2) - (upperCurvature U {t.val}).toReal) 0 := by
+        max (2 * Real.tan (δ / 2) - (upperCurvature U {(t.val : ℝ)}).toReal) 0 := by
   have hm := lt_min_iff.mp hmargin
   have htan : 0 < Real.tan δ := by
     rw [Real.tan_eq_sin_div_cos]
@@ -253,7 +257,7 @@ theorem negative_shadow_source_bounds {U : Set Plane} (hU : IsDownwardCap U)
 
 theorem mesh_half_tan_nonneg (n : ℕ) : 0 ≤ Real.tan (mesh n / 2) := by
   apply nonneg_of_mul_nonneg_left _ (mesh_sin_pos n)
-  rw [Imported.tan_half_mul_sin (mesh_half_cos_ne n)]
+  rw [MovingSofaOptimality.tan_half_mul_sin (mesh_half_cos_ne n)]
   linarith [Real.cos_le_one (mesh n)]
 
 theorem IsSelectedPolygon.positive_shadow_atoms {target U : Set Plane}
@@ -261,7 +265,7 @@ theorem IsSelectedPolygon.positive_shadow_atoms {target U : Set Plane}
     (hU : IsSelectedPolygon target a b level coefficient U) (hc : 0 ≤ coefficient)
     (t : InteriorPoint (dyadic level))
     (hmargin : 0 < positiveShadowMargin U t.val (mesh level)) :
-    (upperCurvature U {t.val}).toReal ≤ middleOuterMass U (dyadic level) (Sum.inl t) +
+    (upperCurvature U {(t.val : ℝ)}).toReal ≤ middleOuterMass U (dyadic level) (Sum.inl t) +
         selectionDefect target U level coefficient (Sum.inl t) ∧
       (upperCurvature U {t.val + Real.pi / 2}).toReal ≤ Real.tan (mesh level / 2) +
         middleOuterMass U (dyadic level) (Sum.inr t) +
@@ -284,7 +288,7 @@ theorem IsSelectedPolygon.negative_shadow_atoms {target U : Set Plane}
     (upperCurvature U {t.val + Real.pi / 2}).toReal ≤
         middleOuterMass U (dyadic level) (Sum.inr t) +
           selectionDefect target U level coefficient (Sum.inr t) ∧
-      (upperCurvature U {t.val}).toReal ≤ Real.tan (mesh level / 2) +
+      (upperCurvature U {(t.val : ℝ)}).toReal ≤ Real.tan (mesh level / 2) +
         middleOuterMass U (dyadic level) (Sum.inl t) +
           selectionDefect target U level coefficient (Sum.inl t) := by
   obtain ⟨hm, hp⟩ := dyadic_neighbors level t
@@ -306,7 +310,7 @@ theorem CapHausdorffTendsto.forwardSecondCornerSecant_tendsto
     {angle δ : ℕ → ℝ} {t : ℝ} (hangle : Tendsto angle atTop (𝓝 t))
     (hδ : Tendsto δ atTop (𝓝 0))
     (hsin : ∀ n, 0 < Real.sin (δ n)) (hcos : ∀ n, 0 ≤ Real.cos (δ n))
-    (ht : Imported.sigmaAt K t = 0) :
+    (ht : MovingSofaOptimality.sigmaAt K t = 0) :
     Tendsto (fun n => AngularGrid.forwardSecondCornerSecant (U n) (angle n) (δ n))
       atTop (𝓝 (secondCornerVelocity K t)) := by
   have hshift := hangle.add_const (Real.pi / 2)
@@ -326,7 +330,7 @@ theorem CapHausdorffTendsto.backwardFirstCornerSecant_tendsto
     {angle δ : ℕ → ℝ} {t : ℝ} (hangle : Tendsto angle atTop (𝓝 t))
     (hδ : Tendsto δ atTop (𝓝 0))
     (hsin : ∀ n, 0 < Real.sin (δ n)) (hcos : ∀ n, 0 ≤ Real.cos (δ n))
-    (ht : Imported.sigmaAt K (t + Real.pi / 2) = 0) :
+    (ht : MovingSofaOptimality.sigmaAt K (t + Real.pi / 2) = 0) :
     Tendsto (fun n => AngularGrid.backwardFirstCornerSecant (U n) (angle n) (δ n))
       atTop (𝓝 (firstCornerVelocity K t)) := by
   have hnormal : Tendsto (fun n => unitNormal (angle n)) atTop (𝓝 (unitNormal t)) :=
@@ -345,7 +349,7 @@ theorem CapHausdorffTendsto.positiveShadowMargin_tendsto
     {angle δ : ℕ → ℝ} {t : ℝ} (hangle : Tendsto angle atTop (𝓝 t))
     (hδ : Tendsto δ atTop (𝓝 0))
     (hsin : ∀ n, 0 < Real.sin (δ n)) (hcos : ∀ n, 0 ≤ Real.cos (δ n))
-    (ht : Imported.sigmaAt K t = 0) (htcomp : Imported.sigmaAt K (t + Real.pi / 2) = 0) :
+    (ht : MovingSofaOptimality.sigmaAt K t = 0) (htcomp : MovingSofaOptimality.sigmaAt K (t + Real.pi / 2) = 0) :
     Tendsto (fun n => AngularGrid.positiveShadowMargin (U n) (angle n) (δ n)) atTop
       (𝓝 (min (-secondCornerVelocity K t) (firstCornerVelocity K t))) := by
   have hrf := h.forwardSecondCornerSecant_tendsto hU hK hB hbox hangle hδ hsin hcos ht
@@ -369,7 +373,7 @@ theorem CapHausdorffTendsto.negativeShadowMargin_tendsto
     {angle δ : ℕ → ℝ} {t : ℝ} (hangle : Tendsto angle atTop (𝓝 t))
     (hδ : Tendsto δ atTop (𝓝 0))
     (hsin : ∀ n, 0 < Real.sin (δ n)) (hcos : ∀ n, 0 ≤ Real.cos (δ n))
-    (ht : Imported.sigmaAt K t = 0) (htcomp : Imported.sigmaAt K (t + Real.pi / 2) = 0) :
+    (ht : MovingSofaOptimality.sigmaAt K t = 0) (htcomp : MovingSofaOptimality.sigmaAt K (t + Real.pi / 2) = 0) :
     Tendsto (fun n => AngularGrid.negativeShadowMargin (U n) (angle n) (δ n)) atTop
       (𝓝 (min (secondCornerVelocity K t) (-firstCornerVelocity K t))) := by
   have hrb := h.secondCornerSecant_tendsto hU hK hB hbox hangle hδ hsin hcos ht

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.ExactConstant
+module
+
+public import AmbidextrousSofa.ExactConstant
+
+@[expose] public section
 
 /-!
 # An elementary Dirichlet energy estimate

@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.JointSourceContactLimit
-import AmbidextrousSofa.Analysis.PositiveWallContacts
+module
+
+public import AmbidextrousSofa.Analysis.JointSourceContactLimit
+public import AmbidextrousSofa.Analysis.PositiveWallContacts
+
+@[expose] public section
 
 /-!
 # Actual wall contacts supporting the common source measure

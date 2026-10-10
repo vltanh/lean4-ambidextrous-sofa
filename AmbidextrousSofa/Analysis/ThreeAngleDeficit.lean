@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.ThreeAngleNiche
+module
+
+public import AmbidextrousSofa.Analysis.ThreeAngleNiche
+
+@[expose] public section
 
 /-!
 # Diagonal geometry of the literal three-angle objective

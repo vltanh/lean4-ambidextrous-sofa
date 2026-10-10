@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.SelectedCurvature
+module
+
+public import AmbidextrousSofa.Analysis.SelectedCurvature
+
+@[expose] public section
 
 /-!
 # Neighboring walls constrain each actual finite niche source
@@ -147,23 +151,23 @@ theorem wallPoint_fst (U : Set Plane) (t v : ℝ) :
 theorem dot_wallPoint_first (U : Set Plane) (t v s : ℝ) :
     coordDot (wallPoint U t v) (unitNormal s) =
       (support U (unitNormal t) - 1) * Real.cos (s - t) + v * Real.sin (s - t) := by
-  change Imported.dot
-    ((support U (unitNormal t) - 1) • Imported.uvec t + v • Imported.vvec t) (Imported.uvec s) = _
-  rw [Imported.dot_add_left, Imported.dot_smul_left, Imported.dot_smul_left,
-    Imported.dot_uvec_uvec, Imported.dot_vvec_uvec', Real.cos_sub_comm t s]
+  change MovingSofaOptimality.dot
+    ((support U (unitNormal t) - 1) • MovingSofaOptimality.uvec t + v • MovingSofaOptimality.vvec t) (MovingSofaOptimality.uvec s) = _
+  rw [MovingSofaOptimality.dot_add_left, MovingSofaOptimality.dot_smul_left, MovingSofaOptimality.dot_smul_left,
+    MovingSofaOptimality.dot_uvec_uvec, MovingSofaOptimality.dot_vvec_uvec', Real.cos_sub_comm t s]
 
 theorem dot_wallPoint_companion (U : Set Plane) (t v s : ℝ) :
     coordDot (wallPoint U t v) (companionNormal s) =
       (support U (unitNormal t) - 1) * Real.sin (t - s) + v * Real.cos (t - s) := by
-  change Imported.dot
-    ((support U (unitNormal t) - 1) • Imported.uvec t + v • Imported.vvec t) (Imported.vvec s) = _
-  rw [Imported.dot_add_left, Imported.dot_smul_left, Imported.dot_smul_left,
-    Imported.dot_uvec_vvec', Imported.dot_vvec_vvec]
+  change MovingSofaOptimality.dot
+    ((support U (unitNormal t) - 1) • MovingSofaOptimality.uvec t + v • MovingSofaOptimality.vvec t) (MovingSofaOptimality.vvec s) = _
+  rw [MovingSofaOptimality.dot_add_left, MovingSofaOptimality.dot_smul_left, MovingSofaOptimality.dot_smul_left,
+    MovingSofaOptimality.dot_uvec_vvec', MovingSofaOptimality.dot_vvec_vvec]
 
 theorem point_eq_wallPoint {U : Set Plane} {p : Plane} {t : ℝ}
     (hline : coordDot p (unitNormal t) = support U (unitNormal t) - 1) :
     p = wallPoint U t (coordDot p (companionNormal t)) := by
-  have h := Imported.eq_dot_uvec_smul_add p t
+  have h := MovingSofaOptimality.eq_dot_uvec_smul_add p t
   change p = coordDot p (unitNormal t) • unitNormal t +
     coordDot p (companionNormal t) • companionNormal t at h
   rwa [hline] at h

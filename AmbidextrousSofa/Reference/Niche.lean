@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Reference.Realization
-import AmbidextrousSofa.Geometry.BarrierAnalysis
+module
+
+public import AmbidextrousSofa.Reference.Realization
+public import AmbidextrousSofa.Geometry.BarrierAnalysis
+
+@[expose] public section
 
 /-!
 # The actual reference niche

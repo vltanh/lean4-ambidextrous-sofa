@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.ContactGraphSlope
-import Mathlib.Analysis.Calculus.Deriv.Slope
+module
+
+public import AmbidextrousSofa.Analysis.ContactGraphSlope
+public import Mathlib.Analysis.Calculus.Deriv.Slope
+
+@[expose] public section
 
 /-!
 # Corner slope bounds and exclusion of contacts in the equal-sign phases
@@ -175,8 +179,10 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 
 theorem fullTiltedSupportQuarterPair_not_same_sign_at_attachedCorner_contact_after_affine
     {t g : ℝ} (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) (hmt : Real.arctan m ≤ t)

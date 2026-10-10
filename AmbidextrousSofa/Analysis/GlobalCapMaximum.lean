@@ -1,8 +1,12 @@
-import AmbidextrousSofa.Analysis.CapMaximum
-import AmbidextrousSofa.Analysis.CapTranslation
-import AmbidextrousSofa.Analysis.WideCap
-import AmbidextrousSofa.Analysis.Chord
-import AmbidextrousSofa.Reference.Value
+module
+
+public import AmbidextrousSofa.Analysis.CapMaximum
+public import AmbidextrousSofa.Analysis.CapTranslation
+public import AmbidextrousSofa.Analysis.WideCap
+public import AmbidextrousSofa.Analysis.Chord
+public import AmbidextrousSofa.Reference.Value
+
+@[expose] public section
 
 /-!
 # Global existence and canonicalization of full cap maxima

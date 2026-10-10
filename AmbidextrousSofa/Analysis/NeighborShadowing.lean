@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.DyadicNeighbors
+module
+
+public import AmbidextrousSofa.Analysis.DyadicNeighbors
+
+@[expose] public section
 
 /-!
 # Strict neighboring-wall shadowing for actual finite sources
@@ -235,7 +239,7 @@ theorem integral_first_source_le_self_interval {U : Set Plane} (hU : IsDownwardC
       companionPlus (support U (unitNormal t.val))
         (support U (companionNormal ((t.val : ℝ) + δ))) δ) :
     (∫ x in a..b, innerDensity U grid (Sum.inl t) x) ≤
-      max (2 * Real.tan (δ / 2) - (upperCurvature U {t.val}).toReal) 0 := by
+      max (2 * Real.tan (δ / 2) - (upperCurvature U {(t.val : ℝ)}).toReal) 0 := by
   classical
   have ht : 0 < Real.sin t.val := normal_snd_pos grid (Sum.inl t)
   have hint := integral_sourceDensity_outward (barrierExpr (pairList grid) none)

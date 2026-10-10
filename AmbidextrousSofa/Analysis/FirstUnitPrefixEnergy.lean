@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.FirstUnitCrossings
+module
+
+public import AmbidextrousSofa.Analysis.FirstUnitCrossings
+
+@[expose] public section
 
 /-!
 # The first companion excess follows the charged window

@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.FirstFloorTrapping
-import AmbidextrousSofa.Analysis.FirstFloorVisibility
-import AmbidextrousSofa.Analysis.FirstUnitBadEntry
+module
+
+public import AmbidextrousSofa.Analysis.FirstFloorTrapping
+public import AmbidextrousSofa.Analysis.FirstFloorVisibility
+public import AmbidextrousSofa.Analysis.FirstUnitBadEntry
+
+@[expose] public section
 
 /-!
 # Ordering the actual first companion floor crossing
@@ -32,11 +36,16 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "B" => firstTangentPoint F.f F.fD
-local notation "D" => secondTangentPoint F.g F.gD
-local notation "Z" => innerCornerPoint F.f F.g
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "B" => firstTangentPoint (F).f (F).fD
+set_option quotPrecheck false in
+local notation "D" => secondTangentPoint (F).g (F).gD
+set_option quotPrecheck false in
+local notation "Z" => innerCornerPoint (F).f (F).g
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 local notation "v" => (fun t : ℝ => leftCompanionWingDensity m ρ (t + Real.pi / 2))
 local notation "V" => leftCompanionCap U (horizontalLeft U + capWidth U / 4)
 
@@ -76,7 +85,7 @@ theorem fullTiltedSupportQuarterPair_core_phase_positive_and_right {C h α η t 
   have hBy := fullTiltedSupportQuarterPair_first_tangent_nonneg
     hU hm haffine hρ hρ0 hρK heq hheight hunit (Ioo_subset_Icc_self htq)
   refine ⟨hright, ?_⟩
-  rw [innerCorner_snd_eq_firstTangent F.f F.g F.fD]
+  rw [innerCorner_snd_eq_firstTangent (F).f (F).g (F).fD]
   exact sub_pos.mpr ((mul_neg_of_neg_of_pos hp hcos).trans_le hBy)
 
 theorem fullTiltedSupportQuarterPair_companion_floor_pos_at_second_phase {α η : ℝ}
@@ -90,7 +99,7 @@ theorem fullTiltedSupportQuarterPair_companion_floor_pos_at_second_phase {α η 
     hU hm haffine hρ hρ0 hρK heq hheight hunit (Ioo_subset_Icc_self hη)
   have hcos : 0 < Real.cos η := Real.cos_pos_of_mem_Ioo
     ⟨by linarith only [hη.1, Real.pi_pos], hη.2⟩
-  rw [← hjoin, innerCorner_snd_eq_firstTangent F.f F.g F.fD]
+  rw [← hjoin, innerCorner_snd_eq_firstTangent (F).f (F).g (F).fD]
   exact sub_pos.mpr ((mul_neg_of_neg_of_pos hphase.first_at_second hcos).trans_le hBy)
 
 /-- This ordering is valid in both branches of the companion-unit

@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.ThreeAngleWidth
-import AmbidextrousSofa.Analysis.PartialEndpointComplementarity
+module
+
+public import AmbidextrousSofa.Analysis.ThreeAngleWidth
+public import AmbidextrousSofa.Analysis.PartialEndpointComplementarity
+
+@[expose] public section
 
 /-!
 # Actual proper width bounds in both middle orientations

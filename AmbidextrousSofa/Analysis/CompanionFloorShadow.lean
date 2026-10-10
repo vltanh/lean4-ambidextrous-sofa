@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.ShadowCurvature
-import AmbidextrousSofa.Analysis.TangencyLoci
+module
+
+public import AmbidextrousSofa.Analysis.ShadowCurvature
+public import AmbidextrousSofa.Analysis.TangencyLoci
+
+@[expose] public section
 
 /-!
 # Actual companion sources below the floor
@@ -123,7 +127,7 @@ theorem CapHausdorffTendsto.secondSelfIntervalTop_tendsto
     {angle δ : ℕ → ℝ} {t : ℝ} (hangle : Tendsto angle atTop (𝓝 t))
     (hδ : Tendsto δ atTop (𝓝 0))
     (hsin : ∀ n, 0 < Real.sin (δ n)) (hcos : ∀ n, 0 ≤ Real.cos (δ n))
-    (ht : Imported.sigmaAt K (t + Real.pi / 2) = 0) :
+    (ht : MovingSofaOptimality.sigmaAt K (t + Real.pi / 2) = 0) :
     Tendsto (fun n => AngularGrid.secondSelfIntervalTop (U n) (angle n) (δ n)) atTop
       (𝓝 (secondTangency K t).2) := by
   have hsupp := h.support_tendsto_moving hU hK
@@ -149,7 +153,7 @@ theorem CapHausdorffTendsto.secondFloorShadowMargin_tendsto
     {angle δ : ℕ → ℝ} {t : ℝ} (hangle : Tendsto angle atTop (𝓝 t))
     (hδ : Tendsto δ atTop (𝓝 0))
     (hsin : ∀ n, 0 < Real.sin (δ n)) (hcos : ∀ n, 0 ≤ Real.cos (δ n))
-    (ht : Imported.sigmaAt K t = 0) (htcomp : Imported.sigmaAt K (t + Real.pi / 2) = 0) :
+    (ht : MovingSofaOptimality.sigmaAt K t = 0) (htcomp : MovingSofaOptimality.sigmaAt K (t + Real.pi / 2) = 0) :
     Tendsto (fun n => AngularGrid.secondFloorShadowMargin (U n) (angle n) (δ n)) atTop
       (𝓝 (min (-secondCornerVelocity K t) (-(secondTangency K t).2))) := by
   have hp := h.forwardSecondCornerSecant_tendsto hU hK hB hbox hangle hδ hsin hcos ht
@@ -172,8 +176,8 @@ theorem eventually_companion_floor_shadow_atoms_le
     (hHausdorff : CapHausdorffTendsto U target) (hlevel : Tendsto level atTop atTop)
     (hc : ∀ n, 0 ≤ coefficient n) (hB : IsCompact B) (hbox : ∀ n, U n ⊆ B)
     {t : ℝ} (htop : Real.pi / 2 < t)
-    (ht : Imported.sigmaAt target (sourceQuarterAngle t) = 0)
-    (htcomp : Imported.sigmaAt target (sourceQuarterAngle t + Real.pi / 2) = 0)
+    (ht : MovingSofaOptimality.sigmaAt target (sourceQuarterAngle t) = 0)
+    (htcomp : MovingSofaOptimality.sigmaAt target (sourceQuarterAngle t + Real.pi / 2) = 0)
     (hp : secondCornerVelocity target (sourceQuarterAngle t) < 0)
     (hD : (secondTangency target (sourceQuarterAngle t)).2 < 0) :
     ∃ δ > 0, ∀ᶠ n in atTop, ∀ j : SourceIndex (dyadic (level n)),

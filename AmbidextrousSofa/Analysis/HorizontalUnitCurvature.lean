@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.CompanionEndpointEnergy
-import AmbidextrousSofa.Analysis.HorizontalEndpointBounds
-import AmbidextrousSofa.Analysis.HorizontalLeakageScalar
-import AmbidextrousSofa.Analysis.CapReflection
+module
+
+public import AmbidextrousSofa.Analysis.CompanionEndpointEnergy
+public import AmbidextrousSofa.Analysis.HorizontalEndpointBounds
+public import AmbidextrousSofa.Analysis.HorizontalLeakageScalar
+public import AmbidextrousSofa.Analysis.CapReflection
+
+@[expose] public section
 
 /-!
 # Actual unit curvature after an explicit horizontal orientation
@@ -25,8 +29,8 @@ theorem IsDownwardCap.horizontal_middle_roof_mirror
     {U : Set Plane} (hU : IsDownwardCap U)
     (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = 1) :
-    ∀ x ∈ middleHalfInterval (horizontalLeft (horizontalMirror U))
-      (horizontalRight (horizontalMirror U)), capRoof (horizontalMirror U) x = 1 := by
+    ∀ x ∈ middleHalfInterval (horizontalLeft (AmbidextrousSofa.horizontalMirror U))
+      (horizontalRight (AmbidextrousSofa.horizontalMirror U)), capRoof (AmbidextrousSofa.horizontalMirror U) x = 1 := by
   intro x hx
   rw [capRoof_horizontalMirror]
   apply hmiddle
@@ -40,7 +44,7 @@ theorem IsFullCapMaximizer.exists_horizontal_orientation_left_endpoint_criterion
     (hC0 : 0 ≤ C) (hC1 : C ≤ 8571 / 12500) (hheight : capHeight U = 1)
     (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = 1) :
-    ∃ V : Set Plane, (V = U ∨ V = horizontalMirror U) ∧ IsFullCapMaximizer V ∧
+    ∃ V : Set Plane, (V = U ∨ V = AmbidextrousSofa.horizontalMirror U) ∧ IsFullCapMaximizer V ∧
       horizontalLeft V = -2 * C ∧ horizontalRight V = 2 * C ∧
       capHeight V = 1 ∧ capWidth V = capWidth U ∧
       capScore V (Real.pi / 2) = capScore U (Real.pi / 2) ∧
@@ -59,7 +63,7 @@ theorem IsFullCapMaximizer.exists_horizontal_orientation_left_endpoint_criterion
         4 + capRoof U (horizontalRight U) * (1 - capRoof U (horizontalRight U)) := by
       rw [hw]
       nlinarith only [hscalar, hR]
-    refine ⟨horizontalMirror U, Or.inr rfl, hU.horizontalMirror, ?_, ?_, ?_,
+    refine ⟨AmbidextrousSofa.horizontalMirror U, Or.inr rfl, hU.horizontalMirror, ?_, ?_, ?_,
       capWidth_horizontalMirror hU.isCap, capScore_horizontalMirror hU.isCap,
       hU.isCap.horizontal_middle_roof_mirror hmiddle, ?_⟩
     · rw [horizontalLeft_horizontalMirror hU.isCap, hr]
@@ -127,7 +131,7 @@ theorem IsFullCapMaximizer.exists_horizontal_oriented_unit_density_of_width_le
     (hC0 : 0 ≤ C) (hC1 : C ≤ 8571 / 12500) (hheight : capHeight U = 1)
     (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = 1) :
-    ∃ V : Set Plane, (V = U ∨ V = horizontalMirror U) ∧ IsFullCapMaximizer V ∧
+    ∃ V : Set Plane, (V = U ∨ V = AmbidextrousSofa.horizontalMirror U) ∧ IsFullCapMaximizer V ∧
       horizontalLeft V = -2 * C ∧ horizontalRight V = 2 * C ∧
       capHeight V = 1 ∧ capWidth V = capWidth U ∧
       capScore V (Real.pi / 2) = capScore U (Real.pi / 2) ∧

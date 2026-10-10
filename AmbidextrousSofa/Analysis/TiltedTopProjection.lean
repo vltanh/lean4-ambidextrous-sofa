@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.DryTopBalance
-import AmbidextrousSofa.Analysis.SelectedHorizontalMoment
-import AmbidextrousSofa.Analysis.TerminalTopProjection
-import AmbidextrousSofa.Analysis.TiltedEndpointBounds
+module
+
+public import AmbidextrousSofa.Analysis.DryTopBalance
+public import AmbidextrousSofa.Analysis.SelectedHorizontalMoment
+public import AmbidextrousSofa.Analysis.TerminalTopProjection
+public import AmbidextrousSofa.Analysis.TiltedEndpointBounds
+
+@[expose] public section
 
 /-!
 # The exact actual top projection for a tilted full maximum
@@ -59,7 +63,7 @@ theorem IsDownwardCap.top_points_after_positive_affine
     (hab : a < b) (hm : 0 < m) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c)
     (hhigh : capRoof U b = 1) :
-    ∀ p ∈ U, p.2 = 1 → p.1 ∈ Icc b (Imported.vminus U (Real.pi / 2)).1 := by
+    ∀ p ∈ U, p.2 = 1 → p.1 ∈ Icc b (MovingSofaOptimality.vminus U (Real.pi / 2)).1 := by
   intro p hp hpy
   have hroof : p.2 ≤ m * p.1 + c :=
     (le_capRoof hU.isCompact (show (p.1, p.2) ∈ U by simpa only [Prod.mk.eta] using hp)).trans
@@ -68,13 +72,13 @@ theorem IsDownwardCap.top_points_after_positive_affine
   have hlo : b ≤ p.1 := by
     apply (mul_le_mul_left hm).mp
     linarith only [hroof, hline, hpy]
-  have hedge : p ∈ Imported.edge U (Real.pi / 2) := by
+  have hedge : p ∈ MovingSofaOptimality.edge U (Real.pi / 2) := by
     refine ⟨hp, ?_⟩
     change coordDot p (unitNormal (Real.pi / 2)) = angleSupport U (Real.pi / 2)
     simp only [coordDot, unitNormal, angleSupport, Real.cos_pi_div_two, Real.sin_pi_div_two,
       mul_zero, mul_one, zero_add, hpy, ← capHeight, hheight]
-  have hxp : p.1 ∈ Icc (Imported.vplus U (Real.pi / 2)).1
-      (Imported.vminus U (Real.pi / 2)).1 := by
+  have hxp : p.1 ∈ Icc (MovingSofaOptimality.vplus U (Real.pi / 2)).1
+      (MovingSofaOptimality.vminus U (Real.pi / 2)).1 := by
     rw [← hU.horizontalProjection_edge (by simp : 0 ≤ Real.sin (Real.pi / 2))]
     exact ⟨p, hedge, rfl⟩
   exact ⟨hlo, hxp.2⟩
@@ -88,10 +92,10 @@ theorem IsFullCapMaximizer.tilted_top_projection_eq
     (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c)
     (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1) :
-    (Imported.vminus U (Real.pi / 2)).1 - C =
+    (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C =
       max (C + companionZero (leftCompanionCap U (-C))) 0 := by
   let z := companionZero (leftCompanionCap U (-C))
-  let b := (Imported.vminus U (Real.pi / 2)).1
+  let b := (MovingSofaOptimality.vminus U (Real.pi / 2)).1
   have hC : 0 < C := by linarith only [hC0]
   have hm := positive_affine_slope_of_middle_heights hC hh0 haffine hlow hhigh
   have hproj : horizontalProjection U = Icc (-2 * C) (2 * C) := by
@@ -104,7 +108,7 @@ theorem IsFullCapMaximizer.tilted_top_projection_eq
   have htop := hU.isCap.top_points_after_positive_affine ha hb hab hm hheight haffine hhigh
   have hCb : C ≤ b := (htop (C, 1) hhighPoint rfl).2
   have htopPoint : (b, 1) ∈ U := by
-    have hpoint := (Imported.vminus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)).1
+    have hpoint := (MovingSofaOptimality.vminus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)).1
     have hy := (top_vminus_snd_eq_capHeight U).trans hheight
     simpa only [b, ← hy, Prod.mk.eta] using hpoint
   have hbR : b ≤ 2 * C := by

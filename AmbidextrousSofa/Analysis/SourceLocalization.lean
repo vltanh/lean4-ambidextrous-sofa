@@ -1,4 +1,9 @@
-import AmbidextrousSofa.Analysis.FiniteGraphFlux
+module
+
+public import AmbidextrousSofa.Analysis.FiniteGraphFlux
+public import AmbidextrousSofa.Analysis.NegativeCornerCurvature
+
+@[expose] public section
 
 /-!
 # Actual finite sources localize at positive limiting graph pieces

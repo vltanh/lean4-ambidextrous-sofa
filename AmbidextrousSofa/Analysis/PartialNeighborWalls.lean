@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialSelectedCurvature
-import AmbidextrousSofa.Analysis.NeighborCompanion
+module
+
+public import AmbidextrousSofa.Analysis.PartialSelectedCurvature
+public import AmbidextrousSofa.Analysis.NeighborCompanion
+
+@[expose] public section
 
 /-!
 # Actual proper-history sources and their neighboring walls
@@ -28,7 +32,7 @@ theorem scaleAngle_injective (α : TerminalAngle) : Function.Injective (scaleAng
   have hreal := congrArg (fun u : QuarterAngle => (u : ℝ)) h
   change (α : ℝ) * ((s : ℝ) / (Real.pi / 2)) =
     (α : ℝ) * ((t : ℝ) / (Real.pi / 2)) at hreal
-  have hquot := mul_left_cancel₀ α.pos.ne' hreal
+  have hquot := mul_left_cancel₀ (TerminalAngle.pos α).ne' hreal
   have hprod := congrArg (fun z : ℝ => z * (Real.pi / 2)) hquot
   simpa only [div_mul_cancel₀ _ (by linarith [Real.pi_pos] : Real.pi / 2 ≠ 0)] using hprod
 
@@ -172,7 +176,7 @@ theorem above_barrier_wall_alternative {U : Set Plane} (hU : IsDownwardCap U)
       coordDot, mul_zero, zero_add, mul_one] using
       (by linarith only [hp0, htop] : support U (0, 1) - 1 ≤ p.2)
   · have hspos : 0 < (scaleAngle α s : ℝ) := by
-      exact mul_pos α.pos (div_pos
+      exact mul_pos (TerminalAngle.pos α) (div_pos
         (lt_of_le_of_ne s.property.1 (Ne.symm hs0)) (by linarith [Real.pi_pos]))
     have hsL : (scaleAngle α s : ℝ) < Real.pi / 2 :=
       (scaleAngle_le_terminal α s).trans_lt hαL

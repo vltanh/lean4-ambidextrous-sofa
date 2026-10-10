@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.HorizontalLeakageDynamics
+module
+
+public import AmbidextrousSofa.Analysis.HorizontalLeakageDynamics
+
+@[expose] public section
 
 /-!
 # Actual short-interval occupation of horizontal curvature excess

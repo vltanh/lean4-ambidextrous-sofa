@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.TiltedZeroGeometry
-import AmbidextrousSofa.Analysis.SourceLocalization
-import AmbidextrousSofa.Analysis.HorizontalCutoff
+module
+
+public import AmbidextrousSofa.Analysis.TiltedZeroGeometry
+public import AmbidextrousSofa.Analysis.SourceLocalization
+public import AmbidextrousSofa.Analysis.HorizontalCutoff
+
+@[expose] public section
 
 /-!
 # Vanishing finite positive length on a strictly dry interval

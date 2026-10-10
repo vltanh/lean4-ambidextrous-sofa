@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.LowHeightScore
-import AmbidextrousSofa.Analysis.TopFacetEndpoints
+module
+
+public import AmbidextrousSofa.Analysis.LowHeightScore
+public import AmbidextrousSofa.Analysis.TopFacetEndpoints
+
+@[expose] public section
 
 /-!
 # Excluding low middle endpoints at a canonical full maximum
@@ -30,11 +34,11 @@ theorem IsDownwardCap.capScore_lt_lowHeightBound_of_low_middle_left
   let C := capWidth U / 4
   let d := -(horizontalLeft U + horizontalRight U) / 2
   have hC : 0 < C := div_pos hwidth (by norm_num)
-  have hleft : horizontalLeft (centeredCap U) = -2 * C := by
+  have hleft : horizontalLeft (AmbidextrousSofa.centeredCap U) = -2 * C := by
     rw [horizontalLeft_centeredCap hU]
     dsimp [C]
     ring
-  have hright : horizontalRight (centeredCap U) = 2 * C := by
+  have hright : horizontalRight (AmbidextrousSofa.centeredCap U) = 2 * C := by
     rw [horizontalRight_centeredCap hU]
     dsimp [C]
     ring
@@ -48,17 +52,17 @@ theorem IsDownwardCap.capScore_lt_lowHeightBound_of_low_middle_left
     dsimp [C, d]
     unfold capWidth
     ring
-  have hlowV : capRoof (centeredCap U) (-C) ≤ 1 / 2 := by
-    change capRoof (horizontalTranslate U d) (-C) ≤ 1 / 2
+  have hlowV : capRoof (AmbidextrousSofa.centeredCap U) (-C) ≤ 1 / 2 := by
+    change capRoof (AmbidextrousSofa.horizontalTranslate U d) (-C) ≤ 1 / 2
     rw [capRoof_horizontalTranslate, hleftArg]
     exact hlow
-  have hhighV : capRoof (centeredCap U) C = 1 := by
-    change capRoof (horizontalTranslate U d) C = 1
+  have hhighV : capRoof (AmbidextrousSofa.centeredCap U) C = 1 := by
+    change capRoof (AmbidextrousSofa.horizontalTranslate U d) C = 1
     rw [capRoof_horizontalTranslate, hrightArg]
     exact hhigh
   obtain ⟨m, c, haffine⟩ := haffine
   have haffineV : ∃ m' c' : ℝ, ∀ x ∈ Icc (-C) C,
-      capRoof (centeredCap U) x = m' * x + c' := by
+      capRoof (AmbidextrousSofa.centeredCap U) x = m' * x + c' := by
     refine ⟨m, c - m * d, ?_⟩
     intro x hx
     have hxU : x - d ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U) := by
@@ -66,7 +70,7 @@ theorem IsDownwardCap.capScore_lt_lowHeightBound_of_low_middle_left
         x - d ≤ horizontalRight U - (horizontalRight U - horizontalLeft U) / 4
       rw [← hleftArg, ← hrightArg]
       constructor <;> linarith [hx.1, hx.2]
-    change capRoof (horizontalTranslate U d) x = _
+    change capRoof (AmbidextrousSofa.horizontalTranslate U d) x = _
     rw [capRoof_horizontalTranslate, haffine (x - d) hxU]
     ring
   have h := hU.centeredCap.capScore_lt_lowHeightBound_of_affine_middle
@@ -111,11 +115,11 @@ theorem IsFullCapMaximizer.middle_endpoints_gt_half_of_affine
   by_cases hm : 0 ≤ m
   · exact hU.middle_endpoints_gt_half_of_affine_nonneg hheight hm haffine
   · have hV := hU.horizontalMirror
-    have hheightV : capHeight (horizontalMirror U) = 1 := by
+    have hheightV : capHeight (AmbidextrousSofa.horizontalMirror U) = 1 := by
       rw [capHeight_horizontalMirror, hheight]
     have haffineV : ∀ x ∈ middleHalfInterval
-        (horizontalLeft (horizontalMirror U)) (horizontalRight (horizontalMirror U)),
-        capRoof (horizontalMirror U) x = (-m) * x + c := by
+        (horizontalLeft (AmbidextrousSofa.horizontalMirror U)) (horizontalRight (AmbidextrousSofa.horizontalMirror U)),
+        capRoof (AmbidextrousSofa.horizontalMirror U) x = (-m) * x + c := by
       intro x hx
       rw [horizontalLeft_horizontalMirror hU.isCap,
         horizontalRight_horizontalMirror hU.isCap] at hx

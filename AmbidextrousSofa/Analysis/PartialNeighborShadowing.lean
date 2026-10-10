@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialSourceMass
-import AmbidextrousSofa.Analysis.ShadowSecants
+module
+
+public import AmbidextrousSofa.Analysis.PartialSourceMass
+public import AmbidextrousSofa.Analysis.ShadowSecants
+
+@[expose] public section
 
 /-!
 # Strict neighboring-wall shadowing in the actual proper graph
@@ -187,7 +191,7 @@ theorem integral_first_source_le_self_interval {U : Set Plane} (hU : IsDownwardC
       companionPlus (support U (unitNormal (scaleAngle α t.val)))
         (support U (companionNormal ((scaleAngle α t.val : ℝ) + δ))) δ) :
     (∫ x in a..b, innerDensity U α hαL grid (scaledSource α grid (Sum.inl t)) x) ≤
-      max (2 * Real.tan (δ / 2) - (upperCurvature U {(scaleAngle α t.val)}).toReal) 0 := by
+      max (2 * Real.tan (δ / 2) - (upperCurvature U {((scaleAngle α t.val : QuarterAngle) : ℝ)}).toReal) 0 := by
   classical
   have ht : 0 < Real.sin (scaleAngle α t.val) :=
     normal_snd_pos α grid (scaledSource α grid (Sum.inl t))

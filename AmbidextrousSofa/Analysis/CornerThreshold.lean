@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.VisibleFluxDensity
-import Mathlib.MeasureTheory.Measure.OpenPos
+module
+
+public import AmbidextrousSofa.Analysis.VisibleFluxDensity
+public import Mathlib.MeasureTheory.Measure.OpenPos
+
+@[expose] public section
 
 /-!
 # Actual first level crossings and the corner energy threshold

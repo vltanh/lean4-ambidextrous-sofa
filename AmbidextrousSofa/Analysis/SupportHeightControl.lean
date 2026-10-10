@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.Extrusion
-import AmbidextrousSofa.Analysis.CapCompactness
+module
+
+public import AmbidextrousSofa.Analysis.Extrusion
+public import AmbidextrousSofa.Analysis.CapCompactness
+
+@[expose] public section
 
 /-!
 # Support control at the horizontal top direction

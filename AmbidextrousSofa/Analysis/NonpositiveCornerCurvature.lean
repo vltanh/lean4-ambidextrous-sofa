@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FloorContactCurvature
-import Mathlib.MeasureTheory.Group.Measure
+module
+
+public import AmbidextrousSofa.Analysis.FloorContactCurvature
+public import Mathlib.MeasureTheory.Group.Measure
+
+@[expose] public section
 
 /-!
 # The actual density on nonpositive corners

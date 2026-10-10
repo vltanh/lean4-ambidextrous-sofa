@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.Chord
+module
+
+public import AmbidextrousSofa.Analysis.Chord
+
+@[expose] public section
 
 /-!
 # Continuity of an actual cap roof on its whole projection

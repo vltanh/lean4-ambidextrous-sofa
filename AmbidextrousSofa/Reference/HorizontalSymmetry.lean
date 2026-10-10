@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.CapNormalization
-import AmbidextrousSofa.Geometry.UpwardSupport
-import AmbidextrousSofa.Reference.Value
+module
+
+public import AmbidextrousSofa.Analysis.CapNormalization
+public import AmbidextrousSofa.Geometry.UpwardSupport
+public import AmbidextrousSofa.Reference.Value
+
+@[expose] public section
 
 /-!
 # Exact horizontal symmetry of the reference cap

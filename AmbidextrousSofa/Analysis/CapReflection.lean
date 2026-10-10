@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FiniteScore
-import AmbidextrousSofa.Analysis.GlobalCapMaximum
+module
+
+public import AmbidextrousSofa.Analysis.FiniteScore
+public import AmbidextrousSofa.Analysis.GlobalCapMaximum
+
+@[expose] public section
 
 /-!
 # Horizontal reflection of full cap scores
@@ -47,7 +51,7 @@ theorem horizontalReflection_combo (p q : Plane) (a b : ℝ) :
   apply Prod.ext <;> simp [horizontalReflection, smul_eq_mul] <;> ring
 
 theorem IsDownwardCap.horizontalMirror {U : Set Plane} (hU : IsDownwardCap U) :
-    IsDownwardCap (horizontalMirror U) := by
+    IsDownwardCap (AmbidextrousSofa.horizontalMirror U) := by
   refine ⟨hU.nonempty.image _, hU.isCompact.image continuous_horizontalReflection, ?_, ?_, ?_⟩
   · rintro p ⟨p, hp, rfl⟩ q ⟨q, hq, rfl⟩ a b ha hb hab
     exact ⟨a • p + b • q, hU.convex hp hq ha hb hab, horizontalReflection_combo p q a b⟩
@@ -162,7 +166,7 @@ theorem capScore_horizontalMirror {U : Set Plane} (hU : IsDownwardCap U) :
   rw [hroof, hniche, intervalSpatialScore_reflect]
 
 theorem IsFullCapMaximizer.horizontalMirror {U : Set Plane} (hU : IsFullCapMaximizer U) :
-    IsFullCapMaximizer (horizontalMirror U) :=
+    IsFullCapMaximizer (AmbidextrousSofa.horizontalMirror U) :=
   hU.of_score_le hU.isCap.horizontalMirror (capScore_horizontalMirror hU.isCap).ge
 
 theorem capHeight_horizontalMirror (U : Set Plane) :

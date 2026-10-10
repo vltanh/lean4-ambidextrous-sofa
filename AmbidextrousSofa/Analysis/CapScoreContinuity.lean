@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.CapRoofConvergence
-import AmbidextrousSofa.Analysis.CapNicheContinuity
+module
+
+public import AmbidextrousSofa.Analysis.CapRoofConvergence
+public import AmbidextrousSofa.Analysis.CapNicheContinuity
+
+@[expose] public section
 
 /-!
 # Continuity of the full spatial cap score

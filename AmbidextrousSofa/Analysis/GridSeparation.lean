@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.GridPolygon
-import AmbidextrousSofa.Geometry.UpwardSupport
+module
+
+public import AmbidextrousSofa.Analysis.GridPolygon
+public import AmbidextrousSofa.Geometry.UpwardSupport
+
+@[expose] public section
 
 /-!
 # The open dyadic sources determine the actual cap

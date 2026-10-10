@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.PartialNeighborLength
-import AmbidextrousSofa.Analysis.BoxedSecants
-import AmbidextrousSofa.Analysis.GridCounting
+module
+
+public import AmbidextrousSofa.Analysis.PartialNeighborLength
+public import AmbidextrousSofa.Analysis.BoxedSecants
+public import AmbidextrousSofa.Analysis.GridCounting
+
+@[expose] public section
 
 /-!
 # Vanishing-mesh bounds for actual proper-history source mass
@@ -31,7 +35,7 @@ theorem scaleAngle_coe (α : TerminalAngle) (t : QuarterAngle) :
   ring
 
 theorem mesh_pos (α : TerminalAngle) (n : ℕ) : 0 < mesh α n :=
-  mul_pos (div_pos α.pos (by linarith [Real.pi_pos])) (AngularGrid.mesh_pos n)
+  mul_pos (div_pos (TerminalAngle.pos α) (by linarith [Real.pi_pos])) (AngularGrid.mesh_pos n)
 
 theorem mesh_le_full_mesh (α : TerminalAngle) (n : ℕ) : mesh α n ≤ AngularGrid.mesh n := by
   have hratio : (α : ℝ) / (Real.pi / 2) ≤ 1 :=

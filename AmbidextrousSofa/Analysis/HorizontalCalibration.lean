@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.HorizontalSupportArea
-import AmbidextrousSofa.Analysis.HorizontalSignedArea
-import AmbidextrousSofa.Analysis.AdaptiveGlobalComparison
-import AmbidextrousSofa.Geometry.UpwardSupport
+module
+
+public import AmbidextrousSofa.Analysis.HorizontalSupportArea
+public import AmbidextrousSofa.Analysis.HorizontalSignedArea
+public import AmbidextrousSofa.Analysis.AdaptiveGlobalComparison
+public import AmbidextrousSofa.Geometry.UpwardSupport
+
+@[expose] public section
 
 /-!
 # Calibration of the actual horizontal full maximum
@@ -123,7 +127,7 @@ theorem IsFullCapMaximizer.eq_reference_translate_of_horizontal_unit_density
     (hunit : ∀ᵐ t ∂volume.restrict (Ioo 0 (Real.pi / 2)),
       ρ t ≤ 1 ∧ ρ (t + Real.pi / 2) ≤ 1) :
     capWidth U = 8 / 3 * Reference.A ∧
-      ∃ b : ℝ, U = horizontalTranslate Reference.referenceCap b := by
+      ∃ b : ℝ, U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap b := by
   let F := horizontalSupportQuarterPair hU.isCap hρ hρ0 hρK heq
   rcases hU.horizontalSupportQuarterPair_traces hρ hρ0 hρK heq hheight hmiddle with
     ⟨hf0, hg0, hfL, hgL, _⟩
@@ -149,8 +153,8 @@ theorem IsFullCapMaximizer.eq_reference_translate_of_horizontal_unit_density
   · intro t ht
     calc
       support U (unitNormal t) = Reference.referenceF t + b * Real.cos t := hf ht
-      _ = support (horizontalTranslate Reference.referenceCap b) (unitNormal t) := by
-        rw [horizontalTranslate, support_translate hRef.isCompact hRef.nonempty]
+      _ = support (AmbidextrousSofa.horizontalTranslate Reference.referenceCap b) (unitNormal t) := by
+        rw [AmbidextrousSofa.horizontalTranslate, support_translate hRef.isCompact hRef.nonempty]
         change Reference.referenceF t + b * Real.cos t =
           angleSupport Reference.referenceCap t + coordDot (b, 0) (unitNormal t)
         rw [Reference.angleSupport_referenceCap_eq_f ht]
@@ -160,8 +164,8 @@ theorem IsFullCapMaximizer.eq_reference_translate_of_horizontal_unit_density
       support U (companionNormal t) = Reference.referenceG t - b * Real.sin t := by
         rw [companionNormal_eq_unitNormal]
         exact hg ht
-      _ = support (horizontalTranslate Reference.referenceCap b) (companionNormal t) := by
-        rw [horizontalTranslate, support_translate hRef.isCompact hRef.nonempty]
+      _ = support (AmbidextrousSofa.horizontalTranslate Reference.referenceCap b) (companionNormal t) := by
+        rw [AmbidextrousSofa.horizontalTranslate, support_translate hRef.isCompact hRef.nonempty]
         have href : support Reference.referenceCap (companionNormal t) = Reference.referenceG t := by
           rw [companionNormal_eq_unitNormal]
           exact Reference.angleSupport_referenceCap_eq_g ht

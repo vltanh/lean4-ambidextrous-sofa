@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.CapScoreContinuity
+module
+
+public import AmbidextrousSofa.Analysis.CapScoreContinuity
+
+@[expose] public section
 
 /-!
 # Existence of actual spatial cap maxima in a compact box

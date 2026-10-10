@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.TiltedFirstUnitClosure
-import AmbidextrousSofa.Measure.SupportAreaAC
+module
+
+public import AmbidextrousSofa.Analysis.TiltedFirstUnitClosure
+public import AmbidextrousSofa.Measure.SupportAreaAC
+
+@[expose] public section
 
 /-!
 # The companion-unit contradiction with either window order

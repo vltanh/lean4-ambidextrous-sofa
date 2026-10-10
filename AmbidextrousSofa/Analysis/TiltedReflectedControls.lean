@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.TiltedSupportControls
-import AmbidextrousSofa.Analysis.SupportArcCalculus
-import AmbidextrousSofa.Analysis.CornerArcCrossing
+module
+
+public import AmbidextrousSofa.Analysis.TiltedSupportControls
+public import AmbidextrousSofa.Analysis.SupportArcCalculus
+public import AmbidextrousSofa.Analysis.CornerArcCrossing
+
+@[expose] public section
 
 /-!
 # The actual reflected active arc of a full tilted maximum
@@ -49,8 +53,10 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 local notation "pR" => reflectedSupportP F
 local notation "qR" => reflectedSupportQ F
 local notation "uR" => reflectedFirstWingDensity m ρ
@@ -91,7 +97,7 @@ theorem fullTiltedSupportQuarterPair_reflected_arm_bounds :
   have hδ0 := Real.arctan_nonneg.mpr hm
   have hδL := Real.arctan_lt_pi_div_two m
   have hpcont : ContinuousOn p (Icc (Real.arctan m) (Real.pi / 2)) :=
-    ((F.continuous_fD.sub F.continuous_g).add continuousOn_const).mono
+    (((F).continuous_fD.sub (F).continuous_g).add continuousOn_const).mono
       (Icc_subset_Icc hδ0 le_rfl)
   have hpclosed := hpcont.le_on_Icc_of_ae_le_on_Ioo hδL (by
     filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ht
@@ -180,7 +186,7 @@ theorem fullTiltedSupportQuarterPair_reflected_initial_values {C : ℝ}
     (hl : horizontalLeft U = -2 * C) (hmpos : 0 < m)
     (hheight : capHeight U = 1) :
     pR 0 = capRoof U (horizontalLeft U) ∧
-      qR 0 = (Imported.vminus U (Real.pi / 2)).1 + 2 * C - 1 := by
+      qR 0 = (MovingSofaOptimality.vminus U (Real.pi / 2)).1 + 2 * C - 1 := by
   obtain ⟨_hf0, _hg0, hfL, hgL, _hfD0, _hgD0, hfDL, hgDL⟩ :=
     fullTiltedSupportQuarterPair_traces hU hm haffine hρ hρ0 hρK heq hmpos
   constructor
@@ -217,15 +223,15 @@ theorem fullTiltedSupportQuarterPair_reflected_second_at_activeEnd {C : ℝ}
     (show 0 < capWidth U by rw [hW]; positivity)
   have hg := hU.isCap.companionSupport_leftCut_eq_low_of_affine
     ha hb hab haffine hc hcoef
-  change F.g δ = -(horizontalLeft U + capWidth U / 4) * Real.sin δ +
+  change (F).g δ = -(horizontalLeft U + capWidth U / 4) * Real.sin δ +
     capRoof U (horizontalLeft U + capWidth U / 4) * Real.cos δ at hg
   have hroof := (hU.isCap.inStrip (capRoof_mem hU.isCap.isCompact ha)).2
   have hroofcos := mul_le_mul_of_nonneg_right hroof hc
-  have hgupper : F.g δ ≤ C * Real.sin δ + 1 := by
+  have hgupper : (F).g δ ≤ C * Real.sin δ + 1 := by
     rw [hg, hleft]
     rw [hleft] at hroofcos
     nlinarith only [hroofcos, Real.cos_le_one δ]
-  have hpU := (Imported.vplus_mem_edge hU.isCap.imported_isConvexBody δ).1
+  have hpU := (MovingSofaOptimality.vplus_mem_edge hU.isCap.imported_isConvexBody δ).1
   have hx := (hU.isCap.fst_mem_Icc hpU).2
   rw [hr] at hx
   have hy := (hU.isCap.inStrip hpU).1
@@ -233,9 +239,9 @@ theorem fullTiltedSupportQuarterPair_reflected_second_at_activeEnd {C : ℝ}
   have hycos := mul_nonneg hy hc
   have hfD := fullTiltedSupportQuarterPair_first_derivative
     hU hm haffine hρ hρ0 hρK heq ⟨hδ0, hδL⟩
-  have hfDlower : -2 * C * Real.sin δ ≤ F.fD δ := by
+  have hfDlower : -2 * C * Real.sin δ ≤ (F).fD δ := by
     rw [hfD]
-    dsimp only [supportTangent, Imported.dot, Imported.vvec]
+    dsimp only [supportTangent, MovingSofaOptimality.dot, MovingSofaOptimality.vvec]
     nlinarith only [hxsin, hycos]
   have hps : -3 * C * Real.sin δ ≤ p δ := by
     dsimp only [supportP]

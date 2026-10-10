@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.CornerArcCrossing
+module
+
+public import AmbidextrousSofa.Analysis.CornerArcCrossing
+
+@[expose] public section
 
 /-!
 # Excess on a truncated arc after a possible initial impulse

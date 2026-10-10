@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Measure.CapScore
+module
+
+public import AmbidextrousSofa.Measure.CapScore
+
+@[expose] public section
 
 /-!
 # A coercive bound for the actual cap score

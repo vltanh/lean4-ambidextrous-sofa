@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.RegularTangency
+module
+
+public import AmbidextrousSofa.Analysis.RegularTangency
+
+@[expose] public section
 
 /-!
 # Corner calculus on the entire actual regular domain

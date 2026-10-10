@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.AdaptiveGlobalBranches
-import AmbidextrousSofa.Reference.Support
+module
+
+public import AmbidextrousSofa.Analysis.AdaptiveGlobalBranches
+public import AmbidextrousSofa.Reference.Support
+
+@[expose] public section
 
 /-!
 # Parameters for a complete stationary family of competitive widths

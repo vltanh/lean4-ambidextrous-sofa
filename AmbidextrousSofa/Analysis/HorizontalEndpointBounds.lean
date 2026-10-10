@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.NicheBoxBounds
-import AmbidextrousSofa.Analysis.EndpointPositivity
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+module
+
+public import AmbidextrousSofa.Analysis.NicheBoxBounds
+public import AmbidextrousSofa.Analysis.EndpointPositivity
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+
+@[expose] public section
 
 /-!
 # Exact horizontal box-wall and endpoint bounds

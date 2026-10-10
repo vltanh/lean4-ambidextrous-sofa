@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.WideDiagonalScalar
-import AmbidextrousSofa.Analysis.EndpointPositivity
+module
+
+public import AmbidextrousSofa.Analysis.WideDiagonalScalar
+public import AmbidextrousSofa.Analysis.EndpointPositivity
+
+@[expose] public section
 
 /-!
 # The wide majorant and deficit of the actual cap

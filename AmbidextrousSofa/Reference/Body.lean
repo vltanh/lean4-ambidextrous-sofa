@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Reference.Faces
-import AmbidextrousSofa.Geometry.AngularDomain
+module
+
+public import AmbidextrousSofa.Reference.Faces
+public import AmbidextrousSofa.Geometry.AngularDomain
+
+@[expose] public section
 
 /-!
 # The physical reference sofa and its two complete motions

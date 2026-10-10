@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Measure.GraphIntegral
-import AmbidextrousSofa.Analysis.RoofContinuity
-import AmbidextrousSofa.Reference.Realization
+module
+
+public import AmbidextrousSofa.Measure.GraphIntegral
+public import AmbidextrousSofa.Analysis.RoofContinuity
+public import AmbidextrousSofa.Reference.Realization
+
+@[expose] public section
 
 /-!
 # Support coordinates and actual cap area

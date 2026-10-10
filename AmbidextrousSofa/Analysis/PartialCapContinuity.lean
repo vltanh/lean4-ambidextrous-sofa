@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.CapMaximum
+module
+
+public import AmbidextrousSofa.Analysis.CapMaximum
+
+@[expose] public section
 
 /-!
 # Joint continuity for the entire partial barrier
@@ -28,7 +32,7 @@ theorem TerminalAngle.pos (α : TerminalAngle) : 0 < (α : ℝ) := by
   linarith [α.property.1, Real.pi_pos]
 
 theorem TerminalAngle.sin_pos (α : TerminalAngle) : 0 < Real.sin (α : ℝ) :=
-  Real.sin_pos_of_pos_of_lt_pi α.pos (by linarith [α.property.2, Real.pi_pos])
+  Real.sin_pos_of_pos_of_lt_pi (TerminalAngle.pos α) (by linarith [α.property.2, Real.pi_pos])
 
 /-- Closing the visited angular interval adds no positive height to its
 supremum, even when the terminal corner itself is positive. -/
@@ -80,22 +84,22 @@ theorem partialSweptNiche_eq_sSup_unit (U : CompactCap) (α : TerminalAngle) (x 
     have h := le_csSup hbounded (mem_image_of_mem _ (mem_univ zero))
     simpa only [zero, mul_zero, fullWallClip_zero] using h
   apply le_antisymm
-  · apply sweptNiche_le_of_forall α.pos hzero
+  · apply sweptNiche_le_of_forall (TerminalAngle.pos α) hzero
     intro θ hθ
-    let s : Icc (0 : ℝ) 1 := ⟨θ / α, div_nonneg hθ.1.le α.pos.le, by
-      rw [div_le_iff₀ α.pos]
+    let s : Icc (0 : ℝ) 1 := ⟨θ / α, div_nonneg hθ.1.le (TerminalAngle.pos α).le, by
+      rw [div_le_iff₀ (TerminalAngle.pos α)]
       simpa only [one_mul] using hθ.2.le⟩
     have heq : (α : ℝ) * (s : ℝ) = θ := by
       dsimp [s]
-      field_simp [α.pos.ne'] <;> ring
+      field_simp [(TerminalAngle.pos α).ne'] <;> ring
     have h := le_csSup hbounded (mem_image_of_mem _ (mem_univ s))
     rw [heq] at h
     exact (le_max_left _ _).trans h
   · apply csSup_le ⟨fullWallClip U x ((α : ℝ) * (zero : ℝ)), zero, mem_univ _, rfl⟩
     rintro y ⟨s, _, rfl⟩
-    apply fullWallClip_le_sweptNiche_of_mem_Icc U α.pos α.property.2 x
-    refine ⟨mul_nonneg α.pos.le s.property.1, ?_⟩
-    simpa only [mul_one] using mul_le_mul_of_nonneg_left s.property.2 α.pos.le
+    apply fullWallClip_le_sweptNiche_of_mem_Icc U (TerminalAngle.pos α) α.property.2 x
+    refine ⟨mul_nonneg (TerminalAngle.pos α).le s.property.1, ?_⟩
+    simpa only [mul_one] using mul_le_mul_of_nonneg_left s.property.2 (TerminalAngle.pos α).le
 
 theorem continuous_partialCapSweptNiche :
     Continuous (fun p : (CompactCap × TerminalAngle) × ℝ =>

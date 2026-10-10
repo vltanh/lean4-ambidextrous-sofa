@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.SourceOccupation
-import AmbidextrousSofa.Analysis.CornerConfinement
+module
+
+public import AmbidextrousSofa.Analysis.SourceOccupation
+public import AmbidextrousSofa.Analysis.CornerConfinement
+
+@[expose] public section
 
 /-!
 # Actual curvature vanishes at corners below the floor

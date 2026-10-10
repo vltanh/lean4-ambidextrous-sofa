@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.SelectedHorizontalMoment
-import AmbidextrousSofa.Analysis.NichePositiveMiddle
-import AmbidextrousSofa.Analysis.FullWidthGap
-import AmbidextrousSofa.Analysis.FacetPinning
+module
+
+public import AmbidextrousSofa.Analysis.SelectedHorizontalMoment
+public import AmbidextrousSofa.Analysis.NichePositiveMiddle
+public import AmbidextrousSofa.Analysis.FullWidthGap
+public import AmbidextrousSofa.Analysis.FacetPinning
+
+@[expose] public section
 
 /-!
 # Pinning the actual horizontal top facet

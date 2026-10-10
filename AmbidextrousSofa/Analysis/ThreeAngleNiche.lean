@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.ThreeAngleComparison
+module
+
+public import AmbidextrousSofa.Analysis.ThreeAngleComparison
+
+@[expose] public section
 
 /-!
 # Actual niche payments using only the three displayed corners

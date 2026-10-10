@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.SharpCapBound
-import AmbidextrousSofa.Analysis.SharpCapEquality
-import AmbidextrousSofa.Measure.ReferenceOrbit
-import AmbidextrousSofa.Geometry.MotionReduction
+module
+
+public import AmbidextrousSofa.Analysis.SharpCapBound
+public import AmbidextrousSofa.Analysis.SharpCapEquality
+public import AmbidextrousSofa.Measure.ReferenceOrbit
+public import AmbidextrousSofa.Geometry.MotionReduction
+
+@[expose] public section
 
 /-!
 # Optimality and equality in the original ambidextrous domain

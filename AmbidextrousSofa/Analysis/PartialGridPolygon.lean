@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialGridNiche
-import AmbidextrousSofa.Analysis.PersistentPenalty
+module
+
+public import AmbidextrousSofa.Analysis.PartialGridNiche
+public import AmbidextrousSofa.Analysis.PersistentPenalty
+
+@[expose] public section
 
 /-!
 # Actual partial-grid polygons and their terminal source
@@ -27,7 +31,7 @@ namespace PartialGrid
 open FinitePolygon
 
 def terminalQuarterAngle (α : TerminalAngle) : AngularGrid.QuarterAngle :=
-  ⟨α, α.pos.le, α.property.2⟩
+  ⟨α, (TerminalAngle.pos α).le, α.property.2⟩
 
 def outerGrid (α : TerminalAngle) (grid : Finset AngularGrid.QuarterAngle) :
     Finset AngularGrid.QuarterAngle := by
@@ -70,7 +74,7 @@ def terminalIndex (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2)
     (grid : Finset AngularGrid.QuarterAngle) : SourceIndex α grid := by
   classical
   exact Sum.inl ⟨terminalQuarterAngle α, Finset.mem_filter.mpr
-    ⟨terminal_mem_outerGrid α grid, α.pos, hαL⟩⟩
+    ⟨terminal_mem_outerGrid α grid, (TerminalAngle.pos α), hαL⟩⟩
 
 def pairList (α : TerminalAngle) (grid : Finset AngularGrid.QuarterAngle) :
     List (SourceIndex α grid × SourceIndex α grid) := by

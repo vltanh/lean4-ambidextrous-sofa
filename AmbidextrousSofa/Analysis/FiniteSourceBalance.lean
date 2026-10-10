@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.FiniteGraphGreen
-import AmbidextrousSofa.Analysis.EndpointPositivity
-import AmbidextrousSofa.Analysis.GridCounting
+module
+
+public import AmbidextrousSofa.Analysis.FiniteGraphGreen
+public import AmbidextrousSofa.Analysis.EndpointPositivity
+public import AmbidextrousSofa.Analysis.GridCounting
+
+@[expose] public section
 
 /-!
 # Quantitative balance of actual selected finite sources

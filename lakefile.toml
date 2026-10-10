@@ -4,13 +4,23 @@ keywords = ["math"]
 defaultTargets = ["AmbidextrousSofa"]
 
 [leanOptions]
-autoImplicit = false
 pp.unicode.fun = true
+autoImplicit = false
+maxSynthPendingDepth = 3
 
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
-rev = "c55e6e786f49471c72fbddbec5415808896aec1e"
+rev = "v4.35.0-rc3"
+
+# Baek's optimality theorem for Gerver's sofa, formalized in Lean (MovingSofaOptimality), which the
+# manuscript cites for the ordinary upper bound 22199/10000, and whose convex-body and surface-area
+# library some proofs use.
+[[require]]
+name = "MovingSofa"
+git = "https://github.com/vltanh/lean4-moving-sofa"
+rev = "1174c5c25c1c66b807e368446d6682e8d0276759"
 
 [[lean_lib]]
 name = "AmbidextrousSofa"
+globs = ["AmbidextrousSofa.+"]

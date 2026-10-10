@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.AdaptiveGlobalBoundary
+module
+
+public import AmbidextrousSofa.Analysis.AdaptiveGlobalBoundary
+
+@[expose] public section
 
 /-!
 # Horizontal translation of the adaptive functional

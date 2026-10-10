@@ -1,6 +1,10 @@
-import Mathlib.Analysis.Calculus.FDeriv.Measurable
-import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
-import Mathlib.MeasureTheory.Function.JacobianOneDim
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Measurable
+public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+public import Mathlib.MeasureTheory.Function.JacobianOneDim
+
+@[expose] public section
 
 /-!
 # Saturation along a monotone graph, including constant pieces

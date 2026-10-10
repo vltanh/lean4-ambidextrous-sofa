@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Measure.GraphMeasureTransfer
-import Mathlib.Analysis.Calculus.FDeriv.Measurable
-import Mathlib.MeasureTheory.Function.JacobianOneDim
+module
+
+public import AmbidextrousSofa.Measure.GraphMeasureTransfer
+public import Mathlib.Analysis.Calculus.FDeriv.Measurable
+public import Mathlib.MeasureTheory.Function.JacobianOneDim
+
+@[expose] public section
 
 /-!
 # Exact angular density from a saturated injective graph

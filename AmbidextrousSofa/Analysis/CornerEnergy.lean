@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PositivePartCalculus
-import AmbidextrousSofa.Analysis.ShadowCurvature
+module
+
+public import AmbidextrousSofa.Analysis.PositivePartCalculus
+public import AmbidextrousSofa.Analysis.ShadowCurvature
+
+@[expose] public section
 
 /-!
 # A clipped energy for one regular corner quarter
@@ -181,13 +185,13 @@ theorem IsDownwardCap.firstCornerVelocity_ge_neg_one
     {U : Set Plane} (hU : IsDownwardCap U) (t : ℝ) :
     -1 ≤ firstCornerVelocity U t := by
   rw [firstCornerVelocity_eq_gPlus]
-  linarith [(Imported.inj_arm_nonneg hU.imported_isConvexBody t).2.2.1]
+  linarith [(MovingSofaOptimality.inj_arm_nonneg hU.imported_isConvexBody t).2.2.1]
 
 theorem IsDownwardCap.neg_secondCornerVelocity_le_one
     {U : Set Plane} (hU : IsDownwardCap U) (t : ℝ) :
     -secondCornerVelocity U t ≤ 1 := by
   rw [secondCornerVelocity_eq_fPlus]
-  linarith [(Imported.inj_arm_nonneg hU.imported_isConvexBody t).1]
+  linarith [(MovingSofaOptimality.inj_arm_nonneg hU.imported_isConvexBody t).1]
 
 /-- Application to the literal curvature density of an actual full
 maximizer. The interval avoids both actual exceptional normals. All

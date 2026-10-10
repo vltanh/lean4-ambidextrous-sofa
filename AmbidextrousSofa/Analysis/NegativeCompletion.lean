@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TerminalSupportTails
+module
+
+public import AmbidextrousSofa.Analysis.TerminalSupportTails
+
+@[expose] public section
 
 /-!
 # Same-cap completion of the negative-tilt alternatives

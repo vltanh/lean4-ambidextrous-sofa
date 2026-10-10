@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.WideNichePieces
-import AmbidextrousSofa.Analysis.AsymmetricTent
+module
+
+public import AmbidextrousSofa.Analysis.WideNichePieces
+public import AmbidextrousSofa.Analysis.AsymmetricTent
+
+@[expose] public section
 
 /-!
 # Complete niche triangles with their positive-floor loss

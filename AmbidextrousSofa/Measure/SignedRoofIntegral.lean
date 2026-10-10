@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Measure.SignedRoof
+module
+
+public import AmbidextrousSofa.Measure.SignedRoof
+
+@[expose] public section
 
 /-!
 # The signed three-arc area formula

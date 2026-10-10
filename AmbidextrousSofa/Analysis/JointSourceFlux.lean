@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.JointSourceSpatial
-import AmbidextrousSofa.Analysis.SourceLocalization
+module
+
+public import AmbidextrousSofa.Analysis.JointSourceSpatial
+public import AmbidextrousSofa.Analysis.SourceLocalization
+
+@[expose] public section
 
 /-!
 # The two spatial fluxes of the actual common source limit
@@ -15,6 +19,7 @@ well, because the sine weight is strictly positive almost everywhere.
 noncomputable section
 
 open Set Filter MeasureTheory
+open scoped BoundedContinuousFunction
 open scoped Topology
 
 namespace AmbidextrousSofa

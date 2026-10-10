@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.NormalTrimming
-import AmbidextrousSofa.Measure.ContactVariation
+module
+
+public import AmbidextrousSofa.Analysis.NormalTrimming
+public import AmbidextrousSofa.Measure.ContactVariation
+
+@[expose] public section
 
 /-!
 # Strict terminal exposure is paid by the actual terminal facet
@@ -46,7 +50,7 @@ theorem IsDownwardCap.normalTrim_barrier_gain {U : Set Plane} (hU : IsDownwardCa
     (hbase : horizontalRight U * Real.cos α ≤ support U (unitNormal α) - ε * Real.sin α)
     (x : ℝ) :
     min ε (max (firstWall U α x - sweptNiche U α x) 0) ≤
-      partialBarrier U α x - partialBarrier (normalTrim U α ε) α x := by
+      partialBarrier U α x - partialBarrier (AmbidextrousSofa.normalTrim U α ε) α x := by
   have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi hα0
     (by linarith [Real.pi_pos])
   have hc : 0 ≤ Real.cos α := Real.cos_nonneg_of_mem_Icc
@@ -54,7 +58,7 @@ theorem IsDownwardCap.normalTrim_barrier_gain {U : Set Plane} (hU : IsDownwardCa
   have hV := hU.normalTrim hc hs.le hbase
   have hhistory := sweptNiche_mono (normalTrim_subset U α ε) hV.nonempty
     hU.isCompact hα0 hαL x
-  have hN : partialBarrier (normalTrim U α ε) α x ≤
+  have hN : partialBarrier (AmbidextrousSofa.normalTrim U α ε) α x ≤
       max (sweptNiche U α x) (firstWall U α x - ε) := by
     unfold partialBarrier
     rw [firstWall_normalTrim hU hc hs hε hbase]
@@ -79,7 +83,7 @@ theorem IsDownwardCap.tendsto_integral_terminal_contactRamp
     apply hU.capRoof_le_outerSupportingRoof hs
     rwa [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
   have hlim := tendsto_integral_contactRamp_quotient (volume.restrict I) hd hd0
-  have hset : {x | d x = 0} ∩ I = horizontalProjection (Imported.edge U α) := by
+  have hset : {x | d x = 0} ∩ I = horizontalProjection (MovingSofaOptimality.edge U α) := by
     rw [inter_comm]
     change {x ∈ I | outerSupportingRoof U α x - capRoof U x = 0} = _
     rw [show I = horizontalProjection U from

@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.HorizontalEndpointKernel
-import AmbidextrousSofa.Analysis.WallVisibility
-import AmbidextrousSofa.Analysis.TiltedLateExcessScalar
+module
+
+public import AmbidextrousSofa.Analysis.HorizontalEndpointKernel
+public import AmbidextrousSofa.Analysis.WallVisibility
+public import AmbidextrousSofa.Analysis.TiltedLateExcessScalar
+
+@[expose] public section
 
 /-!
 # Endpoint leakage after actual first-wing excess has stopped
@@ -25,7 +29,7 @@ theorem IsDownwardCap.firstWall_eq_density_kernel_at
       (volume.restrict S).withDensity (fun s => ENNReal.ofReal (ρ s)))
     (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2))
     (hsub : Ioo t (Real.pi / 2) ⊆ S)
-    (htop : Imported.vminus U (Real.pi / 2) = (b, 1)) (x : ℝ) :
+    (htop : MovingSofaOptimality.vminus U (Real.pi / 2) = (b, 1)) (x : ℝ) :
     firstWall U t x = (b - x) * Real.cos t / Real.sin t +
       (∫ s in t..(Real.pi / 2), Real.sin (s - t) * (ρ s - 1)) / Real.sin t := by
   have hkernel := hU.firstWall_eq_horizontal_density_kernel hρ hρ0 hρK heq ht hsub htop
@@ -74,10 +78,10 @@ theorem IsDownwardCap.firstWall_le_at_arccos_of_first_density
     have h := Real.cos_le_cos_of_nonneg_of_le_pi (ht0.le.trans hs.1.le)
       (Real.arccos_le_pi C) hs.2.le
     rwa [hcosA] at h
-  have hpoint := hU.fst_mem_Icc (Imported.vplus_mem_edge hU.imported_isConvexBody s).1
+  have hpoint := hU.fst_mem_Icc (MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody s).1
   rw [hright] at hpoint
   rw [firstTangency_eq_vplus_sub_unitNormal]
-  change (Imported.vplus U s).1 - Real.cos s ≤ C
+  change (MovingSofaOptimality.vplus U s).1 - Real.cos s ≤ C
   linarith only [hpoint.2, hcos]
 
 theorem sine_kernel_integral_nonpos_of_unit_tail
@@ -135,7 +139,7 @@ theorem IsDownwardCap.middle_niche_le_top_overhang_of_unit_tail
       (volume.restrict S).withDensity (fun s => ENNReal.ofReal (ρ s)))
     (hsub : Ioo (0 : ℝ) (Real.pi / 2) ⊆ S)
     (hright : horizontalRight U = 2 * C) (hC0 : 0 < C) (hC1 : C < 1)
-    (hCb : C ≤ b) (htop : Imported.vminus U (Real.pi / 2) = (b, 1))
+    (hCb : C ≤ b) (htop : MovingSofaOptimality.vminus U (Real.pi / 2) = (b, 1))
     (hunit : ∀ᵐ s ∂volume.restrict (Ioo (Real.arccos C) (Real.pi / 2)), ρ s ≤ 1) :
     sweptNiche U (Real.pi / 2) C ≤ (b - C) * C / Real.sqrt (1 - C ^ 2) := by
   have hA0 : 0 < Real.arccos C := Real.arccos_pos.mpr hC1
@@ -168,7 +172,7 @@ theorem IsDownwardCap.middle_niche_le_top_overhang_of_late_unit
       (volume.restrict S).withDensity (fun s => ENNReal.ofReal (ρ s)))
     (hsub : Ioo (0 : ℝ) (Real.pi / 2) ⊆ S)
     (hright : horizontalRight U = 2 * C) (hC0 : 0 < C) (hC1 : C ≤ 37 / 50)
-    (hCb : C ≤ b) (htop : Imported.vminus U (Real.pi / 2) = (b, 1))
+    (hCb : C ≤ b) (htop : MovingSofaOptimality.vminus U (Real.pi / 2) = (b, 1))
     (hunit : ∀ᵐ s ∂volume.restrict (Ioo (11 / 15 : ℝ) (Real.pi / 2)), ρ s ≤ 1) :
     sweptNiche U (Real.pi / 2) C ≤ (b - C) * C / Real.sqrt (1 - C ^ 2) :=
   hU.middle_niche_le_top_overhang_of_unit_tail hρ hρ0 hρK heq hsub hright hC0

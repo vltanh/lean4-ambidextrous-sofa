@@ -1,7 +1,12 @@
-import AmbidextrousSofa.Analysis.TerminalImpulseEnergy
-import AmbidextrousSofa.Analysis.PartialWidthBounds
-import AmbidextrousSofa.Analysis.HorizontalEndpointBounds
-import AmbidextrousSofa.Analysis.TiltedInitialEnergyBounds
+module
+
+public import AmbidextrousSofa.Analysis.TerminalImpulseEnergy
+public import AmbidextrousSofa.Analysis.TerminalTopProjection
+public import AmbidextrousSofa.Analysis.PartialWidthBounds
+public import AmbidextrousSofa.Analysis.HorizontalEndpointBounds
+public import AmbidextrousSofa.Analysis.TiltedInitialEnergyBounds
+
+@[expose] public section
 
 /-!
 # Actual endpoint parameters for the proper reflected arc

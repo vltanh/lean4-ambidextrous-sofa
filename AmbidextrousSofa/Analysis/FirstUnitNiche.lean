@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FirstUnitTangency
-import AmbidextrousSofa.Analysis.CompanionZero
+module
+
+public import AmbidextrousSofa.Analysis.FirstUnitTangency
+public import AmbidextrousSofa.Analysis.CompanionZero
+
+@[expose] public section
 
 /-!
 # Actual first-unit niche contact and first companion floor crossing
@@ -30,29 +34,32 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "B" => firstTangentPoint F.f F.fD
-local notation "D" => secondTangentPoint F.g F.gD
-local notation "p" => supportP F.fD F.g
+set_option quotPrecheck false in
+local notation "B" => firstTangentPoint (F).f (F).fD
+set_option quotPrecheck false in
+local notation "D" => secondTangentPoint (F).g (F).gD
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
 local notation "V" => leftCompanionCap U (horizontalLeft U + capWidth U / 4)
 
 theorem fullTiltedSupportQuarterPair_companion_wall_first_tangency_gap {t : ℝ}
     (hc : Real.cos t ≠ 0) :
     (secondWall V t (B t).1 - (B t).2) * Real.cos t = -p t := by
-  have hg : support V (companionNormal t) = F.g t := by
+  have hg : support V (companionNormal t) = (F).g t := by
     change support V (companionNormal t) = angleSupport V (t + Real.pi / 2)
     rw [angleSupport, companionNormal_eq_unitNormal]
   rw [sub_mul, secondWall, div_mul_cancel₀ _ hc, hg]
   dsimp only [firstTangentPoint, Reference.supportPoint, supportP]
-  have hcircle := congrArg (fun r : ℝ => F.fD t * r) (Real.sin_sq_add_cos_sq t)
+  have hcircle := congrArg (fun r : ℝ => (F).fD t * r) (Real.sin_sq_add_cos_sq t)
   nlinarith only [hcircle]
 
 theorem fullTiltedSupportQuarterPair_companion_wall_second_tangency {t : ℝ}
     (hc : Real.cos t ≠ 0) : secondWall V t (D t).1 = (D t).2 := by
-  have hg : support V (companionNormal t) = F.g t := by
+  have hg : support V (companionNormal t) = (F).g t := by
     change support V (companionNormal t) = angleSupport V (t + Real.pi / 2)
     rw [angleSupport, companionNormal_eq_unitNormal]
   rw [secondWall, div_eq_iff hc, hg, secondTangentPoint, companionSupportPoint_coordinates]
-  have hcircle := congrArg (fun r : ℝ => (F.g t - 1) * r) (Real.sin_sq_add_cos_sq t)
+  have hcircle := congrArg (fun r : ℝ => ((F).g t - 1) * r) (Real.sin_sq_add_cos_sq t)
   dsimp only [Prod.fst, Prod.snd]
   nlinarith only [hcircle]
 
@@ -114,14 +121,14 @@ theorem fullTiltedSupportQuarterPair_second_tangency_abscissa_le {C t : ℝ}
     (ht : t ∈ Icc 0 (Real.pi / 2)) : C + (D t).1 ≤ 1 := by
   have hpoint := (fullTiltedSupportQuarterPair_points_mem
     hU hm haffine hρ hρ0 hρK heq).2 t ht
-  have hx : (Reference.companionSupportPoint F.g F.gD t).1 ≤
+  have hx : (Reference.companionSupportPoint (F).g (F).gD t).1 ≤
       horizontalLeft U + capWidth U / 4 := hpoint.2.2
   have hj : horizontalLeft U + capWidth U / 4 = -C := by
     unfold capWidth
     rw [hl, hr]
     ring
   rw [hj] at hx
-  have hD : (D t).1 = (Reference.companionSupportPoint F.g F.gD t).1 + Real.sin t := by
+  have hD : (D t).1 = (Reference.companionSupportPoint (F).g (F).gD t).1 + Real.sin t := by
     rw [secondTangentPoint, companionSupportPoint_coordinates,
       companionSupportPoint_coordinates]
     dsimp only [Prod.fst]

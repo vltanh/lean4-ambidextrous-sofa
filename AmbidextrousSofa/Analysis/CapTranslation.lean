@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Measure.CapScore
-import AmbidextrousSofa.Measure.RigidInvariance
+module
+
+public import AmbidextrousSofa.Measure.CapScore
+public import AmbidextrousSofa.Measure.RigidInvariance
+
+@[expose] public section
 
 /-!
 # Horizontal translation of actual cap scores
@@ -29,7 +33,7 @@ theorem mem_horizontalTranslate_iff (U : Set Plane) (c : ℝ) (p : Plane) :
     apply Prod.ext <;> simp
 
 theorem IsDownwardCap.horizontalTranslate {U : Set Plane} (hU : IsDownwardCap U) (c : ℝ) :
-    IsDownwardCap (horizontalTranslate U c) := by
+    IsDownwardCap (AmbidextrousSofa.horizontalTranslate U c) := by
   refine ⟨hU.nonempty.image _, hU.isCompact.image (by fun_prop), ?_, ?_, ?_⟩
   · rintro p ⟨p, hp, rfl⟩ q ⟨q, hq, rfl⟩ a b ha hb hab
     refine ⟨a • p + b • q, hU.convex hp hq ha hb hab, ?_⟩
@@ -138,7 +142,7 @@ def centeredCap (U : Set Plane) : Set Plane :=
   horizontalTranslate U (-(horizontalLeft U + horizontalRight U) / 2)
 
 theorem IsDownwardCap.centeredCap {U : Set Plane} (hU : IsDownwardCap U) :
-    IsDownwardCap (centeredCap U) := hU.horizontalTranslate _
+    IsDownwardCap (AmbidextrousSofa.centeredCap U) := hU.horizontalTranslate _
 
 theorem horizontalLeft_centeredCap {U : Set Plane} (hU : IsDownwardCap U) :
     horizontalLeft (centeredCap U) = -capWidth U / 2 := by

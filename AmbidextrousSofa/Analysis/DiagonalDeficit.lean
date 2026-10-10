@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.DiagonalScalar
+module
+
+public import AmbidextrousSofa.Analysis.DiagonalScalar
+
+@[expose] public section
 
 /-!
 # Actual exterior deficit and short-width stability

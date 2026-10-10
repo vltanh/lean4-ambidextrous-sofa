@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.PolygonExposure
+module
+
+public import AmbidextrousSofa.Analysis.PolygonExposure
+
+@[expose] public section
 
 /-!
 # Actual endpoint movement from a positive vertical end face

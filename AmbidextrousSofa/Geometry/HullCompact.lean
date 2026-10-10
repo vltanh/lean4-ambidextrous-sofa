@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Geometry.CapGeometry
+module
+
+public import AmbidextrousSofa.Geometry.CapGeometry
+
+@[expose] public section
 
 /-!
 # Compactness of the actual planar convex hull

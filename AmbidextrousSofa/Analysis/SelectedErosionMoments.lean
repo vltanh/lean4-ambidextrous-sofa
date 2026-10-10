@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.SelectedPressureLimit
+module
+
+public import AmbidextrousSofa.Analysis.SelectedPressureLimit
+
+@[expose] public section
 
 /-!
 # Selected erosion moments and their vanishing errors

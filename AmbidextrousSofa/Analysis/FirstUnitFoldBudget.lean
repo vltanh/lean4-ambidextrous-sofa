@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.FirstUnitCrossings
+module
+
+public import AmbidextrousSofa.Analysis.FirstUnitCrossings
+
+@[expose] public section
 
 /-!
 # The companion fold budget after the first bad entry

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.NonpositiveCornerCurvature
+module
+
+public import AmbidextrousSofa.Analysis.NonpositiveCornerCurvature
+
+@[expose] public section
 
 /-!
 # From actual selected atoms to local density inequalities
@@ -21,7 +25,7 @@ theorem sigmaAt_eq_zero_of_density {U : Set Plane} {S : Set ℝ} {ρ : ℝ → �
     (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t)
     (heq : (upperCurvature U).restrict S =
       (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
-    {t : ℝ} (ht : t ∈ S) : Imported.sigmaAt U t = 0 := by
+    {t : ℝ} (ht : t ∈ S) : MovingSofaOptimality.sigmaAt U t = 0 := by
   change (upperCurvature U).real {t} = 0
   rw [measureReal_eq_integral_of_restrict_withDensity hρ hρ0 heq (measurableSet_singleton t)
     (singleton_subset_iff.mpr ht)]
@@ -74,6 +78,7 @@ theorem ae_density_le_of_conditional_local_bound
 
 namespace AngularGrid
 
+open Classical in
 theorem IsSelectedPolygon.curvature_Ioc_le_of_atom_bound
     {target U : Set Plane} {boxLeft boxRight coefficient C a b : ℝ} {level : ℕ}
     (hU : IsSelectedPolygon target boxLeft boxRight level coefficient U)
@@ -135,7 +140,7 @@ theorem curvature_Ioc_le_of_eventual_atom_bound
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft target) (horizontalRight target),
       capRoof target x = m * x + c)
     (hC : 0 ≤ C) (hab : a ≤ b) (hregular : Icc a b ⊆ regularCurvatureDomain m)
-    (ha : Imported.sigmaAt target a = 0) (hb : Imported.sigmaAt target b = 0)
+    (ha : MovingSofaOptimality.sigmaAt target a = 0) (hb : MovingSofaOptimality.sigmaAt target b = 0)
     (hatom : ∀ᶠ n in atTop, ∀ j : SourceIndex (dyadic (level n)),
       fullAngle (dyadic (level n)) j ∈ Icc a b →
         (upperCurvature (U n) {fullAngle (dyadic (level n)) j}).toReal ≤
@@ -143,7 +148,7 @@ theorem curvature_Ioc_le_of_eventual_atom_bound
             selectionDefect target (U n) (level n) (coefficient n) j) :
     (upperCurvature target).real (Ioc a b) ≤ C * (b - a) := by
   have hcap : ∀ n, IsDownwardCap (U n) := fun n => (hU n).isCap
-  have hcb : ∀ n, Imported.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
+  have hcb : ∀ n, MovingSofaOptimality.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
   have hlim := hHausdorff.imported_hausdorffTendsto hcap hTarget
   have hupper : Icc a b ⊆ Ioo 0 Real.pi := hregular.trans (regularCurvatureDomain_subset m)
   have htop : Real.pi / 2 ∉ Icc a b := by
@@ -153,8 +158,8 @@ theorem curvature_Ioc_le_of_eventual_atom_bound
     fun t ht => (mem_regularCurvatureDomain_iff.mp (hregular ht)).2.2.2
   have hmass : Tendsto (fun n => (upperCurvature (U n)).real (Ioc a b)) atTop
       (𝓝 ((upperCurvature target).real (Ioc a b))) := by
-    have hleft := Imported.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim ha
-    have hright := Imported.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim hb
+    have hleft := MovingSofaOptimality.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim ha
+    have hright := MovingSofaOptimality.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim hb
     have hFormula (n : ℕ) := (hcap n).upperCurvature_real_Ioc hab
     simpa only [hFormula, hTarget.upperCurvature_real_Ioc hab] using hright.sub hleft
   have hmiddle := middleOuterMass_sum_tendsto_of_compact hHausdorff hcap hTarget

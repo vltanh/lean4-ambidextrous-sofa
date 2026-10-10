@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Measure.GraphIntegral
-import AmbidextrousSofa.Geometry.Reflection
+module
+
+public import AmbidextrousSofa.Measure.GraphIntegral
+public import AmbidextrousSofa.Geometry.Reflection
+
+@[expose] public section
 
 /-!
 # The area of a symmetric hull with two actual niches removed

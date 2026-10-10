@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TiltedHarmonicMoments
+module
+
+public import AmbidextrousSofa.Analysis.TiltedHarmonicMoments
+
+@[expose] public section
 
 /-!
 # Paying the complete companion-fold loss

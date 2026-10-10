@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.CornerCrossing
+module
+
+public import AmbidextrousSofa.Analysis.CornerCrossing
+
+@[expose] public section
 
 /-!
 # Unit companion curvature forces unit curvature on the first quarter

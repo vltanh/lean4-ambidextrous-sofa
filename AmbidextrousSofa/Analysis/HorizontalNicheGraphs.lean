@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.HorizontalNicheConfinement
+module
+
+public import AmbidextrousSofa.Analysis.HorizontalNicheConfinement
+
+@[expose] public section
 
 /-!
 # The three actual niche graphs under unit curvature

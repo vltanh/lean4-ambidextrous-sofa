@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FullCapRigidity
-import AmbidextrousSofa.Analysis.ProperTerminalExclusion
+module
+
+public import AmbidextrousSofa.Analysis.FullCapRigidity
+public import AmbidextrousSofa.Analysis.ProperTerminalExclusion
+
+@[expose] public section
 
 /-!
 # The sharp cap bound on the whole terminal-angle interval

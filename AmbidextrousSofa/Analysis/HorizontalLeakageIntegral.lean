@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.HorizontalEndpointKernel
-import AmbidextrousSofa.Analysis.HorizontalLeakageScalar
+module
+
+public import AmbidextrousSofa.Analysis.HorizontalEndpointKernel
+public import AmbidextrousSofa.Analysis.HorizontalLeakageScalar
+
+@[expose] public section
 
 /-!
 # Exact integration of the horizontal curvature-excess envelope

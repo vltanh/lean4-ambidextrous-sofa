@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.FullTriangleScalar
+module
+
+public import AmbidextrousSofa.Analysis.FullTriangleScalar
+
+@[expose] public section
 
 /-!
 # The sharper triangle bound in the remaining tilted strip

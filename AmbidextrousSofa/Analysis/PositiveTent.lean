@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Reference.Support
-import AmbidextrousSofa.Geometry.BarrierAnalysis
+module
+
+public import AmbidextrousSofa.Reference.Support
+public import AmbidextrousSofa.Geometry.BarrierAnalysis
+
+@[expose] public section
 
 /-!
 # Exact integrals of positive tents and ramps

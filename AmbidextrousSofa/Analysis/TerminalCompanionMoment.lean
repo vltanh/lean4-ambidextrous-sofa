@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.TerminalCubicPayment
-import AmbidextrousSofa.Analysis.CircleAverage
+module
+
+public import AmbidextrousSofa.Analysis.TerminalCubicPayment
+public import AmbidextrousSofa.Analysis.CircleAverage
+
+@[expose] public section
 
 /-!
 # The weighted companion moment

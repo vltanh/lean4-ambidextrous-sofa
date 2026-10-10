@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.FirstUnitCrossings
+module
+
+public import AmbidextrousSofa.Analysis.FirstUnitCrossings
+
+@[expose] public section
 
 /-!
 # Exact source sectors from one common occupation law

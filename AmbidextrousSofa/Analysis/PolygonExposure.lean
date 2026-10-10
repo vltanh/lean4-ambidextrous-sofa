@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.PolygonEnvelope
+module
+
+public import AmbidextrousSofa.Analysis.PolygonEnvelope
+
+@[expose] public section
 
 /-!
 # Exposure inequality at an actual selected polygonal maximum

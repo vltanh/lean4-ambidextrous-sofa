@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Reference.Hull
+module
+
+public import AmbidextrousSofa.Reference.Hull
+
+@[expose] public section
 
 /-!
 # Realization of the displayed reference support

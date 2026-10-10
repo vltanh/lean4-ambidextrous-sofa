@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.FirstSourceFlux
-import AmbidextrousSofa.Analysis.TiltedInitialCircle
-import AmbidextrousSofa.Analysis.VisibleFluxDensity
+module
+
+public import AmbidextrousSofa.Analysis.FirstSourceFlux
+public import AmbidextrousSofa.Analysis.TiltedInitialCircle
+public import AmbidextrousSofa.Analysis.VisibleFluxDensity
+
+@[expose] public section
 
 /-!
 # Actual first-source density from visible graph pieces
@@ -96,10 +100,14 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "B" => firstTangentPoint F.f F.fD
-local notation "Z" => innerCornerPoint F.f F.g
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "B" => firstTangentPoint (F).f (F).fD
+set_option quotPrecheck false in
+local notation "Z" => innerCornerPoint (F).f (F).g
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 
 theorem fullTiltedSupportQuarterPair_ae_first_density_ge_core
     {a b : ℝ} (hheight : capHeight U = 1)

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.CapMaximum
+module
+
+public import AmbidextrousSofa.Analysis.CapMaximum
+
+@[expose] public section
 
 /-!
 # Uniform approximation of the actual niche by finite angular grids

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.PartialGridPolygon
+module
+
+public import AmbidextrousSofa.Analysis.PartialGridPolygon
+
+@[expose] public section
 
 /-!
 # Uniform finite recovery of the proper-angle spatial score
@@ -45,7 +49,7 @@ theorem score_sub_capScore_eq {U : Set Plane} (hU : IsDownwardCap U)
         partialBarrier U α x - barrier U α grid x := by
   have hN : IntegrableOn (partialBarrier U α)
       (middleHalfInterval (horizontalLeft U) (horizontalRight U)) :=
-    integrableOn_partialBarrier_Icc hU.isCompact α.pos α.property.2 _ _
+    integrableOn_partialBarrier_Icc hU.isCompact (TerminalAngle.pos α) α.property.2 _ _
   have hG : IntegrableOn (barrier U α grid)
       (middleHalfInterval (horizontalLeft U) (horizontalRight U)) :=
     ((continuous_barrier grid).comp (continuous_const.prodMk continuous_id)).integrableOn_Icc
@@ -69,7 +73,7 @@ theorem score_sub_capScore_le {U : Set Plane} (hU : IsDownwardCap U)
     score U α hαL grid - capScore U α ≤ capWidth U / 2 * ε := by
   have hN : IntegrableOn (partialBarrier U α)
       (middleHalfInterval (horizontalLeft U) (horizontalRight U)) :=
-    integrableOn_partialBarrier_Icc hU.isCompact α.pos α.property.2 _ _
+    integrableOn_partialBarrier_Icc hU.isCompact (TerminalAngle.pos α) α.property.2 _ _
   have hG : IntegrableOn (barrier U α grid)
       (middleHalfInterval (horizontalLeft U) (horizontalRight U)) :=
     ((continuous_barrier grid).comp (continuous_const.prodMk continuous_id)).integrableOn_Icc

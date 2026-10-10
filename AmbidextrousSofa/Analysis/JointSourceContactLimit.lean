@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.JointSourceFlux
+module
+
+public import AmbidextrousSofa.Analysis.JointSourceFlux
+
+@[expose] public section
 
 /-!
 # Passing literal source contact equations to the joint limit

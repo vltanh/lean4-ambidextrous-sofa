@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PositiveTent
-import AmbidextrousSofa.Analysis.ExactEstimates
+module
+
+public import AmbidextrousSofa.Analysis.PositiveTent
+public import AmbidextrousSofa.Analysis.ExactEstimates
+
+@[expose] public section
 
 /-!
 # Exact scalar bounds for the low-middle-height exclusion

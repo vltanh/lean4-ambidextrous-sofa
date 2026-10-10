@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.ThreeAngleDeficit
+module
+
+public import AmbidextrousSofa.Analysis.ThreeAngleDeficit
+
+@[expose] public section
 
 /-!
 # Wide-width exclusion for the literal three-angle objective

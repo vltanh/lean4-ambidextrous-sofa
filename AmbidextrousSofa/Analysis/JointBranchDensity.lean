@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.JointSourceBranches
+module
+
+public import AmbidextrousSofa.Analysis.JointSourceBranches
+
+@[expose] public section
 
 /-!
 # Angular densities of the four common-source branches

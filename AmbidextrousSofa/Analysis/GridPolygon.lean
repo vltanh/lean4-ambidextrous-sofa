@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FiniteScore
-import AmbidextrousSofa.Analysis.DyadicGrid
+module
+
+public import AmbidextrousSofa.Analysis.FiniteScore
+public import AmbidextrousSofa.Analysis.DyadicGrid
+
+@[expose] public section
 
 /-!
 # Actual polygon source indices for a quarter-angle grid

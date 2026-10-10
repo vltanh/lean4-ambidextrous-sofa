@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.ProperTailRegime
+module
+
+public import AmbidextrousSofa.Analysis.ProperTailRegime
+
+@[expose] public section
 
 /-!
 # Actual terminal facet coordinates and tail geometry
@@ -21,10 +25,10 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-def terminalTailPoint (U : Set Plane) (α : ℝ) : Plane := Imported.vplus U α
+def terminalTailPoint (U : Set Plane) (α : ℝ) : Plane := MovingSofaOptimality.vplus U α
 
 def terminalFaceWidth (U : Set Plane) (α : ℝ) : ℝ :=
-  (Imported.vminus U α).1 - (Imported.vplus U α).1
+  (MovingSofaOptimality.vminus U α).1 - (MovingSofaOptimality.vplus U α).1
 
 def terminalTailInset (U : Set Plane) (α : ℝ) : ℝ :=
   (1 - (terminalTailPoint U α).2 * Real.sin α) / Real.cos α
@@ -36,28 +40,28 @@ def terminalTailZero (U : Set Plane) (α : ℝ) : ℝ :=
   (terminalTailPoint U α).1 - terminalTailInset U α
 
 theorem top_vminus_snd_eq_capHeight (U : Set Plane) :
-    (Imported.vminus U (Real.pi / 2)).2 = capHeight U := by
-  have h : coordDot (Imported.vminus U (Real.pi / 2)) (unitNormal (Real.pi / 2)) =
-      angleSupport U (Real.pi / 2) := Imported.dot_vminus_uvec U (Real.pi / 2)
+    (MovingSofaOptimality.vminus U (Real.pi / 2)).2 = capHeight U := by
+  have h : coordDot (MovingSofaOptimality.vminus U (Real.pi / 2)) (unitNormal (Real.pi / 2)) =
+      angleSupport U (Real.pi / 2) := MovingSofaOptimality.dot_vminus_uvec U (Real.pi / 2)
   simpa only [coordDot, unitNormal, angleSupport, capHeight,
     Real.cos_pi_div_two, Real.sin_pi_div_two, mul_zero, mul_one, zero_add] using h
 
 theorem IsDownwardCap.top_vminus_fst_ge_of_top {U : Set Plane}
     (hU : IsDownwardCap U) {x : ℝ} (hx : (x, capHeight U) ∈ U) :
-    x ≤ (Imported.vminus U (Real.pi / 2)).1 := by
-  have htop : (x, capHeight U) ∈ Imported.edge U (Real.pi / 2) := by
+    x ≤ (MovingSofaOptimality.vminus U (Real.pi / 2)).1 := by
+  have htop : (x, capHeight U) ∈ MovingSofaOptimality.edge U (Real.pi / 2) := by
     refine ⟨hx, ?_⟩
     change coordDot (x, capHeight U) (unitNormal (Real.pi / 2)) = angleSupport U (Real.pi / 2)
     simp only [coordDot, unitNormal, angleSupport, capHeight,
       Real.cos_pi_div_two, Real.sin_pi_div_two, mul_zero, mul_one, zero_add]
-  have h := Imported.dot_vminus_le_dot hU.isCompact htop
-  simp only [Imported.dot, Imported.vvec, Real.sin_pi_div_two, Real.cos_pi_div_two,
+  have h := MovingSofaOptimality.dot_vminus_le_dot hU.isCompact htop
+  simp only [MovingSofaOptimality.dot, MovingSofaOptimality.vvec, Real.sin_pi_div_two, Real.cos_pi_div_two,
     mul_neg, mul_one, mul_zero, add_zero] at h
   linarith
 
 theorem IsDownwardCap.terminalTailPoint_mem {U : Set Plane}
     (hU : IsDownwardCap U) (α : ℝ) : terminalTailPoint U α ∈ U :=
-  (Imported.vplus_mem_edge hU.imported_isConvexBody α).1
+  (MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody α).1
 
 theorem IsDownwardCap.terminalFaceWidth_nonneg {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hs : 0 ≤ Real.sin α) : 0 ≤ terminalFaceWidth U α :=
@@ -68,27 +72,27 @@ No vanishing of this atom has been imposed. -/
 theorem IsDownwardCap.terminalFaceWidth_eq_curvature_atom {U : Set Plane}
     (hU : IsDownwardCap U) (α : ℝ) :
     terminalFaceWidth U α = (upperCurvature U {α}).toReal * Real.sin α := by
-  have h := congrArg Prod.fst (Imported.proposition2_1_2 hU.imported_isConvexBody α).2
-  change (Imported.vplus U α).1 = (Imported.vminus U α).1 +
+  have h := congrArg Prod.fst (MovingSofaOptimality.proposition2_1_2 hU.imported_isConvexBody α).2
+  change (MovingSofaOptimality.vplus U α).1 = (MovingSofaOptimality.vminus U α).1 +
     (upperCurvature U {α}).toReal * (-Real.sin α) at h
   unfold terminalFaceWidth
   nlinarith
 
 theorem IsDownwardCap.terminalFaceWidth_eq_projection_measure {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hs : 0 ≤ Real.sin α) :
-    terminalFaceWidth U α = volume.real (horizontalProjection (Imported.edge U α)) := by
+    terminalFaceWidth U α = volume.real (horizontalProjection (MovingSofaOptimality.edge U α)) := by
   rw [hU.horizontalProjection_edge hs, Real.volume_real_Icc_of_le (hU.face_fst_order hs)]
   rfl
 
 theorem IsDownwardCap.terminal_vminus_eq {U : Set Plane} (hU : IsDownwardCap U)
     {α : ℝ} (hs : Real.sin α ≠ 0) :
-    Imported.vminus U α =
+    MovingSofaOptimality.vminus U α =
       ((terminalTailPoint U α).1 + terminalFaceWidth U α,
         (terminalTailPoint U α).2 - terminalFaceWidth U α * Real.cos α / Real.sin α) := by
-  have hline : (Imported.vminus U α).1 * Real.cos α +
-      (Imported.vminus U α).2 * Real.sin α =
-      (Imported.vplus U α).1 * Real.cos α + (Imported.vplus U α).2 * Real.sin α :=
-    (Imported.dot_vminus_uvec U α).trans (Imported.dot_vplus_uvec U α).symm
+  have hline : (MovingSofaOptimality.vminus U α).1 * Real.cos α +
+      (MovingSofaOptimality.vminus U α).2 * Real.sin α =
+      (MovingSofaOptimality.vplus U α).1 * Real.cos α + (MovingSofaOptimality.vplus U α).2 * Real.sin α :=
+    (MovingSofaOptimality.dot_vminus_uvec U α).trans (MovingSofaOptimality.dot_vplus_uvec U α).symm
   apply Prod.ext
   · dsimp [terminalTailPoint, terminalFaceWidth]
     ring
@@ -114,13 +118,13 @@ theorem IsJointCapMaximizer.terminalTailPoint_bounds_of_tail_regime
     have hv := (hU.support_vertices_first_unused_gap haffine le_rfl hmL.le hαm
       (show affineNormalAngle m ∉ Ioo α (affineNormalAngle m) by simp)).1.trans
       (hU.middle_support_vertices hm.ne haffine).2
-    change horizontalRight U - capWidth U / 4 ≤ (Imported.vplus U α).1 ∧
-      Real.sin α < (Imported.vplus U α).2 ∧ (Imported.vplus U α).2 ≤ 1
+    change horizontalRight U - capWidth U / 4 ≤ (MovingSofaOptimality.vplus U α).1 ∧
+      Real.sin α < (MovingSofaOptimality.vplus U α).2 ∧ (MovingSofaOptimality.vplus U α).2 ≤ 1
     rw [hv]
     exact ⟨le_rfl, hH, capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _⟩
   · have hm0 : 0 ≤ m := le_of_not_gt hm
     have hv := hU.first_terminal_vplus_of_middle_nonneg hαL hm0 haffine
-    have hpy : (Imported.vminus U (Real.pi / 2)).2 = 1 :=
+    have hpy : (MovingSofaOptimality.vminus U (Real.pi / 2)).2 = 1 :=
       (top_vminus_snd_eq_capHeight U).trans hheight
     have hroof := hU.middle_right_eq_one_of_affine_nonneg hheight hm0 haffine
     obtain ⟨_, hb, _⟩ := hU.isCap.middleChord_endpoints
@@ -133,8 +137,8 @@ theorem IsJointCapMaximizer.terminalTailPoint_bounds_of_tail_regime
       ⟨by linarith [hU.angle_pos, Real.pi_pos], hαL⟩
     have hs1 : Real.sin α < 1 := by
       nlinarith [Real.sin_sq_add_cos_sq α, Real.sin_le_one α, sq_pos_of_pos hc]
-    change horizontalRight U - capWidth U / 4 ≤ (Imported.vplus U α).1 ∧
-      Real.sin α < (Imported.vplus U α).2 ∧ (Imported.vplus U α).2 ≤ 1
+    change horizontalRight U - capWidth U / 4 ≤ (MovingSofaOptimality.vplus U α).1 ∧
+      Real.sin α < (MovingSofaOptimality.vplus U α).2 ∧ (MovingSofaOptimality.vplus U α).2 ≤ 1
     rw [hv, hpy]
     exact ⟨hx, hs1, le_rfl⟩
 
@@ -194,7 +198,7 @@ theorem firstWall_eq_terminalTail (U : Set Plane) {α : ℝ}
     (hs : Real.sin α ≠ 0) (hc : Real.cos α ≠ 0) (x : ℝ) :
     firstWall U α x = (Real.cos α / Real.sin α) * (terminalTailZero U α - x) := by
   have hsupport : angleSupport U α = (terminalTailPoint U α).1 * Real.cos α +
-      (terminalTailPoint U α).2 * Real.sin α := (Imported.dot_vplus_uvec U α).symm
+      (terminalTailPoint U α).2 * Real.sin α := (MovingSofaOptimality.dot_vplus_uvec U α).symm
   change (angleSupport U α - 1 - x * Real.cos α) / Real.sin α = _
   rw [hsupport]
   unfold terminalTailZero terminalTailInset

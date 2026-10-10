@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.GridNiche
+module
+
+public import AmbidextrousSofa.Analysis.GridNiche
+
+@[expose] public section
 
 /-!
 # Concrete nested equally spaced quarter-angle grids

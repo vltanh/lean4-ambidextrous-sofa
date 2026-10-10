@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.PartialGridScore
-import AmbidextrousSofa.Analysis.SelectedSequence
-import AmbidextrousSofa.Analysis.JointCapMaximum
+module
+
+public import AmbidextrousSofa.Analysis.PartialGridScore
+public import AmbidextrousSofa.Analysis.SelectedSequence
+public import AmbidextrousSofa.Analysis.JointCapMaximum
+
+@[expose] public section
 
 /-!
 # Actual selected proper-angle polygon sequences

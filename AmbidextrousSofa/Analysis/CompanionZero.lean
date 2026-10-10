@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.LeftCompanionCap
+module
+
+public import AmbidextrousSofa.Analysis.LeftCompanionCap
+
+@[expose] public section
 
 /-!
 # The literal zero of the low-wing companion envelope

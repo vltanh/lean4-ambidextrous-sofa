@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.SourceVelocity
+module
+
+public import AmbidextrousSofa.Analysis.SourceVelocity
+
+@[expose] public section
 
 /-!
 # Local sharp curvature bounds from the actual sampled sources
@@ -62,7 +66,7 @@ theorem eventually_sampledCurvatureDensity_lt
     (hB : IsCompact B) (hbox : ∀ n, U n ⊆ B)
     {level : ℕ → ℕ} (hlevel : Tendsto level atTop atTop)
     {t ε : ℝ} (htop : t ≠ Real.pi / 2)
-    (ht : Imported.sigmaAt K (companionSourceAngle t) = 0) (hε : 0 < ε) :
+    (ht : MovingSofaOptimality.sigmaAt K (companionSourceAngle t) = 0) (hε : 0 < ε) :
     ∃ δ > 0, ∀ᶠ n in atTop, ∀ j : SourceIndex (dyadic (level n)),
       |fullAngle (dyadic (level n)) j - t| < δ →
         finiteCurvatureDensity (cornerSecant (U n) (level n) j) (mesh (level n)) /
@@ -75,6 +79,7 @@ theorem eventually_sampledCurvatureDensity_lt
   exact sampledCurvatureDensity_tendsto (h.comp hns) (fun n => hU (ns n)) hK hB
     (fun n => hbox (ns n)) (hlevel.comp hns) j hangle htop ht
 
+open Classical in
 theorem IsSelectedPolygon.curvature_Ioc_le_of_sampled_density
     {target U : Set Plane} {boxLeft boxRight coefficient C a b : ℝ} {level : ℕ}
     (hU : IsSelectedPolygon target boxLeft boxRight level coefficient U)
@@ -143,19 +148,19 @@ theorem curvature_Ioc_le_of_eventual_sampled_density
     (hC : 0 ≤ C) (hab : a ≤ b) (hupper : Icc a b ⊆ Ioo 0 Real.pi)
     (htop : Real.pi / 2 ∉ Icc a b)
     (hperp : ∀ t ∈ Icc a b, Real.cos t + m * Real.sin t ≠ 0)
-    (ha : Imported.sigmaAt target a = 0) (hb : Imported.sigmaAt target b = 0)
+    (ha : MovingSofaOptimality.sigmaAt target a = 0) (hb : MovingSofaOptimality.sigmaAt target b = 0)
     (hdensity : ∀ᶠ n in atTop, ∀ j : SourceIndex (dyadic (level n)),
       fullAngle (dyadic (level n)) j ∈ Icc a b →
         finiteCurvatureDensity (cornerSecant (U n) (level n) j) (mesh (level n)) ≤
           C * mesh (level n)) :
     (upperCurvature target).real (Ioc a b) ≤ C * (b - a) := by
   have hcap : ∀ n, IsDownwardCap (U n) := fun n => (hU n).isCap
-  have hcb : ∀ n, Imported.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
+  have hcb : ∀ n, MovingSofaOptimality.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
   have hlim := hHausdorff.imported_hausdorffTendsto hcap hTarget
   have hmass : Tendsto (fun n => (upperCurvature (U n)).real (Ioc a b)) atTop
       (𝓝 ((upperCurvature target).real (Ioc a b))) := by
-    have hleft := Imported.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim ha
-    have hright := Imported.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim hb
+    have hleft := MovingSofaOptimality.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim ha
+    have hright := MovingSofaOptimality.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim hb
     have hFormula (n : ℕ) := (hcap n).upperCurvature_real_Ioc hab
     simpa only [hFormula, hTarget.upperCurvature_real_Ioc hab] using hright.sub hleft
   have hmiddle := middleOuterMass_sum_tendsto_of_compact hHausdorff hcap hTarget
@@ -189,7 +194,7 @@ theorem curvature_local_source_bound
       capRoof target x = m * x + c)
     (hA : 0 ≤ A) (hB : B ≤ Real.pi) (htop : Real.pi / 2 ∉ Ioo A B)
     (hperp : ∀ s ∈ Ioo A B, Real.cos s + m * Real.sin s ≠ 0)
-    (ht : t ∈ Ioo A B) (hcomp : Imported.sigmaAt target (companionSourceAngle t) = 0)
+    (ht : t ∈ Ioo A B) (hcomp : MovingSofaOptimality.sigmaAt target (companionSourceAngle t) = 0)
     (hε : 0 < ε) :
     ∃ δ > 0, Ioo (t - δ) (t + δ) ⊆ Ioo A B ∧
       ∀ a b : ℝ, t - δ < a → a ≤ b → b < t + δ →
@@ -211,7 +216,7 @@ theorem curvature_local_source_bound
   intro a b ha hab hb
   have hinterval : Icc a b ⊆ Ioo A B := fun s hs =>
     hsub ⟨ha.trans_le hs.1, hs.2.trans_lt hb⟩
-  have hfree (s : ℝ) (hs : s ∈ Ioo A B) : Imported.sigmaAt target s = 0 := by
+  have hfree (s : ℝ) (hs : s ∈ Ioo A B) : MovingSofaOptimality.sigmaAt target s = 0 := by
     have hz := curvature_singleton_eq_zero_on_wing hTarget hU hHausdorff hlevel hc hrate
       hR hbox hwidth haffine hA hB htop hperp hs
     change (upperCurvature target {s}).toReal = 0

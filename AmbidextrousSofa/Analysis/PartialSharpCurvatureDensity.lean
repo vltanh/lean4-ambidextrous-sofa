@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialSharpSourceDensity
-import AmbidextrousSofa.Analysis.LeftCompanionDensity
+module
+
+public import AmbidextrousSofa.Analysis.PartialSharpSourceDensity
+public import AmbidextrousSofa.Analysis.LeftCompanionDensity
+
+@[expose] public section
 
 /-!
 # Actual sharp curvature densities for proper maxima

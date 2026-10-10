@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.ThreeAngleShortWidth
-import AmbidextrousSofa.Analysis.ThreeAngleWideWidth
-import AmbidextrousSofa.Analysis.ThreeAngleTriangleWidth
+module
+
+public import AmbidextrousSofa.Analysis.ThreeAngleShortWidth
+public import AmbidextrousSofa.Analysis.ThreeAngleWideWidth
+public import AmbidextrousSofa.Analysis.ThreeAngleTriangleWidth
+
+@[expose] public section
 
 /-!
 # Width and tilt from the actual finite comparison

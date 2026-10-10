@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.SelectedPressureLimit
-import AmbidextrousSofa.Analysis.PartialEndpointMoments
+module
+
+public import AmbidextrousSofa.Analysis.SelectedPressureLimit
+public import AmbidextrousSofa.Analysis.PartialEndpointMoments
+
+@[expose] public section
 
 /-!
 # Proper endpoint pressure limits

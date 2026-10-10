@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.TiltedInitialCircle
-import AmbidextrousSofa.Analysis.TiltedEndpointLeakage
-import AmbidextrousSofa.Analysis.HorizontalNicheGraphs
+module
+
+public import AmbidextrousSofa.Analysis.TiltedInitialCircle
+public import AmbidextrousSofa.Analysis.TiltedEndpointLeakage
+public import AmbidextrousSofa.Analysis.HorizontalNicheGraphs
+
+@[expose] public section
 
 /-!
 # The actual first-unit tangency and its middle crossing
@@ -111,20 +115,24 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "B" => firstTangentPoint F.f F.fD
-local notation "D" => secondTangentPoint F.g F.gD
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "B" => firstTangentPoint (F).f (F).fD
+set_option quotPrecheck false in
+local notation "D" => secondTangentPoint (F).g (F).gD
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 
 theorem fullTiltedSupportQuarterPair_tangent_traces {C h : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hmpos : 0 < m) (hheight : capHeight U = 1)
     (hlow : capRoof U (-C) = 1 - h) :
     B 0 = (2 * C - 1, capRoof U (horizontalRight U)) ∧
-      B (Real.pi / 2) = ((Imported.vminus U (Real.pi / 2)).1, 0) ∧
+      B (Real.pi / 2) = ((MovingSofaOptimality.vminus U (Real.pi / 2)).1, 0) ∧
       D 0 = (-C, -h) ∧
       D (Real.pi / 2) = (1 - 2 * C, capRoof U (horizontalLeft U)) ∧
-      p (Real.pi / 2) = 1 - 2 * C - (Imported.vminus U (Real.pi / 2)).1 ∧
+      p (Real.pi / 2) = 1 - 2 * C - (MovingSofaOptimality.vminus U (Real.pi / 2)).1 ∧
       q (Real.pi / 2) = -capRoof U (horizontalLeft U) := by
   obtain ⟨hf0, hg0, hfL, hgL, hfD0, hgD0, hfDL, hgDL⟩ :=
     fullTiltedSupportQuarterPair_traces hU hm haffine hρ hρ0 hρK heq hmpos
@@ -188,7 +196,7 @@ theorem fullTiltedSupportQuarterPair_first_momentum_neg_after_middle {C h t : �
     (hlow : capRoof U (-C) = 1 - h)
     (ht : t ∈ Icc 0 (Real.pi / 2)) (hB : C ≤ (B t).1) :
     Real.cos t ≤ C ∧ p t < 0 := by
-  let P := Reference.supportPoint F.f F.fD t
+  let P := Reference.supportPoint (F).f (F).fD t
   have hP : P ∈ U :=
     (fullTiltedSupportQuarterPair_points_mem hU hm haffine hρ hρ0 hρK heq).1 t ht
   have hPx := (hU.isCap.fst_mem_Icc hP).2
@@ -202,9 +210,9 @@ theorem fullTiltedSupportQuarterPair_first_momentum_neg_after_middle {C h t : �
     (by linarith only [ht.2, Real.pi_pos])
   have hc : 0 ≤ Real.cos t := Real.cos_nonneg_of_neg_pi_div_two_le_of_le
     (by linarith only [ht.1, Real.pi_pos]) ht.2
-  have hfd : F.fD t = -P.1 * Real.sin t + P.2 * Real.cos t := by
+  have hfd : (F).fD t = -P.1 * Real.sin t + P.2 * Real.cos t := by
     dsimp only [P, Reference.supportPoint]
-    have hcircle := congrArg (fun r : ℝ => F.fD t * r) (Real.sin_sq_add_cos_sq t)
+    have hcircle := congrArg (fun r : ℝ => (F).fD t * r) (Real.sin_sq_add_cos_sq t)
     nlinarith only [hcircle]
   have hj : horizontalLeft U + capWidth U / 4 = -C := by
     unfold capWidth
@@ -218,7 +226,7 @@ theorem fullTiltedSupportQuarterPair_first_momentum_neg_after_middle {C h t : �
   rw [hlow] at hlowP
   have hg := coordDot_le_support (hU.isCap.leftCompanionCap hproj).isCompact hlowP
     (companionNormal t)
-  have hgF : C * Real.sin t + (1 - h) * Real.cos t ≤ F.g t := by
+  have hgF : C * Real.sin t + (1 - h) * Real.cos t ≤ (F).g t := by
     change _ ≤ angleSupport (leftCompanionCap U
       (horizontalLeft U + capWidth U / 4)) (t + Real.pi / 2)
     rw [hj, angleSupport, ← companionNormal_eq_unitNormal]
@@ -239,7 +247,7 @@ theorem fullTiltedSupportQuarterPair_exists_first_middle_crossing {C h : ℝ}
     (hC0 : 1 / 2 < C) (hC1 : C ≤ 37 / 50) (hh : h ≤ 17 / 50)
     (hmpos : 0 < m) (hheight : capHeight U = 1)
     (hlow : capRoof U (-C) = 1 - h)
-    (htop : C < (Imported.vminus U (Real.pi / 2)).1)
+    (htop : C < (MovingSofaOptimality.vminus U (Real.pi / 2)).1)
     (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1) :
     ∃ β ∈ Ioo 0 (Real.pi / 2),
       (B β).1 = C ∧

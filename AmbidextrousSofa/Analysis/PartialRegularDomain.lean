@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.PartialSharpCurvatureDensity
+module
+
+public import AmbidextrousSofa.Analysis.PartialSharpCurvatureDensity
+
+@[expose] public section
 
 /-!
 # The actual proper regular upper domain
@@ -144,10 +148,10 @@ theorem IsJointCapMaximizer.sigmaAt_eq_zero_on_regular_proper_domain
     (hproper : α < Real.pi / 2)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft K) (horizontalRight K),
       capRoof K x = m * x + c)
-    (ht : t ∈ regularProperCurvatureDomain α m) : Imported.sigmaAt K t = 0 := by
+    (ht : t ∈ regularProperCurvatureDomain α m) : MovingSofaOptimality.sigmaAt K t = 0 := by
   obtain ⟨ρ, hρ, hρbounds, _, heq⟩ := hK.curvature_density_on_regular_proper_domain hproper haffine
   have h := measureReal_eq_integral_of_restrict_withDensity hρ (fun x => (hρbounds x).1)
     heq (measurableSet_singleton t) (singleton_subset_iff.mpr ht)
-  simpa [Imported.sigmaAt, upperCurvature, measureReal_def, integral_singleton] using h
+  simpa [MovingSofaOptimality.sigmaAt, upperCurvature, measureReal_def, integral_singleton] using h
 
 end AmbidextrousSofa

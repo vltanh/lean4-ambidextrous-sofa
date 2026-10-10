@@ -1,7 +1,11 @@
-import AmbidextrousSofa.Analysis.JointFirstTangentDensity
-import AmbidextrousSofa.Analysis.JointFirstTangentExclusivity
-import AmbidextrousSofa.Analysis.JointCoreProjectionEquality
-import AmbidextrousSofa.Measure.MonotoneGraphSaturation
+module
+
+public import AmbidextrousSofa.Analysis.JointFirstTangentDensity
+public import AmbidextrousSofa.Analysis.JointFirstTangentExclusivity
+public import AmbidextrousSofa.Analysis.JointCoreProjectionEquality
+public import AmbidextrousSofa.Measure.MonotoneGraphSaturation
+
+@[expose] public section
 
 /-!
 # Saturation of the actual charged first tangent
@@ -50,13 +54,15 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "B" => firstTangentPoint F.f F.fD
-local notation "p" => supportP F.fD F.g
+set_option quotPrecheck false in
+local notation "B" => firstTangentPoint (F).f (F).fD
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
 
 theorem fullTiltedSupportQuarterPair_first_tangent_continuous_global :
     Continuous (fun t => (B t).1) ∧ Continuous (fun t => (B t).2) := by
-  have hf : Continuous F.f := hU.isCap.imported_isConvexBody.continuous_supp
-  have hfD : Continuous F.fD := hU.isCap.continuous_closedSupportDerivative hρ hρ0 hρK 0
+  have hf : Continuous (F).f := hU.isCap.imported_isConvexBody.continuous_supp
+  have hfD : Continuous (F).fD := hU.isCap.continuous_closedSupportDerivative hρ hρ0 hρK 0
   constructor <;> dsimp only [firstTangentPoint, Reference.supportPoint] <;> fun_prop
 
 theorem fullTiltedSupportQuarterPair_measurableSet_firstTangentChargedSet (C : ℝ) :
@@ -120,9 +126,13 @@ variable (hU : IsFullCapMaximizer target) {C h m c : ℝ}
   (hleft : a < horizontalLeft target) (hright : horizontalRight target < b)
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm.le haffine hρ hρ0 hρK heq
-local notation "B" => firstTangentPoint F.f F.fD
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "B" => firstTangentPoint (F).f (F).fD
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
+set_option quotPrecheck false in
 local notation "X" => (fun t => (B t).1)
 local notation "aB" => J.sourceBranchDensity (firstTangentSource target) 0
 local notation "charged" => firstTangentChargedSet target C p B

@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.TerminalReflectedParameters
-import AmbidextrousSofa.Analysis.PartialReflectedDynamics
+module
+
+public import AmbidextrousSofa.Analysis.TerminalReflectedParameters
+public import AmbidextrousSofa.Analysis.PartialReflectedDynamics
+
+@[expose] public section
 
 /-!
 # The actual post-terminal entry into the reflected differential arc

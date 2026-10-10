@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Measure.SupportArea
+module
+
+public import AmbidextrousSofa.Measure.SupportArea
+
+@[expose] public section
 
 /-!
 # Actual tangent and corner pieces of a swept niche

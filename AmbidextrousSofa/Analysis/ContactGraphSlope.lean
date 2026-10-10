@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.CoreContactGeometry
-import AmbidextrousSofa.Analysis.RegularCorner
+module
+
+public import AmbidextrousSofa.Analysis.CoreContactGeometry
+public import AmbidextrousSofa.Analysis.RegularCorner
+
+@[expose] public section
 
 /-!
 # The actual niche slope at tangent and core contacts
@@ -145,9 +149,12 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "Z" => innerCornerPoint F.f F.g
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "Z" => innerCornerPoint (F).f (F).g
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 local notation "V" => leftCompanionCap U (horizontalLeft U + capWidth U / 4)
 
 theorem fullTiltedSupportQuarterPair_core_le_sweptNiche {t : ℝ}

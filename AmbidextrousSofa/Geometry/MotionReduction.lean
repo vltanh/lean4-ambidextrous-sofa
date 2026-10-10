@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Measure.RigidInvariance
-import AmbidextrousSofa.Measure.StripBounds
-import AmbidextrousSofa.Measure.CapAssembly
+module
+
+public import AmbidextrousSofa.Measure.RigidInvariance
+public import AmbidextrousSofa.Measure.StripBounds
+public import AmbidextrousSofa.Measure.CapAssembly
+
+@[expose] public section
 
 /-!
 # Reduction of the original independent passages to the two actual caps

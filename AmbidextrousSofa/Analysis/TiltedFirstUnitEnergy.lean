@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TiltedInitialEnergy
+module
+
+public import AmbidextrousSofa.Analysis.TiltedInitialEnergy
+
+@[expose] public section
 
 /-!
 # The first-unit momentum energy with a companion fold defect

@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.HorizontalLeakageBound
-import AmbidextrousSofa.Analysis.HorizontalOrdinaryArea
-import AmbidextrousSofa.Analysis.HorizontalUnitCurvature
+module
+
+public import AmbidextrousSofa.Analysis.HorizontalLeakageBound
+public import AmbidextrousSofa.Analysis.HorizontalOrdinaryArea
+public import AmbidextrousSofa.Analysis.HorizontalUnitCurvature
+
+@[expose] public section
 
 /-!
 # The actual horizontal leakage width reduction
@@ -48,7 +52,7 @@ theorem IsFullCapMaximizer.exists_horizontal_oriented_unit_density
     (hheight : capHeight U = 1)
     (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = 1) :
-    ∃ V : Set Plane, (V = U ∨ V = horizontalMirror U) ∧ IsFullCapMaximizer V ∧
+    ∃ V : Set Plane, (V = U ∨ V = AmbidextrousSofa.horizontalMirror U) ∧ IsFullCapMaximizer V ∧
       horizontalLeft V = -2 * C ∧ horizontalRight V = 2 * C ∧
       capHeight V = 1 ∧ capWidth V = capWidth U ∧
       capScore V (Real.pi / 2) = capScore U (Real.pi / 2) ∧

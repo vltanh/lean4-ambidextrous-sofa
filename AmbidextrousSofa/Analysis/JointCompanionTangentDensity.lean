@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.JointBranchProjection
-import AmbidextrousSofa.Analysis.JointSourceAffine
-import AmbidextrousSofa.Analysis.TangencyMeasurable
+module
+
+public import AmbidextrousSofa.Analysis.JointBranchProjection
+public import AmbidextrousSofa.Analysis.JointSourceAffine
+public import AmbidextrousSofa.Analysis.TangencyMeasurable
+
+@[expose] public section
 
 /-!
 # The actual companion tangent occupation density
@@ -114,7 +118,8 @@ variable {C h : ℝ}
   (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1)
 
 local notation "F" => fullTiltedSupportQuarterPair hTarget hm.le haffine hρ hρ0 hρK heq
-local notation "D" => secondTangentPoint F.g F.gD
+set_option quotPrecheck false in
+local notation "D" => secondTangentPoint (F).g (F).gD
 local notation "v" => fun t => leftCompanionWingDensity m ρ (t + Real.pi / 2)
 
 theorem ae_companion_tangent_density_le_max_one_sub :

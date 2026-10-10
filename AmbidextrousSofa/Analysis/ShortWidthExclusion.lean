@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.NearDiagonalTail
+module
+
+public import AmbidextrousSofa.Analysis.NearDiagonalTail
+
+@[expose] public section
 
 /-!
 # Actual short-width cap exclusion

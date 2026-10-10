@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.Extrusion
+module
+
+public import AmbidextrousSofa.Analysis.Extrusion
+
+@[expose] public section
 
 /-!
 # Canonicalizing the uncharged middle roof

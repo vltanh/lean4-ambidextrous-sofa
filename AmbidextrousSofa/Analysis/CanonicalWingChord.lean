@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.FiniteGraphLength
-import AmbidextrousSofa.Analysis.SelectedGreenLimit
-import AmbidextrousSofa.Analysis.CanonicalOneTurn
+module
+
+public import AmbidextrousSofa.Analysis.FiniteGraphLength
+public import AmbidextrousSofa.Analysis.SelectedGreenLimit
+public import AmbidextrousSofa.Analysis.CanonicalOneTurn
+
+@[expose] public section
 
 /-!
 # The wing chord comparison for every canonical full maximum

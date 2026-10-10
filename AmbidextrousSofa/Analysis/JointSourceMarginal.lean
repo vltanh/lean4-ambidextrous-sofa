@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.JointSourceLimit
-import AmbidextrousSofa.Measure.FiniteMeasurePortmanteau
+module
+
+public import AmbidextrousSofa.Analysis.JointSourceLimit
+public import AmbidextrousSofa.Measure.FiniteMeasurePortmanteau
+
+@[expose] public section
 
 /-!
 # The angular marginal of the common source limit

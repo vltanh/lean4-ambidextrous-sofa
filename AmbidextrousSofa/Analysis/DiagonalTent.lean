@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PositiveTent
-import AmbidextrousSofa.Analysis.WideCap
+module
+
+public import AmbidextrousSofa.Analysis.PositiveTent
+public import AmbidextrousSofa.Analysis.WideCap
+
+@[expose] public section
 
 /-!
 # The genuine diagonal two-ray tent

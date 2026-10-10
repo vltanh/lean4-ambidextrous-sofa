@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.JointSourceContacts
-import AmbidextrousSofa.Measure.RealRadonNikodym
-import Mathlib.MeasureTheory.Group.Measure
+module
+
+public import AmbidextrousSofa.Analysis.JointSourceContacts
+public import AmbidextrousSofa.Measure.RealRadonNikodym
+public import Mathlib.MeasureTheory.Group.Measure
+
+@[expose] public section
 
 /-!
 # Full angular density of the joint source limit

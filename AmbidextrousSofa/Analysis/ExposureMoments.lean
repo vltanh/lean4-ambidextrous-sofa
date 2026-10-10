@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.ErosionVariation
+module
+
+public import AmbidextrousSofa.Analysis.ErosionVariation
+
+@[expose] public section
 
 /-!
 # Literal source masses and the translation balance

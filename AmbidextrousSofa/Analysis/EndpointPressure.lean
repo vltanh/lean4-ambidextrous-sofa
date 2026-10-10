@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.EndpointPolygons
-import AmbidextrousSofa.Analysis.FiniteScore
+module
+
+public import AmbidextrousSofa.Analysis.EndpointPolygons
+public import AmbidextrousSofa.Analysis.FiniteScore
+
+@[expose] public section
 
 /-!
 # Inward endpoint pressures from actual selected caps

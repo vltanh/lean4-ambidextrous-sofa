@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.LevelSetDerivative
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
-import Mathlib.Topology.MetricSpace.Lipschitz
+module
+
+public import AmbidextrousSofa.Analysis.LevelSetDerivative
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
+public import Mathlib.Topology.MetricSpace.Lipschitz
+
+@[expose] public section
 
 /-!
 # Absolutely continuous barriers with a clipped variable

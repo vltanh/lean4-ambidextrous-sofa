@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FiniteNicheOscillation
-import AmbidextrousSofa.Analysis.EndpointPositivity
+module
+
+public import AmbidextrousSofa.Analysis.FiniteNicheOscillation
+public import AmbidextrousSofa.Analysis.EndpointPositivity
+
+@[expose] public section
 
 /-!
 # The central niche-height bound for every canonical full maximum

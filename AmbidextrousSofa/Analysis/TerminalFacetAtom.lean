@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.TerminalExtension
-import AmbidextrousSofa.Analysis.PartialRegularDomain
+module
+
+public import AmbidextrousSofa.Analysis.TerminalExtension
+public import AmbidextrousSofa.Analysis.PartialRegularDomain
+
+@[expose] public section
 
 /-!
 # The terminal facet bound for a prescribed proper maximizer
@@ -31,7 +35,7 @@ theorem IsJointCapMaximizer.faceWidth_eq_zero_at_regular_visited_normal
     exact ⟨(ht.2.trans hproper).ne, hmiddle⟩
   have hzero := hU.sigmaAt_eq_zero_on_regular_proper_domain hproper haffine hregular
   rw [hU.isCap.terminalFaceWidth_eq_curvature_atom]
-  change Imported.sigmaAt U t * Real.sin t = 0
+  change MovingSofaOptimality.sigmaAt U t * Real.sin t = 0
   rw [hzero, zero_mul]
 
 /-- TB1: the short-facet bound follows from the actual new-angle

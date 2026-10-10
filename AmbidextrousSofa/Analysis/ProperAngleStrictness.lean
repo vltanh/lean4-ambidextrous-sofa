@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.ProperTerminalExclusion
+module
+
+public import AmbidextrousSofa.Analysis.ProperTerminalExclusion
+
+@[expose] public section
 
 /-!
 # From full-cap affine rigidity to strict individual proper angles

@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Imported.SurfaceArea
-import AmbidextrousSofa.Analysis.CapCompactness
+module
+
+public import MovingSofaOptimality.Basic.SurfaceArea
+public import AmbidextrousSofa.Analysis.CapCompactness
+
+@[expose] public section
 
 /-!
 # Actual support curvature and the imported convex-body calculus
@@ -20,22 +24,22 @@ open scoped Topology
 namespace AmbidextrousSofa
 
 theorem coordDot_eq_imported_dot (p v : Plane) :
-    coordDot p v = Imported.dot p v := rfl
+    coordDot p v = MovingSofaOptimality.dot p v := rfl
 
 theorem unitNormal_eq_imported_uvec (t : ℝ) :
-    unitNormal t = Imported.uvec t := rfl
+    unitNormal t = MovingSofaOptimality.uvec t := rfl
 
 theorem angleSupport_eq_imported_supp (U : Set Plane) (t : ℝ) :
-    angleSupport U t = Imported.supp U t := rfl
+    angleSupport U t = MovingSofaOptimality.supp U t := rfl
 
 theorem IsDownwardCap.imported_isConvexBody {U : Set Plane}
-    (hU : IsDownwardCap U) : Imported.IsConvexBody U :=
+    (hU : IsDownwardCap U) : MovingSofaOptimality.IsConvexBody U :=
   ⟨hU.nonempty, hU.isCompact, hU.convex⟩
 
 theorem imported_hausdorffDist_le_two_mul {U V : Set Plane}
     (hU : IsCompact U) (hUne : U.Nonempty)
     (hV : IsCompact V) (hVne : V.Nonempty) :
-    Imported.hausdorffDist U V ≤ 2 * Metric.hausdorffDist U V := by
+    MovingSofaOptimality.hausdorffDist U V ≤ 2 * Metric.hausdorffDist U V := by
   apply ciSup_le
   intro t
   change |support U (unitNormal t) - support V (unitNormal t)| ≤ _
@@ -53,35 +57,35 @@ theorem imported_hausdorffDist_le_two_mul {U V : Set Plane}
 theorem CapHausdorffTendsto.imported_hausdorffTendsto
     {U : ℕ → Set Plane} {K : Set Plane} (h : CapHausdorffTendsto U K)
     (hU : ∀ n, IsDownwardCap (U n)) (hK : IsDownwardCap K) :
-    Imported.HausdorffTendsto U K := by
-  apply squeeze_zero (fun n => Imported.hausdorffDist_nonneg (U n) K)
+    MovingSofaOptimality.HausdorffTendsto U K := by
+  apply squeeze_zero (fun n => MovingSofaOptimality.hausdorffDist_nonneg (U n) K)
     (fun n => imported_hausdorffDist_le_two_mul
       (hU n).isCompact (hU n).nonempty hK.isCompact hK.nonempty)
   simpa only [mul_zero] using h.const_mul 2
 
 /-- The periodic angular curvature measure of the actual supporting faces. -/
-def upperCurvature (U : Set Plane) : Measure ℝ := Imported.sigma U
+def upperCurvature (U : Set Plane) : Measure ℝ := MovingSofaOptimality.sigma U
 
 instance upperCurvature_isLocallyFiniteMeasure (U : Set Plane) :
     IsLocallyFiniteMeasure (upperCurvature U) :=
-  Imported.sigma_isLocallyFiniteMeasure U
+  inferInstanceAs (IsLocallyFiniteMeasure (MovingSofaOptimality.sigma U))
 
 theorem IsDownwardCap.upperCurvature_Ioc {U : Set Plane}
     (hU : IsDownwardCap U) (a b : ℝ) :
     upperCurvature U (Ioc a b) =
-      ENNReal.ofReal (Imported.sigmaFun U b - Imported.sigmaFun U a) :=
-  Imported.sigma_Ioc hU.imported_isConvexBody a b
+      ENNReal.ofReal (MovingSofaOptimality.sigmaFun U b - MovingSofaOptimality.sigmaFun U a) :=
+  MovingSofaOptimality.sigma_Ioc hU.imported_isConvexBody a b
 
 theorem IsDownwardCap.angleSupport_right_deriv {U : Set Plane}
     (hU : IsDownwardCap U) (t : ℝ) :
     HasDerivWithinAt (angleSupport U)
-      (coordDot (Imported.vplus U t) (Imported.vvec t)) (Ici t) t :=
-  Imported.hasDerivWithinAt_supp_right hU.imported_isConvexBody t
+      (coordDot (MovingSofaOptimality.vplus U t) (MovingSofaOptimality.vvec t)) (Ici t) t :=
+  MovingSofaOptimality.hasDerivWithinAt_supp_right hU.imported_isConvexBody t
 
 theorem IsDownwardCap.angleSupport_left_deriv {U : Set Plane}
     (hU : IsDownwardCap U) (t : ℝ) :
     HasDerivWithinAt (angleSupport U)
-      (coordDot (Imported.vminus U t) (Imported.vvec t)) (Iic t) t :=
-  Imported.hasDerivWithinAt_supp_left hU.imported_isConvexBody t
+      (coordDot (MovingSofaOptimality.vminus U t) (MovingSofaOptimality.vvec t)) (Iic t) t :=
+  MovingSofaOptimality.hasDerivWithinAt_supp_left hU.imported_isConvexBody t
 
 end AmbidextrousSofa

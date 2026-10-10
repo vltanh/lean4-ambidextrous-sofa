@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialCapContinuity
-import AmbidextrousSofa.Analysis.DyadicGrid
+module
+
+public import AmbidextrousSofa.Analysis.PartialCapContinuity
+public import AmbidextrousSofa.Analysis.DyadicGrid
+
+@[expose] public section
 
 /-!
 # Rescaled finite histories with the whole outgoing wall
@@ -28,11 +32,11 @@ def unitParameter (t : QuarterAngle) : Icc (0 : ℝ) 1 :=
     exact t.property.2⟩
 
 def scaleAngle (α : TerminalAngle) (t : QuarterAngle) : QuarterAngle :=
-  ⟨(α : ℝ) * (unitParameter t : ℝ), mul_nonneg α.pos.le (unitParameter t).property.1,
+  ⟨(α : ℝ) * (unitParameter t : ℝ), mul_nonneg (TerminalAngle.pos α).le (unitParameter t).property.1,
     (by
       have h : (α : ℝ) * (unitParameter t : ℝ) ≤ (α : ℝ) := by
         simpa only [mul_one] using
-          mul_le_mul_of_nonneg_left (unitParameter t).property.2 α.pos.le
+          mul_le_mul_of_nonneg_left (unitParameter t).property.2 (TerminalAngle.pos α).le
       exact h.trans α.property.2)⟩
 
 theorem scaleAngle_zero (α : TerminalAngle) : (scaleAngle α zeroAngle : ℝ) = 0 := by
@@ -42,7 +46,7 @@ theorem scaleAngle_le_terminal (α : TerminalAngle) (t : QuarterAngle) :
     (scaleAngle α t : ℝ) ≤ (α : ℝ) := by
   change (α : ℝ) * (unitParameter t : ℝ) ≤ (α : ℝ)
   simpa only [mul_one] using
-    mul_le_mul_of_nonneg_left (unitParameter t).property.2 α.pos.le
+    mul_le_mul_of_nonneg_left (unitParameter t).property.2 (TerminalAngle.pos α).le
 
 theorem scaleAngle_mem_open (α : TerminalAngle) {t : QuarterAngle}
     (ht : 0 < (t : ℝ) ∧ (t : ℝ) < Real.pi / 2) :
@@ -50,8 +54,8 @@ theorem scaleAngle_mem_open (α : TerminalAngle) {t : QuarterAngle}
   have hL : 0 < Real.pi / 2 := by linarith [Real.pi_pos]
   have ht0 : 0 < (unitParameter t : ℝ) := div_pos ht.1 hL
   have ht1 : (unitParameter t : ℝ) < 1 := (div_lt_one hL).mpr ht.2
-  exact ⟨mul_pos α.pos ht0, by
-    simpa only [mul_one] using mul_lt_mul_of_pos_left ht1 α.pos⟩
+  exact ⟨mul_pos (TerminalAngle.pos α) ht0, by
+    simpa only [mul_one] using mul_lt_mul_of_pos_left ht1 (TerminalAngle.pos α)⟩
 
 theorem continuous_unitParameter : Continuous unitParameter := by
   apply Continuous.subtype_mk
@@ -121,7 +125,7 @@ theorem niche_le_sweptNiche (U : CompactCap) (α : TerminalAngle)
   apply (niche_le_iff U.carrier α grid x _).mpr
   refine ⟨sweptNiche_nonneg _ _ _, ?_⟩
   intro t _
-  exact fullWallClip_le_sweptNiche_of_mem_Icc U α.pos α.property.2 x
+  exact fullWallClip_le_sweptNiche_of_mem_Icc U (TerminalAngle.pos α) α.property.2 x
     ⟨(scaleAngle α t).property.1, scaleAngle_le_terminal α t⟩
 
 theorem barrier_le_partialBarrier (U : CompactCap) (α : TerminalAngle)
@@ -146,17 +150,17 @@ theorem isLUB_niche (grids : ℕ → Finset QuarterAngle)
           (continuous_rescaledFullWallClip.comp
             (continuous_const.prodMk continuous_unitParameter)) continuous_const
     have hb0 := (niche_nonneg U.carrier α (grids 0) x).trans (hb (mem_range_self 0))
-    apply sweptNiche_le_of_forall α.pos hb0
+    apply sweptNiche_le_of_forall (TerminalAngle.pos α) hb0
     intro θ hθ
     let t : QuarterAngle := ⟨(θ / α) * (Real.pi / 2), by
-      have hr : 0 ≤ θ / α := div_nonneg hθ.1.le α.pos.le
-      have hr1 : θ / α ≤ 1 := (div_le_one α.pos).mpr hθ.2.le
+      have hr : 0 ≤ θ / α := div_nonneg hθ.1.le (TerminalAngle.pos α).le
+      have hr1 : θ / α ≤ 1 := (div_le_one (TerminalAngle.pos α)).mpr hθ.2.le
       refine ⟨mul_nonneg hr (by linarith [Real.pi_pos]), ?_⟩
       simpa only [one_mul] using
         mul_le_mul_of_nonneg_right hr1 (by linarith [Real.pi_pos] : 0 ≤ Real.pi / 2)⟩
     have ht : (scaleAngle α t : ℝ) = θ := by
       dsimp [scaleAngle, unitParameter, t]
-      field_simp [α.pos.ne', (by linarith [Real.pi_pos] : Real.pi / 2 ≠ 0)] <;> ring
+      field_simp [(TerminalAngle.pos α).ne', (by linarith [Real.pi_pos] : Real.pi / 2 ≠ 0)] <;> ring
     have h := hclip t
     rw [ht] at h
     exact (le_max_left _ _).trans h

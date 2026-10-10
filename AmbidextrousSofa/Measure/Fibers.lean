@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Algebra.Deficit
-import AmbidextrousSofa.Geometry.Plane
-import AmbidextrousSofa.Topology.RegularClosed
+module
+
+public import AmbidextrousSofa.Algebra.Deficit
+public import AmbidextrousSofa.Geometry.Plane
+public import AmbidextrousSofa.Topology.RegularClosed
+
+@[expose] public section
 
 /-!
 # Measurable envelopes and their exact vertical-fiber areas

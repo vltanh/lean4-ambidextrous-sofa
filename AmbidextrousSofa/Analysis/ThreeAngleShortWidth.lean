@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.ThreeAngleShortTail
+module
+
+public import AmbidextrousSofa.Analysis.ThreeAngleShortTail
+
+@[expose] public section
 
 /-!
 # Short-width exclusion for the reflection-invariant three-angle objective

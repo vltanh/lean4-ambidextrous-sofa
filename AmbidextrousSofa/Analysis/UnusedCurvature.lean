@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.UsedSupportSaturation
-import AmbidextrousSofa.Analysis.DiscreteCurvature
-import AmbidextrousSofa.Analysis.AffineNormal
+module
+
+public import AmbidextrousSofa.Analysis.UsedSupportSaturation
+public import AmbidextrousSofa.Analysis.DiscreteCurvature
+public import AmbidextrousSofa.Analysis.AffineNormal
+
+@[expose] public section
 
 /-!
 # Actual curvature on the unvisited normal intervals
@@ -56,7 +60,7 @@ theorem partialCapAngle_mem {α : ℝ} (hα : α ≤ Real.pi / 2) (m : ℝ)
 every used first and second support, and the single affine middle ceiling. -/
 theorem capCut_usedSupportSaturation_eq_halfplanes (U : Set Plane) (α m c : ℝ) :
     capCut (usedSupportSaturation U α) (fun x => m * x + c) =
-      ⋂ i, Imported.halfMinus
+      ⋂ i, MovingSofaOptimality.halfMinus
         (FinitePolygon.fullPolygonAngle (partialCapAngle α m) i)
         (FinitePolygon.fullPolygonHeight (horizontalLeft U) (horizontalRight U)
           (partialCapHeight U α m c) i) := by
@@ -122,12 +126,12 @@ theorem partialCapAngle_eq_middle_of_mem_unused {α m : ℝ}
 /-- A single allowed exceptional normal leaves two genuine zero-curvature
 gaps; the exceptional singleton itself is retained. -/
 theorem sigma_Ioo_diff_singleton_eq_zero_of_halfplane_gap {K : Set Plane}
-    (hK : Imported.IsConvexBody K) {ι : Type*} (angle height : ι → ℝ)
-    (hpoly : K = ⋂ i, Imported.halfMinus (angle i) (height i))
+    (hK : MovingSofaOptimality.IsConvexBody K) {ι : Type*} (angle height : ι → ℝ)
+    (hpoly : K = ⋂ i, MovingSofaOptimality.halfMinus (angle i) (height i))
     (hangle : ∀ i, angle i ∈ Icc 0 (2 * Real.pi))
     {a b c : ℝ} (ha : 0 ≤ a) (hb : b ≤ Real.pi) (hab : a < b) (hspan : b - a < Real.pi)
     (hgap : ∀ i, angle i ∈ Ioo a b → angle i = c) :
-    Imported.sigma K (Ioo a b \ {c}) = 0 := by
+    MovingSofaOptimality.sigma K (Ioo a b \ {c}) = 0 := by
   by_cases hca : c ≤ a
   · apply measure_mono_null sdiff_subset
     apply sigma_Ioo_eq_zero_of_halfplane_gap hK angle height hpoly hangle ha hb hab hspan
@@ -163,7 +167,7 @@ theorem upperCurvature_unused_of_usedSupportSaturation_capCut
   let angle := FinitePolygon.fullPolygonAngle (partialCapAngle α m)
   let height := FinitePolygon.fullPolygonHeight (horizontalLeft U) (horizontalRight U)
     (partialCapHeight U α m c)
-  have hpoly : V = ⋂ i, Imported.halfMinus (angle i) (height i) :=
+  have hpoly : V = ⋂ i, MovingSofaOptimality.halfMinus (angle i) (height i) :=
     hcut.trans (capCut_usedSupportSaturation_eq_halfplanes U α m c)
   have hangle : ∀ i, angle i ∈ Icc 0 (2 * Real.pi) :=
     FinitePolygon.fullPolygonAngle_mem _ (partialCapAngle_mem hα.le m)

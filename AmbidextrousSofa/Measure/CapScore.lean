@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Geometry.BarrierAnalysis
-import AmbidextrousSofa.Measure.Partition
-import AmbidextrousSofa.ExactConstant
+module
+
+public import AmbidextrousSofa.Geometry.BarrierAnalysis
+public import AmbidextrousSofa.Measure.Partition
+public import AmbidextrousSofa.ExactConstant
+
+@[expose] public section
 
 /-!
 # Actual cap scores and the elementary width branch

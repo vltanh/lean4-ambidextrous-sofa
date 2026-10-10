@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.PartialTopInsertion
-import AmbidextrousSofa.Analysis.Circumscription
-import AmbidextrousSofa.Analysis.FacetPinning
+module
+
+public import AmbidextrousSofa.Analysis.PartialTopInsertion
+public import AmbidextrousSofa.Analysis.Circumscription
+public import AmbidextrousSofa.Analysis.FacetPinning
+
+@[expose] public section
 
 /-!
 # Saturation by precisely the visited upper supports
@@ -146,12 +150,12 @@ theorem IsDownwardCap.capScore_le_usedSupportSaturation {U : Set Plane}
   linarith
 
 theorem IsJointCapMaximizer.usedSupportSaturation {U : Set Plane} {α : ℝ}
-    (hU : IsJointCapMaximizer U α) : IsJointCapMaximizer (usedSupportSaturation U α) α :=
+    (hU : IsJointCapMaximizer U α) : IsJointCapMaximizer (AmbidextrousSofa.usedSupportSaturation U α) α :=
   hU.of_score_le (hU.isCap.isDownwardCap_usedSupportSaturation hU.angle_mem.2) hU.angle_mem
     (hU.isCap.capScore_le_usedSupportSaturation hU.angle_pos hU.angle_mem.2)
 
 theorem IsJointCapMaximizer.capScore_usedSupportSaturation {U : Set Plane} {α : ℝ}
-    (hU : IsJointCapMaximizer U α) : capScore (usedSupportSaturation U α) α = capScore U α :=
+    (hU : IsJointCapMaximizer U α) : capScore (AmbidextrousSofa.usedSupportSaturation U α) α = capScore U α :=
   hU.usedSupportSaturation.score_eq hU
 
 /-- A strict increase even at a wing endpoint would give a positive
@@ -161,7 +165,7 @@ theorem IsJointCapMaximizer.capRoof_usedSupportSaturation_on_charged
     {U : Set Plane} {α x : ℝ} (hU : IsJointCapMaximizer U α)
     (hx : x ∈ Icc (horizontalLeft U) (horizontalLeft U + capWidth U / 4) ∪
       Icc (horizontalRight U - capWidth U / 4) (horizontalRight U)) :
-    capRoof (usedSupportSaturation U α) x = capRoof U x := by
+    capRoof (AmbidextrousSofa.usedSupportSaturation U α) x = capRoof U x := by
   have hV := hU.isCap.isDownwardCap_usedSupportSaturation hU.angle_mem.2
   have hsub := hU.isCap.subset_usedSupportSaturation α
   have hwidth : 0 < capWidth U := by linarith [hU.width_bounds.1, one_lt_M]
@@ -179,7 +183,7 @@ theorem IsJointCapMaximizer.eq_usedSupportSaturation_capCut
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    U = capCut (usedSupportSaturation U α) (fun x => m * x + c) := by
+    U = capCut (AmbidextrousSofa.usedSupportSaturation U α) (fun x => m * x + c) := by
   let a := horizontalLeft U + capWidth U / 4
   let b := horizontalRight U - capWidth U / 4
   have hwidth : 0 < capWidth U := by linarith [hU.width_bounds.1, one_lt_M]
@@ -203,7 +207,7 @@ theorem IsJointCapMaximizer.eq_usedSupportSaturation_capCut
     exact (le_capRoof hU.isCap.isCompact (by simpa only [Prod.mk.eta] using hp)).trans
       (hline p.1 ⟨p, hp, rfl⟩)
   · intro p hp
-    have hxV : p.1 ∈ horizontalProjection (usedSupportSaturation U α) := ⟨p, hp.1, rfl⟩
+    have hxV : p.1 ∈ horizontalProjection (AmbidextrousSofa.usedSupportSaturation U α) := ⟨p, hp.1, rfl⟩
     have hxU : p.1 ∈ horizontalProjection U := by rwa [hproj] at hxV
     apply (hU.isCap.mem_iff_projection_and_roof p).mpr
     refine ⟨hxU, (hV.inStrip hp.1).1, ?_⟩

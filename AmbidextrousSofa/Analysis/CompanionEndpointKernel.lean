@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TerminalCompanionCurvature
+module
+
+public import AmbidextrousSofa.Analysis.TerminalCompanionCurvature
+
+@[expose] public section
 
 /-!
 # The actual initial companion wall under unit curvature
@@ -23,7 +27,7 @@ theorem IsDownwardCap.secondWall_le_height_sub_one_of_unit_prefix
     (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2))
     (hsub : Ioc (Real.pi / 2) (t + Real.pi / 2) ⊆ S)
     (hunit : ∀ᵐ s ∂volume.restrict (Ioo (0 : ℝ) t), ρ (s + Real.pi / 2) ≤ 1) :
-    secondWall U t (Imported.vplus U (Real.pi / 2)).1 ≤ capHeight U - 1 := by
+    secondWall U t (MovingSofaOptimality.vplus U (Real.pi / 2)).1 ≤ capHeight U - 1 := by
   have hmom := hU.shiftedCompanion_sub_eq_integral_of_density hρ hρ0 hρK heq ht.1.le
     (by simpa only [zero_add] using hsub)
   simp only [shiftedCompanionX_zero, shiftedCompanionY_zero, top_vplus_snd_eq_capHeight] at hmom
@@ -39,7 +43,7 @@ theorem IsDownwardCap.secondWall_le_height_sub_one_of_unit_prefix
     ((Real.continuous_sin.comp (continuous_id.sub continuous_const)).continuousOn)
   have hkernel : (∫ s in 0..t, (1 - ρ (s + Real.pi / 2)) * Real.sin (s - t)) =
       Real.cos t * (shiftedCompanionY U t - (capHeight U - 1)) -
-        Real.sin t * (shiftedCompanionX U t - (Imported.vplus U (Real.pi / 2)).1) := by
+        Real.sin t * (shiftedCompanionX U t - (MovingSofaOptimality.vplus U (Real.pi / 2)).1) := by
     calc
       _ = ∫ s in 0..t,
           Real.cos t * ((1 - ρ (s + Real.pi / 2)) * Real.sin s) -
@@ -67,10 +71,10 @@ theorem IsDownwardCap.secondWall_le_height_sub_one_of_unit_prefix
     simpa only [intervalIntegral.integral_zero] using hbound
   have hc : 0 < Real.cos t := Real.cos_pos_of_mem_Ioo
     ⟨by linarith only [ht.1, Real.pi_pos], ht.2⟩
-  have hsupp : coordDot (Imported.vplus U (t + Real.pi / 2)) (companionNormal t) =
+  have hsupp : coordDot (MovingSofaOptimality.vplus U (t + Real.pi / 2)) (companionNormal t) =
       support U (companionNormal t) := by
     rw [companionNormal_eq_unitNormal]
-    exact Imported.dot_vplus_uvec U (t + Real.pi / 2)
+    exact MovingSofaOptimality.dot_vplus_uvec U (t + Real.pi / 2)
   unfold secondWall
   apply (div_le_iff₀ hc).mpr
   dsimp only [shiftedCompanionX, shiftedCompanionY] at hkernel

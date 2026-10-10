@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Measure.SupportArea
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
-import Mathlib.Topology.TietzeExtension
+module
+
+public import AmbidextrousSofa.Measure.SupportArea
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
+public import Mathlib.Topology.TietzeExtension
+
+@[expose] public section
 
 /-!
 # Absolutely continuous graph and support area

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Measure.FiniteMeasurePortmanteau
+module
+
+public import AmbidextrousSofa.Measure.FiniteMeasurePortmanteau
+
+@[expose] public section
 
 /-!
 # Bounded continuous weights on a finite weak limit
@@ -12,6 +16,8 @@ can be read directly in the original measure.
 noncomputable section
 
 open Set Filter MeasureTheory
+open scoped BoundedContinuousFunction
+open scoped ENNReal NNReal
 open scoped Topology
 
 namespace AmbidextrousSofa

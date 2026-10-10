@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.CornerDynamics
+module
+
+public import AmbidextrousSofa.Analysis.CornerDynamics
+
+@[expose] public section
 
 /-!
 # Strict unit-curvature control at floor contact

@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Geometry.RigidMotion
-import AmbidextrousSofa.Geometry.Reflection
+module
+
+public import AmbidextrousSofa.Geometry.RigidMotion
+public import AmbidextrousSofa.Geometry.Reflection
+
+@[expose] public section
 
 /-!
 # Product Lebesgue area under rigid changes of coordinates

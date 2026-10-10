@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.EndpointPressure
-import AmbidextrousSofa.Analysis.OrdinarySofaBound
-import AmbidextrousSofa.Topology.VerticalRegion
+module
+
+public import AmbidextrousSofa.Analysis.EndpointPressure
+public import AmbidextrousSofa.Analysis.OrdinarySofaBound
+public import AmbidextrousSofa.Topology.VerticalRegion
+
+@[expose] public section
 
 /-!
 # The actual one-turn body cut out by a full cap niche
@@ -73,8 +77,9 @@ def IsDownwardCap.canonicalLowerPath {U : Set Plane} (hU : IsDownwardCap U) : Ri
   continuous_shift := by
     have hu := (continuous_support hU.isCompact).comp continuous_unitNormal
     have hv := (continuous_support hU.isCompact).comp continuous_companionNormal
-    exact (continuous_const.sub (hu.comp (by fun_prop))).prodMk
-      (continuous_const.sub (hv.comp (by fun_prop)))
+    have hl : Continuous fun t : ℝ => Real.pi / 2 * t := by fun_prop
+    exact ((continuous_const.sub (hu.comp hl)).prodMk
+      (continuous_const.sub (hv.comp hl))).continuousOn
 
 theorem IsDownwardCap.canonicalLowerPath_placement {U : Set Plane} (hU : IsDownwardCap U)
     (t : ℝ) (p : Plane) :

@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.HorizontalClassification
-import AmbidextrousSofa.Reference.HorizontalSymmetry
+module
+
+public import AmbidextrousSofa.Analysis.HorizontalClassification
+public import AmbidextrousSofa.Reference.HorizontalSymmetry
+
+@[expose] public section
 
 /-!
 # Horizontal rigidity in the original orientation
@@ -19,7 +23,7 @@ theorem IsFullCapMaximizer.eq_reference_translate_of_horizontal
     {U : Set Plane} (hU : IsFullCapMaximizer U)
     (hheight : capHeight U = 1)
     (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1) :
-    ∃ b : ℝ, U = horizontalTranslate Reference.referenceCap b := by
+    ∃ b : ℝ, U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap b := by
   obtain ⟨_hscore, _hwidth, b, h | h⟩ := hU.horizontal_classification hheight hmiddle
   · exact ⟨b, h⟩
   · exact ⟨_, Reference.eq_reference_translate_of_horizontalMirror_eq h⟩

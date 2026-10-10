@@ -1,8 +1,12 @@
-import AmbidextrousSofa.Analysis.DiagonalTent
-import AmbidextrousSofa.Analysis.LowHeightAlgebra
-import AmbidextrousSofa.Analysis.Chord
-import AmbidextrousSofa.Analysis.FiniteScore
-import AmbidextrousSofa.Measure.GraphIntegral
+module
+
+public import AmbidextrousSofa.Analysis.DiagonalTent
+public import AmbidextrousSofa.Analysis.LowHeightAlgebra
+public import AmbidextrousSofa.Analysis.Chord
+public import AmbidextrousSofa.Analysis.FiniteScore
+public import AmbidextrousSofa.Measure.GraphIntegral
+
+@[expose] public section
 
 /-!
 # Actual roofs below the low-middle-height ceiling

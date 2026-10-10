@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TopInsertion
+module
+
+public import AmbidextrousSofa.Analysis.TopInsertion
+
+@[expose] public section
 
 /-!
 # Strict gain from an actual charged roof point

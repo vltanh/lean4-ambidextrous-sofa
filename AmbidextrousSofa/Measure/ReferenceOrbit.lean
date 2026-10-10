@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Geometry.RigidImage
-import AmbidextrousSofa.Measure.ActualReferenceRecovery
+module
+
+public import AmbidextrousSofa.Geometry.RigidImage
+public import AmbidextrousSofa.Measure.ActualReferenceRecovery
+
+@[expose] public section
 
 /-!
 # Recovering the reference rigid orbit from normalized equality

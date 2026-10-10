@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.LowHeightScore
-import AmbidextrousSofa.Analysis.CapTranslation
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+module
+
+public import AmbidextrousSofa.Analysis.LowHeightScore
+public import AmbidextrousSofa.Analysis.CapTranslation
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+
+@[expose] public section
 
 /-!
 # An actual terminal-wall bound at every proper angle
@@ -104,11 +108,11 @@ theorem IsDownwardCap.capScore_le_terminal_quadratic {U : Set Plane}
       2 * (Real.cos α / Real.sin α) * (capWidth U / 4) ^ 2 := by
   let C := capWidth U / 4
   have hC : 0 ≤ C := div_nonneg hU.capWidth_nonneg (by norm_num)
-  have hleft : horizontalLeft (centeredCap U) = -2 * C := by
+  have hleft : horizontalLeft (AmbidextrousSofa.centeredCap U) = -2 * C := by
     rw [horizontalLeft_centeredCap hU]
     dsimp [C]
     ring
-  have hright : horizontalRight (centeredCap U) = 2 * C := by
+  have hright : horizontalRight (AmbidextrousSofa.centeredCap U) = 2 * C := by
     rw [horizontalRight_centeredCap hU]
     dsimp [C]
     ring

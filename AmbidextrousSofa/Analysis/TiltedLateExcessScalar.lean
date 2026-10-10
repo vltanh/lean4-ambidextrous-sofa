@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.TiltedInitialEnergyBounds
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+module
+
+public import AmbidextrousSofa.Analysis.TiltedInitialEnergyBounds
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+
+@[expose] public section
 
 /-!
 # Exact late-excess estimates for the tilted first wing

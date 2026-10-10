@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.JointCoreProjectionEquality
-import AmbidextrousSofa.Analysis.UniqueWallContact
-import AmbidextrousSofa.Measure.GraphDensitySaturation
+module
+
+public import AmbidextrousSofa.Analysis.JointCoreProjectionEquality
+public import AmbidextrousSofa.Analysis.UniqueWallContact
+public import AmbidextrousSofa.Measure.GraphDensitySaturation
+
+@[expose] public section
 
 /-!
 # Full corner occupation at uniquely exposed positive contacts
@@ -48,10 +52,15 @@ variable {target : Set Plane} {a b : ℝ} (J : SelectedJointSourceLimit target a
   (hleft : a < horizontalLeft target) (hright : horizontalRight target < b)
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm.le haffine hρ hρ0 hρK heq
-local notation "Z" => innerCornerPoint F.f F.g
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "Z" => innerCornerPoint (F).f (F).g
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
+set_option quotPrecheck false in
 local notation "X" => (fun t => (Z t).1)
+set_option quotPrecheck false in
 local notation "Y" => (fun t => (Z t).2)
 local notation "XD" => (fun t => p t * Real.cos t - q t * Real.sin t)
 local notation "aZ" => J.sourceBranchDensity (firstCornerSource target) 0

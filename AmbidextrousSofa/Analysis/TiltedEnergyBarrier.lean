@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TiltedInitialCircle
+module
+
+public import AmbidextrousSofa.Analysis.TiltedInitialCircle
+
+@[expose] public section
 
 /-!
 # Whole-quarter energy propagation for the actual tilted pair
@@ -72,8 +76,10 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 
 theorem fullTiltedSupportQuarterPair_first_arm_or_zero_sources {C : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)

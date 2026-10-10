@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.TiltedReflectedLateUnit
-import AmbidextrousSofa.Analysis.CompanionEndpointKernel
+module
+
+public import AmbidextrousSofa.Analysis.TiltedReflectedLateUnit
+public import AmbidextrousSofa.Analysis.CompanionEndpointKernel
+
+@[expose] public section
 
 /-!
 # Positive actual top overhang and the dry low middle endpoint
@@ -28,7 +32,7 @@ theorem IsFullCapMaximizer.tilted_top_overhang_pos
     (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c)
     (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1) :
-    0 < (Imported.vminus U (Real.pi / 2)).1 - C := by
+    0 < (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C := by
   have hC : 0 < C := by linarith only [hC0]
   have hprojection := hU.tilted_top_projection_eq
     hl hr hC0 hC1 hh0 hh1 hheight haffine hlow hhigh
@@ -39,7 +43,7 @@ theorem IsFullCapMaximizer.tilted_top_overhang_pos
         max (C + companionZero (leftCompanionCap U (-C))) 0 := le_max_left _ _
     rw [← hprojection] at hmax
     linarith only [hmax, hTle]
-  have hT0 : (Imported.vminus U (Real.pi / 2)).1 = C := by
+  have hT0 : (MovingSofaOptimality.vminus U (Real.pi / 2)).1 = C := by
     have hnonneg := le_max_right (C + companionZero (leftCompanionCap U (-C))) 0
     rw [← hprojection] at hnonneg
     linarith only [hnonneg, hTle]
@@ -115,7 +119,7 @@ theorem IsFullCapMaximizer.tilted_top_overhang_pos
     (by intro s hs; exact ⟨hs.1, by linarith only [hs.2, ht.2]⟩)
     (ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo le_rfl htprefix.le) hunit)
   change secondWall (leftCompanionCap U (-C)) t
-    (Imported.vplus (leftCompanionCap U (-C)) (Real.pi / 2)).1 ≤
+    (MovingSofaOptimality.vplus (leftCompanionCap U (-C)) (Real.pi / 2)).1 ≤
       capHeight (leftCompanionCap U (-C)) - 1 at hkernel
   rw [hVtop.2, hVtop.1, hlow] at hkernel
   have hs : 0 ≤ Real.sin t := (Real.sin_pos_of_pos_of_lt_pi ht.1
@@ -141,12 +145,12 @@ theorem IsFullCapMaximizer.tilted_dry_left_and_overhang_bounds
     (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c)
     (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1) :
-    let T := (Imported.vminus U (Real.pi / 2)).1 - C
+    let T := (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C
     0 < T ∧ sweptNiche U (Real.pi / 2) (-C) = 0 ∧
       T = C + companionZero (leftCompanionCap U (-C)) ∧
       T ≤ Real.sqrt (h * (2 - h)) ∧
       T ≤ Real.sqrt (1 - capRoof U (horizontalLeft U) ^ 2) - C ∧ T < 1 - C := by
-  let T := (Imported.vminus U (Real.pi / 2)).1 - C
+  let T := (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C
   let V := leftCompanionCap U (-C)
   have hT : 0 < T := hU.tilted_top_overhang_pos
     hl hr hC0 hC1 hh0 hh1 hheight haffine hlow hhigh

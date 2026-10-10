@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.FullTriangleScalar
+module
+
+public import AmbidextrousSofa.Analysis.FullTriangleScalar
+
+@[expose] public section
 
 /-!
 # Joint floor payment for the proper three-angle width comparison

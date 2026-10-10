@@ -1,4 +1,8 @@
-import AmbidextrousSofa.ExactConstant
+module
+
+public import AmbidextrousSofa.ExactConstant
+
+@[expose] public section
 
 /-!
 # Exact parameters for the reference support functions

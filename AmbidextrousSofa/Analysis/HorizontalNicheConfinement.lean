@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.HorizontalUnitCurvature
-import AmbidextrousSofa.Measure.GraphIntegral
+module
+
+public import AmbidextrousSofa.Analysis.HorizontalUnitCurvature
+public import AmbidextrousSofa.Measure.GraphIntegral
+
+@[expose] public section
 
 /-!
 # Actual endpoint order and horizontal niche confinement

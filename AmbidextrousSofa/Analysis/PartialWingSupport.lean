@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.PartialNegativeCornerCurvature
-import AmbidextrousSofa.Analysis.PartialWidthBounds
-import AmbidextrousSofa.Analysis.TiltedWingSupport
+module
+
+public import AmbidextrousSofa.Analysis.PartialNegativeCornerCurvature
+public import AmbidextrousSofa.Analysis.PartialWidthBounds
+public import AmbidextrousSofa.Analysis.TiltedWingSupport
+
+@[expose] public section
 
 /-!
 # The actual two used support arcs of a proper maximum
@@ -122,7 +126,7 @@ theorem IsJointCapMaximizer.proper_terminal_companion_atom_eq_zero
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hproper : α < Real.pi / 2)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) : Imported.sigmaAt U (α + Real.pi / 2) = 0 := by
+      capRoof U x = m * x + c) : MovingSofaOptimality.sigmaAt U (α + Real.pi / 2) = 0 := by
   apply hU.sigmaAt_eq_zero_on_regular_proper_domain hproper haffine
   apply regularCompanionDomain_subset_regularProperCurvatureDomain hproper
   refine ⟨⟨by linarith only [hU.angle_pos], by linarith only [hproper]⟩, ?_⟩

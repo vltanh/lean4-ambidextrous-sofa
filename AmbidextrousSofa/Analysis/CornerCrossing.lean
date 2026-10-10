@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.CornerThreshold
+module
+
+public import AmbidextrousSofa.Analysis.CornerThreshold
+
+@[expose] public section
 
 /-!
 # A positive-corner crossing is incompatible with unit companion curvature

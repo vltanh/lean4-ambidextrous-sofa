@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.InitialAngleRaise
-import AmbidextrousSofa.Analysis.DiagonalScalar
+module
+
+public import AmbidextrousSofa.Analysis.InitialAngleRaise
+public import AmbidextrousSofa.Analysis.DiagonalScalar
+
+@[expose] public section
 
 /-!
 # The all-width three-support scalar bound

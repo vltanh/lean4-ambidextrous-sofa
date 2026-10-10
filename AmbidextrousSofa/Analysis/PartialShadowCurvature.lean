@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialShadowSecants
-import AmbidextrousSofa.Analysis.PartialAtomIntervalLimit
+module
+
+public import AmbidextrousSofa.Analysis.PartialShadowSecants
+public import AmbidextrousSofa.Analysis.PartialAtomIntervalLimit
+
+@[expose] public section
 
 /-!
 # The actual proper same-sign curvature laws

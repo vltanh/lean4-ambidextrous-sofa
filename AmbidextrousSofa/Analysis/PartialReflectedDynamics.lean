@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialReflectedControls
-import AmbidextrousSofa.Analysis.CornerArcExcess
+module
+
+public import AmbidextrousSofa.Analysis.PartialReflectedControls
+public import AmbidextrousSofa.Analysis.CornerArcExcess
+
+@[expose] public section
 
 /-!
 # The actual proper cap supplies the reflected arc dynamics

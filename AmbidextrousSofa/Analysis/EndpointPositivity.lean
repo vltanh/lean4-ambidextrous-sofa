@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.EndpointComplementarity
-import AmbidextrousSofa.Analysis.LowHeightMaximizer
-import AmbidextrousSofa.Analysis.SelectedErosionMoments
+module
+
+public import AmbidextrousSofa.Analysis.EndpointComplementarity
+public import AmbidextrousSofa.Analysis.LowHeightMaximizer
+public import AmbidextrousSofa.Analysis.SelectedErosionMoments
+
+@[expose] public section
 
 /-!
 # Strict endpoint stationarity for canonical full maxima

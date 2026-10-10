@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.NearDiagonalWalls
+module
+
+public import AmbidextrousSofa.Analysis.NearDiagonalWalls
+
+@[expose] public section
 
 /-!
 # Exact constants for the short-width two-tail payment

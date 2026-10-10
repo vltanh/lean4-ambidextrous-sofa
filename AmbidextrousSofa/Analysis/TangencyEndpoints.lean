@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.HorizontalTopFacet
-import AmbidextrousSofa.Analysis.TangencyLoci
+module
+
+public import AmbidextrousSofa.Analysis.HorizontalTopFacet
+public import AmbidextrousSofa.Analysis.TangencyLoci
+
+@[expose] public section
 
 /-!
 # Actual horizontal top faces and one-sided tangency endpoints
@@ -19,23 +23,23 @@ open scoped Topology
 namespace AmbidextrousSofa
 
 theorem firstTangency_eq_vplus_sub_unitNormal (U : Set Plane) (t : ℝ) :
-    firstTangency U t = Imported.vplus U t - unitNormal t := by
-  have hframe := Imported.eq_dot_uvec_smul_add (Imported.vplus U t) t
-  rw [Imported.dot_vplus_uvec] at hframe
+    firstTangency U t = MovingSofaOptimality.vplus U t - unitNormal t := by
+  have hframe := MovingSofaOptimality.eq_dot_uvec_smul_add (MovingSofaOptimality.vplus U t) t
+  rw [MovingSofaOptimality.dot_vplus_uvec] at hframe
   have hx := congrArg Prod.fst hframe
   have hy := congrArg Prod.snd hframe
   simp only [Prod.fst_add, Prod.snd_add, Prod.smul_fst, Prod.smul_snd, smul_eq_mul,
-    Imported.uvec, Imported.vvec] at hx hy
+    MovingSofaOptimality.uvec, MovingSofaOptimality.vvec] at hx hy
   apply Prod.ext
   · rw [firstTangency_fst_eq_support]
-    change (Imported.supp U t - 1) * Real.cos t -
-      Imported.dot (Imported.vplus U t) (Imported.vvec t) * Real.sin t =
-        (Imported.vplus U t).1 - Real.cos t
+    change (MovingSofaOptimality.supp U t - 1) * Real.cos t -
+      MovingSofaOptimality.dot (MovingSofaOptimality.vplus U t) (MovingSofaOptimality.vvec t) * Real.sin t =
+        (MovingSofaOptimality.vplus U t).1 - Real.cos t
     nlinarith
   · rw [firstTangency_snd_eq_support]
-    change (Imported.supp U t - 1) * Real.sin t +
-      Imported.dot (Imported.vplus U t) (Imported.vvec t) * Real.cos t =
-        (Imported.vplus U t).2 - Real.sin t
+    change (MovingSofaOptimality.supp U t - 1) * Real.sin t +
+      MovingSofaOptimality.dot (MovingSofaOptimality.vplus U t) (MovingSofaOptimality.vvec t) * Real.cos t =
+        (MovingSofaOptimality.vplus U t).2 - Real.sin t
     nlinarith
 
 theorem secondTangency_eq_firstTangency_shift (U : Set Plane) (t : ℝ) :
@@ -49,34 +53,34 @@ theorem secondTangency_eq_firstTangency_shift (U : Set Plane) (t : ℝ) :
     ring
 
 theorem secondTangency_eq_vplus_sub_companionNormal (U : Set Plane) (t : ℝ) :
-    secondTangency U t = Imported.vplus U (t + Real.pi / 2) - companionNormal t := by
+    secondTangency U t = MovingSofaOptimality.vplus U (t + Real.pi / 2) - companionNormal t := by
   rw [secondTangency_eq_firstTangency_shift, firstTangency_eq_vplus_sub_unitNormal,
     companionNormal_eq_unitNormal]
 
 theorem imported_supp_pi_div_two (U : Set Plane) :
-    Imported.supp U (Real.pi / 2) = capHeight U := by
+    MovingSofaOptimality.supp U (Real.pi / 2) = capHeight U := by
   change support U (unitNormal (Real.pi / 2)) = support U (0, 1)
   simp only [unitNormal, Real.cos_pi_div_two, Real.sin_pi_div_two]
 
 theorem IsFullCapMaximizer.top_vplus_pi_div_two
     {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1)
     (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1) :
-    Imported.vplus U (Real.pi / 2) = (horizontalLeft U + capWidth U / 4, 1) := by
-  have hp := Imported.vplus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)
-  have hy : (Imported.vplus U (Real.pi / 2)).2 = 1 := by
-    simpa only [Imported.dot, Imported.uvec, Real.cos_pi_div_two, Real.sin_pi_div_two,
+    MovingSofaOptimality.vplus U (Real.pi / 2) = (horizontalLeft U + capWidth U / 4, 1) := by
+  have hp := MovingSofaOptimality.vplus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)
+  have hy : (MovingSofaOptimality.vplus U (Real.pi / 2)).2 = 1 := by
+    simpa only [MovingSofaOptimality.dot, MovingSofaOptimality.uvec, Real.cos_pi_div_two, Real.sin_pi_div_two,
       mul_zero, mul_one, zero_add, imported_supp_pi_div_two, hheight] using hp.2
   have hJ := hU.top_abscissa_mem_middle hheight hmiddle hp.1 hy
   have hw : 0 < capWidth U := lt_trans (by norm_num) hU.two_lt_width
   obtain ⟨hl, _, hlr⟩ := hU.isCap.middleChord_endpoints hw
   have hpoint : (horizontalLeft U + capWidth U / 4, 1) ∈ U := by
     simpa only [hmiddle _ ⟨le_rfl, hlr.le⟩] using capRoof_mem hU.isCap.isCompact hl
-  have hedge : (horizontalLeft U + capWidth U / 4, 1) ∈ Imported.edge U (Real.pi / 2) := by
+  have hedge : (horizontalLeft U + capWidth U / 4, 1) ∈ MovingSofaOptimality.edge U (Real.pi / 2) := by
     refine ⟨hpoint, ?_⟩
-    simp only [Imported.dot, Imported.uvec, Real.cos_pi_div_two, Real.sin_pi_div_two,
+    simp only [MovingSofaOptimality.dot, MovingSofaOptimality.uvec, Real.cos_pi_div_two, Real.sin_pi_div_two,
       mul_zero, mul_one, zero_add, imported_supp_pi_div_two, hheight]
-  have hbound := Imported.dot_le_dot_vplus hU.isCap.isCompact hedge
-  simp only [Imported.dot, Imported.vvec, Real.sin_pi_div_two, Real.cos_pi_div_two,
+  have hbound := MovingSofaOptimality.dot_le_dot_vplus hU.isCap.isCompact hedge
+  simp only [MovingSofaOptimality.dot, MovingSofaOptimality.vvec, Real.sin_pi_div_two, Real.cos_pi_div_two,
     mul_neg, mul_one, mul_zero, add_zero] at hbound
   apply Prod.ext _ hy
   change horizontalLeft U + capWidth U / 4 ≤ _ ∧ _ at hJ
@@ -85,22 +89,22 @@ theorem IsFullCapMaximizer.top_vplus_pi_div_two
 theorem IsFullCapMaximizer.top_vminus_pi_div_two
     {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1)
     (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1) :
-    Imported.vminus U (Real.pi / 2) = (horizontalRight U - capWidth U / 4, 1) := by
-  have hp := Imported.vminus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)
-  have hy : (Imported.vminus U (Real.pi / 2)).2 = 1 := by
-    simpa only [Imported.dot, Imported.uvec, Real.cos_pi_div_two, Real.sin_pi_div_two,
+    MovingSofaOptimality.vminus U (Real.pi / 2) = (horizontalRight U - capWidth U / 4, 1) := by
+  have hp := MovingSofaOptimality.vminus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)
+  have hy : (MovingSofaOptimality.vminus U (Real.pi / 2)).2 = 1 := by
+    simpa only [MovingSofaOptimality.dot, MovingSofaOptimality.uvec, Real.cos_pi_div_two, Real.sin_pi_div_two,
       mul_zero, mul_one, zero_add, imported_supp_pi_div_two, hheight] using hp.2
   have hJ := hU.top_abscissa_mem_middle hheight hmiddle hp.1 hy
   have hw : 0 < capWidth U := lt_trans (by norm_num) hU.two_lt_width
   obtain ⟨_, hr, hlr⟩ := hU.isCap.middleChord_endpoints hw
   have hpoint : (horizontalRight U - capWidth U / 4, 1) ∈ U := by
     simpa only [hmiddle _ ⟨hlr.le, le_rfl⟩] using capRoof_mem hU.isCap.isCompact hr
-  have hedge : (horizontalRight U - capWidth U / 4, 1) ∈ Imported.edge U (Real.pi / 2) := by
+  have hedge : (horizontalRight U - capWidth U / 4, 1) ∈ MovingSofaOptimality.edge U (Real.pi / 2) := by
     refine ⟨hpoint, ?_⟩
-    simp only [Imported.dot, Imported.uvec, Real.cos_pi_div_two, Real.sin_pi_div_two,
+    simp only [MovingSofaOptimality.dot, MovingSofaOptimality.uvec, Real.cos_pi_div_two, Real.sin_pi_div_two,
       mul_zero, mul_one, zero_add, imported_supp_pi_div_two, hheight]
-  have hbound := Imported.dot_vminus_le_dot hU.isCap.isCompact hedge
-  simp only [Imported.dot, Imported.vvec, Real.sin_pi_div_two, Real.cos_pi_div_two,
+  have hbound := MovingSofaOptimality.dot_vminus_le_dot hU.isCap.isCompact hedge
+  simp only [MovingSofaOptimality.dot, MovingSofaOptimality.vvec, Real.sin_pi_div_two, Real.cos_pi_div_two,
     mul_neg, mul_one, mul_zero, add_zero] at hbound
   apply Prod.ext _ hy
   change _ ∧ _ ≤ horizontalRight U - capWidth U / 4 at hJ
@@ -124,7 +128,7 @@ theorem IsDownwardCap.firstTangency_tendsto_zero_right
     {U : Set Plane} (hU : IsDownwardCap U) :
     Tendsto (firstTangency U) (𝓝[>] (0 : ℝ))
       (𝓝 (horizontalRight U - 1, capRoof U (horizontalRight U))) := by
-  have hp := Imported.tendsto_vplus_right hU.imported_isConvexBody 0
+  have hp := MovingSofaOptimality.tendsto_vplus_right hU.imported_isConvexBody 0
   have hn := (continuous_unitNormal.tendsto 0).mono_left (nhdsWithin_le_nhds : 𝓝[>] (0 : ℝ) ≤ 𝓝 0)
   simpa only [← firstTangency_eq_vplus_sub_unitNormal, hU.axis_vplus_zero,
     unitNormal, Real.cos_zero, Real.sin_zero, Prod.mk_sub_mk, sub_zero] using hp.sub hn
@@ -134,7 +138,7 @@ theorem IsFullCapMaximizer.secondTangency_tendsto_zero_right
     (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1) :
     Tendsto (secondTangency U) (𝓝[>] (0 : ℝ))
       (𝓝 (horizontalLeft U + capWidth U / 4, 0)) := by
-  have hp := (Imported.tendsto_vplus_right hU.isCap.imported_isConvexBody (Real.pi / 2)).comp
+  have hp := (MovingSofaOptimality.tendsto_vplus_right hU.isCap.imported_isConvexBody (Real.pi / 2)).comp
     (by simpa only [zero_add] using tendsto_add_const_nhdsGT 0 (Real.pi / 2))
   have hn := (continuous_companionNormal.tendsto 0).mono_left
     (nhdsWithin_le_nhds : 𝓝[>] (0 : ℝ) ≤ 𝓝 0)
@@ -147,7 +151,7 @@ theorem IsFullCapMaximizer.firstTangency_tendsto_pi_div_two_left
     (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1) :
     Tendsto (firstTangency U) (𝓝[<] (Real.pi / 2))
       (𝓝 (horizontalRight U - capWidth U / 4, 0)) := by
-  have hp := Imported.tendsto_vplus_left hU.isCap.imported_isConvexBody (Real.pi / 2)
+  have hp := MovingSofaOptimality.tendsto_vplus_left hU.isCap.imported_isConvexBody (Real.pi / 2)
   have hn := (continuous_unitNormal.tendsto (Real.pi / 2)).mono_left
     (nhdsWithin_le_nhds : 𝓝[<] (Real.pi / 2) ≤ 𝓝 (Real.pi / 2))
   simpa only [← firstTangency_eq_vplus_sub_unitNormal,
@@ -159,7 +163,7 @@ theorem IsDownwardCap.secondTangency_tendsto_pi_div_two_left
     Tendsto (secondTangency U) (𝓝[<] (Real.pi / 2))
       (𝓝 (horizontalLeft U + 1, capRoof U (horizontalLeft U))) := by
   have hadd : Real.pi / 2 + Real.pi / 2 = Real.pi := by ring
-  have hp := (Imported.tendsto_vplus_left hU.imported_isConvexBody Real.pi).comp
+  have hp := (MovingSofaOptimality.tendsto_vplus_left hU.imported_isConvexBody Real.pi).comp
     (by simpa only [hadd] using tendsto_add_const_nhdsLT (Real.pi / 2) (Real.pi / 2))
   have hn := (continuous_companionNormal.tendsto (Real.pi / 2)).mono_left
     (nhdsWithin_le_nhds : 𝓝[<] (Real.pi / 2) ≤ 𝓝 (Real.pi / 2))
@@ -182,12 +186,12 @@ theorem IsDownwardCap.attachedCorner_zero_of_height_one
     attachedCorner U 0 = (horizontalRight U - 1, 0) := by
   apply Prod.ext
   · rw [attachedCorner_fst_eq_support]
-    change (Imported.supp U 0 - 1) * Real.cos 0 -
-      (Imported.supp U (0 + Real.pi / 2) - 1) * Real.sin 0 = _
+    change (MovingSofaOptimality.supp U 0 - 1) * Real.cos 0 -
+      (MovingSofaOptimality.supp U (0 + Real.pi / 2) - 1) * Real.sin 0 = _
     simp only [Real.cos_zero, Real.sin_zero, mul_one, mul_zero, sub_zero, imported_supp_zero]
   · rw [attachedCorner_snd_eq_support]
-    change (Imported.supp U 0 - 1) * Real.sin 0 +
-      (Imported.supp U (0 + Real.pi / 2) - 1) * Real.cos 0 = _
+    change (MovingSofaOptimality.supp U 0 - 1) * Real.sin 0 +
+      (MovingSofaOptimality.supp U (0 + Real.pi / 2) - 1) * Real.cos 0 = _
     simp only [Real.cos_zero, Real.sin_zero, mul_one, mul_zero, zero_add,
       imported_supp_pi_div_two, zero_add, hheight, sub_self]
 
@@ -197,14 +201,14 @@ theorem IsDownwardCap.attachedCorner_pi_div_two_of_height_one
   have hadd : Real.pi / 2 + Real.pi / 2 = Real.pi := by ring
   apply Prod.ext
   · rw [attachedCorner_fst_eq_support]
-    change (Imported.supp U (Real.pi / 2) - 1) * Real.cos (Real.pi / 2) -
-      (Imported.supp U (Real.pi / 2 + Real.pi / 2) - 1) * Real.sin (Real.pi / 2) = _
+    change (MovingSofaOptimality.supp U (Real.pi / 2) - 1) * Real.cos (Real.pi / 2) -
+      (MovingSofaOptimality.supp U (Real.pi / 2 + Real.pi / 2) - 1) * Real.sin (Real.pi / 2) = _
     rw [hadd, hU.imported_supp_pi]
     simp only [Real.cos_pi_div_two, Real.sin_pi_div_two, mul_zero, mul_one, zero_sub]
     ring
   · rw [attachedCorner_snd_eq_support]
-    change (Imported.supp U (Real.pi / 2) - 1) * Real.sin (Real.pi / 2) +
-      (Imported.supp U (Real.pi / 2 + Real.pi / 2) - 1) * Real.cos (Real.pi / 2) = _
+    change (MovingSofaOptimality.supp U (Real.pi / 2) - 1) * Real.sin (Real.pi / 2) +
+      (MovingSofaOptimality.supp U (Real.pi / 2 + Real.pi / 2) - 1) * Real.cos (Real.pi / 2) = _
     simp only [Real.cos_pi_div_two, Real.sin_pi_div_two, mul_zero, mul_one, add_zero,
       imported_supp_pi_div_two, hheight, sub_self]
 

@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.DrySourceProjection
+module
+
+public import AmbidextrousSofa.Analysis.DrySourceProjection
+
+@[expose] public section
 
 /-!
 # Actual dry intervals are paid for by the horizontal top

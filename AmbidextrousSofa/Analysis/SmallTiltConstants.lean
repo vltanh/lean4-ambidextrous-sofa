@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TiltedInitialEnergyBounds
+module
+
+public import AmbidextrousSofa.Analysis.TiltedInitialEnergyBounds
+
+@[expose] public section
 
 /-!
 # The fixed tangent and rational margins for small positive tilts

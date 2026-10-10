@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.ThreeAngleDeficit
-import AmbidextrousSofa.Analysis.PartialTriangleScalar
+module
+
+public import AmbidextrousSofa.Analysis.ThreeAngleDeficit
+public import AmbidextrousSofa.Analysis.PartialTriangleScalar
+
+@[expose] public section
 
 /-!
 # The proper joint floor payment in the actual three-angle comparison

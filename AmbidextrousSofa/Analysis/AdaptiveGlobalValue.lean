@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.AdaptiveGlobalMomenta
-import AmbidextrousSofa.Reference.Value
+module
+
+public import AmbidextrousSofa.Analysis.AdaptiveGlobalMomenta
+public import AmbidextrousSofa.Reference.Value
+
+@[expose] public section
 
 /-!
 # Integral value of the actual stationary family

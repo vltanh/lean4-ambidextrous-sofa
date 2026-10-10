@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TiltedLateExcessScalar
+module
+
+public import AmbidextrousSofa.Analysis.TiltedLateExcessScalar
+
+@[expose] public section
 
 /-!
 # Exact stopping bounds for a proper reflected excess

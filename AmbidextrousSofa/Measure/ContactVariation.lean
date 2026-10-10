@@ -1,5 +1,9 @@
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Integral.Bochner.Set
+module
+
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+
+@[expose] public section
 
 /-!
 # One-sided contact and strict-gap integral variations

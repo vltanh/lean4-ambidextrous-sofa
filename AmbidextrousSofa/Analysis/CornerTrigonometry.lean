@@ -1,5 +1,9 @@
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Tactic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Tactic
+
+@[expose] public section
 
 /-!
 # Exact corner confinement margins

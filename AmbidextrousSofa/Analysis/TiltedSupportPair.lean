@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.ClosedSupportPair
-import AmbidextrousSofa.Analysis.TiltedWingSupport
-import AmbidextrousSofa.Analysis.CornerCrossing
+module
+
+public import AmbidextrousSofa.Analysis.ClosedSupportPair
+public import AmbidextrousSofa.Analysis.TiltedWingSupport
+public import AmbidextrousSofa.Analysis.CornerCrossing
+
+@[expose] public section
 
 /-!
 # The actual two-cap support pair for a tilted full maximum
@@ -64,48 +68,48 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
 
 theorem fullTiltedSupportQuarterPair_absolutelyContinuous :
-    AbsolutelyContinuousOnInterval F.f 0 (Real.pi / 2) ∧
-      AbsolutelyContinuousOnInterval F.g 0 (Real.pi / 2) ∧
-      AbsolutelyContinuousOnInterval F.fD 0 (Real.pi / 2) ∧
-      AbsolutelyContinuousOnInterval F.gD 0 (Real.pi / 2) := by
+    AbsolutelyContinuousOnInterval (F).f 0 (Real.pi / 2) ∧
+      AbsolutelyContinuousOnInterval (F).g 0 (Real.pi / 2) ∧
+      AbsolutelyContinuousOnInterval (F).fD 0 (Real.pi / 2) ∧
+      AbsolutelyContinuousOnInterval (F).gD 0 (Real.pi / 2) := by
   unfold fullTiltedSupportQuarterPair
   exact supportQuarterPair_absolutelyContinuous _ _ _ _ _ _ _ _ _ _
 
 theorem fullTiltedSupportQuarterPair_ae_derivatives :
     ∀ᵐ t ∂volume.restrict (Ioo 0 (Real.pi / 2)),
-      HasDerivAt F.f (F.fD t) t ∧ HasDerivAt F.g (F.gD t) t ∧
-      HasDerivAt F.fD (ρ t - F.f t) t ∧
-      HasDerivAt F.gD (leftCompanionWingDensity m ρ (t + Real.pi / 2) - F.g t) t := by
+      HasDerivAt (F).f ((F).fD t) t ∧ HasDerivAt (F).g ((F).gD t) t ∧
+      HasDerivAt (F).fD (ρ t - (F).f t) t ∧
+      HasDerivAt (F).gD (leftCompanionWingDensity m ρ (t + Real.pi / 2) - (F).g t) t := by
   unfold fullTiltedSupportQuarterPair
   exact supportQuarterPair_ae_derivatives _ _ _ _ _ _ _ _ _ _
 
 theorem fullTiltedSupportQuarterPair_corner_calculus :
-    AbsolutelyContinuousOnInterval (supportP F.fD F.g) 0 (Real.pi / 2) ∧
-      AbsolutelyContinuousOnInterval (supportQ F.gD F.f) 0 (Real.pi / 2) ∧
+    AbsolutelyContinuousOnInterval (supportP (F).fD (F).g) 0 (Real.pi / 2) ∧
+      AbsolutelyContinuousOnInterval (supportQ (F).gD (F).f) 0 (Real.pi / 2) ∧
       ∀ᵐ t ∂volume.restrict (Ioo 0 (Real.pi / 2)),
-        HasDerivAt (supportP F.fD F.g) (ρ t - 1 - supportQ F.gD F.f t) t ∧
-        HasDerivAt (supportQ F.gD F.f)
-          (leftCompanionWingDensity m ρ (t + Real.pi / 2) - 1 + supportP F.fD F.g t) t := by
+        HasDerivAt (supportP (F).fD (F).g) (ρ t - 1 - supportQ (F).gD (F).f t) t ∧
+        HasDerivAt (supportQ (F).gD (F).f)
+          (leftCompanionWingDensity m ρ (t + Real.pi / 2) - 1 + supportP (F).fD (F).g t) t := by
   unfold fullTiltedSupportQuarterPair
   exact supportQuarterPair_corner_calculus _ _ _ _ _ _ _ _ _ _
 
 theorem fullTiltedSupportQuarterPair_points_mem :
-    (∀ t ∈ Icc 0 (Real.pi / 2), Reference.supportPoint F.f F.fD t ∈ U) ∧
-      ∀ t ∈ Icc 0 (Real.pi / 2), Reference.companionSupportPoint F.g F.gD t ∈
+    (∀ t ∈ Icc 0 (Real.pi / 2), Reference.supportPoint (F).f (F).fD t ∈ U) ∧
+      ∀ t ∈ Icc 0 (Real.pi / 2), Reference.companionSupportPoint (F).g (F).gD t ∈
         leftCompanionCap U (horizontalLeft U + capWidth U / 4) := by
   unfold fullTiltedSupportQuarterPair
   exact supportQuarterPair_points_mem _ _ _ _ _ _ _ _ _ _
 
 theorem fullTiltedSupportQuarterPair_base_traces :
-    F.f 0 = horizontalRight U ∧
-      F.g 0 = capHeight (leftCompanionCap U (horizontalLeft U + capWidth U / 4)) ∧
-      F.f (Real.pi / 2) = capHeight U ∧
-      F.g (Real.pi / 2) = -horizontalLeft (leftCompanionCap U (horizontalLeft U + capWidth U / 4)) ∧
-      F.fD 0 = capRoof U (horizontalRight U) ∧
-      F.gD 0 = -(Imported.vplus (leftCompanionCap U (horizontalLeft U + capWidth U / 4))
+    (F).f 0 = horizontalRight U ∧
+      (F).g 0 = capHeight (leftCompanionCap U (horizontalLeft U + capWidth U / 4)) ∧
+      (F).f (Real.pi / 2) = capHeight U ∧
+      (F).g (Real.pi / 2) = -horizontalLeft (leftCompanionCap U (horizontalLeft U + capWidth U / 4)) ∧
+      (F).fD 0 = capRoof U (horizontalRight U) ∧
+      (F).gD 0 = -(MovingSofaOptimality.vplus (leftCompanionCap U (horizontalLeft U + capWidth U / 4))
         (Real.pi / 2)).1 ∧
-      F.fD (Real.pi / 2) = -(Imported.vminus U (Real.pi / 2)).1 ∧
-      F.gD (Real.pi / 2) = -capRoof (leftCompanionCap U (horizontalLeft U + capWidth U / 4))
+      (F).fD (Real.pi / 2) = -(MovingSofaOptimality.vminus U (Real.pi / 2)).1 ∧
+      (F).gD (Real.pi / 2) = -capRoof (leftCompanionCap U (horizontalLeft U + capWidth U / 4))
         (horizontalLeft (leftCompanionCap U (horizontalLeft U + capWidth U / 4))) := by
   unfold fullTiltedSupportQuarterPair
   exact supportQuarterPair_traces _ _ _ _ _ _ _ _ _ _
@@ -114,13 +118,13 @@ theorem fullTiltedSupportQuarterPair_base_traces :
 middle endpoint. The terminal first derivative retains the genuine
 right endpoint of the original top face. -/
 theorem fullTiltedSupportQuarterPair_traces (hmpos : 0 < m) :
-    F.f 0 = horizontalRight U ∧
-      F.g 0 = capRoof U (horizontalLeft U + capWidth U / 4) ∧
-      F.f (Real.pi / 2) = capHeight U ∧ F.g (Real.pi / 2) = -horizontalLeft U ∧
-      F.fD 0 = capRoof U (horizontalRight U) ∧
-      F.gD 0 = -(horizontalLeft U + capWidth U / 4) ∧
-      F.fD (Real.pi / 2) = -(Imported.vminus U (Real.pi / 2)).1 ∧
-      F.gD (Real.pi / 2) = -capRoof U (horizontalLeft U) := by
+    (F).f 0 = horizontalRight U ∧
+      (F).g 0 = capRoof U (horizontalLeft U + capWidth U / 4) ∧
+      (F).f (Real.pi / 2) = capHeight U ∧ (F).g (Real.pi / 2) = -horizontalLeft U ∧
+      (F).fD 0 = capRoof U (horizontalRight U) ∧
+      (F).gD 0 = -(horizontalLeft U + capWidth U / 4) ∧
+      (F).fD (Real.pi / 2) = -(MovingSofaOptimality.vminus U (Real.pi / 2)).1 ∧
+      (F).gD (Real.pi / 2) = -capRoof U (horizontalLeft U) := by
   obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints
     (show 0 < capWidth U by linarith only [hU.width_bounds.1, one_lt_M])
   have htop := hU.isCap.top_leftCompanionCap_of_positive_affine ha hb hab hmpos haffine
@@ -138,7 +142,7 @@ theorem fullTiltedSupportQuarterPair_traces (hmpos : 0 < m) :
     fullTiltedSupportQuarterPair_base_traces hU hm haffine hρ hρ0 hρK heq
 
 theorem fullTiltedSupportQuarterPair_first_derivative {t : ℝ}
-    (ht : t ∈ Ico 0 (Real.pi / 2)) : F.fD t = supportTangent U t := by
+    (ht : t ∈ Ico 0 (Real.pi / 2)) : (F).fD t = supportTangent U t := by
   have h := hU.isCap.closedSupportDerivative_eq_supportTangent hρ hρ0 hρK heq
     (d := 0) (by simpa only [zero_add] using
       firstQuarter_subset_regularCurvatureDomain_of_nonneg hm) ht.1 ht.2
@@ -148,10 +152,10 @@ theorem fullTiltedSupportQuarterPair_first_derivative {t : ℝ}
 literally the original cap's companion support and tangent. -/
 theorem fullTiltedSupportQuarterPair_after_affine {t : ℝ}
     (ht : t ∈ Ico 0 (Real.pi / 2)) (hmt : Real.arctan m ≤ t) :
-    F.g t = angleSupport U (t + Real.pi / 2) ∧
-      F.gD t = supportTangent U (t + Real.pi / 2) ∧
-      supportP F.fD F.g t = -secondCornerVelocity U t ∧
-      supportQ F.gD F.f t = firstCornerVelocity U t := by
+    (F).g t = angleSupport U (t + Real.pi / 2) ∧
+      (F).gD t = supportTangent U (t + Real.pi / 2) ∧
+      supportP (F).fD (F).g t = -secondCornerVelocity U t ∧
+      supportQ (F).gD (F).f t = firstCornerVelocity U t := by
   obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints
     (show 0 < capWidth U by linarith only [hU.width_bounds.1, one_lt_M])
   have hmatch := hU.isCap.companionSupport_and_tangent_leftCut_after_affine
@@ -164,8 +168,8 @@ theorem fullTiltedSupportQuarterPair_after_affine {t : ℝ}
     (fun s => (leftCompanionWingDensity_bounds hρ0 hρK s).1)
     (fun s => (leftCompanionWingDensity_bounds hρ0 hρK s).2) hcut
     (d := Real.pi / 2) (by intro s hs; exact ⟨hs.1, by linarith only [hs.2]⟩) ht.1 ht.2
-  have hg : F.g t = angleSupport U (t + Real.pi / 2) := hmatch.1
-  have hgD : F.gD t = supportTangent U (t + Real.pi / 2) := hgd.trans hmatch.2
+  have hg : (F).g t = angleSupport U (t + Real.pi / 2) := hmatch.1
+  have hgD : (F).gD t = supportTangent U (t + Real.pi / 2) := hgd.trans hmatch.2
   have hfD := fullTiltedSupportQuarterPair_first_derivative hU hm haffine hρ hρ0 hρK heq ht
   refine ⟨hg, hgD, ?_, ?_⟩
   · dsimp only [supportP]
@@ -183,18 +187,18 @@ theorem fullTiltedSupportQuarterPair_after_affine {t : ℝ}
 of whether the companion quarter has passed its middle normal. -/
 theorem fullTiltedSupportQuarterPair_first_tangency {t : ℝ}
     (ht : t ∈ Ico 0 (Real.pi / 2)) :
-    firstTangentPoint F.f F.fD t = firstTangency U t := by
+    firstTangentPoint (F).f (F).fD t = firstTangency U t := by
   have hfD := fullTiltedSupportQuarterPair_first_derivative hU hm haffine hρ hρ0 hρK heq ht
   apply Prod.ext
-  · change (angleSupport U t - 1) * Real.cos t - F.fD t * Real.sin t = _
+  · change (angleSupport U t - 1) * Real.cos t - (F).fD t * Real.sin t = _
     rw [hfD, firstTangency_fst_eq_support]
-  · change (angleSupport U t - 1) * Real.sin t + F.fD t * Real.cos t = _
+  · change (angleSupport U t - 1) * Real.sin t + (F).fD t * Real.cos t = _
     rw [hfD, firstTangency_snd_eq_support]
 
 theorem fullTiltedSupportQuarterPair_other_points_after_affine {t : ℝ}
     (ht : t ∈ Ico 0 (Real.pi / 2)) (hmt : Real.arctan m ≤ t) :
-    secondTangentPoint F.g F.gD t = secondTangency U t ∧
-      innerCornerPoint F.f F.g t = attachedCorner U t := by
+    secondTangentPoint (F).g (F).gD t = secondTangency U t ∧
+      innerCornerPoint (F).f (F).g t = attachedCorner U t := by
   have hmatch := fullTiltedSupportQuarterPair_after_affine hU hm haffine hρ hρ0 hρK heq ht hmt
   constructor
   · rw [secondTangentPoint, companionSupportPoint_coordinates, hmatch.1, hmatch.2.1]
@@ -206,9 +210,9 @@ theorem fullTiltedSupportQuarterPair_other_points_after_affine {t : ℝ}
       rw [secondTangency_snd_eq_support]
       ring
   · apply Prod.ext
-    · change (angleSupport U t - 1) * Real.cos t - (F.g t - 1) * Real.sin t = _
+    · change (angleSupport U t - 1) * Real.cos t - ((F).g t - 1) * Real.sin t = _
       rw [hmatch.1, attachedCorner_fst_eq_support]
-    · change (angleSupport U t - 1) * Real.sin t + (F.g t - 1) * Real.cos t = _
+    · change (angleSupport U t - 1) * Real.sin t + ((F).g t - 1) * Real.cos t = _
       rw [hmatch.1, attachedCorner_snd_eq_support]
 
 end ActualPair

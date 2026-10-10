@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.WingCurvatureIntervals
-import AmbidextrousSofa.Imported.Injectivity.LimitIneq
+module
+
+public import AmbidextrousSofa.Analysis.WingCurvatureIntervals
+public import MovingSofaOptimality.Injectivity.LimitIneq
+
+@[expose] public section
 
 /-!
 # Actual bounded curvature densities on the wings
@@ -75,7 +79,7 @@ theorem curvature_restrict_le_on_wing
   letI : IsFiniteMeasure (ENNReal.ofReal (4 * R + 10) • (volume.restrict (Ioo a b))) :=
     Measure.smul_finite _ ENNReal.ofReal_ne_top
   have hC : 0 ≤ 4 * R + 10 := by linarith
-  apply Imported.inj_measure_le_of_Ioo
+  apply MovingSofaOptimality.inj_measure_le_of_Ioo
   intro x y _
   simp only [Measure.restrict_apply measurableSet_Ioo, Measure.smul_apply, smul_eq_mul]
   have hinter : Ioo x y ∩ Ioo a b = Ioo (max x a) (min y b) := by

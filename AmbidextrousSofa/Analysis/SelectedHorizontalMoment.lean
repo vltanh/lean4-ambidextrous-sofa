@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.PositiveNicheLimit
+module
+
+public import AmbidextrousSofa.Analysis.PositiveNicheLimit
+
+@[expose] public section
 
 /-!
 # The actual selected horizontal source inequality

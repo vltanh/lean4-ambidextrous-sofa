@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TangencyLoci
+module
+
+public import AmbidextrousSofa.Analysis.TangencyLoci
+
+@[expose] public section
 
 /-!
 # Measurability of the actual tangency coordinates

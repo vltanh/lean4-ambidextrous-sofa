@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.LeftCompanionDensity
-import AmbidextrousSofa.Analysis.TerminalStrictComparison
+module
+
+public import AmbidextrousSofa.Analysis.LeftCompanionDensity
+public import AmbidextrousSofa.Analysis.TerminalStrictComparison
+
+@[expose] public section
 
 /-!
 # Terminal comparison for the actual left charged wing
@@ -29,10 +33,10 @@ theorem IsDownwardCap.leftCompanion_initial_data_of_nonpos_affine
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (hm : m ≤ 0)
     (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c) :
-    Imported.vplus (leftCompanionCap U a) (Real.pi / 2) =
-        Imported.vplus U (Real.pi / 2) ∧
-      companionInitialOffset (leftCompanionCap U a) = companionInitialOffset U ∧
-      companionInitialDeficit (leftCompanionCap U a) = companionInitialDeficit U := by
+    MovingSofaOptimality.vplus (AmbidextrousSofa.leftCompanionCap U a) (Real.pi / 2) =
+        MovingSofaOptimality.vplus U (Real.pi / 2) ∧
+      companionInitialOffset (AmbidextrousSofa.leftCompanionCap U a) = companionInitialOffset U ∧
+      companionInitialDeficit (AmbidextrousSofa.leftCompanionCap U a) = companionInitialDeficit U := by
   have htop := hU.vplus_leftCompanionCap_eq_of_affine ha hb hab haffine
     (by simp only [Real.sin_pi_div_two]; norm_num : 0 < Real.sin (Real.pi / 2))
     (by simpa only [Real.cos_pi_div_two, Real.sin_pi_div_two, mul_one, zero_add] using hm)
@@ -40,7 +44,7 @@ theorem IsDownwardCap.leftCompanion_initial_data_of_nonpos_affine
   · unfold companionInitialOffset
     rw [htop, horizontalLeft_leftCompanionCap hU ha]
   · unfold companionInitialDeficit
-    rw [← top_vplus_snd_eq_capHeight (leftCompanionCap U a), htop,
+    rw [← top_vplus_snd_eq_capHeight (AmbidextrousSofa.leftCompanionCap U a), htop,
       top_vplus_snd_eq_capHeight U]
 
 theorem Ioc_companion_arcsin_subset {B : ℝ} (hB : B < 1) :
@@ -89,13 +93,13 @@ theorem IsDownwardCap.sweptNiche_lt_terminalWall_of_leftCompanion_weighted_exces
     {U : Set Plane} (hU : IsDownwardCap U) {ρ : ℝ → ℝ}
     {K α C T_L T_R m c z : ℝ}
     (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (heq : (upperCurvature (leftCompanionCap U (-C))).restrict (Ioo (Real.pi / 2) Real.pi) =
+    (heq : (upperCurvature (AmbidextrousSofa.leftCompanionCap U (-C))).restrict (Ioo (Real.pi / 2) Real.pi) =
       (volume.restrict (Ioo (Real.pi / 2) Real.pi)).withDensity
         (fun t => ENNReal.ofReal (ρ t)))
     (hα0 : 0 < α) (hαL : α < Real.pi / 2)
     (hleft : horizontalLeft U = -2 * C) (hright : horizontalRight U = 2 * C)
     (haffine : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c)
-    (hinitial : companionInitialOffset (leftCompanionCap U (-C)) = C - T_L)
+    (hinitial : companionInitialOffset (AmbidextrousSofa.leftCompanionCap U (-C)) = C - T_L)
     (htail : (terminalTailPoint U α).1 = C + T_R)
     (hC0 : (1 / 2 : ℝ) ≤ C) (hC1 : C ≤ 37 / 50)
     (hcut : 73 * Real.cos α ^ 2 ≤ 9)
@@ -122,11 +126,11 @@ theorem IsDownwardCap.sweptNiche_lt_terminalWall_of_leftCompanion_weighted_exces
     constructor <;> linarith only [hC0]
   have hab : -C < C := by linarith only [hC0]
   have hxb : -C + z ≤ C := by linarith only [hz1, hwhalf, hcsmall, hC0]
-  have hA : 0 < companionInitialOffset (leftCompanionCap U (-C)) := by
+  have hA : 0 < companionInitialOffset (AmbidextrousSofa.leftCompanionCap U (-C)) := by
     rw [hinitial]
     linarith only [htop, hTR, hdc, hcsmall, hC0]
   have hcoord : (-C + z) - horizontalLeft U = C + z := by rw [hleft]; ring
-  have hAB : companionInitialOffset (leftCompanionCap U (-C)) ≤ (-C + z) - horizontalLeft U := by
+  have hAB : companionInitialOffset (AmbidextrousSofa.leftCompanionCap U (-C)) ≤ (-C + z) - horizontalLeft U := by
     rw [hinitial, hcoord]
     linarith only [hTL, hz0]
   have hBα : (-C + z) - horizontalLeft U < Real.sin α := by

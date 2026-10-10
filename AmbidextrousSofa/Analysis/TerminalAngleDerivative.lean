@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.PartialCapContinuity
-import AmbidextrousSofa.Analysis.SupportCurvature
-import Mathlib.Analysis.Calculus.Deriv.Slope
+module
+
+public import AmbidextrousSofa.Analysis.PartialCapContinuity
+public import AmbidextrousSofa.Analysis.SupportCurvature
+public import Mathlib.Analysis.Calculus.Deriv.Slope
+
+@[expose] public section
 
 /-!
 # The actual right terminal-angle derivative, with historical ties
@@ -27,15 +31,15 @@ namespace AmbidextrousSofa
 /-- The horizontal coordinate of the actual upper terminal-face endpoint
 after translating that point inward by its unit normal. -/
 def terminalFirstRightAbscissa (U : Set Plane) (α : ℝ) : ℝ :=
-  (Imported.vplus U α).1 - Real.cos α
+  (MovingSofaOptimality.vplus U α).1 - Real.cos α
 
 theorem terminalFirstRightAbscissa_eq_frame (U : Set Plane) (α : ℝ) :
     terminalFirstRightAbscissa U α =
       (angleSupport U α - 1) * Real.cos α -
-        coordDot (Imported.vplus U α) (Imported.vvec α) * Real.sin α := by
-  have h := congrArg Prod.fst (Imported.vplus_eq_frame U α)
-  change (Imported.vplus U α).1 = angleSupport U α * Real.cos α +
-    coordDot (Imported.vplus U α) (Imported.vvec α) * (-Real.sin α) at h
+        coordDot (MovingSofaOptimality.vplus U α) (MovingSofaOptimality.vvec α) * Real.sin α := by
+  have h := congrArg Prod.fst (MovingSofaOptimality.vplus_eq_frame U α)
+  change (MovingSofaOptimality.vplus U α).1 = angleSupport U α * Real.cos α +
+    coordDot (MovingSofaOptimality.vplus U α) (MovingSofaOptimality.vvec α) * (-Real.sin α) at h
   unfold terminalFirstRightAbscissa
   linarith
 
@@ -47,7 +51,7 @@ theorem IsDownwardCap.firstWall_right_deriv {U : Set Plane}
     (((Real.hasDerivAt_cos α).const_mul x).hasDerivWithinAt)
   have h := hn.div (Real.hasDerivAt_sin α).hasDerivWithinAt hs
   change HasDerivWithinAt (fun t => firstWall U t x)
-    (((coordDot (Imported.vplus U α) (Imported.vvec α) - x * (-Real.sin α)) *
+    (((coordDot (MovingSofaOptimality.vplus U α) (MovingSofaOptimality.vvec α) - x * (-Real.sin α)) *
       Real.sin α - (angleSupport U α - 1 - x * Real.cos α) * Real.cos α) /
       Real.sin α ^ 2) (Ici α) α at h
   apply h.congr_deriv

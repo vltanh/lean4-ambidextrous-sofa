@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.JointSourceMeasure
-import Mathlib.MeasureTheory.Measure.Prokhorov
+module
+
+public import AmbidextrousSofa.Analysis.JointSourceMeasure
+public import Mathlib.MeasureTheory.Measure.Prokhorov
+
+@[expose] public section
 
 /-!
 # A common weak limit of the actual joint source measures

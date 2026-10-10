@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FullWidthGap
-import AmbidextrousSofa.Analysis.FacetPinning
+module
+
+public import AmbidextrousSofa.Analysis.FullWidthGap
+public import AmbidextrousSofa.Analysis.FacetPinning
+
+@[expose] public section
 
 /-!
 # The actual affine ceiling and its mandatory exterior deficit

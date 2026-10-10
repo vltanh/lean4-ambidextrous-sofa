@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.AdaptiveGlobalFamily
+module
+
+public import AmbidextrousSofa.Analysis.AdaptiveGlobalFamily
+
+@[expose] public section
 
 /-!
 # Contact signs and Euler equations for the stationary family

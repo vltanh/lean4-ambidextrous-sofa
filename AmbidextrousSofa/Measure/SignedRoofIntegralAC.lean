@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Measure.SignedRoofIntegral
-import AmbidextrousSofa.Measure.SupportAreaAC
+module
+
+public import AmbidextrousSofa.Measure.SignedRoofIntegral
+public import AmbidextrousSofa.Measure.SupportAreaAC
+
+@[expose] public section
 
 /-!
 # Signed roof integration for absolutely continuous support derivatives

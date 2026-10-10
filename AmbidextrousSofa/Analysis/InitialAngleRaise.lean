@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.AsymmetricTent
-import AmbidextrousSofa.Analysis.InitialAngleCalibration
+module
+
+public import AmbidextrousSofa.Analysis.AsymmetricTent
+public import AmbidextrousSofa.Analysis.InitialAngleCalibration
+
+@[expose] public section
 
 /-!
 # The high-right finite-support comparison

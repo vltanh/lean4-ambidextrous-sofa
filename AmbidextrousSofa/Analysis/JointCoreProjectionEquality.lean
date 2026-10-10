@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.JointCoreFlux
-import AmbidextrousSofa.Analysis.JointCoreProjection
+module
+
+public import AmbidextrousSofa.Analysis.JointCoreFlux
+public import AmbidextrousSofa.Analysis.JointCoreProjection
+
+@[expose] public section
 
 /-!
 # Exact core projection at uniquely exposed corner points
@@ -71,9 +75,13 @@ variable (hU : IsFullCapMaximizer target) {C h m c : ℝ}
   (hleft : a < horizontalLeft target) (hright : horizontalRight target < b)
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm.le haffine hρ hρ0 hρK heq
-local notation "Z" => innerCornerPoint F.f F.g
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "Z" => innerCornerPoint (F).f (F).g
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
+set_option quotPrecheck false in
 local notation "X" => (fun t => (Z t).1)
 local notation "aZ" => J.sourceBranchDensity (firstCornerSource target) 0
 local notation "aW" => J.sourceBranchDensity (secondCornerSource target) (Real.pi / 2)

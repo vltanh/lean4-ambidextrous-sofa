@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.TiltedFoldPayment
+module
+
+public import AmbidextrousSofa.Analysis.TiltedFoldPayment
+
+@[expose] public section
 
 /-!
 # The GF contradiction from raw analytic data

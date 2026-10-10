@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.CapInsertion
-import AmbidextrousSofa.Analysis.GlobalCapMaximum
-import AmbidextrousSofa.Analysis.FiniteScore
+module
+
+public import AmbidextrousSofa.Analysis.CapInsertion
+public import AmbidextrousSofa.Analysis.GlobalCapMaximum
+public import AmbidextrousSofa.Analysis.FiniteScore
+
+@[expose] public section
 
 /-!
 # Top insertion preserves the whole niche on the middle window

@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.VisibleFluxDensity
-import AmbidextrousSofa.Analysis.RegularCorner
+module
+
+public import AmbidextrousSofa.Analysis.VisibleFluxDensity
+public import AmbidextrousSofa.Analysis.RegularCorner
+
+@[expose] public section
 
 /-!
 # Saturation from local interval occupation

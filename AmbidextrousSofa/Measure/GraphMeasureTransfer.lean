@@ -1,8 +1,13 @@
-import AmbidextrousSofa.Measure.RealRadonNikodym
-import Mathlib.MeasureTheory.Constructions.Polish.Basic
-import Mathlib.MeasureTheory.Function.AEEqOfIntegral
-import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
-import Mathlib.MeasureTheory.Integral.Bochner.Set
+module
+
+public import AmbidextrousSofa.Measure.RealRadonNikodym
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+
+@[expose] public section
 
 /-!
 # Transferring source measures along a graph

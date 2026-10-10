@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.PartialSourceMass
-import AmbidextrousSofa.Analysis.DyadicCurvatureMass
+module
+
+public import AmbidextrousSofa.Analysis.PartialSourceMass
+public import AmbidextrousSofa.Analysis.DyadicCurvatureMass
+
+@[expose] public section
 
 /-!
 # Proper source counting and literal curvature interval bounds
@@ -29,6 +33,7 @@ theorem scaledAngle_eq_index_mul_mesh (α : TerminalAngle) (n : ℕ)
   rw [scaleAngle_coe, ht, mesh]
   ring
 
+open Classical in
 theorem sum_mesh_scaled_interior_interval_le (α : TerminalAngle) (n : ℕ)
     {a b : ℝ} (hab : a ≤ b) :
     (∑ t ∈ Finset.univ.filter (fun t : InteriorPoint (dyadic n) =>
@@ -40,6 +45,7 @@ theorem sum_mesh_scaled_interior_interval_le (α : TerminalAngle) (n : ℕ)
       (fun s t h => Sum.inl.inj (fullGridIndex_injective n h))
       (mesh_pos α n).le hab (scaledAngle_eq_index_mul_mesh α n)
 
+open Classical in
 theorem sum_mesh_scaled_sources_interval_le (α : TerminalAngle) (n : ℕ)
     {a b : ℝ} (hab : a ≤ b) :
     (∑ k : AngularGrid.SourceIndex (dyadic n),
@@ -70,6 +76,7 @@ theorem sum_mesh_scaled_sources_interval_le (α : TerminalAngle) (n : ℕ)
       if (scaleAngle α t.val : ℝ) + Real.pi / 2 ∈ Icc a b then mesh α n else 0) ≤ _
   linarith only [hfirst, hsecond]
 
+open Classical in
 theorem innerSourceMass_sum_interval_le {U : Set Plane} (hU : IsDownwardCap U)
     (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2)
     {R a b : ℝ} (hR : 0 ≤ R) (hbox : U ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1)
@@ -130,6 +137,7 @@ theorem innerSourceMass_sum_interval_le {U : Set Plane} (hU : IsDownwardCap U)
       mul_le_mul_of_nonneg_left (sum_mesh_scaled_sources_interval_le α n hab) hC
     _ = _ := by dsimp [C]; ring
 
+open Classical in
 theorem IsSelectedPolygon.curvature_Ioc_le {target U : Set Plane}
     {α : TerminalAngle} {hαL : (α : ℝ) < Real.pi / 2}
     {boxLeft boxRight coefficient R a b : ℝ} {level : ℕ}

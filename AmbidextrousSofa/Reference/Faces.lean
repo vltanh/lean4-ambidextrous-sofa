@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Reference.Niche
-import AmbidextrousSofa.Reference.Momenta
-import AmbidextrousSofa.Measure.CapScore
+module
+
+public import AmbidextrousSofa.Reference.Niche
+public import AmbidextrousSofa.Reference.Momenta
+public import AmbidextrousSofa.Measure.CapScore
+
+@[expose] public section
 
 /-!
 # Projection, top face, and confinement of the reference niche

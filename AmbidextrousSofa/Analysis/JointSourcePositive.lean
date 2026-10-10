@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.JointSourceContactLimit
-import AmbidextrousSofa.Analysis.FirstUnitProjection
-import AmbidextrousSofa.Analysis.DrySourceProjection
+module
+
+public import AmbidextrousSofa.Analysis.JointSourceContactLimit
+public import AmbidextrousSofa.Analysis.FirstUnitProjection
+public import AmbidextrousSofa.Analysis.DrySourceProjection
+
+@[expose] public section
 
 /-!
 # No floor-only mass in the actual common source limit

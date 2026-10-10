@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.FirstUnitPhases
-import AmbidextrousSofa.Analysis.FirstUnitPrefixEnergy
-import AmbidextrousSofa.Analysis.CoreSourceLowerBounds
+module
+
+public import AmbidextrousSofa.Analysis.FirstUnitPhases
+public import AmbidextrousSofa.Analysis.FirstUnitPrefixEnergy
+public import AmbidextrousSofa.Analysis.CoreSourceLowerBounds
+
+@[expose] public section
 
 /-!
 # Actual ordered first-bad-entry estimates
@@ -28,10 +32,13 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "p" => supportP F.fD F.g
-local notation "q" => supportQ F.gD F.f
+set_option quotPrecheck false in
+local notation "p" => supportP (F).fD (F).g
+set_option quotPrecheck false in
+local notation "q" => supportQ (F).gD (F).f
 local notation "v" => (fun t : ℝ => leftCompanionWingDensity m ρ (t + Real.pi / 2))
-local notation "B" => firstTangentPoint F.f F.fD
+set_option quotPrecheck false in
+local notation "B" => firstTangentPoint (F).f (F).fD
 
 theorem fullTiltedSupportQuarterPair_first_bad_after_middle {C h α β η τ : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)

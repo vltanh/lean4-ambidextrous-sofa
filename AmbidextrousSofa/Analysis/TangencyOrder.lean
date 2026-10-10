@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.TangencyEndpoints
-import AmbidextrousSofa.Analysis.RegularTangency
+module
+
+public import AmbidextrousSofa.Analysis.TangencyEndpoints
+public import AmbidextrousSofa.Analysis.RegularTangency
+
+@[expose] public section
 
 /-!
 # Order and floor bounds for the actual unit-curvature tangency

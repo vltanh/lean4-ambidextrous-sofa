@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.TerminalWallBound
-import AmbidextrousSofa.Analysis.PartialTopInsertion
+module
+
+public import AmbidextrousSofa.Analysis.TerminalWallBound
+public import AmbidextrousSofa.Analysis.PartialTopInsertion
+
+@[expose] public section
 
 /-!
 # Three actual supports at a proper terminal angle

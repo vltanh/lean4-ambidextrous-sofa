@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.TerminalFacetAtom
-import AmbidextrousSofa.Analysis.InitialAngleExclusion
-import AmbidextrousSofa.Analysis.InitialAngleWidth
+module
+
+public import AmbidextrousSofa.Analysis.TerminalFacetAtom
+public import AmbidextrousSofa.Analysis.InitialAngleExclusion
+public import AmbidextrousSofa.Analysis.InitialAngleWidth
+
+@[expose] public section
 
 /-!
 # Actual terminal corner separation and the terminal face bound
@@ -71,7 +75,7 @@ theorem IsJointCapMaximizer.terminal_corner_difference
       Real.sin α * (1 - ((terminalTailPoint U α).1 - horizontalLeft U) * Real.sin α +
         ((terminalTailPoint U α).2 - capRoof U (horizontalLeft U)) * Real.cos α) := by
   have hf : support U (unitNormal α) = (terminalTailPoint U α).1 * Real.cos α +
-      (terminalTailPoint U α).2 * Real.sin α := (Imported.dot_vplus_uvec U α).symm
+      (terminalTailPoint U α).2 * Real.sin α := (MovingSofaOptimality.dot_vplus_uvec U α).symm
   have hg := hU.companion_tail_support hαL haffine
     (show α ∈ Icc α (Real.pi / 2) from ⟨le_rfl, hαL.le⟩)
   have hcircle := congrArg (fun v : ℝ => (terminalTailPoint U α).1 * v)

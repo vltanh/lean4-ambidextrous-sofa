@@ -1,5 +1,10 @@
-import AmbidextrousSofa.Analysis.LeftCompanionCap
-import AmbidextrousSofa.Analysis.TerminalSupportTails
+module
+
+public import AmbidextrousSofa.Analysis.LeftCompanionCap
+public import AmbidextrousSofa.Analysis.TerminalSupportTails
+public import AmbidextrousSofa.Analysis.SurfaceAreaFacts
+
+@[expose] public section
 
 /-!
 # The literal curvature of the left companion cut
@@ -63,9 +68,9 @@ theorem IsDownwardCap.vplus_mem_leftCompanionCap_of_affine
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c)
     (hs : 0 < Real.sin t) (hcoef : Real.cos t + m * Real.sin t ≤ 0) :
-    Imported.vplus U t ∈ leftCompanionCap U a := by
-  let p := Imported.vplus U t
-  have hp := Imported.vplus_mem_edge hU.imported_isConvexBody t
+    MovingSofaOptimality.vplus U t ∈ AmbidextrousSofa.leftCompanionCap U a := by
+  let p := MovingSofaOptimality.vplus U t
+  have hp := MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody t
   refine ⟨hp.1, (hU.fst_mem_Icc hp.1).1, ?_⟩
   by_cases hpa : p.1 ≤ a
   · exact hpa
@@ -80,13 +85,13 @@ theorem IsDownwardCap.vplus_mem_leftCompanionCap_of_affine
       unfold coordDot unitNormal
       rw [hline]
       nlinarith only [hheight, hhorizontal]
-    have hpA : (a, capRoof U a) ∈ Imported.edge U t := by
+    have hpA : (a, capRoof U a) ∈ MovingSofaOptimality.edge U t := by
       refine ⟨capRoof_mem hU.isCompact ha, ?_⟩
       change coordDot (a, capRoof U a) (unitNormal t) = angleSupport U t
       apply le_antisymm (coordDot_le_support hU.isCompact (capRoof_mem hU.isCompact ha) _)
       have hpval : coordDot p (unitNormal t) = angleSupport U t := hp.2
       rwa [hpval] at hdot
-    have hprojection : a ∈ horizontalProjection (Imported.edge U t) :=
+    have hprojection : a ∈ horizontalProjection (MovingSofaOptimality.edge U t) :=
       ⟨(a, capRoof U a), hpA, rfl⟩
     rw [hU.horizontalProjection_edge hs.le] at hprojection
     exact hprojection.1
@@ -96,19 +101,19 @@ theorem IsDownwardCap.vplus_leftCompanionCap_eq_of_affine
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c)
     (hs : 0 < Real.sin t) (hcoef : Real.cos t + m * Real.sin t ≤ 0) :
-    Imported.vplus (leftCompanionCap U a) t = Imported.vplus U t := by
+    MovingSofaOptimality.vplus (AmbidextrousSofa.leftCompanionCap U a) t = MovingSofaOptimality.vplus U t := by
   have hV := hU.leftCompanionCap ha
-  have hp := Imported.vplus_mem_edge hU.imported_isConvexBody t
+  have hp := MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody t
   have hpV := hU.vplus_mem_leftCompanionCap_of_affine ha hb hab haffine hs hcoef
-  have hsupport : angleSupport (leftCompanionCap U a) t = angleSupport U t := by
+  have hsupport : angleSupport (AmbidextrousSofa.leftCompanionCap U a) t = angleSupport U t := by
     exact support_eq_of_mem hV.isCompact
       (fun p hp => coordDot_le_support hU.isCompact hp.1 (unitNormal t)) hpV hp.2
   symm
-  apply Imported.cvx_eq_vplus hV.imported_isConvexBody
-    (show Imported.vplus U t ∈ Imported.edge (leftCompanionCap U a) t from
+  apply MovingSofaOptimality.cvx_eq_vplus hV.imported_isConvexBody
+    (show MovingSofaOptimality.vplus U t ∈ MovingSofaOptimality.edge (AmbidextrousSofa.leftCompanionCap U a) t from
       ⟨hpV, hp.2.trans hsupport.symm⟩)
   intro q hq
-  apply Imported.dot_le_dot_vplus hU.isCompact
+  apply MovingSofaOptimality.dot_le_dot_vplus hU.isCompact
   refine ⟨hq.1.1, ?_⟩
   change coordDot q (unitNormal t) = angleSupport U t
   rw [← hsupport]
@@ -119,13 +124,13 @@ theorem IsDownwardCap.vplus_leftCompanionCap_eq_rightRoof_of_positive_coefficien
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c)
     (hs : 0 < Real.sin t) (hcoef : 0 < Real.cos t + m * Real.sin t) :
-    Imported.vplus (leftCompanionCap U a) t = (a, capRoof U a) := by
+    MovingSofaOptimality.vplus (AmbidextrousSofa.leftCompanionCap U a) t = (a, capRoof U a) := by
   have hV := hU.leftCompanionCap ha
   have hline := haffine a ⟨le_rfl, hab.le⟩
-  have hceiling (p : Plane) (hp : p ∈ leftCompanionCap U a) : p.2 ≤ m * p.1 + c :=
+  have hceiling (p : Plane) (hp : p ∈ AmbidextrousSofa.leftCompanionCap U a) : p.2 ≤ m * p.1 + c :=
     (le_capRoof hU.isCompact (show (p.1, p.2) ∈ U by simpa only [Prod.mk.eta] using hp.1)).trans
       (hU.capRoof_le_affine_of_affine_segment ha hb hab haffine p.1 ⟨p, hp.1, rfl⟩)
-  have hsupport : angleSupport (leftCompanionCap U a) t =
+  have hsupport : angleSupport (AmbidextrousSofa.leftCompanionCap U a) t =
       coordDot (a, capRoof U a) (unitNormal t) := by
     refine support_eq_of_mem hV.isCompact ?_ (hU.rightRoof_mem_leftCompanionCap ha) rfl
     intro p hp
@@ -134,8 +139,8 @@ theorem IsDownwardCap.vplus_leftCompanionCap_eq_rightRoof_of_positive_coefficien
     unfold coordDot unitNormal
     rw [hline]
     nlinarith only [hheight, hhorizontal]
-  let p := Imported.vplus (leftCompanionCap U a) t
-  have hp := Imported.vplus_mem_edge hV.imported_isConvexBody t
+  let p := MovingSofaOptimality.vplus (AmbidextrousSofa.leftCompanionCap U a) t
+  have hp := MovingSofaOptimality.vplus_mem_edge hV.imported_isConvexBody t
   have hpval : p.1 * Real.cos t + p.2 * Real.sin t =
       a * Real.cos t + capRoof U a * Real.sin t := hp.2.trans hsupport
   have hheight := mul_le_mul_of_nonneg_right (hceiling p hp.1) hs.le
@@ -167,7 +172,7 @@ theorem IsJointCapMaximizer.leftCompanion_initial_curvature_zero
   have hLm : Real.pi / 2 ≤ affineNormalAngle m := by
     unfold affineNormalAngle
     linarith only [hm0]
-  apply Imported.sigma_Ioc_eq_zero_of_vplus_const hV.imported_isConvexBody hLm
+  apply MovingSofaOptimality.sigma_Ioc_eq_zero_of_vplus_const hV.imported_isConvexBody hLm
     (p := (horizontalLeft U + capWidth U / 4, capRoof U (horizontalLeft U + capWidth U / 4)))
   intro t ht
   have hs : 0 < Real.sin t := Real.sin_pos_of_pos_of_lt_pi
@@ -185,21 +190,21 @@ theorem IsJointCapMaximizer.leftCompanion_initial_curvature_zero
 implies equality of the Stieltjes curvature measures on its Ioc arc. -/
 theorem upperCurvature_restrict_Ioc_eq_of_vplus_eq
     {U V : Set Plane} (hU : IsDownwardCap U) (hV : IsDownwardCap V) {a b : ℝ}
-    (hab : a ≤ b) (hpoints : ∀ t ∈ Icc a b, Imported.vplus U t = Imported.vplus V t) :
+    (hab : a ≤ b) (hpoints : ∀ t ∈ Icc a b, MovingSofaOptimality.vplus U t = MovingSofaOptimality.vplus V t) :
     (upperCurvature U).restrict (Ioc a b) = (upperCurvature V).restrict (Ioc a b) := by
   have hcurvature {x y : ℝ} (hxy : x ≤ y) (hx : a ≤ x) (hy : y ≤ b) :
       upperCurvature U (Ioc x y) = upperCurvature V (Ioc x y) := by
-    have hsupp (t : ℝ) (ht : t ∈ Icc x y) : Imported.supp U t = Imported.supp V t := by
-      rw [← Imported.dot_vplus_uvec U t, ← Imported.dot_vplus_uvec V t,
+    have hsupp (t : ℝ) (ht : t ∈ Icc x y) : MovingSofaOptimality.supp U t = MovingSofaOptimality.supp V t := by
+      rw [← MovingSofaOptimality.dot_vplus_uvec U t, ← MovingSofaOptimality.dot_vplus_uvec V t,
         hpoints t ⟨hx.trans ht.1, ht.2.trans hy⟩]
-    have hi : (∫ t in x..y, Imported.supp U t) = ∫ t in x..y, Imported.supp V t := by
+    have hi : (∫ t in x..y, MovingSofaOptimality.supp U t) = ∫ t in x..y, MovingSofaOptimality.supp V t := by
       apply intervalIntegral.integral_congr
       intro t ht
       rw [uIcc_of_le hxy] at ht
       exact hsupp t ht
     rw [hU.upperCurvature_Ioc, hV.upperCurvature_Ioc,
-      Imported.sa_sigmaFun_sub hU.imported_isConvexBody,
-      Imported.sa_sigmaFun_sub hV.imported_isConvexBody,
+      AmbidextrousSofa.sigmaFun_sub hU.imported_isConvexBody,
+      AmbidextrousSofa.sigmaFun_sub hV.imported_isConvexBody,
       hpoints x ⟨hx, hxy.trans hy⟩, hpoints y ⟨hx.trans hxy, hy⟩, hi]
   apply Measure.ext_of_Ioc
   intro x y _hxy
@@ -220,7 +225,7 @@ theorem IsDownwardCap.leftCompanion_curvature_restrict_after_affine
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (haffine : ∀ z ∈ Icc a b, capRoof U z = m * z + c)
     (hxy : x ≤ y) (hmx : affineNormalAngle m ≤ x) (hyπ : y < Real.pi) :
-    (upperCurvature (leftCompanionCap U a)).restrict (Ioc x y) =
+    (upperCurvature (AmbidextrousSofa.leftCompanionCap U a)).restrict (Ioc x y) =
       (upperCurvature U).restrict (Ioc x y) := by
   apply upperCurvature_restrict_Ioc_eq_of_vplus_eq (hU.leftCompanionCap ha) hU hxy
   intro t ht

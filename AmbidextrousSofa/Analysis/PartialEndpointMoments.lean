@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.SelectedEndpointMoments
-import AmbidextrousSofa.Analysis.PartialSelectedCurvature
+module
+
+public import AmbidextrousSofa.Analysis.SelectedEndpointMoments
+public import AmbidextrousSofa.Analysis.PartialSelectedCurvature
+
+@[expose] public section
 
 /-!
 # Endpoint variation for actual proper-angle selected polygons

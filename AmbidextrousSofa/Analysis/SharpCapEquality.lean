@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.FullCapRigidity
-import AmbidextrousSofa.Analysis.ProperAngleStrictness
+module
+
+public import AmbidextrousSofa.Analysis.FullCapRigidity
+public import AmbidextrousSofa.Analysis.ProperAngleStrictness
+
+@[expose] public section
 
 /-!
 # Individual-angle strictness and sharp cap equality
@@ -54,7 +58,7 @@ theorem IsDownwardCap.capScore_eq_half_M_iff
     {U : Set Plane} (hU : IsDownwardCap U) {α : ℝ}
     (hα : α ∈ Icc (Real.pi / 4) (Real.pi / 2)) :
     capScore U α = M / 2 ↔ α = Real.pi / 2 ∧
-      ∃ b : ℝ, U = horizontalTranslate Reference.referenceCap b := by
+      ∃ b : ℝ, U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap b := by
   constructor
   · intro hscore
     obtain ⟨V, hV, _⟩ := exists_fullCapMaximizer

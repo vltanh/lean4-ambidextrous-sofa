@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.CapOrder
+module
+
+public import AmbidextrousSofa.Analysis.CapOrder
+
+@[expose] public section
 
 /-!
 # Vertical extrusion and height saturation of actual caps

@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.CornerArcDynamics
-import AmbidextrousSofa.Analysis.TiltedLateExcessScalar
+module
+
+public import AmbidextrousSofa.Analysis.CornerArcDynamics
+public import AmbidextrousSofa.Analysis.TiltedLateExcessScalar
+
+@[expose] public section
 
 /-!
 # The single possible excess interval of a regular corner arc

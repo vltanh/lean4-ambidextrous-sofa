@@ -1,4 +1,8 @@
-import AmbidextrousSofa.Analysis.WideNicheGeometry
+module
+
+public import AmbidextrousSofa.Analysis.WideNicheGeometry
+
+@[expose] public section
 
 /-!
 # Actual wide-width exclusion with both endpoint laws

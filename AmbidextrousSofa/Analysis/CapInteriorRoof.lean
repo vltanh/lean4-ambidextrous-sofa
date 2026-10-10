@@ -1,5 +1,9 @@
-import AmbidextrousSofa.Analysis.CapCompactness
-import Mathlib.Analysis.Convex.Continuous
+module
+
+public import AmbidextrousSofa.Analysis.CapCompactness
+public import Mathlib.Analysis.Convex.Continuous
+
+@[expose] public section
 
 /-!
 # Actual roofs at moving interior points
@@ -15,6 +19,7 @@ bound. Both bounds apply to the original compact fibers.
 noncomputable section
 
 open Set Filter
+open scoped ENNReal NNReal
 open scoped Topology
 
 namespace AmbidextrousSofa

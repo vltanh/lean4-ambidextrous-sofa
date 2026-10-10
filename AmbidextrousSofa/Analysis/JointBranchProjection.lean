@@ -1,6 +1,10 @@
-import AmbidextrousSofa.Analysis.JointBranchDensity
-import AmbidextrousSofa.Measure.GraphMeasureTransfer
-import AmbidextrousSofa.Measure.GraphDensityDomination
+module
+
+public import AmbidextrousSofa.Analysis.JointBranchDensity
+public import AmbidextrousSofa.Measure.GraphMeasureTransfer
+public import AmbidextrousSofa.Measure.GraphDensityDomination
+
+@[expose] public section
 
 /-!
 # Horizontal domination for each literal source branch
