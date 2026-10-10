@@ -26,4 +26,4 @@ jobs:
       - name: Check that the Challenge's copy of the shared definitions is current
         run: python3 scripts/sync_challenge_defs.py --check
       - name: Check the Markdown tables
-        run: python3 scripts/check_md_tables.py README.md
+        run: python3 scripts/check_md_tables.py README.md docs/*.md docs/archive/README.md
