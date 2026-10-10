@@ -114,10 +114,10 @@ theorem finiteSpatialScore_le_circumscription {U : Set Plane} (hU : IsDownwardCa
   have hroof : ∀ x, capRoof U x ≤ capRoof (circumscription U normal) x :=
     hU.capRoof_mono hV (subset_circumscription hU normal)
   have hUI (a b : ℝ) : IntervalIntegrable (capRoof U) volume a b := by
-    apply intervalIntegrable_iff'.mpr
+    apply MeasureTheory.IntegrableOn.intervalIntegrable
     simpa only [uIcc] using hU.integrableOn_capRoof_Icc (min a b) (max a b)
   have hVI (a b : ℝ) : IntervalIntegrable (capRoof (circumscription U normal)) volume a b := by
-    apply intervalIntegrable_iff'.mpr
+    apply MeasureTheory.IntegrableOn.intervalIntegrable
     simpa only [uIcc] using hV.integrableOn_capRoof_Icc (min a b) (max a b)
   have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
   have hfirst := intervalIntegral.integral_mono_on

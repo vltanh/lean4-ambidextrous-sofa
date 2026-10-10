@@ -31,12 +31,12 @@ theorem circleHeight_nonneg (x : ℝ) : 0 ≤ circleHeight x := Real.sqrt_nonneg
 
 theorem circleHeight_pos {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) 1) : 0 < circleHeight x := by
   apply Real.sqrt_pos.mpr
-  nlinarith [mul_pos (sub_pos.mpr hx.2) (by linarith : 0 < 1 + x)]
+  nlinarith [mul_pos (sub_pos.mpr hx.2) (by linarith [hx.1] : 0 < 1 + x)]
 
 theorem circleHeight_sq {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) 1) :
     circleHeight x ^ 2 = 1 - x ^ 2 := by
-  exact Real.sq_sqrt (by nlinarith [mul_nonneg
-    (sub_nonneg.mpr hx.2.le) (by linarith : 0 ≤ 1 + x)])
+  exact Real.sq_sqrt (by
+    nlinarith [mul_nonneg (sub_nonneg.mpr hx.2.le) (by linarith [hx.1] : 0 ≤ 1 + x)])
 
 theorem continuous_circleHeight : Continuous circleHeight := by
   unfold circleHeight
@@ -59,10 +59,11 @@ theorem hasDerivAt_circleHeight {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) 1) :
     HasDerivAt circleHeight (-circleSlope x) x := by
   have hnum : 1 - x ^ 2 ≠ 0 := by
     apply ne_of_gt
-    nlinarith [mul_pos (sub_pos.mpr hx.2) (by linarith : 0 < 1 + x)]
+    nlinarith [mul_pos (sub_pos.mpr hx.2) (by linarith [hx.1] : 0 < 1 + x)]
   have hd := (((hasDerivAt_id x).pow 2).const_sub 1).sqrt hnum
   apply hd.congr_deriv
   unfold circleSlope circleHeight
+  simp only [Pi.pow_apply, id_eq]
   ring
 
 theorem hasDerivAt_circleSlope {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) 1) :
@@ -74,6 +75,7 @@ theorem hasDerivAt_circleSlope {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) 1) :
   calc
     _ = (circleHeight x ^ 2 + x ^ 2) / circleHeight x ^ 3 := by
       unfold circleSlope
+      simp only [id_eq]
       field_simp [hroot] <;> ring
     _ = _ := by rw [hs]; ring
 
@@ -98,7 +100,7 @@ theorem circleSlope_affine_intervalIntegrable {a b q y : ℝ}
     IntervalIntegrable (fun t : ℝ => circleSlope (y + q * t)) volume a b := by
   apply ContinuousOn.intervalIntegrable
   intro t ht
-  exact ((continuousAt_circleSlope (hdom t ht)).comp t
+  exact ((continuousAt_circleSlope (hdom t ht)).comp (f := fun r : ℝ => y + q * r)
     (by fun_prop : ContinuousAt (fun r : ℝ => y + q * r) t)).continuousWithinAt
 
 theorem circleAverage_point_mem {q y t : ℝ} (hq : 0 ≤ q)
@@ -106,8 +108,8 @@ theorem circleAverage_point_mem {q y t : ℝ} (hq : 0 ≤ q)
     (ht : t ∈ Icc (-1 / 2 : ℝ) (1 / 2 : ℝ)) :
     y + q * t ∈ Ioo (0 : ℝ) 1 := by
   constructor
-  · nlinarith [mul_nonneg hq (show 0 ≤ t + 1 / 2 by linarith [ht.1])]
-  · nlinarith [mul_nonneg hq (show 0 ≤ 1 / 2 - t by linarith [ht.2])]
+  · nlinarith [mul_nonneg hq (show 0 ≤ t + 1 / 2 by linarith [ht.1]), hy.1, hy.2]
+  · nlinarith [mul_nonneg hq (show 0 ≤ 1 / 2 - t by linarith [ht.2]), hy.1, hy.2]
 
 theorem circleAverage_intervalIntegrable {q y : ℝ} (hq : 0 ≤ q)
     (hy : y ∈ Ioo (q / 2) (1 - q / 2)) :
@@ -127,8 +129,9 @@ theorem integral_circleSlope {a b : ℝ}
     (a := a) (b := b) (f := fun t => -circleHeight t) (f' := circleSlope)
     (fun t ht => by
       have htm : t ∈ Icc a b := by simpa only [uIcc_of_le hab] using ht
-      simpa only [neg_neg] using
-        (hasDerivAt_circleHeight ⟨ha.trans_le htm.1, htm.2.trans_lt hb⟩).neg)
+      have h := (hasDerivAt_circleHeight ⟨ha.trans_le htm.1, htm.2.trans_lt hb⟩).neg
+      rw [neg_neg] at h
+      exact h)
     hcont.intervalIntegrable
   linarith
 
@@ -224,7 +227,7 @@ theorem circleAverage_eq_paired_integral {q y : ℝ} (hq : 0 ≤ q)
       ∫ t in 0..(1 / 2 : ℝ), circleSlope (y - q * t) := by
     have h := intervalIntegral.integral_comp_neg
       (f := fun t : ℝ => circleSlope (y + q * t)) (a := 0) (b := (1 / 2 : ℝ))
-    simpa only [neg_zero, mul_neg, sub_eq_add_neg] using h.symm
+    simpa only [neg_zero, mul_neg, sub_eq_add_neg, neg_div] using h.symm
   unfold circleAverage
   rw [← intervalIntegral.integral_add_adjacent_intervals hleft hright, hreflect,
     intervalIntegral.integral_add hminus hright]
@@ -275,7 +278,7 @@ theorem circleAverage_linear_gap_concave {q e l u A B : ℝ}
     (hl : q / 2 < l - e) (hu : u - e < 1 - q / 2) :
     ConcaveOn ℝ (Icc l u) (fun x : ℝ => A * x + B - circleAverage q (x - e)) := by
   have hlin : ConcaveOn ℝ (Icc l u) (fun x : ℝ => A * x + B) := by
-    simpa only [Pi.add_apply, smul_eq_mul, id_eq] using
+    simpa only [Pi.add_apply, Pi.add_def, smul_eq_mul, id_eq] using
       ((concaveOn_id (convex_Icc l u)).smul hA).add_const B
   have havg : ConvexOn ℝ (Icc l u) (fun x : ℝ => circleAverage q (x - e)) := by
     refine ⟨convex_Icc l u, ?_⟩

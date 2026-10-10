@@ -31,11 +31,13 @@ theorem initialAngleRelaxation_zero (K C d u v b : ℝ) :
   have hQ : initialAngleRightLoss C 0 u b = initialAngleRampLoss C u := by
     apply intervalIntegral.integral_congr
     intro x _
+    dsimp only
     rw [zero_mul, max_eq_left (le_max_left 0 (x - u)), max_comm]
   have hN : initialAngleNicheLoss K C 0 d u v b =
       ∫ x in (-C)..C, max 0 (min (u - K - x) (v - K + x)) := by
     apply intervalIntegral.integral_congr
     intro x _
+    dsimp only
     rw [zero_mul, max_eq_left (le_max_left 0 (min (u - K - x) (v - K + x)))]
   unfold initialAngleRelaxation
   rw [hQ, hN]
@@ -58,8 +60,9 @@ theorem initialAngleRelaxation_diagonal_symm (K C u v : ℝ) :
       _ = ∫ x in (-C)..C, max 0 (min (v - K - (-x)) (u - K + (-x))) := by
         apply intervalIntegral.integral_congr
         intro x _
+        dsimp only
         congr 1
-        rw [sub_neg_eq_add, add_neg_eq_sub]
+        rw [sub_neg_eq_add, ← sub_eq_add_neg]
         exact min_comm _ _
       _ = _ := by
         simpa only [neg_neg] using intervalIntegral.integral_comp_neg
@@ -166,7 +169,7 @@ theorem initialAngleRelaxation_left_domain_lt {C k d s u v b : ℝ}
     · have hp : (u - v) / 2 ∈ Icc (-C) C := by
         constructor <;> linarith [lt_of_not_ge hapex]
       by_cases hu : u ≤ C + K
-      · have hfirst := initialAngleRelaxation_first_region_le hK0 (by linarith : K ≤ 2 * C)
+      · have hfirst := initialAngleRelaxation_first_region_le (d := d) hK0 (by linarith : K ≤ 2 * C)
           hkpos.le hklt hbu hv0 hv1 (by linarith [lt_of_not_ge hsum]) hp hu
         have hbound : initialAngleRelaxation K C k d u v b ≤
             initialAngleStationaryValue K C k d := by

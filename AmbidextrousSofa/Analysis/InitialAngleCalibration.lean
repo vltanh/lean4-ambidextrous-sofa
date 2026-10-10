@@ -120,7 +120,7 @@ theorem initialAngle_V_integral_affine_lower {K C : ℝ}
       _ ≤ _ := le_max_left _ _
   rw [initialAngle_integral_affine] at hleft hright
   have hadd := intervalIntegral.integral_add_adjacent_intervals
-    (hV.intervalIntegrable (-C) l) (hV.intervalIntegrable l C)
+    (hV.intervalIntegrable (μ := volume) (-C) l) (hV.intervalIntegrable l C)
   dsimp [l] at hleft hright hadd
   nlinarith only [hleft, hright, hadd]
 
@@ -157,7 +157,7 @@ theorem initialAngle_niche_first_region_lower {K C k d u v b : ℝ}
         2 * max (x - (u - v) / 2) 0 + max (x - (u - K)) 0) ≤
       initialAngleNicheLoss K C k d u v b := by
     apply intervalIntegral.integral_mono (by linarith)
-      (((hV.sub (hP.const_mul 2)).add hA).intervalIntegrable (-C) C)
+      (((hV.fun_sub (hP.const_mul 2)).fun_add hA).intervalIntegrable (-C) C)
       (hN.intervalIntegrable (-C) C)
     intro x
     have h := initialAngle_wall_pointwise_lower
@@ -170,7 +170,7 @@ theorem initialAngle_niche_first_region_lower {K C k d u v b : ℝ}
       hscale, show -(u - K - x) = x - (u - K) by ring] at h
     exact h
   rw [intervalIntegral.integral_add
-      ((hV.sub (hP.const_mul 2)).intervalIntegrable (-C) C) (hA.intervalIntegrable (-C) C),
+      ((hV.fun_sub (hP.const_mul 2)).intervalIntegrable (-C) C) (hA.intervalIntegrable (-C) C),
     intervalIntegral.integral_sub (hV.intervalIntegrable (-C) C)
       ((hP.const_mul 2).intervalIntegrable (-C) C),
     intervalIntegral.integral_const_mul, initialAngle_integral_ramp_centered hp,
@@ -187,7 +187,7 @@ theorem initialAngleRelaxation_first_region_le {K C k d u v b : ℝ}
     initialAngleRelaxation K C k d u v b ≤
       initialAngleStationaryValue K C k d - (u + v - 2 * C - K) ^ 2 / 4 := by
   have hQ := initialAngleRightLoss_affine_lower hK0 hK2 hk0 hk1 hbu
-  have hN := initialAngle_niche_first_region_lower hK0 hK2 hsum hp hu
+  have hN := initialAngle_niche_first_region_lower (k := k) (d := d) (b := b) hK0 hK2 hsum hp hu
   have hleft := initialAngleRampLoss_eq_square hv0 hv1
   unfold initialAngleRelaxation initialAngleStationaryValue
   nlinarith only [hQ, hN, hleft]
@@ -295,7 +295,7 @@ theorem initialAngle_niche_second_region_lower {K C k d u v b : ℝ}
       max (v - K + x) (k * (b - d - x)) - 2 * max (x - (u - v) / 2) 0) ≤
       initialAngleNicheLoss K C k d u v b := by
     apply intervalIntegral.integral_mono (by linarith)
-      ((hV.sub (hP.const_mul 2)).intervalIntegrable (-C) C)
+      ((hV.fun_sub (hP.const_mul 2)).intervalIntegrable (-C) C)
       (hN.intervalIntegrable (-C) C)
     intro x
     have h := initialAngle_wall_pointwise_lower
@@ -312,6 +312,8 @@ theorem initialAngle_niche_second_region_lower {K C k d u v b : ℝ}
     intervalIntegral.integral_const_mul, initialAngle_integral_ramp_centered hp] at hmono
   have hVexact := initialAngle_V_integral_quadratic (C := C) (c := v - K)
     (e := b - d) hk (by nlinarith only [hY0]) (by nlinarith only [hY2])
+  rw [show (1 + k) * C - (v - K) + k * (b - d) = (1 + k) * C + K - v + k * (b - d) by ring]
+    at hVexact
   nlinarith only [hmono, hVexact]
 
 /-- The exterior moving switch supplies its full quadratic whenever the

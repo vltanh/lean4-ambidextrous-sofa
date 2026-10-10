@@ -136,6 +136,7 @@ theorem firstFloor_bad_entry_trapping
     ((hycont.mono (Icc_subset_Icc ha.1 le_rfl)).neg)
     (show (0 : ℝ) < -y a by linarith only [hya])
     (show -y η ≤ 0 by linarith only [hyη])
+  simp only [Pi.neg_apply] at hyb hnegative
   have hyb0 : y b = 0 := by linarith only [hyb]
   have hτb : b ∈ Ioc τ η := ⟨ha.1.trans_lt hb.1, hb.2⟩
   have hnonpos : ∀ s ∈ Icc τ b, y s ≤ 0 := by

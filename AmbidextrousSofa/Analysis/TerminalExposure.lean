@@ -106,6 +106,9 @@ theorem IsDownwardCap.tendsto_integral_terminal_strictGapRamp
   let d : ℝ → ℝ := fun x => firstWall U α x - sweptNiche U α x
   have hd : Measurable d := (continuous_firstWall U α).measurable.sub
     (measurable_sweptNiche hU.isCompact (by linarith [Real.pi_pos]) hαL)
+  have : IsFiniteMeasure (volume.restrict J) := by
+    dsimp only [J, middleHalfInterval]
+    infer_instance
   have hlim := tendsto_integral_strictGapRamp_quotient (volume.restrict J) hd
   have hset : {x | 0 < d x} ∩ J = J ∩ terminalStrictRegion U α := by
     ext x

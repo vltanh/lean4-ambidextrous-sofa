@@ -43,11 +43,12 @@ theorem integral_graph_parametrization {a b : ℝ} {F X Y XD : ℝ → ℝ}
     (by simpa only [min_eq_left hab, max_eq_right hab] using
       hF.mono (image_mono Ioo_subset_Icc_self))
     (hFu.integrableOn_compact (isCompact_uIcc.image_of_continuousOn hXu))
-    (intervalIntegrable_iff'.mp hcompI)
+    ((intervalIntegrable_iff').mp hcompI)
   rw [← hsubstitution]
   apply intervalIntegral.integral_congr_Ioo_of_le hab
   intro t ht
-  rw [Function.comp_apply, hgraph t ht]
+  dsimp only [Function.comp_apply]
+  rw [hgraph t ht]
 
 /-- The line-integral form of oriented graph area. All endpoint products are
 retained; they are the terms needed for vertical faces and joining arcs. -/
@@ -112,7 +113,7 @@ theorem IsDownwardCap.volumeReal_eq_integral_capRoof {U : Set Plane}
 
 theorem IsDownwardCap.intervalIntegrable_capRoof {U : Set Plane}
     (hU : IsDownwardCap U) (a b : ℝ) : IntervalIntegrable (capRoof U) volume a b := by
-  apply intervalIntegrable_iff'.mpr
+  apply (intervalIntegrable_iff').mpr
   simpa only [uIcc] using hU.integrableOn_capRoof_Icc (min a b) (max a b)
 
 theorem IsDownwardCap.volumeReal_eq_intervalIntegral_capRoof {U : Set Plane}

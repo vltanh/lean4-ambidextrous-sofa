@@ -49,7 +49,7 @@ theorem measurableSet_secondSourceSlice : MeasurableSet secondSourceSlice :=
 theorem measurable_joint_firstWall {U : Set Plane} (hU : IsCompact U) :
     Measurable (fun z : Plane => firstWall U z.1 z.2) := by
   have hs := ((continuous_support hU).comp
-    (continuous_unitNormal.comp continuous_fst)).measurable
+    (continuous_unitNormal.comp (continuous_fst : Continuous (fun z : Plane => z.1)))).measurable
   exact ((hs.sub measurable_const).sub
     (measurable_snd.mul (Real.measurable_cos.comp measurable_fst))).div
     (Real.measurable_sin.comp measurable_fst)
@@ -57,7 +57,7 @@ theorem measurable_joint_firstWall {U : Set Plane} (hU : IsCompact U) :
 theorem measurable_joint_secondWall {U : Set Plane} (hU : IsCompact U) :
     Measurable (fun z : Plane => secondWall U z.1 z.2) := by
   have hs := ((continuous_support hU).comp
-    (continuous_companionNormal.comp continuous_fst)).measurable
+    (continuous_companionNormal.comp (continuous_fst : Continuous (fun z : Plane => z.1)))).measurable
   exact ((hs.sub measurable_const).add
     (measurable_snd.mul (Real.measurable_sin.comp measurable_fst))).div
     (Real.measurable_cos.comp measurable_fst)
@@ -76,17 +76,17 @@ theorem measurableSet_secondTangentSource {U : Set Plane} (hU : IsCompact U) :
     MeasurableSet (secondTangentSource U) := by
   have hm : Measurable (fun z : Plane => (z.1 - Real.pi / 2, z.2)) :=
     (measurable_fst.sub_const _).prodMk measurable_snd
-  exact measurableSet_secondSourceSlice.inter
-    (measurableSet_lt ((measurable_joint_secondWall hU).comp hm)
-      ((measurable_joint_firstWall hU).comp hm))
+  have h1 := (measurable_joint_secondWall hU).comp hm
+  have h2 := (measurable_joint_firstWall hU).comp hm
+  exact measurableSet_secondSourceSlice.inter (measurableSet_lt h1 h2)
 
 theorem measurableSet_secondCornerSource {U : Set Plane} (hU : IsCompact U) :
     MeasurableSet (secondCornerSource U) := by
   have hm : Measurable (fun z : Plane => (z.1 - Real.pi / 2, z.2)) :=
     (measurable_fst.sub_const _).prodMk measurable_snd
-  exact measurableSet_secondSourceSlice.inter
-    (measurableSet_eq_fun ((measurable_joint_firstWall hU).comp hm)
-      ((measurable_joint_secondWall hU).comp hm))
+  have h1 := (measurable_joint_firstWall hU).comp hm
+  have h2 := (measurable_joint_secondWall hU).comp hm
+  exact measurableSet_secondSourceSlice.inter (measurableSet_eq_fun h1 h2)
 
 theorem disjoint_firstSource_branches (U : Set Plane) :
     Disjoint (firstTangentSource U) (firstCornerSource U) := by
@@ -158,13 +158,15 @@ theorem first_source_partition (hTarget : IsDownwardCap target)
     (measurableSet_firstCornerSource hTarget.isCompact)]
   apply Measure.restrict_congr_set
   filter_upwards [J.ae_first_wall_contact hTarget, hpositive] with z hz hp
+  apply propext
   constructor
   · rintro (ht | hc)
     · exact ht.1
     · exact hc.1
   · intro ht
     have hh := hz ht
-    have hm := positive_fullWallClip_eq_cornerWall hp hh.2
+    have hm : cornerWall target z.1 z.2 = sweptNiche target (Real.pi / 2) z.2 :=
+      positive_fullWallClip_eq_cornerWall (U := hTarget.toCompactCap) hp hh.2
     have hle : firstWall target z.1 z.2 ≤ secondWall target z.1 z.2 := by
       rw [hh.1, ← hm]
       exact min_le_right _ _
@@ -184,13 +186,15 @@ theorem second_source_partition (hTarget : IsDownwardCap target)
     (measurableSet_secondCornerSource hTarget.isCompact)]
   apply Measure.restrict_congr_set
   filter_upwards [J.ae_second_wall_contact hTarget, hpositive] with z hz hp
+  apply propext
   constructor
   · rintro (ht | hc)
     · exact ht.1
     · exact hc.1
   · intro ht
     have hh := hz ht
-    have hm := positive_fullWallClip_eq_cornerWall hp hh.2
+    have hm : cornerWall target (z.1 - Real.pi / 2) z.2 = sweptNiche target (Real.pi / 2) z.2 :=
+      positive_fullWallClip_eq_cornerWall (U := hTarget.toCompactCap) hp hh.2
     have hle : secondWall target (z.1 - Real.pi / 2) z.2 ≤
         firstWall target (z.1 - Real.pi / 2) z.2 := by
       rw [hh.1, ← hm]
@@ -254,17 +258,20 @@ variable (hTarget : IsFullCapMaximizer target) (hheight : capHeight target = 1)
   (heq : (upperCurvature target).restrict (regularCurvatureDomain m) =
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
+include hTarget hheight haffine hTargetBox hleft hright heq in
 theorem sourceBranchAngular_absolutelyContinuous (S : Set Plane) (d : ℝ) :
     J.sourceBranchAngular S d ≪ (volume : Measure ℝ) :=
   (Measure.absolutelyContinuous_of_le (J.sourceBranchAngular_le S d)).trans
     (J.shifted_angle_absolutelyContinuous hTarget hheight haffine hTargetBox hleft hright heq d)
 
+include hTarget hheight haffine hTargetBox hleft hright heq in
 theorem sourceBranchAngular_eq_density (S : Set Plane) (d : ℝ) :
     J.sourceBranchAngular S d = volume.withDensity
       (fun t => ENNReal.ofReal (J.sourceBranchDensity S d t)) :=
   (withDensity_realRnDensity _ _ (J.sourceBranchAngular_absolutelyContinuous hTarget
     hheight haffine hTargetBox hleft hright heq S d)).symm
 
+include hTarget hheight haffine hTargetBox hleft hright hρ hρ0 hρK heq in
 theorem ae_first_tangent_source_contact :
     ∀ᵐ z ∂J.sourceBranchMeasure (firstTangentSource target),
       z.1 ∈ regularCornerDomain m ∧
@@ -279,6 +286,7 @@ theorem ae_first_tangent_source_contact :
   exact ⟨hr hz.1, hTarget.isCap.first_strict_contact_eq_tangency hρ hρ0 hρK heq
     (hr hz.1) (hc hz.1).1 hz.2⟩
 
+include hTarget hheight haffine hTargetBox hleft hright hρ hρ0 hρK heq in
 theorem ae_second_tangent_source_contact :
     ∀ᵐ z ∂J.sourceBranchMeasure (secondTangentSource target),
       z.1 - Real.pi / 2 ∈ regularCornerDomain m ∧
@@ -293,6 +301,7 @@ theorem ae_second_tangent_source_contact :
   exact ⟨hr ht, hTarget.isCap.second_strict_contact_eq_tangency hρ hρ0 hρK heq
     (hr ht) (hc hz.1).1 hz.2⟩
 
+include hTarget hheight haffine hTargetBox hleft hright hρ hρ0 hρK heq in
 theorem ae_second_tangent_source_density_le_one :
     ∀ᵐ z ∂J.sourceBranchMeasure (secondTangentSource target), ρ z.1 ≤ 1 := by
   have hbound : ∀ᵐ t : ℝ ∂volume,

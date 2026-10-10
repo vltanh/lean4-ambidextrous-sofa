@@ -106,7 +106,9 @@ theorem first_source_le_companion (U : Set Plane) (grid : Finset QuarterAngle)
   rcases cornerExpr_source_cases (Sum.inl s, Sum.inr s) v with h | h
   · have heq : t = s := Sum.inl.inj (Option.some.inj (hselected.symm.trans h.1))
     subst s
-    simpa only [v, ← supportWall_eq_affine, normal] using h.2
+    have h2 := h.2
+    simp only [v, ← supportWall_eq_affine] at h2
+    exact h2
   · have hfalse := hselected.symm.trans h.1
     simp at hfalse
 
@@ -154,7 +156,8 @@ theorem dot_wallPoint_first (U : Set Plane) (t v s : ℝ) :
   change MovingSofaOptimality.dot
     ((support U (unitNormal t) - 1) • MovingSofaOptimality.uvec t + v • MovingSofaOptimality.vvec t) (MovingSofaOptimality.uvec s) = _
   rw [MovingSofaOptimality.dot_add_left, MovingSofaOptimality.dot_smul_left, MovingSofaOptimality.dot_smul_left,
-    MovingSofaOptimality.dot_uvec_uvec, MovingSofaOptimality.dot_vvec_uvec', Real.cos_sub_comm t s]
+    MovingSofaOptimality.dot_uvec_uvec, MovingSofaOptimality.dot_vvec_uvec', ← Real.cos_neg (t - s),
+    neg_sub]
 
 theorem dot_wallPoint_companion (U : Set Plane) (t v s : ℝ) :
     coordDot (wallPoint U t v) (companionNormal s) =

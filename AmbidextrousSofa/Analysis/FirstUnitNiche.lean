@@ -75,7 +75,8 @@ theorem fullTiltedSupportQuarterPair_first_wall_envelope
     intro s hs r hr hsr
     simpa only [hmatch s hs, hmatch r hr] using
       horder (Ioo_subset_Icc_self hs) (Ioo_subset_Icc_self hr) hsr
-  have hwall := fun s hs x => hU.isCap.hasDerivAt_firstWall_of_open_first_density
+  have hwall := fun (s : ℝ) (hs : s ∈ Ioo (0 : ℝ) (Real.pi / 2)) (x : ℝ) =>
+    hU.isCap.hasDerivAt_firstWall_of_open_first_density
     hρ hρ0 hρK heq (firstQuarter_subset_regularCurvatureDomain_of_nonneg hm) hs x
   intro s hs
   simpa only [hmatch t ht] using firstWall_le_at_firstTangency U hmono hwall hs ht
@@ -151,7 +152,9 @@ theorem fullTiltedSupportQuarterPair_first_floor_crossing {C h : ℝ}
     fullTiltedSupportQuarterPair_tangent_calculus hU hm haffine hρ hρ0 hρK heq
   have heL := (hU.endpoint_heights_pos_of_affine hheight ⟨m, c, haffine⟩).2
   have hcont : ContinuousOn (fun t => -(D t).2) (Icc 0 (Real.pi / 2)) := by
-    simpa only [uIcc_of_le hL.le] using hDy.continuousOn.neg
+    have h := hDy.continuousOn.neg
+    rw [uIcc_of_le hL.le] at h
+    exact h
   obtain ⟨γ, hγ, heqγ, hbefore⟩ := exists_first_level_crossing hL hcont
     (show (0 : ℝ) < -(D 0).2 by simpa only [hD0, neg_neg] using hh)
     (show -(D (Real.pi / 2)).2 ≤ 0 by simpa only [hDL] using neg_nonpos.mpr heL.le)

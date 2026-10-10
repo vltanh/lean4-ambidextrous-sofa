@@ -137,9 +137,10 @@ theorem innerDensity_eq_zero_of_source_empty (U : Set Plane) (grid : Finset Quar
     innerDensity U α hαL grid j = fun _ => 0 := by
   classical
   funext x
-  have hnot : x ∉ innerSourceSet U α hαL grid j := by rw [hempty]; exact not_mem_empty x
+  have hnot : x ∉ innerSourceSet U α hαL grid j := by rw [hempty]; exact notMem_empty x
   unfold innerDensity
-  rw [outwardVelocity_eq_single, WallExpr.sourceDensity_single, indicator_of_notMem hnot]
+  rw [outwardVelocity_eq_single, WallExpr.sourceDensity_single]
+  exact indicator_of_notMem hnot _
 
 theorem first_source_empty_of_forward_separation {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (t : InteriorPoint grid) {δ : ℝ}
@@ -153,11 +154,11 @@ theorem first_source_empty_of_forward_separation {U : Set Plane} (hU : IsDownwar
       companionPlus (support U (unitNormal (scaleAngle α t.val)))
         (support U (companionNormal ((scaleAngle α t.val : ℝ) + δ))) δ) :
     innerSourceSet U α hαL grid (scaledSource α grid (Sum.inl t)) = ∅ := by
-  apply Set.eq_empty_iff_forall_not_mem.mpr
+  apply Set.eq_empty_iff_forall_notMem.mpr
   intro x hx
   obtain ⟨v, _, hv⟩ := first_source_neighbor_feasible hU grid t hminus hplus hx
   rw [neighborFeasible_eq_empty_of_forward_separation hc hs hfirst hcompanion] at hv
-  exact not_mem_empty v hv
+  exact notMem_empty v hv
 
 theorem second_source_empty_of_backward_separation {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (t : InteriorPoint grid) {δ : ℝ}
@@ -171,11 +172,11 @@ theorem second_source_empty_of_backward_separation {U : Set Plane} (hU : IsDownw
       companionPlus (support U (companionNormal (scaleAngle α t.val)))
         (support U (unitNormal ((scaleAngle α t.val : ℝ) - δ))) δ) :
     innerSourceSet U α hαL grid (scaledSource α grid (Sum.inr t)) = ∅ := by
-  apply Set.eq_empty_iff_forall_not_mem.mpr
+  apply Set.eq_empty_iff_forall_notMem.mpr
   intro x hx
   obtain ⟨v, _, hv⟩ := second_source_neighbor_feasible hU grid t hminus hplus hx
   rw [neighborFeasible_eq_empty_of_forward_separation hc hs hfirst hcompanion] at hv
-  exact not_mem_empty v hv
+  exact notMem_empty v hv
 
 theorem integral_first_source_le_self_interval {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (t : InteriorPoint grid) {δ a b : ℝ}

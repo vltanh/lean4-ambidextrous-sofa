@@ -63,7 +63,7 @@ theorem IsDownwardCap.threeAngleScore_le_tilted_charged_rectangle {U : Set Plane
   have hR := intervalIntegral.integral_mono_on (by linarith only [ha] : a / 2 ≤ a)
     (hU.intervalIntegrable_capRoof _ _) (continuous_const.intervalIntegrable _ _)
     (fun x (_ : x ∈ Icc (a / 2) a) => capRoof_le_one hU.isCompact hU.inStrip x)
-  have hN := intervalIntegral.integral_nonneg_of_forall
+  have hN := intervalIntegral.integral_nonneg_of_forall (μ := volume)
     (by linarith only [ha] : -a / 2 ≤ a / 2) (threeAngleBarrier_nonneg U)
   rw [intervalIntegral.integral_const] at hL hR
   simp only [smul_eq_mul] at hL hR
@@ -203,6 +203,7 @@ theorem IsDownwardCap.threeAngle_intermediate_width_tilt_bound {U : Set Plane}
   refine ⟨htilt, ?_⟩
   rw [tiltedDiagonalBound_eq_width_tilt h4.ne' hksq,
     show (Real.sqrt 2 - 1) + 1 = Real.sqrt 2 by ring] at hP
+  rw [show 4 * a / (4 * a - h) = 2 * (2 * a / (4 * a - h)) by ring]
   nlinarith only [hP, hscore]
 
 end AmbidextrousSofa

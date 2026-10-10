@@ -50,7 +50,7 @@ theorem first_density_kernel_le_excess_moment
       volume t (Real.pi / 2) :=
     ((intervalIntegrable_bounded_real_density hρ hρ0 hρK _ _).sub
       intervalIntegrable_const).continuousOn_mul
-        ((Real.continuous_sin.comp (continuous_id.sub_const t)).continuousOn)
+        ((Real.continuous_sin.comp (continuous_sub_right t)).continuousOn)
   have hei := firstExcessMoment_integrable (a := t) (b := Real.pi / 2) hρ hρ0 hρK
   have hc : 0 ≤ Real.cos t := (Real.cos_pos_of_mem_Ioo
     ⟨by linarith only [ht.1, Real.pi_pos], ht.2⟩).le
@@ -138,7 +138,7 @@ theorem ConvexOn.integral_tail_le_triangle {f : ℝ → ℝ} {a b X : ℝ}
         _ = 0 := intervalIntegral.integral_zero
     rw [hzero, ← heq, sub_self, zero_mul, zero_div]
   have haX' : a < X := lt_of_le_of_ne haX heq
-  have htr := (hf.subset (fun _ hx => hx.1) (convex_Icc a X)).integral_le_trapezoid
+  have htr := ConvexOn.integral_le_trapezoid (hf.subset (fun _ hx => hx.1) (convex_Icc a X))
     haX' (hc.intervalIntegrable a X)
   rw [hz X le_rfl, add_zero] at htr
   by_cases hXb : X ≤ b
@@ -151,7 +151,7 @@ theorem ConvexOn.integral_tail_le_triangle {f : ℝ → ℝ} {a b X : ℝ}
           exact hz x hx.1
         _ = 0 := intervalIntegral.integral_zero
     have hsplit := intervalIntegral.integral_add_adjacent_intervals
-      (hc.intervalIntegrable a X) (hc.intervalIntegrable X b)
+      (hc.intervalIntegrable (μ := volume) a X) (hc.intervalIntegrable X b)
     rw [hzero, add_zero] at hsplit
     exact hsplit ▸ htr
   · exact (intervalIntegral.integral_mono_interval le_rfl hab (le_of_not_ge hXb)
@@ -168,7 +168,7 @@ theorem IsDownwardCap.right_niche_integral_le_excess_triangle
     (hcorner : ∀ t ∈ Ioo (0 : ℝ) (Real.pi / 2), (attachedCorner U t).1 ≤ C) :
     (∫ x in C..(2 * C), sweptNiche U (Real.pi / 2) x) ≤
       (b - C + firstExcessMoment ρ) * sweptNiche U (Real.pi / 2) C / 2 := by
-  have h := (hU.convexOn_sweptNiche_right_of_corners hcorner).integral_tail_le_triangle
+  have h := ConvexOn.integral_tail_le_triangle (hU.convexOn_sweptNiche_right_of_corners hcorner)
     hU.continuous_sweptNiche_pi_div_two (sweptNiche_nonneg U (Real.pi / 2))
     (show C ≤ 2 * C by linarith only [hC0])
     (show C ≤ b + firstExcessMoment ρ by linarith only [hCb, firstExcessMoment_nonneg ρ])
@@ -184,7 +184,8 @@ theorem integrable_horizontalLeakageEnvelope (A h : ℝ) :
 
 theorem integral_horizontalLeakageEnvelope {A h : ℝ} (hh : 0 ≤ h) :
     (∫ s, horizontalLeakageEnvelope A h s) = horizontalLeakageA0 h := by
-  rw [horizontalLeakageEnvelope, integral_indicator measurableSet_Icc,
+  unfold horizontalLeakageEnvelope
+  rw [integral_indicator measurableSet_Icc,
     integral_Icc_eq_integral_Ioc,
     ← intervalIntegral.integral_of_le (show A ≤ A + h by linarith only [hh])]
   have hshift := intervalIntegral.integral_comp_sub_right

@@ -45,6 +45,7 @@ theorem integral_positive_asymmetric_tent_full {s t l r A B : ℝ}
           apply intervalIntegral.integral_congr
           rw [uIcc_of_le (hAl.trans hlp)]
           intro x hx
+          dsimp only
           have hlines : s * (x - l) ≤ t * (r - x) := by
             nlinarith only [hsplit, mul_nonneg hst.le (sub_nonneg.mpr hx.2)]
           rw [min_eq_left hlines, show -l + x = x - l by ring]
@@ -61,6 +62,7 @@ theorem integral_positive_asymmetric_tent_full {s t l r A B : ℝ}
           apply intervalIntegral.integral_congr
           rw [uIcc_of_le (hpr.trans hrB)]
           intro x hx
+          dsimp only
           have hlines : t * (r - x) ≤ s * (x - l) := by
             nlinarith only [hsplit, mul_nonneg hst.le (sub_nonneg.mpr hx.1)]
           rw [min_eq_right hlines]
@@ -133,7 +135,7 @@ theorem wall_increment_le_shifted_tent {A B₀ B₁ L : ℝ} (hB : B₀ ≤ B₁
       rw [max_eq_left h', max_eq_right (sub_nonpos.mpr h')]
       ring
   have h := max_increment_le_of_floor_le (L := L) (D := max 0 L)
-    (le_max_right 0 L) (min_le_min le_rfl hB)
+    (le_max_right 0 L) (min_le_min (le_refl A) hB)
   have horder (B : ℝ) : max (max 0 (min A B)) L = max (max 0 L) (min A B) := by
     ac_rfl
   rw [← horder B₁, ← horder B₀, hshift B₁, hshift B₀] at h

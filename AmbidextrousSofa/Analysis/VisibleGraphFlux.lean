@@ -62,8 +62,8 @@ theorem IsFullCapMaximizer.visible_tangency_corner_flux
     fun u hu => hfull ⟨hb₀.trans_lt hu.1, hu.2⟩
   have hB := hU.isCap.firstTangency_monotoneOn_open_of_unit_density
     hρ hρ0 hρC heq hfutureReg hfuture
-  have hwalls := fun u hu x => hU.isCap.hasDerivAt_walls_on_regularCornerDomain
-    hρ hρ0 hρC heq (hfull hu) x
+  have hwalls := fun (u : ℝ) (hu : u ∈ Ioo (0 : ℝ) (Real.pi / 2)) (x : ℝ) =>
+    hU.isCap.hasDerivAt_walls_on_regularCornerDomain hρ hρ0 hρC heq (hfull hu) x
   have hS := fun u hu x => (hwalls u hu x).2
   have hR := fun u hu x => (hwalls u hu x).1
   have hDcont : ContinuousOn (fun u => (secondTangency U u).1) (Icc s t) :=
@@ -115,11 +115,13 @@ theorem IsFullCapMaximizer.visible_tangency_corner_flux
     have hvx : (secondTangency U v).1 = x := hvD.2.trans hux
     constructor
     · by_contra hnot
-      have hle := hD.1 hvD.1 (hquarter (left_mem_Icc.mpr hst.le)) (le_of_not_gt hnot)
+      have hle : (secondTangency U v).1 ≤ (secondTangency U s).1 :=
+        hD.1 hvD.1 (hquarter (left_mem_Icc.mpr hst.le)) (le_of_not_gt hnot)
       rw [hvx] at hle
       exact (not_le_of_gt hx.1) hle
     · by_contra hnot
-      have hle := hD.1 (hquarter (right_mem_Icc.mpr hst.le)) hvD.1 (le_of_not_gt hnot)
+      have hle : (secondTangency U t).1 ≤ (secondTangency U v).1 :=
+        hD.1 (hquarter (right_mem_Icc.mpr hst.le)) hvD.1 (le_of_not_gt hnot)
       rw [hvx] at hle
       exact (not_le_of_gt hx.2) hle
   have hcpiece : ∀ x ∈ Ioo (attachedCorner U t).1 (attachedCorner U s).1,

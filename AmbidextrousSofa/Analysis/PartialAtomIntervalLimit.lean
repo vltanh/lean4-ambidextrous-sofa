@@ -70,13 +70,14 @@ theorem IsSelectedPolygon.curvature_Ioc_le_of_sampled_atom_bound
                 · exact mul_nonneg hC hδ
                 · exact le_rfl)
           (Finset.mem_univ k)
-        simpa only [if_pos rfl] using h
+        simpa only [↓reduceIte] using h
       linarith only [h, hsingle]
     · have hjterminal : j ≠ terminalIndex α hαL (dyadic level) := by
         intro heq
         apply hterminal
         have hmem := (Finset.mem_filter.mp hj).2
-        simpa only [heq, fullAngle, terminalIndex, AngularGrid.fullAngle] using hmem
+        rw [heq] at hmem
+        exact hmem
       have hzero := innerSourceMass_eq_zero_of_not_scaled U α hαL (dyadic level) j hjterminal hscaled
       have h := hU.curvature_atom_le_mass hc j
       rw [hzero, zero_add] at h
@@ -165,14 +166,21 @@ theorem curvature_Ioc_le_of_eventual_sampled_atom_bound
   have hmiddle := AngularGrid.middleOuterMass_sum_tendsto_of_compact hHausdorff hcap hTarget
     (grid := fun n => outerGrid α (dyadic (level n)))
     (fun n => (hU n).polygon_eq) hbox hwidth haffine isCompact_Icc hupper hperp
-  have herr := selectionDefect_sum_tendsto (α := α) hTarget hcap hc hrate hHausdorff
+  have herr := selectionDefect_sum_tendsto (α := α) (level := level) hTarget hcap hc hrate hHausdorff
   have hmesh := (mesh_tendsto α).comp hlevel
   have hrhs : Tendsto (fun n => C * (b - a + mesh α (level n)) +
       (∑ j ∈ Finset.univ.filter (fun j : SourceIndex α (dyadic (level n)) =>
         fullAngle α (dyadic (level n)) j ∈ Icc a b), middleOuterMass (U n) α (dyadic (level n)) j) +
       ∑ j, selectionDefect target (U n) α (level n) (coefficient n) j) atTop (𝓝 (C * (b - a))) := by
-    simpa only [add_zero] using
-      (((tendsto_const_nhds.add hmesh).const_mul C).add hmiddle).add herr
+    have hmiddle' : Tendsto (fun n => ∑ j ∈ Finset.univ.filter
+        (fun j : SourceIndex α (dyadic (level n)) => fullAngle α (dyadic (level n)) j ∈ Icc a b),
+          middleOuterMass (U n) α (dyadic (level n)) j) atTop (𝓝 0) := by
+      refine hmiddle.congr (fun n => Finset.sum_congr ?_ (fun j _ => rfl))
+      exact Finset.filter_congr_decidable _ _ _
+    have hconst : Tendsto (fun _ : ℕ => b - a) atTop (𝓝 (b - a)) := tendsto_const_nhds
+    have h := (((hconst.add hmesh).const_mul C).add hmiddle').add herr
+    simp only [add_zero] at h
+    exact h
   apply le_of_tendsto_of_tendsto hmass hrhs
   filter_upwards [hsampled] with n hn
   exact (hU n).curvature_Ioc_le_of_sampled_atom_bound (hc n) hC hab hupper htop hterminal hn

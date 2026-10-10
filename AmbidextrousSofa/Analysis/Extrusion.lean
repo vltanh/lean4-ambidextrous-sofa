@@ -94,7 +94,7 @@ theorem IsDownwardCap.capRoof_verticalExtrusion {U : Set Plane}
     have hqroof : q.2 ≤ capRoof U x := by
       have hq' : (q.1, q.2) ∈ U := by simpa only [Prod.mk.eta] using hq
       simpa only [hqx] using le_capRoof hU.isCompact hq'
-    exact hle.trans (add_le_add_right hqroof ε)
+    exact hle.trans (add_le_add_left hqroof ε)
   · apply le_capRoof hcompact
     apply (mem_verticalExtrusion_iff U ε (x, capRoof U x + ε)).mpr
     exact ⟨add_nonneg (capRoof_nonneg hU.isCompact
@@ -144,7 +144,7 @@ theorem IsDownwardCap.sweptNiche_verticalExtrusion_le {U : Set Plane}
   have hc : 0 < Real.cos θ := Real.cos_pos_of_mem_Ioo
     ⟨by linarith [hθ.1, Real.pi_pos], hθ.2.trans_le hα⟩
   rw [hU.cornerWall_verticalExtrusion hε hs hc]
-  exact add_le_add_right
+  exact add_le_add_left
     (cornerWall_le_sweptNiche (sweptWallValues_bddAbove hU.isCompact hα x) hθ) ε
 
 /-- The full terminal wall gains exactly `ε`; clipping the swept supremum at
@@ -157,9 +157,9 @@ theorem IsDownwardCap.partialBarrier_verticalExtrusion_le {U : Set Plane}
     (by linarith [hα, Real.pi_pos])
   apply max_le
   · exact (hU.sweptNiche_verticalExtrusion_le hε hα0 hα x).trans
-      (add_le_add_right (le_max_left _ _) ε)
+      (add_le_add_left (le_max_left _ _) ε)
   · rw [hU.firstWall_verticalExtrusion hε hs]
-    exact add_le_add_right (le_max_right _ _) ε
+    exact add_le_add_left (le_max_right _ _) ε
 
 /-- Equal window lengths pay for the entire barrier increase, even when a
 previously zero portion of the niche becomes positive. -/
@@ -206,6 +206,7 @@ theorem IsDownwardCap.capScore_le_verticalExtrusion {U : Set Plane}
     have h := integral_mono hbarrierV
       (hbarrierU.add (hconstI.mono_set (middleHalfInterval_subset hlr)))
       (fun x => hU.partialBarrier_verticalExtrusion_le hε hα0 hα x)
+    simp only [Pi.add_apply] at h
     rw [integral_add hbarrierU
       (hconstI.mono_set (middleHalfInterval_subset hlr)), setIntegral_const] at h
     simpa only [smul_eq_mul, J, volumeReal_middleHalfInterval hlr] using h

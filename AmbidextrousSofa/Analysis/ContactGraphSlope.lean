@@ -25,13 +25,15 @@ namespace AmbidextrousSofa
 
 theorem hasDerivAt_firstWall_spatial (U : Set Plane) (t x : ℝ) :
     HasDerivAt (firstWall U t) (-Real.cos t / Real.sin t) x := by
-  simpa only [firstWall, one_mul, zero_sub] using
+  show HasDerivAt (fun y => (support U (unitNormal t) - 1 - y * Real.cos t) / Real.sin t) _ x
+  simpa only [Pi.sub_apply, id_eq, one_mul, zero_sub] using
     (((hasDerivAt_const x (support U (unitNormal t) - 1)).sub
       ((hasDerivAt_id x).mul_const (Real.cos t))).div_const (Real.sin t))
 
 theorem hasDerivAt_secondWall_spatial (U : Set Plane) (t x : ℝ) :
     HasDerivAt (secondWall U t) (Real.sin t / Real.cos t) x := by
-  simpa only [secondWall, one_mul, zero_add] using
+  show HasDerivAt (fun y => (support U (companionNormal t) - 1 + y * Real.sin t) / Real.cos t) _ x
+  simpa only [Pi.add_apply, id_eq, one_mul, zero_add] using
     (((hasDerivAt_const x (support U (companionNormal t) - 1)).add
       ((hasDerivAt_id x).mul_const (Real.sin t))).div_const (Real.cos t))
 

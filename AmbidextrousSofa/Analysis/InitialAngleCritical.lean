@@ -188,10 +188,10 @@ theorem initialAngle_integral_three_walls_ordered {C k a c e l p : ℝ}
         rw [uIcc_of_le hCl]
         intro x hx
         have hcharge : 0 ≤ k * (e - x) :=
-          mul_nonneg hk0 (by linarith : 0 ≤ e - x)
+          mul_nonneg hk0 (by linarith [hx.2] : 0 ≤ e - x)
         have hline : c + x ≤ k * (e - x) := by
           nlinarith only [hcross, mul_nonneg (show 0 ≤ 1 + k by linarith)
-            (show 0 ≤ l - x by linarith)]
+            (show 0 ≤ l - x by linarith [hx.2])]
         have hmax : f x = k * (e - x) :=
           max_eq_right (max_le hcharge ((min_le_right _ _).trans hline))
         rw [hmax]
@@ -206,11 +206,11 @@ theorem initialAngle_integral_three_walls_ordered {C k a c e l p : ℝ}
         intro x hx
         have hbase : 0 ≤ c + l := by
           nlinarith only [hcross, mul_nonneg hk0 (sub_nonneg.mpr hle)]
-        have hnonneg : 0 ≤ c + x := by linarith
+        have hnonneg : 0 ≤ c + x := by linarith [hx.1]
         have htent : c + x ≤ a - x := by linarith only [hapex, hx.2]
         have hcharge : k * (e - x) ≤ c + x := by
           nlinarith only [hcross, mul_nonneg (show 0 ≤ 1 + k by linarith)
-            (show 0 ≤ x - l by linarith)]
+            (show 0 ≤ x - l by linarith [hx.1])]
         change max (max 0 (min (a - x) (c + x))) (k * (e - x)) = _
         rw [min_eq_right htent, max_eq_right hnonneg, max_eq_left hcharge]
         ring
@@ -239,7 +239,7 @@ theorem initialAngle_integral_three_walls_ordered {C k a c e l p : ℝ}
         have htent : min (a - x) (c + x) ≤ 0 :=
           (min_le_left _ _).trans (sub_nonpos.mpr hx.1)
         have hcharge : k * (e - x) ≤ 0 :=
-          mul_nonpos_of_nonneg_of_nonpos hk0 (by linarith : e - x ≤ 0)
+          mul_nonpos_of_nonneg_of_nonpos hk0 (by linarith [hx.1] : e - x ≤ 0)
         change max (max 0 (min (a - x) (c + x))) (k * (e - x)) = 0
         rw [max_eq_left htent, max_eq_left hcharge]
       _ = 0 := by simp

@@ -31,7 +31,7 @@ theorem norm_supportBoxCorner (v : Plane) : ‖supportBoxCorner v‖ = 1 := by
 theorem coordDot_supportBoxCorner (v : Plane) :
     coordDot (supportBoxCorner v) v = |v.1| + |v.2| := by
   unfold supportBoxCorner coordDot
-  split_ifs with hx hy
+  split_ifs with hx hy hy
   · rw [abs_of_nonneg hx, abs_of_nonneg hy]
     ring
   · rw [abs_of_nonneg hx, abs_of_nonpos (le_of_not_ge hy)]
@@ -132,9 +132,10 @@ theorem CapHausdorffTendsto.volumeReal_tendsto
     · by_cases hpB : p ∈ B <;> simp [hp, hpB]
   have hlim := tendsto_integral_of_dominated_convergence (B.indicator (fun _ => (1 : ℝ)))
     hmeas hbound hdom (h.indicator_tendsto_ae hU hK)
-  have hArea (n : ℕ) := integral_indicator_one (μ := (volume : Measure Plane))
+  have hArea (n : ℕ) := integral_indicator_const (μ := (volume : Measure Plane)) (1 : ℝ)
     (hU n).isCompact.measurableSet
   simpa only [hArea,
-    integral_indicator_one hK.isCompact.measurableSet] using hlim
+    integral_indicator_const (μ := (volume : Measure Plane)) (1 : ℝ)
+      hK.isCompact.measurableSet, smul_eq_mul, mul_one] using hlim
 
 end AmbidextrousSofa

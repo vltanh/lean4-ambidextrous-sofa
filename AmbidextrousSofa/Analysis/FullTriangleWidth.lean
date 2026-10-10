@@ -20,6 +20,19 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
+/-- `41/50 < M/2`; the same statement and proof as `forty_one_fiftieths_lt_half_M` of
+`TerminalScalar`, which this module does not import. -/
+private theorem fullTriangleWidth_forty_one_fiftieths_lt_half_M : (41 / 50 : ℝ) < M / 2 := by
+  have hY : (19 / 64 : ℝ) < Y := by
+    apply (cubic_strictMono.lt_iff_lt).mp
+    rw [Y_cubic]
+    norm_num [cubic]
+  have hbeta : Y - Y ^ 3 / 3 ≤ beta := self_sub_cube_div_three_le_arctan Y_pos.le
+  have hYsq := mul_pos (sub_pos.mpr hY)
+    (show 0 < Y + 19 / 64 by linarith [Y_pos])
+  unfold M
+  nlinarith [Y_equation]
+
 theorem IsDownwardCap.capScore_lt_of_full_triangles_and_endpoint_laws
     {U : Set Plane} (hU : IsDownwardCap U) {a h : ℝ}
     (ha0 : 37 / 25 ≤ a) (ha1 : a ≤ 8 / 5) (hh0 : 0 ≤ h) (hh1 : h ≤ 17 / 50)
@@ -115,7 +128,7 @@ theorem IsDownwardCap.capScore_lt_of_full_triangles_and_endpoint_laws
   have hcut : (δR ^ 2 + δL ^ 2) / (2 * k) ≤ D :=
     hU.diagonalRoofDeficit_ge_inner_cuts ha hh0 hk hl hr hleft hright hu hv
       huv.1 huv.2 hδR hδL
-  have hgain := fullTriangle_gain_sum hk hksq hbR hbL hEP
+  have hgain := fullTriangle_gain_sum (a := a) hk hksq hbR hbL hEP
   have hpayment : (max (fullTriangleDemand a ((u + v) / 2) h k (fullTriangleCos k)) 0) ^ 2 /
       (2 + 3 * k) ≤ (δR ^ 2 + δL ^ 2) / (2 * k) + G :=
     fullTriangle_square_payment hk hδR.1 hδL.1 hgain
@@ -143,7 +156,8 @@ theorem IsDownwardCap.capScore_lt_of_full_triangles_and_endpoint_laws
     change D = _ at hD
     linarith only [hP, hD, hN']
   have hfinal : capScore U (Real.pi / 2) ≤
-      fullTriangleRelaxation a h k (fullTriangleCos k) u v + fullTriangleLoss h k (fullTriangleCos k) := by
+      fullTriangleRelaxation a h k (fullTriangleCos k) u v +
+        fullTriangleLoss h k (fullTriangleCos k) := by
     unfold fullTriangleRelaxation
     change capScore U (Real.pi / 2) ≤ F -
       (max (fullTriangleDemand a ((u + v) / 2) h k (fullTriangleCos k)) 0) ^ 2 / (2 + 3 * k) +
@@ -174,7 +188,8 @@ theorem IsFullCapMaximizer.centered_half_width_lt_thirty_seven_twenty_fifths_of_
   have hEP := hU.centered_endpoint_laws hheight hl hr hleft hright hAff
   have hscore := hU.isCap.capScore_lt_of_full_triangles_and_endpoint_laws
     ha0 ha1.le hh0 hh1.le hl hr hleft hright hAff hEP.1 hEP.2
-  exact (not_lt_of_ge hU.reference_le) (hscore.trans forty_one_fiftieths_lt_half_M)
+  exact (not_lt_of_ge hU.reference_le)
+    (hscore.trans fullTriangleWidth_forty_one_fiftieths_lt_half_M)
 
 theorem IsFullCapMaximizer.centered_half_width_lt_thirty_seven_twenty_fifths_of_affine
     {U : Set Plane} (hU : IsFullCapMaximizer U) {a m c : ℝ}

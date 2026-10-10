@@ -57,11 +57,11 @@ theorem outerAngleDensity_le {U : Set Plane} {grid : Finset QuarterAngle} {E : S
     roofIntercept (normal grid) (fun j => support U (normal grid j)) i
   change (∑ j ∈ F, outwardVelocity (normal grid) j ((roofExpr (ι := SourceIndex grid)).source v)) ≤ _
   cases hsource : (roofExpr (ι := SourceIndex grid)).source v with
-  | none => simp [outwardVelocity, (div_pos (by norm_num) hs).le]
+  | none => simp [outwardVelocity, hs.le]
   | some i =>
     by_cases hi : i ∈ F
     · rw [Finset.sum_eq_single_of_mem i hi]
-      · simp only [outwardVelocity, if_pos rfl]
+      · simp only [outwardVelocity]
         apply one_div_le_one_div_of_le hs
         simpa only [normal_eq_unitNormal, unitNormal] using
           hE (fullAngle grid i) (Finset.mem_filter.mp hi).2
@@ -202,7 +202,7 @@ theorem middleOuterMass_sum_tendsto
   have hlim : ∀ᵐ x : ℝ ∂volume,
       Tendsto (fun n => middleAngleDensity (U n) (grid n) E x) atTop (𝓝 0) := by
     filter_upwards [hzero] with x hx
-    exact tendsto_const_nhds.congr' hx.symm
+    exact tendsto_const_nhds.congr' (hx.mono fun n hn => hn.symm)
   have h := tendsto_integral_of_dominated_convergence B
     (fun n => (measurable_middleAngleDensity (U n) (grid n) E).aestronglyMeasurable)
     hB hdom hlim

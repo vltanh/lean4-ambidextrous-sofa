@@ -92,7 +92,8 @@ theorem cornerSecant_tendsto
         have hbad : (scaleAngle α s.val : ℝ) + Real.pi / 2 < Real.pi / 2 := by
           simpa only [hj, fullAngle, scaledSource, AngularGrid.fullAngle, scaledInterior] using hn
         exact False.elim (by linarith only [hs.1, hbad])
-    simpa only [upperCornerVelocity, if_pos hleft] using hsec.congr' heq.symm
+    simpa only [upperCornerVelocity, if_pos hleft] using
+      hsec.congr' (Filter.EventuallyEq.symm heq)
   · have hright : Real.pi / 2 < t := lt_of_le_of_ne (le_of_not_gt hleft) htop.symm
     have hsec := h.secondCornerSecant_tendsto hU hK hB hbox
       (hangle.sub_const (Real.pi / 2)) hmesh
@@ -113,7 +114,8 @@ theorem cornerSecant_tendsto
       | inr s =>
         simp only [hj, cornerSecant, fullAngle, scaledSource, AngularGrid.fullAngle,
           scaledInterior, add_sub_cancel_right]
-    simpa only [upperCornerVelocity, if_neg hleft] using hsec.congr' heq.symm
+    simpa only [upperCornerVelocity, if_neg hleft] using
+      hsec.congr' (Filter.EventuallyEq.symm heq)
 
 theorem sampledCurvatureDensity_tendsto
     {U : ℕ → Set Plane} {K B : Set Plane} (h : CapHausdorffTendsto U K)

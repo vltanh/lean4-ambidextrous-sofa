@@ -68,7 +68,7 @@ theorem IsFullCapMaximizer.middle_right_eq_one_of_affine_nonneg
     have hqb : q.1 ≤ b := (lt_of_not_ge hnot).le
     have hline : capRoof U q.1 ≤ m * q.1 + c := by
       by_cases hqa : q.1 ≤ a
-      · have hchord := hU.isCap.concaveOn_capRoof.le_roofChord_of_le
+      · have hchord := ConcaveOn.le_roofChord_of_le hU.isCap.concaveOn_capRoof
           (show q.1 ∈ horizontalProjection U from ⟨q, hq, rfl⟩) hbU hab hqa
         rwa [roofChord_eq_affine hab hA hB] at hchord
       · exact (haffine q.1 ⟨le_of_not_ge hqa, hqb⟩).le

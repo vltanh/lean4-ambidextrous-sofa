@@ -141,17 +141,18 @@ theorem fullTiltedSupportQuarterPair_earlier_cut_walls_eventually {t : ℝ}
       exact hscalar z.2 (Z z.1).1
     have hcont : ContinuousAt (fun z : ℝ × ℝ => secondWall V z.2 (Z z.1).1) (t, r) := by
       rw [hfun]
-      exact (((hg.continuousAt.comp continuous_snd.continuousAt).sub_const 1).add
-        ((hX.comp continuous_fst.continuousAt).mul
-          (Real.continuous_sin.continuousAt.comp continuous_snd.continuousAt))).div
-            (Real.continuous_cos.continuousAt.comp continuous_snd.continuousAt) hcr
+      exact (((hg.continuousAt.comp (x := (t, r)) continuous_snd.continuousAt).sub_const 1).add
+        ((hX.comp (x := (t, r)) continuous_fst.continuousAt).mul
+          (Real.continuous_sin.continuousAt.comp (x := (t, r)) continuous_snd.continuousAt))).div
+            (Real.continuous_cos.continuousAt.comp (x := (t, r)) continuous_snd.continuousAt) hcr
     have hcurrent : secondWall V r (Z t).1 < (Z t).2 := by
       rcases hr.1.eq_or_lt with hr0 | hr0
       · rw [← hr0]
         exact hzero.trans_lt hy
       · exact hEarlier r ⟨hr0, hr.2.trans_lt hat⟩
-    exact hcont.tendsto.eventually_lt
-      (hY.comp continuous_fst.continuousAt).tendsto hcurrent
+    have hYz : ContinuousAt (fun z : ℝ × ℝ => (Z z.1).2) (t, r) :=
+      hY.comp (f := Prod.fst) (x := (t, r)) continuous_fst.continuousAt
+    exact hcont.tendsto.eventually_lt hYz.tendsto hcurrent
   filter_upwards [hremote, Ioo_mem_nhds hat htu.2] with s hs hsu
   have hslocal := hlocal ⟨hla.trans hsu.1, hsu.2⟩
   intro r hr

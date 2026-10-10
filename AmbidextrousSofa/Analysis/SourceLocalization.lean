@@ -32,8 +32,10 @@ theorem CapHausdorffTendsto.fullWallClip_tendsto
     Tendsto (fun n => fullWallClip (hU n).toCompactCap (point n) (angle n)) atTop
       (𝓝 (fullWallClip hK.toCompactCap x t)) := by
   have hcap := IsDownwardCap.tendsto_toCompactCap hU hK h
-  exact (continuousAt_fullWallClip htmem).tendsto.comp
-    ((hcap.prodMk_nhds hx).prodMk_nhds ht)
+  have hpair := (hcap.prodMk_nhds hx).prodMk_nhds ht
+  have hclip := (continuousAt_fullWallClip (z := ((hK.toCompactCap, x), t)) htmem).tendsto
+  have hcomp := hclip.comp hpair
+  exact hcomp
 
 namespace AngularGrid
 
@@ -146,9 +148,10 @@ theorem eventually_innerSources_in_open_of_maximizers
   have hseq : Tendsto seq atTop atTop := hnsTop.comp hms.tendsto_atTop
   have hfinite := finiteBarrier_dyadic_tendsto (hHausdorff.comp hseq)
     (fun n => hU (seq n)) hK (hlevel.comp hseq) (fun n => hbox (seq n))
-    (fun n => hFbox (hpoint (ms n))) hpairlim.fst
-  have hclip := (hHausdorff.comp hseq).fullWallClip_tendsto
-    (fun n => hU (seq n)) hK hpairlim.fst hpairlim.snd hz.2
+    (fun n => hFbox (hpoint (ms n))) hpairlim.fst_nhds
+  have hsubseq : CapHausdorffTendsto (fun n => U (seq n)) K := hHausdorff.comp hseq
+  have hclip := hsubseq.fullWallClip_tendsto
+    (fun n => hU (seq n)) hK hpairlim.fst_nhds hpairlim.snd_nhds hz.2
   have hfiniteClip : Tendsto
       (fun n => fullWallClip (hU (seq n)).toCompactCap (point (ms n)) (angle (ms n)))
       atTop (𝓝 (sweptNiche K (Real.pi / 2) z.1)) := by
@@ -158,7 +161,7 @@ theorem eventually_innerSources_in_open_of_maximizers
   have heq : fullWallClip hK.toCompactCap z.1 z.2 = sweptNiche K (Real.pi / 2) z.1 :=
     tendsto_nhds_unique hclip hfiniteClip
   have hmem := hmaximizers z.1 hz.1 z.2 hz.2 heq
-  have hevent : ∀ᶠ n in atTop, angle (ms n) ∈ V := hpairlim.snd.eventually (hV.mem_nhds hmem)
+  have hevent : ∀ᶠ n in atTop, angle (ms n) ∈ V := hpairlim.snd_nhds.eventually (hV.mem_nhds hmem)
   obtain ⟨n, hn⟩ := hevent.exists
   exact houtside (ms n) hn
 

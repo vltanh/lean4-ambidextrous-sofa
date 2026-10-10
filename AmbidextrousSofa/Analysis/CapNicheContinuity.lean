@@ -27,10 +27,12 @@ theorem continuous_hyperspaceSupport :
     Continuous (fun p : NonemptyCompacts Plane × Plane => support (p.1 : Set Plane) p.2) := by
   apply continuous_iff_seqContinuous.mpr
   intro z p hz
-  have hd : Tendsto (fun n => Metric.hausdorffDist (z n).1 p.1) atTop (𝓝 0) := by
-    simpa only [NonemptyCompacts.dist_eq] using tendsto_iff_dist_tendsto_zero.mp hz.fst
+  have hd : Tendsto (fun n => Metric.hausdorffDist ((z n).1 : Set Plane) (p.1 : Set Plane))
+      atTop (𝓝 0) := by
+    simpa only [NonemptyCompacts.dist_eq] using tendsto_iff_dist_tendsto_zero.mp hz.fst_nhds
   have hv : Tendsto (fun n => |(z n).2.1| + |(z n).2.2|)
-      atTop (𝓝 (|p.2.1| + |p.2.2|)) := hz.snd.fst.abs.add hz.snd.snd.abs
+      atTop (𝓝 (|p.2.1| + |p.2.2|)) :=
+    hz.snd_nhds.fst_nhds.abs.add hz.snd_nhds.snd_nhds.abs
   have hsmall : Tendsto (fun n => |support ((z n).1 : Set Plane) (z n).2 -
       support (p.1 : Set Plane) (z n).2|) atTop (𝓝 0) :=
     squeeze_zero (fun _ => abs_nonneg _)
@@ -41,8 +43,8 @@ theorem continuous_hyperspaceSupport :
       support (p.1 : Set Plane) (z n).2) atTop (𝓝 0) := by
     apply tendsto_iff_dist_tendsto_zero.mpr
     simpa only [Real.dist_eq, sub_zero] using hsmall
-  have hbase := ((continuous_support p.1.isCompact).tendsto p.2).comp hz.snd
-  simpa only [sub_add_cancel, zero_add] using hdiff.add hbase
+  have hbase := ((continuous_support p.1.isCompact).tendsto p.2).comp hz.snd_nhds
+  simpa only [Function.comp_def, sub_add_cancel, zero_add] using hdiff.add hbase
 
 /-- The original compact downward-cap domain, with its Hausdorff topology. -/
 abbrev CompactCap := {K : NonemptyCompacts Plane // IsDownwardCap (K : Set Plane)}
@@ -128,7 +130,7 @@ theorem continuousAt_fullWallClip {z : (CompactCap × ℝ) × ℝ}
     change Tendsto _ _ (𝓝 (fullWallClip z.1.1 z.1.2 z.2))
     rw [hvalue]
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-      (by simpa only [hupper0] using hupper)
+      (by simpa only [hupper0] using hupper.tendsto)
     · intro p
       exact fullWallClip_nonneg _ _ _
     · intro p
@@ -149,7 +151,7 @@ theorem continuousAt_fullWallClip {z : (CompactCap × ℝ) × ℝ}
     change Tendsto _ _ (𝓝 (fullWallClip z.1.1 z.1.2 z.2))
     rw [hvalue]
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-      (by simpa only [hupper0] using hupper)
+      (by simpa only [hupper0] using hupper.tendsto)
     · intro p
       exact fullWallClip_nonneg _ _ _
     · intro p
@@ -166,15 +168,21 @@ theorem continuous_fullWallClip_on_angles :
       fullWallClip p.1.1 p.1.2 p.2) := by
   apply continuous_iff_continuousAt.mpr
   intro p
+  have hf : Continuous (fun q : (CompactCap × ℝ) × Icc (0 : ℝ) (Real.pi / 2) =>
+      (q.1, (q.2 : ℝ))) :=
+    continuous_fst.prodMk (continuous_subtype_val.comp continuous_snd)
   exact (continuousAt_fullWallClip (z := (p.1, (p.2 : ℝ))) p.2.property).comp
-    (continuous_fst.prodMk (continuous_subtype_val.comp continuous_snd)).continuousAt
+    (f := fun q : (CompactCap × ℝ) × Icc (0 : ℝ) (Real.pi / 2) => (q.1, (q.2 : ℝ)))
+    hf.continuousAt
 
 theorem sweptNiche_eq_sSup_clipped (U : CompactCap) (x : ℝ) :
     sweptNiche U.carrier (Real.pi / 2) x =
       sSup ((fun t : Icc (0 : ℝ) (Real.pi / 2) => fullWallClip U x t) '' Set.univ) := by
   let zeroAngle : Icc (0 : ℝ) (Real.pi / 2) := ⟨0, le_rfl, by linarith [Real.pi_pos]⟩
-  have hcont : Continuous (fun t : Icc (0 : ℝ) (Real.pi / 2) => fullWallClip U x t) :=
-    continuous_fullWallClip_on_angles.comp (continuous_const.prodMk continuous_id)
+  have hcont : Continuous (fun t : Icc (0 : ℝ) (Real.pi / 2) => fullWallClip U x t) := by
+    have h1 : Continuous (fun t : Icc (0 : ℝ) (Real.pi / 2) => ((U, x), t)) :=
+      continuous_const.prodMk continuous_id
+    simpa only [Function.comp_def] using continuous_fullWallClip_on_angles.comp h1
   have hbounded := (isCompact_univ : IsCompact
     (Set.univ : Set (Icc (0 : ℝ) (Real.pi / 2)))).bddAbove_image hcont.continuousOn
   have hzero : 0 ≤ sSup ((fun t : Icc (0 : ℝ) (Real.pi / 2) =>
@@ -185,18 +193,22 @@ theorem sweptNiche_eq_sSup_clipped (U : CompactCap) (x : ℝ) :
   · apply sweptNiche_le_of_forall (by linarith [Real.pi_pos]) hzero
     intro t ht
     calc
-      cornerWall U.carrier t x ≤ fullWallClip U x t := le_max_left _ _
+      cornerWall U.carrier t x ≤ fullWallClip U x t := by
+        unfold fullWallClip
+        exact le_max_left _ _
       _ ≤ _ := le_csSup hbounded (mem_image_of_mem _
-        (mem_univ (⟨t, ht.1.le, ht.2.le⟩ : Icc (0 : ℝ) (Real.pi / 2))))
-  · apply csSup_le ⟨fullWallClip U x zeroAngle, zeroAngle, mem_univ _, rfl⟩
+        (x := (⟨t, ht.1.le, ht.2.le⟩ : Icc (0 : ℝ) (Real.pi / 2))) (mem_univ _))
+  · refine csSup_le ⟨fullWallClip U x zeroAngle, zeroAngle, mem_univ _, rfl⟩ ?_
     rintro y ⟨t, _, rfl⟩
+    show fullWallClip U x t ≤ sweptNiche U.carrier (Real.pi / 2) x
     by_cases ht0 : (t : ℝ) = 0
     · rw [ht0, fullWallClip_zero]
       exact sweptNiche_nonneg _ _ _
     by_cases htL : (t : ℝ) = Real.pi / 2
     · rw [htL, fullWallClip_pi_div_two]
       exact sweptNiche_nonneg _ _ _
-    · apply max_le _ (sweptNiche_nonneg _ _ _)
+    · unfold fullWallClip
+      apply max_le _ (sweptNiche_nonneg _ _ _)
       exact cornerWall_le_sweptNiche
         (sweptWallValues_bddAbove U.isCap.isCompact le_rfl x)
         ⟨lt_of_le_of_ne t.property.1 (Ne.symm ht0), lt_of_le_of_ne t.property.2 htL⟩
@@ -205,6 +217,7 @@ theorem continuous_capSweptNiche :
     Continuous (fun p : CompactCap × ℝ => sweptNiche p.1.carrier (Real.pi / 2) p.2) := by
   have h := (isCompact_univ : IsCompact
     (Set.univ : Set (Icc (0 : ℝ) (Real.pi / 2)))).continuous_sSup
+    (f := fun (p : CompactCap × ℝ) (t : Icc (0 : ℝ) (Real.pi / 2)) => fullWallClip p.1 p.2 t)
     continuous_fullWallClip_on_angles
   simpa only [← sweptNiche_eq_sSup_clipped] using h
 
@@ -212,8 +225,9 @@ theorem CapHausdorffTendsto.sweptNiche_tendsto {U : ℕ → Set Plane} {K : Set 
     (h : CapHausdorffTendsto U K) (hU : ∀ n, IsDownwardCap (U n))
     (hK : IsDownwardCap K) {x : ℕ → ℝ} {y : ℝ} (hx : Tendsto x atTop (𝓝 y)) :
     Tendsto (fun n => sweptNiche (U n) (Real.pi / 2) (x n))
-      atTop (𝓝 (sweptNiche K (Real.pi / 2) y)) :=
-  (continuous_capSweptNiche.tendsto (hK.toCompactCap, y)).comp
+      atTop (𝓝 (sweptNiche K (Real.pi / 2) y)) := by
+  have h1 := (continuous_capSweptNiche.tendsto (hK.toCompactCap, y)).comp
     ((IsDownwardCap.tendsto_toCompactCap hU hK h).prodMk_nhds hx)
+  simpa only [Function.comp_def, IsDownwardCap.toCompactCap_carrier] using h1
 
 end AmbidextrousSofa

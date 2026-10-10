@@ -107,7 +107,7 @@ theorem IsSelectedPolygon.positive_shadow_atoms {target U : Set Plane}
   have hab : horizontalLeft U + capWidth U / 4 ≤ horizontalRight U - capWidth U / 4 := by
     unfold capWidth
     linarith only [horizontalLeft_le_horizontalRight hU.isCap.nonempty hU.isCap.isCompact]
-  have hsource := positive_shadow_source_bounds hU.isCap (dyadic level) t
+  have hsource := positive_shadow_source_bounds (hαL := hαL) hU.isCap (dyadic level) t
     (mesh_cos_pos α level) (mesh_sin_pos α level) (mesh_half_cos_ne α level) hab hm hp hmargin
   exact ⟨hU.curvature_atom_le_error_of_source_empty hc _ hsource.1,
     hU.curvature_atom_le_half_of_self_interval hc _ (mesh_half_tan_nonneg α level) hsource.2⟩
@@ -127,7 +127,7 @@ theorem IsSelectedPolygon.negative_shadow_atoms {target U : Set Plane}
   have hab : horizontalLeft U + capWidth U / 4 ≤ horizontalRight U - capWidth U / 4 := by
     unfold capWidth
     linarith only [horizontalLeft_le_horizontalRight hU.isCap.nonempty hU.isCap.isCompact]
-  have hsource := negative_shadow_source_bounds hU.isCap (dyadic level) t
+  have hsource := negative_shadow_source_bounds (hαL := hαL) hU.isCap (dyadic level) t
     (mesh_cos_pos α level) (mesh_sin_pos α level) (mesh_half_cos_ne α level) hab hm hp hmargin
   exact ⟨hU.curvature_atom_le_error_of_source_empty hc _ hsource.1,
     hU.curvature_atom_le_half_of_self_interval hc _ (mesh_half_tan_nonneg α level) hsource.2⟩
@@ -138,9 +138,11 @@ theorem sourceQuarterAngle_scaledSource (α : TerminalAngle) (grid : Finset Quar
       Sum.elim (fun t : InteriorPoint grid => (scaleAngle α t.val : ℝ))
         (fun t : InteriorPoint grid => (scaleAngle α t.val : ℝ)) j := by
   cases j with
-  | inl t => exact AngularGrid.sourceQuarterAngle_fullAngle (outerGrid α grid)
+  | inl t =>
+    exact AngularGrid.sourceQuarterAngle_fullAngle (outerGrid α grid)
       (Sum.inl (scaledInterior α grid t))
-  | inr t => exact AngularGrid.sourceQuarterAngle_fullAngle (outerGrid α grid)
+  | inr t =>
+    exact AngularGrid.sourceQuarterAngle_fullAngle (outerGrid α grid)
       (Sum.inr (scaledInterior α grid t))
 
 theorem IsSelectedPolygon.curvature_scaled_atom_le_shadow {target U : Set Plane}
@@ -163,14 +165,20 @@ theorem IsSelectedPolygon.curvature_scaled_atom_le_shadow {target U : Set Plane}
         simpa [sameSignShadowMargin, sourceQuarterAngle_scaledSource] using hmargin
       have h := (hU.negative_shadow_atoms hc t hm).2
       have ht := (scaleAngle_mem_open α (interiorPoint_mem (dyadic level) t)).2.trans hαL
-      simpa [sameSignCoefficient, fullAngle, scaledSource, AngularGrid.fullAngle, ht] using h
+      have hval : (((scaledInterior α (dyadic level) t).val : QuarterAngle) : ℝ) =
+          (scaleAngle α t.val : ℝ) := rfl
+      simpa [sameSignCoefficient, fullAngle, scaledSource, AngularGrid.fullAngle, hval, ht] using h
     | inr t =>
       have hm : 0 < negativeShadowMargin U (scaleAngle α t.val) (mesh α level) := by
         simpa [sameSignShadowMargin, sourceQuarterAngle_scaledSource] using hmargin
       have ht : ¬ (scaleAngle α t.val : ℝ) + Real.pi / 2 < Real.pi / 2 := by
         linarith only [(scaleAngle_mem_open α (interiorPoint_mem (dyadic level) t)).1]
+      have ht' : ¬ (scaleAngle α t.val : ℝ) < 0 := by
+        linarith only [(scaleAngle_mem_open α (interiorPoint_mem (dyadic level) t)).1]
+      have hval : (((scaledInterior α (dyadic level) t).val : QuarterAngle) : ℝ) =
+          (scaleAngle α t.val : ℝ) := rfl
       have h := (hU.negative_shadow_atoms hc t hm).1
-      simpa [sameSignCoefficient, fullAngle, scaledSource, AngularGrid.fullAngle, ht] using h
+      simpa [sameSignCoefficient, fullAngle, scaledSource, AngularGrid.fullAngle, hval, ht, ht'] using h
   | true =>
     cases j with
     | inl t =>
@@ -178,14 +186,20 @@ theorem IsSelectedPolygon.curvature_scaled_atom_le_shadow {target U : Set Plane}
         simpa [sameSignShadowMargin, sourceQuarterAngle_scaledSource] using hmargin
       have h := (hU.positive_shadow_atoms hc t hm).1
       have ht := (scaleAngle_mem_open α (interiorPoint_mem (dyadic level) t)).2.trans hαL
-      simpa [sameSignCoefficient, fullAngle, scaledSource, AngularGrid.fullAngle, ht] using h
+      have hval : (((scaledInterior α (dyadic level) t).val : QuarterAngle) : ℝ) =
+          (scaleAngle α t.val : ℝ) := rfl
+      simpa [sameSignCoefficient, fullAngle, scaledSource, AngularGrid.fullAngle, hval, ht] using h
     | inr t =>
       have hm : 0 < positiveShadowMargin U (scaleAngle α t.val) (mesh α level) := by
         simpa [sameSignShadowMargin, sourceQuarterAngle_scaledSource] using hmargin
       have ht : ¬ (scaleAngle α t.val : ℝ) + Real.pi / 2 < Real.pi / 2 := by
         linarith only [(scaleAngle_mem_open α (interiorPoint_mem (dyadic level) t)).1]
+      have ht' : ¬ (scaleAngle α t.val : ℝ) < 0 := by
+        linarith only [(scaleAngle_mem_open α (interiorPoint_mem (dyadic level) t)).1]
+      have hval : (((scaledInterior α (dyadic level) t).val : QuarterAngle) : ℝ) =
+          (scaleAngle α t.val : ℝ) := rfl
       have h := (hU.positive_shadow_atoms hc t hm).2
-      simpa [sameSignCoefficient, fullAngle, scaledSource, AngularGrid.fullAngle, ht] using h
+      simpa [sameSignCoefficient, fullAngle, scaledSource, AngularGrid.fullAngle, hval, ht, ht'] using h
 
 theorem eventually_sameSignShadowMargin_pos
     {U : ℕ → Set Plane} {K B : Set Plane} (h : CapHausdorffTendsto U K)
@@ -207,7 +221,8 @@ theorem eventually_sameSignShadowMargin_pos
       (sourceQuarterAngle (fullAngle α (dyadic (level n)) (scaledSource α (dyadic (level n)) j)))
         (mesh α (level n))) hmargin
   intro ns hns j hangle
-  exact (h.comp hns).sameSignShadowMargin_tendsto (fun n => hU (ns n)) hK hB
+  have hsub : CapHausdorffTendsto (fun n => U (ns n)) K := h.comp hns
+  exact hsub.sameSignShadowMargin_tendsto (fun n => hU (ns n)) hK hB
     (fun n => hbox (ns n)) positive (sourceQuarterAngle_tendsto hangle htop)
     ((mesh_tendsto α).comp (hlevel.comp hns)) (fun n => mesh_sin_pos α (level (ns n)))
     (fun n => (mesh_cos_pos α (level (ns n))).le) ht htcomp
@@ -216,7 +231,7 @@ theorem tan_half_div_mesh_tendsto (α : TerminalAngle)
     {level : ℕ → ℕ} (hlevel : Tendsto level atTop atTop) :
     Tendsto (fun n => Real.tan (mesh α (level n) / 2) / mesh α (level n)) atTop (𝓝 (1 / 2)) := by
   have hhalf : Tendsto (fun n => mesh α (level n) / 2) atTop (𝓝 0) := by
-    simpa only [zero_div] using ((mesh_tendsto α).comp hlevel).div_const 2
+    simpa only [zero_div, Function.comp_apply] using ((mesh_tendsto α).comp hlevel).div_const 2
   have hratio := tan_div_self_tendsto hhalf
     (fun n => div_pos (mesh_pos α (level n)) (by norm_num))
   simpa only [div_div, div_mul_cancel₀ _ (by norm_num : (2 : ℝ) ≠ 0)] using hratio.div_const 2

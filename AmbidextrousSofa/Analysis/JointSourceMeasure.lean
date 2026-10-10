@@ -91,9 +91,10 @@ theorem innerJointMeasure_apply (U : Set Plane) (grid : Finset QuarterAngle)
   rw [innerJointMeasure, Measure.finsetSum_apply]
   apply Finset.sum_congr rfl
   intro j _
-  rw [Measure.map_apply (measurable_const.prodMk measurable_id) hE,
+  have hm : Measurable (fun x : ℝ => (fullAngle grid j, x)) := measurable_prodMk_left
+  rw [Measure.map_apply hm hE,
     innerSpatialMeasure, Measure.smul_apply, smul_eq_mul,
-    Measure.restrict_apply (hE.preimage (measurable_const.prodMk measurable_id))]
+    Measure.restrict_apply (hE.preimage hm)]
 
 open Classical in
 theorem innerJointMeasure_prod (U : Set Plane) (grid : Finset QuarterAngle)
@@ -105,7 +106,8 @@ theorem innerJointMeasure_prod (U : Set Plane) (grid : Finset QuarterAngle)
   rw [innerJointMeasure, Measure.finsetSum_apply]
   apply Finset.sum_congr rfl
   intro j _
-  rw [Measure.map_apply (measurable_const.prodMk measurable_id) (hE.prod hS)]
+  have hm : Measurable (fun x : ℝ => (fullAngle grid j, x)) := measurable_prodMk_left
+  rw [Measure.map_apply hm (hE.prod hS)]
   have hpre : (fun x : ℝ => (fullAngle grid j, x)) ⁻¹' (E ×ˢ S) =
       if fullAngle grid j ∈ E then S else ∅ := by
     ext x
@@ -201,10 +203,10 @@ theorem integrable_innerJointMeasure_angle (U : Set Plane) (grid : Finset Quarte
   unfold innerJointMeasure
   apply integrable_finsetSum_measure.mpr
   intro j _
+  have hm : Measurable (fun x : ℝ => (fullAngle grid j, x)) := measurable_prodMk_left
   apply (integrable_map_measure (hw.comp measurable_fst).aestronglyMeasurable
-    (measurable_const.prodMk measurable_id).aemeasurable).mpr
-  simpa only [Function.comp_apply] using
-    (integrable_const (w (fullAngle grid j)) :
+    hm.aemeasurable).mpr
+  exact (integrable_const (w (fullAngle grid j)) :
       Integrable (fun _ : ℝ => w (fullAngle grid j)) (innerSpatialMeasure U grid l r j))
 
 theorem integral_innerJointMeasure_angle (U : Set Plane) (grid : Finset QuarterAngle)
@@ -217,8 +219,9 @@ theorem integral_innerJointMeasure_angle (U : Set Plane) (grid : Finset QuarterA
   rw [integral_finsetSum_measure (integrable_finsetSum_measure.mp hi)]
   apply Finset.sum_congr rfl
   intro j _
-  rw [integral_map_of_stronglyMeasurable (measurable_const.prodMk measurable_id)
-    (hw.comp measurable_fst).stronglyMeasurable]
+  have hm : Measurable (fun x : ℝ => (fullAngle grid j, x)) := measurable_prodMk_left
+  rw [integral_map_of_stronglyMeasurable hm
+    (f := fun z : Plane => w z.1) (hw.comp measurable_fst).stronglyMeasurable]
   change (∫ _ : ℝ, w (fullAngle grid j) ∂innerSpatialMeasure U grid l r j) = _
   rw [integral_const, smul_eq_mul, innerSpatialMeasure_real_univ U grid hlr]
   ring
@@ -251,7 +254,7 @@ theorem finiteBarrier_projection_eq_joint_integral
         (barrierExpr (pairList grid) none).sourceMass (wallSlope (normal grid))
           (barrierIntercept (normal grid) (fun i => support U (normal grid i))) l r none +
       ∫ z : Plane, Real.sin (z.1 - t) ∂innerJointMeasure U grid l r := by
-  rw [integral_innerJointMeasure_angle U grid hlr
+  rw [integral_innerJointMeasure_angle U grid hlr (w := fun θ => Real.sin (θ - t))
     (Real.continuous_sin.measurable.comp (measurable_id.sub_const t))]
   exact finiteBarrier_projection_eq_sources U grid hlr t
 

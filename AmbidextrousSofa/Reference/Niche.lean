@@ -78,7 +78,7 @@ theorem earlyApex_lt_half {t : ℝ} (ht : t ∈ Icc (0 : ℝ) beta) :
   have hc : 0 < Real.cos t := Real.cos_pos_of_mem_Ioo
     ⟨by linarith [ht.1, Real.pi_pos], ht.2.trans_lt beta_lt_pi_div_two⟩
   have hA : 2 * A * Real.sin t ≤ 1 / 2 := by
-    nlinarith [mul_le_mul_of_nonneg_left hs (show 0 ≤ 2 * A by positivity),
+    nlinarith [mul_le_mul_of_nonneg_left hs (show 0 ≤ 2 * A by linarith [A_pos]),
       four_mul_A_mul_sinBeta]
   by_cases ht0 : t = 0
   · subst t
@@ -216,7 +216,7 @@ theorem exists_referenceNiche_uniform_bound :
   obtain ⟨t, ht, hmax⟩ := (isCompact_Icc : IsCompact (Icc (0 : ℝ) (Real.pi / 2))).exists_isMaxOn
     ⟨0, hzero⟩ continuous_referenceApexHeight.continuousOn
   have hC : 0 ≤ referenceApexHeight t := by
-    simpa only [referenceApexHeight_zero] using hmax hzero
+    simpa only [mem_setOf_eq, referenceApexHeight_zero] using hmax hzero
   refine ⟨referenceApexHeight t, hC, referenceApexHeight_lt_half ht, ?_⟩
   intro x
   apply sweptNiche_le_of_forall (by linarith [Real.pi_pos]) hC
@@ -255,8 +255,10 @@ theorem continuousAt_referenceWallClip {z : ℝ × ℝ}
     have hvalue : referenceWallClip z.1 z.2 = 0 := by rw [hz0, referenceWallClip_zero]
     change Filter.Tendsto _ _ (𝓝 (referenceWallClip z.1 z.2))
     rw [hvalue]
-    apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-      (by simpa only [hupper0] using hupper)
+    have hupper' : Filter.Tendsto upper (𝓝 z) (𝓝 0) := by
+      have h := hupper.tendsto
+      rwa [hupper0] at h
+    apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hupper'
     · intro p
       exact le_max_right _ _
     · intro p
@@ -271,8 +273,10 @@ theorem continuousAt_referenceWallClip {z : ℝ × ℝ}
     have hvalue : referenceWallClip z.1 z.2 = 0 := by rw [hzL, referenceWallClip_pi_div_two]
     change Filter.Tendsto _ _ (𝓝 (referenceWallClip z.1 z.2))
     rw [hvalue]
-    apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-      (by simpa only [hupper0] using hupper)
+    have hupper' : Filter.Tendsto upper (𝓝 z) (𝓝 0) := by
+      have h := hupper.tendsto
+      rwa [hupper0] at h
+    apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hupper'
     · intro p
       exact le_max_right _ _
     · intro p
@@ -289,6 +293,7 @@ theorem continuous_referenceWallClip_on_angles :
   apply continuous_iff_continuousAt.mpr
   intro p
   exact (continuousAt_referenceWallClip (z := (p.1, (p.2 : ℝ))) p.2.property).comp
+    (f := fun q : ℝ × Icc (0 : ℝ) (Real.pi / 2) => (q.1, (q.2 : ℝ)))
     (continuous_fst.prodMk (continuous_subtype_val.comp continuous_snd)).continuousAt
 
 /-- Closed-angle clipping has exactly the same supremum as the actual open-angle niche. -/
@@ -313,8 +318,9 @@ theorem referenceNiche_eq_sSup_clipped (x : ℝ) :
         exact le_max_left _ _
       _ ≤ _ := le_csSup hbounded (mem_image_of_mem _
         (mem_univ (⟨t, ht.1.le, ht.2.le⟩ : Icc (0 : ℝ) (Real.pi / 2))))
-  · apply csSup_le ⟨referenceWallClip x zeroAngle, zeroAngle, mem_univ _, rfl⟩
+  · refine csSup_le ⟨referenceWallClip x zeroAngle, zeroAngle, mem_univ _, rfl⟩ ?_
     rintro y ⟨t, _, rfl⟩
+    show referenceWallClip x t ≤ referenceNiche x
     by_cases ht0 : (t : ℝ) = 0
     · rw [ht0, referenceWallClip_zero]
       exact referenceNiche_nonneg x

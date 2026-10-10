@@ -23,15 +23,16 @@ theorem image_addParameterInterval {s : ℝ} (hs : 0 < s) (c a b : ℝ) :
   ext x
   constructor
   · rintro ⟨v, hv, rfl⟩
-    exact ⟨add_le_add_left (mul_le_mul_of_nonneg_right hv.1 hs.le) _,
-      add_le_add_left (mul_le_mul_of_nonneg_right hv.2 hs.le) _⟩
+    exact ⟨add_le_add_right (mul_le_mul_of_nonneg_right hv.1 hs.le) _,
+      add_le_add_right (mul_le_mul_of_nonneg_right hv.2 hs.le) _⟩
   · intro hx
     refine ⟨(x - c) / s, ⟨?_, ?_⟩, ?_⟩
     · rw [le_div_iff₀ hs]
       linarith [hx.1]
     · rw [div_le_iff₀ hs]
       linarith [hx.2]
-    · rw [div_mul_cancel₀ _ hs.ne']
+    · dsimp only
+      rw [div_mul_cancel₀ _ hs.ne']
       ring
 
 theorem volume_real_image_addParameterInterval {s : ℝ} (hs : 0 < s) (c a b : ℝ) :
@@ -52,7 +53,7 @@ theorem measure_addParameterIntervals_le {S : Set ℝ} {s : ℝ} (hs : 0 < s)
     rcases hv with hv | hv
     · exact Or.inl ⟨v, hv, rfl⟩
     · exact Or.inr ⟨v, hv, rfl⟩
-  have hfinite : volume (F '' Icc a b ∪ F '' Icc d e) ≠ ∞ := by
+  have hfinite : volume (F '' Icc a b ∪ F '' Icc d e) ≠ ⊤ := by
     dsimp only [F]
     rw [image_addParameterInterval hs, image_addParameterInterval hs]
     exact (measure_union_lt_top isCompact_Icc.measure_lt_top isCompact_Icc.measure_lt_top).ne
@@ -85,7 +86,9 @@ theorem second_source_le_first (U : Set Plane) (grid : Finset QuarterAngle)
     simp at hfalse
   · have heq : t = s := Sum.inr.inj (Option.some.inj (hselected.symm.trans h.1))
     subst s
-    simpa only [v, ← supportWall_eq_affine, normal] using h.2
+    have h2 := h.2
+    simp only [v, ← supportWall_eq_affine] at h2
+    exact h2
 
 def companionPoint (U : Set Plane) (t v : ℝ) : Plane :=
   v • unitNormal t + (support U (companionNormal t) - 1) • companionNormal t
@@ -104,7 +107,8 @@ theorem dot_companionPoint_first (U : Set Plane) (t v s : ℝ) :
     (v • MovingSofaOptimality.uvec t + (support U (companionNormal t) - 1) • MovingSofaOptimality.vvec t)
       (MovingSofaOptimality.uvec s) = _
   rw [MovingSofaOptimality.dot_add_left, MovingSofaOptimality.dot_smul_left, MovingSofaOptimality.dot_smul_left,
-    MovingSofaOptimality.dot_uvec_uvec, MovingSofaOptimality.dot_vvec_uvec', Real.cos_sub_comm t s]
+    MovingSofaOptimality.dot_uvec_uvec, MovingSofaOptimality.dot_vvec_uvec',
+    show Real.cos (t - s) = Real.cos (s - t) by rw [← Real.cos_neg, neg_sub]]
 
 theorem dot_companionPoint_companion (U : Set Plane) (t v s : ℝ) :
     coordDot (companionPoint U t v) (companionNormal s) =
@@ -244,7 +248,8 @@ theorem integral_second_source_le {U : Set Plane} (hU : IsDownwardCap U)
       support U (unitNormal ((t.val : ℝ) - δ)) -
         2 * Real.cos δ * support U (unitNormal t.val) := by
     nlinarith [hU.support_secondDifference_nonneg t.val hs.le]
-  have hcomp := companion_interval_length_le hc hs hh hconv
+  have hcomp := companion_interval_length_le (f := support U (companionNormal t.val))
+    hc hs hh hconv
   have hfirst := companion_interval_length_le_curvature hU t.val hs hh
   exact hraw.trans (add_le_add hcomp (max_le_max hfirst le_rfl))
 

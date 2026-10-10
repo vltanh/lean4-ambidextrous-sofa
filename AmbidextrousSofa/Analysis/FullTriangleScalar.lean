@@ -111,7 +111,7 @@ theorem fullTriangleRelaxation_le_joint_tangent {a h k c u v a0 u0 v0 : ℝ}
       (a0 - u0 - ((u0 + v0 - h) / 2 - k) - S0 * (k - 2) / (2 + 3 * k)) * (u - u0) +
       (a0 - v0 - ((u0 + v0 - h) / 2 - k) - S0 * (k - 2) / (2 + 3 * k)) * (v - v0) := by
   dsimp only
-  have hF := diagonalRelaxation_le_joint_tangent h k hq hq0 hu0 hv0
+  have hF := diagonalRelaxation_le_joint_tangent (a := a) h k hq hq0 hu0 hv0
   have hS := positive_square_ge_tangent
     (fullTriangleDemand a ((u + v) / 2) h k c) hS0
   have hden : 0 < 2 + 3 * k := by linarith only [hk]
@@ -162,7 +162,7 @@ theorem fullTriangle_stationary_clip {k c h : ℝ}
   have hBA : 3 / 4 < (2 - k) * (1 - k) := by
     nlinarith only [sq_nonneg k, hk1, hk0]
   have hsprod : (2 - k) * s0 < (8 / 5) * (71 / 100) := by
-    have h := mul_lt_mul hb.2 hs1 (by linarith only [hs0] : 0 < s0) (by norm_num)
+    have h := mul_lt_mul hb.2 hs1.le (by linarith only [hs0] : 0 < s0) (by norm_num)
     exact h
   have hBAh := mul_le_mul_of_nonneg_right hBA.le hh0
   have hclip : M < k + 37 / 50 := by
@@ -216,10 +216,10 @@ theorem fullTriangleRelaxation_le_bound {a h k c u v : ℝ}
       _ = _ := by rw [hBD]; dsimp [fullTriangleBound, z]; ring
   have hmMean : (m + m) / 2 = m := by ring
   have hmQ : (m + m - h) / 2 - k = m - h / 2 - k := by ring
-  have htan := fullTriangleRelaxation_le_joint_tangent (a0 := a0) (u0 := m) (v0 := m)
-    hk hq (by rw [hmQ]; exact hclip.2.2.2.le) hclip.2.2.1.le
+  have htan := fullTriangleRelaxation_le_joint_tangent (a := a) (a0 := a0) (u0 := m) (v0 := m)
+    hk hq (by rw [hmQ]; exact hclip.2.2.2.le) (by dsimp only [a0]; linarith only [hclip.2.2.1])
     (by dsimp [a0]; linarith only [hclip.2.2.1, hh0])
-    (by rw [hmMean, hS]; positivity)
+    (by rw [hmMean, hS]; have hdz := mul_pos hd hclip.1; nlinarith only [hdz])
   dsimp only at htan
   rw [hmMean, hmQ, hS] at htan
   change fullTriangleRelaxation a h k c u v ≤
@@ -228,7 +228,7 @@ theorem fullTriangleRelaxation_le_bound {a h k c u v : ℝ}
     (1 - h / 2 - (2 * a0 - m - m) - 2 * (2 * d * z / 9) * (k + 2) / d) * (a - a0) +
     (a0 - m - (m - h / 2 - k) - (2 * d * z / 9) * (k - 2) / d) * (u - m) +
     (a0 - m - (m - h / 2 - k) - (2 * d * z / 9) * (k - 2) / d) * (v - m) at htan
-  rw [hvalue, hgradA, hgrad, zero_mul, add_zero, add_zero] at htan
+  rw [hvalue, hgradA, hgrad, zero_mul, add_zero, zero_mul, add_zero] at htan
   have hneg : 1 + k - a0 - 2 * d * z / 9 ≤ 0 := by
     dsimp [a0]
     nlinarith only [hk1, mul_pos hd hclip.1]
@@ -256,9 +256,9 @@ theorem fullTriangleBound_add_loss_lt {h k c : ℝ}
     dsimp [d0]
     constructor <;> linarith only [hc0, hc1, hk0, hk1]
   have hAs : A * s0 < (3 / 5) * (71 / 100) :=
-    mul_lt_mul hA.2 hs.2 (by linarith only [hs.1] : 0 < s0) (by norm_num)
+    mul_lt_mul hA.2 hs.2.le (by linarith only [hs.1] : 0 < s0) (by norm_num)
   have hγd : γ * d0 < (3 / 10) * (589 / 3500) :=
-    mul_lt_mul hγ.2 hd.2 hd.1 (by norm_num)
+    mul_lt_mul hγ.2 hd.2.le hd.1 (by norm_num)
   have hell : ell < -1 / 10 := by dsimp [ell]; linarith only [hAs, hγd, hk0]
   have hq : q < 1 / 16 := by dsimp [q]; linarith only [hγ.2, sq_nonneg A]
   have htilt : ell * h + q * h ^ 2 ≤ 0 := by

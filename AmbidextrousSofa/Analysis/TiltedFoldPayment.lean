@@ -61,7 +61,7 @@ theorem intervalIntegrable_firstUnitLossDensity
     rw [Real.norm_eq_abs, abs_of_nonneg (sub_nonneg.mpr ht.2)]
     linarith [ht.1]
   apply (intervalIntegrable_iff_integrableOn_Icc_of_le hab).2
-  simpa only [firstUnitLossDensity] using hw'.mul_bdd hdm hdb
+  simpa only [firstUnitLossDensity, IntegrableOn] using hw'.mul_bdd hdm hdb
 
 /-- A tail with nonnegative loss before `β` and a density payment after
 `β` is paid by the whole `β..L` budget, even if `γ > β`. -/
@@ -190,7 +190,7 @@ theorem firstUnit_loss_integral_lower_bound
     have hfloor' := (ae_restrict_iff' measurableSet_Icc).1 hfloor
     filter_upwards [hfloor'] with t ht hmem
     have hmem' : t ∈ Icc 0 γ := by
-      simpa only [uIcc_of_le hγ0] using (Ioc_subset_Icc_self hmem)
+      simpa only [min_eq_left hγ0, max_eq_right hγ0] using (Ioc_subset_Icc_self hmem)
     simp only [firstUnitLossDensity, ht hmem', sub_zero, mul_one]
   have hsum := intervalIntegral.integral_add_adjacent_intervals hD0γ hDγη
   rw [hfloor_eq] at hsum

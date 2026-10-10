@@ -44,14 +44,14 @@ theorem CapHausdorffTendsto.eventually_top_points_near
   let seq : ℕ → ℕ := fun n => ns (ms n)
   have hseq : Tendsto seq atTop atTop :=
     (tendsto_atTop_mono hns tendsto_id).comp hms.tendsto_atTop
-  have hpK : p ∈ K := (h.comp hseq).mem_of_tendsto
+  have hpK : p ∈ K := CapHausdorffTendsto.mem_of_tendsto (U := fun n => U (seq n)) (h.comp hseq)
     (fun n => (hU (seq n)).isCompact) (fun n => (hU (seq n)).nonempty)
     hK.isCompact hK.nonempty (fun n => hpoint (ms n)) hp
-  have hpy : p.2 = 1 := tendsto_nhds_unique hp.snd
+  have hpy : p.2 = 1 := tendsto_nhds_unique hp.snd_nhds
     ((tendsto_const_nhds : Tendsto (fun _ : ℕ => (1 : ℝ)) atTop (𝓝 1)).congr'
       (Eventually.of_forall (fun n => (hheight (ms n)).symm)))
   have hpt := htop p hpK hpy
-  have hnear := hp.fst.eventually (Ioo_mem_nhds
+  have hnear := hp.fst_nhds.eventually (Ioo_mem_nhds
     (show s - ε < p.1 by linarith only [hpt.1, hε])
     (show p.1 < t + ε by linarith only [hpt.2, hε]))
   obtain ⟨n, hn⟩ := hnear.exists
@@ -75,7 +75,8 @@ theorem topSource_mem_cap [Fintype ι] {U : Set Plane} (hU : IsDownwardCap U)
       none at hsource
   rw [hsource] at hvalue
   have hheight : capRoof U x = 1 := by
-    exact hroof.trans (by simpa only [wallSlope, roofIntercept, zero_mul, zero_add] using hvalue)
+    exact hroof.trans (by
+      simpa only [roofEnvelope, wallSlope, roofIntercept, zero_mul, zero_add] using hvalue)
   rw [← hheight]
   apply capRoof_mem hU.isCompact
   rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
@@ -213,7 +214,7 @@ theorem dry_interval_length_le_top_width_of_selected
     fun n => subset_symmetricBox_of_horizontalBox (hU n).inBox
   have hpositive := finitePositiveLength_tendsto_zero_on_dry_interval hHausdorff hcap hTarget
     hlevel hB hbox hab ha hb hnegative
-  have herror := selectionDefect_sum_tendsto hTarget hcap hc hrate hHausdorff
+  have herror := selectionDefect_sum_tendsto (level := level) hTarget hcap hc hrate hHausdorff
   have hl := hHausdorff.horizontalLeft_tendsto (fun n => (hcap n).isCompact)
     (fun n => (hcap n).nonempty) hTarget.isCompact hTarget.nonempty
   have hr := hHausdorff.horizontalRight_tendsto (fun n => (hcap n).isCompact)
@@ -243,7 +244,7 @@ theorem dry_interval_length_le_top_width_of_selected
     have hconstant : Tendsto (fun _ : ℕ => t - s + 2 * ε) atTop (𝓝 (t - s + 2 * ε)) :=
       tendsto_const_nhds
     have hlim := (hconstant.add hpositive).add herror
-    have hresult := le_of_tendsto hlim hinequality
+    have hresult := ge_of_tendsto hlim hinequality
     simpa only [add_zero] using hresult
   by_contra hnot
   have hgap : 0 < (b - a) - (t - s) := sub_pos.mpr (lt_of_not_ge hnot)

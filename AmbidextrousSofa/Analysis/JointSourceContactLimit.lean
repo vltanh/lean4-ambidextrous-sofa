@@ -72,7 +72,9 @@ theorem eventually_source_values_lt
   have hseq : Tendsto seq atTop atTop := hnsTop.comp hms.tendsto_atTop
   have hz := hzero seq hseq (fun n => point (ms n)) (fun n => hpoint (ms n)) z hlim
   have hsmall : Tendsto (fun n => f (point (ms n))) atTop (𝓝 0) := by
-    simpa only [hz] using (hf.tendsto z).comp hlim
+    have h := (hf.tendsto z).comp hlim
+    rw [hz] at h
+    exact h
   have hle : ε ≤ 0 := ge_of_tendsto hsmall
     (Eventually.of_forall (fun n => le_of_not_gt (hlarge (ms n))))
   exact not_le_of_gt hε hle
@@ -96,11 +98,13 @@ theorem ae_zero_of_source_limits
         (isClosed_le hf continuous_const).measurableSet
         (fun j x hx hsource => (hn (fullAngle (dyadic (J.level n)) j, x)
           ⟨hx, j, rfl, hsource⟩).le)
-      simpa only [compl_setOf, not_le] using hnull
+      simp only [compl_setOf, not_le] at hnull
+      exact hnull
     have hreal : (J.measure : Measure Plane).real {z | selectionRate k < f z} ≤ 0 := by
       apply finiteMeasure_real_open_le_of_tendsto_bound J.converges
         (isOpen_lt continuous_const hf) le_rfl tendsto_const_nhds
       filter_upwards [hfinite.filter_mono sourceLimitFilter_le_atTop] with n hn
+      change (J.finiteMeasure n : Measure Plane).real {z | selectionRate k < f z} ≤ 0
       simp only [Measure.real, hn, ENNReal.toReal_zero, le_rfl]
     have hnull : (J.measure : Measure Plane) {z | selectionRate k < f z} = 0 :=
       (measureReal_eq_zero_iff (measure_ne_top _ _)).mp
@@ -129,10 +133,10 @@ theorem ae_spatial_mem_middle (hTarget : IsDownwardCap target) :
       (fun n => (J.isCap n).nonempty) hTarget.isCompact hTarget.nonempty).comp hseq
     have hw := ((J.hausdorff.capWidth_tendsto J.isCap hTarget).div_const 4).comp hseq
     have hleft : horizontalLeft target + capWidth target / 4 ≤ z.2 :=
-      le_of_tendsto_of_tendsto (hl.add hw) hz.snd
+      le_of_tendsto_of_tendsto (hl.add hw) hz.snd_nhds
         (Eventually.of_forall (fun n => (hpoint n).1.1.le))
     have hright : z.2 ≤ horizontalRight target - capWidth target / 4 :=
-      le_of_tendsto_of_tendsto hz.snd (hr.sub hw)
+      le_of_tendsto_of_tendsto hz.snd_nhds (hr.sub hw)
         (Eventually.of_forall (fun n => (hpoint n).1.2))
     simp only [f, max_eq_right (sub_nonpos.mpr hleft),
       max_eq_right (sub_nonpos.mpr hright), add_zero])

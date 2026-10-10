@@ -85,15 +85,15 @@ theorem IsDownwardCap.hasDerivWithinAt_companionSupport_zero
     {U : Set Plane} (hU : IsDownwardCap U) :
     HasDerivWithinAt (fun t => angleSupport U (t + Real.pi / 2))
       (-(MovingSofaOptimality.vplus U (Real.pi / 2)).1) (Ici 0) 0 := by
-  have houter := MovingSofaOptimality.hasDerivWithinAt_supp_right hU.imported_isConvexBody
-    (0 + Real.pi / 2)
+  have houter := hU.angleSupport_right_deriv (0 + Real.pi / 2)
   have hinner : HasDerivWithinAt (fun t : ℝ => t + Real.pi / 2) 1 (Ici 0) 0 :=
     ((hasDerivAt_id (0 : ℝ)).add_const (Real.pi / 2)).hasDerivWithinAt
   have h := houter.comp 0 hinner (fun t ht => by
     simp only [mem_Ici] at ht ⊢
     linarith only [ht])
   simpa only [zero_add, mul_one, MovingSofaOptimality.dot, MovingSofaOptimality.vvec,
-    Real.sin_pi_div_two, Real.cos_pi_div_two, mul_neg, mul_zero, add_zero] using h
+    Real.sin_pi_div_two, Real.cos_pi_div_two, mul_neg, mul_zero, add_zero, coordDot,
+    Function.comp_def] using h
 
 /-- Both literal endpoint-coordinate moments. The density domain only
 needs to contain the half-open arc, so the initial supporting atom is
@@ -109,7 +109,7 @@ theorem IsDownwardCap.shiftedCompanion_sub_eq_integral_of_density
       shiftedCompanionY U b - shiftedCompanionY U a =
         ∫ r in a..b, (1 - ρ (r + Real.pi / 2)) * Real.sin r := by
   have hvec := MovingSofaOptimality.vplus_sub_vplus hU.imported_isConvexBody
-    (add_le_add_right hab (Real.pi / 2))
+    (add_le_add_left hab (Real.pi / 2))
   have hic : IntegrableOn MovingSofaOptimality.vvec
       (Icc (a + Real.pi / 2) (b + Real.pi / 2)) (MovingSofaOptimality.sigma U) :=
     MovingSofaOptimality.continuous_vvec.integrableOn_Icc
@@ -125,10 +125,10 @@ theorem IsDownwardCap.shiftedCompanion_sub_eq_integral_of_density
       (MovingSofaOptimality.vplus U (a + Real.pi / 2)).2 =
         ∫ r in Ioc (a + Real.pi / 2) (b + Real.pi / 2), Real.cos r ∂upperCurvature U at hy
   rw [setIntegral_eq_density_mul_of_restrict_withDensity hρ hρ0 heq measurableSet_Ioc hsub,
-    ← intervalIntegral.integral_of_le (add_le_add_right hab (Real.pi / 2)),
+    ← intervalIntegral.integral_of_le (add_le_add_left hab (Real.pi / 2)),
     ← intervalIntegral.integral_comp_add_right (fun r => ρ r * (-Real.sin r)) (Real.pi / 2)] at hx
   rw [setIntegral_eq_density_mul_of_restrict_withDensity hρ hρ0 heq measurableSet_Ioc hsub,
-    ← intervalIntegral.integral_of_le (add_le_add_right hab (Real.pi / 2)),
+    ← intervalIntegral.integral_of_le (add_le_add_left hab (Real.pi / 2)),
     ← intervalIntegral.integral_comp_add_right (fun r => ρ r * Real.cos r) (Real.pi / 2)] at hy
   simp only [Real.sin_add_pi_div_two, mul_neg, intervalIntegral.integral_neg] at hx
   simp only [Real.cos_add_pi_div_two, mul_neg, intervalIntegral.integral_neg] at hy
@@ -144,7 +144,7 @@ theorem IsDownwardCap.shiftedCompanion_sub_eq_integral_of_density
         ring
       _ = _ := by
         rw [intervalIntegral.integral_sub (Real.continuous_cos.intervalIntegrable a b)
-          (hρi.mul_continuousOn Real.continuous_cos.continuousOn), intervalIntegral.integral_cos]
+          (hρi.mul_continuousOn Real.continuous_cos.continuousOn), integral_cos]
   have hY : (∫ r in a..b, (1 - ρ (r + Real.pi / 2)) * Real.sin r) =
       Real.cos a - Real.cos b - ∫ r in a..b, ρ (r + Real.pi / 2) * Real.sin r := by
     calc
@@ -154,7 +154,7 @@ theorem IsDownwardCap.shiftedCompanion_sub_eq_integral_of_density
         ring
       _ = _ := by
         rw [intervalIntegral.integral_sub (Real.continuous_sin.intervalIntegrable a b)
-          (hρi.mul_continuousOn Real.continuous_sin.continuousOn), intervalIntegral.integral_sin]
+          (hρi.mul_continuousOn Real.continuous_sin.continuousOn), integral_sin]
   unfold shiftedCompanionX shiftedCompanionY
   constructor <;> linarith only [hx, hy, hX, hY]
 

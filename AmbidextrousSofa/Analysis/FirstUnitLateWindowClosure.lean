@@ -133,7 +133,7 @@ theorem firstUnit_loss_integral_lower_bound_of_companion_unit
     have hfloor' := (ae_restrict_iff' measurableSet_Icc).mp hfloor
     filter_upwards [hfloor'] with t ht hmem
     have hmem' : t ∈ Icc 0 γ := by
-      simpa only [uIcc_of_le hγ0] using Ioc_subset_Icc_self hmem
+      simpa only [min_eq_left hγ0, max_eq_right hγ0] using Ioc_subset_Icc_self hmem
     simp only [firstUnitLossDensity, ht hmem', sub_zero, mul_one]
   rwa [hfloor_eq] at hmono
 

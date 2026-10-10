@@ -97,11 +97,11 @@ theorem CapHausdorffTendsto.exterior_roof_integral_tendsto
         middleHalfInterval (horizontalLeft (U n)) (horizontalRight (U n)), capRoof (U n) x)
       atTop (𝓝 (∫ x in Icc (horizontalLeft K) (horizontalRight K) \
         middleHalfInterval (horizontalLeft K) (horizontalRight K), capRoof K x)) := by
-  apply tendsto_setIntegral_moving_domain (fun n => (hU n).measurable_capRoof)
+  refine tendsto_setIntegral_moving_domain (fun n => (hU n).measurable_capRoof)
     (fun n => measurableSet_Icc.diff (measurableSet_middleHalfInterval _ _))
     (measurableSet_Icc.diff (measurableSet_middleHalfInterval _ _))
     (h.capRoof_tendsto_ae hU hK) ?_ (C := 1) zero_le_one
-    (l := horizontalLeft B) (r := horizontalRight B)
+    (l := horizontalLeft B) (r := horizontalRight B) ?_ ?_
   · filter_upwards [h.projection_membership_ae hU hK, h.middle_membership_ae hU hK]
       with x hxI hxJ
     filter_upwards [hxI, hxJ] with n hnI hnJ

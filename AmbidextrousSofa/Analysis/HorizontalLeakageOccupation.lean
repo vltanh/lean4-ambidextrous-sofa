@@ -193,13 +193,13 @@ theorem IsFullCapMaximizer.exists_horizontal_quadratic_excess_envelope
   have hlim := hU.cornerVelocities_tendsto_zero_right hheight hmiddle
   have hp : Tendsto (fun s => -secondCornerVelocity U s) (𝓝[>] (0 : ℝ))
       (𝓝 (capRoof U (horizontalRight U))) := by
-    simpa only [neg_neg] using hlim.snd.neg
+    simpa only [neg_neg] using hlim.snd_nhds.neg
   have hq : Tendsto (firstCornerVelocity U) (𝓝[>] (0 : ℝ)) (𝓝 (3 * C - 1)) := by
     have hvalue : horizontalRight U - 1 - (horizontalLeft U + capWidth U / 4) =
         3 * C - 1 := by
       unfold capWidth at hwidth ⊢
       linarith
-    simpa only [hvalue] using hlim.fst
+    simpa only [hvalue] using hlim.fst_nhds
   have hlater : ∃ d ∈ Ioo (0 : ℝ) (Real.pi / 2), firstCornerVelocity U d ≤ 1 := by
     obtain ⟨d, hd, hqd⟩ := hU.exists_later_negative_firstCornerVelocity
       hheight hmiddle (by linarith [Real.pi_pos] : (0 : ℝ) < Real.pi / 2)

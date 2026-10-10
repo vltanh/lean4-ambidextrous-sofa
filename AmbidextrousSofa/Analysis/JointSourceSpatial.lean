@@ -132,8 +132,9 @@ theorem finite_horizontalProjection_Ioc_real_le
   calc
     _ ≤ volume.real (Ioc l r) := by
       apply measureReal_mono
-      intro x hx
-      exact ⟨(le_max_right _ _).trans_lt hx.1.1, hx.1.2.trans (min_le_right _ _)⟩
+      · intro x hx
+        exact ⟨(le_max_right _ _).trans_lt hx.1.1, hx.1.2.trans (min_le_right _ _)⟩
+      · exact measure_Ioc_lt_top.ne
     _ = r - l := Real.volume_real_Ioc_of_le hlr
 
 namespace SelectedJointSourceLimit
@@ -235,7 +236,7 @@ theorem spatial_fiber_eq_zero (x : ℝ) :
       (weightedFiniteMeasure J.measure sourceSineFunction.nnrealPart : Measure Plane)
         (univ ×ˢ {x}) = 0 := by
     rw [← sourceHorizontalProjection_apply _ (measurableSet_singleton x)]
-    exact measure_singleton x
+    exact NullSingletonClass.measure_singleton (μ := (J.horizontalProjection : Measure ℝ)) x
   exact absolutelyContinuous_weightedFiniteMeasure J.measure sourceSineFunction.nnrealPart
     J.sinePart_ne_zero_ae hweighted
 

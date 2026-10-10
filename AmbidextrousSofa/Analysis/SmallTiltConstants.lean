@@ -164,6 +164,7 @@ theorem smallTilt_polynomial_positive {h s : ℝ}
   have hlin : h + (10 / 9) * s ≤ c * s := by
     have hp := mul_le_mul_of_nonneg_left hsR hk
     dsimp only [c]
+    clear_value k R
     nlinarith only [hh', hp]
   have hsum : 0 ≤ c * s + (h + (10 / 9) * s) := by
     nlinarith only [mul_nonneg hc hs0.le, hh0, hs0]

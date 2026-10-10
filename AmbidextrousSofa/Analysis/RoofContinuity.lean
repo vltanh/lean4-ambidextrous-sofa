@@ -29,7 +29,7 @@ theorem continuousWithinAt_of_upperSemicontinuousWithinAt_of_lower_support
   refine ⟨?_, hupper⟩
   intro c hc
   have hcg : c < g x := by rw [hvalue]; exact hc
-  have hglower := hg.continuousWithinAt.lowerSemicontinuousWithinAt
+  have hglower := (hg.continuousWithinAt (s := s)).lowerSemicontinuousWithinAt
   filter_upwards [hglower c hcg, self_mem_nhdsWithin] with y hy hys
   exact hy.trans_le (hlower y hys)
 
@@ -51,14 +51,14 @@ theorem IsDownwardCap.continuousOn_capRoof_Icc {U : Set Plane}
     have hl : l ∈ horizontalProjection U := horizontalLeft_mem hU.nonempty hU.isCompact
     have hr : r ∈ horizontalProjection U := horizontalRight_mem hU.nonempty hU.isCompact
     have hbelow : ∀ x ∈ Icc l r, roofChord (capRoof U) l r x ≤ capRoof U x :=
-      fun x hx => hU.concaveOn_capRoof.roofChord_le hl hr hlt hx
+      fun x hx => ConcaveOn.roofChord_le hU.concaveOn_capRoof hl hr hlt hx
     have hleft : ContinuousWithinAt (capRoof U) (Icc l r) l :=
       continuousWithinAt_of_upperSemicontinuousWithinAt_of_lower_support
-        ((hU.upperSemicontinuous_capRoof l).upperSemicontinuousWithinAt (Icc l r))
+        (hU.upperSemicontinuous_capRoof.upperSemicontinuousWithinAt (Icc l r) l)
         (continuous_roofChord _ _ _).continuousAt (roofChord_left _ _ _) hbelow
     have hright : ContinuousWithinAt (capRoof U) (Icc l r) r :=
       continuousWithinAt_of_upperSemicontinuousWithinAt_of_lower_support
-        ((hU.upperSemicontinuous_capRoof r).upperSemicontinuousWithinAt (Icc l r))
+        (hU.upperSemicontinuous_capRoof.upperSemicontinuousWithinAt (Icc l r) r)
         (continuous_roofChord _ _ _).continuousAt (roofChord_right _ hlt) hbelow
     exact hconcave.continuousOn_Icc hlt
       ((continuousWithinAt_Icc_iff_Ici hlt).mp hleft)

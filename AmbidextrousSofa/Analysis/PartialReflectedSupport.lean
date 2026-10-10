@@ -96,8 +96,8 @@ theorem IsJointCapMaximizer.properUsed_momenta_ae_derivatives_of_tail_regime
   have hfirst := hU.proper_first_density_of_regular_of_tail_regime hregime hproper hheight haffine heq
   have hsecond := hU.proper_leftCompanion_density_of_regular hproper haffine heq
   have hσ := measurable_leftCompanionWingDensity hρ m
-  have hσ0 := fun t => (leftCompanionWingDensity_bounds hρ0 hρK t).1
-  have hσK := fun t => (leftCompanionWingDensity_bounds hρ0 hρK t).2
+  have hσ0 := fun t => (leftCompanionWingDensity_bounds (m := m) hρ0 hρK t).1
+  have hσK := fun t => (leftCompanionWingDensity_bounds (m := m) hρ0 hρK t).2
   filter_upwards [ae_restrict_mem measurableSet_Ioo,
     hU.isCap.ae_hasDerivAt_closedSupportDerivative hρ hρ0 hρK hU.angle_pos.le 0,
     hV.ae_hasDerivAt_closedSupportDerivative hσ hσ0 hσK hU.angle_pos.le (Real.pi / 2)]
@@ -140,10 +140,12 @@ theorem IsJointCapMaximizer.properReflected_momenta_absolutelyContinuous
       AbsolutelyContinuousOnInterval (properReflectedQ U m ρ) (Real.pi / 2 - α) (Real.pi / 2) := by
   have h := hU.properUsed_momenta_absolutelyContinuous (m := m) hρ hρ0 hρK
   constructor
-  · simpa only [sub_zero, properReflectedP] using
-      (absolutelyContinuousOnInterval_comp_const_sub h.2 hU.angle_pos.le (Real.pi / 2)).neg
-  · simpa only [sub_zero, properReflectedQ] using
-      (absolutelyContinuousOnInterval_comp_const_sub h.1 hU.angle_pos.le (Real.pi / 2)).neg
+  · have h' := (absolutelyContinuousOnInterval_comp_const_sub h.2 hU.angle_pos.le (Real.pi / 2)).neg
+    rw [sub_zero] at h'
+    exact h'
+  · have h' := (absolutelyContinuousOnInterval_comp_const_sub h.1 hU.angle_pos.le (Real.pi / 2)).neg
+    rw [sub_zero] at h'
+    exact h'
 
 theorem IsJointCapMaximizer.properReflected_momenta_ae_derivatives_of_tail_regime
     {U : Set Plane} {α m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
@@ -223,11 +225,13 @@ theorem IsJointCapMaximizer.properUsed_momenta_eq_actual_after_affine_of_tail_re
   constructor
   · dsimp only [properUsedP, supportP]
     rw [hfd, hmatch.1]
-    dsimp only [supportTangent, secondCornerVelocity, angleSupport]
+    simp only [angleSupport_eq_imported_supp]
+    dsimp only [supportTangent, secondCornerVelocity]
     ring
   · dsimp only [properUsedQ, supportQ]
     rw [hgd, hmatch.2]
-    dsimp only [supportTangent, firstCornerVelocity, angleSupport]
+    simp only [angleSupport_eq_imported_supp]
+    dsimp only [supportTangent, firstCornerVelocity]
     ring
 
 theorem IsJointCapMaximizer.properUsed_momenta_eq_actual_after_affine
@@ -287,7 +291,7 @@ theorem IsJointCapMaximizer.properReflected_terminal_values_of_tail_regime
       (terminalTailPoint U α).2 * Real.sin α := (MovingSofaOptimality.dot_vplus_uvec U α).symm
   have hgs : angleSupport U (α + Real.pi / 2) =
       -horizontalLeft U * Real.sin α + capRoof U (horizontalLeft U) * Real.cos α := by
-    rw [← MovingSofaOptimality.dot_vplus_uvec, hcomp]
+    rw [angleSupport_eq_imported_supp, ← MovingSofaOptimality.dot_vplus_uvec, hcomp]
     simp only [MovingSofaOptimality.dot, MovingSofaOptimality.uvec, Real.cos_add_pi_div_two, Real.sin_add_pi_div_two]
     ring
   have hgt : supportTangent U (α + Real.pi / 2) =

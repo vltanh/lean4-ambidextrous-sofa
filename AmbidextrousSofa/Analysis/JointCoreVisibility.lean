@@ -67,6 +67,7 @@ local notation "aZ" => J.sourceBranchDensity (firstCornerSource target) 0
 local notation "aW" => J.sourceBranchDensity (secondCornerSource target) (Real.pi / 2)
 local notation "w" => (fun t => aZ t * Real.sin t + aW t * Real.cos t)
 
+include hl hr hC hheight hlow hhigh hh hunit hTargetBox hleft hright in
 theorem ae_corner_densities_eq_momenta_of_unique_contact {α η : ℝ}
     (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η) :
     ∀ᵐ t ∂volume.restrict (Ioo α η),
@@ -84,8 +85,9 @@ theorem ae_corner_densities_eq_momenta_of_unique_contact {α η : ℝ}
   obtain ⟨hX, hY⟩ := fullTiltedSupportQuarterPair_core_continuous_global
     hU hm.le haffine hρ hρ0 hρK heq
   have hN : Continuous (fun t => sweptNiche target (Real.pi / 2) (X t)) := by
-    exact continuous_capSweptNiche.comp
+    have h := continuous_capSweptNiche.comp
       ((continuous_const : Continuous (fun _ : ℝ => hU.isCap.toCompactCap)).prodMk hX)
+    simpa only [Function.comp_def, IsDownwardCap.toCompactCap_carrier] using h
   have hT : MeasurableSet T :=
     measurableSet_Ioo.inter ((measurableSet_Ioo.preimage hX.measurable).inter
       ((isOpen_lt continuous_const hY).measurableSet.inter
@@ -164,6 +166,7 @@ theorem ae_corner_densities_eq_momenta_of_unique_contact {α η : ℝ}
   intro hx hy hcontact hunique
   exact hmasses ⟨ht, hx, hy, hcontact, hunique⟩
 
+include hl hr hC hheight hlow hhigh hh hunit hTargetBox hleft hright in
 theorem ae_first_corner_density_eq_q_of_unique_contact {α η : ℝ}
     (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η) :
     ∀ᵐ t ∂volume.restrict (regularCornerDomain m),

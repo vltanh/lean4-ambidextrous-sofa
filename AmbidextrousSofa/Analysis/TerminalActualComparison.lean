@@ -43,7 +43,8 @@ theorem IsDownwardCap.top_leftCompanionCap_fst_eq_min_of_affine
   · have hm0 : 0 < m := lt_of_not_ge hm
     have htop := (hU.top_leftCompanionCap_of_positive_affine ha hb hab hm0 haffine).2
     have hp := (MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody (Real.pi / 2)).1
-    have hceiling := (le_capRoof hU.isCompact hp).trans
+    have hceiling := (le_capRoof (x := (MovingSofaOptimality.vplus U (Real.pi / 2)).1)
+        (y := (MovingSofaOptimality.vplus U (Real.pi / 2)).2) hU.isCompact hp).trans
       (hU.capRoof_le_affine_of_affine_segment ha hb hab haffine
         (MovingSofaOptimality.vplus U (Real.pi / 2)).1 ⟨MovingSofaOptimality.vplus U (Real.pi / 2), hp, rfl⟩)
     have hfa : capRoof U a ≤ capHeight U := by
@@ -52,7 +53,7 @@ theorem IsDownwardCap.top_leftCompanionCap_fst_eq_min_of_affine
     have hpy := top_vplus_snd_eq_capHeight U
     have hline := haffine a ⟨le_rfl, hab.le⟩
     have hax : a ≤ (MovingSofaOptimality.vplus U (Real.pi / 2)).1 := by
-      apply (mul_le_mul_left hm0).mp
+      apply (mul_le_mul_iff_right₀ hm0).mp
       linarith only [hceiling, hfa, hpy, hline]
     rw [htop, min_eq_left hax]
 

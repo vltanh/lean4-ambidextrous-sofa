@@ -28,7 +28,7 @@ theorem isOpen_regularProperCurvatureDomain (α m : ℝ) :
   have hopen : IsOpen (regularCurvatureDomain m) := by
     rw [regularCurvatureDomain_eq_three]
     exact (isOpen_Ioo.union isOpen_Ioo).union isOpen_Ioo
-  exact hopen.diff isClosed_singleton
+  exact hopen.sdiff isClosed_singleton
 
 theorem measurableSet_regularProperCurvatureDomain (α m : ℝ) :
     MeasurableSet (regularProperCurvatureDomain α m) :=
@@ -90,7 +90,7 @@ theorem measure_restrict_regularProperCurvatureDomain_le
       simp only [mem_inter_iff, mem_Ioo, mem_Ioi, max_lt_iff]
       tauto
     simpa only [Measure.restrict_restrict measurableSet_Ioo, hinter] using hbound
-  rw [Measure.restrict_restrict (measurableSet_regularCurvatureDomain m)] at hbelow habove
+  simp only [Measure.restrict_restrict (measurableSet_regularCurvatureDomain m)] at hbelow habove
   have hd : Disjoint (regularCurvatureDomain m ∩ Iio α)
       (regularCurvatureDomain m ∩ Ioi α) := by
     apply disjoint_left.mpr
@@ -129,17 +129,17 @@ theorem IsJointCapMaximizer.curvature_density_on_regular_proper_domain
       (μ := upperCurvature K) (ν := (volume : Measure ℝ).withDensity f)
       (α := α) (m := m) (by
         intro A B hA hB htop hterminal hperp
-        simpa only [Measure.restrict_withDensity measurableSet_Ioo] using
+        simpa only [restrict_withDensity measurableSet_Ioo] using
           hK.curvature_restrict_le_source_density_on_proper_open_wing hproper haffine
             hA hB htop hterminal hperp)
-    simpa only [Measure.restrict_withDensity (measurableSet_regularProperCurvatureDomain α m)] using h
+    simpa only [restrict_withDensity (measurableSet_regularProperCurvatureDomain α m)] using h
   letI : IsFiniteMeasure ((upperCurvature K).restrict (regularProperCurvatureDomain α m)) :=
     isFiniteMeasure_restrict.mpr
       (lt_of_le_of_lt (measure_mono (regularProperCurvatureDomain_subset α m)) measure_Ioo_lt_top).ne
   letI : IsFiniteMeasure ((volume : Measure ℝ).restrict (regularProperCurvatureDomain α m)) :=
     isFiniteMeasure_restrict.mpr
       (lt_of_le_of_lt (measure_mono (regularProperCurvatureDomain_subset α m)) measure_Ioo_lt_top).ne
-  exact exists_real_density_of_two_bounds (by dsimp [C]; positivity)
+  exact exists_real_density_of_two_bounds (by positivity)
     (continuous_sourceKappa.measurable.comp hK.isCap.measurable_upperCornerVelocity)
     (fun t => sourceKappa_nonneg _) hcoarse hsharp
 

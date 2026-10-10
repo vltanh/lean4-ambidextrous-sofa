@@ -28,7 +28,8 @@ def referenceSofa : Set Plane :=
 theorem referenceSofa_subset_referenceHull : referenceSofa ⊆ referenceHull := fun _ hp => hp.1
 
 theorem isClosed_referenceSofa : IsClosed referenceSofa := by
-  have hn := continuous_referenceNiche.comp continuous_fst
+  have hn : Continuous (fun p : Plane => referenceNiche p.1) :=
+    continuous_referenceNiche.comp continuous_fst
   exact isClosed_referenceHull.inter
     ((isClosed_le hn continuous_snd).inter
       (isClosed_le hn (continuous_const.sub continuous_snd)))
@@ -230,7 +231,7 @@ theorem referenceSofa_subset_canonicalHall {t : ℝ}
     subst t
     have hy := (referenceHull_subset_unitStrip hp.1).1
     rw [show support referenceHull (unitNormal (Real.pi / 2)) = 1 by
-      simpa only [referenceF_pi_div_two] using angleSupport_referenceHull_eq_f
+      simpa only [angleSupport, referenceF_pi_div_two] using angleSupport_referenceHull_eq_f
         (show Real.pi / 2 ∈ Icc (0 : ℝ) (Real.pi / 2) from
           ⟨by linarith [Real.pi_pos], le_rfl⟩)]
     simpa only [coordDot, unitNormal, Real.cos_pi_div_two, Real.sin_pi_div_two,
@@ -244,7 +245,8 @@ theorem referenceSofa_subset_canonicalHall {t : ℝ}
       (sweptWallValues_bddAbove isCompact_referenceHull le_rfl p.1) hθ).trans hp.2.1
 
 theorem lowerReferencePath_start (p : Plane) : lowerReferencePath.placement 0 p = p := by
-  simp [lowerReferencePath, RigidMotionPath.placement, referenceF_zero, referenceG_zero]
+  simp [lowerReferencePath, RigidMotionPath.placement, referenceF_zero, referenceG_zero,
+    Prod.mk_zero_zero]
 
 theorem lowerReferencePath_finish (p : Plane) :
     lowerReferencePath.placement 1 p = (p.2, 2 - 8 / 3 * A - p.1) := by

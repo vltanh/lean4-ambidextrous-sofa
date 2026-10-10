@@ -129,7 +129,7 @@ theorem fullTiltedSupportQuarterPair_core_prefix_q_le_one {C h α τ : ℝ}
   have hupper := ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hα hτ.2) hunit
   have hcont : ContinuousOn q (Icc α τ) :=
     (((F).continuous_gD.add (F).continuous_f).sub continuousOn_const).mono (Icc_subset_Icc hα hτ.2)
-  apply hcont.le_on_Icc_of_ae_le_on_Ioo hατ
+  apply ContinuousOn.le_on_Icc_of_ae_le_on_Ioo hcont hατ
   filter_upwards [hlower, hupper] with t ht hu
   exact ht.trans hu
 

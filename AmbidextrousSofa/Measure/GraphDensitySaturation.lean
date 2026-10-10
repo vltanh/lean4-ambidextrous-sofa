@@ -112,7 +112,8 @@ theorem ae_weight_eq_abs_deriv_of_graph_saturated_on
   have hrestrict := restrict_graph_map_eq_map_restrict_of_injOn hS hX hinj hμS hT hTS
   have hμT : μ.restrict T =
       (volume.restrict T).withDensity (fun t => ENNReal.ofReal (w t)) := by
-    rw [μ, restrict_withDensity hT, Measure.restrict_restrict_of_subset hTS]
+    dsimp only [μ]
+    rw [restrict_withDensity hT, Measure.restrict_restrict_of_subset hTS]
   change (μ.map X).restrict (X '' T) = _ at hsaturated
   rw [hrestrict, hμT] at hsaturated
   have harea := map_abs_deriv_density_eq_volume_image hT
@@ -125,7 +126,7 @@ theorem ae_weight_eq_abs_deriv_of_graph_saturated_on
     ((withDensity_absolutelyContinuous _ _).ae_le (ae_restrict_mem hT))
     ((withDensity_absolutelyContinuous _ _).ae_le (ae_restrict_mem hT)) hmap
   have hXD : AEMeasurable (fun t => |XD t|) (volume.restrict T) := by
-    apply (measurable_deriv X).abs.aemeasurable.congr
+    apply (continuous_abs.measurable.comp (measurable_deriv X)).aemeasurable.congr
     filter_upwards [ae_restrict_mem hT] with t ht
     exact congrArg abs (hD t (hTS ht)).deriv
   have heq := (withDensity_eq_iff_of_sigmaFinite hw.ennreal_ofReal hXD.ennreal_ofReal).mp

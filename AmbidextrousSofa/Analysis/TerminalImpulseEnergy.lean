@@ -2,6 +2,7 @@ module
 
 public import AmbidextrousSofa.Analysis.PartialReflectedSupport
 public import AmbidextrousSofa.Analysis.TerminalThreeSupports
+public import AmbidextrousSofa.Analysis.TerminalCorner
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 
 @[expose] public section

@@ -34,7 +34,8 @@ theorem eqOn_quarter_of_interior_dyadic {f g : ℝ → ℝ}
       ((hf.comp continuous_subtype_val).sub (hg.comp continuous_subtype_val))
   have hzero : ∀ t, H t = 0 := by
     intro t
-    apply dense_iUnion_dyadic.induction ?_ (isClosed_eq hH continuous_const) t
+    refine dense_iUnion_dyadic.induction (P := fun t => H t = 0) ?_
+      (isClosed_eq hH continuous_const) t
     intro s hs
     obtain ⟨n, hn⟩ := mem_iUnion.mp hs
     by_cases hs0 : (s : ℝ) = 0

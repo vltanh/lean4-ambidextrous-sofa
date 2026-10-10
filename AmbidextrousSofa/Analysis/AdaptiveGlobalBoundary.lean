@@ -116,9 +116,10 @@ theorem adaptiveFunctional_addScaled_lower (u v : QuarterPair) (r : ℝ) :
       r ^ 2 * (quadraticEnergy v + variationContactIntegral v) ≤
         adaptiveFunctional (u.addScaled r v) := by
   have hL : (0 : ℝ) ≤ Real.pi / 2 := by linarith [Real.pi_pos]
-  have hc := ContinuousOn.intervalIntegrable_of_Icc hL
+  have hc := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) hL
     (continuousOn_contactDefectDensity u (u.addScaled r v))
-  have hv := ContinuousOn.intervalIntegrable_of_Icc hL (continuousOn_variationContactDensity v)
+  have hv := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) hL
+    (continuousOn_variationContactDensity v)
   have hbound := intervalIntegral.integral_mono_on hL hc (hv.const_mul (r ^ 2))
     (fun t _ => contactDefectDensity_addScaled_le u v r t)
   rw [intervalIntegral.integral_const_mul] at hbound

@@ -54,8 +54,9 @@ theorem absolutelyContinuousOnInterval_of_integral_sub
 theorem IsDownwardCap.intervalIntegrable_supportTangent {U : Set Plane}
     (hU : IsDownwardCap U) (a b : ℝ) :
     IntervalIntegrable (supportTangent U) volume a b := by
-  simpa only [supportTangent, add_zero] using
-    MovingSofaOptimality.inj_intervalIntegrable_dvplus hU.imported_isConvexBody 0 a b
+  have h := MovingSofaOptimality.inj_intervalIntegrable_dvplus hU.imported_isConvexBody 0 a b
+  simp only [add_zero] at h
+  exact h
 
 theorem IsDownwardCap.angleSupport_sub_eq_integral {U : Set Plane}
     (hU : IsDownwardCap U) (a b : ℝ) :
@@ -97,7 +98,8 @@ theorem IsDownwardCap.supportTangent_sub_eq_integral_of_density
       exact measureReal_eq_integral_of_restrict_withDensity hρ hρ0 heq measurableSet_Ioc
         (Ioc_subset_Icc_self.trans hsub)
     change MovingSofaOptimality.dot (MovingSofaOptimality.vplus U b) (MovingSofaOptimality.vvec b) -
-      MovingSofaOptimality.dot (MovingSofaOptimality.vplus U a) (MovingSofaOptimality.vvec a) = _
+      MovingSofaOptimality.dot (MovingSofaOptimality.vplus U a) (MovingSofaOptimality.vvec a) =
+        ∫ t in a..b, ρ t - MovingSofaOptimality.supp U t
     rw [AmbidextrousSofa.dot_vplus_vvec_sub hU.imported_isConvexBody hab, hmass,
       intervalIntegral.integral_sub
         (intervalIntegrable_bounded_real_density hρ hρ0 hρC a b)
@@ -114,7 +116,7 @@ theorem IsDownwardCap.supportTangent_shift_sub_eq_integral_of_density
   rw [intervalIntegral.integral_comp_add_right
     (fun t => ρ t - angleSupport U t) d]
   exact hU.supportTangent_sub_eq_integral_of_density hρ hρ0 hρC heq
-    (add_le_add_right hab d) hsub
+    (add_le_add_left hab d) hsub
 
 theorem IsDownwardCap.absolutelyContinuousOnInterval_supportTangent_shift_of_density
     {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {C a b d : ℝ}
@@ -134,7 +136,7 @@ theorem IsDownwardCap.absolutelyContinuousOnInterval_supportTangent_shift_of_den
   intro x hx
   rw [uIcc_of_le hab] at hx
   exact hU.supportTangent_shift_sub_eq_integral_of_density hρ hρ0 hρC heq hx.1
-    ((Icc_subset_Icc le_rfl (add_le_add_right hx.2 d)).trans hsub)
+    ((Icc_subset_Icc le_rfl (add_le_add_left hx.2 d)).trans hsub)
 
 theorem IsDownwardCap.absolutelyContinuousOnInterval_supportTangent_of_density
     {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {C a b : ℝ}
@@ -197,7 +199,7 @@ theorem IsDownwardCap.ae_hasDerivAt_supportTangent_shift_of_density
   change supportTangent U (t + d) = supportTangent U (a + d) +
     (∫ s in a..t, ρ (s + d) - angleSupport U (s + d))
   have hid := hU.supportTangent_shift_sub_eq_integral_of_density hρ hρ0 hρC heq ht.1.le
-    ((Icc_subset_Icc le_rfl (add_le_add_right ht.2.le d)).trans hsub)
+    ((Icc_subset_Icc le_rfl (add_le_add_left ht.2.le d)).trans hsub)
   linarith
 
 theorem IsDownwardCap.ae_hasDerivAt_supportTangent_of_density
@@ -251,10 +253,10 @@ theorem IsDownwardCap.ae_hasDerivAt_cornerVelocities_of_density
   have hds := hU.hasDerivAt_angleSupport_of_density hρ hρ0 hρC heq hbase hx
   have hdx := hU.hasDerivAt_angleSupport_of_density hρ hρ0 hρC heq hshift
     (show x + Real.pi / 2 ∈ Ioo (a + Real.pi / 2) (b + Real.pi / 2) from
-      ⟨add_lt_add_right hx.1 _, add_lt_add_right hx.2 _⟩)
+      ⟨add_lt_add_left hx.1 _, add_lt_add_left hx.2 _⟩)
   have hdss : HasDerivAt (fun t => angleSupport U (t + Real.pi / 2))
       (supportTangent U (x + Real.pi / 2)) x := by
-    simpa only [Function.comp_def, mul_one] using
+    simpa only [Function.comp_def, mul_one, id_eq] using
       hdx.comp x ((hasDerivAt_id x).add_const (Real.pi / 2))
   have hd1 : HasDerivAt (firstCornerVelocity U)
       (supportTangent U x + (ρ (x + Real.pi / 2) - angleSupport U (x + Real.pi / 2))) x :=
@@ -294,7 +296,8 @@ theorem IsDownwardCap.firstCornerVelocity_sub_eq_integral_of_density
     firstCornerVelocity U b - firstCornerVelocity U a =
         (angleSupport U b - angleSupport U a) +
           (supportTangent U (b + Real.pi / 2) - supportTangent U (a + Real.pi / 2)) := by
-      change (_ + _ - 1) - (_ + _ - 1) = _
+      change (angleSupport U b + supportTangent U (b + Real.pi / 2) - 1) -
+        (angleSupport U a + supportTangent U (a + Real.pi / 2) - 1) = _
       ring
     _ = (∫ t in a..b, supportTangent U t) +
         (∫ t in a..b, ρ (t + Real.pi / 2) - angleSupport U (t + Real.pi / 2)) := by
@@ -323,13 +326,15 @@ theorem IsDownwardCap.secondCornerVelocity_sub_eq_integral_of_density
   have hτi : IntervalIntegrable (fun t => supportTangent U (t + Real.pi / 2)) volume a b :=
     MovingSofaOptimality.inj_intervalIntegrable_dvplus hU.imported_isConvexBody (Real.pi / 2) a b
   have hρi := intervalIntegrable_bounded_real_density hρ hρ0 hρC a b
-  have hhi := hU.imported_isConvexBody.continuous_supp.intervalIntegrable a b
+  have hhi : IntervalIntegrable (fun t => angleSupport U t) volume a b :=
+    hU.imported_isConvexBody.continuous_supp.intervalIntegrable a b
   have hτ := hU.supportTangent_sub_eq_integral_of_density hρ hρ0 hρC heq hab hbase
   calc
     secondCornerVelocity U b - secondCornerVelocity U a =
         (angleSupport U (b + Real.pi / 2) - angleSupport U (a + Real.pi / 2)) -
           (supportTangent U b - supportTangent U a) := by
-      change (_ - _ - 1) - (_ - _ - 1) = _
+      change (angleSupport U (b + Real.pi / 2) - supportTangent U b - 1) -
+        (angleSupport U (a + Real.pi / 2) - supportTangent U a - 1) = _
       ring
     _ = (∫ t in a..b, supportTangent U (t + Real.pi / 2)) -
         (∫ t in a..b, ρ t - angleSupport U t) := by

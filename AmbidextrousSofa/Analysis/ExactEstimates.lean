@@ -29,10 +29,12 @@ theorem self_sub_cube_div_three_le_arctan {y : ℝ} (hy : 0 ≤ y) :
       apply (le_div_iff₀ (by positivity : (0 : ℝ) < 1 + x ^ 2)).2
       nlinarith [sq_nonneg (x ^ 2)])
   rw [intervalIntegral.integral_sub intervalIntegrable_const
-    ((continuous_id.pow 2).intervalIntegrable 0 y),
+    ((continuous_pow 2).intervalIntegrable 0 y),
     intervalIntegral.integral_const, integral_pow, Real.arctan_zero] at hbound
-  simpa only [sub_zero, zero_pow (by norm_num : 3 ≠ 0), smul_eq_mul, mul_one,
-    Nat.cast_ofNat] using hbound
+  simp only [sub_zero, zero_pow (by norm_num : 3 ≠ 0), smul_eq_mul, mul_one,
+    Nat.cast_ofNat] at hbound
+  norm_num at hbound
+  linarith
 
 /-- The cubic lower estimate is already strong enough to cross `8/5`. -/
 theorem eight_fifths_lt_M : (8 / 5 : ℝ) < M := by

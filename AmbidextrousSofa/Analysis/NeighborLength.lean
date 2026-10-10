@@ -34,7 +34,8 @@ theorem image_parameterInterval {s : ℝ} (hs : 0 < s) (c a b : ℝ) :
       linarith [hx.2]
     · rw [div_le_iff₀ hs]
       linarith [hx.1]
-    · rw [div_mul_cancel₀ _ hs.ne']
+    · show c - (c - x) / s * s = x
+      rw [div_mul_cancel₀ _ hs.ne']
       ring
 
 theorem volume_real_image_parameterInterval {s : ℝ} (hs : 0 < s) (c a b : ℝ) :
@@ -57,7 +58,7 @@ theorem measure_parameterIntervals_le {S : Set ℝ} {s : ℝ} (hs : 0 < s)
     rcases hv with hv | hv
     · exact Or.inl ⟨v, hv, rfl⟩
     · exact Or.inr ⟨v, hv, rfl⟩
-  have hfinite : volume (F '' Icc a b ∪ F '' Icc d e) ≠ ∞ := by
+  have hfinite : volume (F '' Icc a b ∪ F '' Icc d e) ≠ ⊤ := by
     dsimp only [F]
     rw [image_parameterInterval hs, image_parameterInterval hs]
     exact (measure_union_lt_top isCompact_Icc.measure_lt_top isCompact_Icc.measure_lt_top).ne
@@ -128,7 +129,7 @@ theorem companion_interval_length_le {f g gm gp δ : ℝ}
   have hqm : qm ≤ q := by
     dsimp only [qm, q]
     apply sub_le_sub_right
-    apply add_le_add_left
+    apply add_le_add_right
     apply (div_le_div_iff_of_pos_right hs).mpr
     linarith
   have hhalf := MovingSofaOptimality.tan_half_mul_sin hh
@@ -158,11 +159,11 @@ theorem companion_interval_length_le {f g gm gp δ : ℝ}
   have hmle : g - 1 - companionMinus f gm δ ≤
       Real.tan δ * (|q| + Real.tan (δ / 2)) := by
     rw [hm]
-    exact mul_le_mul_of_nonneg_left (add_le_add_right (hqm.trans (le_abs_self q)) _) htan
+    exact mul_le_mul_of_nonneg_left (add_le_add_left (hqm.trans (le_abs_self q)) _) htan
   have hple : g - 1 - companionPlus f gp δ ≤
       Real.tan δ * (|q| + Real.tan (δ / 2)) := by
     rw [hp]
-    exact mul_le_mul_of_nonneg_left (add_le_add_right (neg_le_abs q) _) htan
+    exact mul_le_mul_of_nonneg_left (add_le_add_left (neg_le_abs q) _) htan
   have hzero : 0 ≤ Real.tan δ * (|q| + Real.tan (δ / 2)) :=
     mul_nonneg htan (add_nonneg (abs_nonneg q) hh0)
   change max (g - 1 - min (companionMinus f gm δ) (companionPlus f gp δ)) 0 ≤ _
@@ -188,7 +189,7 @@ theorem first_interval_length_le_curvature {U : Set Plane} (hU : IsDownwardCap U
     unfold firstHi firstLo
     field_simp [hs.ne']
     ring
-  apply (mul_le_mul_right hs).mp
+  apply (mul_le_mul_iff_left₀ hs).mp
   nlinarith
 
 theorem integral_first_source_le_parameters {U : Set Plane} (hU : IsDownwardCap U)
@@ -231,7 +232,7 @@ theorem integral_first_source_le {U : Set Plane} (hU : IsDownwardCap U)
       Real.tan δ * (|firstCornerSecant U t.val δ| + Real.tan (δ / 2)) +
         max (2 * Real.tan (δ / 2) - (upperCurvature U {(t.val : ℝ)}).toReal) 0 := by
   have hraw := integral_first_source_le_parameters hU grid t hc hs hab hminus hplus
-  have hcomp := companion_interval_length_le hc hs hh
+  have hcomp := companion_interval_length_le (f := support U (unitNormal t.val)) hc hs hh
     (hU.companion_secondDifference_nonneg t.val hs.le)
   have hfirst := first_interval_length_le_curvature hU t.val hs hh
   exact hraw.trans (add_le_add hcomp (max_le_max hfirst le_rfl))

@@ -149,11 +149,11 @@ theorem solve_curvature_self_bound {x A B e : ℝ} (he : 0 ≤ e)
     (h : x ≤ A + max (B - x) 0 + e) : x ≤ max A ((A + B) / 2) + e := by
   by_cases hx : B ≤ x
   · rw [max_eq_right (by linarith : B - x ≤ 0), add_zero] at h
-    exact h.trans (add_le_add_right (le_max_left _ _) e)
+    exact h.trans (add_le_add_left (le_max_left _ _) e)
   · have hx' : 0 ≤ B - x := by linarith [le_of_not_ge hx]
     rw [max_eq_left hx'] at h
     have hle : x ≤ (A + B) / 2 + e := by linarith
-    exact hle.trans (add_le_add_right (le_max_right _ _) e)
+    exact hle.trans (add_le_add_left (le_max_right _ _) e)
 
 def finiteCurvatureDensity (q δ : ℝ) : ℝ :=
   max (Real.tan δ * (|q| + Real.tan (δ / 2)))

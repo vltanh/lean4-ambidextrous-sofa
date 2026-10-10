@@ -70,14 +70,14 @@ theorem first_density_ge_of_projection_increments
     filter_upwards [hsmall] with n hn x hx
     have hx' : x - Real.pi / 2 ∈ Ioo a b := by
       constructor <;> linarith [ht.1, hx.1, hx.2]
-    simpa only [sub_add_cancel] using (hregular hx').2.2
+    simpa only [mem_preimage, sub_add_cancel] using (hregular hx').2.2
   have hmass0 := measureReal_Ioc_increment_tendsto_zero_of_density
     hρ hρ0 hρK heq hd hdpos hbase
   have hshift0 := measureReal_Ioc_increment_tendsto_zero_of_density
     hρ hρ0 hρK heq hd hdpos hshift
   have hquot := measureReal_Ioc_increment_div_tendsto_of_density
     hρ hρ0 heq hLebesgue hd hdpos hbase
-  have hGlim := hG.forward_increment_div_tendsto hd hdpos
+  have hGlim := HasDerivAt.forward_increment_div_tendsto hG hd hdpos
   have hbound : ∀ᶠ n in atTop,
       (G (t + d n) - G t) / d n ≤
         (upperCurvature U).real (Ioc t (t + d n)) / d n +
@@ -126,7 +126,7 @@ theorem fullTiltedSupportQuarterPair_ae_first_density_ge_core
     (fun t ht => (hregular ht).1)
     (fullTiltedSupportQuarterPair_ae_derivatives hU hm haffine hρ hρ0 hρK heq)
   filter_upwards [ae_restrict_mem measurableSet_Ioo, hD,
-    ae_restrict_of_ae hlocal.ae_hasDerivAt_integral] with t ht hd hLeb
+    ae_restrict_of_ae (LocallyIntegrable.ae_hasDerivAt_integral hlocal)] with t ht hd hLeb
   have hZ := hasDerivAt_innerCornerPoint_coordinates hd.1 hd.2.1
   let G : ℝ → ℝ := fun s => Real.cos t * (Z s).2 - Real.sin t * (Z s).1
   have hG : HasDerivAt G (q t) t := by
@@ -169,7 +169,7 @@ theorem fullTiltedSupportQuarterPair_ae_first_density_ge_charged
     (fun t ht => (hregular ht).1)
     (fullTiltedSupportQuarterPair_tangent_calculus hU hm haffine hρ hρ0 hρK heq).2.2.2.2
   filter_upwards [ae_restrict_mem measurableSet_Ioo, hD, hT,
-    ae_restrict_of_ae hlocal.ae_hasDerivAt_integral] with t ht hd hT hLeb
+    ae_restrict_of_ae (LocallyIntegrable.ae_hasDerivAt_integral hlocal)] with t ht hd hT hLeb
   have hZ := hasDerivAt_innerCornerPoint_coordinates hd.1 hd.2.1
   let G : ℝ → ℝ := fun s =>
     (Real.cos t * (Z s).2 - Real.sin t * (Z s).1) +

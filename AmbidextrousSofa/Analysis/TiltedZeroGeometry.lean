@@ -51,8 +51,8 @@ theorem IsDownwardCap.firstWall_pos_of_high_middle_point
     nlinarith only [Real.sin_sq_add_cos_sq t, mul_pos hs hc, hprod]
   have hgap : 1 ≤ C - x := by linarith only [hC, hx]
   have hmul := mul_le_mul_of_nonneg_right hgap hc.le
-  have hsupport := coordDot_le_support hU.isCompact hhigh (unitNormal t)
-  dsimp only [coordDot, unitNormal] at hsupport
+  have hsupport : C * Real.cos t + 1 * Real.sin t ≤ support U (unitNormal t) :=
+    coordDot_le_support hU.isCompact hhigh (unitNormal t)
   rw [firstWall]
   apply div_pos _ hs
   nlinarith only [hsupport, hmul, hsum]
@@ -191,6 +191,7 @@ theorem IsDownwardCap.secondWallNumerator_neg_of_lt_low_wing_zero
       ⟨by linarith only [ht.1, Real.pi_pos], htL⟩
     have h := hU.secondWall_neg_of_lt_low_wing_zero ha hb hab haffine hhigh hxb hx
       ⟨ht.1, htL⟩
+    rw [secondWallNumerator]
     simpa only [zero_mul] using (div_lt_iff₀ hc).mp h
 
 end AmbidextrousSofa

@@ -97,8 +97,8 @@ theorem IsFullCapMaximizer.secondTangency_from_top_endpoint
       nhdsWithin_le_nhds (isOpen_Iio.mem_nhds ht.1)] with u hu0 hut
     have hu : u ∈ Ioo (0 : ℝ) (Real.pi / 2) := ⟨hu0, hut.trans ht.2⟩
     exact ⟨hm.1 hu ht hut.le, hm.2 hu ht hut.le⟩
-  exact ⟨le_of_tendsto hlim.fst (horder.mono (fun _ h => h.1)),
-    le_of_tendsto hlim.snd (horder.mono (fun _ h => h.2))⟩
+  exact ⟨le_of_tendsto hlim.fst_nhds (horder.mono (fun _ h => h.1)),
+    le_of_tendsto hlim.snd_nhds (horder.mono (fun _ h => h.2))⟩
 
 theorem IsFullCapMaximizer.firstTangency_before_top_endpoint
     {U : Set Plane} (hU : IsFullCapMaximizer U) {ρ : ℝ → ℝ} {C b₀ t : ℝ}
@@ -125,8 +125,9 @@ theorem IsFullCapMaximizer.firstTangency_before_top_endpoint
       nhdsWithin_le_nhds (isOpen_Ioi.mem_nhds ht.2)] with u huL htu
     have hu : u ∈ Ioo b₀ (Real.pi / 2) := ⟨ht.1.trans htu, huL⟩
     exact ⟨hm.1 ht hu htu.le, hm.2 ht hu htu.le⟩
-  exact ⟨le_of_tendsto_of_tendsto tendsto_const_nhds hlim.fst (horder.mono (fun _ h => h.1)),
-    le_of_tendsto hlim.snd (horder.mono (fun _ h => h.2))⟩
+  exact ⟨le_of_tendsto_of_tendsto tendsto_const_nhds hlim.fst_nhds
+      (horder.mono (fun _ h => h.1)),
+    le_of_tendsto hlim.snd_nhds (horder.mono (fun _ h => h.2))⟩
 
 theorem IsFullCapMaximizer.visible_corner_middle_and_height
     {U : Set Plane} (hU : IsFullCapMaximizer U) {ρ : ℝ → ℝ} {C b₀ t : ℝ}

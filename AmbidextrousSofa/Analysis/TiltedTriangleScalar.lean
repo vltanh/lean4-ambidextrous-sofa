@@ -53,7 +53,7 @@ theorem tiltedTriangle_stationary_clip {k c h : ℝ}
   have hBA : 3 / 4 < (2 - k) * (1 - k) := by
     nlinarith only [sq_nonneg k, hk1, hk0]
   have hsprod : (2 - k) * s0 < (8 / 5) * (7 / 10) := by
-    have h := mul_lt_mul hb.2 hs1 (by linarith only [hs0] : 0 < s0) (by norm_num)
+    have h := mul_lt_mul hb.2 hs1.le (by linarith only [hs0] : 0 < s0) (by norm_num)
     exact h
   have hBAh := mul_le_mul_of_nonneg_right hBA.le hh0
   have hclip : M < k + 73 / 100 := by
@@ -107,10 +107,10 @@ theorem tiltedTriangleRelaxation_le_bound {a h k c u v : ℝ}
       _ = _ := by rw [hBD]; dsimp [fullTriangleBound, z]; ring
   have hmMean : (m + m) / 2 = m := by ring
   have hmQ : (m + m - h) / 2 - k = m - h / 2 - k := by ring
-  have htan := fullTriangleRelaxation_le_joint_tangent (a0 := a0) (u0 := m) (v0 := m)
-    hk hq (by rw [hmQ]; exact hclip.2.2.2.le) hclip.2.2.1.le
+  have htan := fullTriangleRelaxation_le_joint_tangent (a := a) (a0 := a0) (u0 := m) (v0 := m)
+    hk hq (by rw [hmQ]; exact hclip.2.2.2.le) (by dsimp only [a0]; linarith only [hclip.2.2.1])
     (by dsimp [a0]; linarith only [hclip.2.2.1, hh0])
-    (by rw [hmMean, hS]; positivity)
+    (by rw [hmMean, hS]; have hdz := mul_pos hd hclip.1; nlinarith only [hdz])
   dsimp only at htan
   rw [hmMean, hmQ, hS] at htan
   change fullTriangleRelaxation a h k c u v ≤
@@ -119,7 +119,7 @@ theorem tiltedTriangleRelaxation_le_bound {a h k c u v : ℝ}
     (1 - h / 2 - (2 * a0 - m - m) - 2 * (2 * d * z / 9) * (k + 2) / d) * (a - a0) +
     (a0 - m - (m - h / 2 - k) - (2 * d * z / 9) * (k - 2) / d) * (u - m) +
     (a0 - m - (m - h / 2 - k) - (2 * d * z / 9) * (k - 2) / d) * (v - m) at htan
-  rw [hvalue, hgradA, hgrad, zero_mul, add_zero, add_zero] at htan
+  rw [hvalue, hgradA, hgrad, zero_mul, add_zero, zero_mul, add_zero] at htan
   have hneg : 1 + k - a0 - 2 * d * z / 9 ≤ 0 := by
     dsimp [a0]
     nlinarith only [hk1, mul_pos hd hclip.1]
@@ -151,7 +151,7 @@ theorem tiltedTriangleBound_add_loss_lt {h k c : ℝ}
     dsimp [D]
     constructor <;> linarith only [hk0, hk1, hc0, hc1]
   have hAs : A * s0 < (3 / 5) * (7 / 10) :=
-    mul_lt_mul hA.2 hs.2 (by linarith only [hs.1] : 0 < s0) (by norm_num)
+    mul_lt_mul hA.2 hs.2.le (by linarith only [hs.1] : 0 < s0) (by norm_num)
   have hγD : γ * (D + 1 / 8) < (3 / 10) * (239 / 3500 + 1 / 8) :=
     mul_lt_mul hγ.2 (by linarith only [hD.2])
       (by linarith only [hD.1] : 0 < D + 1 / 8) (by norm_num)

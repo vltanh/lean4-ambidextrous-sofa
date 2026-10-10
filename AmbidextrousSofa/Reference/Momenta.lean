@@ -73,7 +73,7 @@ theorem momentP_nonneg_early {t : ℝ} (ht : t ∈ Icc (0 : ℝ) beta) : 0 ≤ m
   rw [momentP_phases, if_pos ht.2]
   have hsin : Real.sin t ≤ sinBeta := Real.sin_le_sin_of_le_of_le_pi_div_two
     (by linarith [ht.1, Real.pi_pos]) beta_lt_pi_div_two.le ht.2
-  have hmul := mul_le_mul_of_nonneg_left hsin (show 0 ≤ 2 * A by positivity)
+  have hmul := mul_le_mul_of_nonneg_left hsin (show 0 ≤ 2 * A by linarith [A_pos])
   nlinarith [four_mul_A_mul_sinBeta]
 
 theorem momentP_nonpos_after_beta {t : ℝ} (ht : t ∈ Icc beta (Real.pi / 2)) : momentP t ≤ 0 := by
@@ -96,7 +96,7 @@ theorem momentP_nonpos_after_beta {t : ℝ} (ht : t ∈ Icc beta (Real.pi / 2)) 
         (show -(Real.pi / 2) ≤ lateSwitch by linarith [lateSwitch_pos, Real.pi_pos])
         ht.2 (le_of_lt (lt_of_not_ge hmiddle))
       simpa only [lateSwitch, Real.sin_pi_div_two_sub, cosBeta] using h
-    have hmul := mul_le_mul_of_nonneg_left hsin (show 0 ≤ 2 * A by positivity)
+    have hmul := mul_le_mul_of_nonneg_left hsin (show 0 ≤ 2 * A by linarith [A_pos])
     nlinarith [one_lt_two_mul_A_mul_cosBeta]
 
 theorem momentQ_nonneg_before_lateSwitch {t : ℝ} (ht : t ∈ Icc (0 : ℝ) lateSwitch) :
@@ -106,7 +106,7 @@ theorem momentQ_nonneg_before_lateSwitch {t : ℝ} (ht : t ∈ Icc (0 : ℝ) lat
   · rw [if_pos hearly]
     have hcos : cosBeta ≤ Real.cos t := Real.cos_le_cos_of_nonneg_of_le_pi ht.1
       (by linarith [beta_lt_pi_div_two, Real.pi_pos]) hearly
-    have hmul := mul_le_mul_of_nonneg_left hcos (show 0 ≤ 2 * A by positivity)
+    have hmul := mul_le_mul_of_nonneg_left hcos (show 0 ≤ 2 * A by linarith [A_pos])
     nlinarith [one_lt_two_mul_A_mul_cosBeta]
   · rw [if_neg hearly, if_pos ht.2]
     have hcos : Real.cos (lateSwitch / 2 + Real.pi / 8) ≤ Real.cos (t / 2 + Real.pi / 8) := by
@@ -127,7 +127,7 @@ theorem momentQ_nonpos_late {t : ℝ} (ht : t ∈ Icc lateSwitch (Real.pi / 2)) 
     have h := Real.cos_le_cos_of_nonneg_of_le_pi lateSwitch_pos.le
       (by linarith [ht.2, Real.pi_pos]) ht.1
     simpa only [lateSwitch, Real.cos_pi_div_two_sub, sinBeta] using h
-  have hmul := mul_le_mul_of_nonneg_left hcos (show 0 ≤ 2 * A by positivity)
+  have hmul := mul_le_mul_of_nonneg_left hcos (show 0 ≤ 2 * A by linarith [A_pos])
   nlinarith [four_mul_A_mul_sinBeta]
 
 theorem referenceF_right_curvature_lt_one {t : ℝ}

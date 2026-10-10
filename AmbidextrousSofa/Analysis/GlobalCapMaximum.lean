@@ -53,7 +53,7 @@ theorem exists_fullCapMaximizer :
   have hRefBox : centeredCap Reference.referenceCap ⊆ Icc (-3, 0) (3, 1) :=
     centeredCap_subset_box_of_width_le hRef (by linarith)
   obtain ⟨K, hK, hKB, hmax⟩ := exists_capScore_max_of_compact_containment
-    (isCompact_Icc : IsCompact (Icc (-3, 0) (3, 1))) hRef.centeredCap hRefBox
+    (isCompact_Icc : IsCompact (Icc ((-3, 0) : Plane) (3, 1))) hRef.centeredCap hRefBox
   have hKRef : M / 2 ≤ capScore K (Real.pi / 2) := by
     have h := hmax _ hRef.centeredCap hRefBox
     rwa [capScore_centeredCap hRef, Reference.capScore_referenceCap] at h

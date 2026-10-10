@@ -60,8 +60,9 @@ theorem mesh_half_cos_ne (α : TerminalAngle) (n : ℕ) : Real.cos (mesh α n / 
   constructor <;> linarith [mesh_pos α n, mesh_le_pi_div_four α n, Real.pi_pos]
 
 theorem mesh_tendsto (α : TerminalAngle) : Tendsto (mesh α) atTop (𝓝 0) := by
-  simpa only [mesh, mul_zero] using
-    AngularGrid.mesh_tendsto.const_mul ((α : ℝ) / (Real.pi / 2))
+  have h := AngularGrid.mesh_tendsto.const_mul ((α : ℝ) / (Real.pi / 2))
+  rw [mul_zero] at h
+  exact h
 
 theorem dyadic_neighbors (α : TerminalAngle) (n : ℕ) (t : InteriorPoint (dyadic n)) :
     (∃ s ∈ dyadic n, (scaleAngle α s : ℝ) = (scaleAngle α t.val : ℝ) - mesh α n) ∧
@@ -102,9 +103,11 @@ theorem abs_cornerSecant_le_box {U : Set Plane} (hU : IsDownwardCap U)
     (α : TerminalAngle) (n : ℕ) (j : AngularGrid.SourceIndex (dyadic n)) :
     |cornerSecant U α n j| ≤ 2 * R + 3 := by
   cases j with
-  | inl t => exact AngularGrid.abs_firstCornerSecant_le_box hU hbox
+  | inl t =>
+    exact AngularGrid.abs_firstCornerSecant_le_box hU hbox
       (scaleAngle α t.val) (mesh α n) (mesh_cos_pos α n).le (mesh_sin_pos α n).ne'
-  | inr t => exact AngularGrid.abs_secondCornerSecant_le_box hU hbox
+  | inr t =>
+    exact AngularGrid.abs_secondCornerSecant_le_box hU hbox
       (scaleAngle α t.val) (mesh α n) (mesh_cos_pos α n).le (mesh_sin_pos α n).ne'
 
 theorem raw_inner_bound_le_coarse {q atom R δ : ℝ} (hR : 0 ≤ R)

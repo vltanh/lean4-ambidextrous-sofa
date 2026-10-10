@@ -50,9 +50,13 @@ theorem score_sub_capScore_eq {U : Set Plane} (hU : IsDownwardCap U)
   have hN : IntegrableOn (partialBarrier U α)
       (middleHalfInterval (horizontalLeft U) (horizontalRight U)) :=
     integrableOn_partialBarrier_Icc hU.isCompact (TerminalAngle.pos α) α.property.2 _ _
+  have hc : Continuous (barrier U α grid) := by
+    have h := (continuous_barrier grid).comp (continuous_const.prodMk continuous_id :
+      Continuous (fun x : ℝ => ((hU.toCompactCap, α), x)))
+    exact h
   have hG : IntegrableOn (barrier U α grid)
       (middleHalfInterval (horizontalLeft U) (horizontalRight U)) :=
-    ((continuous_barrier grid).comp (continuous_const.prodMk continuous_id)).integrableOn_Icc
+    hc.integrableOn_Icc
   rw [score_eq_integrals hU α hαL grid, capScore_eq_integrals, integral_sub hN hG]
   ring
 
@@ -74,9 +78,13 @@ theorem score_sub_capScore_le {U : Set Plane} (hU : IsDownwardCap U)
   have hN : IntegrableOn (partialBarrier U α)
       (middleHalfInterval (horizontalLeft U) (horizontalRight U)) :=
     integrableOn_partialBarrier_Icc hU.isCompact (TerminalAngle.pos α) α.property.2 _ _
+  have hc : Continuous (barrier U α grid) := by
+    have h := (continuous_barrier grid).comp (continuous_const.prodMk continuous_id :
+      Continuous (fun x : ℝ => ((hU.toCompactCap, α), x)))
+    exact h
   have hG : IntegrableOn (barrier U α grid)
       (middleHalfInterval (horizontalLeft U) (horizontalRight U)) :=
-    ((continuous_barrier grid).comp (continuous_const.prodMk continuous_id)).integrableOn_Icc
+    hc.integrableOn_Icc
   have hConst : IntegrableOn (fun _ : ℝ => ε)
       (middleHalfInterval (horizontalLeft U) (horizontalRight U)) :=
     continuous_const.integrableOn_Icc

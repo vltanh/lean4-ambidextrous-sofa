@@ -34,7 +34,7 @@ def horizontalLeakageMajorant (A h b s : ℝ) : ℝ :=
 theorem horizontalLeakageQuadratic_nonneg {h τ : ℝ} (hτ : τ ∈ Icc (0 : ℝ) h) :
     0 ≤ horizontalLeakageQuadratic h τ := by
   have hprod := mul_nonneg (sub_nonneg.mpr hτ.2)
-    (show 0 ≤ h + τ + 2 by linarith [hτ.1])
+    (show 0 ≤ h + τ + 2 by linarith [hτ.1, hτ.2])
   unfold horizontalLeakageQuadratic
   nlinarith
 
@@ -69,11 +69,11 @@ theorem integral_horizontalLeakageQuadratic (h : ℝ) :
   unfold horizontalLeakageQuadratic horizontalLeakageA0
   rw [intervalIntegral.integral_sub
       ((intervalIntegrable_const (c := (h ^ 2 + 2 * h) / 4)).sub
-        ((continuous_id.div_const 2).intervalIntegrable _ _))
-      (((continuous_id.pow 2).div_const 4).intervalIntegrable _ _),
+        ((show Continuous (fun τ : ℝ => τ / 2) by fun_prop).intervalIntegrable _ _))
+      ((show Continuous (fun τ : ℝ => τ ^ 2 / 4) by fun_prop).intervalIntegrable _ _),
     intervalIntegral.integral_sub intervalIntegrable_const
-      ((continuous_id.div_const 2).intervalIntegrable _ _),
-    intervalIntegral.integral_div, intervalIntegral.integral_div,
+      ((show Continuous (fun τ : ℝ => τ / 2) by fun_prop).intervalIntegrable _ _),
+    intervalIntegral.integral_div, intervalIntegral.integral_div, intervalIntegral.integral_div,
     intervalIntegral.integral_const, integral_id, integral_pow]
   simp only [smul_eq_mul]
   ring
@@ -86,11 +86,12 @@ theorem integral_mul_horizontalLeakageQuadratic (h : ℝ) :
     ring
   simp_rw [hfun]
   rw [intervalIntegral.integral_sub
-      (((continuous_const.mul continuous_id).intervalIntegrable _ _).sub
-        (((continuous_id.pow 2).div_const 2).intervalIntegrable _ _))
-      (((continuous_id.pow 3).div_const 4).intervalIntegrable _ _),
-    intervalIntegral.integral_sub ((continuous_const.mul continuous_id).intervalIntegrable _ _)
-      (((continuous_id.pow 2).div_const 2).intervalIntegrable _ _),
+      ((show Continuous (fun τ : ℝ => (h ^ 2 + 2 * h) / 4 * τ - τ ^ 2 / 2) by
+        fun_prop).intervalIntegrable _ _)
+      ((show Continuous (fun τ : ℝ => τ ^ 3 / 4) by fun_prop).intervalIntegrable _ _),
+    intervalIntegral.integral_sub
+      ((show Continuous (fun τ : ℝ => (h ^ 2 + 2 * h) / 4 * τ) by fun_prop).intervalIntegrable _ _)
+      ((show Continuous (fun τ : ℝ => τ ^ 2 / 2) by fun_prop).intervalIntegrable _ _),
     intervalIntegral.integral_const_mul, intervalIntegral.integral_div,
     intervalIntegral.integral_div, integral_id, integral_pow, integral_pow]
   unfold horizontalLeakageA1
@@ -99,7 +100,8 @@ theorem integral_mul_horizontalLeakageQuadratic (h : ℝ) :
 theorem integral_horizontalLeakageMajorant {A h b : ℝ} (hh : 0 ≤ h) :
     (∫ s, horizontalLeakageMajorant A h b s) =
       horizontalLeakageA0 h * max (A - b) 0 + horizontalLeakageA1 h := by
-  rw [horizontalLeakageMajorant, integral_indicator measurableSet_Icc,
+  unfold horizontalLeakageMajorant
+  rw [integral_indicator measurableSet_Icc,
     integral_Icc_eq_integral_Ioc,
     ← intervalIntegral.integral_of_le (show A ≤ A + h by linarith)]
   have hshift := intervalIntegral.integral_comp_sub_right
@@ -115,8 +117,10 @@ theorem integral_horizontalLeakageMajorant {A h b : ℝ} (hh : 0 ≤ h) :
     unfold horizontalLeakageQuadratic
     fun_prop
   rw [intervalIntegral.integral_add
-      ((continuous_const.mul hcont).intervalIntegrable _ _)
-      ((continuous_id.mul hcont).intervalIntegrable _ _),
+      ((show Continuous (fun τ => max (A - b) 0 * horizontalLeakageQuadratic h τ) by
+        fun_prop).intervalIntegrable _ _)
+      ((show Continuous (fun τ => τ * horizontalLeakageQuadratic h τ) by
+        fun_prop).intervalIntegrable _ _),
     intervalIntegral.integral_const_mul, integral_horizontalLeakageQuadratic,
     integral_mul_horizontalLeakageQuadratic]
   ring
@@ -136,9 +140,8 @@ theorem horizontal_density_kernel_le_envelope_moments
   have hρi := intervalIntegrable_bounded_real_density hρ hρ0 hρK t (Real.pi / 2)
   have hki : IntervalIntegrable (fun s => Real.sin (s - t) * (ρ s - 1))
       volume t (Real.pi / 2) := by
-    simpa only [mul_comm] using
-      (hρi.sub intervalIntegrable_const).mul_continuousOn
-        (Real.continuous_sin.comp (continuous_id.sub_const t)).continuousOn
+    exact (hρi.sub intervalIntegrable_const).continuousOn_mul
+      (Real.continuous_sin.comp (continuous_sub_right t)).continuousOn
   have hM := integrable_horizontalLeakageMajorant A h b
   have hpoint : ∀ᵐ s ∂volume.restrict (Ioo t (Real.pi / 2)),
       Real.sin (s - t) * (ρ s - 1) ≤ horizontalLeakageMajorant A h b s := by

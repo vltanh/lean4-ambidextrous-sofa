@@ -68,7 +68,7 @@ theorem IsJointCapMaximizer.centered_proper_half_width_bounds_of_affine_nonneg
   have hleft : capRoof U (-a / 2) = 1 - h := by dsimp [h]; ring
   have hright : capRoof U (a / 2) = 1 := by
     have h := hU.middle_right_eq_one_of_affine_nonneg hheight hm haffine
-    rw [hl, hr, show a - (a - -a) / 4 = a / 2 by ring] at h
+    rw [hr, hw, show a - 2 * a / 4 = a / 2 by ring] at h
     exact h
   have hAff : ∃ m' c' : ℝ, ∀ x ∈ Icc (-a / 2) (a / 2), capRoof U x = m' * x + c' := by
     exact ⟨m, c, by simpa only [hl, hr, middleHalfInterval_centered] using haffine⟩
@@ -99,7 +99,7 @@ theorem IsJointCapMaximizer.centered_proper_half_width_bounds_of_affine_nonpos
   have hright : capRoof U (a / 2) = 1 - h := by dsimp [h]; ring
   have hleft : capRoof U (-a / 2) = 1 := by
     have h := hU.middle_left_eq_one_of_affine_nonpos hheight hm haffine
-    rw [hl, hr, show -a + (a - -a) / 4 = -a / 2 by ring] at h
+    rw [hl, hw, show -a + 2 * a / 4 = -a / 2 by ring] at h
     exact h
   have hAff : ∃ m' c' : ℝ, ∀ x ∈ Icc (-a / 2) (a / 2), capRoof U x = m' * x + c' := by
     exact ⟨m, c, by simpa only [hl, hr, middleHalfInterval_centered] using haffine⟩

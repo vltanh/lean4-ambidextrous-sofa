@@ -77,7 +77,10 @@ theorem IsDownwardCap.capRoof_capCut {U : Set Plane} (hU : IsDownwardCap U)
     exact le_min (le_capRoof hU.isCompact htop.1) htop.2
   · apply le_capRoof hV.isCompact
     refine ⟨hU.downward (x, capRoof U x) (capRoof_mem hU.isCompact hx)
-      (min (capRoof U x) (ceiling x)) ?_ (min_le_left _ _), min_le_right _ _⟩
+      (min (capRoof U x) (ceiling x)) ?_ (min_le_left _ _), ?_⟩
+    swap
+    · change min (capRoof U x) (ceiling x) ≤ ceiling x
+      exact min_le_right _ _
     exact le_min (capRoof_nonneg hU.isCompact (fun p hp => (hU.inStrip hp).1) x)
       (hnonneg x hx)
 
@@ -173,9 +176,9 @@ theorem IsDownwardCap.roofChord_nonneg {U : Set Plane} (hU : IsDownwardCap U)
   intro x hx
   have hroof0 := capRoof_nonneg hU.isCompact (fun p hp => (hU.inStrip hp).1)
   rcases le_total x a with hxa | hax
-  · exact (hroof0 x).trans (hU.concaveOn_capRoof.le_roofChord_of_le hx hb hab hxa)
+  · exact (hroof0 x).trans (ConcaveOn.le_roofChord_of_le hU.concaveOn_capRoof hx hb hab hxa)
   · rcases le_total b x with hbx | hxb
-    · exact (hroof0 x).trans (hU.concaveOn_capRoof.le_roofChord_of_ge ha hx hab hbx)
+    · exact (hroof0 x).trans (ConcaveOn.le_roofChord_of_ge hU.concaveOn_capRoof ha hx hab hbx)
     · exact roofChord_nonneg_of_mem_Icc hab (hroof0 a) (hroof0 b) ⟨hax, hxb⟩
 
 /-- The actual cut to the line through two points on the cap roof. -/
@@ -209,7 +212,7 @@ theorem IsDownwardCap.capRoof_chordCap_inside {U : Set Plane} (hU : IsDownwardCa
   have hxU : x ∈ horizontalProjection U :=
     (convex_horizontalProjection hU.convex).ordConnected.out ha hb hx
   rw [hU.capRoof_chordCap ha hb hab hxU]
-  exact min_eq_right (hU.concaveOn_capRoof.roofChord_le ha hb hab hx)
+  exact min_eq_right (ConcaveOn.roofChord_le hU.concaveOn_capRoof ha hb hab hx)
 
 theorem IsDownwardCap.capRoof_chordCap_outside {U : Set Plane} (hU : IsDownwardCap U)
     {a b x : ℝ} (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
@@ -218,9 +221,9 @@ theorem IsDownwardCap.capRoof_chordCap_outside {U : Set Plane} (hU : IsDownwardC
   rw [hU.capRoof_chordCap ha hb hab hx]
   apply min_eq_left
   rcases lt_or_ge x a with hxa | hax
-  · exact hU.concaveOn_capRoof.le_roofChord_of_le hx hb hab hxa.le
+  · exact ConcaveOn.le_roofChord_of_le hU.concaveOn_capRoof hx hb hab hxa.le
   · have hbx : b < x := lt_of_not_ge (fun hxb => hout ⟨hax, hxb⟩)
-    exact hU.concaveOn_capRoof.le_roofChord_of_ge ha hx hab hbx.le
+    exact ConcaveOn.le_roofChord_of_ge hU.concaveOn_capRoof ha hx hab hbx.le
 
 /-- The middle chord uses the endpoints of the moving middle-half window. -/
 def middleChordCap (U : Set Plane) : Set Plane :=

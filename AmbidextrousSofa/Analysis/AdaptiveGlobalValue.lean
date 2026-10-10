@@ -109,8 +109,8 @@ theorem integral_familyValueRemainder_early {b : ℝ}
     (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
     (∫ t in (0 : ℝ)..b, familyValueRemainder b hb t) =
       familyEarlyValuePrimitive b b - familyEarlyValuePrimitive b 0 := by
-  apply intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le hb.1
-    (by unfold familyEarlyValuePrimitive; fun_prop)
+  apply intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le (f := familyEarlyValuePrimitive b)
+    hb.1 (by unfold familyEarlyValuePrimitive; fun_prop)
   · intro t ht
     rw [familyValueRemainder_early hb ⟨ht.1.le, ht.2.le⟩]
     exact hasDerivAt_familyEarlyValuePrimitive b t
@@ -228,9 +228,9 @@ stationary pair, with its actual half-width subtracted. -/
 theorem familyPair_score {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
     adaptiveFunctional (familyPair b hb) - familyWidth b = familyScore b := by
   have hL : (0 : ℝ) ≤ Real.pi / 2 := by linarith [Real.pi_pos]
-  have hd := ContinuousOn.intervalIntegrable_of_Icc hL
+  have hd := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) hL
     (continuousOn_adaptiveDensity (familyPair b hb))
-  have hv := ContinuousOn.intervalIntegrable_of_Icc hL
+  have hv := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) hL
     (continuousOn_adaptiveLinearDensity (familyPair b hb) (familyPair b hb))
   have h := integral_familyValueRemainder hb
   unfold familyValueRemainder at h

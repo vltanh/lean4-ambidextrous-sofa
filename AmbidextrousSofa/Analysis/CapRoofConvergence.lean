@@ -24,7 +24,7 @@ namespace AmbidextrousSofa
 theorem IsDownwardCap.integral_vertical_indicator {U : Set Plane}
     (hU : IsDownwardCap U) (x : ℝ) :
     (∫ y : ℝ, U.indicator (fun _ => (1 : ℝ)) (x, y)) = capRoof U x := by
-  change (∫ y : ℝ, (verticalFiber U x).indicator (fun _ => (1 : ℝ)) y) = capRoof U x
+  change (∫ y : ℝ, (verticalFiber U x).indicator (1 : ℝ → ℝ) y) = capRoof U x
   rw [integral_indicator_one (isCompact_verticalFiber hU.isCompact x).measurableSet]
   by_cases hx : x ∈ horizontalProjection U
   · rw [hU.verticalFiber_eq_Icc hx, Real.volume_real_Icc_of_le
@@ -58,8 +58,8 @@ theorem CapHausdorffTendsto.capRoof_tendsto_ae
     apply Eventually.of_forall
     intro y
     by_cases hp : (x, y) ∈ U n
-    · simp only [indicator_of_mem hp, indicator_of_mem ((hU n).inStrip hp),
-        norm_one, le_refl]
+    · simp only [indicator_of_mem hp,
+        indicator_of_mem (show y ∈ Icc (0 : ℝ) 1 from (hU n).inStrip hp), norm_one, le_refl]
     · by_cases hy : y ∈ Icc (0 : ℝ) 1 <;> simp [hp, hy]
   have hlim := tendsto_integral_of_dominated_convergence
     ((Icc (0 : ℝ) 1).indicator (fun _ => (1 : ℝ))) hmeas hbound hdom hx

@@ -82,7 +82,8 @@ theorem wide_rising_piece_integral {n : ℝ → ℝ} {A k u v b B : ℝ}
       have hnear : b + k * x ≤ B - x / k := by
         have hprod := mul_nonneg hkR.le (sub_nonneg.mpr hxp)
         have hki : (k + 1 / k) * x = 2 * (1 + k) * x := congrArg (fun z : ℝ => z * x) hkInv
-        nlinarith only [hprod, hpEq, hki]
+        have hdiv : x / k = 1 / k * x := by ring
+        linarith only [hprod, hpEq, hki, hdiv]
       have hwallx := hwall x
       rw [min_eq_left hnear] at hwallx
       have hdiag : max (min (u - k - x) (v - k + x)) 0 = u - k - x := by
@@ -103,7 +104,7 @@ theorem wide_rising_piece_integral {n : ℝ → ℝ} {A k u v b B : ℝ}
     exact hlocal.trans (intervalIntegral.integral_mono_interval hc hlr hrA
       (Eventually.of_forall hf0) (hf _ _))
   · rw [max_eq_right (le_of_not_gt hpos)]
-    simpa only [zero_pow, zero_div] using
+    simpa only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_div] using
       intervalIntegral.integral_nonneg_of_forall hd hf0
 
 def wideNearRightIntercept (U : Set Plane) (k : ℝ) : ℝ := support U (-k, 1) - nearDiagonalNorm k
@@ -230,7 +231,7 @@ theorem IsDownwardCap.wide_niche_integral_ge_pieces {U : Set Plane}
       congr 3 <;> ring
     simp_rw [hfun]
     rw [intervalIntegral.integral_comp_neg]
-    congr 1 <;> dsimp [d] <;> ring
+    congr 1 <;> (try dsimp only [d]) <;> ring
   rw [hleftInt] at hleft
   change _ ≤ ∫ x in d..(a / 2), f x at hright
   have hf : ∀ l r, IntervalIntegrable f volume l r := fun l r =>

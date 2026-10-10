@@ -31,9 +31,9 @@ theorem ae_deriv_eq_zero_on_level (f : ℝ → ℝ) (c : ℝ) :
   filter_upwards [hcount.ae_notMem volume] with x hx
   intro hfx
   have hne : 𝓝[S ∩ Ioi x] x ≠ ⊥ := fun hbot => hx ⟨hfx, hbot⟩
-  letI : NeBot (𝓝[S ∩ Ioi x] x) := ⟨hne⟩
+  have : NeBot (𝓝[S ∩ Ioi x] x) := ⟨hne⟩
   have hlevel : ∀ᶠ y in 𝓝[S ∩ Ioi x] x, f y = c :=
-    self_mem_nhdsWithin.mono (fun y hy => hy.1)
+    Filter.mem_of_superset self_mem_nhdsWithin (fun y hy => hy.1)
   have hle : 𝓝[S ∩ Ioi x] x ≤ 𝓝[≠] x :=
     nhdsWithin_mono x (fun y hy => by
       change y ≠ x

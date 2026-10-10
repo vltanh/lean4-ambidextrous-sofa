@@ -31,7 +31,7 @@ theorem ae_eq_deriv_of_local_interval_occupation
       X r - X s ≤ ∫ t in s..r, w t) :
     ∀ᵐ t ∂volume.restrict S, w t = XD t := by
   filter_upwards [ae_restrict_mem hS.measurableSet, hD, hupper,
-    ae_restrict_of_ae hw.locallyIntegrable.ae_hasDerivAt_integral]
+    ae_restrict_of_ae (LocallyIntegrable.ae_hasDerivAt_integral hw.locallyIntegrable)]
     with t ht hd hu hLeb
   apply le_antisymm hu
   obtain ⟨l, r, hti, hsub⟩ := exists_closed_interval_within_open hS ht
@@ -41,11 +41,11 @@ theorem ae_eq_deriv_of_local_interval_occupation
   have hsmall : ∀ᶠ n in atTop, t + d n < r := by
     filter_upwards [hd0.eventually (Iio_mem_nhds (sub_pos.mpr hti.2))] with n hn
     linarith only [hn]
-  have hXlim := hd.forward_increment_div_tendsto hd0 hdpos
+  have hXlim := HasDerivAt.forward_increment_div_tendsto hd hd0 hdpos
   have hwlim : Tendsto (fun n => (∫ s in t..t + d n, w s) / d n)
       atTop (𝓝 (w t)) := by
-    simpa only [intervalIntegral.integral_self, sub_zero] using
-      (hLeb t).forward_increment_div_tendsto hd0 hdpos
+    simpa only [intervalIntegral.integral_same, sub_zero] using
+      HasDerivAt.forward_increment_div_tendsto (hLeb t) hd0 hdpos
   apply le_of_tendsto_of_tendsto hXlim hwlim
   filter_upwards [hsmall] with n hn
   apply div_le_div_of_nonneg_right _ (hdpos n).le

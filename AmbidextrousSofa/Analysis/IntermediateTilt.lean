@@ -63,7 +63,7 @@ theorem tiltedDiagonalRelaxation_le_bound {a h k : ℝ}
   have hza : z * a = h := div_mul_cancel₀ h ha0.ne'
   have hden : 0 < 4 - z := by linarith only [hz1]
   have hDform : D = 2 * (a - 3 * h / 4 - k) / (4 - z) := by
-    rw [show 4 - z = (4 * a - h) / a by dsimp [z]; field_simp [ha0.ne']; ring]
+    rw [show 4 - z = (4 * a - h) / a by dsimp [z]; field_simp [ha0.ne']]
     dsimp [D, z]
     field_simp [ha0.ne', h4.ne'] <;> ring
   have hD0 : 0 < D := by
@@ -104,8 +104,9 @@ theorem tiltedDiagonalRelaxation_le_bound {a h k : ℝ}
   rw [hgradU, hgradV, zero_mul, zero_mul, add_zero, add_zero, hq] at ht
   have hvalue : a - ((a - u0) ^ 2 + (a - v0) ^ 2) / 2 - a * h / 2 - D ^ 2 -
       h * (v0 - a / 2) ^ 2 / (2 * (a - h)) = tiltedDiagonalBound a h k := by
+    have h4' : a * 4 - h ≠ 0 := (by linarith : (0 : ℝ) < a * 4 - h).ne'
     dsimp [u0, v0, z, D, tiltedDiagonalBound]
-    field_simp [ha0.ne', (sub_pos.mpr hha).ne', h4.ne'] <;> ring
+    field_simp [ha0.ne', (sub_pos.mpr hha).ne', h4.ne', h4'] <;> ring
   rwa [hvalue] at ht
 
 theorem tiltedDiagonalBound_eq_width_tilt {a h k : ℝ} (h4 : 4 * a - h ≠ 0)
@@ -116,7 +117,8 @@ theorem tiltedDiagonalBound_eq_width_tilt {a h k : ℝ} (h4 : 4 * a - h ≠ 0)
     _ = 1 - (a - (k + 1)) ^ 2 / 2 - (2 * a / (4 * a - h)) * (k + h / 2) ^ 2 +
         (k ^ 2 + 2 * k - 1) / 2 := by
       unfold tiltedDiagonalBound
-      field_simp [h4] <;> ring
+      have h4' : a * 4 - h ≠ 0 := by rwa [mul_comm] at h4
+      field_simp [h4, h4'] <;> ring
     _ = _ := by rw [hksq]; ring
 
 theorem diagonal_offset_gt_forty_one_ninety_ninths {k : ℝ} (hk : 0 < k)
@@ -189,6 +191,8 @@ theorem IsDownwardCap.intermediate_width_tilt_bound
   refine ⟨htilt, ?_⟩
   rw [tiltedDiagonalBound_eq_width_tilt h4.ne' hksq,
     show (Real.sqrt 2 - 1) + 1 = Real.sqrt 2 by ring] at hP
+  have hY : 4 * a / (4 * a - h) = 2 * (2 * a / (4 * a - h)) := by ring
+  rw [hY]
   nlinarith only [hP, hscore]
 
 end AmbidextrousSofa

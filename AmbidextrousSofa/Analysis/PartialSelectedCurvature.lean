@@ -136,8 +136,8 @@ theorem IsSelectedPolygon.curvature_atom_le {target U : Set Plane}
       (support_circumscription hU.isCap (normal α grid))
       (subset_circumscription hU.isCap (normal α grid) hp.1)
       (subset_circumscription hU.isCap (normal α grid) hq.1) hpq
-      (by simpa only [height, normal_eq_unitNormal] using hp.2)
-      (by simpa only [height, normal_eq_unitNormal] using hq.2)
+      (by simp only [height, normal_eq_unitNormal]; exact hp.2)
+      (by simp only [height, normal_eq_unitNormal]; exact hq.2)
       (normal_fst_ne_zero α grid j)
       (fun i hij => AngularGrid.normal_det_ne_zero (outerGrid α grid) (Ne.symm hij)) (normal_unit α grid j) hmax
     have htotal := integral_outerSource_eq_curvature_atom hU.isCap (normal α grid)
@@ -157,7 +157,7 @@ theorem IsSelectedPolygon.curvature_atom_le {target U : Set Plane}
     have hdefect : 2 * weight j * (height j - prescribed j) ≤
         selectionDefect target U α level coefficient j := by
       have h := mul_le_mul_of_nonneg_left (le_abs_self (height j - prescribed j))
-        (mul_nonneg (by norm_num) (mul_nonneg hcoefficient (stageWeight_nonneg α level j)))
+        (mul_nonneg (by norm_num : (0 : ℝ) ≤ 2) (mul_nonneg hcoefficient (stageWeight_nonneg α level j)))
       simpa only [weight, height, prescribed, selectionDefect, grid, mul_assoc] using h
     change (∫ x in (horizontalLeft U)..(horizontalRight U), outerDensity U α grid j x) =
       (upperCurvature U {θ}).toReal at htotal
@@ -170,8 +170,10 @@ theorem IsSelectedPolygon.curvature_atom_le {target U : Set Plane}
         innerDensity U α hαL grid j x) + 2 * weight j * (height j - prescribed j) at hExpose
     change (upperCurvature U {θ}).toReal ≤ _
     nlinarith
-  · have hInner := intervalIntegral.integral_nonneg_of_forall hmiddle (innerDensity_nonneg U α hαL grid j)
-    have hOuter := intervalIntegral.integral_nonneg_of_forall hmiddle (outerDensity_nonneg U α grid j)
+  · have hInner := intervalIntegral.integral_nonneg_of_forall (μ := volume) hmiddle
+      (innerDensity_nonneg U α hαL grid j)
+    have hOuter := intervalIntegral.integral_nonneg_of_forall (μ := volume) hmiddle
+      (outerDensity_nonneg U α grid j)
     have hDefect := selectionDefect_nonneg target U α level hcoefficient j
     change (upperCurvature U {θ}).toReal ≤ _
     linarith [le_of_not_gt hmass]
@@ -202,14 +204,15 @@ theorem sum_selectionDefect_le {target U : Set Plane}
       apply Finset.sum_le_sum
       intro j _
       have h := mul_le_mul_of_nonneg_left (hpoint j)
-        (mul_nonneg (mul_nonneg (by norm_num) hcoefficient) (stageWeight_nonneg α level j))
+        (mul_nonneg (mul_nonneg (by norm_num : (0 : ℝ) ≤ 2) hcoefficient) (stageWeight_nonneg α level j))
       dsimp only [selectionDefect]
       nlinarith
     _ = 4 * coefficient * Metric.hausdorffDist U target * ∑ j, stageWeight α level j := by
       rw [Finset.mul_sum]
     _ ≤ 4 * coefficient * Metric.hausdorffDist U target := by
       have h := mul_le_mul_of_nonneg_left (sum_stageWeight_le_one α level)
-        (mul_nonneg (mul_nonneg (by norm_num) hcoefficient) Metric.hausdorffDist_nonneg)
+        (mul_nonneg (mul_nonneg (by norm_num : (0 : ℝ) ≤ 4) hcoefficient)
+          (Metric.hausdorffDist_nonneg (s := U) (t := target)))
       simpa only [mul_one] using h
 
 /-- All the finite support defects disappear in the actual selected

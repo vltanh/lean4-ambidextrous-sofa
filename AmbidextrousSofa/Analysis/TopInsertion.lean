@@ -68,7 +68,7 @@ theorem IsDownwardCap.clippedCorner_inserted_top {U : Set Plane}
     have hsecondOld : secondWall U θ x ≤ 0 :=
       (secondWall_mono (hU.subset_insertedCap hp) hU.nonempty hV.isCompact hc x).trans
         hsecond
-    rw [max_eq_right ((min_le_right _ _).trans hsecond),
+    rw [cornerWall, cornerWall, max_eq_right ((min_le_right _ _).trans hsecond),
       max_eq_right ((min_le_right _ _).trans hsecondOld)]
 
 theorem IsDownwardCap.sweptNiche_inserted_top {U : Set Plane}

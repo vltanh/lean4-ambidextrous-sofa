@@ -138,8 +138,8 @@ theorem IsJointCapMaximizer.curvature_restrict_le_source_density_on_proper_open_
     have h := PartialGrid.curvature_restrict_le_source_density hK.isCap hU hHausdorff hlevelTop
       (fun n => (hc n).le) hrate hR (fun n => (hU n).inBox) hwidth haffine
       hA hB htop hterminal hperp ha hab hb
-    simpa only [Measure.restrict_withDensity measurableSet_Ioo] using h
-  simpa only [Measure.restrict_withDensity measurableSet_Ioo] using hdom
+    simpa only [restrict_withDensity measurableSet_Ioo] using h
+  simpa only [restrict_withDensity measurableSet_Ioo] using hdom
 
 theorem IsJointCapMaximizer.curvature_density_sharp_on_proper_open_wing
     {K : Set Plane} {α m c A B : ℝ} (hK : IsJointCapMaximizer K α)
@@ -230,7 +230,7 @@ theorem IsJointCapMaximizer.curvature_density_sharp_on_regular_companion_domain
     isFiniteMeasure_restrict.mpr ((measure_mono hsub).trans_lt measure_Ioo_lt_top).ne
   letI : IsFiniteMeasure ((volume : Measure ℝ).restrict (regularCompanionDomain m)) :=
     isFiniteMeasure_restrict.mpr ((measure_mono hsub).trans_lt measure_Ioo_lt_top).ne
-  exact exists_real_density_of_two_bounds (by dsimp [C]; positivity)
+  exact exists_real_density_of_two_bounds (by positivity)
     (continuous_sourceKappa.measurable.comp hK.isCap.measurable_upperCornerVelocity)
     (fun t => sourceKappa_nonneg _) hcoarse hsharp
 

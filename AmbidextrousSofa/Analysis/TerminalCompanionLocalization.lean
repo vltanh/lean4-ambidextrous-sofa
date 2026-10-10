@@ -164,8 +164,8 @@ theorem IsDownwardCap.exists_positive_localized_secondWall_max {U : Set Plane}
   let p := MovingSofaOptimality.vplus U (t + Real.pi / 2)
   have hp : p ∈ U := (MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody _).1
   have hpSupport : coordDot p (companionNormal t) = support U (companionNormal t) := by
-    simpa only [p, companionNormal_eq_unitNormal, angleSupport] using
-      MovingSofaOptimality.dot_vplus_uvec U (t + Real.pi / 2)
+    rw [companionNormal_eq_unitNormal]
+    exact MovingSofaOptimality.dot_vplus_uvec U (t + Real.pi / 2)
   have hpeq := companionPointWall_eq_secondWall_of_support (x := x)
     (hcos t ⟨ht0.le, htα.le⟩).ne' hpSupport
   have hpmax : IsMaxOn (companionPointWall p x) (Icc 0 α) t := by

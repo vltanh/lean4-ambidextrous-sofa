@@ -30,7 +30,7 @@ theorem closure_interior_subset_of_measure_sdiff_eq_zero
     {S F : Set X} (hS : IsClosed S) (hzero : μ (F \ S) = 0) :
     closure (interior F) ⊆ S := by
   have hzero' : μ (interior F \ S) = 0 :=
-    measure_mono_null (fun _ hx => ⟨interior_subset hx.1, hx.2⟩) hzero
+    measure_mono_null (fun x hx => (⟨interior_subset hx.1, hx.2⟩ : x ∈ F \ S)) hzero
   have hempty : interior F \ S = ∅ :=
     (isOpen_interior.sdiff hS).eq_empty_of_measure_zero hzero'
   exact closure_minimal (Set.sdiff_eq_empty.mp hempty) hS

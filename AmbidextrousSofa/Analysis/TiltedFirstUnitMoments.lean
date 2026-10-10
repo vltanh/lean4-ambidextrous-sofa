@@ -51,6 +51,7 @@ theorem backwardSineConvolution_eq_moments
         Real.cos t * (v s * Real.sin s) - Real.sin t * (v s * Real.cos s) := by
       apply intervalIntegral.integral_congr
       intro s hs
+      dsimp only
       rw [Real.sin_sub]
       ring
     _ = _ := by
@@ -94,7 +95,7 @@ theorem backwardSineConvolution_le_five_fourths
     apply mul_le_mul_of_nonneg_right hvs
     apply Real.sin_nonneg_of_nonneg_of_le_pi
     · linarith [hs.1]
-    · linarith [hs.2, Real.pi_pos]
+    · linarith [hs.2, Real.pi_pos, ht.1]
   unfold backwardSineConvolution
   calc
     _ ≤ ∫ s in t..(Real.pi / 2), 5 / 4 * Real.sin (s - t) :=

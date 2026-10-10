@@ -85,8 +85,8 @@ theorem CapHausdorffTendsto.capRoof_tendsto_of_interior
   obtain ⟨q, hq, hqlim⟩ := h.exists_points_tendsto
     (fun n => (hU n).isCompact) (fun n => (hU n).nonempty)
     hK.isCompact hK.nonempty (capRoof_mem hK.isCompact hxK)
-  have hqx : Tendsto (fun n => (q n).1) atTop (𝓝 x) := hqlim.fst
-  have hqy : Tendsto (fun n => (q n).2) atTop (𝓝 (capRoof K x)) := hqlim.snd
+  have hqx : Tendsto (fun n => (q n).1) atTop (𝓝 x) := hqlim.fst_nhds
+  have hqy : Tendsto (fun n => (q n).2) atTop (𝓝 (capRoof K x)) := hqlim.snd_nhds
   have hlower : Tendsto
       (fun n => (q n).2 - (L : ℝ) * dist (q n).1 (t n)) atTop (𝓝 (capRoof K x)) := by
     simpa only [dist_self, mul_zero, sub_zero] using
@@ -109,7 +109,7 @@ theorem CapHausdorffTendsto.capRoof_tendsto_of_interior
     apply tendsto_iff_dist_tendsto_zero.mpr
     apply squeeze_zero (fun n => dist_nonneg)
       (fun n => (dist_triangle (z n).1 (t n) x).trans
-        (add_le_add_right (hzdist n) (dist (t n) x)))
+        (add_le_add_left (hzdist n) (dist (t n) x)))
     simpa only [zero_add] using h.add (tendsto_iff_dist_tendsto_zero.mp ht)
   have hzprojection : ∀ n, (z n).1 ∈ horizontalProjection K :=
     fun n => ⟨z n, hz n, rfl⟩
@@ -127,7 +127,7 @@ theorem CapHausdorffTendsto.capRoof_tendsto_of_interior
     have hqroof : (q n).2 ≤ capRoof (U n) (q n).1 :=
       le_capRoof (hU n).isCompact (by simpa only [Prod.mk.eta] using hq n)
     have hdiff := (le_abs_self (capRoof (U n) (q n).1 - capRoof (U n) (t n))).trans
-      (by simpa only [Real.dist_eq] using hL)
+      ((Real.dist_eq _ _).symm.le.trans hL)
     linarith
   · apply Eventually.of_forall
     intro n

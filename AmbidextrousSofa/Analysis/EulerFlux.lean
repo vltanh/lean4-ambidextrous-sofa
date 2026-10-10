@@ -84,7 +84,7 @@ theorem adaptiveFirstVariation_eq_boundary (u v : QuarterPair)
   · intro t ht
     have h := ((hf t ht).mul (v.hasDeriv_f t ht)).add
       ((hg t ht).mul (v.hasDeriv_g t ht))
-    exact h.congr_deriv (by rw [adaptiveLinearDensity_eq_flux]; ring)
+    exact h.congr_deriv (by rw [adaptiveLinearDensity_eq_flux])
   · exact ContinuousOn.intervalIntegrable_of_Icc hL (continuousOn_adaptiveLinearDensity u v)
 
 theorem QuarterPair.stationary_of_euler (u : QuarterPair)

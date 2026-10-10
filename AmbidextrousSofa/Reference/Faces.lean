@@ -133,7 +133,6 @@ theorem referenceF_le_topRight_disk {t : ℝ}
     apply (((Real.hasDerivAt_sin x).const_mul (-topRight)).hasDerivWithinAt.sub
       (hasDerivWithinAt_referenceFD_right x)).congr_deriv
     dsimp [HDD]
-    ring
   have hcurv : ∀ x ∈ Icc (0 : ℝ) (Real.pi / 2), 0 ≤ H x + HDD x := by
     intro x hx
     have hbound := referenceF_right_curvature_le_one hx

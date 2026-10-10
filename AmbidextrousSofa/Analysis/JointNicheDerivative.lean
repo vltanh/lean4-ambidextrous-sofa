@@ -49,7 +49,8 @@ theorem integrable_spatialWeightDensity (w : Plane →ᵇ ℝ≥0) :
   have hi := Measure.integrableOn_toReal_rnDeriv
     (μ := (J.weightedSpatialProjection w : Measure ℝ)) (ν := volume)
     (s := univ) (measure_ne_top _ _)
-  simpa only [IntegrableOn, Measure.restrict_univ] using hi
+  rw [IntegrableOn, Measure.restrict_univ] at hi
+  exact hi
 
 theorem setIntegral_spatialWeightDensity (w : Plane →ᵇ ℝ≥0)
     {E : Set ℝ} (hE : MeasurableSet E) :
@@ -76,13 +77,15 @@ theorem integrable_nicheDerivative : Integrable J.nicheDerivative volume :=
 theorem setIntegral_nicheDerivative {E : Set ℝ} (hE : MeasurableSet E) :
     (∫ x in E, J.nicheDerivative x) =
       ∫ z in univ ×ˢ E, -Real.cos z.1 ∂(J.measure : Measure Plane) := by
-  rw [nicheDerivative,
-    integral_sub (J.integrable_spatialWeightDensity _).integrableOn
+  simp only [nicheDerivative]
+  rw [integral_sub (J.integrable_spatialWeightDensity _).integrableOn
       (J.integrable_spatialWeightDensity _).integrableOn,
     J.setIntegral_spatialWeightDensity _ hE, J.setIntegral_spatialWeightDensity _ hE]
-  simpa only [neg_neg] using
-    ((-sourceCosineFunction).integral_eq_integral_nnrealPart_sub
+  have h := ((-sourceCosineFunction).integral_eq_integral_nnrealPart_sub
       ((J.measure : Measure Plane).restrict (univ ×ˢ E))).symm
+  rw [neg_neg] at h
+  rw [h]
+  rfl
 
 theorem niche_sub_eq_integral_nicheDerivative
     (hTarget : IsDownwardCap target) {l r : ℝ}
@@ -105,7 +108,8 @@ theorem ae_hasDerivAt_niche
     ∀ᵐ x ∂volume.restrict (Ioo l r),
       HasDerivAt (sweptNiche target (Real.pi / 2)) (J.nicheDerivative x) x := by
   filter_upwards [ae_restrict_mem measurableSet_Ioo,
-    ae_restrict_of_ae J.integrable_nicheDerivative.locallyIntegrable.ae_hasDerivAt_integral]
+    ae_restrict_of_ae
+      (LocallyIntegrable.ae_hasDerivAt_integral J.integrable_nicheDerivative.locallyIntegrable)]
     with x hx hd
   apply ((hd x).const_add (sweptNiche target (Real.pi / 2) x)).congr_of_eventuallyEq
   filter_upwards [Ioo_mem_nhds hx.1 hx.2] with y hy
@@ -117,7 +121,7 @@ theorem ae_hasDerivAt_niche
     linarith only [h]
   · have h := J.niche_sub_eq_integral_nicheDerivative hTarget
       (hbox hy) (hbox hx) hyx (hmiddle hy).1 (hmiddle hx).2
-    have hsymm := intervalIntegral.integral_symm (f := J.nicheDerivative) y x
+    have hsymm := intervalIntegral.integral_symm (f := J.nicheDerivative) (μ := volume) y x
     linarith only [h, hsymm]
 
 theorem setIntegral_spatial_sine {f : ℝ → ℝ} (hf : Measurable f)

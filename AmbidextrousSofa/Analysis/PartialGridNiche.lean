@@ -54,8 +54,9 @@ theorem scaleAngle_mem_open (α : TerminalAngle) {t : QuarterAngle}
   have hL : 0 < Real.pi / 2 := by linarith [Real.pi_pos]
   have ht0 : 0 < (unitParameter t : ℝ) := div_pos ht.1 hL
   have ht1 : (unitParameter t : ℝ) < 1 := (div_lt_one hL).mpr ht.2
-  exact ⟨mul_pos (TerminalAngle.pos α) ht0, by
-    simpa only [mul_one] using mul_lt_mul_of_pos_left ht1 (TerminalAngle.pos α)⟩
+  have h1 : (α : ℝ) * (unitParameter t : ℝ) < (α : ℝ) := by
+    simpa only [mul_one] using mul_lt_mul_of_pos_left ht1 (TerminalAngle.pos α)
+  exact ⟨mul_pos (TerminalAngle.pos α) ht0, h1⟩
 
 theorem continuous_unitParameter : Continuous unitParameter := by
   apply Continuous.subtype_mk
@@ -73,7 +74,8 @@ theorem clip_le_niche (U : Set Plane) (α : TerminalAngle)
     (grid : Finset QuarterAngle) (x : ℝ) {t : QuarterAngle} (ht : t ∈ grid) :
     max (cornerWall U (scaleAngle α t) x) 0 ≤ niche U α grid x := by
   classical
-  exact Finset.le_sup' _ (Finset.mem_insert_of_mem ht)
+  exact Finset.le_sup' (fun t => max (cornerWall U (scaleAngle α t) x) 0)
+    (Finset.mem_insert_of_mem ht)
 
 theorem niche_nonneg (U : Set Plane) (α : TerminalAngle)
     (grid : Finset QuarterAngle) (x : ℝ) : 0 ≤ niche U α grid x := by
@@ -113,8 +115,10 @@ theorem continuous_niche (grid : Finset QuarterAngle) :
   unfold niche
   apply Continuous.finset_sup'_apply
   intro t _
-  exact continuous_rescaledFullWallClip.comp
-    (continuous_id.prodMk (continuous_const : Continuous (fun _ => unitParameter t)))
+  have h := continuous_rescaledFullWallClip.comp
+    (continuous_id.prodMk (continuous_const :
+      Continuous (fun _ : (CompactCap × TerminalAngle) × ℝ => unitParameter t)))
+  exact h
 
 theorem continuous_barrier (grid : Finset QuarterAngle) :
     Continuous (fun p : (CompactCap × TerminalAngle) × ℝ => barrier p.1.1.carrier p.1.2 grid p.2) :=
@@ -142,13 +146,14 @@ theorem isLUB_niche (grids : ℕ → Finset QuarterAngle)
   · intro b hb
     have hclip : ∀ t : QuarterAngle, fullWallClip U x (scaleAngle α t) ≤ b := by
       intro t
-      apply hdense.induction ?_ ?_ t
+      refine hdense.induction (P := fun t => fullWallClip U x (scaleAngle α t) ≤ b) ?_ ?_ t
       · intro s hs
         obtain ⟨n, hn⟩ := mem_iUnion.mp hs
         exact (clip_le_niche U.carrier α (grids n) x hn).trans (hb (mem_range_self n))
-      · exact isClosed_le
-          (continuous_rescaledFullWallClip.comp
-            (continuous_const.prodMk continuous_unitParameter)) continuous_const
+      · have hc := continuous_rescaledFullWallClip.comp
+          (continuous_const.prodMk continuous_unitParameter :
+            Continuous (fun t : QuarterAngle => (((U, α), x), unitParameter t)))
+        exact isClosed_le hc continuous_const
     have hb0 := (niche_nonneg U.carrier α (grids 0) x).trans (hb (mem_range_self 0))
     apply sweptNiche_le_of_forall (TerminalAngle.pos α) hb0
     intro θ hθ
@@ -160,7 +165,7 @@ theorem isLUB_niche (grids : ℕ → Finset QuarterAngle)
         mul_le_mul_of_nonneg_right hr1 (by linarith [Real.pi_pos] : 0 ≤ Real.pi / 2)⟩
     have ht : (scaleAngle α t : ℝ) = θ := by
       dsimp [scaleAngle, unitParameter, t]
-      field_simp [(TerminalAngle.pos α).ne', (by linarith [Real.pi_pos] : Real.pi / 2 ≠ 0)] <;> ring
+      field_simp [(TerminalAngle.pos α).ne', (by linarith [Real.pi_pos] : Real.pi / 2 ≠ 0)]
     have h := hclip t
     rw [ht] at h
     exact (le_max_left _ _).trans h

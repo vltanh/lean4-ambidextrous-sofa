@@ -28,7 +28,7 @@ theorem HasDerivAt.forward_increment_div_tendsto
     Tendsto (fun n => (f (x + d n) - f x) / d n) atTop (𝓝 f') := by
   have hright : Tendsto d atTop (𝓝[>] (0 : ℝ)) :=
     tendsto_nhdsWithin_iff.mpr ⟨hd, Eventually.of_forall hdpos⟩
-  simpa only [smul_eq_mul, div_eq_mul_inv, mul_comm] using
+  simpa only [Function.comp_def, smul_eq_mul, div_eq_mul_inv, mul_comm] using
     hf.tendsto_slope_zero_right.comp hright
 
 theorem measureReal_Ioc_eq_intervalIntegral_of_density
@@ -50,8 +50,8 @@ theorem measureReal_Ioc_increment_tendsto_zero_of_density
   have hcont : Continuous (fun y => ∫ z in x..y, ρ z) :=
     intervalIntegral.continuous_primitive (intervalIntegrable_bounded_real_density hρ hρ0 hρC) x
   have hi : Tendsto (fun n => ∫ z in x..(x + d n), ρ z) atTop (𝓝 0) := by
-    simpa only [add_zero, intervalIntegral.integral_same] using
-      hcont.continuousAt.tendsto.comp (tendsto_const_nhds.add hd)
+    simpa only [Function.comp_def, add_zero, intervalIntegral.integral_same] using
+      (hcont.continuousAt (x := x + 0)).tendsto.comp ((tendsto_const_nhds (x := x)).add hd)
   apply hi.congr'
   filter_upwards [hsub] with n hn
   exact (measureReal_Ioc_eq_intervalIntegral_of_density hρ hρ0 heq
@@ -65,7 +65,7 @@ theorem measureReal_Ioc_increment_div_tendsto_of_density
     (hd : Tendsto d atTop (𝓝 0)) (hdpos : ∀ n, 0 < d n)
     (hsub : ∀ᶠ n in atTop, Ioc x (x + d n) ⊆ S) :
     Tendsto (fun n => μ.real (Ioc x (x + d n)) / d n) atTop (𝓝 (ρ x)) := by
-  have hi := hLebesgue.forward_increment_div_tendsto hd hdpos
+  have hi := HasDerivAt.forward_increment_div_tendsto hLebesgue hd hdpos
   simp only [intervalIntegral.integral_same, sub_zero] at hi
   apply hi.congr'
   filter_upwards [hsub] with n hn
@@ -137,15 +137,15 @@ theorem IsFullCapMaximizer.companion_density_ge_visible_corner
       ⟨hb₀.trans_lt (hn _ huI).1.1, (hn _ huI).1.2⟩
     have hureg : u - Real.pi / 2 ∈ regularCornerDomain 0 := by
       simpa only [regularCornerDomain_zero] using huq
-    simpa only [sub_add_cancel] using hureg.2.2
+    simpa only [Set.mem_preimage, sub_add_cancel] using hureg.2.2
   have hmass0 := measureReal_Ioc_increment_tendsto_zero_of_density hρ hρ0 hρC heq hd hdpos hbase
   have hmassShift0 := measureReal_Ioc_increment_tendsto_zero_of_density hρ hρ0 hρC heq hd hdpos hshift
   have hquot := measureReal_Ioc_increment_div_tendsto_of_density
     hρ hρ0 heq hLebesgue hd hdpos hshift
-  have hDxlim := hDx.forward_increment_div_tendsto hd hdpos
-  have hDylim := hDy'.forward_increment_div_tendsto hd hdpos
-  have hcxlim := hcorner.1.forward_increment_div_tendsto hd hdpos
-  have hcylim := hcorner.2.forward_increment_div_tendsto hd hdpos
+  have hDxlim := HasDerivAt.forward_increment_div_tendsto hDx hd hdpos
+  have hDylim := HasDerivAt.forward_increment_div_tendsto hDy' hd hdpos
+  have hcxlim := HasDerivAt.forward_increment_div_tendsto hcorner.1 hd hdpos
+  have hcylim := HasDerivAt.forward_increment_div_tendsto hcorner.2 hd hdpos
   let Q : ℕ → ℝ := fun n =>
     (Real.cos t * ((secondTangency U (t + d n)).1 - (secondTangency U t).1) +
       Real.sin t * ((secondTangency U (t + d n)).2 - (secondTangency U t).2) +
@@ -158,7 +158,8 @@ theorem IsFullCapMaximizer.companion_density_ge_visible_corner
     · ext n
       dsimp only [Q]
       ring
-    · dsimp only [cornerVelocityX, cornerVelocityY]
+    · congr 1
+      dsimp only [cornerVelocityX, cornerVelocityY]
       nlinarith [congrArg (fun z : ℝ => (1 - ρ (t + Real.pi / 2)) * z)
         (Real.sin_sq_add_cos_sq t),
         congrArg (fun z : ℝ => secondCornerVelocity U t * z) (Real.sin_sq_add_cos_sq t)]
@@ -209,7 +210,7 @@ theorem IsFullCapMaximizer.ae_companion_density_ge_visible_corner
       rw [Real.norm_eq_abs, abs_of_nonneg (hρ0 x)]
       exact hρC x)
   have hLeb := (measurePreserving_add_right volume (Real.pi / 2)).quasiMeasurePreserving.ae
-    hlocal.ae_hasDerivAt_integral
+    (LocallyIntegrable.ae_hasDerivAt_integral hlocal)
   have hTang := hU.isCap.ae_hasDerivAt_tangency_coordinates_on_regularCornerDomain
     hρ hρ0 hρC heq
   rw [regularCornerDomain_zero] at hTang

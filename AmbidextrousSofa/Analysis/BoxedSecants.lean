@@ -101,9 +101,11 @@ theorem abs_cornerSecant_le_box {U : Set Plane} (hU : IsDownwardCap U)
     {R : ℝ} (hbox : U ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1)
     (n : ℕ) (j : SourceIndex (dyadic n)) : |cornerSecant U n j| ≤ 2 * R + 3 := by
   cases j with
-  | inl t => exact abs_firstCornerSecant_le_box hU hbox t.val (mesh n)
+  | inl t =>
+    exact abs_firstCornerSecant_le_box hU hbox t.val (mesh n)
       (mesh_cos_pos n).le (mesh_sin_pos n).ne'
-  | inr t => exact abs_secondCornerSecant_le_box hU hbox t.val (mesh n)
+  | inr t =>
+    exact abs_secondCornerSecant_le_box hU hbox t.val (mesh n)
       (mesh_cos_pos n).le (mesh_sin_pos n).ne'
 
 theorem tan_le_two_mul {δ : ℝ} (hδ : δ ∈ Icc (0 : ℝ) (Real.pi / 4)) :

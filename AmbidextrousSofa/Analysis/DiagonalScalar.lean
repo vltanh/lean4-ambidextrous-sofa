@@ -76,7 +76,7 @@ theorem diagonalRelaxation_le_constrained_right (a h k t u v : ℝ)
       a - (a - k) ^ 2 / 2 - k * h / 2 - h ^ 2 / 8 -
         (2 / 3) * (t - k / 2) ^ 2 := by
   have hsmall : (2 * k - t) / 3 ≤ t := by linarith
-  have h := diagonalRelaxation_le_tangent a h k u v
+  have htan := diagonalRelaxation_le_tangent a h k u v
     (a / 2 + t + h / 4) (a / 2 + (2 * k - t) / 3 + h / 4)
     (by linarith) (by linarith) (by linarith)
   have hgrad : (2 * k - 4 * t) / 3 * (u - (a / 2 + t + h / 4)) ≤ 0 :=
@@ -91,7 +91,7 @@ theorem diagonalRelaxation_le_constrained_left (a h k t u v : ℝ)
       a - (a - k) ^ 2 / 2 - k * h / 2 - h ^ 2 / 8 -
         (2 / 3) * (t - k / 2) ^ 2 := by
   have hsmall : (2 * k - t) / 3 ≤ t := by linarith
-  have h := diagonalRelaxation_le_tangent a h k u v
+  have htan := diagonalRelaxation_le_tangent a h k u v
     (a / 2 + (2 * k - t) / 3 + h / 4) (a / 2 + t + h / 4)
     (by linarith) (by linarith) (by linarith)
   have hgrad : (2 * k - 4 * t) / 3 * (v - (a / 2 + t + h / 4)) ≤ 0 :=
@@ -134,28 +134,28 @@ theorem short_diagonal_stability {a h k u v : ℝ}
   have hkh : 0 ≤ k * h := mul_nonneg (by linarith) hh0
   have hmax : diagonalRelaxation a h k u v ≤
       (2001 / 1000) * k - 1 / 2000000 - k * h / 2 - h ^ 2 / 8 := by
-    nlinarith
+    linarith
   have ha : 9 / 10 < a := by
     by_contra hbad
     have hsmall := diagonal_critical_width_mono (le_of_not_gt hbad)
       (by linarith : (9 / 10 : ℝ) ≤ 1 + k)
-    nlinarith [sq_nonneg h]
+    linarith [sq_nonneg h]
   have hh : h < 1 / 23 := by
     by_contra hbad
     have hh' : 1 / 23 ≤ h := le_of_not_gt hbad
     have hprod := mul_nonneg (show 0 ≤ k by linarith) (sub_nonneg.mpr hh')
     have hsquare : (1 / 23 : ℝ) ^ 2 ≤ h ^ 2 := by nlinarith [sq_nonneg (h - 1 / 23)]
-    nlinarith
+    linarith
   have hright : u - a / 2 < 323 / 1000 + h / 4 := by
     by_contra hbad
     have hconstrained := diagonalRelaxation_le_constrained_right a h k (323 / 1000) u v
       (by linarith) (by linarith) hh0 (by linarith) (by linarith [le_of_not_gt hbad])
-    nlinarith [sq_nonneg h]
+    linarith [sq_nonneg h]
   have hleft : v - a / 2 < 323 / 1000 + h / 4 := by
     by_contra hbad
     have hconstrained := diagonalRelaxation_le_constrained_left a h k (323 / 1000) u v
       (by linarith) (by linarith) hh0 (by linarith) (by linarith [le_of_not_gt hbad])
-    nlinarith [sq_nonneg h]
+    linarith [sq_nonneg h]
   have hq : 0 < (u + v - h) / 2 - k := by linarith [hu.1, hv.1]
   have hclipR : u - k - a / 2 < 0 := by linarith
   have hclipL : v - h - k - a / 2 < 0 := by linarith
@@ -176,10 +176,10 @@ theorem short_diagonal_stability {a h k u v : ℝ}
     have hquad1 := sq_nonneg ((a - 1001 / 1000) - (m - 16 / 25))
     have hquad2 := sq_nonneg (m - 16 / 25)
     have hbound : a - (a - m) ^ 2 - (m - k) ^ 2 ≤
-        (82 / 25) * k - 538921 / 1000000 := by nlinarith
+        (82 / 25) * k - 538921 / 1000000 := by linarith
     change diagonalRelaxation a h k u v =
       a - (a - m) ^ 2 - (m - k) ^ 2 - ((u - v) / 2) ^ 2 - k * h / 2 - h ^ 2 / 8 at heq
-    nlinarith [sq_nonneg ((u - v) / 2), sq_nonneg h]
+    linarith [sq_nonneg ((u - v) / 2), sq_nonneg h]
   exact ⟨ha, hh, hright, hleft, hm, hq, hclipR, hclipL⟩
 
 end AmbidextrousSofa

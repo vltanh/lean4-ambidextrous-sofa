@@ -71,11 +71,12 @@ theorem IsDownwardCap.diagonal_tent_le_partialBarrier {U : Set Plane}
 
 theorem IsDownwardCap.diagonalRight_ge {U : Set Plane} (hU : IsDownwardCap U)
     {p : Plane} (hp : p ∈ U) : p.1 + p.2 ≤ diagonalRight U := by
-  simpa only [coordDot, mul_one] using coordDot_le_support hU.isCompact hp (1, 1)
+  simpa only [diagonalRight, coordDot, mul_one] using coordDot_le_support hU.isCompact hp (1, 1)
 
 theorem IsDownwardCap.diagonalLeft_ge {U : Set Plane} (hU : IsDownwardCap U)
     {p : Plane} (hp : p ∈ U) : -p.1 + p.2 ≤ diagonalLeft U := by
-  simpa only [coordDot, mul_neg_one, mul_one] using coordDot_le_support hU.isCompact hp (-1, 1)
+  simpa only [diagonalLeft, coordDot, mul_neg_one, mul_one] using
+    coordDot_le_support hU.isCompact hp (-1, 1)
 
 theorem IsDownwardCap.capRoof_le_diagonalRight {U : Set Plane} (hU : IsDownwardCap U)
     {x : ℝ} (hx : x ∈ horizontalProjection U) : capRoof U x ≤ diagonalRight U - x := by

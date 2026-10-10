@@ -69,10 +69,10 @@ theorem normalizedExposureDefect_le_innerSourceMass {U : Set Plane} (hU : IsDown
     (grid : Finset QuarterAngle) (j : SourceIndex grid) :
     normalizedExposureDefect U grid j ≤ innerSourceMass U grid j := by
   have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
-  have hL := intervalIntegral.integral_nonneg_of_forall
+  have hL := intervalIntegral.integral_nonneg_of_forall (μ := volume)
     (show horizontalLeft U ≤ horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4 by linarith)
     (outerDensity_nonneg U grid j)
-  have hR := intervalIntegral.integral_nonneg_of_forall
+  have hR := intervalIntegral.integral_nonneg_of_forall (μ := volume)
     (show horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 ≤ horizontalRight U by linarith)
     (outerDensity_nonneg U grid j)
   unfold normalizedExposureDefect
@@ -176,7 +176,7 @@ theorem IsSelectedPolygon.sum_abs_normalizedExposureDefect_le {target U : Set Pl
       constructor <;> linarith
     _ = (∑ j : SourceIndex (dyadic level), innerSourceMass U (dyadic level) j) +
         ∑ j, selectionDefect target U level coefficient j := Finset.sum_add_distrib
-    _ ≤ _ := add_le_add_right (sum_innerSourceMass_dyadic_le hU.isCap hR hbox level) _
+    _ ≤ _ := add_le_add_left (sum_innerSourceMass_dyadic_le hU.isCap hR hbox level) _
 
 end AngularGrid
 

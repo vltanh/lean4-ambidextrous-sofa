@@ -44,6 +44,7 @@ theorem IsDownwardCap.firstWall_pi_div_four_lower {U : Set Plane}
     zero_mul, add_zero] at hw
   rw [firstWall, Real.cos_pi_div_four, Real.sin_pi_div_four,
     le_div_iff₀ (by positivity : 0 < Real.sqrt 2 / 2)]
+  simp only [unitNormal, Real.cos_pi_div_four, Real.sin_pi_div_four]
   nlinarith [hsquare]
 
 theorem IsDownwardCap.secondWall_pi_div_four_lower {U : Set Plane}
@@ -57,6 +58,7 @@ theorem IsDownwardCap.secondWall_pi_div_four_lower {U : Set Plane}
     zero_mul, add_zero] at hw
   rw [secondWall, Real.cos_pi_div_four, Real.sin_pi_div_four,
     le_div_iff₀ (by positivity : 0 < Real.sqrt 2 / 2)]
+  simp only [companionNormal, Real.cos_pi_div_four, Real.sin_pi_div_four]
   nlinarith [hsquare]
 
 /-- The endpoint case uses the actual whole terminal wall. -/
@@ -112,14 +114,14 @@ theorem integral_middleHalf_baseline_tent {l r : ℝ} (hlr : l ≤ r) (d : ℝ) 
   have hleft_value : (∫ x in a..m, x - l - d) =
       (m ^ 2 - a ^ 2) / 2 - (m - a) * l - (m - a) * d := by
     simp only [intervalIntegral.integral_sub
-      ((continuous_id.sub continuous_const).intervalIntegrable a m) intervalIntegrable_const,
-      intervalIntegral.integral_sub (continuous_id.intervalIntegrable a m)
+      ((continuous_sub_right l).intervalIntegrable a m) intervalIntegrable_const,
+      intervalIntegral.integral_sub intervalIntegral.intervalIntegrable_id
         intervalIntegrable_const,
       integral_id, intervalIntegral.integral_const, smul_eq_mul]
   have hright_value : (∫ x in m..b, r - d - x) =
       (b - m) * (r - d) - (b ^ 2 - m ^ 2) / 2 := by
     simp only [intervalIntegral.integral_sub intervalIntegrable_const
-      (continuous_id.intervalIntegrable m b),
+      intervalIntegral.intervalIntegrable_id,
       intervalIntegral.integral_const, integral_id, smul_eq_mul]
   change (∫ x in Icc a b, min (r - d - x) (x - l - d)) = _
   rw [integral_Icc_eq_integral_Ioc,

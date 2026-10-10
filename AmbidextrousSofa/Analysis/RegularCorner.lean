@@ -110,7 +110,7 @@ theorem IsDownwardCap.attachedCorner_fst_strictAntiOn_of_opposite_velocities
     exact (hU.hasDerivAt_corner_coordinates_on_regularCornerDomain hρ hρ0 hρC heq
       (hsub ⟨hx.1.trans ht.1, ht.2.trans hy.2⟩)).1
   have hmono : StrictMonoOn (fun t => -(attachedCorner U t).1) (Icc x y) :=
-    strictMonoOn_of_deriv_pos convex_Icc
+    strictMonoOn_of_deriv_pos (convex_Icc x y)
       (fun t ht => (hderiv t ht).neg.continuousAt.continuousWithinAt)
       (fun t ht => by
         have htI : t ∈ Ioo x y := by simpa only [interior_Icc] using ht
@@ -118,7 +118,9 @@ theorem IsDownwardCap.attachedCorner_fst_strictAntiOn_of_opposite_velocities
         have htq := (hsub (Ioo_subset_Icc_self htbig)).1
         have hs := Real.sin_pos_of_pos_of_lt_pi htq.1 (by linarith [htq.2, Real.pi_pos])
         have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [htq.1, Real.pi_pos], htq.2⟩
-        rw [(hderiv t (interior_subset ht)).neg.deriv]
+        have hdt : HasDerivAt (fun s => -(attachedCorner U s).1) (-cornerVelocityX U t) t :=
+          (hderiv t (interior_subset ht)).neg
+        rw [hdt.deriv]
         dsimp only [cornerVelocityX]
         nlinarith [mul_pos (hq t htbig) hs, mul_pos (hr t htbig) hc])
   have h := hmono (left_mem_Icc.mpr hxy.le) (right_mem_Icc.mpr hxy.le) hxy

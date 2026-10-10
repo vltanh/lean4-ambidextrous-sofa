@@ -38,10 +38,12 @@ theorem isClosed_separatedWallContactSet (U : CompactCap) {X : ℝ → ℝ}
   have hclip : Continuous (fun z : ℝ × Icc (0 : ℝ) (Real.pi / 2) =>
       fullWallClip U (X z.1) z.2) :=
     continuous_fullWallClip_on_angles.comp
+      (f := fun z : ℝ × Icc (0 : ℝ) (Real.pi / 2) => ((U, X z.1), z.2))
       ((continuous_const.prodMk (hX.comp continuous_fst)).prodMk continuous_snd)
   have hniche : Continuous (fun z : ℝ × Icc (0 : ℝ) (Real.pi / 2) =>
       sweptNiche U.carrier (Real.pi / 2) (X z.1)) :=
-    continuous_capSweptNiche.comp (continuous_const.prodMk (hX.comp continuous_fst))
+    continuous_capSweptNiche.comp (f := fun z : ℝ × Icc (0 : ℝ) (Real.pi / 2) => (U, X z.1))
+      (continuous_const.prodMk (hX.comp continuous_fst))
   have hgap : Continuous (fun z : ℝ × Icc (0 : ℝ) (Real.pi / 2) =>
       |(z.2 : ℝ) - z.1|) :=
     ((continuous_subtype_val.comp continuous_snd).sub continuous_fst).abs
@@ -92,6 +94,6 @@ theorem IsDownwardCap.measurableSet_unique_fullWallClip_contact
     {U : Set Plane} (hU : IsDownwardCap U) {X : ℝ → ℝ} (hX : Continuous X) :
     MeasurableSet {t | ∀ s ∈ Icc (0 : ℝ) (Real.pi / 2),
       fullWallClip hU.toCompactCap (X t) s = sweptNiche U (Real.pi / 2) (X t) → s = t} :=
-  measurableSet_unique_fullWallClip_contact hU.toCompactCap hX
+  AmbidextrousSofa.measurableSet_unique_fullWallClip_contact hU.toCompactCap hX
 
 end AmbidextrousSofa

@@ -158,7 +158,7 @@ theorem IsDownwardCap.ae_floor_curvature_lt_one_of_density
     have hshift : Icc (a + Real.pi / 2) (b + Real.pi / 2) ⊆ regularCurvatureDomain m := by
       intro t ht
       have ht' : t - Real.pi / 2 ∈ Icc a b := ⟨by linarith [ht.1], by linarith [ht.2]⟩
-      simpa only [sub_add_cancel] using (hclosed ht').2.2
+      simpa only [mem_preimage, sub_add_cancel] using (hclosed ht').2.2
     have hlocal : ∀ᵐ t ∂volume.restrict (Ioo a b), P t :=
       hU.ae_floor_curvature_lt_one_on_interval hρ hρ0 hρC hκ heq hab
         (fun t ht => (hclosed ht).1) hbase hshift

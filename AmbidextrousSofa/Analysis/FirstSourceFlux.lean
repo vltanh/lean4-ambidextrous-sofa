@@ -35,6 +35,7 @@ theorem localized_quarter_first_source_projection (grid : Finset QuarterAngle)
   cases j with
   | inl u => exact Or.inl ⟨hj.1, hj.2.le⟩
   | inr u =>
+    simp only [Sum.elim_inr] at hj
     right
     constructor
     · change s + Real.pi / 2 < (u.val : ℝ) + Real.pi / 2 ∧
@@ -121,7 +122,7 @@ theorem firstGraphProjection_add_le_curvature_of_selected_sequence
       (show horizontalLeft (U n) + capWidth (U n) / 4 ≤
         horizontalRight (U n) - capWidth (U n) / 4 by linarith)
     simp only [innerAngularMassOn_middle] at hbound hm
-    exact hbound.trans (add_le_add_left (mul_le_mul_of_nonneg_left hm hδ) _)
+    exact hbound.trans (add_le_add_right (mul_le_mul_of_nonneg_left hm hδ) _)
   have hbase := innerAngularMass_Ioc_tendsto_of_canonical_maximum hTarget hheight haffine hTargetBox
     hU hHausdorff hlevel hc hrate hleft hright hst hregular
   have hcomp := innerAngularMass_Ioc_tendsto_of_canonical_maximum hTarget hheight haffine hTargetBox

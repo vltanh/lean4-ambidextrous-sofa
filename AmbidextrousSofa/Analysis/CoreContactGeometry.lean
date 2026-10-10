@@ -109,8 +109,9 @@ theorem fullTiltedSupportQuarterPair_cut_wall_derivative {t : ℝ}
     hU hm haffine hρ hρ0 hρK heq ht).2
   have hc : Real.cos t ≠ 0 := (Real.cos_pos_of_mem_Ioo
     ⟨by linarith only [ht.1, Real.pi_pos], ht.2⟩).ne'
-  have hd := ((hg.sub_const 1).add ((Real.hasDerivAt_sin t).const_mul x)).div
-    (Real.hasDerivAt_cos t) hc
+  have hd : HasDerivAt (fun s => ((F).g s - 1 + x * Real.sin s) / Real.cos s) _ t :=
+    ((hg.sub_const 1).add ((Real.hasDerivAt_sin t).const_mul x)).div
+      (Real.hasDerivAt_cos t) hc
   have hfun : (fun s => ((F).g s - 1 + x * Real.sin s) / Real.cos s) =
       fun s => secondWall V s x := by
     funext s
@@ -120,7 +121,7 @@ theorem fullTiltedSupportQuarterPair_cut_wall_derivative {t : ℝ}
   apply hd.congr_deriv
   rw [secondTangentPoint, companionSupportPoint_coordinates]
   apply congrArg (fun z : ℝ => z / Real.cos t ^ 2)
-  dsimp only [Prod.fst]
+  dsimp only [Prod.fst, Pi.add_apply]
   nlinarith only [congrArg (fun z : ℝ => x * z) (Real.sin_sq_add_cos_sq t)]
 
 theorem fullTiltedSupportQuarterPair_walls_core {t : ℝ}
@@ -177,6 +178,7 @@ theorem fullTiltedSupportQuarterPair_first_tangent_nonneg
       Real.sin_pi_div_two, Real.cos_pi_div_two, sub_self, zero_mul, mul_zero, zero_add]
   have h := (fullTiltedSupportQuarterPair_first_tangent_order
     hU hm haffine hρ hρ0 hρK heq hunit).2 ht ⟨by positivity, le_rfl⟩ ht.2
+  dsimp only at h
   rwa [hfloor] at h
 
 theorem fullTiltedSupportQuarterPair_core_strictAntiOn {α τ : ℝ}
@@ -185,7 +187,7 @@ theorem fullTiltedSupportQuarterPair_core_strictAntiOn {α τ : ℝ}
     StrictAntiOn (fun t => (Z t).1) (Icc α τ) := by
   have hcont := (fullTiltedSupportQuarterPair_core_continuous
     hU hm haffine hρ hρ0 hρK heq).1.mono (Icc_subset_Icc hα hτ)
-  apply strictAntiOn_of_deriv_neg convex_Icc hcont
+  apply strictAntiOn_of_deriv_neg (convex_Icc α τ) hcont
   intro t ht
   have ht' : t ∈ Ioo α τ := by simpa only [interior_Icc] using ht
   have htq : t ∈ Ioo (0 : ℝ) (Real.pi / 2) := ⟨hα.trans_lt ht'.1, ht'.2.trans_le hτ⟩
@@ -229,12 +231,15 @@ theorem fullTiltedSupportQuarterPair_core_geometry {C h α τ t : ℝ}
   have hreverse := fullTiltedSupportQuarterPair_core_strictAntiOn
     hU hm haffine hρ hρ0 hρK heq hα hτ.2 hphase
       ⟨le_rfl, ht.1.le.trans ht.2.le⟩ (Ioo_subset_Icc_self ht) ht.1
-  have hright : (Z t).1 < C := by rw [hjoin] at hreverse; exact hreverse.trans hBxα
+  have hright : (Z t).1 < C := by
+    dsimp only at hreverse
+    rw [hjoin] at hreverse; exact hreverse.trans hBxα
   have hD0 := (fullTiltedSupportQuarterPair_tangent_traces
     hU hm haffine hρ hρ0 hρK heq hl hr hmpos hheight hlow).2.2.1
   have hDorder := (fullTiltedSupportQuarterPair_companion_tangent_order_on_prefix
     hU hm haffine hρ hρ0 hρK heq hτ hcompanion).1
       ⟨le_rfl, hτ.1⟩ ⟨htq.1.le, ht.2.le⟩ htq.1.le
+  dsimp only at hDorder
   rw [hD0] at hDorder
   have hDgap : (D t).1 < (Z t).1 := by
     rw [innerCorner_fst_eq_secondTangent (F).f (F).g (F).gD]
@@ -424,7 +429,7 @@ theorem fullTiltedSupportQuarterPair_core_contact_of_earlier_cut_walls {t : ℝ}
   · rw [hsL, fullWallClip_pi_div_two] at heq
     exact hy.ne' heq.symm
   have hs : s ∈ Ioo (0 : ℝ) (Real.pi / 2) :=
-    ⟨lt_of_le_of_ne hsc.1 hs0.symm, lt_of_le_of_ne hsc.2 hsL⟩
+    ⟨lt_of_le_of_ne hsc.1 (Ne.symm hs0), lt_of_le_of_ne hsc.2 hsL⟩
   have hmax : fullWallClip hU.isCap.toCompactCap (Z t).1 s < (Z t).2 :=
     max_lt (hstrict s hs hne) hy
   exact (ne_of_lt hmax) heq
@@ -674,11 +679,13 @@ theorem fullTiltedSupportQuarterPair_first_source_charged_pieces {C h α τ β s
     · by_contra hnot
       have hle := hB (Ioo_subset_Icc_self hangle.1)
         (Ioo_subset_Icc_self (hquarter hsI)) (le_of_not_gt hnot)
+      dsimp only at hle
       rw [hax] at hle
       exact (not_le_of_gt hx.1) hle
     · by_contra hnot
       have hle := hB (Ioo_subset_Icc_self (hquarter htI))
         (Ioo_subset_Icc_self hangle.1) (le_of_not_gt hnot)
+      dsimp only at hle
       rw [hax] at hle
       exact (not_le_of_gt hx.2) hle
   refine ⟨hcore, hB (Ioo_subset_Icc_self (hquarter hsI))
@@ -688,6 +695,7 @@ theorem fullTiltedSupportQuarterPair_first_source_charged_pieces {C h α τ β s
   · exact (fullTiltedSupportQuarterPair_core_geometry hU hm haffine hρ hρ0 hρK heq
       hl hr hC0 hC1 hh hmpos hheight hlow hunit hα hτ hpα hphase hcompanion hs).2.2.1.le
   · have hright := hB (Ioo_subset_Icc_self (hquarter htI)) hβ htβ
+    dsimp only at hright
     rw [hβx] at hright
     have hmidR : horizontalRight U - capWidth U / 4 = C := by
       unfold capWidth

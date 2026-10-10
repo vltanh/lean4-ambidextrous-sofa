@@ -67,7 +67,7 @@ theorem sum_sin_innerSourceMass_eq_positiveLength {U : Set Plane}
   apply Finset.sum_congr rfl
   intro j _
   unfold innerSourceMass innerDensity
-  rw [integral_sourceDensity_outward _ _ _ _ (by linarith)]
+  rw [integral_sourceDensity_outward _ _ _ _ (by unfold capWidth; linarith)]
   unfold WallExpr.sourceMass
   field_simp [(normal_snd_pos α grid j).ne']
 
@@ -96,11 +96,11 @@ theorem normal_snd_mul_innerSourceMass_eq {U : Set Plane} (hU : IsDownwardCap U)
         (barrierIntercept (normal α grid) (fun i => support U (normal α grid i)))
         (horizontalLeft U + capWidth U / 4) (horizontalRight U - capWidth U / 4) (some j) := by
     unfold innerSourceMass innerDensity
-    rw [integral_sourceDensity_outward _ _ _ _ (by linarith)]
+    rw [integral_sourceDensity_outward _ _ _ _ (by unfold capWidth; linarith)]
     unfold WallExpr.sourceMass
     field_simp [(normal_snd_pos α grid j).ne']
   rw [hinner]
-  unfold normalizedExposureDefect finiteExposureDefect finiteWingMass
+  unfold normalizedExposureDefect finiteExposureDefect finiteWingMass capWidth
   field_simp [(normal_snd_pos α grid j).ne'] <;> ring
 
 open Classical in
@@ -123,12 +123,14 @@ theorem finitePositiveLength_le_horizontalOuterMass_add_cutoff {U : Set Plane}
       AngularGrid.horizontalOuterMass U (outerGrid α grid) E +
         ∑ j ∈ Finset.univ.filter (fun j : SourceIndex α grid => fullAngle α grid j ∈ E),
           |normalizedExposureDefect U α hαL grid j| := by
-    unfold AngularGrid.horizontalOuterMass
-    rw [← Finset.sum_add_distrib]
+    have hOM : AngularGrid.horizontalOuterMass U (outerGrid α grid) E =
+        ∑ j ∈ Finset.univ.filter (fun j : SourceIndex α grid => fullAngle α grid j ∈ E),
+          finiteWingMass U (normal α grid) (some j) := rfl
+    rw [hOM, ← Finset.sum_add_distrib]
     apply Finset.sum_le_sum
     intro j _
     rw [normal_snd_mul_innerSourceMass_eq hU]
-    apply add_le_add_left
+    apply add_le_add_right
     calc
       (normal α grid j).2 * normalizedExposureDefect U α hαL grid j ≤
           (normal α grid j).2 * |normalizedExposureDefect U α hαL grid j| :=
@@ -147,7 +149,8 @@ theorem finitePositiveLength_le_horizontalOuterMass_add_cutoff {U : Set Plane}
     have hs : (normal α grid j).2 ≤ 1 := by rw [normal_eq_unitNormal]; exact Real.sin_le_one _
     simpa only [one_mul] using mul_le_mul_of_nonneg_right hs (innerSourceMass_nonneg hU α hαL grid j)
   exact add_le_add
-    (hmain.trans (add_le_add_left (sum_abs_defect_on_set_le_cos_sum (α := α) (hαL := hαL) U grid hδ hE) _)) hrest
+    (hmain.trans (add_le_add_right
+      (sum_abs_defect_on_set_le_cos_sum (α := α) (hαL := hαL) U grid hδ hE) _)) hrest
 
 theorem finitePositiveLength_le_horizontalOuterMass_away_top {U : Set Plane}
     (hU : IsDownwardCap U) {R η : ℝ} (hR : 0 ≤ R)
@@ -162,7 +165,8 @@ theorem finitePositiveLength_le_horizontalOuterMass_away_top {U : Set Plane}
         (8 * R + 24) * (2 * η + mesh α level) := by
   classical
   have hsin : 0 < Real.sin η := Real.sin_pos_of_pos_of_lt_pi hη.1 (by linarith [hη.2, Real.pi_pos])
-  have h := finitePositiveLength_le_horizontalOuterMass_add_cutoff (α := α) (hαL := hαL) hU (dyadic level) hsin
+  have h := finitePositiveLength_le_horizontalOuterMass_add_cutoff (α := α) (hαL := hαL) hU
+    (dyadic level) (E := Ioo (0 : ℝ) Real.pi \ Icc (Real.pi / 2 - η) (Real.pi / 2 + η)) hsin
     (fun t ht => abs_cos_ge_sin_of_outside_top_interval hη ht.1 ht.2)
   have hfilter :
       Finset.univ.filter (fun j : SourceIndex α (dyadic level) => fullAngle α (dyadic level) j ∉
@@ -172,13 +176,13 @@ theorem finitePositiveLength_le_horizontalOuterMass_away_top {U : Set Plane}
     ext j
     simp only [Finset.mem_filter, Finset.mem_univ, true_and, mem_diff,
       fullAngle_mem, true_and, not_not]
-  rw [hfilter] at h
+  rw [Finset.filter_congr_decidable, hfilter] at h
   have hsmall := innerSourceMass_sum_interval_le hU α hαL hR hbox level
     (show Real.pi / 2 - η ≤ Real.pi / 2 + η by linarith [hη.1])
     (fun ht => by linarith [ht.1])
   have hid : Real.pi / 2 + η - (Real.pi / 2 - η) + mesh α level = 2 * η + mesh α level := by ring
   rw [hid] at hsmall
-  exact h.trans (add_le_add_left hsmall _)
+  exact h.trans (add_le_add_right hsmall _)
 
 
 end PartialGrid

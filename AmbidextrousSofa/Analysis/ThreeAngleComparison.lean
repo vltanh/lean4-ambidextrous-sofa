@@ -99,8 +99,8 @@ theorem IsDownwardCap.threeAngleComparisonScore_le_diagonalComparisonScore {U : 
   have hmono := intervalIntegral.integral_mono_on
     (show horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4 ≤
       horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 by linarith only [hlr])
-    ((continuous_diagonalBarrier U).intervalIntegrable _ _)
-    ((continuous_threeAngleBarrier U).intervalIntegrable _ _)
+    ((continuous_diagonalBarrier U).intervalIntegrable (μ := volume) _ _)
+    ((continuous_threeAngleBarrier U).intervalIntegrable (μ := volume) _ _)
     (fun x _ => diagonalBarrier_le_threeAngleBarrier U x)
   unfold threeAngleComparisonScore diagonalComparisonScore intervalSpatialScore
   linarith only [hmono]

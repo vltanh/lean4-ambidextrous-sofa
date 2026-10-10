@@ -123,7 +123,7 @@ theorem second_bound_of_energy_at_nonpositive_first
   have hE := D.energy_le_max_initial ht
   have hmax : max (17 / 4) (clippedCornerEnergy p q a) ≤ 1 / 4 + (2 + ε) ^ 2 :=
     max_le (by nlinarith only [hε, sq_nonneg ε]) hstart
-  unfold clippedCornerEnergy at hE
+  unfold clippedCornerEnergy at hE hmax
   rw [max_eq_right hpt] at hE
   have hsquare : (q t + 1) ^ 2 ≤ (2 + ε) ^ 2 := by linarith only [hE, hmax]
   have hbound := (sq_le_sq₀

@@ -32,6 +32,7 @@ theorem intervalIntegrable_terminal_positive_excess {v : ℝ → ℝ} {a b : ℝ
   have hi := (hsub.add hsub.abs).div_const 2
   refine hi.congr ?_
   intro r _hr
+  dsimp only
   by_cases hvr : 0 ≤ v r - 1
   · rw [abs_of_nonneg hvr, max_eq_left hvr]
     ring
@@ -180,8 +181,7 @@ theorem terminal_weighted_companion_moment_trig
     dsimp [k]
     rw [intervalIntegral.integral_sub (Real.continuous_sin.intervalIntegrable θ β)
       ((Real.continuous_cos.intervalIntegrable θ β).const_mul (Real.tan θ)),
-      intervalIntegral.integral_const_mul, intervalIntegral.integral_sin,
-      intervalIntegral.integral_cos]
+      intervalIntegral.integral_const_mul, integral_sin, integral_cos]
   linarith only [hbound, hmoment, htail]
 
 /-- The circle-height form of the localized companion comparison.

@@ -36,7 +36,8 @@ theorem usedNormal_eq_unitNormal (α : ℝ) (i : Icc (0 : ℝ) α ⊕ Icc (0 : �
 theorem usedNormalAngle_mem {α : ℝ} (hα : α ≤ Real.pi / 2)
     (i : Icc (0 : ℝ) α ⊕ Icc (0 : ℝ) α) : usedNormalAngle α i ∈ Icc 0 Real.pi := by
   rcases i with t | t
-  · exact ⟨t.property.1, by linarith [t.property.2, Real.pi_pos]⟩
+  · change 0 ≤ (t : ℝ) ∧ (t : ℝ) ≤ Real.pi
+    exact ⟨t.property.1, by linarith [t.property.2, Real.pi_pos]⟩
   · change 0 ≤ (t : ℝ) + Real.pi / 2 ∧ (t : ℝ) + Real.pi / 2 ≤ Real.pi
     constructor <;> linarith [t.property.1, t.property.2, Real.pi_pos]
 
@@ -88,8 +89,8 @@ theorem capCut_usedSupportSaturation_eq_halfplanes (U : Set Plane) (α m c : ℝ
     · have h := hhalf (some (Sum.inl ⟨t, ht⟩))
       exact h
     · have h := hhalf (some (Sum.inr ⟨t, ht⟩))
-      simpa only [partialCapAngle, partialCapHeight, usedNormalAngle, usedNormal,
-        ← companionNormal_eq_unitNormal] using h
+      change coordDot p (unitNormal (t + Real.pi / 2)) ≤ support U (companionNormal t) at h
+      rwa [← companionNormal_eq_unitNormal] at h
 
 def unusedNormalIntervals (α : ℝ) : Set ℝ :=
   Ioo α (Real.pi / 2) ∪ Ioo (α + Real.pi / 2) Real.pi

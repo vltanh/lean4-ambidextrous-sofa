@@ -24,7 +24,7 @@ theorem integral_affine_scalar (s t p k δ : ℝ) :
   have hfun (x : ℝ) : δ + k * (x - p) = k * x + (δ - k * p) := by ring
   simp_rw [hfun]
   rw [intervalIntegral.integral_add
-      ((continuous_const.mul continuous_id).intervalIntegrable _ _)
+      ((show Continuous (fun x : ℝ => k * x) by fun_prop).intervalIntegrable _ _)
       (continuous_const.intervalIntegrable _ _),
     intervalIntegral.integral_const_mul, integral_id, intervalIntegral.integral_const]
   simp only [smul_eq_mul]
@@ -39,7 +39,7 @@ theorem integral_gap_ge_left_ramp {f : ℝ → ℝ} {A B p k δ : ℝ}
     δ ^ 2 / (2 * k) ≤ ∫ x in A..B, f x := by
   have hδk : 0 ≤ δ / k := div_nonneg hδ hk.le
   have hA : A ≤ p - δ / k := by
-    have h := (div_le_iff₀ hk).mpr hfit
+    have h := (div_le_iff₀' hk).mpr hfit
     linarith only [h]
   have hlocal := intervalIntegral.integral_mono_on
     (show p - δ / k ≤ p by linarith only [hδk])
@@ -47,7 +47,8 @@ theorem integral_gap_ge_left_ramp {f : ℝ → ℝ} {A B p k δ : ℝ}
     (hf _ _) hcut
   have harea : (∫ x in (p - δ / k)..p, δ + k * (x - p)) = δ ^ 2 / (2 * k) := by
     rw [integral_affine_scalar]
-    field_simp [hk.ne'] <;> ring
+    field_simp [hk.ne']
+    ring
   rw [harea] at hlocal
   apply hlocal.trans
   apply intervalIntegral.integral_mono_interval hA
@@ -64,7 +65,7 @@ theorem integral_gap_ge_right_ramp {f : ℝ → ℝ} {A B p k δ : ℝ}
     δ ^ 2 / (2 * k) ≤ ∫ x in A..B, f x := by
   have hδk : 0 ≤ δ / k := div_nonneg hδ hk.le
   have hB : p + δ / k ≤ B := by
-    have h := (div_le_iff₀ hk).mpr hfit
+    have h := (div_le_iff₀' hk).mpr hfit
     linarith only [h]
   have hlocal := intervalIntegral.integral_mono_on
     (show p ≤ p + δ / k by linarith only [hδk])
@@ -74,7 +75,8 @@ theorem integral_gap_ge_right_ramp {f : ℝ → ℝ} {A B p k δ : ℝ}
     have hfun (x : ℝ) : δ - k * (x - p) = δ + (-k) * (x - p) := by ring
     simp_rw [hfun]
     rw [integral_affine_scalar]
-    field_simp [hk.ne'] <;> ring
+    field_simp [hk.ne']
+    ring
   rw [harea] at hlocal
   apply hlocal.trans
   apply intervalIntegral.integral_mono_interval hp.1

@@ -77,14 +77,16 @@ theorem lipschitz_eval (e : WallExpr ι) {v : ℝ → ι → ℝ} {K : ℝ≥0}
     LipschitzWith K (fun x => e.eval (v x)) := by
   induction e with
   | leaf i => exact hv i
-  | minimum e f he hf => simpa only [max_self] using he.min hf
-  | maximum e f he hf => simpa only [max_self] using he.max hf
+  | minimum e f he hf => simpa only [max_self, eval] using he.min hf
+  | maximum e f he hf => simpa only [max_self, eval] using he.max hf
 
 theorem measurable_sourceWeight (e : WallExpr ι) {v : ℝ → ι → ℝ}
     (hv : ∀ i, Continuous (fun x => v x i)) (w : ι → ℝ) :
     Measurable (fun x => w (e.source (v x))) := by
   induction e with
-  | leaf i => exact measurable_const
+  | leaf i =>
+    change Measurable (fun _ => w i)
+    exact measurable_const
   | minimum e f he hf =>
     change Measurable (fun x => w (if e.eval (v x) ≤ f.eval (v x)
       then e.source (v x) else f.source (v x)))
@@ -165,7 +167,7 @@ theorem hasDerivAt_affineEnvelope (e : WallExpr ι) (a b w : ι → ℝ) (x : �
         b (e.source (fun i => a i * x + b i)) +
         ε * w (e.source (fun i => a i * x + b i)))
       (e.sourceDensity a b w x) 0 := by
-    simpa only [sourceDensity, zero_add, one_mul] using
+    simpa only [sourceDensity, zero_add, one_mul, Pi.add_def, id_eq] using
       (hasDerivAt_const (0 : ℝ) (a (e.source (fun i => a i * x + b i)) * x +
         b (e.source (fun i => a i * x + b i)))).add
         ((hasDerivAt_id (0 : ℝ)).mul_const (w (e.source (fun i => a i * x + b i))))

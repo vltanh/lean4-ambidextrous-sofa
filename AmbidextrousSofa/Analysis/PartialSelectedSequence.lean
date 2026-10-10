@@ -84,7 +84,7 @@ theorem IsSelectedPolygon.penalty_le {target U : Set Plane} {a b coefficient : �
   rw [AngularGrid.stagePenalty_self, mul_zero, sub_zero] at hselected
   have hfinite := capScore_le_score hTarget.isCap α hαL (dyadic level)
   have hmax := hTarget.score_le_same_angle hU.isCap
-  apply (mul_le_mul_left hcoefficient).mp
+  apply (mul_le_mul_iff_right₀ hcoefficient).mp
   nlinarith
 
 theorem exists_selected_approximations {target : Set Plane}

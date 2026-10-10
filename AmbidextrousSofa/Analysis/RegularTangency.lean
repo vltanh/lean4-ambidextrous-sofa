@@ -37,7 +37,7 @@ theorem regularCornerDomain_interval_directions {m a b : ℝ}
   intro t ht
   have hm : t - Real.pi / 2 ∈ Icc a b := by
     constructor <;> linarith [ht.1, ht.2]
-  simpa only [sub_add_cancel] using (hsub hm).2.2
+  simpa only [mem_preimage, sub_add_cancel] using (hsub hm).2.2
 
 theorem IsDownwardCap.hasDerivAt_walls_on_regularCornerDomain
     {U : Set Plane} (hU : IsDownwardCap U) {ρ : ℝ → ℝ} {C m t : ℝ}

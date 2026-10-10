@@ -43,7 +43,7 @@ theorem absolutelyContinuousOnInterval_momentumQuadraticEnergy
     AbsolutelyContinuousOnInterval (fun t => momentumQuadraticEnergy A B K (p t) (q t)) a b := by
   have hp' := hp.sub (absolutelyContinuousOnInterval_const_real A a b)
   have hq' := hq.sub (absolutelyContinuousOnInterval_const_real B a b)
-  simpa only [momentumQuadraticEnergy, pow_two, Pi.add_apply, Pi.sub_apply, Pi.mul_apply] using
+  simpa only [momentumQuadraticEnergy, pow_two, Pi.add_def, Pi.sub_def, Pi.mul_def] using
     ((hp'.mul hp').add (hq'.mul hq')).add
       (absolutelyContinuousOnInterval_const_real K a b)
 
@@ -102,6 +102,7 @@ theorem firstUnit_initial_sector_energy
     rw [hd.deriv, hs.1]
     have hm := congrArg (fun x : ℝ => (q t + 1) * x) hs.2
     unfold firstUnitLossDensity
+    simp only [Pi.neg_apply]
     nlinarith
   simpa only [intervalIntegral.integral_neg] using hbound
 
@@ -127,6 +128,7 @@ theorem firstUnit_charged_core_energy
     have hm := congrArg (fun x : ℝ => (p t - 1) * x) hs.1
     have hn := congrArg (fun x : ℝ => (q t + 1) * x) hs.2
     unfold firstUnitLossDensity
+    simp only [Pi.neg_apply]
     nlinarith
   simpa only [intervalIntegral.integral_neg] using hbound
 

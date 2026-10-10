@@ -146,6 +146,7 @@ theorem fullTiltedSupportQuarterPair_ae_first_le_one_after_energy {C a : ℝ}
       ⟨ha.1.trans ht.1.le, ht.2.le⟩) hs.1
     (fun hp hq => (hs.2.2.1 hp hq).1) henergy
 
+include hU hm haffine hρ hρ0 hρK heq in
 /-- The initial-floor scalar conditions now imply unit curvature of
 the actual original first quarter. Every stopping, source and energy
 propagation hypothesis is discharged from the cap inside this proof. -/
@@ -169,10 +170,10 @@ theorem fullTiltedSupportQuarterPair_ae_first_le_one_of_initial_floor_conditions
   have hstopCircle : Analysis.initialFloorCircleP (3 * C)
       (capRoof U (horizontalRight U) - 1 + h) τ = 0 ∨ τ = Analysis.initialFloorAngle h := by
     rcases hstop with hpzero | hfloor
-    · exact Or.inl ((hpcircle τ hτmem).symm.trans hpzero)
+    · exact Or.inl ((hpcircle hτmem).symm.trans hpzero)
     · exact Or.inr hfloor
   have henergy := Analysis.initialFloor_stopped_energy_le hh.le hh2 hconditions hstopCircle
-  rw [← hpcircle τ hτmem, ← hqcircle τ hτmem] at henergy
+  rw [← hpcircle hτmem, ← hqcircle hτmem] at henergy
   have hstart : clippedCornerEnergy p q τ ≤ 17 / 4 :=
     (clippedCornerEnergy_le_initialFloorEnergy p q τ).trans henergy
   have hfuture := fullTiltedSupportQuarterPair_ae_first_le_one_after_energy

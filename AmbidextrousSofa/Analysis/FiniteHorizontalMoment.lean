@@ -66,7 +66,8 @@ theorem integral_horizontalSourceDensity [Fintype ι] [DecidableEq ι]
     {l r : ℝ} (hlr : l ≤ r) :
     (∫ x in l..r, e.horizontalSourceDensity a b F x) =
       ∑ j ∈ F, e.sourceMass a b l r (some j) := by
-  rw [horizontalSourceDensity, e.integral_sourceDensity_eq_sum a b _ hlr]
+  unfold horizontalSourceDensity
+  rw [e.integral_sourceDensity_eq_sum a b _ hlr]
   simp only [Fintype.sum_option, mul_zero, zero_add]
   simp
 
@@ -100,7 +101,7 @@ theorem horizontalSourceDensity_ae_eq_positive [Fintype ι]
       intro hz
       have heq : a (some j) * x + b (some j) = a none * x + b none := by
         simpa only [hsource, ha0, hb0, zero_mul, zero_add, hz] using hvalue.symm
-      exact Option.noConfusion (hx heq)
+      exact Option.some_ne_none j (hx heq)
     have hpos : 0 < e.eval (fun i => a i * x + b i) :=
       lt_of_le_of_ne (he x) (Ne.symm hne)
     simp [sourceDensity, hsource, horizontalSourceWeight, hpos]
@@ -193,6 +194,7 @@ theorem finite_horizontal_source_balance [Fintype ι] {U : Set Plane}
     simp only [finiteWingMass, capWidth, Finset.sum_add_distrib]
   rw [hpos]
   change _ - _ - _ = _
+  simp only [capWidth] at hpos hw houter ⊢
   linarith
 
 end FinitePolygon
@@ -215,7 +217,7 @@ theorem sum_sin_innerSourceMass_eq_positiveLength {U : Set Plane}
     unfold capWidth; linarith)]
   apply Finset.sum_congr rfl
   intro j _
-  unfold innerSourceMass innerDensity
+  unfold innerSourceMass innerDensity capWidth
   rw [integral_sourceDensity_outward _ _ _ _ (by linarith)]
   unfold WallExpr.sourceMass
   field_simp [(normal_snd_pos grid j).ne']

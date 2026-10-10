@@ -64,8 +64,8 @@ theorem integral_first_source_le {U : Set Plane} (hU : IsDownwardCap U)
       Real.tan δ * (|firstCornerSecant U (scaleAngle α t.val) δ| + Real.tan (δ / 2)) +
         max (2 * Real.tan (δ / 2) - (upperCurvature U {((scaleAngle α t.val : QuarterAngle) : ℝ)}).toReal) 0 := by
   have hraw := integral_first_source_le_parameters hU α hαL grid t hc hs hab hminus hplus
-  have hcomp := companion_interval_length_le hc hs hh
-    (hU.companion_secondDifference_nonneg (scaleAngle α t.val) hs.le)
+  have hcomp := companion_interval_length_le (f := support U (unitNormal (scaleAngle α t.val)))
+    hc hs hh (hU.companion_secondDifference_nonneg (scaleAngle α t.val) hs.le)
   have hfirst := first_interval_length_le_curvature hU (scaleAngle α t.val) hs hh
   exact hraw.trans (add_le_add hcomp (max_le_max hfirst le_rfl))
 
@@ -113,7 +113,8 @@ theorem integral_second_source_le {U : Set Plane} (hU : IsDownwardCap U)
       support U (unitNormal ((scaleAngle α t.val : ℝ) - δ)) -
         2 * Real.cos δ * support U (unitNormal (scaleAngle α t.val)) := by
     nlinarith [hU.support_secondDifference_nonneg (scaleAngle α t.val) hs.le]
-  have hcomp := companion_interval_length_le hc hs hh hconv
+  have hcomp := companion_interval_length_le
+    (f := support U (companionNormal (scaleAngle α t.val))) hc hs hh hconv
   have hfirst := companion_interval_length_le_curvature hU (scaleAngle α t.val) hs hh
   exact hraw.trans (add_le_add hcomp (max_le_max hfirst le_rfl))
 

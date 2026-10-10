@@ -92,7 +92,7 @@ theorem rightEndpointPressure_le_of_inward_comparison {roof niche : ℝ → ℝ}
       intervalSpatialScore roof niche l (r - ε) ≤ intervalSpatialScore roof niche l r + ε * K) :
     rightEndpointPressure roof niche l r ≤ roof r + K := by
   have hlinear : HasDerivAt (fun ε : ℝ => ε * K) K 0 := by
-    simpa only [one_mul] using (hasDerivAt_id (0 : ℝ)).mul_const K
+    simpa only [one_mul] using (hasDerivAt_id' (0 : ℝ)).mul_const K
   have hderiv := (hasDerivAt_intervalSpatialScore_inward_right hroof hniche l r).sub hlinear
   have hmax : ∀ᶠ ε in 𝓝[>] (0 : ℝ),
       intervalSpatialScore roof niche l (r - ε) - ε * K ≤
@@ -109,7 +109,7 @@ theorem leftEndpointPressure_le_of_inward_comparison {roof niche : ℝ → ℝ}
       intervalSpatialScore roof niche (l + ε) r ≤ intervalSpatialScore roof niche l r + ε * K) :
     leftEndpointPressure roof niche l r ≤ roof l + K := by
   have hlinear : HasDerivAt (fun ε : ℝ => ε * K) K 0 := by
-    simpa only [one_mul] using (hasDerivAt_id (0 : ℝ)).mul_const K
+    simpa only [one_mul] using (hasDerivAt_id' (0 : ℝ)).mul_const K
   have hderiv := (hasDerivAt_intervalSpatialScore_inward_left hroof hniche l r).sub hlinear
   have hmax : ∀ᶠ ε in 𝓝[>] (0 : ℝ),
       intervalSpatialScore roof niche (l + ε) r - ε * K ≤
@@ -129,7 +129,7 @@ theorem intervalSpatialScore_le_of_roof_eq_of_niche_le
     intervalSpatialScore roof niche l r ≤ intervalSpatialScore roof' niche' l r := by
   rw [FinitePolygon.intervalSpatialScore_congr_roof hlr hroof]
   have hm : l + (r - l) / 4 ≤ r - (r - l) / 4 := by linarith
-  have hi := intervalIntegral.integral_mono_on hm
+  have hi := intervalIntegral.integral_mono_on (μ := volume) hm
     (hniche'.intervalIntegrable _ _) (hniche.intervalIntegrable _ _) (fun x _ => hle x)
   unfold intervalSpatialScore
   linarith
@@ -142,7 +142,7 @@ theorem abs_sq_sub_sq_le_of_abs_le {s t z B : ℝ}
       |s + t - 2 * z| ≤ |s + t| + |2 * z| := by
         simpa only [sub_eq_add_neg, abs_neg] using abs_add_le (s + t) (-(2 * z))
       _ = |s + t| + 2 * |z| := by rw [abs_mul]; norm_num
-      _ ≤ |s| + |t| + 2 * |z| := add_le_add_right (abs_add_le s t) _
+      _ ≤ |s| + |t| + 2 * |z| := by linarith [abs_add_le s t]
       _ ≤ 4 * B := by linarith
   rw [show (s - z) ^ 2 - (t - z) ^ 2 = (s - t) * (s + t - 2 * z) by ring, abs_mul]
   calc
@@ -183,7 +183,8 @@ theorem finiteBarrier_mono {U V : Set Plane} (hUV : U ⊆ V) (hne : U.Nonempty)
     finiteBarrier U normal corners terminal x ≤ finiteBarrier V normal corners terminal x := by
   cases terminal with
   | none => exact finiteNiche_mono hUV hne hV normal hnormal corners x
-  | some i => exact max_le_max (finiteNiche_mono hUV hne hV normal hnormal corners x)
+  | some i =>
+    exact max_le_max (finiteNiche_mono hUV hne hV normal hnormal corners x)
       (supportWall_mono hUV hne hV (hnormal i) x)
 
 /-- Exact coefficient for a product-metric support perturbation of the
@@ -254,10 +255,10 @@ theorem rightTrim_frozen_barrier_comparison {U : Set Plane} (hU : IsDownwardCap 
   have hT := hU.rightTrim hε0 hεW
   unfold finiteSpatialScore
   rw [horizontalLeft_rightTrim hU hε0 hεW, horizontalRight_rightTrim hU hε0 hεW]
-  apply intervalSpatialScore_le_of_roof_eq_of_niche_le
+  refine intervalSpatialScore_le_of_roof_eq_of_niche_le
     (by unfold capWidth at hεW; linarith) ?_
     (continuous_finiteBarrier U normal corners terminal)
-    (continuous_finiteBarrier (rightTrim U ε) normal corners terminal)
+    (continuous_finiteBarrier (rightTrim U ε) normal corners terminal) ?_
   · intro x hx
     rw [capRoof_rightTrim hU hε0 hεW hx]
     apply hU.extendedCapRoof_eq
@@ -275,10 +276,10 @@ theorem leftTrim_frozen_barrier_comparison {U : Set Plane} (hU : IsDownwardCap U
   have hT := hU.leftTrim hε0 hεW
   unfold finiteSpatialScore
   rw [horizontalLeft_leftTrim hU hε0 hεW, horizontalRight_leftTrim hU hε0 hεW]
-  apply intervalSpatialScore_le_of_roof_eq_of_niche_le
+  refine intervalSpatialScore_le_of_roof_eq_of_niche_le
     (by unfold capWidth at hεW; linarith) ?_
     (continuous_finiteBarrier U normal corners terminal)
-    (continuous_finiteBarrier (leftTrim U ε) normal corners terminal)
+    (continuous_finiteBarrier (leftTrim U ε) normal corners terminal) ?_
   · intro x hx
     rw [capRoof_leftTrim hU hε0 hεW hx]
     apply hU.extendedCapRoof_eq
@@ -386,9 +387,10 @@ theorem IsDownwardCap.continuous_partialBarrier_pi_div_two {U : Set Plane}
       fun x => sweptNiche hU.toCompactCap.carrier (Real.pi / 2) x :=
     funext (fun x => hU.partialBarrier_pi_div_two x)
   rw [heq]
-  exact continuous_capSweptNiche.comp
+  have hcomp := continuous_capSweptNiche.comp
     (show Continuous (fun x : ℝ => (hU.toCompactCap, x)) from
       continuous_const.prodMk continuous_id)
+  exact hcomp
 
 theorem rightTrim_full_barrier_comparison {U : Set Plane} (hU : IsDownwardCap U)
     {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) :
@@ -397,9 +399,9 @@ theorem rightTrim_full_barrier_comparison {U : Set Plane} (hU : IsDownwardCap U)
   have hT := hU.rightTrim hε0 hεW
   rw [hT.capScore_eq_intervalSpatialScore,
     horizontalLeft_rightTrim hU hε0 hεW, horizontalRight_rightTrim hU hε0 hεW]
-  apply intervalSpatialScore_le_of_roof_eq_of_niche_le
+  refine intervalSpatialScore_le_of_roof_eq_of_niche_le
     (by unfold capWidth at hεW; linarith) ?_
-    hU.continuous_partialBarrier_pi_div_two hT.continuous_partialBarrier_pi_div_two
+    hU.continuous_partialBarrier_pi_div_two hT.continuous_partialBarrier_pi_div_two ?_
   · intro x hx
     rw [capRoof_rightTrim hU hε0 hεW hx]
     exact hU.extendedCapRoof_eq ⟨hx.1, hx.2.trans (sub_le_self _ hε0)⟩
@@ -412,9 +414,9 @@ theorem leftTrim_full_barrier_comparison {U : Set Plane} (hU : IsDownwardCap U)
   have hT := hU.leftTrim hε0 hεW
   rw [hT.capScore_eq_intervalSpatialScore,
     horizontalLeft_leftTrim hU hε0 hεW, horizontalRight_leftTrim hU hε0 hεW]
-  apply intervalSpatialScore_le_of_roof_eq_of_niche_le
+  refine intervalSpatialScore_le_of_roof_eq_of_niche_le
     (by unfold capWidth at hεW; linarith) ?_
-    hU.continuous_partialBarrier_pi_div_two hT.continuous_partialBarrier_pi_div_two
+    hU.continuous_partialBarrier_pi_div_two hT.continuous_partialBarrier_pi_div_two ?_
   · intro x hx
     rw [capRoof_leftTrim hU hε0 hεW hx]
     exact hU.extendedCapRoof_eq ⟨(le_add_of_nonneg_right hε0).trans hx.1, hx.2⟩

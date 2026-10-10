@@ -41,13 +41,15 @@ theorem companionNormal_arctan (k : ℝ) :
 
 theorem unitNormal_complement_arctan (k : ℝ) :
     unitNormal (Real.pi / 2 - Real.arctan k) = (1 / nearDiagonalNorm k) • (k, 1) := by
-  apply Prod.ext <;> simp [unitNormal, Real.sin_pi_div_two_sub, Real.cos_pi_div_two_sub,
-    Real.sin_arctan, Real.cos_arctan, nearDiagonalNorm, smul_eq_mul, div_eq_mul_inv, mul_comm]
+  rw [unitNormal, Real.sin_pi_div_two_sub, Real.cos_pi_div_two_sub]
+  apply Prod.ext <;> simp [Real.sin_arctan, Real.cos_arctan, nearDiagonalNorm, smul_eq_mul,
+    div_eq_mul_inv, mul_comm]
 
 theorem companionNormal_complement_arctan (k : ℝ) :
     companionNormal (Real.pi / 2 - Real.arctan k) = (1 / nearDiagonalNorm k) • (-1, k) := by
-  apply Prod.ext <;> simp [companionNormal, Real.sin_pi_div_two_sub, Real.cos_pi_div_two_sub,
-    Real.sin_arctan, Real.cos_arctan, nearDiagonalNorm, smul_eq_mul, div_eq_mul_inv, mul_comm]
+  rw [companionNormal, Real.sin_pi_div_two_sub, Real.cos_pi_div_two_sub]
+  apply Prod.ext <;> simp [Real.sin_arctan, Real.cos_arctan, nearDiagonalNorm, smul_eq_mul,
+    div_eq_mul_inv, mul_comm]
 
 theorem IsDownwardCap.firstWall_arctan {U : Set Plane} (hU : IsDownwardCap U)
     {k : ℝ} (hk : k ≠ 0) (x : ℝ) :

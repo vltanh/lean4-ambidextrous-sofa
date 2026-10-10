@@ -103,8 +103,8 @@ theorem wide_truncation_loss_sum_le {a h k N u v eR eL bR bL : ℝ}
   have hk : 0 < k := by linarith only [hk0]
   have hc : 0 ≤ 2 * (1 + k) - 1 := by linarith only [hk0]
   have hK := wide_fitting_constant_neg hk0 hksq hN
-  have hR := wide_loss_twice_le hk hksq hbR
-  have hL := wide_loss_twice_le (h := 0) hk hksq (by simpa only [sub_zero] using hbL)
+  have hR := wide_loss_twice_le (e := eR) (u := u) hk hksq hbR
+  have hL := wide_loss_twice_le (h := 0) (e := eL) (u := v) hk hksq (by simpa only [sub_zero] using hbL)
   have hwa := mul_le_mul_of_nonneg_left ha (by positivity : 0 ≤ 3 * k / 2)
   have hwR' := mul_le_mul_of_nonneg_left hwR hc
   have hwL' := mul_le_mul_of_nonneg_left hwL hc

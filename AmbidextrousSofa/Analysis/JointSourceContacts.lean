@@ -134,19 +134,21 @@ theorem wall_residuals_eq_zero_of_source_limit
         sourceBackwardDefect target (sweptNiche target (Real.pi / 2) z.2) z.1 z.2 = 0 := by
   let height : ℕ → ℝ := fun n => finiteBarrier (J.caps (seq n))
     (normal (dyadic (J.level (seq n)))) (pairList (dyadic (J.level (seq n)))) none (point n).2
+  have hH : CapHausdorffTendsto (fun n => J.caps (seq n)) target := J.hausdorff.comp hseq
   have hh : Tendsto height atTop (𝓝 (sweptNiche target (Real.pi / 2) z.2)) :=
-    finiteBarrier_dyadic_tendsto (J.hausdorff.comp hseq) (fun n => J.isCap (seq n))
+    finiteBarrier_dyadic_tendsto hH (fun n => J.isCap (seq n))
       hTarget (J.level_tendsto.comp hseq) (fun n => (J.selected (seq n)).inBox)
-      (fun n => (J.finiteSourceTags_subset_box (seq n) (hpoint n)).2) hz.snd
-  have hR := (J.hausdorff.comp hseq).sourceWallResidual_tendsto
-    (fun n => J.isCap (seq n)) hTarget hh hz.fst hz.snd
-  have hplus := (J.hausdorff.comp hseq).sourceWallResidual_tendsto
-    (fun n => J.isCap (seq n)) hTarget hh (hz.fst.add_const (Real.pi / 2)) hz.snd
-  have hminus := (J.hausdorff.comp hseq).sourceWallResidual_tendsto
-    (fun n => J.isCap (seq n)) hTarget hh (hz.fst.sub_const (Real.pi / 2)) hz.snd
-  have hcos := (Real.continuous_cos.tendsto z.1).comp hz.fst
-  have hF := (hcos.max tendsto_const_nhds).mul (hplus.neg.max tendsto_const_nhds)
-  have hB := (hcos.neg.max tendsto_const_nhds).mul (hminus.neg.max tendsto_const_nhds)
+      (fun n => (J.finiteSourceTags_subset_box (seq n) (hpoint n)).2) hz.snd_nhds
+  have hR := hH.sourceWallResidual_tendsto
+    (fun n => J.isCap (seq n)) hTarget hh hz.fst_nhds hz.snd_nhds
+  have hplus := hH.sourceWallResidual_tendsto
+    (fun n => J.isCap (seq n)) hTarget hh (hz.fst_nhds.add_const (Real.pi / 2)) hz.snd_nhds
+  have hminus := hH.sourceWallResidual_tendsto
+    (fun n => J.isCap (seq n)) hTarget hh (hz.fst_nhds.sub_const (Real.pi / 2)) hz.snd_nhds
+  have hcos := (Real.continuous_cos.tendsto z.1).comp hz.fst_nhds
+  have h0 : Tendsto (fun _ : ℕ => (0 : ℝ)) atTop (𝓝 0) := tendsto_const_nhds
+  have hF := (hcos.max h0).mul (hplus.neg.max h0)
+  have hB := (hcos.neg.max h0).mul (hminus.neg.max h0)
   have hzeroR (n : ℕ) : sourceWallResidual (J.caps (seq n)) (height n)
       (point n).1 (point n).2 = 0 := by
     obtain ⟨_hx, j, hθ, hsource⟩ := hpoint n
@@ -163,9 +165,9 @@ theorem wall_residuals_eq_zero_of_source_limit
     rw [hθ]
     exact innerSource_backwardDefect_zero _ _ j hsource
   refine ⟨tendsto_nhds_unique hR ?_, tendsto_nhds_unique hF ?_, tendsto_nhds_unique hB ?_⟩
-  · exact tendsto_const_nhds.congr' (Eventually.of_forall hzeroR).symm
-  · exact tendsto_const_nhds.congr' (Eventually.of_forall hzeroF).symm
-  · exact tendsto_const_nhds.congr' (Eventually.of_forall hzeroB).symm
+  · exact tendsto_const_nhds.congr fun n => (hzeroR n).symm
+  · exact tendsto_const_nhds.congr fun n => (hzeroF n).symm
+  · exact tendsto_const_nhds.congr fun n => (hzeroB n).symm
 
 theorem ae_wall_residuals (hTarget : IsDownwardCap target) :
     ∀ᵐ z ∂(J.measure : Measure Plane),
@@ -177,12 +179,14 @@ theorem ae_wall_residuals (hTarget : IsDownwardCap target) :
     |sourceWallResidual target (n z.2) z.1 z.2| +
       sourceForwardDefect target (n z.2) z.1 z.2 +
         sourceBackwardDefect target (n z.2) z.1 z.2
-  have hn : Continuous n :=
-    continuous_capSweptNiche.comp
+  have hn : Continuous n := by
+    have hcomp := continuous_capSweptNiche.comp
       ((continuous_const : Continuous (fun _ : ℝ => hTarget.toCompactCap)).prodMk continuous_id)
+    exact hcomp
   have hR (d : ℝ) : Continuous (fun z : Plane =>
       sourceWallResidual target (n z.2) (z.1 + d) z.2) := by
-    have hs := (continuous_angleSupport hTarget.isCompact).comp (continuous_fst.add_const d)
+    have hs := (continuous_angleSupport hTarget.isCompact).comp
+      (continuous_fst.add_const d : Continuous (fun z : Plane => z.1 + d))
     change Continuous (fun z : Plane => angleSupport target (z.1 + d) - 1 -
       z.2 * Real.cos (z.1 + d) - n z.2 * Real.sin (z.1 + d))
     exact ((hs.sub continuous_const).sub

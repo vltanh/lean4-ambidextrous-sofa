@@ -53,7 +53,7 @@ theorem abs_endpointIntegralError_le {F : ℝ → ℝ → ℝ} {K : ℝ}
       |∫ x in q..(q + ε * d), F ε x - F 0 x| ≤ K * |ε| * |q + ε * d - q| := by
         simpa only [Real.norm_eq_abs] using
           (intervalIntegral.norm_integral_le_of_norm_le_const
-            (a := q) (b := q + ε * d) (C := K * |ε|)
+            (a := q) (b := q + ε * d) (C := K * |ε|) (f := fun x => F ε x - F 0 x)
             (fun x _ => by simpa only [Real.norm_eq_abs] using hbound ε x))
       _ = K * |d| * |ε| ^ 2 := by
         rw [show q + ε * d - q = ε * d by ring, abs_mul]
@@ -81,9 +81,9 @@ theorem integral_moving_eq_fixed_add_error {F : ℝ → ℝ → ℝ}
         (∫ x in l..r, F η x) + (∫ x in r..(r + ε * rD), F η x) -
           ∫ x in l..(l + ε * lD), F η x := by
     intro η
-    have hfirst := intervalIntegral.integral_add_adjacent_intervals
+    have hfirst := intervalIntegral.integral_add_adjacent_intervals (μ := volume)
       ((hcont η).intervalIntegrable l r) ((hcont η).intervalIntegrable r (r + ε * rD))
-    have hsecond := intervalIntegral.integral_interval_sub_left
+    have hsecond := intervalIntegral.integral_interval_sub_left (μ := volume)
       ((hcont η).intervalIntegrable l (r + ε * rD))
       ((hcont η).intervalIntegrable l (l + ε * lD))
     linarith
@@ -162,6 +162,7 @@ theorem hasDerivAt_finite_intervalSpatialScore_moving
     have hhigh : r + ε * rD - (r + ε * rD - (l + ε * lD)) / 4 =
         r - (r - l) / 4 + ε * ((lD + 3 * rD) / 4) := by ring
     rw [hlow, hhigh]
+    rfl
   · ring
 
 end AmbidextrousSofa

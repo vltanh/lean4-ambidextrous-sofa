@@ -57,7 +57,8 @@ theorem secondSelfIntervalTop_eq_firstHi (U : Set Plane) (t : ℝ) {δ : ℝ}
           (support U (companionNormal (t + δ))) δ * Real.sin t := by
   rw [firstHi_eq_secant_add_tan hs hh]
   simp only [secondSelfIntervalTop, forwardAngularSecant, companionNormal_eq_unitNormal,
-    show (t + δ) + Real.pi / 2 = (t + Real.pi / 2) + δ by ring]
+    show (t + δ) + Real.pi / 2 = (t + Real.pi / 2) + δ by ring,
+    ← angleSupport_eq_imported_supp, angleSupport]
   ring
 
 def secondFloorShadowMargin (U : Set Plane) (t δ : ℝ) : ℝ :=
@@ -81,7 +82,7 @@ theorem second_source_empty_of_floor_shadow {U : Set Plane} (hU : IsDownwardCap 
     have hgap := second_companion_forward_shadow_gap U t.val hc.ne' hs.ne' hh
     have hpositive := mul_pos htan hm.1
     linarith only [hgap, hpositive]
-  apply Set.eq_empty_iff_forall_not_mem.mpr
+  apply Set.eq_empty_iff_forall_notMem.mpr
   intro x hx
   obtain ⟨v, hvx, hv⟩ := second_source_neighbor_feasible hU grid t hminus hplus hx
   have hvupper := neighborFeasible_le_firstHi_of_one_separation hc hs hsep hv
@@ -101,7 +102,7 @@ theorem second_source_empty_of_floor_shadow {U : Set Plane} (hU : IsDownwardCap 
     nlinarith only [hcircle]
   have hheight : secondWall U t.val x ≤ secondSelfIntervalTop U t.val δ := by
     rw [hwall, secondSelfIntervalTop_eq_firstHi U t.val hs.ne' hh]
-    exact add_le_add_left (mul_le_mul_of_nonneg_right hvupper hsin.le) _
+    exact add_le_add_right (mul_le_mul_of_nonneg_right hvupper hsin.le) _
   have hnegative : secondSelfIntervalTop U t.val δ < 0 := neg_pos.mp hm.2
   exact not_lt_of_ge (hy0.trans hheight) hnegative
 
@@ -137,14 +138,16 @@ theorem CapHausdorffTendsto.secondSelfIntervalTop_tendsto
   have hdiv : Tendsto (fun n => δ n / 2) atTop (𝓝 0) := by
     simpa only [zero_div] using hδ.div_const 2
   have hhalf : Tendsto (fun n => Real.tan (δ n / 2)) atTop (𝓝 0) := by
-    simpa only [Real.tan_zero] using
+    simpa only [Real.tan_zero, Function.comp_def] using
       (Real.hasDerivAt_tan (x := 0) (by simp)).continuousAt.tendsto.comp hdiv
   have hsinAngle := (Real.continuous_sin.tendsto t).comp hangle
   have hcosAngle := (Real.continuous_cos.tendsto t).comp hangle
   rw [secondTangency_snd_eq_support]
-  simpa only [AngularGrid.secondSelfIntervalTop, supportTangent, add_zero,
-    companionNormal_eq_unitNormal, add_comm] using
-    ((hsupp.sub_const 1).mul hcosAngle).add ((hsec.neg.add hhalf).mul hsinAngle)
+  convert ((hsupp.sub_const 1).mul hcosAngle).add ((hsec.neg.add hhalf).mul hsinAngle) using 2
+  · rfl
+  · rw [companionNormal_eq_unitNormal]
+    simp only [supportTangent, angleSupport, add_zero]
+    ring
 
 theorem CapHausdorffTendsto.secondFloorShadowMargin_tendsto
     {U : ℕ → Set Plane} {K B : Set Plane} (h : CapHausdorffTendsto U K)
@@ -161,7 +164,7 @@ theorem CapHausdorffTendsto.secondFloorShadowMargin_tendsto
   have hdiv : Tendsto (fun n => δ n / 2) atTop (𝓝 0) := by
     simpa only [zero_div] using hδ.div_const 2
   have hhalf : Tendsto (fun n => Real.tan (δ n / 2)) atTop (𝓝 0) := by
-    simpa only [Real.tan_zero] using
+    simpa only [Real.tan_zero, Function.comp_def] using
       (Real.hasDerivAt_tan (x := 0) (by simp)).continuousAt.tendsto.comp hdiv
   simpa only [AngularGrid.secondFloorShadowMargin, sub_zero] using
     (hp.neg.sub hhalf).min hD.neg
@@ -191,7 +194,8 @@ theorem eventually_companion_floor_shadow_atoms_le
       (sourceQuarterAngle (fullAngle (dyadic (level n)) j)) (mesh (level n)))
     (lt_min (neg_pos.mpr hp) (neg_pos.mpr hD)) (by
       intro ns hns j hangle
-      exact (hHausdorff.comp hns).secondFloorShadowMargin_tendsto
+      exact CapHausdorffTendsto.secondFloorShadowMargin_tendsto (U := fun n => U (ns n))
+        (hHausdorff.comp hns)
         (fun n => (hU (ns n)).isCap) hTarget hB (fun n => hbox (ns n))
         (sourceQuarterAngle_tendsto hangle (ne_of_gt htop))
         (mesh_tendsto.comp (hlevel.comp hns))

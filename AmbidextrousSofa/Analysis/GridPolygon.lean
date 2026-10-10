@@ -140,14 +140,15 @@ theorem sourceSlope_eq_tan (grid : Finset QuarterAngle) (i : SourceIndex grid) :
 theorem sourceSlope_injective (grid : Finset QuarterAngle) :
     Function.Injective (fun i : SourceIndex grid => wallSlope (normal grid) (some i)) := by
   intro i j heq
+  dsimp only at heq
   rw [sourceSlope_eq_tan, sourceSlope_eq_tan] at heq
   have hi := fullAngle_mem grid i
   have hj := fullAngle_mem grid j
   have hangles := Real.injOn_tan
     (show fullAngle grid i - Real.pi / 2 ∈ Ioo (-(Real.pi / 2)) (Real.pi / 2) by
-      constructor <;> linarith)
+      constructor <;> linarith [hi.1, hi.2])
     (show fullAngle grid j - Real.pi / 2 ∈ Ioo (-(Real.pi / 2)) (Real.pi / 2) by
-      constructor <;> linarith) heq
+      constructor <;> linarith [hj.1, hj.2]) heq
   exact fullAngle_injective grid (by linarith)
 
 theorem normal_det_ne_zero (grid : Finset QuarterAngle) {i j : SourceIndex grid} (hij : i ≠ j) :

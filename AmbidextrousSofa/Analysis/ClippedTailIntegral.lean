@@ -98,7 +98,7 @@ theorem integral_affineCutTriangle_clipped_left {k δ p A B : ℝ}
           (mul_max_of_nonneg (p + δ / (1 - k) - x) 0 hj.le).symm
       _ = _ := by
         have hzero : p + δ / (1 - k) - B ≤ 0 := by
-          have h := (div_le_iff₀ hj).mpr hright
+          have h := (div_le_iff₀' hj).mpr hright
           linarith
         rw [intervalIntegral.integral_const_mul, integral_positive_ramp_sub,
           show p + δ / (1 - k) - p = δ / (1 - k) by ring,

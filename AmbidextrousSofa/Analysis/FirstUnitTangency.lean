@@ -82,7 +82,7 @@ theorem firstUnit_source_box_margin_of_half_lt {C h k s : ℝ}
     have hbox : 2 * C + k ≤ 99 / 50 := by linarith only [hC1, hk]
     have hquad := mul_le_mul_of_nonneg_right hbox (sq_nonneg k)
     have hksmall := mul_nonneg hk0 (sub_nonneg.mpr hk)
-    have hlinear := mul_nonneg (show 0 ≤ 99 / 50 by norm_num) hksmall
+    have hlinear := mul_nonneg (show (0 : ℝ) ≤ 99 / 50 by norm_num) hksmall
     nlinarith only [hprod, hquad, hlinear, hhk, hC0]
   · have hkhalf : 1 / 2 < k := lt_of_not_ge hk
     by_cases hCshort : C ≤ 3 / 5
@@ -262,7 +262,7 @@ theorem fullTiltedSupportQuarterPair_exists_first_middle_crossing {C h : ℝ}
   obtain ⟨hBx, hBy, _hDx, _hDy, _hderiv⟩ :=
     fullTiltedSupportQuarterPair_tangent_calculus hU hm haffine hρ hρ0 hρK heq
   have hcont : ContinuousOn (fun t => C - (B t).1) (Icc 0 (Real.pi / 2)) := by
-    simpa only [uIcc_of_le hL.le] using continuousOn_const.sub hBx.continuousOn
+    simpa only [uIcc_of_le hL.le, Pi.sub_def] using continuousOn_const.sub hBx.continuousOn
   obtain ⟨β, hβ, heqβ, hbefore⟩ := exists_first_level_crossing hL hcont
     (show (0 : ℝ) < C - (B 0).1 by rw [hB0]; dsimp only [Prod.fst]; linarith only [hC1])
     (show C - (B (Real.pi / 2)).1 ≤ 0 by rw [hBL]; exact sub_nonpos.mpr htop.le)
@@ -291,6 +291,7 @@ theorem fullTiltedSupportQuarterPair_exists_first_middle_crossing {C h : ℝ}
       (show 0 < 3 / 5 + Real.sin β by linarith only [hs0])
     nlinarith only [h, hkSq, Real.sin_sq_add_cos_sq β]
   have hy := horder.2 ⟨hβ.1.le, hβ.2⟩ ⟨hL.le, le_rfl⟩ hβ.2
+  beta_reduce at hy
   rw [hBL] at hy
   refine ⟨β, ⟨hβ.1, hβL⟩, hβx, ?_, ?_, hβacos, hsin, hgeom.2, hy⟩
   · intro t ht

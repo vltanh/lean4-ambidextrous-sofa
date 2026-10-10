@@ -75,14 +75,15 @@ theorem integral_graph_parametrization_ac {a b : ℝ} {F X Y XD : ℝ → ℝ}
     (∫ x in X a..X b, F x) = ∫ x in X a..X b, G x := by
       apply intervalIntegral.integral_congr
       intro x hx
-      apply (hGeq x ?_).symm
+      apply (hGeq (x := x) ?_).symm
       have hmem := intermediate_value_uIcc hX.continuousOn hx
       simpa only [uIcc_of_le hab] using hmem
     _ = ∫ t in a..b, G (X t) * XD t := hprimitive.symm
     _ = ∫ t in a..b, Y t * XD t := by
       apply intervalIntegral.integral_congr_Ioo_of_le hab
       intro t ht
-      rw [hGeq (X t) (mem_image_of_mem X ⟨ht.1.le, ht.2.le⟩), hgraph t ht]
+      dsimp only
+      rw [hGeq (mem_image_of_mem X ⟨ht.1.le, ht.2.le⟩), hgraph t ht]
 
 theorem twice_integral_graph_parametrization_ac
     {a b : ℝ} {F X Y XD YD : ℝ → ℝ}
@@ -136,7 +137,7 @@ theorem hasDerivAt_companionSupportPoint_fst {g gD : ℝ → ℝ} {gDD t : ℝ}
     (hg : HasDerivAt g (gD t) t) (hgD : HasDerivAt gD gDD t) :
     HasDerivAt (fun s => (Reference.companionSupportPoint g gD s).1)
       (-(g t + gDD) * Real.cos t) t := by
-  have h := (hasDerivAt_supportPoint_snd hg hgD).neg
+  have h := (hasDerivAt_supportPoint_snd hg hgD).fun_neg
   simpa only [Reference.companionSupportPoint, rotate, Real.cos_pi_div_two,
     Real.sin_pi_div_two, zero_mul, one_mul, zero_sub, neg_mul] using h
 
@@ -171,9 +172,11 @@ theorem absolutelyContinuousOnInterval_companionSupportPoint
   constructor
   · apply ((hg.neg.fun_mul hs).sub (hgD.fun_mul hc)).congr
     intro t _
+    simp only [Pi.sub_apply, Pi.neg_apply]
     rw [companionSupportPoint_coordinates]
   · apply ((hg.fun_mul hc).sub (hgD.fun_mul hs)).congr
     intro t _
+    simp only [Pi.sub_apply]
     rw [companionSupportPoint_coordinates]
 
 theorem integral_support_density_ac {a b : ℝ} {f fD fDD : ℝ → ℝ}

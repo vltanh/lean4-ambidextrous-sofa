@@ -42,8 +42,12 @@ theorem IsFullCapMaximizer.top_abscissa_mem_middle
   have hbr : b ≤ r := by dsimp [r, b]; linarith only [hw]
   have hA : capRoof U a = 1 := hmiddle a ⟨le_rfl, hab.le⟩
   have hB : capRoof U b = 1 := hmiddle b ⟨hab.le, le_rfl⟩
-  have hpA : (a, 1) ∈ U := by simpa only [hA] using capRoof_mem hU.isCap.isCompact ha
-  have hpB : (b, 1) ∈ U := by simpa only [hB] using capRoof_mem hU.isCap.isCompact hb
+  have hpA : (a, 1) ∈ U := by
+    have h := capRoof_mem hU.isCap.isCompact (show a ∈ horizontalProjection U from ha)
+    rwa [hA] at h
+  have hpB : (b, 1) ∈ U := by
+    have h := capRoof_mem hU.isCap.isCompact (show b ∈ horizontalProjection U from hb)
+    rwa [hB] at h
   have hpTop : (p.1, 1) ∈ U := by simpa only [← hpone, Prod.mk.eta] using hp
   have hpBounds : p.1 ∈ Icc l r := by
     rw [← horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact hU.isCap.convex]
@@ -110,7 +114,7 @@ theorem IsFullCapMaximizer.horizontalProjection_top_supportFace
   apply Subset.antisymm
   · rintro x ⟨p, hp, rfl⟩
     have hpone : p.2 = 1 := by
-      simpa only [coordDot, mul_zero, mul_one, zero_add, hsupport] using hp.2
+      simpa only [Set.mem_ofPred_eq, coordDot, mul_zero, mul_one, zero_add, hsupport] using hp.2
     exact hU.top_abscissa_mem_middle hheight hmiddle hp.1 hpone
   · intro x hx
     have hxU : x ∈ horizontalProjection U := by
@@ -118,7 +122,7 @@ theorem IsFullCapMaximizer.horizontalProjection_top_supportFace
       exact middleHalfInterval_subset
         (horizontalLeft_le_horizontalRight hU.isCap.nonempty hU.isCap.isCompact) hx
     refine ⟨(x, capRoof U x), ⟨capRoof_mem hU.isCap.isCompact hxU, ?_⟩, rfl⟩
-    simp only [coordDot, mul_zero, mul_one, zero_add, hsupport, hmiddle x hx]
+    simp only [Set.mem_ofPred_eq, coordDot, mul_zero, mul_one, zero_add, hsupport, hmiddle x hx]
 
 /-- All middle slopes are covered, including the horizontal case whose
 top atom cannot be handled by the nonhorizontal trimming variation. -/
@@ -130,7 +134,8 @@ theorem IsFullCapMaximizer.horizontalProjection_middle_supportFace_at_height_one
       middleHalfInterval (horizontalLeft U) (horizontalRight U) := by
   by_cases hm : m = 0
   · subst m
-    have hright := hU.middle_right_eq_one_of_affine_nonneg hheight (le_refl 0) haffine
+    have hright : capRoof U (horizontalRight U - capWidth U / 4) = 1 :=
+      hU.middle_right_eq_one_of_affine_nonneg hheight (le_refl 0) haffine
     have hw : 0 < capWidth U := lt_trans (by norm_num) hU.two_lt_width
     obtain ⟨_, _, hab⟩ := hU.isCap.middleChord_endpoints hw
     have hc : c = 1 := by

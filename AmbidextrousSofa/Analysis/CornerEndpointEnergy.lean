@@ -86,8 +86,8 @@ theorem IsFullCapMaximizer.actualCornerEnergy_tendsto_zero_right
     Tendsto (actualCornerEnergy U) (𝓝[>] (0 : ℝ))
       (𝓝 ((capRoof U (horizontalRight U) - 1 / 2) ^ 2 + (3 * capWidth U / 4) ^ 2)) := by
   have hvel := hU.cornerVelocities_tendsto_zero_right hheight hmiddle
-  have hE := (((hvel.snd.neg.max tendsto_const_nhds).sub_const (1 / 2)).pow 2).add
-    ((hvel.fst.add_const 1).pow 2)
+  have hE := (((hvel.snd_nhds.neg.max (tendsto_const_nhds (x := (0 : ℝ)))).sub_const
+    (1 / 2)).pow 2).add ((hvel.fst_nhds.add_const 1).pow 2)
   change Tendsto (actualCornerEnergy U) _ _ at hE
   have heR : 0 ≤ capRoof U (horizontalRight U) :=
     capRoof_nonneg hU.isCap.isCompact (fun p hp => (hU.isCap.inStrip hp).1) _

@@ -118,7 +118,7 @@ theorem IsFullCapMaximizer.sqrt_chord_le_score_of_canonical
   have hplus : horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 = C := by
     rw [hl, hr]; ring
   have hchord := hU.wing_chords_le_twice_score_of_affine hheight haffine
-  rw [hwidth, hminus, hplus, hleft, hright] at hchord
+  rw [hminus, hplus, hwidth, hleft, hright] at hchord
   have htriangle := two_mul_sqrt_half_sum_le_chord_sum C
     (1 - h - capRoof U (horizontalLeft U)) (1 - capRoof U (horizontalRight U))
   have hsquare : (1 - capRoof U (horizontalRight U)) ^ 2 =

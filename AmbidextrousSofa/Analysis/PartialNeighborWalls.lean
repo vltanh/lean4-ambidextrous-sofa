@@ -130,7 +130,11 @@ theorem first_source_le_companion (U : Set Plane) (α : TerminalAngle)
   · have heq : t = s := scaledInterior_injective α grid
       (Sum.inl.inj (Option.some.inj (hselected.symm.trans h.1)))
     subst s
-    simpa only [v, ← supportWall_eq_affine, normal, AngularGrid.normal, scaledInterior] using h.2
+    have h2 : supportWall U (normal α grid (Sum.inl (scaledInterior α grid t))) x ≤
+        supportWall U (normal α grid (Sum.inr (scaledInterior α grid t))) x := by
+      rw [supportWall_eq_affine U (normal α grid) x, supportWall_eq_affine U (normal α grid) x]
+      exact h.2
+    exact h2
   · have hfalse := hselected.symm.trans h.1
     simp [scaledSource] at hfalse
 
@@ -156,7 +160,11 @@ theorem second_source_le_first (U : Set Plane) (α : TerminalAngle)
   · have heq : t = s := scaledInterior_injective α grid
       (Sum.inr.inj (Option.some.inj (hselected.symm.trans h.1)))
     subst s
-    simpa only [v, ← supportWall_eq_affine, normal, AngularGrid.normal, scaledInterior] using h.2
+    have h2 : supportWall U (normal α grid (Sum.inr (scaledInterior α grid t))) x ≤
+        supportWall U (normal α grid (Sum.inl (scaledInterior α grid t))) x := by
+      rw [supportWall_eq_affine U (normal α grid) x, supportWall_eq_affine U (normal α grid) x]
+      exact h.2
+    exact h2
 
 theorem above_barrier_wall_alternative {U : Set Plane} (hU : IsDownwardCap U)
     (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2) (grid : Finset QuarterAngle)

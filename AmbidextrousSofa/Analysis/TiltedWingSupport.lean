@@ -158,7 +158,7 @@ theorem one_sub_cos_le_slope_mul_sin {m t : ℝ}
   have hsin := mul_nonneg hcoef hs
   have hcircle := Real.sin_sq_add_cos_sq t
   have hcle := Real.cos_le_one t
-  apply (mul_le_mul_right hc).mp
+  apply (mul_le_mul_iff_left₀ hc).mp
   nlinarith only [hsin, hcircle, hcle]
 
 /-- This is the original cap's corner, with its original high-point
@@ -216,6 +216,6 @@ theorem IsFullCapMaximizer.first_wing_curvature_zero_before_affine
     rw [sourceCornerHeight, sourceQuarterAngle, if_pos htL]
     exact hU.isCap.attachedCorner_neg_before_positive_affine hl hr hC hsmall haff hhigh ht
   exact le_antisymm ((measure_mono hsub).trans_eq
-    (hU.upperCurvature_negative_corners_eq_zero hheight haffine)) (zero_le _)
+    (hU.upperCurvature_negative_corners_eq_zero hheight haffine)) zero_le
 
 end AmbidextrousSofa

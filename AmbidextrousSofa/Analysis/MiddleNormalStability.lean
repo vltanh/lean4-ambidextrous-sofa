@@ -130,7 +130,8 @@ theorem outerSource_mem_edge {ι : Type*} [Fintype ι] [DecidableEq ι]
   have hline : capRoof U x = -(normal j).1 / (normal j).2 * x +
       support U (normal j) / (normal j).2 := hroof.trans hvalue
   have hdot := (eq_upper_line_iff (hnormal j).ne' (support U (normal j)) x (capRoof U x)).mp hline
-  exact ⟨capRoof_mem hU.isCompact hx, by simpa only [hangle] using hdot⟩
+  rw [hangle] at hdot
+  exact ⟨capRoof_mem hU.isCompact hx, hdot⟩
 
 end FinitePolygon
 

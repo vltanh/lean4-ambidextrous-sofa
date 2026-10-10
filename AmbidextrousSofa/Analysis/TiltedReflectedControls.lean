@@ -72,11 +72,13 @@ theorem fullTiltedSupportQuarterPair_reflected_calculus :
     fullTiltedSupportQuarterPair_corner_calculus hU hm haffine hρ hρ0 hρK heq
   have hL : (0 : ℝ) ≤ Real.pi / 2 := by positivity
   have hpAC : AbsolutelyContinuousOnInterval pR 0 (Real.pi / 2) := by
-    simpa only [sub_self, sub_zero, reflectedSupportP] using
-      (absolutelyContinuousOnInterval_comp_const_sub hq hL (Real.pi / 2)).neg
+    have h := (absolutelyContinuousOnInterval_comp_const_sub hq hL (Real.pi / 2)).neg
+    simp only [sub_self, sub_zero] at h
+    exact h
   have hqAC : AbsolutelyContinuousOnInterval qR 0 (Real.pi / 2) := by
-    simpa only [sub_self, sub_zero, reflectedSupportQ] using
-      (absolutelyContinuousOnInterval_comp_const_sub hp hL (Real.pi / 2)).neg
+    have h := (absolutelyContinuousOnInterval_comp_const_sub hp hL (Real.pi / 2)).neg
+    simp only [sub_self, sub_zero] at h
+    exact h
   refine ⟨hpAC, hqAC, ?_⟩
   have hpr := ae_hasDerivAt_comp_const_sub (c := Real.pi / 2)
     (hode.mono (fun _ ht => ht.1))
@@ -99,7 +101,7 @@ theorem fullTiltedSupportQuarterPair_reflected_arm_bounds :
   have hpcont : ContinuousOn p (Icc (Real.arctan m) (Real.pi / 2)) :=
     (((F).continuous_fD.sub (F).continuous_g).add continuousOn_const).mono
       (Icc_subset_Icc hδ0 le_rfl)
-  have hpclosed := hpcont.le_on_Icc_of_ae_le_on_Ioo hδL (by
+  have hpclosed := ContinuousOn.le_on_Icc_of_ae_le_on_Ioo hpcont hδL (by
     filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ht
     exact fullTiltedSupportQuarterPair_p_le_one_after_affine
       hU hm haffine hρ hρ0 hρK heq ⟨hδ0.trans ht.1.le, ht.2⟩ ht.1.le)
@@ -165,6 +167,7 @@ theorem fullTiltedSupportQuarterPair_reflected_dynamics {C : ℝ}
   · filter_upwards [ae_restrict_mem measurableSet_Ioo] with r hr
     exact Or.inl (harms r (Ioo_subset_Icc_self hr)).1
 
+include hU hm haffine hρ hρ0 hρK heq in
 theorem fullTiltedSupportQuarterPair_reflected_zero_after_active {C : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hC : 0 < C) (hsmall : C + m < 1)

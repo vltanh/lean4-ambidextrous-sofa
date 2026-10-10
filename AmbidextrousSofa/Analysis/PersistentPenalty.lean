@@ -118,14 +118,15 @@ def stageWeight (n : ℕ) : SourceIndex (dyadic n) → ℝ := by
 theorem stageWeight_nonneg (n : ℕ) (i : SourceIndex (dyadic n)) :
     0 ≤ stageWeight n i := by
   classical
-  exact aggregateWeight_nonneg _ _ (fun s => (levelWeight_pos s.1.val).le) i
+  exact aggregateWeight_nonneg (sampleSource n) (sampleWeight n)
+    (fun s => (levelWeight_pos s.1.val).le) i
 
 theorem sum_levelWeight_le (m : ℕ) :
     (∑ _i : SourceIndex (dyadic m), levelWeight m) ≤ (1 / 2 : ℝ) ^ (m + 1) := by
   have hd : (0 : ℝ) < Fintype.card (SourceIndex (dyadic m)) + 1 := by positivity
   simp only [Finset.sum_const, Finset.card_univ, nsmul_eq_mul]
   unfold levelWeight
-  rw [mul_div_assoc, div_le_iff₀ hd]
+  rw [← mul_div_assoc, div_le_iff₀ hd]
   have hp : 0 ≤ (1 / 2 : ℝ) ^ (m + 1) := by positivity
   nlinarith
 
@@ -134,7 +135,7 @@ theorem sum_half_pow (n : ℕ) :
   induction n with
   | zero => simp
   | succ n ih =>
-    simp only [Finset.sum_range_succ, ih, pow_succ]
+    rw [Finset.sum_range_succ, ih]
     ring
 
 theorem sum_stageWeight_le_one (n : ℕ) :
@@ -146,7 +147,8 @@ theorem sum_stageWeight_le_one (n : ℕ) :
         ∑ m : Fin (n + 1), (1 / 2 : ℝ) ^ (m.val + 1) :=
       Finset.sum_le_sum (fun m _ => sum_levelWeight_le m.val)
     _ = 1 - (1 / 2 : ℝ) ^ (n + 1) := by
-      rw [Fin.sum_univ_eq_sum_range, sum_half_pow]
+      exact (Fin.sum_univ_eq_sum_range (fun m => (1 / 2 : ℝ) ^ (m + 1)) (n + 1)).trans
+        (sum_half_pow (n + 1))
     _ ≤ 1 := sub_le_self _ (by positivity)
 
 def stagePenalty (n : ℕ) (target U : Set Plane) : ℝ :=
@@ -179,9 +181,11 @@ theorem persistent_sample_bound {m n : ℕ} (hmn : m ≤ n)
   classical
   rw [stagePenalty_eq_sum]
   let s : SampleIndex n := ⟨⟨m, Nat.lt_succ_iff.mpr hmn⟩, i⟩
-  exact Finset.single_le_sum
+  have h := Finset.single_le_sum (f := fun s : SampleIndex n => levelWeight s.1.val *
+      (support U (normal (dyadic s.1.val) s.2) - support target (normal (dyadic s.1.val) s.2)) ^ 2)
     (fun s _ => mul_nonneg (levelWeight_pos s.1.val).le (sq_nonneg _))
     (Finset.mem_univ s)
+  exact h
 
 theorem stagePenalty_self (n : ℕ) (U : Set Plane) : stagePenalty n U U = 0 :=
   sampledPenalty_self U (normal (dyadic n)) (stageWeight n)

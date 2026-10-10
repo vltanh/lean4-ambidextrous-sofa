@@ -71,7 +71,7 @@ theorem density_le_of_local_interval_bound
       (∫ s in t..(t + AngularGrid.selectionRate n), ρ s) / AngularGrid.selectionRate n)
       atTop (𝓝 (ρ t)) := by
     simpa only [intervalIntegral.integral_same, sub_zero, smul_eq_mul,
-      div_eq_mul_inv, mul_comm] using hderiv.tendsto_slope_zero_right.comp hstep
+      div_eq_mul_inv, mul_comm, Function.comp_def] using hderiv.tendsto_slope_zero_right.comp hstep
   apply le_of_forall_pos_le_add
   intro ε hε
   obtain ⟨δ, hδ, hbound⟩ := htlocal ε hε

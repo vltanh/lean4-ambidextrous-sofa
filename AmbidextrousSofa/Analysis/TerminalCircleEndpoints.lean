@@ -121,6 +121,7 @@ theorem hasDerivAt_circleTerminalLinearRatio {C x : ℝ} (hx : x ∈ Ioo (0 : �
   calc
     _ = (-circleHeight x ^ 2 + (2 * C - x) * x) / circleHeight x ^ 3 := by
       unfold circleSlope
+      simp only [id_eq]
       field_simp [hroot] <;> ring
     _ = _ := by rw [circleHeight_sq hx]; ring
 

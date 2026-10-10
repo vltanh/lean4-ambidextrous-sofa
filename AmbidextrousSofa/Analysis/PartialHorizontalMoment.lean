@@ -107,7 +107,7 @@ theorem positive_middle_measure_le_outer_without_top_of_selected
       (grid := fun n => outerGrid α (dyadic (level n))) hHausdorff hcap hTarget.isCap
       (fun n => (hU n).polygon_eq) ha hb hheight hsin hE hjR hr hwindowR hboxR
     have herror : Tendsto (fun n => C * (2 * η + mesh α (level n))) atTop (𝓝 (C * (2 * η))) := by
-      simpa only [add_zero] using
+      simpa only [add_zero, Function.comp_apply] using
         (tendsto_const_nhds.add ((mesh_tendsto α).comp hlevel)).const_mul C
     have hbound (n : ℕ) :
         (∫ x in middleHalfInterval (horizontalLeft (U n)) (horizontalRight (U n)),
@@ -119,13 +119,14 @@ theorem positive_middle_measure_le_outer_without_top_of_selected
         C * (2 * η + mesh α (level n)) := by
       have hfinite := finitePositiveLength_le_horizontalOuterMass_away_top (α := α) (hαL := hαL) (hcap n) hB
         (hbox n) (level n) hη hηterminal
-      have houter := (AngularGrid.integral_horizontalOuterDensity_le_envelope (U n) (outerGrid α (dyadic (level n))) E
-        (horder n).1 a b).add
-        (AngularGrid.integral_horizontalOuterDensity_le_envelope (U n) (outerGrid α (dyadic (level n))) E
-          (horder n).2.2 a b)
+      have houter := add_le_add
+        (AngularGrid.integral_horizontalOuterDensity_le_envelope (U n)
+          (outerGrid α (dyadic (level n))) E (horder n).1 a b)
+        (AngularGrid.integral_horizontalOuterDensity_le_envelope (U n)
+          (outerGrid α (dyadic (level n))) E (horder n).2.2 a b)
       rw [← AngularGrid.horizontalOuterMass_eq_integrals (hcap n)] at houter
       exact (integral_positiveBarrierOverlap_le (α := α) (hαL := hαL) hTarget.isCap _).trans
-        (hfinite.trans (add_le_add_right (add_le_add_right houter _) _))
+        (hfinite.trans (add_le_add_left (add_le_add_left houter _) _))
     have hlim := ((hUL.add hUR).add (hcos.div_const (Real.sin η))).add herror
     have hineq := le_of_tendsto_of_tendsto hpositive hlim (Eventually.of_forall hbound)
     simpa only [zero_div, add_zero] using hineq
@@ -173,8 +174,9 @@ theorem IsJointCapMaximizer.positive_partial_middle_measure_le_outer_without_top
     · dsimp [R]; linarith [hx.2]
   obtain ⟨level, coefficient, V, hlevel, hc, hrate, hV, _, hHausdorff⟩ :=
     PartialGrid.exists_selected_sequence β hproper hU hLR hbox
-  exact PartialGrid.positive_middle_measure_le_outer_without_top_of_selected
+  have hmain := PartialGrid.positive_middle_measure_le_outer_without_top_of_selected
     hU hheight haffine hbox hV hHausdorff (tendsto_atTop_mono hlevel tendsto_id)
     (fun n => (hc n).le) hrate (by dsimp [L]; linarith) (by dsimp [R]; linarith) ha hb
+  exact hmain
 
 end AmbidextrousSofa

@@ -86,8 +86,8 @@ theorem IsDownwardCap.sweptNiche_lt_terminalWall_of_weighted_excess
   have hsubz : Ioc (Real.pi / 2)
       (Real.arcsin ((-C + z) - horizontalLeft U) + Real.pi / 2) ⊆ S := by
     rw [hcoord]
-    exact (Ioc_subset_Ioc le_rfl (add_le_add_right
-      (Real.arcsin_le_arcsin (add_le_add_left hz1 C)) _)).trans hsub
+    exact (Ioc_subset_Ioc le_rfl (add_le_add_left
+      (Real.arcsin_le_arcsin (add_le_add_right hz1 C)) _)).trans hsub
   have hniche := hU.sweptNiche_le_circle_of_density hρ hρ0 hρK heq
     hα0 hαL hA hAB hBα hsubz
   rw [hinitial, hcoord] at hniche

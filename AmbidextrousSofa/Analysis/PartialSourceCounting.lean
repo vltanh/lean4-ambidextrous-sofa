@@ -103,12 +103,13 @@ theorem innerSourceMass_sum_interval_le {U : Set Plane} (hU : IsDownwardCap U)
           show 0 ≤ (if scaledSource α (dyadic n) s = scaledSource α (dyadic n) k
             then C * δ else 0) from by split_ifs <;> positivity)
         (Finset.mem_univ k)
-      simpa only [if_pos rfl] using h
+      simpa only [↓reduceIte, C, δ] using h
     · have hjterminal : j ≠ terminalIndex α hαL (dyadic n) := by
         intro heq
         apply hterminal
         have hmem := (Finset.mem_filter.mp hj).2
-        simpa only [heq, fullAngle, terminalIndex, AngularGrid.fullAngle] using hmem
+        simp only [heq, fullAngle, terminalIndex, AngularGrid.fullAngle] at hmem
+        exact hmem
       rw [innerSourceMass_eq_zero_of_not_scaled U α hαL (dyadic n) j hjterminal hscaled]
       apply Finset.sum_nonneg
       intro k _

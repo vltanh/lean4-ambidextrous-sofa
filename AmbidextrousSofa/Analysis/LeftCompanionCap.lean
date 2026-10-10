@@ -153,7 +153,7 @@ theorem IsDownwardCap.top_leftCompanionCap_of_positive_affine
     (MovingSofaOptimality.vplus_mem_edge hV.imported_isConvexBody _).1
   have hpy : p.2 = capRoof U a := (top_vplus_snd_eq_capHeight _).trans hheight
   have hax : a ≤ p.1 := by
-    apply (mul_le_mul_left hm).mp
+    apply le_of_mul_le_mul_left _ hm
     linarith only [hceiling p hp, hpy, hline]
   exact Prod.ext (le_antisymm hp.2.2 hax) hpy
 

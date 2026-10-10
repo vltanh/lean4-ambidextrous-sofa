@@ -53,6 +53,7 @@ local notation "R₂" => (fun t => J.nicheDerivative (X t) * Real.cos t - Real.s
 local notation "aZ" => J.sourceBranchDensity (firstCornerSource target) 0
 local notation "aW" => J.sourceBranchDensity (secondCornerSource target) (Real.pi / 2)
 
+include hl hr hC hheight hlow hhigh hh hunit hTargetBox hleft hright in
 theorem ae_corner_density_zero_off_core {α η : ℝ}
     (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η) :
     ∀ᵐ t ∂volume, t ∉ Ioo α η → aZ t = 0 ∧ aW t = 0 := by
@@ -73,6 +74,7 @@ theorem ae_corner_density_zero_off_core {α η : ℝ}
   intro ht
   exact ⟨by by_contra hn; exact ht (hZ hn), by by_contra hn; exact ht (hW hn)⟩
 
+include hl hr hC hheight hlow hhigh hh hunit hTargetBox hleft hright in
 theorem ae_core_residual_density_sum_eq_zero {α η : ℝ}
     (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η) :
     ∀ᵐ t ∂volume.restrict (Ioo α η), aZ t * R₁ t + aW t * R₂ t = 0 := by
@@ -144,6 +146,7 @@ theorem ae_core_residual_density_sum_eq_zero {α η : ℝ}
     rw [(ht hn).2, zero_mul]
   rwa [heq₁, heq₂] at htest
 
+include hl hr hC hheight hlow hhigh hh hunit hTargetBox hleft hright in
 theorem ae_corner_density_balance {α η : ℝ}
     (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η) :
     ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)),
@@ -183,7 +186,8 @@ theorem ae_corner_density_balance {α η : ℝ}
   by_cases ht : t ∈ Ioo α η
   · calc
       p t * aZ t + q t * aW t = aZ t * (R₁ t * XD t) + aW t * (R₂ t * XD t) := by
-        rw [h₁, h₂]
+        rw [show aZ t * (R₁ t * XD t) = aZ t * p t from h₁,
+          show aW t * (R₂ t * XD t) = aW t * q t from h₂]
         ring
       _ = (aZ t * R₁ t + aW t * R₂ t) * XD t := by ring
       _ = 0 := by rw [hcancel ht, zero_mul]

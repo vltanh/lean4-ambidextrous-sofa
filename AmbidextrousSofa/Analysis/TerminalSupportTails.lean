@@ -167,11 +167,11 @@ theorem IsJointCapMaximizer.middle_support_vertices
   · apply Prod.ext hends.1
     have h := hU.isCap.capRoof_eq_of_mem_upper_edge hs
       (MovingSofaOptimality.vplus_mem_edge hU.isCap.imported_isConvexBody (affineNormalAngle m))
-    simpa only [hends.1] using h
+    simpa only [hends.1, capWidth] using h
   · apply Prod.ext hends.2
     have h := hU.isCap.capRoof_eq_of_mem_upper_edge hs
       (MovingSofaOptimality.vminus_mem_edge hU.isCap.imported_isConvexBody (affineNormalAngle m))
-    simpa only [hends.2] using h
+    simpa only [hends.2, capWidth] using h
 
 theorem IsJointCapMaximizer.middle_slope_lt_five_fourths
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)

@@ -127,7 +127,8 @@ theorem IsFullCapMaximizer.tilted_middle_niche_le_ten_ninths_overhang
     (Analysis.width_over_circleHeight_le_ten_ninths (by linarith only [hC0]) hC1.le) hT.le
   have hlam' : ((MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C) * C /
       Real.sqrt (1 - C ^ 2) ≤ (10 / 9) * ((MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C) := by
-    simpa only [mul_div_assoc, mul_comm] using hlam
+    rw [mul_div_assoc, mul_comm (10 / 9 : ℝ)]
+    exact hlam
   exact hn.trans hlam'
 
 /-- The small-height scalar test now has no external projection,

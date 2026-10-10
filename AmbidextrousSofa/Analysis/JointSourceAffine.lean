@@ -51,7 +51,7 @@ theorem ae_sourceQuarterAngle_mem :
       sourceQuarterAngle z.1 ∈ Ioo (0 : ℝ) (Real.pi / 2) := by
   filter_upwards [J.ae_angle_mem_upper, J.ae_angle_ne (Real.pi / 2)] with z hz htop
   by_cases hfirst : z.1 < Real.pi / 2
-  · simpa only [sourceQuarterAngle, if_pos hfirst] using And.intro hz.1 hfirst
+  · simpa only [sourceQuarterAngle, if_pos hfirst, mem_Ioo] using And.intro hz.1 hfirst
   · have hsecond : Real.pi / 2 < z.1 := lt_of_le_of_ne (le_of_not_gt hfirst) htop.symm
     rw [sourceQuarterAngle, if_neg hfirst]
     constructor <;> linarith only [hsecond, hz.2]
@@ -70,6 +70,7 @@ variable (hU : IsFullCapMaximizer target) {C h m c : ℝ}
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
   (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1)
 
+include hU C hl hr hC hm hheight haffine hlow hhigh hh hρ hρ0 hρK heq hunit in
 theorem ae_sourceQuarterAngle_gt_affine :
     ∀ᵐ z ∂(J.measure : Measure Plane), Real.arctan m < sourceQuarterAngle z.1 := by
   have hmid : middleHalfInterval (horizontalLeft target) (horizontalRight target) =
@@ -116,6 +117,7 @@ theorem ae_sourceQuarterAngle_gt_affine :
 variable (hTargetBox : target ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1)
   (hleft : a < horizontalLeft target) (hright : horizontalRight target < b)
 
+include hU hl hr hC hm hheight haffine hlow hhigh hh hρ hρ0 hρK heq hunit in
 theorem angularMeasure_initial_companion_eq_zero :
     J.angularMeasure (Ioc (Real.pi / 2) (affineNormalAngle m)) = 0 := by
   rw [angularMeasure, Measure.map_apply measurable_fst measurableSet_Ioc]
@@ -128,6 +130,7 @@ theorem angularMeasure_initial_companion_eq_zero :
   unfold affineNormalAngle at hmem
   linarith only [hz, hmem.2]
 
+include J hU hl hr hC hm hheight haffine hlow hhigh hh hρ hρ0 hρK heq hunit hTargetBox hleft hright in
 theorem ae_original_companion_density_eq_cut :
     ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)),
       ρ (t + Real.pi / 2) = leftCompanionWingDensity m ρ (t + Real.pi / 2) := by

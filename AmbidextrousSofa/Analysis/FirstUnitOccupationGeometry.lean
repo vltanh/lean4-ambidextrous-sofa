@@ -66,6 +66,7 @@ theorem fullTiltedSupportQuarterPair_first_window_positive_contact {C h α β η
     hU hm haffine hρ hρ0 hρK heq hunit).1
   have hx0 := horder (show (0 : ℝ) ∈ Icc 0 (Real.pi / 2) from
     ⟨le_rfl, by positivity⟩) (Ioo_subset_Icc_self htq) htq.1.le
+  dsimp only at hx0
   rw [hB0] at hx0
   have hxL : -C < (B t).1 := by
     change 2 * C - 1 ≤ (B t).1 at hx0

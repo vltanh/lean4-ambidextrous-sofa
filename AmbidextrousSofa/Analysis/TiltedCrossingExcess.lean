@@ -80,8 +80,8 @@ theorem fullTiltedSupportQuarterPair_first_zero_excess_stops_early {C h A : ℝ}
       hU hm haffine hρ hρ0 hρK heq hl hr (by linarith only [hC0]) hmpos hsmall
       hh0 hheight hhigh hlow hκ
   have hτmem : τ ∈ Icc (0 : ℝ) τ := ⟨hτ.1.le, le_rfl⟩
-  have hpc : p τ = Analysis.initialFloorCircleP (3 * C) B τ := hpcircle τ hτmem
-  have hqc : q τ = Analysis.initialFloorCircleQ (3 * C) B τ := hqcircle τ hτmem
+  have hpc : p τ = Analysis.initialFloorCircleP (3 * C) B τ := hpcircle hτmem
+  have hqc : q τ = Analysis.initialFloorCircleQ (3 * C) B τ := hqcircle hτmem
   have hτA : τ ≤ A := by
     by_contra hnot
     have hpos := (hphase A ⟨hA.1.le, lt_of_not_ge hnot⟩).1
@@ -132,7 +132,7 @@ theorem fullTiltedSupportQuarterPair_first_zero_excess_stops_early {C h A : ℝ}
     rw [hEA] at h
     nlinarith only [h]
   by_cases hhcut : 1 / 25 ≤ h
-  · have htest := Analysis.initial_floor_test_medium_tilt_le hd0 hd1.le hhcut hhsmall.le
+  · have htest := Analysis.initial_floor_test_medium_tilt_le (B := B) hd0 hd1.le hhcut hhsmall.le
       (by linarith only [hBlower hhsmall.le]) (by linarith only [hBupper])
     have hquad' : 0 ≤ 29 / 32 - 3 * C * A + A ^ 2 / 2 := by
       linarith only [hquadB, hBupper, hhsmall]

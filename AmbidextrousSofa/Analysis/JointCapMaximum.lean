@@ -94,7 +94,8 @@ theorem exists_boxed_jointCapScore_max {B : Set Plane} (hB : IsCompact B)
       ⟨z₀, mem_univ z₀⟩ (continuous_partialCapScore_on_box hB).continuousOn
   refine ⟨z.1.val.carrier, z.2, z.1.val.isCap, z.1.property, z.2.property, ?_⟩
   intro U β hU hUB hβ
-  exact hmax (mem_univ (⟨hU.toCompactCap, hUB⟩, (⟨β, hβ⟩ : TerminalAngle)))
+  have h := hmax (mem_univ (⟨hU.toCompactCap, hUB⟩, (⟨β, hβ⟩ : TerminalAngle)))
+  exact h
 
 /-- The reference cap and the actual wide-cap estimate remove the
 artificial box from the extreme-value conclusion. -/
@@ -108,7 +109,7 @@ theorem exists_jointCapMaximizer :
   have hRefBox : centeredCap Reference.referenceCap ⊆ Icc (-3, 0) (3, 1) :=
     centeredCap_subset_box_of_width_le hRef (by linarith)
   obtain ⟨K, α, hK, hKB, hα, hmax⟩ := exists_boxed_jointCapScore_max
-    (isCompact_Icc : IsCompact (Icc (-3, 0) (3, 1))) hRef.centeredCap hRefBox
+    (isCompact_Icc : IsCompact (Icc ((-3, 0) : Plane) (3, 1))) hRef.centeredCap hRefBox
   have hKRef : M / 2 ≤ capScore K α := by
     have h := hmax _ _ hRef.centeredCap hRefBox
       (show Real.pi / 2 ∈ Icc (Real.pi / 4) (Real.pi / 2) from

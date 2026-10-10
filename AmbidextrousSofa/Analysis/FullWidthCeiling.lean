@@ -21,6 +21,19 @@ open Set
 
 namespace AmbidextrousSofa
 
+/-- `41/50 < M/2`; the same statement and proof as `forty_one_fiftieths_lt_half_M` of
+`TerminalScalar`, which this module does not import. -/
+private theorem fullWidthCeiling_forty_one_fiftieths_lt_half_M : (41 / 50 : ℝ) < M / 2 := by
+  have hY : (19 / 64 : ℝ) < Y := by
+    apply (cubic_strictMono.lt_iff_lt).mp
+    rw [Y_cubic]
+    norm_num [cubic]
+  have hbeta : Y - Y ^ 3 / 3 ≤ beta := self_sub_cube_div_three_le_arctan Y_pos.le
+  have hYsq := mul_pos (sub_pos.mpr hY)
+    (show 0 < Y + 19 / 64 by linarith [Y_pos])
+  unfold M
+  nlinarith [Y_equation]
+
 theorem IsFullCapMaximizer.centered_half_projection_width_lt_of_affine_nonneg
     {U : Set Plane} (hU : IsFullCapMaximizer U) {a m c : ℝ}
     (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
@@ -52,7 +65,8 @@ theorem IsFullCapMaximizer.centered_half_projection_width_lt_of_affine_nonneg
   have hEP := hU.centered_endpoint_laws hheight hl hr hleft hright hAff
   have hscore := hU.isCap.capScore_lt_of_wide_width_and_endpoint_laws
     ha0 ha1 hh0 hh1 hl hr hleft hright hAff hEP.1 hEP.2
-  exact (not_lt_of_ge hU.reference_le) (hscore.trans forty_one_fiftieths_lt_half_M)
+  exact (not_lt_of_ge hU.reference_le)
+    (hscore.trans fullWidthCeiling_forty_one_fiftieths_lt_half_M)
 
 theorem IsFullCapMaximizer.centered_half_projection_width_lt_of_affine
     {U : Set Plane} (hU : IsFullCapMaximizer U) {a m c : ℝ}
@@ -130,6 +144,6 @@ theorem IsFullCapMaximizer.centered_intermediate_width_tilt
     (sub_nonneg.mpr (capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _))
     (by linarith only [hleft]) hl hr (by ring) hright hAff
     (by linarith only [Real.pi_pos]) le_rfl
-    (forty_one_fiftieths_lt_half_M.le.trans hU.reference_le)
+    (fullWidthCeiling_forty_one_fiftieths_lt_half_M.le.trans hU.reference_le)
 
 end AmbidextrousSofa

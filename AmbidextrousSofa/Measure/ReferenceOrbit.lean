@@ -28,7 +28,10 @@ theorem eq_rigidImage_of_normalized_horizontalTranslate
     (fun E : Set Plane => rigidMap (-θ) (-rotate (-θ) v) '' E) h
   rw [image_inverse_rigidMap_image] at hinv
   have htranslate : horizontalTranslate T b = rigidMap 0 (b, 0) '' T := by
-    simp only [horizontalTranslate, rigidMap, rotate_zero]
+    have hmap : rigidMap 0 (b, 0) = fun p => p + (b, 0) := by
+      funext p
+      simp only [rigidMap, rotate_zero]
+    simp only [horizontalTranslate, hmap]
   rw [htranslate, image_rigidMap_image] at hinv
   have hshift : rotate (-θ) (b, 0) + -rotate (-θ) v =
       rotate (-θ) ((b, 0) - v) := by

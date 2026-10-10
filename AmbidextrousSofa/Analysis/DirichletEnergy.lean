@@ -59,8 +59,8 @@ theorem integral_dirichlet_weight (L : ℝ) :
     funext t
     ring
   rw [hfunction, intervalIntegral.integral_sub
-    ((continuous_id.const_mul L).intervalIntegrable 0 L)
-    ((continuous_id.pow 2).intervalIntegrable 0 L),
+    ((show Continuous (fun t : ℝ => L * t) by fun_prop).intervalIntegrable 0 L)
+    ((show Continuous (fun t : ℝ => t ^ 2) by fun_prop).intervalIntegrable 0 L),
     intervalIntegral.integral_const_mul, integral_id, integral_pow]
   norm_num
   ring

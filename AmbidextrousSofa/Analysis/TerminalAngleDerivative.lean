@@ -99,12 +99,13 @@ theorem IsDownwardCap.sweptNiche_right_continuous {U : Set Plane}
     (hU : IsDownwardCap U) {a : ℝ} (ha0 : Real.pi / 4 ≤ a)
     (haL : a < Real.pi / 2) (x : ℝ) :
     ContinuousWithinAt (fun b => sweptNiche U b x) (Ioi a) a := by
-  have hcont : Continuous (fun b : TerminalAngle => sweptNiche U b x) :=
-    continuous_partialCapSweptNiche.comp
+  have hcont : Continuous (fun b : TerminalAngle => sweptNiche U b x) := by
+    have h := continuous_partialCapSweptNiche.comp
       (show Continuous (fun b : TerminalAngle => ((hU.toCompactCap, b), x)) by fun_prop)
+    simpa only [Function.comp_def, IsDownwardCap.toCompactCap_carrier] using h
   have hOn : ContinuousOn (fun b : ℝ => sweptNiche U b x)
       (Icc (Real.pi / 4) (Real.pi / 2)) :=
-    continuousOn_iff_continuous_restrict.mpr hcont
+    continuousOn_iff_continuous_domRestrict.mpr hcont
   apply (hOn a ⟨ha0, haL.le⟩).mono_of_mem_nhdsWithin
   filter_upwards [Ioo_mem_nhdsGT haL] with b hb
   exact ⟨ha0.trans hb.1.le, hb.2.le⟩

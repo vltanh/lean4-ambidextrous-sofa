@@ -35,9 +35,10 @@ theorem measurableSet_firstTangentChargedSet {U : Set Plane} (hU : IsDownwardCap
     (hp : Measurable p) (hBx : Measurable (fun t => (B t).1))
     (hBy : Measurable (fun t => (B t).2)) :
     MeasurableSet (firstTangentChargedSet U C p B) := by
-  have hn : Continuous (fun x => sweptNiche U (Real.pi / 2) x) :=
-    continuous_capSweptNiche.comp
+  have hn : Continuous (fun x => sweptNiche U (Real.pi / 2) x) := by
+    have h := continuous_capSweptNiche.comp
       (continuous_const.prodMk continuous_id : Continuous (fun x => (hU.toCompactCap, x)))
+    simpa only [Function.comp_def, IsDownwardCap.toCompactCap_carrier] using h
   exact (measurableSet_lt hp measurable_const).inter
     ((measurableSet_Ioo.preimage hBx).inter
       ((measurableSet_lt measurable_const hBy).inter
@@ -137,6 +138,7 @@ local notation "X" => (fun t => (B t).1)
 local notation "aB" => J.sourceBranchDensity (firstTangentSource target) 0
 local notation "charged" => firstTangentChargedSet target C p B
 
+include hl hr hC hheight hlow hhigh hh hunit hTargetBox hleft hright in
 theorem lintegral_first_tangent_density_mul_sin_eq_volume_image {α η : ℝ}
     (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η)
     {T : Set ℝ} (hT : MeasurableSet T)
@@ -174,6 +176,7 @@ theorem lintegral_first_tangent_density_mul_sin_eq_volume_image {α η : ℝ}
     rw [← hpositiveSet]
     have hc := (hgood t ht).2
     refine ⟨hc.2.1, ?_⟩
+    show 0 < sweptNiche target (Real.pi / 2) (B t).1
     rw [hc.2.2.2]
     exact hc.2.2.1
   have hH := congrArg (fun μ : Measure ℝ => μ (X '' T))
@@ -183,6 +186,7 @@ theorem lintegral_first_tangent_density_mul_sin_eq_volume_image {α η : ℝ}
     simpa only [Measure.restrict_apply himage, inter_eq_left.mpr hsub] using hH
   exact hmass.trans hHeq
 
+include hl hr hC hheight hlow hhigh hh hunit hTargetBox hleft hright in
 theorem ae_first_tangent_density_eq_one_sub_on_charged {α η : ℝ}
     (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η) :
     ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)),

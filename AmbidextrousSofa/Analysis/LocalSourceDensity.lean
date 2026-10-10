@@ -163,16 +163,20 @@ theorem curvature_Ioc_le_of_eventual_sampled_density
     have hright := MovingSofaOptimality.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim hb
     have hFormula (n : ℕ) := (hcap n).upperCurvature_real_Ioc hab
     simpa only [hFormula, hTarget.upperCurvature_real_Ioc hab] using hright.sub hleft
-  have hmiddle := middleOuterMass_sum_tendsto_of_compact hHausdorff hcap hTarget
-    (fun n => (hU n).polygon_eq) hbox hwidth haffine isCompact_Icc hupper hperp
-  have herr := selectionDefect_sum_tendsto hTarget hcap hc hrate hHausdorff
+  have hmiddle : Tendsto (fun n => ∑ j ∈ Finset.univ.filter
+      (fun j : SourceIndex (dyadic (level n)) => fullAngle (dyadic (level n)) j ∈ Icc a b),
+        middleOuterMass (U n) (dyadic (level n)) j) atTop (𝓝 0) := by
+    have h := middleOuterMass_sum_tendsto_of_compact hHausdorff hcap hTarget
+      (fun n => (hU n).polygon_eq) hbox hwidth haffine isCompact_Icc hupper hperp
+    convert h using 5
+  have herr := selectionDefect_sum_tendsto (level := level) hTarget hcap hc hrate hHausdorff
   have hmesh := mesh_tendsto.comp hlevel
   have hrhs : Tendsto (fun n => C * (b - a + mesh (level n)) +
       (∑ j ∈ Finset.univ.filter (fun j : SourceIndex (dyadic (level n)) =>
         fullAngle (dyadic (level n)) j ∈ Icc a b), middleOuterMass (U n) (dyadic (level n)) j) +
       ∑ j, selectionDefect target (U n) (level n) (coefficient n) j) atTop
         (𝓝 (C * (b - a))) := by
-    simpa only [add_zero] using
+    simpa only [add_zero, Function.comp_apply] using
       (((tendsto_const_nhds.add hmesh).const_mul C).add hmiddle).add herr
   apply le_of_tendsto_of_tendsto hmass hrhs
   filter_upwards [hdensity] with n hn

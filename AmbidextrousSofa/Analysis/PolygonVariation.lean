@@ -64,7 +64,7 @@ theorem isDownwardCap_upperPolygon (l r : ℝ) (normal : ι → Plane) (height :
     calc
       coordDot (p.1, y) (normal i) ≤ coordDot p (normal i) := by
         unfold coordDot
-        exact add_le_add_left (mul_le_mul_of_nonneg_right hyp (hnormal i)) _
+        exact add_le_add_right (mul_le_mul_of_nonneg_right hyp (hnormal i)) _
       _ ≤ height i := hphalf i
 
 theorem horizontalProjection_upperPolygon (l r : ℝ) (normal : ι → Plane) (height : ι → ℝ)
@@ -92,9 +92,9 @@ theorem upperPolygon_subset_outward [DecidableEq ι] (l r : ℝ)
   intro i
   by_cases hij : i = j
   · subst i
-    simp only [Function.update_same]
+    simp only [Function.update_self]
     linarith
-  · simp only [Function.update_of_ne hij]
+  · simp only [Function.update_of_ne hij, le_refl]
 
 /-- Retaining an old attaining point and its original halfplane pins every
 unchanged actual support, whether or not another constraint is redundant. -/
@@ -137,8 +137,9 @@ theorem exists_outward_attaining_point [Fintype ι] [DecidableEq ι]
     · exact Eventually.of_forall (fun _ h => (h hij).elim)
     · have hvalue : coordDot (p + (0 : ℝ) • normal j) (normal i) < height i := by
         simpa only [zero_smul, add_zero] using hstrict i hij
-      have h := ((continuous_coordDot_right (normal i)).comp hcont).continuousAt
-        (Iio_mem_nhds hvalue)
+      have h : ∀ᶠ ε : ℝ in 𝓝 0, coordDot (p + ε • normal j) (normal i) < height i :=
+        ((continuous_coordDot_right (normal i)).comp hcont).continuousAt
+          (Iio_mem_nhds hvalue)
       exact h.mono (fun _ h _ => h)
   have hnear := hx.and (hy.and (eventually_all.mpr hother))
   obtain ⟨δ, hδ, hball⟩ := Metric.mem_nhds_iff.mp hnear
@@ -155,7 +156,7 @@ theorem exists_outward_attaining_point [Fintype ι] [DecidableEq ι]
   intro i
   by_cases hij : i = j
   · subst i
-    rw [Function.update_same, hfaceε]
+    rw [Function.update_self, hfaceε]
   · rw [Function.update_of_ne hij]
     exact (hotherε i hij).le
 
@@ -261,7 +262,7 @@ theorem exists_outward_support_variation [Fintype ι] [DecidableEq ι]
     intro x hx i
     by_cases hij : i = j
     · subst i
-      simp only [Function.update_same]
+      simp only [Function.update_self]
       exact (hbaseline x hx j).trans (by linarith [hε.1])
     · simpa only [Function.update_of_ne hij] using hbaseline x hx i
   refine ⟨isDownwardCap_upperPolygon _ _ _ _ hlr hnormal hbaseline',
@@ -269,11 +270,11 @@ theorem exists_outward_support_variation [Fintype ι] [DecidableEq ι]
   intro i
   by_cases hij : i = j
   · subst i
-    rw [Function.update_same]
+    rw [Function.update_self]
     obtain ⟨hmε, hmdot⟩ := hattain ε hε
     apply support_eq_of_mem (isCompact_upperPolygon _ _ _ _) ?_ hmε hmdot
     intro z hz
-    simpa only [Function.update_same] using ((mem_upperPolygon_iff _ _ _ _ _).mp hz).2.2 j
+    simpa only [Function.update_self] using ((mem_upperPolygon_iff _ _ _ _ _).mp hz).2.2 j
   · rw [Function.update_of_ne hij]
     exact support_outward_unchanged j hε.1 ⟨p, hp⟩ hexact hij
 

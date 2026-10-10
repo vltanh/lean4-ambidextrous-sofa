@@ -162,7 +162,7 @@ theorem regularCompanionDomain_eq_two (m : ℝ) :
       Ioo (Real.pi / 2) (max (Real.pi / 2) (affineNormalAngle m)) ∪
         Ioo (max (Real.pi / 2) (affineNormalAngle m)) Real.pi := by
   ext t
-  simp only [regularCompanionDomain, mem_sdiff, mem_Ioo, mem_singleton_iff, mem_union]
+  simp only [regularCompanionDomain, Set.mem_sdiff, mem_Ioo, mem_singleton_iff, mem_union]
   by_cases hm : affineNormalAngle m ≤ Real.pi / 2
   · rw [max_eq_left hm]
     constructor
@@ -246,6 +246,6 @@ theorem IsJointCapMaximizer.curvature_density_on_regular_companion_domain
     isFiniteMeasure_restrict.mpr ((measure_mono hsub).trans_lt measure_Ioo_lt_top).ne
   letI : IsFiniteMeasure ((volume : Measure ℝ).restrict (regularCompanionDomain m)) :=
     isFiniteMeasure_restrict.mpr ((measure_mono hsub).trans_lt measure_Ioo_lt_top).ne
-  exact exists_bounded_real_density_of_le_smul (by dsimp [C]; positivity) hdom
+  exact exists_bounded_real_density_of_le_smul (by positivity) hdom
 
 end AmbidextrousSofa

@@ -58,7 +58,7 @@ theorem intervalIntegrable_sourceDensity [Fintype ι] (e : WallExpr ι)
       fun x => ∑ j, (e.sourceSet a b j).indicator (fun _ => w j) x :=
     funext (e.sourceDensity_eq_sum a b w)
   rw [heq]
-  simpa only [Finset.sum_apply] using
+  simpa only [Finset.sum_fn] using
     (IntervalIntegrable.sum Finset.univ (fun j _ =>
       e.intervalIntegrable_sourceIndicator a b j (w j) l r))
 

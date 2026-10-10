@@ -50,9 +50,22 @@ theorem fullTiltedSupportQuarterPair_companion_unit_of_collapsed_top_small_width
     (by rw [hvalues.1]; exact heL)
     (by rw [hvalues.2, htop]; linarith only [hC1])
   have hactiveGlobal := (ae_restrict_iff' measurableSet_Ioo).mp hactive
-  have hzeroGlobal := (ae_restrict_iff' measurableSet_Ioo).mp
-    (fullTiltedSupportQuarterPair_reflected_zero_after_active
-      hU hm haffine hρ hρ0 hρK heq hl hr hC0 hsmall hheight hhigh)
+  -- The reflected wing densities vanish after the active end (the argument of
+  -- `fullTiltedSupportQuarterPair_reflected_zero_after_active`, inlined).
+  have hzeroAfter : ∀ᵐ r ∂volume.restrict (Ioo (fullReflectedActiveEnd m) (Real.pi / 2)),
+      reflectedFirstWingDensity m ρ r = 0 ∧ reflectedSecondWingDensity ρ r = 0 := by
+    have hzero := (ae_restrict_iff' measurableSet_Ioo).mp
+      (hU.full_tilted_wing_densities_zero_before_affine
+        hl hr hC0 hm hsmall hheight haffine hhigh hρ hρ0 heq)
+    have hshift :=
+      (volume.measurePreserving_sub_left (Real.pi / 2)).quasiMeasurePreserving.ae hzero
+    filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hshift]
+      with r hr hs
+    have ht : Real.pi / 2 - r ∈ Ioo (0 : ℝ) (Real.arctan m) := by
+      dsimp only [fullReflectedActiveEnd] at hr
+      constructor <;> linarith only [hr.1, hr.2]
+    exact ⟨(hs ht).2, (hs ht).1⟩
+  have hzeroGlobal := (ae_restrict_iff' measurableSet_Ioo).mp hzeroAfter
   have hwhole : ∀ᵐ r ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)),
       reflectedFirstWingDensity m ρ r ≤ 1 := by
     filter_upwards [ae_restrict_mem measurableSet_Ioo,

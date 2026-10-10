@@ -34,7 +34,7 @@ theorem integral_quadratic_tail_kernel (a b : ℝ) :
   have hd (x : ℝ) :
       HasDerivAt (fun t : ℝ => (b - a) * (t - a) ^ 2 / 2 - (t - a) ^ 3 / 3)
         ((x - a) * (b - x)) x := by
-    have hx := (hasDerivAt_id x).sub_const a
+    have hx := (hasDerivAt_id' x).sub_const a
     convert ((((hx.pow 2).const_mul (b - a)).div_const 2).sub
       ((hx.pow 3).div_const 3)) using 1 <;> norm_num <;> ring
   have hc : Continuous (fun t : ℝ => (t - a) * (b - t)) := by fun_prop
@@ -59,6 +59,7 @@ theorem integral_positive_quadratic_tail_kernel {θ t₀ : ℝ}
           apply intervalIntegral.integral_congr
           rw [uIcc_of_le hθ]
           intro t ht
+          dsimp only
           rw [max_eq_right (by linarith [ht.2] : t - t₀ ≤ 0), zero_mul]
         _ = 0 := by simp
     rw [hz, max_eq_right (sub_nonpos.mpr hθt)]
@@ -70,6 +71,7 @@ theorem integral_positive_quadratic_tail_kernel {θ t₀ : ℝ}
           apply intervalIntegral.integral_congr
           rw [uIcc_of_le ht₀]
           intro t ht
+          dsimp only
           rw [max_eq_right (sub_nonpos.mpr ht.2), zero_mul]
         _ = 0 := by simp
     have hright : (∫ t in t₀..θ, max (t - t₀) 0 * (θ - t)) =
@@ -77,6 +79,7 @@ theorem integral_positive_quadratic_tail_kernel {θ t₀ : ℝ}
       apply intervalIntegral.integral_congr
       rw [uIcc_of_le htθ]
       intro t ht
+      dsimp only
       rw [max_eq_left (sub_nonneg.mpr ht.1)]
     rw [← intervalIntegral.integral_add_adjacent_intervals
       (hc.intervalIntegrable 0 t₀) (hc.intervalIntegrable t₀ θ),

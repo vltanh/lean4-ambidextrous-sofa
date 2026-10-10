@@ -59,7 +59,7 @@ theorem IsDownwardCap.diagonalRoofDeficit_ge_inner_cuts {U : Set Plane}
   have hR : δR ^ 2 / (2 * k) ≤ ∫ x in (a / 2)..a, fR x := by
     apply integral_gap_ge_left_ramp hfR hk hδR.1 huv hδR.2 hfR0
     intro x hx
-    have hfit : δR / k ≤ u - a / 2 := (div_le_iff₀ hk).mpr hδR.2
+    have hfit : δR / k ≤ u - a / 2 := (div_le_iff₀ hk).mpr (by rw [mul_comm]; exact hδR.2)
     have hxU : x ∈ horizontalProjection U := by
       rw [hproj]
       exact ⟨by linarith only [hx.1, hfit, ha], hx.2.trans huv.2⟩
@@ -73,7 +73,7 @@ theorem IsDownwardCap.diagonalRoofDeficit_ge_inner_cuts {U : Set Plane}
       (show -v ∈ Icc (-a) (-a / 2) by constructor <;> linarith only [hvv.1, hvv.2])
       (show δL ≤ k * (-a / 2 - -v) by convert hδL.2 using 1 <;> ring) hfL0
     intro x hx
-    have hfit : δL / k ≤ v - a / 2 := (div_le_iff₀ hk).mpr hδL.2
+    have hfit : δL / k ≤ v - a / 2 := (div_le_iff₀ hk).mpr (by rw [mul_comm]; exact hδL.2)
     have hxU : x ∈ horizontalProjection U := by
       rw [hproj]
       exact ⟨by linarith only [hx.1, hvv.2], by linarith only [hx.2, hfit, ha]⟩
@@ -152,7 +152,7 @@ theorem IsDownwardCap.niche_integral_ge_full_triangles {U : Set Plane}
       congr 3 <;> ring
     simp_rw [hfun]
     rw [intervalIntegral.integral_comp_neg]
-    congr 1 <;> dsimp [d] <;> ring
+    congr 1 <;> (try dsimp only [d]) <;> ring
   rw [hleftInt] at hleft
   change _ ≤ ∫ x in d..(a / 2), f x at hright
   have hf : ∀ l r, IntervalIntegrable f volume l r := fun l r =>

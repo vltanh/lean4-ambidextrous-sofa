@@ -92,7 +92,7 @@ theorem finiteBarrier_dyadic_tendsto {U : ℕ → Set Plane} {K : Set Plane}
         Eventually.of_forall (fun n => ⟨⟨hbox n, mem_univ α⟩, htmem n⟩)⟩
   have hlim := huniform.tendsto_comp
     continuous_partialCapBarrier.continuousAt.continuousWithinAt hp
-  simpa only [finiteBarrier_eq_barrier] using hlim
+  simpa only [finiteBarrier_eq_barrier, IsDownwardCap.toCompactCap_carrier] using hlim
 
 theorem rightPressure_tendsto {U : ℕ → Set Plane} {K : Set Plane}
     (hHausdorff : CapHausdorffTendsto U K) (hU : ∀ n, IsDownwardCap (U n))

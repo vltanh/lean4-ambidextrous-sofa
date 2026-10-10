@@ -29,7 +29,7 @@ theorem firstLo_eq_secant_sub_tan {f fp δ : ℝ}
     firstLo f fp δ = (fp - f * Real.cos δ) / Real.sin δ - Real.tan (δ / 2) := by
   have hhalf := MovingSofaOptimality.tan_half_mul_sin hh
   unfold firstLo
-  rw [div_eq_iff hs, sub_mul, div_mul_cancel₀ _ hs, hhalf]
+  rw [div_eq_iff hs, sub_mul ((fp - f * Real.cos δ) / Real.sin δ), div_mul_cancel₀ _ hs, hhalf]
   ring
 
 theorem firstHi_eq_secant_add_tan {f fm δ : ℝ}
@@ -318,7 +318,9 @@ theorem CapHausdorffTendsto.forwardSecondCornerSecant_tendsto
       (𝓝 (unitNormal (t + Real.pi / 2))) :=
     (Real.continuous_cos.tendsto _ |>.comp hshift).prodMk_nhds
       (Real.continuous_sin.tendsto _ |>.comp hshift)
-  have hsupp := h.support_tendsto_moving hU hK hnormal
+  have hsupp : Tendsto (fun n => MovingSofaOptimality.supp (U n) (angle n + Real.pi / 2)) atTop
+      (𝓝 (MovingSofaOptimality.supp K (t + Real.pi / 2))) :=
+    h.support_tendsto_moving hU hK hnormal
   have hsec := h.forwardAngularSecant_tendsto hU hK hB hbox hangle hδ hsin hcos ht
   simpa only [AngularGrid.forwardSecondCornerSecant, secondCornerVelocity] using
     (hsupp.sub hsec).sub_const 1
@@ -336,7 +338,8 @@ theorem CapHausdorffTendsto.backwardFirstCornerSecant_tendsto
   have hnormal : Tendsto (fun n => unitNormal (angle n)) atTop (𝓝 (unitNormal t)) :=
     (Real.continuous_cos.tendsto _ |>.comp hangle).prodMk_nhds
       (Real.continuous_sin.tendsto _ |>.comp hangle)
-  have hsupp := h.support_tendsto_moving hU hK hnormal
+  have hsupp : Tendsto (fun n => MovingSofaOptimality.supp (U n) (angle n)) atTop
+      (𝓝 (MovingSofaOptimality.supp K t)) := h.support_tendsto_moving hU hK hnormal
   have hsec := h.backwardAngularSecant_tendsto hU hK hB hbox
     (hangle.add_const (Real.pi / 2)) hδ hsin hcos ht
   simpa only [AngularGrid.backwardFirstCornerSecant, firstCornerVelocity] using
@@ -357,11 +360,11 @@ theorem CapHausdorffTendsto.positiveShadowMargin_tendsto
   have hqf := h.firstCornerSecant_tendsto hU hK hB hbox hangle hδ hsin hcos htcomp
   have htan0 := (Real.hasDerivAt_tan (x := 0) (by simp)).continuousAt.tendsto
   have htan : Tendsto (fun n => Real.tan (δ n)) atTop (𝓝 0) := by
-    simpa only [Real.tan_zero] using htan0.comp hδ
+    simpa only [Real.tan_zero, Function.comp_def] using htan0.comp hδ
   have hhalf : Tendsto (fun n => Real.tan (δ n / 2)) atTop (𝓝 0) := by
     have hdiv : Tendsto (fun n => δ n / 2) atTop (𝓝 0) := by
       simpa only [zero_div] using hδ.div_const 2
-    simpa only [Real.tan_zero] using htan0.comp hdiv
+    simpa only [Real.tan_zero, Function.comp_def] using htan0.comp hdiv
   have hthird := (hqf.sub hhalf).sub (htan.mul (hrb.neg.add hhalf))
   simpa only [AngularGrid.positiveShadowMargin, sub_zero, add_zero, zero_mul, min_self] using
     (hrf.neg.sub hhalf).min ((hqf.sub hhalf).min hthird)
@@ -381,17 +384,17 @@ theorem CapHausdorffTendsto.negativeShadowMargin_tendsto
   have hqb := h.backwardFirstCornerSecant_tendsto hU hK hB hbox hangle hδ hsin hcos htcomp
   have htan0 := (Real.hasDerivAt_tan (x := 0) (by simp)).continuousAt.tendsto
   have htan : Tendsto (fun n => Real.tan (δ n)) atTop (𝓝 0) := by
-    simpa only [Real.tan_zero] using htan0.comp hδ
+    simpa only [Real.tan_zero, Function.comp_def] using htan0.comp hδ
   have hhalf : Tendsto (fun n => Real.tan (δ n / 2)) atTop (𝓝 0) := by
     have hdiv : Tendsto (fun n => δ n / 2) atTop (𝓝 0) := by
       simpa only [zero_div] using hδ.div_const 2
-    simpa only [Real.tan_zero] using htan0.comp hdiv
+    simpa only [Real.tan_zero, Function.comp_def] using htan0.comp hdiv
   have hthird := (hrb.sub hhalf).add (htan.mul (hqf.sub hhalf))
   have hlim := (hrb.sub hhalf).min ((hqb.neg.sub hhalf).min hthird)
   have hmin (a b : ℝ) : min a (min b a) = min a b := by
     rcases le_total a b with hab | hba
     · simp only [min_eq_left hab, min_eq_right hab, min_self]
-    · simp only [min_eq_left hba, min_eq_right hba, min_self]
+    · simp only [min_eq_left hba, min_eq_right hba]
   simpa only [AngularGrid.negativeShadowMargin, sub_zero, zero_mul, add_zero,
     hmin] using hlim
 

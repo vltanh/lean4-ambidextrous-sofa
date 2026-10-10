@@ -176,10 +176,11 @@ theorem IsDownwardCap.terminalBarrier_derivative_sign_of_overlong_facet
 
 theorem IsDownwardCap.continuous_sweptNiche_terminalAngle {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hα : α ∈ Icc (Real.pi / 4) (Real.pi / 2)) :
-    Continuous (sweptNiche U α) :=
-  continuous_partialCapSweptNiche.comp
-    (continuous_const.prodMk continuous_id :
-      Continuous (fun x : ℝ => ((hU.toCompactCap, (⟨α, hα⟩ : TerminalAngle)), x)))
+    Continuous (sweptNiche U α) := by
+  have hpath : Continuous (fun x : ℝ => ((hU.toCompactCap, (⟨α, hα⟩ : TerminalAngle)), x)) :=
+    continuous_const.prodMk continuous_id
+  have h := continuous_partialCapSweptNiche.comp hpath
+  exact h
 
 /-- The integral right-angle condition forces the outgoing wall to be
 redundant everywhere on the middle window. Continuity upgrades the exact

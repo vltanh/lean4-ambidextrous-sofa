@@ -163,7 +163,7 @@ theorem IsJointCapMaximizer.proper_first_wing_curvature_zero_before_affine
     rw [sourceCornerHeight, sourceQuarterAngle, if_pos htL]
     exact hU.isCap.attachedCorner_neg_before_positive_affine hl hr hC hsmall haff hhigh ht
   exact le_antisymm ((measure_mono hsub).trans_eq
-    (hU.upperCurvature_proper_negative_corners_eq_zero hproper haffine)) (zero_le _)
+    (hU.upperCurvature_proper_negative_corners_eq_zero hproper haffine)) zero_le
 
 /-- The actual proper width and tilt bounds discharge the geometric
 smallness needed for the unused positive-tilt interval. -/

@@ -38,9 +38,9 @@ theorem continuous_outerSupportingRoof (U : Set Plane) (α : ℝ) :
 theorem IsDownwardCap.capRoof_le_outerSupportingRoof {U : Set Plane}
     (hU : IsDownwardCap U) {α x : ℝ} (hs : 0 < Real.sin α)
     (hx : x ∈ horizontalProjection U) : capRoof U x ≤ outerSupportingRoof U α x := by
-  have h := coordDot_le_support hU.isCompact (capRoof_mem hU.isCompact hx) (unitNormal α)
+  have h : x * Real.cos α + capRoof U x * Real.sin α ≤ support U (unitNormal α) :=
+    coordDot_le_support hU.isCompact (capRoof_mem hU.isCompact hx) (unitNormal α)
   apply (le_div_iff₀ hs).mpr
-  unfold coordDot unitNormal at h
   linarith only [h]
 
 theorem IsDownwardCap.outerSupportingRoof_contact {U : Set Plane}
@@ -53,7 +53,7 @@ theorem IsDownwardCap.outerSupportingRoof_contact {U : Set Plane}
     have hline : coordDot (x, capRoof U x) (unitNormal α) = support U (unitNormal α) := by
       have hroof : capRoof U x = outerSupportingRoof U α x := by linarith only [heq]
       have h := (eq_div_iff hs.ne').mp hroof
-      unfold coordDot unitNormal
+      change x * Real.cos α + capRoof U x * Real.sin α = support U (unitNormal α)
       linarith only [h]
     exact ⟨(x, capRoof U x), ⟨capRoof_mem hU.isCompact hx, hline⟩, rfl⟩
   · rintro ⟨p, hp, rfl⟩
@@ -74,13 +74,15 @@ theorem IsDownwardCap.support_right_baseline_strict {U : Set Plane}
   have hp : (horizontalRight U, 0) ∈ U := hU.baseline_mem_of_mem_projection
     (horizontalRight_mem hU.nonempty hU.isCompact)
   have hle : horizontalRight U * Real.cos α ≤ support U (unitNormal α) := by
-    simpa only [coordDot, unitNormal, zero_mul, add_zero] using
+    have h : horizontalRight U * Real.cos α + 0 * Real.sin α ≤ support U (unitNormal α) :=
       coordDot_le_support hU.isCompact hp (unitNormal α)
+    simpa only [zero_mul, add_zero] using h
   apply lt_of_le_of_ne hle
   intro heq
   have hedge : (horizontalRight U, 0) ∈ MovingSofaOptimality.edge U α := by
     refine ⟨hp, ?_⟩
-    simpa only [coordDot, unitNormal, zero_mul, add_zero] using heq
+    change horizontalRight U * Real.cos α + 0 * Real.sin α = support U (unitNormal α)
+    simpa only [zero_mul, add_zero] using heq
   have hx : horizontalRight U ≤ (MovingSofaOptimality.vminus U α).1 := by
     have hmem : horizontalRight U ∈ horizontalProjection (MovingSofaOptimality.edge U α) :=
       ⟨(horizontalRight U, 0), hedge, rfl⟩
@@ -103,7 +105,8 @@ theorem IsDownwardCap.normalTrim {U : Set Plane} (hU : IsDownwardCap U)
     refine ⟨hU.baseline_mem_of_mem_projection hx, ?_⟩
     have hxr : x ≤ horizontalRight U :=
       le_csSup (isCompact_horizontalProjection hU.isCompact).bddAbove hx
-    simpa only [coordDot, unitNormal, zero_mul, add_zero] using
+    change x * Real.cos α + 0 * Real.sin α ≤ support U (unitNormal α) - ε * Real.sin α
+    simpa only [zero_mul, add_zero] using
       (mul_le_mul_of_nonneg_right hxr hc).trans hbase
   refine ⟨?_, ?_, ?_, fun p hp => hU.inStrip hp.1, ?_⟩
   · exact ⟨(horizontalRight U, 0), hbaseline _ (horizontalRight_mem hU.nonempty hU.isCompact)⟩
@@ -127,7 +130,8 @@ theorem horizontalProjection_normalTrim {U : Set Plane} (hU : IsDownwardCap U)
   have hxr : x ≤ horizontalRight U :=
     le_csSup (isCompact_horizontalProjection hU.isCompact).bddAbove hx
   refine ⟨(x, 0), ⟨hU.baseline_mem_of_mem_projection hx, ?_⟩, rfl⟩
-  simpa only [coordDot, unitNormal, zero_mul, add_zero] using
+  change x * Real.cos α + 0 * Real.sin α ≤ support U (unitNormal α) - ε * Real.sin α
+  simpa only [zero_mul, add_zero] using
     (mul_le_mul_of_nonneg_right hxr hc).trans hbase
 
 theorem horizontalLeft_normalTrim {U : Set Plane} (hU : IsDownwardCap U)
@@ -192,7 +196,9 @@ theorem support_normalTrim_eq {U : Set Plane} (hU : IsDownwardCap U)
     have h := MovingSofaOptimality.dot_vplus_uvec U α
     change (MovingSofaOptimality.vplus U α).1 * Real.cos α +
       (MovingSofaOptimality.vplus U α).2 * Real.sin α = support U (unitNormal α) at h
-    unfold p coordDot unitNormal
+    change (MovingSofaOptimality.vplus U α).1 * Real.cos α +
+      ((MovingSofaOptimality.vplus U α).2 - ε) * Real.sin α =
+        support U (unitNormal α) - ε * Real.sin α
     nlinarith only [h]
   exact support_eq_of_mem hV.isCompact (fun _ hp => hp.2) ⟨hpU, hline.le⟩ hline
 
@@ -206,7 +212,7 @@ theorem support_normalTrim_eq_of_baseline {U : Set Plane} (hU : IsDownwardCap U)
       (MovingSofaOptimality.vplus U α).2 * Real.sin α = support U (unitNormal α) :=
     MovingSofaOptimality.dot_vplus_uvec U α
   have hεH : ε ≤ (MovingSofaOptimality.vplus U α).2 := by
-    apply (mul_le_mul_right hs).mp
+    apply (mul_le_mul_iff_left₀ hs).mp
     nlinarith only [hbase, hmul, hline]
   exact support_normalTrim_eq hU hc hs.le hbase hε0 hεH
 

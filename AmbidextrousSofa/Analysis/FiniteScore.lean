@@ -57,7 +57,7 @@ theorem finiteSpatialScore_eq_integrals {U : Set Plane} (hU : IsDownwardCap U)
   apply intervalSpatialScore_eq_setIntegrals _ _
     (horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact)
   intro a b
-  apply intervalIntegrable_iff'.mpr
+  apply IntegrableOn.intervalIntegrable
   simpa only [uIcc] using hU.integrableOn_capRoof_Icc (min a b) (max a b)
 
 theorem continuous_finiteBarrier_caps (normal : ι → Plane)
@@ -159,8 +159,11 @@ theorem circumscription_idem {U : Set Plane} (hU : IsDownwardCap U) (normal : ι
     congrArg sSup hprojection
   have hsupport : (fun i => support (circumscription U normal) (normal i)) =
       fun i => support U (normal i) := funext (support_circumscription hU normal)
-  unfold circumscription
+  change upperPolygon (horizontalLeft (circumscription U normal))
+    (horizontalRight (circumscription U normal)) normal
+    (fun i => support (circumscription U normal) (normal i)) = circumscription U normal
   rw [hleft, hright, hsupport]
+  rfl
 
 /-- Every nonempty boxed cap domain has an actual polygon maximizing the
 finite physical objective minus the displayed sampled support penalty. -/
@@ -208,7 +211,7 @@ theorem IsDownwardCap.capScore_eq_intervalSpatialScore {U : Set Plane}
   apply FinitePolygon.intervalSpatialScore_eq_setIntegrals _ _
     (horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact)
   intro a b
-  apply intervalIntegrable_iff'.mpr
+  apply IntegrableOn.intervalIntegrable
   simpa only [uIcc] using hU.integrableOn_capRoof_Icc (min a b) (max a b)
 
 end AmbidextrousSofa

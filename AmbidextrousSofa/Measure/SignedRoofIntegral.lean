@@ -132,6 +132,7 @@ theorem integral_firstTangent_density {a b : ℝ} {f g fD gD fDD : ℝ → ℝ}
       (∫ t in a..b, supportP fD g t ^ 2) +
       firstMomentumPrimitive f g fD b - firstMomentumPrimitive f g fD a := by
   have hp : Continuous (supportP fD g) := (hfD.sub hg).add continuous_const
+  have hp2 : Continuous (fun t => supportP fD g t ^ 2) := hp.pow 2
   have hc : Continuous (cornerDensity f g fD gD) := by
     unfold cornerDensity supportP supportQ
     fun_prop
@@ -153,9 +154,10 @@ theorem integral_firstTangent_density {a b : ℝ} {f g fD gD fDD : ℝ → ℝ}
       exact firstTangent_density_identity f g fD gD fDD t
     _ = _ := by
       rw [intervalIntegral.integral_add
-        ((hc.intervalIntegrable _ _).sub ((hp.pow 2).intervalIntegrable _ _)) hd,
+        ((hc.intervalIntegrable _ _).sub
+          (hp2.intervalIntegrable _ _)) hd,
         intervalIntegral.integral_sub (hc.intervalIntegrable _ _)
-          ((hp.pow 2).intervalIntegrable _ _), hftc]
+          (hp2.intervalIntegrable _ _), hftc]
       ring
 
 theorem integral_secondTangent_density {a b : ℝ} {f g fD gD gDD : ℝ → ℝ}
@@ -170,6 +172,7 @@ theorem integral_secondTangent_density {a b : ℝ} {f g fD gD gDD : ℝ → ℝ}
       (∫ t in a..b, supportQ gD f t ^ 2) +
       secondMomentumPrimitive f g gD b - secondMomentumPrimitive f g gD a := by
   have hq : Continuous (supportQ gD f) := (hgD.add hf).sub continuous_const
+  have hq2 : Continuous (fun t => supportQ gD f t ^ 2) := hq.pow 2
   have hc : Continuous (cornerDensity f g fD gD) := by
     unfold cornerDensity supportP supportQ
     fun_prop
@@ -191,9 +194,10 @@ theorem integral_secondTangent_density {a b : ℝ} {f g fD gD gDD : ℝ → ℝ}
       exact secondTangent_density_identity f g fD gD gDD t
     _ = _ := by
       rw [intervalIntegral.integral_add
-        ((hc.intervalIntegrable _ _).sub ((hq.pow 2).intervalIntegrable _ _)) hd,
+        ((hc.intervalIntegrable _ _).sub
+          (hq2.intervalIntegrable _ _)) hd,
         intervalIntegral.integral_sub (hc.intervalIntegrable _ _)
-          ((hq.pow 2).intervalIntegrable _ _), hftc]
+          (hq2.intervalIntegrable _ _), hftc]
       ring
 
 /-- Three graph arcs with the middle one reversed. The identity does not
@@ -232,11 +236,11 @@ theorem twice_integral_three_graph_arcs
   rw [hPQ, hPzero, mul_zero] at hpi
   rw [← hQR, hRzero, mul_zero] at hri
   have hsplit := intervalIntegral.integral_add_adjacent_intervals
-    (hF.intervalIntegrable (P a).1 (Q b).1)
-    (hF.intervalIntegrable (Q b).1 (Q d).1)
+    (hF.intervalIntegrable (μ := volume) (P a).1 (Q b).1)
+    (hF.intervalIntegrable (μ := volume) (Q b).1 (Q d).1)
   have hjoin := intervalIntegral.integral_add_adjacent_intervals
-    (hF.intervalIntegrable (P a).1 (Q b).1)
-    (hF.intervalIntegrable (Q b).1 (R e).1)
+    (hF.intervalIntegrable (μ := volume) (P a).1 (Q b).1)
+    (hF.intervalIntegrable (μ := volume) (Q b).1 (R e).1)
   linarith
 
 /-- Signed roof integration with actual graph identities on the three arcs.
@@ -301,8 +305,12 @@ theorem signedRoof_integral_of_graphs
       Real.sin_pi_div_two, Real.cos_pi_div_two, zero_mul, mul_zero, add_zero]
   have hDzero : (secondTangentPoint g gD 0).2 = 0 := by
     simp only [secondTangentPoint, companionSupportPoint_coordinates, hGtop,
-      sub_self, Real.sin_zero, Real.cos_zero, zero_mul, mul_zero, sub_zero]
+      sub_self, Real.sin_zero, Real.cos_zero, zero_mul, mul_zero]
   have hgraphs := twice_integral_three_graph_arcs h0d hbd hbL hDc hCc hBc
+    (PX := companionSupportPointDX (fun s => g s - 1) gDD)
+    (PY := companionSupportPointDY (fun s => g s - 1) gDD)
+    (RX := supportPointDX (fun s => f s - 1) fDD)
+    (RY := supportPointDY (fun s => f s - 1) fDD)
     (fun t _ => hasDerivWithinAt_companionSupportPoint_fst
       ((hderivG t).sub_const 1) (hsecondG t))
     (fun t _ => hasDerivWithinAt_companionSupportPoint_snd
@@ -338,7 +346,7 @@ theorem signedRoof_integral_of_graphs
   rw [hdetD, hdetC, hdetB] at hgraphs
   simp only [secondTangentPoint, companionSupportPoint_coordinates, firstTangentPoint,
     Reference.supportPoint, Real.cos_zero, Real.sin_zero, Real.cos_pi_div_two,
-    Real.sin_pi_div_two, mul_zero, mul_one, zero_sub, zero_mul] at hgraphs
+    Real.sin_pi_div_two, mul_zero, mul_one, zero_sub] at hgraphs
   have hBint := integral_firstTangent_density hbL hf hg hfD hgD
     (fun t _ => hderivF t) (fun t _ => hderivG t) (fun t _ => hsecondF t) hfDD
   have hDint := integral_secondTangent_density h0d hf hg hfD hgD
@@ -351,9 +359,9 @@ theorem signedRoof_integral_of_graphs
     unfold cornerDensity supportP supportQ
     fun_prop
   have hsplit0 := intervalIntegral.integral_add_adjacent_intervals
-    (hc.intervalIntegrable 0 d) (hc.intervalIntegrable d (Real.pi / 2))
+    (hc.intervalIntegrable (μ := volume) 0 d) (hc.intervalIntegrable d (Real.pi / 2))
   have hsplitb := intervalIntegral.integral_add_adjacent_intervals
-    (hc.intervalIntegrable b d) (hc.intervalIntegrable d (Real.pi / 2))
+    (hc.intervalIntegrable (μ := volume) b d) (hc.intervalIntegrable d (Real.pi / 2))
   linarith
 
 /-- The signed formula for the actual complete angular niche. The global
@@ -439,6 +447,7 @@ theorem integral_min_sq_of_sign_switch {a b c : ℝ} {p : ℝ → ℝ}
         apply intervalIntegral.integral_congr
         intro t ht
         rw [uIcc_of_le hab] at ht
+        dsimp only
         rw [min_eq_right (hleft t ht)]
         norm_num
       _ = 0 := by simp
@@ -446,9 +455,10 @@ theorem integral_min_sq_of_sign_switch {a b c : ℝ} {p : ℝ → ℝ}
     apply intervalIntegral.integral_congr
     intro t ht
     rw [uIcc_of_le hbc] at ht
+    dsimp only
     rw [min_eq_left (hright t ht)]
   have hsplit := intervalIntegral.integral_add_adjacent_intervals
-    (hclip.intervalIntegrable a b) (hclip.intervalIntegrable b c)
+    (hclip.intervalIntegrable (μ := volume) a b) (hclip.intervalIntegrable b c)
   rw [hleftInt, hrightInt, zero_add] at hsplit
   exact hsplit.symm
 
@@ -462,6 +472,7 @@ theorem integral_max_sq_of_sign_switch {a b c : ℝ} {q : ℝ → ℝ}
     apply intervalIntegral.integral_congr
     intro t ht
     rw [uIcc_of_le hab] at ht
+    dsimp only
     rw [max_eq_left (hleft t ht)]
   have hrightInt : (∫ t in b..c, max (q t) 0 ^ 2) = 0 := by
     calc
@@ -469,11 +480,12 @@ theorem integral_max_sq_of_sign_switch {a b c : ℝ} {q : ℝ → ℝ}
         apply intervalIntegral.integral_congr
         intro t ht
         rw [uIcc_of_le hbc] at ht
+        dsimp only
         rw [max_eq_right (hright t ht)]
         norm_num
       _ = 0 := by simp
   have hsplit := intervalIntegral.integral_add_adjacent_intervals
-    (hclip.intervalIntegrable a b) (hclip.intervalIntegrable b c)
+    (hclip.intervalIntegrable (μ := volume) a b) (hclip.intervalIntegrable b c)
   rw [hleftInt, hrightInt, add_zero] at hsplit
   exact hsplit.symm
 

@@ -98,7 +98,7 @@ theorem IsJointCapMaximizer.proper_wing_densities_zero_before_affine
     apply le_trans _ (le_max_right _ _)
     unfold affineNormalAngle
     linarith only [hmem.2]
-  · have hm0 : Real.arctan m ≤ 0 := Real.arctan_nonpos.mpr (le_of_not_ge hm)
+  · have hm0 : Real.arctan m ≤ 0 := Real.arctan_le_zero.mpr (le_of_not_ge hm)
     filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ht
     exfalso
     linarith only [ht.1, ht.2, hm0]

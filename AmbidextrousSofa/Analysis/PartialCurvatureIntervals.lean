@@ -56,7 +56,15 @@ theorem curvature_Ioc_le_of_nonatoms
   have hmiddle := AngularGrid.middleOuterMass_sum_tendsto_of_compact hHausdorff hcap hTarget
     (grid := fun n => outerGrid α (dyadic (level n)))
     (fun n => (hU n).polygon_eq) hbox hwidth haffine isCompact_Icc hupper hperp
-  have herr := selectionDefect_sum_tendsto (α := α) hTarget hcap hc hrate hHausdorff
+  have hmiddle' : Tendsto (fun n =>
+      ∑ j ∈ Finset.univ.filter (fun j : SourceIndex α (dyadic (level n)) =>
+        fullAngle α (dyadic (level n)) j ∈ Icc a b), middleOuterMass (U n) α (dyadic (level n)) j)
+      atTop (𝓝 0) := by
+    refine hmiddle.congr (fun n => ?_)
+    rw [Finset.filter_congr_decidable]
+    rfl
+  have herr := selectionDefect_sum_tendsto (α := α) (level := level) hTarget hcap hc hrate
+    hHausdorff
   have hmesh := (mesh_tendsto α).comp hlevel
   have hrhs : Tendsto (fun n =>
       (8 * R + 24) * (b - a + mesh α (level n)) +
@@ -64,8 +72,8 @@ theorem curvature_Ioc_le_of_nonatoms
         fullAngle α (dyadic (level n)) j ∈ Icc a b), middleOuterMass (U n) α (dyadic (level n)) j) +
       ∑ j, selectionDefect target (U n) α (level n) (coefficient n) j) atTop
         (𝓝 ((8 * R + 24) * (b - a))) := by
-    simpa only [add_zero] using
-      (((tendsto_const_nhds.add hmesh).const_mul (8 * R + 24)).add hmiddle).add herr
+    simpa only [add_zero, Function.comp_apply] using
+      (((tendsto_const_nhds.add hmesh).const_mul (8 * R + 24)).add hmiddle').add herr
   exact le_of_tendsto_of_tendsto hmass hrhs (Eventually.of_forall
     (fun n => (hU n).curvature_Ioc_le (hc n) hR (hbox n) hab hupper htop hterminal))
 

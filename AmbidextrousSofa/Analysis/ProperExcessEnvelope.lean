@@ -28,7 +28,8 @@ theorem ae_Ioo_splice_real {P : ℝ → Prop} {a b c : ℝ}
     ∀ᵐ t ∂volume.restrict (Ioo a c), P t := by
   have hne : ∀ᵐ t : ℝ ∂volume, t ≠ b := by
     apply ae_iff.mpr
-    simpa only [not_not] using (measure_singleton b : volume ({b} : Set ℝ) = 0)
+    simpa only [not_not, Set.ofPred_eq_eq_singleton] using
+      (measure_singleton b : volume ({b} : Set ℝ) = 0)
   have hL := (ae_restrict_iff' measurableSet_Ioo).mp hleft
   have hR := (ae_restrict_iff' measurableSet_Ioo).mp hright
   filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hL,

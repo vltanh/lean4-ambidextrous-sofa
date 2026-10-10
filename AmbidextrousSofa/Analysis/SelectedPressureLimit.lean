@@ -111,7 +111,7 @@ theorem finiteBarrier_dyadic_tendsto {U : ℕ → Set Plane} {K : Set Plane}
   have hlim := huniform.tendsto_comp
     continuous_capSweptNiche.continuousAt.continuousWithinAt hp
   have heq (n : ℕ) := finiteBarrier_eq_niche (hU n) (dyadic (level n)) (t n)
-  simpa only [heq] using hlim
+  simpa only [heq, IsDownwardCap.toCompactCap_carrier] using hlim
 
 theorem rightPressure_tendsto {U : ℕ → Set Plane} {K : Set Plane}
     (hHausdorff : CapHausdorffTendsto U K) (hU : ∀ n, IsDownwardCap (U n))

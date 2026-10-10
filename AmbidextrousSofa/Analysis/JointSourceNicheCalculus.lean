@@ -61,6 +61,7 @@ variable (hU : IsFullCapMaximizer target) {C h m c : ℝ}
   (hTargetBox : target ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1)
   (hleft : a < horizontalLeft target) (hright : horizontalRight target < b)
 
+include hU hl hr hC hm hheight haffine hlow hhigh hh hρ hρ0 hρK heq hunit in
 theorem ae_spatial_mem_firstUnitPositiveInterval :
     ∀ᵐ z ∂(J.measure : Measure Plane), z.2 ∈ firstUnitPositiveInterval target C := by
   have hmid : Ioo (horizontalLeft target + capWidth target / 4)
@@ -78,6 +79,7 @@ theorem ae_spatial_mem_firstUnitPositiveInterval :
   rw [← hpositive]
   exact ⟨hz, hp⟩
 
+include hU C hl hr hC hleft hright in
 theorem ae_hasDerivAt_niche_on_source :
     ∀ᵐ z ∂(J.measure : Measure Plane),
       HasDerivAt (sweptNiche target (Real.pi / 2)) (J.nicheDerivative z.2) z.2 := by
@@ -99,6 +101,7 @@ theorem ae_hasDerivAt_niche_on_source :
   rw [hmid] at hz
   exact hd hz
 
+include hU C hl hr hC hm hheight haffine hlow hhigh hh hρ hρ0 hρK heq hunit hleft hright in
 theorem setIntegral_sourceGraphResidual_eq_zero {E : Set ℝ} (hE : MeasurableSet E) :
     (∫ z in univ ×ˢ E, J.sourceGraphResidual z ∂(J.measure : Measure Plane)) = 0 := by
   let P := firstUnitPositiveInterval target C
@@ -125,11 +128,12 @@ theorem setIntegral_sourceGraphResidual_eq_zero {E : Set ℝ} (hE : MeasurableSe
     filter_upwards [J.ae_spatial_mem_firstUnitPositiveInterval hU hl hr hC hm hheight
       haffine hlow hhigh hh hρ hρ0 hρK heq hunit] with z hz
     apply propext
-    simp only [mem_prod, mem_univ, true_and, mem_inter_iff, hz, and_true]
+    simp only [mem_prod, mem_univ, true_and, mem_inter_iff, show z.2 ∈ P from hz, and_true]
   rw [setIntegral_congr_set hs]
   exact J.setIntegral_graph_residual_eq_zero hU.isCap hbox
     (by rw [hmid]; exact hsub) hpos (hE.inter hP) inter_subset_right
 
+include hU hl hr hC hheight haffine hρ hρ0 hρK heq hTargetBox hleft hright in
 theorem ae_first_tangent_residual_eq_zero :
     ∀ᵐ z ∂J.sourceBranchMeasure (firstTangentSource target), J.sourceGraphResidual z = 0 := by
   filter_upwards [ae_restrict_mem (measurableSet_firstTangentSource hU.isCap.isCompact),
@@ -147,6 +151,7 @@ theorem ae_first_tangent_residual_eq_zero :
   field_simp [hs]
   ring
 
+include hU hl hr hC hheight haffine hρ hρ0 hρK heq hTargetBox hleft hright in
 theorem ae_second_tangent_residual_eq_zero :
     ∀ᵐ z ∂J.sourceBranchMeasure (secondTangentSource target), J.sourceGraphResidual z = 0 := by
   filter_upwards [ae_restrict_mem (measurableSet_secondTangentSource hU.isCap.isCompact),
@@ -166,10 +171,10 @@ theorem ae_second_tangent_residual_eq_zero :
     nth_rw 1 [show z.1 = (z.1 - Real.pi / 2) + Real.pi / 2 by ring]
     exact Real.cos_add_pi_div_two _
   unfold sourceGraphResidual
-  rw [hg, hs, hc']
-  field_simp [hc0]
+  rw [hg, hs, hc', div_mul_cancel₀ _ hc0]
   ring
 
+include hU hl hr hC hm hheight haffine hlow hhigh hh hρ hρ0 hρK heq hunit hTargetBox hleft hright in
 theorem setIntegral_corner_residuals_add_eq_zero {E : Set ℝ} (hE : MeasurableSet E) :
     (∫ z in univ ×ˢ E, J.sourceGraphResidual z
       ∂J.sourceBranchMeasure (firstCornerSource target)) +

@@ -58,7 +58,7 @@ theorem ContinuousOn.le_on_Icc_of_ae_le_on_Ioo
   have hclosed : Icc a b ⊆ closure (interior (Icc a b)) := by
     simpa only [interior_Icc, closure_Ioo hab.ne] using
       (Subset.rfl : Icc a b ⊆ Icc a b)
-  have heq := eqOn_of_ae_eq hEq (hf.min continuousOn_const) hf hclosed
+  have heq := Measure.eqOn_of_ae_eq hEq (hf.inf continuousOn_const) hf hclosed
   intro x hx
   calc
     f x = min (f x) C := (heq hx).symm

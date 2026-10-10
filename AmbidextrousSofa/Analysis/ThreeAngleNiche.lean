@@ -121,7 +121,7 @@ theorem symmetric_barrier_gain_integral {n : ℝ → ℝ} {a k u v gR gL : ℝ}
       congr 3 <;> ring
     simp_rw [hfun]
     rw [intervalIntegral.integral_comp_neg]
-    congr 1 <;> dsimp [d] <;> ring
+    congr 1 <;> (try dsimp only [d]) <;> ring
   rw [hleftInt] at hL
   change gR ≤ ∫ x in d..(a / 2), f x at hR
   have hf : ∀ l r, IntervalIntegrable f volume l r := fun l r =>
@@ -219,6 +219,7 @@ theorem IsDownwardCap.threeAngle_integral_ge_wide_pieces {U : Set Plane}
     (show (v - u) / 2 ≤ a / 2 by linarith only [hd.1])
     (show (v - u) / 2 ≤ wideCrossing k v (wideNearLeftIntercept U k) by linarith only [hcL]) hpL
   have h := symmetric_barrier_gain_integral hn hd hR hL
-  convert h using 1 <;> dsimp only [n] <;> ring
+  convert h using 1
+  ring
 
 end AmbidextrousSofa

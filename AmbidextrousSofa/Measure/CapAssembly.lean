@@ -154,7 +154,7 @@ theorem actual_cap_four_term_deficit (C : ℝ) {S : Set Plane} (hS : IsCompact S
     (subset_actualCapEnvelope hS hconn hstrip hU hV) hS.measurableSet measurableSet_Icc
     (measurableSet_middleHalfInterval (horizontalLeft S) (horizontalRight S))
     (middleHalfInterval_subset hlr)
-    (by rw [Real.volume_Icc]; exact ENNReal.ofReal_ne_top)
+    (by rw [bodyProjectionInterval, Real.volume_Icc]; exact ENNReal.ofReal_ne_top)
     (middleHalfInterval_measure_balance hlr)
     hcapU.measurable_roofDeficit hcapV.measurable_roofDeficit
     (measurable_partialBarrier hcapU.isCompact hU.angle_pos hU.angle_le)

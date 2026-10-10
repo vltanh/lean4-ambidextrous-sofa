@@ -30,7 +30,10 @@ theorem image_rigidMap_image (S : Set Plane) (θ φ : ℝ) (v w : Plane) :
 theorem image_inverse_rigidMap_image (S : Set Plane) (θ : ℝ) (v : Plane) :
     rigidMap (-θ) (-rotate (-θ) v) '' (rigidMap θ v '' S) = S := by
   rw [image_rigidMap_image]
-  simp only [neg_add_cancel, add_neg_cancel, rigidMap, rotate_zero, add_zero, image_id']
+  have hid : rigidMap 0 0 = id := by
+    funext p
+    simp only [rigidMap, rotate_zero, add_zero, id]
+  simp only [neg_add_cancel, add_neg_cancel, hid, image_id]
 
 theorem SameInitialOrientation.rebase {lower upper : RigidMotionPath}
     (h : SameInitialOrientation lower upper) (θ : ℝ) (v : Plane) :

@@ -50,6 +50,7 @@ theorem IsDownwardCap.secondWall_le_height_sub_one_of_unit_prefix
             Real.sin t * ((1 - ρ (s + Real.pi / 2)) * Real.cos s) := by
         apply intervalIntegral.integral_congr
         intro s _hs
+        dsimp only
         rw [Real.sin_sub]
         ring
       _ = _ := by
@@ -78,7 +79,7 @@ theorem IsDownwardCap.secondWall_le_height_sub_one_of_unit_prefix
   unfold secondWall
   apply (div_le_iff₀ hc).mpr
   dsimp only [shiftedCompanionX, shiftedCompanionY] at hkernel
-  dsimp only [coordDot, companionNormal] at hsupp
+  dsimp only [coordDot, companionNormal] at hsupp ⊢
   nlinarith only [hnonpos, hkernel, hsupp, Real.sin_sq_add_cos_sq t]
 
 end AmbidextrousSofa

@@ -44,14 +44,14 @@ theorem twice_adaptiveFunctional_eq_support_expression (u : QuarterPair) :
   have hC : ContinuousOn (cornerDensity u.f u.g u.fD u.gD) (Icc 0 (Real.pi / 2)) :=
     ((u.continuous_f.sub continuousOn_const).mul hq).sub
       ((u.continuous_g.sub continuousOn_const).mul hp)
-  have hEi := ContinuousOn.intervalIntegrable_of_Icc hL hE
-  have hCi := ContinuousOn.intervalIntegrable_of_Icc hL hC
+  have hEi := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) hL hE
+  have hCi := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) hL hC
   have hPi : IntervalIntegrable
       (fun t => min (supportP u.fD u.g t) 0 ^ 2) volume 0 (Real.pi / 2) :=
-    ContinuousOn.intervalIntegrable_of_Icc hL ((hp.min continuousOn_const).pow 2)
+    ContinuousOn.intervalIntegrable_of_Icc hL ((hp.inf continuousOn_const).pow 2)
   have hQi : IntervalIntegrable
       (fun t => max (supportQ u.gD u.f t) 0 ^ 2) volume 0 (Real.pi / 2) :=
-    ContinuousOn.intervalIntegrable_of_Icc hL ((hq.max continuousOn_const).pow 2)
+    ContinuousOn.intervalIntegrable_of_Icc hL ((hq.sup continuousOn_const).pow 2)
   calc
     _ = ∫ t in (0 : ℝ)..(Real.pi / 2), 2 * adaptiveDensity u t := by
       rw [intervalIntegral.integral_const_mul]

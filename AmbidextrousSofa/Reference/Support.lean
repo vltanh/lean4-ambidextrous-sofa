@@ -74,12 +74,13 @@ theorem hasDerivAt_if_le (c : ℝ) {f g fD gD : ℝ → ℝ}
     (hvalue : f c = g c) (hderiv : fD c = gD c) (x : ℝ) :
     HasDerivAt (fun y => if y ≤ c then f y else g y)
       (if x ≤ c then fD x else gD x) x := by
-  rcases lt_trichotomy x c with hlt | rfl | hgt
+  rcases lt_trichotomy x c with hlt | heq | hgt
   · rw [if_pos hlt.le]
     apply (hf x).congr_of_eventuallyEq
     filter_upwards [Iio_mem_nhds hlt] with y hy
     exact if_pos hy.le
-  · rw [if_pos le_rfl]
+  · subst x
+    rw [if_pos le_rfl]
     have hleft : HasDerivWithinAt (fun y => if y ≤ c then f y else g y)
         (fD c) (Iic c) c := by
       apply (hf c).hasDerivWithinAt.congr
@@ -105,7 +106,7 @@ theorem hasDerivAt_if_le (c : ℝ) {f g fD gD : ℝ → ℝ}
 
 theorem hasDerivAt_middlePhaseAngle (t : ℝ) :
     HasDerivAt (fun x : ℝ => x / 2 + Real.pi / 8) (1 / 2) t := by
-  simpa only [one_div] using ((hasDerivAt_id t).div_const 2).add_const (Real.pi / 8)
+  simpa only [one_div] using ((hasDerivAt_id' t).div_const 2).add_const (Real.pi / 8)
 
 theorem hasDerivAt_fEarly (t : ℝ) : HasDerivAt fEarly (fEarlyD t) t := by
   unfold fEarly fEarlyD

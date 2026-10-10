@@ -3,6 +3,7 @@ module
 public import AmbidextrousSofa.Analysis.LeftCompanionCap
 public import AmbidextrousSofa.Analysis.TerminalSupportTails
 public import AmbidextrousSofa.Analysis.SurfaceAreaFacts
+import MovingSofaOptimality.Convex.ConvexCurve
 
 @[expose] public section
 
@@ -145,16 +146,16 @@ theorem IsDownwardCap.vplus_leftCompanionCap_eq_rightRoof_of_positive_coefficien
       a * Real.cos t + capRoof U a * Real.sin t := hp.2.trans hsupport
   have hheight := mul_le_mul_of_nonneg_right (hceiling p hp.1) hs.le
   have hax : a ≤ p.1 := by
-    apply (mul_le_mul_left hcoef).mp
+    apply le_of_mul_le_mul_left _ hcoef
     rw [hline] at hpval
     nlinarith only [hpval, hheight]
   have hpx : p.1 = a := le_antisymm hp.1.2.2 hax
   apply Prod.ext hpx
   rw [hpx] at hpval
   apply le_antisymm
-  · apply (mul_le_mul_right hs).mp
+  · apply le_of_mul_le_mul_right _ hs
     linarith only [hpval]
-  · apply (mul_le_mul_right hs).mp
+  · apply le_of_mul_le_mul_right _ hs
     linarith only [hpval]
 
 /-- Positive tilt has no initial curvature through the middle normal,
@@ -216,7 +217,7 @@ theorem upperCurvature_restrict_Ioc_eq_of_vplus_eq
   rw [hinter]
   by_cases hspan : max x a ≤ min y b
   · exact hcurvature hspan (le_max_right _ _) (min_le_right _ _)
-  · rw [Ioc_eq_empty_of_le (le_of_not_ge hspan)]
+  · rw [Ioc_eq_empty_of_le (le_of_not_ge hspan), measure_empty, measure_empty]
 
 /-- The curvature after the middle normal is exactly the original
 charged-wing curvature, with the original middle atom excluded. -/

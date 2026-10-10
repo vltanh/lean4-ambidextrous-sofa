@@ -27,7 +27,7 @@ theorem integral_positive_asymmetric_tent_le_full {s t l r A B : ℝ}
       s * t * (max (r - l) 0) ^ 2 / (2 * (s + t)) := by
   have hc : Continuous (fun x : ℝ => max (min (s * (x - l)) (t * (r - x))) 0) := by
     fun_prop
-  have hmono := intervalIntegral.integral_mono_interval (min_le_left A l) hAB
+  have hmono := intervalIntegral.integral_mono_interval (μ := volume) (min_le_left A l) hAB
     (le_max_left B r) (Eventually.of_forall (fun x => le_max_right
       (min (s * (x - l)) (t * (r - x))) 0))
     (hc.intervalIntegrable (min A l) (max B r))
@@ -150,7 +150,7 @@ theorem fullTriangle_niche_gain_integral {n : ℝ → ℝ} {A k u v b B : ℝ}
       (by simpa only [hbase] using hfloor x) hw (min_le_right _ _)
     simpa only [T, L, hbase,
       show -(u - k - x) = x - (u - k) by ring] using hp
-  have hmono := intervalIntegral.integral_mono_on hd
+  have hmono := intervalIntegral.integral_mono_on (f := fun x => T x - L x) hd
     ((hT.sub hL).intervalIntegrable _ _) ((hn _ _).sub (hF.intervalIntegrable _ _)) hpoint
   rw [intervalIntegral.integral_sub (hT.intervalIntegrable _ _)
     (hL.intervalIntegrable _ _)] at hmono
@@ -162,7 +162,7 @@ theorem fullTriangle_niche_gain_integral {n : ℝ → ℝ} {A k u v b B : ℝ}
     have h := integral_positive_asymmetric_tent_le_full
       (l := u - k) (r := fullTriangleRightZero k u B)
       (by norm_num : (0 : ℝ) < 1) (by linarith only [hk] : 0 < 1 + k) hd
-    simpa only [L, one_mul, min_comm,
+    simpa only [L, one_mul, mul_one, min_comm,
       show 1 + (1 + k) = 2 + k by ring, div_eq_mul_inv,
       fullTriangleFloorCoefficient, mul_assoc, mul_left_comm, mul_comm] using h
   linarith only [hmono, hTI, hLI]

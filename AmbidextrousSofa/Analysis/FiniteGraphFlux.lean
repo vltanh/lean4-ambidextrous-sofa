@@ -198,7 +198,8 @@ theorem finiteBarrier_projection_eq_sources_of_positive
         barrierIntercept (normal grid) (fun j => support U (normal grid j)) i)
     have hz : finiteBarrier U (normal grid) (pairList grid) none x = 0 := by
       rw [finiteBarrier_eq_eval (normal grid) _ (fun _ => rfl)]
-      simpa only [heq, wallSlope, barrierIntercept, zero_mul, zero_add] using hvalue
+      rw [heq] at hvalue
+      simpa only [wallSlope, barrierIntercept, zero_mul, zero_add] using hvalue
     exact (ne_of_gt (hpos x hx)) hz
   simpa only [hfloor, mul_zero, zero_add] using finiteBarrier_projection_eq_sources U grid hlr t
 

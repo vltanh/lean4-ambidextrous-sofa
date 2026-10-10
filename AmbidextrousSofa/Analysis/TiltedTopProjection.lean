@@ -70,13 +70,14 @@ theorem IsDownwardCap.top_points_after_positive_affine
       (hU.capRoof_le_affine_of_affine_segment ha hb hab haffine p.1 ⟨p, hp, rfl⟩)
   have hline : m * b + c = 1 := (haffine b ⟨hab.le, le_rfl⟩).symm.trans hhigh
   have hlo : b ≤ p.1 := by
-    apply (mul_le_mul_left hm).mp
+    apply (mul_le_mul_iff_right₀ hm).mp
     linarith only [hroof, hline, hpy]
   have hedge : p ∈ MovingSofaOptimality.edge U (Real.pi / 2) := by
     refine ⟨hp, ?_⟩
     change coordDot p (unitNormal (Real.pi / 2)) = angleSupport U (Real.pi / 2)
     simp only [coordDot, unitNormal, angleSupport, Real.cos_pi_div_two, Real.sin_pi_div_two,
-      mul_zero, mul_one, zero_add, hpy, ← capHeight, hheight]
+      mul_zero, mul_one, zero_add, hpy]
+    exact hheight.symm
   have hxp : p.1 ∈ Icc (MovingSofaOptimality.vplus U (Real.pi / 2)).1
       (MovingSofaOptimality.vminus U (Real.pi / 2)).1 := by
     rw [← hU.horizontalProjection_edge (by simp : 0 ≤ Real.sin (Real.pi / 2))]
@@ -163,7 +164,8 @@ theorem IsFullCapMaximizer.tilted_top_projection_eq
       {x : ℝ | 0 < sweptNiche U (Real.pi / 2) x}) ≤
       volume.real (Icc (-2 * C) (-C) \ Ioo C b) +
         volume.real (Icc C (2 * C) \ Ioo C b) := by
-    simpa only [hJL, hJR, hl, hr] using hmoment
+    rw [hJL, hJR] at hmoment
+    simpa only [hl, hr] using hmoment
   have houterL := real_left_window_without_top_le
     (show -2 * C ≤ -C by linarith only [hC])
     (show -2 * C ≤ C by linarith only [hC]) (show -C ≤ b by linarith only [hCb, hC])

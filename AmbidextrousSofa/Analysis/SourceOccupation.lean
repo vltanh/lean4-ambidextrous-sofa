@@ -116,7 +116,7 @@ theorem sum_cos_abs_normalizedExposureDefect_tendsto_zero_of_canonical_maximum
         |normalizedExposureDefect (U n) (dyadic (level n)) j|) atTop (𝓝 0) := by
   have hD := erosionMoments_tendsto_zero_of_canonical_maximum hTarget hheight haffine
     hTargetBox hU hHausdorff hlevel hc hrate hleft hright
-  have herr := selectionDefect_sum_tendsto hTarget.isCap (fun n => (hU n).isCap)
+  have herr := selectionDefect_sum_tendsto (level := level) hTarget.isCap (fun n => (hU n).isCap)
     hc hrate hHausdorff
   apply squeeze_zero
     (fun n => Finset.sum_nonneg (fun j _ => mul_nonneg (abs_nonneg _) (abs_nonneg _)))

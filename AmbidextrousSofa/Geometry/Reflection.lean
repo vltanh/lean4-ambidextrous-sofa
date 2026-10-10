@@ -138,7 +138,7 @@ theorem horizontalProjection_actualHull {S : Set Plane} (hcompact : IsCompact S)
   have hprojection : Convex ℝ (horizontalProjection S) := by
     rw [horizontalProjection_eq_Icc_of_isConnected hcompact hconnected]
     exact convex_Icc _ _
-  have hpre : Convex ℝ (Prod.fst ⁻¹' horizontalProjection S) := by
+  have hpre : Convex ℝ ((Prod.fst : Plane → ℝ) ⁻¹' horizontalProjection S) := by
     intro p hp q hq a b ha hb hab
     exact hprojection hp hq ha hb hab
   have hhull : actualHull S ⊆ Prod.fst ⁻¹' horizontalProjection S :=
@@ -222,7 +222,7 @@ theorem support_reflect {K : Set Plane} (hK : IsCompact K) (hne : K.Nonempty)
   · apply support_le_of_forall (hne.image reflect)
     rintro q ⟨p, hp, rfl⟩
     rw [coordDot_reflect]
-    exact add_le_add_right (coordDot_le_support hK hp (v.1, -v.2)) _
+    exact add_le_add_left (coordDot_le_support hK hp (v.1, -v.2)) _
   · obtain ⟨p, hp, hpmax⟩ := exists_coordDot_eq_support hK hne (v.1, -v.2)
     calc
       support K (v.1, -v.2) + v.2 = coordDot (reflect p) v := by

@@ -49,8 +49,8 @@ theorem IsDownwardCap.hasDerivAt_angleSupport_shift_of_density
     HasDerivAt (fun t => angleSupport U (t + d)) (supportTangent U (x + d)) x := by
   have h := hU.hasDerivAt_angleSupport_of_density hρ hρ0 hρC heq hsub
     (show x + d ∈ Ioo (a + d) (b + d) from
-      ⟨add_lt_add_right hx.1 _, add_lt_add_right hx.2 _⟩)
-  simpa only [Function.comp_def, mul_one] using
+      ⟨add_lt_add_left hx.1 _, add_lt_add_left hx.2 _⟩)
+  simpa only [Function.comp_def, id_eq, mul_one] using
     h.comp x ((hasDerivAt_id x).add_const d)
 
 theorem IsDownwardCap.hasDerivAt_attachedCorner_fst_of_density

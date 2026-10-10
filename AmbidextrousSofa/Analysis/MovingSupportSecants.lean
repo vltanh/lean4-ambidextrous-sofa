@@ -65,7 +65,7 @@ theorem CapHausdorffTendsto.supporting_points_tendsto
   have hsupport := hH.support_tendsto_moving (fun n => hU (seq n)) hK hnormal
   have hdot : Tendsto (fun n => MovingSofaOptimality.dot (p (seq n)) (MovingSofaOptimality.uvec (angle (seq n))))
       atTop (𝓝 (MovingSofaOptimality.dot q (MovingSofaOptimality.uvec t))) :=
-    (hqt.fst.mul hnormal.fst).add (hqt.snd.mul hnormal.snd)
+    (hqt.fst_nhds.mul hnormal.fst_nhds).add (hqt.snd_nhds.mul hnormal.snd_nhds)
   have heq : MovingSofaOptimality.dot q (MovingSofaOptimality.uvec t) = MovingSofaOptimality.supp K t :=
     tendsto_nhds_unique hdot (hsupport.congr' (Eventually.of_forall
       (fun n => (hp (seq n)).2.symm)))
@@ -87,7 +87,8 @@ theorem IsDownwardCap.forwardAngularSecant_bounds {U : Set Plane} (hU : IsDownwa
   · have hp := MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody (t + δ)
     have hpoint := MovingSofaOptimality.dot_le_supp hU.isCompact hp.1 t
     have hmul := mul_le_mul_of_nonneg_right hpoint hcos
-    have hnew := hp.2
+    have hnew : MovingSofaOptimality.dot (MovingSofaOptimality.vplus U (t + δ))
+        (MovingSofaOptimality.uvec (t + δ)) = MovingSofaOptimality.supp U (t + δ) := hp.2
     rw [MovingSofaOptimality.dot_uvec_eq_cos_add_sin _ _ t, add_sub_cancel_left] at hnew
     apply (div_le_iff₀ hsin).mpr
     nlinarith
@@ -111,11 +112,11 @@ theorem CapHausdorffTendsto.forwardAngularSecant_tendsto
   have hlo : Tendsto
       (fun n => MovingSofaOptimality.dot (MovingSofaOptimality.vplus (U n) (angle n)) (MovingSofaOptimality.vvec (angle n)))
       atTop (𝓝 (MovingSofaOptimality.dot (MovingSofaOptimality.vplus K t) (MovingSofaOptimality.vvec t))) :=
-    (hp.fst.mul hv.fst).add (hp.snd.mul hv.snd)
+    (hp.fst_nhds.mul hv.fst_nhds).add (hp.snd_nhds.mul hv.snd_nhds)
   have hhi : Tendsto
       (fun n => MovingSofaOptimality.dot (MovingSofaOptimality.vplus (U n) (angle n + δ n)) (MovingSofaOptimality.vvec (angle n)))
       atTop (𝓝 (MovingSofaOptimality.dot (MovingSofaOptimality.vplus K t) (MovingSofaOptimality.vvec t))) :=
-    (hq.fst.mul hv.fst).add (hq.snd.mul hv.snd)
+    (hq.fst_nhds.mul hv.fst_nhds).add (hq.snd_nhds.mul hv.snd_nhds)
   exact tendsto_of_tendsto_of_tendsto_of_le_of_le hlo hhi
     (fun n => ((hU n).forwardAngularSecant_bounds (hsin n) (hcos n)).1)
     (fun n => ((hU n).forwardAngularSecant_bounds (hsin n) (hcos n)).2)
@@ -137,7 +138,8 @@ theorem IsDownwardCap.backwardAngularSecant_bounds {U : Set Plane} (hU : IsDownw
   · have hp := MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody (t - δ)
     have hpoint := MovingSofaOptimality.dot_le_supp hU.isCompact hp.1 t
     have hmul := mul_le_mul_of_nonneg_right hpoint hcos
-    have hold := hp.2
+    have hold : MovingSofaOptimality.dot (MovingSofaOptimality.vplus U (t - δ))
+        (MovingSofaOptimality.uvec (t - δ)) = MovingSofaOptimality.supp U (t - δ) := hp.2
     rw [MovingSofaOptimality.dot_uvec_eq_cos_add_sin _ _ t, sub_sub_cancel_left,
       Real.cos_neg, Real.sin_neg] at hold
     apply (le_div_iff₀ hsin).mpr
@@ -164,11 +166,11 @@ theorem CapHausdorffTendsto.backwardAngularSecant_tendsto
   have hlo : Tendsto
       (fun n => MovingSofaOptimality.dot (MovingSofaOptimality.vplus (U n) (angle n - δ n)) (MovingSofaOptimality.vvec (angle n)))
       atTop (𝓝 (MovingSofaOptimality.dot (MovingSofaOptimality.vplus K t) (MovingSofaOptimality.vvec t))) :=
-    (hp.fst.mul hv.fst).add (hp.snd.mul hv.snd)
+    (hp.fst_nhds.mul hv.fst_nhds).add (hp.snd_nhds.mul hv.snd_nhds)
   have hhi : Tendsto
       (fun n => MovingSofaOptimality.dot (MovingSofaOptimality.vminus (U n) (angle n)) (MovingSofaOptimality.vvec (angle n)))
       atTop (𝓝 (MovingSofaOptimality.dot (MovingSofaOptimality.vplus K t) (MovingSofaOptimality.vvec t))) :=
-    (hq.fst.mul hv.fst).add (hq.snd.mul hv.snd)
+    (hq.fst_nhds.mul hv.fst_nhds).add (hq.snd_nhds.mul hv.snd_nhds)
   exact tendsto_of_tendsto_of_tendsto_of_le_of_le hlo hhi
     (fun n => ((hU n).backwardAngularSecant_bounds (hsin n) (hcos n)).1)
     (fun n => ((hU n).backwardAngularSecant_bounds (hsin n) (hcos n)).2)

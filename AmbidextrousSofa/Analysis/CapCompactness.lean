@@ -73,7 +73,8 @@ theorem CapHausdorffTendsto.mem_of_tendsto
     linarith
   have hlim : Tendsto (fun _ : ℕ => Metric.infDist p K) atTop (𝓝 0) :=
     squeeze_zero (fun _ => Metric.infDist_nonneg) hbound
-      (by simpa only [dist_self, add_zero] using h.add (tendsto_const_nhds.dist hp))
+      (by simpa only [dist_self, add_zero] using
+        h.add ((tendsto_const_nhds (x := p) : Tendsto (fun _ : ℕ => p) atTop (𝓝 p)).dist hp))
   have hzero : Metric.infDist p K = 0 := tendsto_nhds_unique tendsto_const_nhds hlim
   rw [← hK.isClosed.closure_eq, Metric.mem_closure_iff_infDist_zero hKne]
   exact hzero
@@ -117,7 +118,9 @@ theorem CapHausdorffTendsto.isDownwardCap_limit
         (le_min hy0 ((hU n).inStrip (hq n)).1) (min_le_right _ _)
     apply h.mem_of_tendsto hc hn hK hKne hclip
     have hmap : Continuous (fun z : Plane => (z.1, min y z.2)) := by fun_prop
-    simpa only [min_eq_left hyp] using (hmap.tendsto p).comp hlim
+    have h2 := (hmap.tendsto p).comp hlim
+    rw [min_eq_left hyp] at h2
+    exact h2
 
 /-- Blaschke selection specialized to the full downward-cap domain. The
 limiting cap remains in the same compact box, including all degeneracies. -/
@@ -140,7 +143,8 @@ theorem exists_cap_hausdorff_subsequence {U : ℕ → Set Plane}
   have hKne : K.Nonempty := Kc.nonempty
   have hd : CapHausdorffTendsto (U ∘ φ) K := by
     have h := tendsto_iff_dist_tendsto_zero.mp hlim
-    simpa only [NonemptyCompacts.dist_eq, C, Function.comp_apply] using h
+    simp only [NonemptyCompacts.dist_eq, C] at h
+    exact h
   refine ⟨K, hd.isDownwardCap_limit (fun n => hU (φ n)) hK hKne, ?_, φ, hφ, hd⟩
   exact hd.subset_closed_limit (fun n => (hU (φ n)).isCompact)
     (fun n => (hU (φ n)).nonempty) hK hKne hB.isClosed (fun n => hsub (φ n))
@@ -170,7 +174,7 @@ theorem support_le_add_hausdorff {K L : Set Plane}
   obtain ⟨p, hp, hsupport⟩ := exists_coordDot_eq_support hK hKne v
   obtain ⟨q, hq, hpq⟩ := exists_mem_dist_le_hausdorff hK hKne hL hLne hp
   have hdot := (abs_le.mp (abs_coordDot_sub_le_dist p q v)).2
-  have hdist := mul_le_mul_of_nonneg_right hpq (add_nonneg (abs_nonneg _) (abs_nonneg _))
+  have hdist := mul_le_mul_of_nonneg_right hpq (add_nonneg (abs_nonneg v.1) (abs_nonneg v.2))
   have hqbound := coordDot_le_support hL hq v
   linarith
 

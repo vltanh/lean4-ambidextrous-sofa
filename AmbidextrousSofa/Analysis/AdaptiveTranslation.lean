@@ -111,8 +111,10 @@ theorem adaptiveFunctional_horizontalTranslate (u : QuarterPair) (b : ℝ) :
     adaptiveFunctional (u.horizontalTranslate b) = adaptiveFunctional u +
       (3 * b / 2) * (u.f (Real.pi / 2) - u.g 0) := by
   have hL : (0 : ℝ) ≤ Real.pi / 2 := by linarith [Real.pi_pos]
-  have hu := ContinuousOn.intervalIntegrable_of_Icc hL (continuousOn_adaptiveDensity u)
-  have hd := ContinuousOn.intervalIntegrable_of_Icc hL (continuousOn_horizontalTranslationDensity u)
+  have hu := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) hL
+    (continuousOn_adaptiveDensity u)
+  have hd := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) hL
+    (continuousOn_horizontalTranslationDensity u)
   calc
     adaptiveFunctional (u.horizontalTranslate b) =
         ∫ t in (0 : ℝ)..(Real.pi / 2), adaptiveDensity u t + b * horizontalTranslationDensity u t := by

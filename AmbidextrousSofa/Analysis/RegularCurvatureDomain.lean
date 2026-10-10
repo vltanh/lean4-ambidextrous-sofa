@@ -61,7 +61,7 @@ theorem mem_regularCurvatureDomain_iff {m t : ℝ} :
     t ∈ regularCurvatureDomain m ↔
       0 < t ∧ t < Real.pi ∧ t ≠ Real.pi / 2 ∧
         Real.cos t + m * Real.sin t ≠ 0 := by
-  simp only [regularCurvatureDomain, mem_sdiff, mem_Ioo, mem_insert_iff,
+  simp only [regularCurvatureDomain, Set.mem_sdiff, mem_Ioo, mem_insert_iff,
     mem_singleton_iff, not_or]
   constructor
   · rintro ⟨ht, htop, hcentral⟩
@@ -75,7 +75,7 @@ theorem Ioo_sdiff_pair_eq_three {l a b r : ℝ}
     (hla : l ≤ a) (hab : a ≤ b) (hbr : b ≤ r) :
     Ioo l r \ {a, b} = Ioo l a ∪ Ioo a b ∪ Ioo b r := by
   ext x
-  simp only [mem_sdiff, mem_Ioo, mem_insert_iff, mem_singleton_iff, not_or, mem_union]
+  simp only [Set.mem_sdiff, mem_Ioo, mem_insert_iff, mem_singleton_iff, not_or, mem_union]
   constructor
   · rintro ⟨⟨hlx, hxr⟩, hxa, hxb⟩
     rcases lt_or_gt_of_ne hxa with hxa | hax
@@ -106,7 +106,7 @@ theorem regularCurvatureDomain_eq_three (m : ℝ) :
     · rw [min_eq_right (le_of_not_ge h), max_eq_left (le_of_not_ge h)]
   rw [regularCurvatureDomain, hpair]
   exact Ioo_sdiff_pair_eq_three
-    (le_min hθ.1.le (by positivity)) (min_le_max _ _)
+    (le_min hθ.1.le (by positivity)) (min_le_max)
     (max_le hθ.2.le (by linarith [Real.pi_pos]))
 
 /-- Domination on each actual open wing gives domination on their full union. -/
@@ -121,7 +121,7 @@ theorem measure_restrict_regularCurvatureDomain_le
   have hθ := affineNormalAngle_mem m
   have ha0 : 0 ≤ a := le_min hθ.1.le (by positivity)
   have hbπ : b ≤ Real.pi := max_le hθ.2.le (by linarith [Real.pi_pos])
-  have hab : a ≤ b := min_le_max _ _
+  have hab : a ≤ b := min_le_max
   have haθ : a ≤ affineNormalAngle m := min_le_left _ _
   have haL : a ≤ Real.pi / 2 := min_le_right _ _
   have hθb : affineNormalAngle m ≤ b := le_max_left _ _
@@ -211,10 +211,10 @@ theorem IsFullCapMaximizer.curvature_density_on_regular_domain
       intro A B hA hB htop hperp
       obtain ⟨ρ, _, hρ, _, heq⟩ :=
         hK.curvature_density_sharp_on_open_wing haffine hA hB htop hperp
-      rw [heq, Measure.restrict_withDensity measurableSet_Ioo]
+      rw [heq, MeasureTheory.restrict_withDensity measurableSet_Ioo]
       exact withDensity_mono (Eventually.of_forall (fun t =>
         ENNReal.ofReal_le_ofReal (hρ t).2))
-    simpa only [Measure.restrict_withDensity (measurableSet_regularCurvatureDomain m)] using h
+    simpa only [MeasureTheory.restrict_withDensity (measurableSet_regularCurvatureDomain m)] using h
   letI : IsFiniteMeasure ((upperCurvature K).restrict (regularCurvatureDomain m)) :=
     isFiniteMeasure_restrict.mpr
       ((measure_mono (regularCurvatureDomain_subset m)).trans_lt measure_Ioo_lt_top).ne
@@ -240,7 +240,8 @@ theorem curvature_restrict_upper_decomposition (K : Set Plane) (m : ℝ) :
   have heq : regularCurvatureDomain m ∪ {Real.pi / 2, affineNormalAngle m} =
       Ioo (0 : ℝ) Real.pi := by
     exact sdiff_union_of_subset hpair
-  rw [← heq, Measure.restrict_union disjoint_sdiff_left
-    ((measurableSet_singleton _).insert _)]
+  have hdisj : Disjoint (regularCurvatureDomain m) {Real.pi / 2, affineNormalAngle m} :=
+    disjoint_sdiff_left
+  rw [← heq, Measure.restrict_union hdisj ((measurableSet_singleton _).insert _)]
 
 end AmbidextrousSofa

@@ -27,7 +27,7 @@ theorem endpoint_le_of_hasDerivAt_nonneg
     {f d : ℝ → ℝ} {a b : ℝ} (hab : a ≤ b)
     (hd : ∀ t ∈ Icc a b, HasDerivAt f (d t) t)
     (hsign : ∀ t ∈ Ioo a b, 0 ≤ d t) : f a ≤ f b := by
-  have hm : MonotoneOn f (Icc a b) := monotoneOn_of_deriv_nonneg convex_Icc
+  have hm : MonotoneOn f (Icc a b) := monotoneOn_of_deriv_nonneg (convex_Icc a b)
     (fun t ht => (hd t ht).continuousAt.continuousWithinAt)
     (fun t ht => (hd t (interior_subset ht)).differentiableAt.differentiableWithinAt)
     (fun t ht => by
@@ -39,7 +39,7 @@ theorem endpoint_lt_of_hasDerivAt_pos
     {f d : ℝ → ℝ} {a b : ℝ} (hab : a < b)
     (hd : ∀ t ∈ Icc a b, HasDerivAt f (d t) t)
     (hsign : ∀ t ∈ Ioo a b, 0 < d t) : f a < f b := by
-  have hm : StrictMonoOn f (Icc a b) := strictMonoOn_of_deriv_pos convex_Icc
+  have hm : StrictMonoOn f (Icc a b) := strictMonoOn_of_deriv_pos (convex_Icc a b)
     (fun t ht => (hd t ht).continuousAt.continuousWithinAt)
     (fun t ht => by
       rw [(hd t (interior_subset ht)).deriv]
@@ -52,6 +52,7 @@ theorem endpoint_le_of_hasDerivAt_nonpos
     (hsign : ∀ t ∈ Ioo a b, d t ≤ 0) : f b ≤ f a := by
   have h := endpoint_le_of_hasDerivAt_nonneg hab
     (fun t ht => (hd t ht).neg) (fun t ht => neg_nonneg.mpr (hsign t ht))
+  simp only [Pi.neg_apply] at h
   linarith
 
 theorem endpoint_lt_of_hasDerivAt_neg
@@ -60,6 +61,7 @@ theorem endpoint_lt_of_hasDerivAt_neg
     (hsign : ∀ t ∈ Ioo a b, d t < 0) : f b < f a := by
   have h := endpoint_lt_of_hasDerivAt_pos hab
     (fun t ht => (hd t ht).neg) (fun t ht => neg_pos.mpr (hsign t ht))
+  simp only [Pi.neg_apply] at h
   linarith
 
 theorem firstWall_attachedCorner (U : Set Plane) {t : ℝ} (hs : Real.sin t ≠ 0) :
@@ -352,7 +354,8 @@ theorem IsDownwardCap.visible_corner_of_unit_companion_and_future
     exact hfull ⟨hb.trans_lt hs.1, hs.2⟩
   have hD := hU.secondTangency_monotoneOn_open_of_unit_density hρ hρ0 hρC heq hfull hcompanion
   have hB := hU.firstTangency_monotoneOn_open_of_unit_density hρ hρ0 hρC heq hsub hfuture
-  have hwall := fun s hs x => hU.hasDerivAt_walls_on_regularCornerDomain hρ hρ0 hρC heq (hfull hs) x
+  have hwall := fun (s : ℝ) (hs : s ∈ Ioo (0 : ℝ) (Real.pi / 2)) (x : ℝ) =>
+    hU.hasDerivAt_walls_on_regularCornerDomain hρ hρ0 hρC heq (hfull hs) x
   exact sweptNiche_at_visible_corner hU hb hD.1 hB.1
     (fun s hs x => (hwall s hs x).1) (fun s hs x => (hwall s hs x).2) ht hq hr hy
 

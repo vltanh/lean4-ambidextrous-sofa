@@ -61,7 +61,9 @@ theorem fullTiltedSupportQuarterPair_tangent_displacements {a b : ℝ}
     filter_upwards [hd] with t ht
     exact ht.2.1.neg.congr_deriv (by ring)
   have h := integral_eq_sub_of_ac_of_ae_hasDerivAt hab (hBy.neg.mono hsub) hneg
-  convert h using 1 <;> ring
+  convert h using 1
+  simp only [Pi.neg_apply]
+  ring
 
 /-- The first-unit hypothesis identifies the right middle niche height
 with the actual first tangent height. No moment identity is supplied as
@@ -87,6 +89,7 @@ theorem fullTiltedSupportQuarterPair_first_floor_right_moments {C h β γ : ℝ}
     hU hm haffine hρ hρ0 hρK heq hunit).2
   have hy := horder (Ioo_subset_Icc_self hβ)
     ⟨by positivity, le_rfl⟩ hβ.2.le
+  dsimp only at hy
   rw [hBL] at hy
   have hniche := fullTiltedSupportQuarterPair_niche_first_tangency
     hU hm haffine hρ hρ0 hρK heq hunit hβ hβp hy

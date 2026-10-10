@@ -41,7 +41,7 @@ theorem ae_density_eq_zero_of_restrict_withDensity_null
     ∀ᵐ t ∂volume.restrict N, ρ t = 0 := by
   have hzero' : (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)) N = 0 := by
     rw [← heq, Measure.restrict_apply hN, inter_eq_left.mpr hNS, hzero]
-  rw [Measure.withDensity_apply _ hN, Measure.restrict_restrict hN,
+  rw [withDensity_apply _ hN, Measure.restrict_restrict hN,
     inter_eq_left.mpr hNS] at hzero'
   have hAe : (fun t => ENNReal.ofReal (ρ t)) =ᵐ[volume.restrict N] 0 :=
     (lintegral_eq_zero_iff hρ.ennreal_ofReal).mp hzero'

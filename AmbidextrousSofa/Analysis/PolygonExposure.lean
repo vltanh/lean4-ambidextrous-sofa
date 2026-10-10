@@ -41,7 +41,7 @@ theorem sampledPenalty_eq_heightPenalty [Fintype ι] {U : Set Plane}
   unfold sampledPenalty heightPenalty
   apply Finset.sum_congr rfl
   intro i _
-  rw [hexact i]
+  simp only [hexact]
 
 theorem hasDerivAt_heightPenalty_update [Fintype ι] [DecidableEq ι]
     (weight target height : ι → ℝ) (j : ι) :
@@ -54,10 +54,9 @@ theorem hasDerivAt_heightPenalty_update [Fintype ι] [DecidableEq ι]
     intro i
     by_cases hij : i = j
     · subst i
-      simp only [Function.update_same, if_pos rfl]
-      have hline : HasDerivAt (fun ε : ℝ => height j + ε - target j) 1 0 := by
-        simpa only [zero_add, sub_zero] using
-          ((hasDerivAt_const (0 : ℝ) (height j)).add (hasDerivAt_id (0 : ℝ))).sub_const (target j)
+      simp only [Function.update_self, ↓reduceIte]
+      have hline : HasDerivAt (fun ε : ℝ => height j + ε - target j) 1 0 :=
+        ((hasDerivAt_id' (x := (0 : ℝ))).const_add (height j)).sub_const (target j)
       convert (hline.pow 2).const_mul (weight j) using 1 <;> norm_num <;> ring
     · simp only [Function.update_of_ne hij, if_neg hij]
       exact hasDerivAt_const _ _
@@ -84,7 +83,7 @@ theorem finiteSpatialScore_upperPolygon_update [Fintype ι] [DecidableEq ι]
     intro x hx i
     by_cases hij : i = j
     · subst i
-      rw [Function.update_same]
+      rw [Function.update_self]
       exact (hbaseline x hx j).trans (by linarith)
     · simpa only [Function.update_of_ne hij] using hbaseline x hx i
   unfold finiteSpatialScore

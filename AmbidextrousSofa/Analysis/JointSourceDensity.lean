@@ -29,7 +29,7 @@ theorem volume_restrict_regular_eq_upper (m : ℝ) :
       volume.restrict (Ioo (0 : ℝ) Real.pi) := by
   apply Measure.restrict_congr_set
   filter_upwards [volume.ae_ne (Real.pi / 2), volume.ae_ne (affineNormalAngle m)] with t ht htm
-  simp only [regularCurvatureDomain, mem_sdiff, mem_insert_iff, mem_singleton_iff,
+  simp only [regularCurvatureDomain, Set.mem_sdiff, mem_insert_iff, mem_singleton_iff,
     ht, htm, or_self, not_false_eq_true, and_true]
 
 theorem ae_regularCornerDomain_of_mem_quarter (m : ℝ) :
@@ -76,6 +76,7 @@ variable (hTarget : IsFullCapMaximizer target) (hheight : capHeight target = 1)
   (heq : (upperCurvature target).restrict (regularCurvatureDomain m) =
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
+include hTarget hheight haffine hTargetBox hleft hright heq in
 theorem angularMeasure_eq_density :
     J.angularMeasure = (volume.restrict (Ioo (0 : ℝ) Real.pi)).withDensity
       (fun t => ENNReal.ofReal (ρ t)) := by
@@ -84,19 +85,22 @@ theorem angularMeasure_eq_density :
   rwa [J.angularMeasure_restrict_regular_eq_self,
     volume_restrict_regular_eq_upper] at h
 
+include hTarget hheight haffine hTargetBox hleft hright heq in
 theorem angularMeasure_absolutelyContinuous : J.angularMeasure ≪ volume := by
   rw [J.angularMeasure_eq_density hTarget hheight haffine hTargetBox hleft hright heq]
   exact (withDensity_absolutelyContinuous _ _).trans
     (Measure.absolutelyContinuous_of_le Measure.restrict_le_self)
 
+include hTarget hheight haffine hTargetBox hleft hright heq in
 theorem shifted_angle_absolutelyContinuous (d : ℝ) :
     (J.measure : Measure Plane).map (fun z => z.1 - d) ≪ (volume : Measure ℝ) := by
   have h := (J.angularMeasure_absolutelyContinuous hTarget hheight haffine hTargetBox
-    hleft hright heq).map (measurable_id.sub_const d)
-  rw [map_sub_right_eq_self] at h
-  simpa only [angularMeasure, Measure.map_map (measurable_id.sub_const d) measurable_fst,
-    Function.comp_apply] using h
+    hleft hright heq).map (measurable_sub_const' d)
+  rw [map_sub_right_eq_self volume d] at h
+  simpa only [angularMeasure, Measure.map_map (measurable_sub_const' d) measurable_fst,
+    Function.comp_def] using h
 
+include hTarget hheight haffine hTargetBox hleft hright heq in
 theorem ae_shifted_angle_regularCorner (d : ℝ) :
     ∀ᵐ z ∂(J.measure : Measure Plane),
       z.1 - d ∈ Ioo (0 : ℝ) (Real.pi / 2) → z.1 - d ∈ regularCornerDomain m := by

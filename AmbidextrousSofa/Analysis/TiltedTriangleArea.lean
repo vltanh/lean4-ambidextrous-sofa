@@ -39,7 +39,7 @@ theorem tiltedTriangle_loss_sum_le {a eR eL h k u v : ℝ}
   have hDR : 0 ≤ D - h / 4 := by linarith only [hD, hh1]
   have hDL : 0 ≤ D + 1 / 12 + 3 * h / 4 := by linarith only [hD, hh0]
   have hR := fullTriangle_floor_loss_le_endpoint hk hksq heR
-  have hL := fullTriangle_floor_loss_le_endpoint (u := v - h) hk hksq
+  have hL := fullTriangle_floor_loss_le_endpoint (a := a) (e := eL) (u := v - h) hk hksq
     (by linarith only [heL])
   have hR' : max (fullTriangleRightZero k u (wideEndpointIntercept a eR k) - (u - k)) 0 ≤
       D - h / 4 := hR.trans (max_le (by dsimp [D]; linarith only [hwR]) hDR)
@@ -152,7 +152,7 @@ theorem IsDownwardCap.capScore_lt_of_tilted_triangles_and_zero_left_niche
   have hcut : (δR ^ 2 + δL ^ 2) / (2 * k) ≤ D :=
     hU.diagonalRoofDeficit_ge_inner_cuts ha hhnonneg hk hl hr hleft hright hu hv
       huv.1 huv.2 hδR hδL
-  have hgain := fullTriangle_gain_sum hk hksq hbR hbL hEP
+  have hgain := fullTriangle_gain_sum (a := a) hk hksq hbR hbL hEP
   have hpayment : (max (fullTriangleDemand a ((u + v) / 2) h k (fullTriangleCos k)) 0) ^ 2 /
       (2 + 3 * k) ≤ (δR ^ 2 + δL ^ 2) / (2 * k) + G :=
     fullTriangle_square_payment hk hδR.1 hδL.1 hgain
@@ -188,6 +188,19 @@ theorem IsDownwardCap.capScore_lt_of_tilted_triangles_and_zero_left_niche
     linarith only [hpaid, hLoss, hpayment, hcut]
   exact hfinal.trans_lt (tiltedTriangleRelaxation_add_loss_lt ha0 hh0 hh1 hk0 hk1 hksq hc.1 hc.2 hq)
 
+/-- `41/50 < M/2`; the same statement and proof as `forty_one_fiftieths_lt_half_M` of
+`TerminalScalar`, which this module does not import. -/
+private theorem tiltedTriangleArea_forty_one_fiftieths_lt_half_M : (41 / 50 : ℝ) < M / 2 := by
+  have hY : (19 / 64 : ℝ) < Y := by
+    apply (cubic_strictMono.lt_iff_lt).mp
+    rw [Y_cubic]
+    norm_num [cubic]
+  have hbeta : Y - Y ^ 3 / 3 ≤ beta := self_sub_cube_div_three_le_arctan Y_pos.le
+  have hYsq := mul_pos (sub_pos.mpr hY)
+    (show 0 < Y + 19 / 64 by linarith [Y_pos])
+  unfold M
+  nlinarith [Y_equation]
+
 theorem IsFullCapMaximizer.false_of_medium_tilt_large_width_zero_left
     {U : Set Plane} (hU : IsFullCapMaximizer U) {a h : ℝ}
     (ha0 : 73 / 50 ≤ a) (ha1 : a ≤ 37 / 25) (hh0 : 1 / 20 ≤ h) (hh1 : h ≤ 21 / 100)
@@ -199,6 +212,6 @@ theorem IsFullCapMaximizer.false_of_medium_tilt_large_width_zero_left
   have hEP := hU.centered_endpoint_laws hheight hl hr hleft hright haffine
   have hscore := hU.isCap.capScore_lt_of_tilted_triangles_and_zero_left_niche
     ha0 ha1 hh0 hh1 hl hr hleft hright haffine hEP.1 hEP.2 hnzero
-  exact (not_lt_of_ge hU.reference_le) (hscore.trans forty_one_fiftieths_lt_half_M)
+  exact (not_lt_of_ge hU.reference_le) (hscore.trans tiltedTriangleArea_forty_one_fiftieths_lt_half_M)
 
 end AmbidextrousSofa

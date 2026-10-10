@@ -59,7 +59,7 @@ theorem fullTiltedSupportQuarterPair_first_bad_after_middle {C h α β η τ : �
   have D := fullTiltedSupportQuarterPair_cornerArcDynamics
     hU hm haffine hρ hρ0 hρK heq hl hr hC hsmall hheight hhigh hκ
   have hpβ := (fullTiltedSupportQuarterPair_first_momentum_neg_after_middle
-    hU hm haffine hρ hρ0 hρK heq hl hr hC0 hC1 hh hlow hβ (by rw [hβx]; exact le_rfl)).2
+    hU hm haffine hρ hρ0 hρK heq hl hr hC0 hC1 hh hlow hβ (by rw [hβx])).2
   have hαβ := hphase.first_lt_of_first_neg hβ hpβ
   have hτcc : τ ∈ Icc (0 : ℝ) (Real.pi / 2) :=
     ⟨(hphase.first_mem.1.trans hτ.1).le, hτ.2.le.trans hphase.second_mem.2.le⟩

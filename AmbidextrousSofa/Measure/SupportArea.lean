@@ -81,7 +81,7 @@ theorem hasDerivWithinAt_companionSupportPoint_fst {g gD : ℝ → ℝ} {gDD t :
     (hgD : HasDerivWithinAt gD gDD (Ioi t) t) :
     HasDerivWithinAt (fun s => (Reference.companionSupportPoint g gD s).1)
       (-(g t + gDD) * Real.cos t) (Ioi t) t := by
-  have h := (hasDerivWithinAt_supportPoint_snd hg hgD).neg
+  have h := (hasDerivWithinAt_supportPoint_snd hg hgD).fun_neg
   simpa only [Reference.companionSupportPoint, rotate, Real.cos_pi_div_two,
     Real.sin_pi_div_two, zero_mul, one_mul, zero_sub, neg_mul] using h
 

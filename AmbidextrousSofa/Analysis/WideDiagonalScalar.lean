@@ -48,7 +48,7 @@ theorem clipped_perspective_ge_tangent {a h b t : ℝ}
   have hclip : (max (b - w) 0) ^ 2 ≤ q ^ 2 := by
     by_cases hw : b ≤ w
     · rw [max_eq_right (sub_nonpos.mpr hw)]
-      simpa only [zero_pow] using sq_nonneg q
+      simpa only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow] using sq_nonneg q
     · rw [max_eq_left (by linarith only [le_of_not_ge hw] : 0 ≤ b - w)]
       have hprod := mul_nonneg
         (show 0 ≤ -q - (b - w) by linarith only [hq, hbt])
@@ -59,8 +59,9 @@ theorem clipped_perspective_ge_tangent {a h b t : ℝ}
     nlinarith only [mul_nonneg (sub_nonneg.mpr hd1) (sq_nonneg q)]
   have hid : (w - 3 * h / 2) ^ 2 / d =
       2 * t * w - t ^ 2 + (-3 * t + t ^ 2 / a) * h + q ^ 2 / d := by
+    have hah : a - h ≠ 0 := (sub_pos.mpr hha).ne'
     dsimp [q, d]
-    field_simp [ha.ne', hd.ne'] <;> ring
+    field_simp [ha.ne', hd.ne', hah] <;> ring
   change _ ≤ (w - 3 * h / 2) ^ 2 / d - _
   linarith only [hid, hclip, hdiv]
 
@@ -74,8 +75,9 @@ theorem wideDiagonalMajorant_le_tangent {a h k t : ℝ}
   have hL := clipped_perspective_ge_tangent ha hh hha ht0 ht1 (a - v)
   rw [show a / 2 - k - (a - u) = u - k - a / 2 by ring] at hR
   rw [show a / 2 - k - (a - v) = v - k - a / 2 by ring] at hL
+  have e : t ^ 2 / (2 * a) * h = t ^ 2 / a * h / 2 := by ring
   unfold wideDiagonalMajorant
-  nlinarith only [hR, hL]
+  nlinarith only [hR, hL, e]
 
 theorem wideDiagonalMajorant_le_half {a h k : ℝ}
     (ha : 8 / 5 ≤ a) (hh : 0 ≤ h) (hh1 : h < 1 / 2)
@@ -96,7 +98,7 @@ theorem wide_tilt_coefficient_ge {a : ℝ} (ha : 8 / 5 ≤ a) :
   have hinv : (1 / (8 * a)) * a = (1 / 8 : ℝ) := by field_simp [ha0.ne']
   have hscaled : (21 / 64 : ℝ) * a ≤ (5 * a / 8 - 3 / 4 + 1 / (8 * a)) * a := by
     nlinarith only [hprod, hinv]
-  exact (mul_le_mul_right ha0).mp hscaled
+  exact le_of_mul_le_mul_right hscaled ha0
 
 theorem wide_mid_value_antitone {k m m0 : ℝ} (h0 : k + 1 / 2 ≤ m0) (hm : m0 ≤ m) :
     m + 1 / 4 - (m - k) ^ 2 ≤ m0 + 1 / 4 - (m0 - k) ^ 2 := by

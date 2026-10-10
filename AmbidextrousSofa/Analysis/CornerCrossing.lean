@@ -66,7 +66,7 @@ theorem corner_first_descent_contradiction
     linarith
   have hrc : ContinuousOn r (Icc a b) := by
     simpa only [uIcc_of_le hab.le] using hr.continuousOn
-  have hr1 := hrc.le_on_Icc_of_ae_le_on_Ioo hab hr1ae
+  have hr1 := ContinuousOn.le_on_Icc_of_ae_le_on_Ioo hrc hab hr1ae
   have hvEq : ∀ᵐ t ∂volume.restrict (Ioo a b), v t = (r t + 1) / 2 := by
     filter_upwards [ae_restrict_mem measurableSet_Ioo, hκ, hflux] with t ht hk hf
     have htcc := Ioo_subset_Icc_self ht
@@ -78,8 +78,10 @@ theorem corner_first_descent_contradiction
   have hconst : AbsolutelyContinuousOnInterval (fun _ : ℝ => (1 : ℝ)) a b :=
     (LipschitzWith.const (1 : ℝ)).lipschitzOnWith.absolutelyContinuousOnInterval
   have hE : AbsolutelyContinuousOnInterval E a b := by
-    simpa only [E, Pi.add_apply, Pi.mul_apply, pow_two] using
-      ((hconst.add hr).mul (hconst.add hr)).add ((hconst.add hq).mul (hconst.add hq))
+    have h := ((hconst.add hr).mul (hconst.add hr)).add ((hconst.add hq).mul (hconst.add hq))
+    convert h using 1
+    funext t
+    simp only [E, Pi.add_apply, Pi.mul_apply, pow_two]
   have hEd : ∀ᵐ t ∂volume.restrict (Ioo a b),
       HasDerivAt E
         (2 * (1 + r t) * (q t + 1 - u t) + 2 * (1 + q t) * (v t - r t - 1)) t ∧
@@ -90,7 +92,7 @@ theorem corner_first_descent_contradiction
     constructor
     · have hdE := ((hd.2.const_add 1).pow 2).add ((hd.1.const_add 1).pow 2)
       change HasDerivAt E _ t at hdE
-      exact hdE.congr_deriv (by norm_num; ring)
+      exact hdE.congr_deriv (by norm_num)
     · have hu := hk.1
       rw [sourceKappa_eq_half_of_mem_Icc ⟨hq0 t htcc, hq1 t htcc⟩] at hu
       have hp := mul_nonneg (by linarith [hrpos t htcc] : 0 ≤ 1 + r t)
@@ -126,12 +128,12 @@ theorem IsFullCapMaximizer.exists_later_negative_firstCornerVelocity
     ∃ b ∈ Ioo a (Real.pi / 2), firstCornerVelocity U b < 0 := by
   have heL := (hU.endpoint_heights_pos_of_affine hheight
     ⟨0, 1, by simpa only [zero_mul, zero_add] using hmiddle⟩).2
-  have hlim := (hU.cornerVelocities_tendsto_pi_div_two_left hheight hmiddle).fst
+  have hlim := (hU.cornerVelocities_tendsto_pi_div_two_left hheight hmiddle).fst_nhds
   have hnegative : ∀ᶠ b in 𝓝[<] (Real.pi / 2), firstCornerVelocity U b < 0 :=
     hlim.eventually (eventually_lt_nhds (by linarith : -capRoof U (horizontalLeft U) < 0))
   have hlater : ∀ᶠ b in 𝓝[<] (Real.pi / 2), a < b :=
     (eventually_gt_nhds ha).filter_mono nhdsWithin_le_nhds
-  obtain ⟨b, hab, hbL, hbq⟩ := (hlater.and (self_mem_nhdsWithin.and hnegative)).exists
+  obtain ⟨b, hab, hbL, hbq⟩ := (hlater.and (eventually_mem_nhdsWithin.and hnegative)).exists
   exact ⟨b, ⟨hab, hbL⟩, hbq⟩
 
 theorem IsFullCapMaximizer.not_first_eq_one_and_second_pos_of_unit_companion

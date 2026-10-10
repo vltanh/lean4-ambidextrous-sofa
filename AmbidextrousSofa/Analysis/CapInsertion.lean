@@ -53,7 +53,7 @@ theorem IsDownwardCap.subset_insertedCap {U : Set Plane}
   intro q hq
   exact ⟨(hU.inStrip hq).1, q.2, le_rfl,
     by simpa only [Prod.mk.eta] using subset_actualHull (insert p U)
-      (mem_insert_of_mem p hq)⟩
+          (mem_insert_of_mem p hq)⟩
 
 theorem inserted_point_mem {U : Set Plane} {p : Plane} (hp : p ∈ unitStrip) :
     p ∈ insertedCap U p := by

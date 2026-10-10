@@ -119,7 +119,7 @@ theorem volume_verticalIntervalRegion_eq_lintegral
           Real.volume_Icc, indicator_of_mem hx]
       · rw [verticalIntervalRegion_section_of_notMem I lower upper hx,
           measure_empty, indicator_of_notMem hx]
-    _ = ∫⁻ x in I, ENNReal.ofReal (upper x - lower x) := lintegral_indicator hI
+    _ = ∫⁻ x in I, ENNReal.ofReal (upper x - lower x) := lintegral_indicator hI _
 
 /-! ## Four-wall envelopes -/
 
@@ -184,9 +184,9 @@ theorem integrableOn_signedFiberLength {I : Set ℝ} {dU dV nU nV : ℝ → ℝ}
     IntegrableOn (fun x => signedFiberLength (dU x) (dV x) (nU x) (nV x)) I := by
   have hOne : IntegrableOn (fun _ : ℝ => (1 : ℝ)) I := integrableOn_const hFinite
   have hLower : IntegrableOn (fun x => max (dV x) (nU x)) I := by
-    simpa only [Pi.sup_apply, sup_eq_max] using (Integrable.sup hdV hnU)
+    exact Integrable.sup hdV hnU
   have hUpper : IntegrableOn (fun x => max (dU x) (nV x)) I := by
-    simpa only [Pi.sup_apply, sup_eq_max] using (Integrable.sup hdU hnV)
+    exact Integrable.sup hdU hnV
   exact Integrable.sub (Integrable.sub hOne hLower) hUpper
 
 theorem integrableOn_physicalFiberLength {I : Set ℝ} {dU dV nU nV : ℝ → ℝ}
@@ -203,8 +203,8 @@ theorem volume_fourWallEnvelope_eq_lintegral
     volume (fourWallEnvelope I dU dV nU nV) =
       ∫⁻ x in I, ENNReal.ofReal (signedFiberLength (dU x) (dV x) (nU x) (nV x)) := by
   rw [fourWallEnvelope_eq_verticalIntervalRegion]
-  rw [volume_verticalIntervalRegion_eq_lintegral hI (hdV.max hnU)
-    (measurable_const.sub (hdU.max hnV))]
+  rw [volume_verticalIntervalRegion_eq_lintegral (upper := fun x => 1 - max (dU x) (nV x))
+    hI (hdV.max hnU) (measurable_const.sub (hdU.max hnV))]
   apply lintegral_congr
   intro x
   congr 1

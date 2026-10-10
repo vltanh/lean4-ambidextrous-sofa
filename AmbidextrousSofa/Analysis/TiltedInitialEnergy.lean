@@ -133,17 +133,17 @@ theorem initialFloor_stopped_energy_le {d B h τ : ℝ}
 
 theorem absolutelyContinuousOnInterval_const_real (c a b : ℝ) :
     AbsolutelyContinuousOnInterval (fun _ : ℝ => c) a b :=
-  (LipschitzWith.lipschitzOnWith (lipschitzWith_const c)).absolutelyContinuousOnInterval
+  (LipschitzWith.lipschitzOnWith (LipschitzWith.const c)).absolutelyContinuousOnInterval
 
 theorem absolutelyContinuousOnInterval_initialFloorEnergy
     {p q : ℝ → ℝ} {a b : ℝ}
     (hp : AbsolutelyContinuousOnInterval p a b)
     (hq : AbsolutelyContinuousOnInterval q a b) :
     AbsolutelyContinuousOnInterval (fun t => initialFloorEnergy (p t) (q t)) a b := by
-  have hp' := hp.sub (absolutelyContinuousOnInterval_const_real (1 / 2) a b)
-  have hq' := hq.add (absolutelyContinuousOnInterval_const_real 1 a b)
+  have hp' := hp.fun_sub (absolutelyContinuousOnInterval_const_real (1 / 2) a b)
+  have hq' := hq.fun_add (absolutelyContinuousOnInterval_const_real 1 a b)
   simpa only [initialFloorEnergy, pow_two, Pi.add_apply, Pi.sub_apply, Pi.mul_apply] using
-    (hp'.mul hp').add (hq'.mul hq')
+    (hp'.fun_mul hp').fun_add (hq'.fun_mul hq')
 
 /-- The same-sign energy is nonincreasing for AC momenta obeying the
 actual source equations with `u=0` and `v≤1/2`, almost everywhere. -/
@@ -160,7 +160,7 @@ theorem initialFloorEnergy_le_of_sourceODE {p q v : ℝ → ℝ} {a b : ℝ}
   have hD : (fun t => deriv (fun x => initialFloorEnergy (p x) (q x)) t) ≤ᵐ[
       volume.restrict (Icc a b)] (fun _ => 0) := by
     filter_upwards [hode, hqpos, hv] with t ht hqt hvt
-    have hd := ((ht.1.sub_const (1 / 2)).pow 2).add ((ht.2.add_const 1).pow 2)
+    have hd := ((ht.1.sub_const (1 / 2)).fun_pow 2).fun_add ((ht.2.add_const 1).fun_pow 2)
     change deriv (fun x => (p x - 1 / 2) ^ 2 + (q x + 1) ^ 2) t ≤ 0
     rw [hd.deriv]
     nlinarith [mul_nonpos_of_nonneg_of_nonpos
@@ -190,19 +190,19 @@ theorem eqOn_initialFloorCircle_of_zero_source {p q : ℝ → ℝ} {d B τ : ℝ
   have hy : AbsolutelyContinuousOnInterval y 0 τ :=
     hq.sub hcq.contDiffOn.absolutelyContinuousOnInterval
   have hE : AbsolutelyContinuousOnInterval (fun t => x t ^ 2 + y t ^ 2) 0 τ := by
-    simpa only [pow_two, Pi.add_apply, Pi.mul_apply] using (hx.mul hx).add (hy.mul hy)
+    simpa only [pow_two, Pi.add_apply, Pi.mul_apply] using (hx.fun_mul hx).fun_add (hy.fun_mul hy)
   have hode' := (ae_restrict_iff' measurableSet_Icc).1 hode
   have hD : ∀ᵐ t ∂volume, t ∈ uIcc 0 τ →
       HasDerivAt (fun s => x s ^ 2 + y s ^ 2) 0 t := by
     filter_upwards [hode'] with t ht hmem
     rw [uIcc_of_le hτ] at hmem
-    have hd := (((ht hmem).1.sub (hasDerivAt_initialFloorCircleP d B t)).pow 2).add
-      (((ht hmem).2.sub (hasDerivAt_initialFloorCircleQ d B t)).pow 2)
+    have hd := (((ht hmem).1.fun_sub (hasDerivAt_initialFloorCircleP d B t)).fun_pow 2).fun_add
+      (((ht hmem).2.fun_sub (hasDerivAt_initialFloorCircleQ d B t)).fun_pow 2)
     exact hd.congr_deriv (by ring)
   obtain ⟨K, hK⟩ := hE.const_of_ae_hasDerivAt_zero hD
   have hzero := hK 0 (by simp)
   have hx0 : x 0 = 0 := by simp [x, initialFloorCircleP, hp0]
-  have hy0 : y 0 = 0 := by simp [y, initialFloorCircleQ, hq0]
+  have hy0 : y 0 = 0 := by simp [y, initialFloorCircleQ, hq0]; ring
   rw [hx0, hy0] at hzero
   have hpoint : ∀ t ∈ Icc (0 : ℝ) τ, x t = 0 ∧ y t = 0 := by
     intro t ht

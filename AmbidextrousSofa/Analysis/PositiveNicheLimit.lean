@@ -106,14 +106,15 @@ theorem integral_positiveNicheOverlap_tendsto
       apply tendsto_const_nhds.congr'
       filter_upwards [hpos] with n hn
       exact (indicator_of_mem (show x ∈ P ∩ {x : ℝ | 0 < finiteBarrier (U n)
-        (normal (dyadic (level n))) (pairList (dyadic (level n))) none x} from ⟨hx, hn⟩)).symm
+        (normal (dyadic (level n))) (pairList (dyadic (level n))) none x} from ⟨hx, hn⟩)
+        (fun _ => (1 : ℝ))).symm
     · rw [indicator_of_notMem hx]
       apply tendsto_const_nhds.congr'
       apply Eventually.of_forall
       intro n
       exact (indicator_of_notMem (show x ∉ P ∩ {x : ℝ | 0 < finiteBarrier (U n)
         (normal (dyadic (level n))) (pairList (dyadic (level n))) none x} from
-        fun hm => hx hm.1)).symm
+        fun hm => hx hm.1) (fun _ => (1 : ℝ))).symm
   have hwindow (n : ℕ) :
       middleHalfInterval (horizontalLeft (U n)) (horizontalRight (U n)) ⊆ Icc a b :=
     (middleHalfInterval_subset (horizontalLeft_le_horizontalRight (hU n).nonempty

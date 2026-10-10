@@ -150,12 +150,13 @@ theorem adaptiveFunctional_taylor (u v : QuarterPair) :
       quadraticEnergy (v.sub u) -
         ∫ t in (0 : ℝ)..(Real.pi / 2), contactDefectDensity u v t := by
   have hL : (0 : ℝ) ≤ Real.pi / 2 := by linarith [Real.pi_pos]
-  have hu := ContinuousOn.intervalIntegrable_of_Icc hL (continuousOn_adaptiveDensity u)
-  have hlin := ContinuousOn.intervalIntegrable_of_Icc hL
+  have hu := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) hL
+    (continuousOn_adaptiveDensity u)
+  have hlin := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) hL
     (continuousOn_adaptiveLinearDensity u (v.sub u))
-  have hquad := ContinuousOn.intervalIntegrable_of_Icc hL
+  have hquad := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) hL
     (continuousOn_quadraticDensity (v.sub u))
-  have hcontact := ContinuousOn.intervalIntegrable_of_Icc hL
+  have hcontact := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) hL
     (continuousOn_contactDefectDensity u v)
   have hfunction : adaptiveDensity v = fun t =>
       adaptiveDensity u t + adaptiveLinearDensity u (v.sub u) t -

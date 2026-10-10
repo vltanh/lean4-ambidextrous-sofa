@@ -53,7 +53,7 @@ theorem topRemovedWindowEnvelope_bounds (U : Set Plane) (grid : Finset QuarterAn
 theorem integrable_topRemovedWindowEnvelope (U : Set Plane) (grid : Finset QuarterAngle)
     (E : Set ℝ) (l r a b : ℝ) :
     Integrable (topRemovedWindowEnvelope U grid E l r a b) volume := by
-  have hB : Integrable ((Icc l r).indicator (fun _ : ℝ => 1)) volume :=
+  have hB : Integrable ((Icc l r).indicator (fun _ : ℝ => (1 : ℝ))) volume :=
     (integrable_indicator_iff measurableSet_Icc).mpr
       (integrableOn_const (by rw [Real.volume_Icc]; exact ENNReal.ofReal_ne_top))
   apply Integrable.mono' hB (measurable_topRemovedWindowEnvelope U grid E l r a b).aestronglyMeasurable
@@ -109,7 +109,7 @@ theorem topRemovedWindowEnvelope_tendsto_ae
           E (hwindow n hxN) hno
       have hxout : x ∉ Icc l₀ r₀ \ Ioo a b := fun hm => hm.2 htop
       rw [indicator_of_notMem hxout]
-      exact tendsto_const_nhds.congr' hzero.symm
+      exact tendsto_const_nhds.congr' (hzero.mono fun _ hn => hn.symm)
     · rw [indicator_of_mem (show x ∈ Icc l₀ r₀ \ Ioo a b from ⟨hx, htop⟩)]
       apply tendsto_const_nhds.congr'
       filter_upwards [hmem] with n hn
@@ -134,7 +134,7 @@ theorem integral_topRemovedWindowEnvelope_tendsto
     (hbox : ∀ n, Icc (l n) (r n) ⊆ Icc L R) :
     Tendsto (fun n => ∫ x : ℝ, topRemovedWindowEnvelope (U n) (grid n) E
         (l n) (r n) a b x) atTop (𝓝 (volume.real (Icc l₀ r₀ \ Ioo a b))) := by
-  have hB : Integrable ((Icc L R).indicator (fun _ : ℝ => 1)) volume :=
+  have hB : Integrable ((Icc L R).indicator (fun _ : ℝ => (1 : ℝ))) volume :=
     (integrable_indicator_iff measurableSet_Icc).mpr
       (integrableOn_const (by rw [Real.volume_Icc]; exact ENNReal.ofReal_ne_top))
   have hdom : ∀ n, ∀ᵐ x : ℝ ∂volume,
@@ -153,10 +153,11 @@ theorem integral_topRemovedWindowEnvelope_tendsto
   have hlim := topRemovedWindowEnvelope_tendsto_ae h hU hK hpoly ha hb hheight hτ hE
     hl hr hwindow
   have hIntegral := tendsto_integral_of_dominated_convergence
-    ((Icc L R).indicator (fun _ : ℝ => 1))
+    ((Icc L R).indicator (fun _ : ℝ => (1 : ℝ)))
     (fun n => (measurable_topRemovedWindowEnvelope (U n) (grid n) E
       (l n) (r n) a b).aestronglyMeasurable) hB hdom hlim
-  simpa only [integral_indicator_one (measurableSet_Icc.diff measurableSet_Ioo)] using hIntegral
+  simpa only [integral_indicator_const (1 : ℝ) (measurableSet_Icc.diff measurableSet_Ioo),
+    smul_eq_mul, mul_one] using hIntegral
 
 end AngularGrid
 

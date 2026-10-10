@@ -86,7 +86,7 @@ theorem finiteSupportDefect_tendsto_zero_of_canonical_maximum
   have hbox : ∀ n, U n ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1 :=
     fun n => subset_symmetricBox_of_horizontalBox (hU n).inBox
   have hcap : ∀ n, IsDownwardCap (U n) := fun n => (hU n).isCap
-  have herr := selectionDefect_sum_tendsto hTarget.isCap hcap hc hrate hHausdorff
+  have herr := selectionDefect_sum_tendsto (level := level) hTarget.isCap hcap hc hrate hHausdorff
   have hH := hHausdorff.capHeight_tendsto hcap hTarget.isCap
   rw [hheight] at hH
   have hD := erosionMoments_tendsto_zero_of_canonical_maximum hTarget hheight haffine
@@ -100,7 +100,8 @@ theorem finiteSupportDefect_tendsto_zero_of_canonical_maximum
         ∑ j, selectionDefect target (U n) (level n) (coefficient n) j)) atTop (𝓝 0) := by
     simpa only [zero_add, add_zero, mul_zero, sub_self, zero_mul] using
       (((hD.1.add hD.2).add (herr.const_mul 2)).const_mul (R + 1)).add
-        ((tendsto_const_nhds.sub hH).mul (tendsto_const_nhds.add herr))
+        (((tendsto_const_nhds (x := (1 : ℝ))).sub hH).mul
+          ((tendsto_const_nhds (x := (4 * R + 12) * Real.pi)).add herr))
   apply tendsto_iff_dist_tendsto_zero.mpr
   simp only [Real.dist_eq, sub_zero]
   exact squeeze_zero (fun n => abs_nonneg _)

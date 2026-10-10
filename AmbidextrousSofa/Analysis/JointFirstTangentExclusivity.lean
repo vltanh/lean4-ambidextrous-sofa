@@ -68,6 +68,7 @@ theorem ae_exclusive_first_source_on_positive_tangent {C α η : ℝ}
       hU hm haffine hρ hρ0 hρK heq hl hr hheight hmpos hunit hphase
       ht hp hy hD hquarter hα hη hmax
     refine ⟨⟨hquarter, ?_⟩, hangle⟩
+    show firstWall U z.1 z.2 < secondWall U z.1 z.2
     simpa only [hx] using hstrict
   · have hupper : z.1 ∈ Ioo (Real.pi / 2) Real.pi := ⟨hafter, hz.2⟩
     have hquarter : z.1 - Real.pi / 2 ∈ Ioo (0 : ℝ) (Real.pi / 2) := by
@@ -89,7 +90,9 @@ theorem ae_exclusive_first_source_on_positive_tangent {C α η : ℝ}
     have hpositive : 0 < sweptNiche U (Real.pi / 2) (B t).1 := by
       rw [hniche]
       exact hy
-    have hcorner := positive_fullWallClip_eq_cornerWall hpositive hmax
+    have hcorner : cornerWall U (z.1 - Real.pi / 2) (B t).1 =
+        sweptNiche U (Real.pi / 2) (B t).1 :=
+      positive_fullWallClip_eq_cornerWall (U := hU.isCap.toCompactCap) hpositive hmax
     have hfirst_eq : firstWall U (z.1 - Real.pi / 2) (B t).1 =
         sweptNiche U (Real.pi / 2) (B t).1 := by
       simpa only [cornerWall, min_eq_left hstrict.le] using hcorner

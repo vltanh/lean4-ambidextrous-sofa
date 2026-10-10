@@ -145,7 +145,8 @@ theorem absolutelyContinuousOnInterval_monotoneOn_of_ae_hasDerivAt_nonneg
   have hsign : ∀ᵐ t ∂volume.restrict (Ioo x y), deriv (fun s => -f s) t ≤ 0 := by
     filter_upwards [ae_restrict_of_ae_restrict_of_subset
       (Ioo_subset_Ioo hx.1 hy.2) hd] with t ht
-    rw [ht.1.neg.deriv]
+    have hneg : HasDerivAt (fun s => -f s) (-d t) t := ht.1.neg
+    rw [hneg.deriv]
     exact neg_nonpos.mpr ht.2
   have h := absolutelyContinuousOnInterval_le_initial_of_ae_deriv_nonpos
     hxyac hxy hsign (right_mem_Icc.mpr hxy)
@@ -222,6 +223,7 @@ theorem IsDownwardCap.hasDerivAt_firstWall_angle_of_density
     (Real.hasDerivAt_sin t) hs
   change HasDerivAt (fun s => firstWall U s x) _ t at hd
   apply hd.congr_deriv
+  simp only [Pi.sub_apply]
   rw [firstTangency_fst_eq_support]
   apply congrArg (fun z : ℝ => z / Real.sin t ^ 2)
   nlinarith [congrArg (fun z : ℝ => x * z) (Real.sin_sq_add_cos_sq t)]
@@ -242,8 +244,11 @@ theorem IsDownwardCap.hasDerivAt_secondWall_angle_of_density
       Real.cos s) = fun s => secondWall U s x := by
     funext s
     simp only [secondWall, angleSupport, companionNormal_eq_unitNormal]
+  change HasDerivAt (fun s => (angleSupport U (s + Real.pi / 2) - 1 + x * Real.sin s) /
+      Real.cos s) _ t at hd
   rw [hfun] at hd
   apply hd.congr_deriv
+  simp only [Pi.add_apply]
   rw [secondTangency_fst_eq_support]
   apply congrArg (fun z : ℝ => z / Real.cos t ^ 2)
   nlinarith [congrArg (fun z : ℝ => x * z) (Real.sin_sq_add_cos_sq t)]

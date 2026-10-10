@@ -44,8 +44,8 @@ theorem IsFullCapMaximizer.firstTangency_from_right_axis
       nhdsWithin_le_nhds (isOpen_Iio.mem_nhds ht.1)] with u hu0 hut
     have hu : u ∈ Ioo (0 : ℝ) (Real.pi / 2) := ⟨hu0, hut.trans ht.2⟩
     exact ⟨hm.1 hu ht hut.le, hm.2 hu ht hut.le⟩
-  exact ⟨le_of_tendsto hlim.fst (horder.mono (fun _ h => h.1)),
-    ge_of_tendsto hlim.snd (horder.mono (fun _ h => h.2))⟩
+  exact ⟨le_of_tendsto hlim.fst_nhds (horder.mono (fun _ h => h.1)),
+    ge_of_tendsto hlim.snd_nhds (horder.mono (fun _ h => h.2))⟩
 
 theorem IsFullCapMaximizer.secondTangency_before_left_axis
     {U : Set Plane} (hU : IsFullCapMaximizer U) {ρ : ℝ → ℝ} {C t : ℝ}
@@ -68,8 +68,8 @@ theorem IsFullCapMaximizer.secondTangency_before_left_axis
       nhdsWithin_le_nhds (isOpen_Ioi.mem_nhds ht.2)] with u huL htu
     have hu : u ∈ Ioo (0 : ℝ) (Real.pi / 2) := ⟨ht.1.trans htu, huL⟩
     exact ⟨hm.1 ht hu htu.le, hm.2 ht hu htu.le⟩
-  exact ⟨ge_of_tendsto hlim.fst (horder.mono (fun _ h => h.1)),
-    ge_of_tendsto hlim.snd (horder.mono (fun _ h => h.2))⟩
+  exact ⟨ge_of_tendsto hlim.fst_nhds (horder.mono (fun _ h => h.1)),
+    ge_of_tendsto hlim.snd_nhds (horder.mono (fun _ h => h.2))⟩
 
 theorem IsFullCapMaximizer.tangency_horizontal_gap_pos_of_unit_density
     {U : Set Plane} (hU : IsFullCapMaximizer U) {ρ : ℝ → ℝ} {C t : ℝ}
@@ -122,7 +122,7 @@ theorem IsFullCapMaximizer.firstWall_nonpos_right_of_middle_of_unit_density
   have hf : Continuous (fun s => support U (unitNormal s)) :=
     (continuous_support hU.isCap.isCompact).comp continuous_unitNormal
   have hn : Continuous (fun s => support U (unitNormal s) - 1 - x * Real.cos s) :=
-    (hf.sub_const 1).sub (Real.continuous_cos.const_mul x)
+    by fun_prop
   have hcont : ContinuousAt (fun s => firstWall U s x) (Real.pi / 2) :=
     hn.continuousAt.div Real.continuous_sin.continuousAt (by simp)
   have hz : firstWall U (Real.pi / 2) x = 0 := by
@@ -159,7 +159,7 @@ theorem IsFullCapMaximizer.secondWall_nonpos_left_of_middle_of_unit_density
   have hg : Continuous (fun s => support U (companionNormal s)) :=
     (continuous_support hU.isCap.isCompact).comp continuous_companionNormal
   have hn : Continuous (fun s => support U (companionNormal s) - 1 + x * Real.sin s) :=
-    (hg.sub_const 1).add (Real.continuous_sin.const_mul x)
+    by fun_prop
   have hcont : ContinuousAt (fun s => secondWall U s x) 0 :=
     hn.continuousAt.div Real.continuous_cos.continuousAt (by simp)
   have hz : secondWall U 0 x = 0 := by

@@ -129,7 +129,7 @@ theorem IsDownwardCap.threeAngleScore_lt_of_full_triangles_and_endpoint_bounds
   have hcut : (δR ^ 2 + δL ^ 2) / (2 * k) ≤ D :=
     hU.diagonalRoofDeficit_ge_inner_cuts ha hh0 hk hl hr hleft hright hu hv
       huv.1 huv.2 hδR hδL
-  have hgain := fullTriangle_gain_sum hk hksq hbR hbL hEP
+  have hgain := fullTriangle_gain_sum (a := a) hk hksq hbR hbL hEP
   have hpayment : (max (fullTriangleDemand a ((u + v) / 2) h k (fullTriangleCos k)) 0) ^ 2 /
       (2 + 3 * k) ≤ (δR ^ 2 + δL ^ 2) / (2 * k) + G :=
     fullTriangle_square_payment hk hδR.1 hδL.1 hgain

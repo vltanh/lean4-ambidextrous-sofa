@@ -191,7 +191,7 @@ theorem support_upperCap {K : Set Plane} (hK : IsCompact K) (hne : K.Nonempty)
     calc
       coordDot p v ≤ coordDot (p.1, y) v := by
         unfold coordDot
-        exact add_le_add_left (mul_le_mul_of_nonneg_right hpy hv) _
+        exact add_le_add_right (mul_le_mul_of_nonneg_right hpy hv) _
       _ ≤ support K v := coordDot_le_support hK hy v
   · exact support_mono hsub hne (isCompact_upperCap hK hK0) v
 
@@ -210,7 +210,7 @@ theorem support_translate {K : Set Plane} (hK : IsCompact K) (hne : K.Nonempty)
   · obtain ⟨q, ⟨p, hp, rfl⟩, hq⟩ :=
       exists_coordDot_eq_support htranslated (hne.image _) v
     rw [← hq, coordDot_add_left]
-    exact add_le_add_right (coordDot_le_support hK hp v) _
+    exact add_le_add_left (coordDot_le_support hK hp v) _
   · obtain ⟨p, hp, hpv⟩ := exists_coordDot_eq_support hK hne v
     rw [← hpv, ← coordDot_add_left]
     exact coordDot_le_support htranslated (mem_image_of_mem _ hp) v
@@ -246,9 +246,7 @@ theorem rotate_unitNormal (θ φ : ℝ) :
     rotate θ (unitNormal φ) = unitNormal (θ + φ) := by
   apply Prod.ext
   · simp only [rotate, unitNormal, Real.cos_add]
-    ring
   · simp only [rotate, unitNormal, Real.sin_add]
-    ring
 
 theorem angleSupport_rotate (K : Set Plane) (θ φ : ℝ) :
     angleSupport (rotate θ '' K) φ = angleSupport K (φ - θ) := by

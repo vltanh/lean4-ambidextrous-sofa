@@ -37,7 +37,7 @@ theorem ConcaveOn.const_le_of_endpoints {s : Set ℝ} {f : ℝ → ℝ}
   have hconstant := congrArg (fun t : ℝ => t * d) hsum
   have hleft := mul_le_mul_of_nonneg_left hfa hweightA
   have hright := mul_le_mul_of_nonneg_left hfb hweightB
-  have hchord := hf.roofChord_le ha hb hab hx
+  have hchord := ConcaveOn.roofChord_le hf ha hb hab hx
   rw [roofChord_eq_interpolation f hab] at hchord
   nlinarith
 
@@ -69,7 +69,7 @@ theorem IsDownwardCap.sweptNiche_le_roof_of_middle_and_convex_wings
       exact hroof0 _
     have hright : 0 ≤ (capRoof U - sweptNiche U (Real.pi / 2)) (-C) :=
       sub_nonneg.mpr (hmid (-C) ⟨le_rfl, by linarith⟩)
-    exact sub_nonneg.mp (hconc.const_le_of_endpoints
+    exact sub_nonneg.mp (ConcaveOn.const_le_of_endpoints hconc
       ⟨le_rfl, by linarith⟩ ⟨by linarith, le_rfl⟩ (by linarith)
       hleft hright ⟨hx.1, hxL⟩)
   · by_cases hxR : C ≤ x
@@ -82,7 +82,7 @@ theorem IsDownwardCap.sweptNiche_le_roof_of_middle_and_convex_wings
         change 0 ≤ capRoof U (2 * C) - sweptNiche U (Real.pi / 2) (2 * C)
         rw [hzeroR, sub_zero]
         exact hroof0 _
-      exact sub_nonneg.mp (hconc.const_le_of_endpoints
+      exact sub_nonneg.mp (ConcaveOn.const_le_of_endpoints hconc
         ⟨le_rfl, by linarith⟩ ⟨by linarith, le_rfl⟩ (by linarith)
         hleft hright ⟨hxR, hx.2⟩)
     · exact hmid x ⟨(lt_of_not_ge hxL).le, (lt_of_not_ge hxR).le⟩
@@ -112,7 +112,7 @@ theorem IsFullCapMaximizer.sweptNiche_le_roof_of_middle_height_bound
   have hends := hU.isCap.middle_niche_le_two_fifths_of_endpoints hl hr (by linarith)
   have hroof : ∀ x ∈ Icc (-C) C, 1 - h ≤ capRoof U x := by
     intro x hx
-    apply hU.isCap.concaveOn_capRoof.const_le_of_endpoints
+    apply ConcaveOn.const_le_of_endpoints hU.isCap.concaveOn_capRoof
       (a := -C) (b := C)
     · rw [hprojection]; constructor <;> linarith
     · rw [hprojection]; constructor <;> linarith

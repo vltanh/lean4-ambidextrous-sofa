@@ -100,7 +100,7 @@ theorem curvature_Ioc_le_of_nonatoms
     simpa only [hFormula, hTarget.upperCurvature_real_Ioc hab] using hright.sub hleft
   have hmiddle := middleOuterMass_sum_tendsto_of_compact hHausdorff hcap hTarget
     (fun n => (hU n).polygon_eq) hbox hwidth haffine isCompact_Icc hupper hperp
-  have herr := selectionDefect_sum_tendsto hTarget hcap hc hrate hHausdorff
+  have herr := selectionDefect_sum_tendsto (level := level) hTarget hcap hc hrate hHausdorff
   have hmesh := mesh_tendsto.comp hlevel
   have hrhs : Tendsto (fun n =>
       (4 * R + 10) * (b - a + mesh (level n)) +
@@ -108,8 +108,12 @@ theorem curvature_Ioc_le_of_nonatoms
         fullAngle (dyadic (level n)) j ∈ Icc a b), middleOuterMass (U n) (dyadic (level n)) j) +
       ∑ j, selectionDefect target (U n) (level n) (coefficient n) j) atTop
         (𝓝 ((4 * R + 10) * (b - a))) := by
-    simpa only [add_zero] using
-      (((tendsto_const_nhds.add hmesh).const_mul (4 * R + 10)).add hmiddle).add herr
+    have hmid' : Tendsto (fun n => ∑ j ∈ Finset.univ.filter (fun j : SourceIndex (dyadic (level n)) =>
+        fullAngle (dyadic (level n)) j ∈ Icc a b), middleOuterMass (U n) (dyadic (level n)) j)
+        atTop (𝓝 0) := by
+      convert hmiddle using 4
+    simpa only [add_zero, Function.comp_apply] using
+      (((tendsto_const_nhds.add hmesh).const_mul (4 * R + 10)).add hmid').add herr
   exact le_of_tendsto_of_tendsto hmass hrhs (Eventually.of_forall
     (fun n => (hU n).curvature_Ioc_le (hc n) hR (hbox n) hab hupper htop))
 

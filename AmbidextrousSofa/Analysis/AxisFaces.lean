@@ -29,17 +29,24 @@ theorem IsDownwardCap.imported_supp_pi {U : Set Plane} (hU : IsDownwardCap U) :
   simpa only [unitNormal, Real.cos_pi, Real.sin_pi] using
     support_horizontal_left hU.isCompact hU.nonempty
 
+private theorem mem_suppLine_iff {S : Set Plane} {t : ℝ} {p : Plane} :
+    p ∈ MovingSofaOptimality.suppLine S t ↔
+      MovingSofaOptimality.dot p (MovingSofaOptimality.uvec t) = MovingSofaOptimality.supp S t :=
+  Iff.rfl
+
 theorem IsDownwardCap.axis_vplus_zero {U : Set Plane} (hU : IsDownwardCap U) :
     MovingSofaOptimality.vplus U 0 = (horizontalRight U, capRoof U (horizontalRight U)) := by
   have hp := MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody 0
   have hx : (MovingSofaOptimality.vplus U 0).1 = horizontalRight U := by
-    simpa only [MovingSofaOptimality.dot_uvec_zero, imported_supp_zero] using hp.2
+    simpa only [mem_suppLine_iff, MovingSofaOptimality.dot_uvec_zero, imported_supp_zero]
+      using hp.2
   have hroof : (horizontalRight U, capRoof U (horizontalRight U)) ∈ MovingSofaOptimality.edge U 0 :=
     ⟨capRoof_mem hU.isCompact (horizontalRight_mem hU.nonempty hU.isCompact), by
-      rw [MovingSofaOptimality.dot_uvec_zero, imported_supp_zero]⟩
+      rw [mem_suppLine_iff, MovingSofaOptimality.dot_uvec_zero, imported_supp_zero]⟩
   have hlo : capRoof U (horizontalRight U) ≤ (MovingSofaOptimality.vplus U 0).2 := by
     simpa [MovingSofaOptimality.dot, MovingSofaOptimality.vvec] using MovingSofaOptimality.dot_le_dot_vplus hU.isCompact hroof
-  have hhi := le_capRoof hU.isCompact hp.1
+  have hhi : (MovingSofaOptimality.vplus U 0).2 ≤ capRoof U (MovingSofaOptimality.vplus U 0).1 :=
+    le_capRoof hU.isCompact hp.1
   rw [hx] at hhi
   exact Prod.ext hx (le_antisymm hhi hlo)
 
@@ -47,10 +54,11 @@ theorem IsDownwardCap.axis_vminus_zero {U : Set Plane} (hU : IsDownwardCap U) :
     MovingSofaOptimality.vminus U 0 = (horizontalRight U, 0) := by
   have hp := MovingSofaOptimality.vminus_mem_edge hU.imported_isConvexBody 0
   have hx : (MovingSofaOptimality.vminus U 0).1 = horizontalRight U := by
-    simpa only [MovingSofaOptimality.dot_uvec_zero, imported_supp_zero] using hp.2
+    simpa only [mem_suppLine_iff, MovingSofaOptimality.dot_uvec_zero, imported_supp_zero]
+      using hp.2
   have hbase : (horizontalRight U, 0) ∈ MovingSofaOptimality.edge U 0 :=
     ⟨hU.baseline_mem (capRoof_mem hU.isCompact (horizontalRight_mem hU.nonempty hU.isCompact)), by
-      rw [MovingSofaOptimality.dot_uvec_zero, imported_supp_zero]⟩
+      rw [mem_suppLine_iff, MovingSofaOptimality.dot_uvec_zero, imported_supp_zero]⟩
   have hhi : (MovingSofaOptimality.vminus U 0).2 ≤ 0 := by
     simpa [MovingSofaOptimality.dot, MovingSofaOptimality.vvec] using MovingSofaOptimality.dot_vminus_le_dot hU.isCompact hbase
   exact Prod.ext hx (le_antisymm hhi (hU.inStrip hp.1).1)
@@ -60,11 +68,11 @@ theorem IsDownwardCap.axis_vplus_pi {U : Set Plane} (hU : IsDownwardCap U) :
   have hp := MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody Real.pi
   have hx : (MovingSofaOptimality.vplus U Real.pi).1 = horizontalLeft U := by
     have h := hp.2
-    rw [MovingSofaOptimality.dot_uvec_pi, hU.imported_supp_pi] at h
+    rw [mem_suppLine_iff, MovingSofaOptimality.dot_uvec_pi, hU.imported_supp_pi] at h
     linarith
   have hbase : (horizontalLeft U, 0) ∈ MovingSofaOptimality.edge U Real.pi :=
     ⟨hU.baseline_mem (capRoof_mem hU.isCompact (horizontalLeft_mem hU.nonempty hU.isCompact)), by
-      rw [MovingSofaOptimality.dot_uvec_pi, hU.imported_supp_pi]⟩
+      rw [mem_suppLine_iff, MovingSofaOptimality.dot_uvec_pi, hU.imported_supp_pi]⟩
   have hhi : (MovingSofaOptimality.vplus U Real.pi).2 ≤ 0 := by
     have h := MovingSofaOptimality.dot_le_dot_vplus hU.isCompact hbase
     simp only [MovingSofaOptimality.dot, MovingSofaOptimality.vvec, Real.sin_pi, Real.cos_pi,
@@ -77,17 +85,19 @@ theorem IsDownwardCap.axis_vminus_pi {U : Set Plane} (hU : IsDownwardCap U) :
   have hp := MovingSofaOptimality.vminus_mem_edge hU.imported_isConvexBody Real.pi
   have hx : (MovingSofaOptimality.vminus U Real.pi).1 = horizontalLeft U := by
     have h := hp.2
-    rw [MovingSofaOptimality.dot_uvec_pi, hU.imported_supp_pi] at h
+    rw [mem_suppLine_iff, MovingSofaOptimality.dot_uvec_pi, hU.imported_supp_pi] at h
     linarith
   have hroof : (horizontalLeft U, capRoof U (horizontalLeft U)) ∈ MovingSofaOptimality.edge U Real.pi :=
     ⟨capRoof_mem hU.isCompact (horizontalLeft_mem hU.nonempty hU.isCompact), by
-      rw [MovingSofaOptimality.dot_uvec_pi, hU.imported_supp_pi]⟩
+      rw [mem_suppLine_iff, MovingSofaOptimality.dot_uvec_pi, hU.imported_supp_pi]⟩
   have hlo : capRoof U (horizontalLeft U) ≤ (MovingSofaOptimality.vminus U Real.pi).2 := by
     have h := MovingSofaOptimality.dot_vminus_le_dot hU.isCompact hroof
     simp only [MovingSofaOptimality.dot, MovingSofaOptimality.vvec, Real.sin_pi, Real.cos_pi,
       neg_zero, mul_zero, mul_neg, mul_one, zero_add] at h
     linarith
-  have hhi := le_capRoof hU.isCompact hp.1
+  have hhi : (MovingSofaOptimality.vminus U Real.pi).2 ≤
+      capRoof U (MovingSofaOptimality.vminus U Real.pi).1 :=
+    le_capRoof hU.isCompact hp.1
   rw [hx] at hhi
   exact Prod.ext hx (le_antisymm hhi hlo)
 

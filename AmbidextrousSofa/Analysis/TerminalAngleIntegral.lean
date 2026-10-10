@@ -66,7 +66,7 @@ theorem IsDownwardCap.norm_terminalFirstRightDerivative_le {U : Set Plane}
     constructor <;> linarith [neg_abs_le x, le_abs_self x,
       neg_abs_le (terminalFirstRightAbscissa U a),
       le_abs_self (terminalFirstRightAbscissa U a)]
-  rw [Real.norm_eq_abs, abs_div, abs_of_nonneg (sq_nonneg _)]
+  rw [Real.norm_eq_abs, abs_div, abs_of_nonneg (sq_nonneg (Real.sin a))]
   apply (div_le_iff₀ (sq_pos_of_pos hspos)).mpr
   have hscale := mul_nonneg
     (show 0 ≤ |x| + |horizontalLeft U| + |horizontalRight U| + 1 by positivity)
@@ -93,10 +93,11 @@ theorem IsDownwardCap.continuousOn_partialBarrier_terminalAngle {U : Set Plane}
     (hU : IsDownwardCap U) (x : ℝ) :
     ContinuousOn (fun a : ℝ => partialBarrier U a x)
       (Icc (Real.pi / 4) (Real.pi / 2)) := by
-  have hcont : Continuous (fun a : TerminalAngle => partialBarrier U a x) :=
-    continuous_partialCapBarrier.comp
+  have hcont : Continuous (fun a : TerminalAngle => partialBarrier U a x) := by
+    have h := continuous_partialCapBarrier.comp
       (show Continuous (fun a : TerminalAngle => ((hU.toCompactCap, a), x)) by fun_prop)
-  exact continuousOn_iff_continuous_restrict.mpr hcont
+    simpa only [Function.comp_def, IsDownwardCap.toCompactCap_carrier] using h
+  exact continuousOn_iff_continuous_domRestrict.mpr hcont
 
 /-- The mean value bound uses the right derivative at every angle before
 the terminal endpoint. It therefore applies even when the historical
@@ -138,6 +139,7 @@ theorem IsDownwardCap.integrableOn_terminalBarrierRightDerivative_Icc
     (hU.measurable_terminalBarrierRightDerivative ha0 haL).aestronglyMeasurable
   filter_upwards [ae_restrict_mem measurableSet_Icc] with x hx
   have h := hU.norm_terminalBarrierRightDerivative_le ha0 haL x
+  rw [Real.norm_eq_abs] at h
   dsimp [C]
   linarith [abs_le_endpoint_sum_of_mem_Icc hx]
 
@@ -251,8 +253,8 @@ theorem terminalBarrierRightDerivative_eq_moment_indicators
       hstrict, htie]
   · by_cases htie : firstWall U a x = sweptNiche U a x
     · simp only [terminalBarrierRightDerivative, if_neg hstrict, if_pos htie,
-        terminalStrictRegion, terminalHistoricalTie, mem_setOf_eq, indicator_of_notMem hstrict,
-        indicator_of_mem htie, zero_add]
+        indicator_of_notMem (show x ∉ terminalStrictRegion U a from hstrict),
+        indicator_of_mem (show x ∈ terminalHistoricalTie U a from htie), zero_add]
       simpa only [zero_div] using
         max_div_div_right (sq_nonneg (Real.sin a)) (x - terminalFirstRightAbscissa U a) 0
     · simp [terminalBarrierRightDerivative, terminalStrictRegion, terminalHistoricalTie,
@@ -270,12 +272,12 @@ theorem IsDownwardCap.integral_terminalBarrierRightDerivative_eq_moments
   have hE := hU.measurableSet_terminalStrictRegion ha0 haL
   have hH := hU.measurableSet_terminalHistoricalTie ha0 haL
   have hlin : IntegrableOn (fun x : ℝ => x - terminalFirstRightAbscissa U a) (Icc l r) :=
-    (show Continuous (fun x : ℝ => x - terminalFirstRightAbscissa U a) by fun_prop)
-      .continuousOn.integrableOn_Icc
+    (show Continuous (fun x : ℝ => x - terminalFirstRightAbscissa U a) by
+      fun_prop).continuousOn.integrableOn_Icc
   have hpos : IntegrableOn (fun x : ℝ => max (x - terminalFirstRightAbscissa U a) 0)
       (Icc l r) :=
-    (show Continuous (fun x : ℝ => max (x - terminalFirstRightAbscissa U a) 0) by fun_prop)
-      .continuousOn.integrableOn_Icc
+    (show Continuous (fun x : ℝ => max (x - terminalFirstRightAbscissa U a) 0) by
+      fun_prop).continuousOn.integrableOn_Icc
   simp_rw [terminalBarrierRightDerivative_eq_moment_indicators]
   rw [integral_div, integral_add (hlin.indicator hE) (hpos.indicator hH),
     setIntegral_indicator hE, setIntegral_indicator hH]
@@ -295,6 +297,6 @@ theorem IsJointCapMaximizer.terminal_variation_moments_nonneg
       hU.angle_mem.1 haL.le] at h
   have hs : 0 < Real.sin a := by
     linarith [half_le_sin_terminalAngle hU.angle_mem.1 haL.le]
-  simpa only [zero_mul] using (le_div_iff₀ (sq_pos_of_pos hs)).mp h
+  simpa only [zero_mul, middleHalfInterval] using (le_div_iff₀ (sq_pos_of_pos hs)).mp h
 
 end AmbidextrousSofa

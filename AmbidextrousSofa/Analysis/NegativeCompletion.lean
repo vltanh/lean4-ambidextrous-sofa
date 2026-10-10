@@ -48,7 +48,7 @@ theorem fixedPoint_firstWall_le_initial {H z a t : ℝ}
   have h1 := mul_nonneg (sub_nonneg.mpr hz) hcross
   have h2 := mul_nonneg hsa.le (sub_nonneg.mpr hdot)
   have hcircle := congrArg (fun v : ℝ => v * Real.sin t) (Real.sin_sq_add_cos_sq a)
-  apply add_le_add_left
+  apply add_le_add_right
   apply (div_le_div_iff₀ hst hsa).mpr
   nlinarith only [h1, h2, hcircle]
 

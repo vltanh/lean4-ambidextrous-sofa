@@ -61,6 +61,7 @@ local notation "aZ" => J.sourceBranchDensity (firstCornerSource target) 0
 local notation "aD" => J.sourceBranchDensity (secondTangentSource target) (Real.pi / 2)
 local notation "aW" => J.sourceBranchDensity (secondCornerSource target) (Real.pi / 2)
 
+include J hl hr hC hheight hlow hhigh hh hunit hTargetBox hleft hright in
 theorem exists_common_source_occupation_of_phases {α η : ℝ}
     (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η) :
     ∃ b δ χ : ℝ → ℝ, Measurable δ ∧

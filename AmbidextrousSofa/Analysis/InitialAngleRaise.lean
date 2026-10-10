@@ -56,7 +56,9 @@ theorem integral_positive_wall_difference_full {A B k a c e : ℝ}
     simpa only [mul_zero] using (mul_max_of_nonneg (r - l) 0 hden.le).symm
   rw [hfun, integral_positive_asymmetric_tent_full hp hm hAl hrB,
     show (1 + k) + (1 - k) = (2 : ℝ) by ring, hmax]
-  field_simp [ne_of_gt hden] <;> ring
+  generalize max (r - l) 0 = M
+  field_simp [ne_of_gt hden]
+  ring
 
 /-- A finite niche increase is no larger than the complete-area increase
 of the positive tent above the terminal line. The integral itself remains

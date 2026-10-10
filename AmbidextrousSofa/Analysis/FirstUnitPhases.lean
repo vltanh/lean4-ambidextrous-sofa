@@ -68,7 +68,7 @@ theorem fullTiltedSupportQuarterPair_exists_strict_sign_phases {C h : ℝ}
   have hpcont : ContinuousOn p (Icc (Real.arctan m) (Real.pi / 2)) :=
     D.continuousOn.1.mono (Icc_subset_Icc hδ0 le_rfl)
   have hfirst : ∀ t ∈ Icc (Real.arctan m) (Real.pi / 2), p t ≤ 1 :=
-    hpcont.le_on_Icc_of_ae_le_on_Ioo hδL (by
+    ContinuousOn.le_on_Icc_of_ae_le_on_Ioo hpcont hδL (by
       filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ht
       exact fullTiltedSupportQuarterPair_p_le_one_after_affine
         hU hm haffine hρ hρ0 hρK heq ⟨hδ0.trans ht.1.le, ht.2⟩ ht.1.le)
@@ -168,7 +168,7 @@ theorem fullTiltedSupportQuarterPair_first_pos_through_affine {C h : ℝ}
   rw [← mul_assoc, hcm] at hsin
   have hprod := mul_nonneg (sub_nonneg.mpr (Real.cos_le_one t))
     (show 0 ≤ 1 - capRoof U (horizontalRight U) + h / 2 by linarith only [heRone, hh0])
-  have hpvalue := hcircle.1 t ht
+  have hpvalue := hcircle.1 ht
   dsimp only [Analysis.initialFloorCircleP] at hpvalue
   have hplower : capRoof U (horizontalRight U) - h / 2 ≤ p t := by
     nlinarith only [hpvalue, hsin, hprod]

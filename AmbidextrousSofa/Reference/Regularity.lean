@@ -133,7 +133,8 @@ def strictReferenceBand : Set Plane :=
   {p | referenceNiche p.1 < p.2 ∧ referenceNiche p.1 < 1 - p.2}
 
 theorem isOpen_strictReferenceBand : IsOpen strictReferenceBand := by
-  have hn := continuous_referenceNiche.comp continuous_fst
+  have hn : Continuous (fun p : Plane => referenceNiche p.1) :=
+    continuous_referenceNiche.comp continuous_fst
   exact (isOpen_lt hn continuous_snd).inter
     (isOpen_lt hn (continuous_const.sub continuous_snd))
 

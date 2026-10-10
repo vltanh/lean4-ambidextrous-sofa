@@ -61,8 +61,12 @@ theorem innerSourceMass_sub_atom_eq {U : Set Plane} (hU : IsDownwardCap U)
       (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4) (horizontalRight U))
   change (∫ x in (horizontalLeft U)..(horizontalRight U), outerDensity U α grid j x) =
     (upperCurvature U {fullAngle α grid j}).toReal at htotal
-  dsimp only [innerSourceMass, normalizedExposureDefect, middleOuterMass,
-    AngularGrid.middleOuterMass, capWidth]
+  have hmid : middleOuterMass U α grid j =
+      ∫ x in (horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4)..
+        (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4), outerDensity U α grid j x :=
+    rfl
+  rw [hmid]
+  dsimp only [innerSourceMass, normalizedExposureDefect, capWidth]
   linarith only [hdef, htotal, hleft, hright]
 
 open Classical in
@@ -78,9 +82,12 @@ theorem abs_innerAngularMass_sub_curvature_le {U : Set Plane} (hU : IsDownwardCa
   have heq : innerAngularMass U α hαL grid E - (upperCurvature U).real E =
       ∑ j ∈ Finset.univ.filter (fun j : SourceIndex α grid => fullAngle α grid j ∈ E),
         (normalizedExposureDefect U α hαL grid j - middleOuterMass U α grid j) := by
-    rw [innerAngularMass,
-      AngularGrid.upperCurvature_real_eq_sum_sources hU (outerGrid α grid) hpoly hupper htop,
-      ← Finset.sum_sub_distrib]
+    have hcurv : (upperCurvature U).real E =
+        ∑ j ∈ Finset.univ.filter (fun j : SourceIndex α grid => fullAngle α grid j ∈ E),
+          (upperCurvature U {fullAngle α grid j}).toReal := by
+      rw [AngularGrid.upperCurvature_real_eq_sum_sources hU (outerGrid α grid) hpoly hupper htop]
+      exact Finset.sum_congr (Finset.filter_congr_decidable _ _ _) (fun _ _ => rfl)
+    rw [innerAngularMass, hcurv, ← Finset.sum_sub_distrib]
     exact Finset.sum_congr rfl (fun j _ => innerSourceMass_sub_atom_eq hU grid hpoly j)
   rw [heq, ← Finset.sum_add_distrib]
   apply (Finset.abs_sum_le_sum_abs _ _).trans

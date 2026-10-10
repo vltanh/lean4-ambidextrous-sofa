@@ -31,6 +31,7 @@ variable {target : Set Plane} {a b : ℝ} (J : SelectedJointSourceLimit target a
   (heq : (upperCurvature target).restrict (regularCurvatureDomain m) =
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
+include hTarget hheight haffine hTargetBox hleft hright heq in
 theorem ae_sourceBranch_property {S : Set Plane} {d : ℝ} {P : ℝ → Prop}
     (hP : MeasurableSet {t | P t})
     (hsource : ∀ᵐ z ∂J.sourceBranchMeasure S, P (z.1 - d)) :
@@ -46,6 +47,7 @@ theorem ae_sourceBranch_property {S : Set Plane} {d : ℝ} {P : ℝ → Prop}
   intro he
   exact hn (le_antisymm (ENNReal.ofReal_eq_zero.mp he) (J.sourceBranchDensity_nonneg S d t))
 
+include hTarget hheight haffine hTargetBox hleft hright heq in
 theorem ae_sourceBranchDensity_mul_eq {S : Set Plane} {d : ℝ} {f g : ℝ → ℝ}
     (hf : Measurable f) (hg : Measurable g)
     (hsource : ∀ᵐ z ∂J.sourceBranchMeasure S, f (z.1 - d) = g (z.1 - d)) :
@@ -57,6 +59,7 @@ theorem ae_sourceBranchDensity_mul_eq {S : Set Plane} {d : ℝ} {f g : ℝ → �
   · simp only [hn, zero_mul]
   · rw [ht hn]
 
+include hTarget hheight haffine hTargetBox hleft hright heq in
 theorem integrable_sourceBranchDensity_mul_of_ae_eq
     {S : Set Plane} {d : ℝ} {R : Plane → ℝ} {f : ℝ → ℝ}
     (hf : Measurable f) (hR : Integrable R (J.sourceBranchMeasure S))
@@ -74,8 +77,10 @@ theorem integrable_sourceBranchDensity_mul_of_ae_eq
     (ae_of_all volume (fun _ => ENNReal.ofReal_lt_top))).mp hi
   apply hw.congr
   exact ae_of_all _ (fun t => by
+    beta_reduce
     rw [ENNReal.toReal_ofReal (J.sourceBranchDensity_nonneg S d t), smul_eq_mul])
 
+include hTarget hheight haffine hTargetBox hleft hright heq in
 theorem setIntegral_sourceBranch_eq_graph
     {S : Set Plane} {d : ℝ} {X f : ℝ → ℝ} {R : Plane → ℝ}
     (hX : Measurable X) (hf : Measurable f)
@@ -105,6 +110,7 @@ theorem setIntegral_sourceBranch_eq_graph
           (ae_of_all _ (fun _ => ENNReal.ofReal_lt_top)) f hXE]
       apply integral_congr_ae
       exact ae_of_all _ (fun t => by
+        beta_reduce
         rw [ENNReal.toReal_ofReal (J.sourceBranchDensity_nonneg S d t), smul_eq_mul])
 
 end AngularGrid.SelectedJointSourceLimit

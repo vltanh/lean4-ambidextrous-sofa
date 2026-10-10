@@ -76,8 +76,9 @@ theorem wideLeftTiltPenalty_identity {a h : ℝ} (ha : 0 < a) (hha : h < a)
     1 + k * v - (1 - h / 2 + (k - h / a) * wideLeftIntersection a h v) =
       wideLeftTiltPenalty a h k v := by
   have hd : 1 - h / a ≠ 0 := (sub_pos.mpr ((div_lt_one ha).mpr hha)).ne'
+  have hah : a - h ≠ 0 := (sub_pos.mpr hha).ne'
   unfold wideLeftTiltPenalty wideLeftIntersection
-  field_simp [ha.ne', hd] <;> ring
+  field_simp [ha.ne', hd, hah] <;> ring
 
 theorem wideLeftTiltPenalty_bounds {a h k v : ℝ} (ha : 0 < a) (hh : 0 ≤ h)
     (hk : k ≤ 1) (hq : wideLeftIntersection a h v ∈ Icc (a / 2) a) :
@@ -134,7 +135,7 @@ theorem IsDownwardCap.wideRoofDeficit_ge_support_cuts {U : Set Plane}
   have hR : δR ^ 2 / (2 * k) ≤ ∫ x in (a / 2)..a, fR x := by
     apply integral_gap_ge_left_ramp hfR hk hδR.1 huv hδR.2 hfR0
     intro x hx
-    have hfit : δR / k ≤ u - a / 2 := (div_le_iff₀ hk).mpr hδR.2
+    have hfit : δR / k ≤ u - a / 2 := (div_le_iff₀' hk).mpr hδR.2
     have hxU : x ∈ horizontalProjection U := by
       rw [hproj]
       exact ⟨by linarith only [hx.1, hfit, ha], hx.2.trans huv.2⟩
@@ -150,7 +151,7 @@ theorem IsDownwardCap.wideRoofDeficit_ge_support_cuts {U : Set Plane}
       (show δL ≤ (k - h / a) * (-a / 2 - -q) by
         convert hδL.2 using 1 <;> dsimp [q] <;> ring) hfL0
     intro x hx
-    have hfit : δL / (k - h / a) ≤ q - a / 2 := (div_le_iff₀ hkp).mpr hδL.2
+    have hfit : δL / (k - h / a) ≤ q - a / 2 := (div_le_iff₀' hkp).mpr hδL.2
     have hxU : x ∈ horizontalProjection U := by
       rw [hproj]
       exact ⟨by linarith only [hx.1, hq.2], by linarith only [hx.2, hfit, ha]⟩

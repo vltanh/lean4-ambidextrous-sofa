@@ -51,7 +51,8 @@ theorem real_left_window_without_top_le {l a s t : ℝ}
     · simp
   have h := (measureReal_mono hsub hfinite).trans
     (measureReal_union_le (Icc l (min a s)) {a})
-  simpa only [Real.volume_real_Icc_of_le (le_min hla hls), Measure.real,
+  rw [Real.volume_real_Icc_of_le (le_min hla hls)] at h
+  simpa only [Measure.real,
     measure_singleton, ENNReal.toReal_zero, add_zero] using h
 
 theorem real_right_window_without_top_le {b r s t : ℝ}
@@ -73,7 +74,8 @@ theorem real_right_window_without_top_le {b r s t : ℝ}
     · simp
   have h := (measureReal_mono hsub hfinite).trans
     (measureReal_union_le (Icc (max b t) r) {b})
-  simpa only [Real.volume_real_Icc_of_le (max_le hbr htr), Measure.real,
+  rw [Real.volume_real_Icc_of_le (max_le hbr htr)] at h
+  simpa only [Measure.real,
     measure_singleton, ENNReal.toReal_zero, add_zero] using h
 
 /-- The source bound loses precisely the actual top overhangs from the
@@ -115,7 +117,8 @@ theorem IsJointCapMaximizer.positive_partial_middle_measure_le_width_sub_topOver
     refine ⟨hzTop, ?_⟩
     change coordDot (z, 1) (unitNormal (Real.pi / 2)) = angleSupport U (Real.pi / 2)
     simp only [coordDot, unitNormal, angleSupport, Real.cos_pi_div_two,
-      Real.sin_pi_div_two, mul_zero, mul_one, zero_add, ← capHeight, hheight]
+      Real.sin_pi_div_two, mul_zero, mul_one, zero_add]
+    exact hheight.symm
   have hzst : z ∈ Icc s t := by
     rw [← hU.isCap.horizontalProjection_edge (by simp : 0 ≤ Real.sin (Real.pi / 2))]
     exact ⟨(z, 1), hzEdge, rfl⟩
@@ -224,7 +227,6 @@ theorem IsJointCapMaximizer.terminal_top_projection_bound_of_tail_regime
   have hzero : z = b + topOverhangRight U - d := by
     dsimp [z, terminalTailZero]
     rw [hU.terminalTailPoint_fst_eq_middle_add_topOverhangRight_of_tail_regime hregime hproper hheight haffine]
-    rfl
   have hwide := hU.width_gt_forty_nine_twenty_fifths hproper
   have hcos := (terminal_sin_cos_bounds_after_initialAngle
     hU.terminal_angle_gt_arctan_eight_thirds.le hproper).2
@@ -240,11 +242,10 @@ theorem IsJointCapMaximizer.terminal_top_projection_bound_of_tail_regime
       (hx.2.trans_le (min_le_right _ _))
   have hlength : min b z - a ≤ volume.real P := by
     rw [← Real.volume_real_Ioo_of_le hmin]
-    apply measureReal_mono hsubset
-    exact measure_ne_top_of_subset inter_subset_left (by
+    exact measureReal_mono hsubset (measure_ne_top_of_subset inter_subset_left (by
       change volume (Icc a b) ≠ ⊤
       rw [Real.volume_Icc]
-      exact ENNReal.ofReal_ne_top)
+      exact ENNReal.ofReal_ne_top))
   have hmoment := hU.positive_partial_middle_measure_le_width_sub_topOverhangs
     hproper hheight ⟨m, c, haffine⟩
   change volume.real P ≤ capWidth U / 2 - topOverhangLeft U - topOverhangRight U at hmoment

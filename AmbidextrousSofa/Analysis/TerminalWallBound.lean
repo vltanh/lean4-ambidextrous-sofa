@@ -29,7 +29,7 @@ namespace AmbidextrousSofa
 theorem intervalIntegral_const_sub_mul (H k a b : ℝ) :
     (∫ x in a..b, H - k * x) = (b - a) * H - k * (b ^ 2 - a ^ 2) / 2 := by
   rw [intervalIntegral.integral_sub (continuous_const.intervalIntegrable _ _)
-    ((continuous_const.mul continuous_id).intervalIntegrable _ _),
+    ((show Continuous (fun x : ℝ => k * x) by fun_prop).intervalIntegrable _ _),
     intervalIntegral.integral_const, intervalIntegral.integral_const_mul,
     integral_id]
   simp only [smul_eq_mul]

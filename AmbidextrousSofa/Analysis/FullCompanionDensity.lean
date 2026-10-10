@@ -42,11 +42,11 @@ theorem IsFullCapMaximizer.middle_support_vertices
   · apply Prod.ext hends.1
     have h := hU.isCap.capRoof_eq_of_mem_upper_edge hs
       (MovingSofaOptimality.vplus_mem_edge hU.isCap.imported_isConvexBody (affineNormalAngle m))
-    simpa only [hends.1] using h
+    simpa only [hends.1, capWidth] using h
   · apply Prod.ext hends.2
     have h := hU.isCap.capRoof_eq_of_mem_upper_edge hs
       (MovingSofaOptimality.vminus_mem_edge hU.isCap.imported_isConvexBody (affineNormalAngle m))
-    simpa only [hends.2] using h
+    simpa only [hends.2, capWidth] using h
 
 theorem IsFullCapMaximizer.leftCompanion_initial_curvature_zero
     {U : Set Plane} {m c : ℝ} (hU : IsFullCapMaximizer U) (hm : 0 < m)
@@ -140,7 +140,7 @@ theorem IsFullCapMaximizer.leftCompanion_density_of_regular_companion
       (Ioi b).indicator (fun r => ENNReal.ofReal (ρ r)) t
     by_cases ht : t ∈ Ioi b
     · simp only [indicator_of_mem ht]
-    · simp only [indicator_of_not_mem ht, ENNReal.ofReal_zero]
+    · simp only [indicator_of_notMem ht, ENNReal.ofReal_zero]
   calc
     _ = (upperCurvature (leftCompanionCap U (horizontalLeft U + capWidth U / 4))).restrict
           (Ioc (Real.pi / 2) b) +

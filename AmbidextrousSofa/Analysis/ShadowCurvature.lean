@@ -138,7 +138,8 @@ theorem eventually_sameSignShadowMargin_pos
     (fun n j => sameSignShadowMargin positive (U n)
       (sourceQuarterAngle (fullAngle (dyadic (level n)) j)) (mesh (level n))) hmargin
   intro ns hns j hangle
-  exact (h.comp hns).sameSignShadowMargin_tendsto (fun n => hU (ns n)) hK hB
+  have hsub : CapHausdorffTendsto (fun n => U (ns n)) K := h.comp hns
+  exact hsub.sameSignShadowMargin_tendsto (fun n => hU (ns n)) hK hB
     (fun n => hbox (ns n)) positive (sourceQuarterAngle_tendsto hangle htop)
     (mesh_tendsto.comp (hlevel.comp hns)) (fun n => mesh_sin_pos (level (ns n)))
     (fun n => (mesh_cos_pos (level (ns n))).le) ht htcomp
@@ -146,7 +147,7 @@ theorem eventually_sameSignShadowMargin_pos
 theorem tan_half_div_mesh_tendsto {level : ℕ → ℕ} (hlevel : Tendsto level atTop atTop) :
     Tendsto (fun n => Real.tan (mesh (level n) / 2) / mesh (level n)) atTop (𝓝 (1 / 2)) := by
   have hhalf : Tendsto (fun n => mesh (level n) / 2) atTop (𝓝 0) := by
-    simpa only [zero_div] using (mesh_tendsto.comp hlevel).div_const 2
+    simpa only [zero_div, Function.comp_apply] using (mesh_tendsto.comp hlevel).div_const 2
   have hratio := tan_div_self_tendsto hhalf (fun n => div_pos (mesh_pos (level n)) (by norm_num))
   simpa only [div_div, div_mul_cancel₀ _ (by norm_num : (2 : ℝ) ≠ 0)] using hratio.div_const 2
 

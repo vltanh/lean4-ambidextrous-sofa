@@ -40,6 +40,7 @@ variable (hTarget : IsFullCapMaximizer target) (hheight : capHeight target = 1)
   (heq : (upperCurvature target).restrict (regularCurvatureDomain m) =
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
+include hTarget hheight haffine hTargetBox hleft hright hρ hρ0 hρK heq in
 theorem ae_first_tangent_source_graph :
     ∀ᵐ z ∂J.sourceBranchMeasure (firstTangentSource target),
       z.2 = (firstTangency target z.1).1 := by
@@ -47,6 +48,7 @@ theorem ae_first_tangent_source_graph :
     hTargetBox hleft hright hρ hρ0 hρK heq] with z hz
   exact congrArg Prod.fst hz.2
 
+include hTarget hheight m haffine hTargetBox hleft hright hρ hρ0 hρK heq in
 theorem ae_first_tangent_density_le_one_sub
     (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1) :
     ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)),
@@ -72,8 +74,9 @@ theorem ae_first_tangent_density_le_one_sub
   have hs : 0 < Real.sin t := Real.sin_pos_of_pos_of_lt_pi ht.1
     (by linarith only [ht.2, Real.pi_pos])
   rw [add_zero, abs_of_nonneg (mul_nonneg (sub_nonneg.mpr hu) hs.le)] at hb
-  exact (mul_le_mul_right hs).mp hb
+  exact (mul_le_mul_iff_left₀ hs).mp hb
 
+include hTarget hheight haffine hTargetBox hleft hright hρ hρ0 hρK heq in
 theorem ae_first_tangent_density_eq_zero_outside_middle :
     ∀ᵐ t ∂volume,
       (firstTangency target t).1 ∉
@@ -93,6 +96,7 @@ theorem ae_first_tangent_density_eq_zero_outside_middle :
   exact J.ae_sourceBranchDensity_eq_zero_on hTarget hheight haffine hTargetBox
     hleft hright heq hE hz
 
+include hTarget hheight haffine hTargetBox hleft hright hρ hρ0 hρK heq in
 theorem ae_first_tangent_density_eq_zero_after_middle {C : ℝ}
     (hl : horizontalLeft target = -2 * C) (hr : horizontalRight target = 2 * C) :
     ∀ᵐ t ∂volume, C ≤ (firstTangency target t).1 →

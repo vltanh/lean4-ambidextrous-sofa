@@ -58,12 +58,14 @@ theorem IsFullCapMaximizer.volumeReal_eq_horizontalSupportQuarterPair_energy
     (hd.mono (fun _ h => h.1)) (hd.mono (fun _ h => h.2.1))
     (hd.mono (fun _ h => h.2.2.1)) (hd.mono (fun _ h => h.2.2.2))
     hfi hgi hp.1 hp.2 (fun _ _ => rfl) (fun _ _ => rfl)
-    (by rw [hgL, neg_neg]) hf0.symm hfL hg0
-  · rw [hgD0, hfDL, neg_neg, neg_neg]
+    (by change horizontalLeft U = -F.g (Real.pi / 2); rw [hgL, neg_neg]) hf0.symm hfL hg0
+  · change -F.gD 0 ≤ -F.fD (Real.pi / 2)
+    rw [hgD0, hfDL, neg_neg, neg_neg]
     have hwidth : 0 ≤ capWidth U := hU.isCap.capWidth_nonneg
     dsimp only [capWidth] at hwidth ⊢
     linarith
   · intro x hx
+    change x ∈ Icc (-F.gD 0) (-F.fD (Real.pi / 2)) at hx
     rw [hgD0, hfDL, neg_neg, neg_neg] at hx
     exact hmiddle x hx
 

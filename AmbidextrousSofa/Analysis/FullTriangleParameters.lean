@@ -132,7 +132,7 @@ theorem fullTriangle_loss_sum_le {a eR eL h k u v : ℝ}
   have hdR : 0 ≤ d0 - h / 4 := by linarith only [hd0, hh1]
   have hdL : 0 ≤ d0 + 3 * h / 4 := by linarith only [hd0, hh0]
   have hR := fullTriangle_floor_loss_le_endpoint hk hksq heR
-  have hL := fullTriangle_floor_loss_le_endpoint (u := v - h) hk hksq
+  have hL := fullTriangle_floor_loss_le_endpoint (a := a) (e := eL) (u := v - h) hk hksq
     (by linarith only [heL])
   have hR' : max (fullTriangleRightZero k u (wideEndpointIntercept a eR k) - (u - k)) 0 ≤
       d0 - h / 4 := hR.trans (max_le (by dsimp [d0]; linarith only [hwR]) hdR)

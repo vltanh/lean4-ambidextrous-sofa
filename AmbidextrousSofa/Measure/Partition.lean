@@ -119,7 +119,8 @@ theorem integral_middle_partition_defect_identity
     (∫ x in I, 1 - nU x - nV x) -
         (∫ x in I, signedFiberLength (dU x) (dV x) (nU x) (nV x)) =
       ∫ x in I, middlePartitionDefect (dU x) (dV x) (nU x) (nV x) := by
-  rw [← integral_sub (Integrable.sub (Integrable.sub hOne hnU) hnV) hSigned]
+  rw [← integral_sub (f := fun x => 1 - nU x - nV x)
+    (Integrable.sub (Integrable.sub hOne hnU) hnV) hSigned]
   apply integral_congr_ae
   exact Filter.Eventually.of_forall
     (fun x => middle_partition_defect_identity (dU x) (dV x) (nU x) (nV x))
@@ -133,7 +134,8 @@ theorem integral_exterior_partition_defect_identity
     (∫ x in I, 1 - dU x - dV x) -
         (∫ x in I, signedFiberLength (dU x) (dV x) (nU x) (nV x)) =
       ∫ x in I, exteriorPartitionDefect (dU x) (dV x) (nU x) (nV x) := by
-  rw [← integral_sub (Integrable.sub (Integrable.sub hOne hdU) hdV) hSigned]
+  rw [← integral_sub (f := fun x => 1 - dU x - dV x)
+    (Integrable.sub (Integrable.sub hOne hdU) hdV) hSigned]
   apply integral_congr_ae
   exact Filter.Eventually.of_forall
     (fun x => exterior_partition_defect_identity (dU x) (dV x) (nU x) (nV x))
@@ -165,12 +167,14 @@ theorem integrated_partition_defect_identity
   have hMiddleExpanded :
       (∫ x in J, 1 - nU x - nV x) =
         volume.real J - (∫ x in J, nU x) - ∫ x in J, nV x := by
-    rw [integral_sub (Integrable.sub hOneJ hnUJ) hnVJ, integral_sub hOneJ hnUJ]
+    rw [integral_sub (f := fun x => 1 - nU x) (Integrable.sub hOneJ hnUJ) hnVJ,
+      integral_sub hOneJ hnUJ]
     simp only [setIntegral_const, smul_eq_mul, mul_one]
   have hExteriorExpanded :
       (∫ x in I \ J, 1 - dU x - dV x) =
         volume.real (I \ J) - (∫ x in I \ J, dU x) - ∫ x in I \ J, dV x := by
-    rw [integral_sub (Integrable.sub hOneE hdUE) hdVE, integral_sub hOneE hdUE]
+    rw [integral_sub (f := fun x => 1 - dU x) (Integrable.sub hOneE hdUE) hdVE,
+      integral_sub hOneE hdUE]
     simp only [setIntegral_const, smul_eq_mul, mul_one]
   unfold spatialScore integratedPartitionDefect
   rw [integral_sub hOneE hdUE, integral_sub hOneE hdVE]

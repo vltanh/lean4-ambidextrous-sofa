@@ -173,9 +173,12 @@ theorem finiteSpatialScore_green [Fintype ι] {U : Set Plane}
         (barrierIntercept normal (fun i => support U (normal i))))
       (horizontalLeft U) (horizontalRight U) = _ at h
   rw [affineGraph_barrier] at h
+  have hroof' : EqOn ((roofExpr (ι := ι)).affineGraph (wallSlope normal)
+      (roofIntercept normal (fun i => support U (normal i)))) (capRoof U)
+      (Icc (horizontalLeft U) (horizontalRight U)) := hroof
   rw [intervalSpatialScore_congr_roof hlr hroof,
-    rightEndpointPressure_congr_roof hlr hroof, leftEndpointPressure_congr_roof hlr hroof,
-    hroof ⟨hlr, le_rfl⟩, hroof ⟨le_rfl, hlr⟩] at h
+    rightEndpointPressure_congr_roof hlr hroof', leftEndpointPressure_congr_roof hlr hroof',
+    hroof' ⟨hlr, le_rfl⟩, hroof' ⟨le_rfl, hlr⟩] at h
   exact h
 
 end FinitePolygon

@@ -106,7 +106,7 @@ theorem CapHausdorffTendsto.sourceCornerHeight_tendsto
     (htop : t ≠ Real.pi / 2) :
     Tendsto (fun n => sourceCornerHeight (U n) (angle n)) atTop
       (𝓝 (sourceCornerHeight K t)) :=
-  (h.attachedCorner_tendsto hU hK (sourceQuarterAngle_tendsto hangle htop)).snd
+  (h.attachedCorner_tendsto hU hK (sourceQuarterAngle_tendsto hangle htop)).snd_nhds
 
 /-- Compactness upgrades the moving-angle limit to eventual uniform
 strict negativity. This applies to arbitrary actual caps, independently
@@ -135,7 +135,8 @@ theorem CapHausdorffTendsto.eventually_sourceCornerHeight_neg_on_compact
   have hseq : Tendsto seq atTop atTop := hnsTop.comp hms.tendsto_atTop
   have hlim : Tendsto (fun n => sourceCornerHeight (U (seq n)) (angle (ms n))) atTop
       (𝓝 (sourceCornerHeight K t)) :=
-    (h.comp hseq).sourceCornerHeight_tendsto (fun n => hU (seq n)) hK hangle
+    CapHausdorffTendsto.sourceCornerHeight_tendsto (U := fun n => U (seq n)) (h.comp hseq)
+      (fun n => hU (seq n)) hK hangle
       (fun heq => htop (heq ▸ ht))
   have hnonneg : 0 ≤ sourceCornerHeight K t := ge_of_tendsto hlim
     (Eventually.of_forall (fun n => le_of_not_gt (hnegativeFail (ms n))))
@@ -150,8 +151,9 @@ theorem sourceQuarterAngle_fullAngle (grid : Finset QuarterAngle) (j : SourceInd
       Sum.elim (fun t : InteriorPoint grid => (t.val : ℝ))
         (fun t : InteriorPoint grid => (t.val : ℝ)) j := by
   cases j with
-  | inl t => simp only [fullAngle, sourceQuarterAngle, if_pos (interiorPoint_mem grid t).2,
-      Sum.elim_inl]
+  | inl t =>
+    simp only [fullAngle, sourceQuarterAngle, Sum.elim_inl]
+    exact ite_eq_left (interiorPoint_mem grid t).2
   | inr t =>
     have hnot : ¬ (t.val : ℝ) + Real.pi / 2 < Real.pi / 2 := by
       linarith [(interiorPoint_mem grid t).1]
@@ -199,7 +201,7 @@ theorem innerSource_corner_height_nonneg (U : Set Plane) (grid : Finset QuarterA
 theorem innerSourceSet_eq_empty_of_corner_neg (U : Set Plane) (grid : Finset QuarterAngle)
     (j : SourceIndex grid) (hnegative : sourceCornerHeight U (fullAngle grid j) < 0) :
     innerSourceSet U grid j = ∅ := by
-  apply Set.eq_empty_iff_forall_not_mem.mpr
+  apply Set.eq_empty_iff_forall_notMem.mpr
   intro x hx
   exact not_lt_of_ge (innerSource_corner_height_nonneg U grid j hx) hnegative
 
@@ -210,10 +212,10 @@ theorem innerDensity_eq_zero_of_corner_neg (U : Set Plane) (grid : Finset Quarte
   funext x
   have hnot : x ∉ innerSourceSet U grid j := by
     rw [innerSourceSet_eq_empty_of_corner_neg U grid j hnegative]
-    exact not_mem_empty x
+    exact notMem_empty x
   unfold innerDensity
-  rw [outwardVelocity_eq_single, WallExpr.sourceDensity_single,
-    indicator_of_notMem hnot]
+  rw [outwardVelocity_eq_single, WallExpr.sourceDensity_single]
+  exact indicator_of_notMem hnot _
 
 theorem innerSourceMass_eq_zero_of_corner_neg (U : Set Plane) (grid : Finset QuarterAngle)
     (j : SourceIndex grid) (hnegative : sourceCornerHeight U (fullAngle grid j) < 0) :

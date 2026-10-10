@@ -95,7 +95,7 @@ theorem IsFullCapMaximizer.sweptNiche_firstTangency_of_unit_density
   have hsub : Ioo (0 : ℝ) (Real.pi / 2) ⊆ regularCornerDomain 0 := by
     rw [regularCornerDomain_zero]
   have hB := hU.isCap.firstTangency_monotoneOn_open_of_unit_density hρ hρ0 hρC heq hsub hfirst
-  have hwall := fun s hs x =>
+  have hwall := fun (s : ℝ) (hs : s ∈ Ioo (0 : ℝ) (Real.pi / 2)) (x : ℝ) =>
     (hU.isCap.hasDerivAt_walls_on_regularCornerDomain hρ hρ0 hρC heq (hsub hs) x).1
   have hfloor := hU.firstTangency_before_top_endpoint hheight hmiddle hρ hρ0 hρC heq
     (by norm_num : (0 : ℝ) ≤ 0) hfirst ht
@@ -114,7 +114,7 @@ theorem IsFullCapMaximizer.sweptNiche_secondTangency_of_unit_density
   have hsub : Ioo (0 : ℝ) (Real.pi / 2) ⊆ regularCornerDomain 0 := by
     rw [regularCornerDomain_zero]
   have hD := hU.isCap.secondTangency_monotoneOn_open_of_unit_density hρ hρ0 hρC heq hsub hcompanion
-  have hwall := fun s hs x =>
+  have hwall := fun (s : ℝ) (hs : s ∈ Ioo (0 : ℝ) (Real.pi / 2)) (x : ℝ) =>
     (hU.isCap.hasDerivAt_walls_on_regularCornerDomain hρ hρ0 hρC heq (hsub hs) x).2
   have hfloor := hU.secondTangency_from_top_endpoint hheight hmiddle hρ hρ0 hρC heq hcompanion ht
   exact sweptNiche_at_secondTangency hU.isCap hD.1 hwall ht hq hfloor.2

@@ -74,7 +74,7 @@ theorem scaled_innerSourceSet_eq_empty_of_corner_neg (U : Set Plane)
     (grid : Finset QuarterAngle) (j : AngularGrid.SourceIndex grid)
     (hnegative : sourceCornerHeight U (fullAngle α grid (scaledSource α grid j)) < 0) :
     innerSourceSet U α hαL grid (scaledSource α grid j) = ∅ := by
-  apply Set.eq_empty_iff_forall_not_mem.mpr
+  apply Set.eq_empty_iff_forall_notMem.mpr
   intro x hx
   exact not_lt_of_ge (scaled_innerSource_corner_height_nonneg U grid j hx) hnegative
 
@@ -103,7 +103,7 @@ theorem curvature_Ioc_eq_zero_of_negative_corners
     (C := 0) le_rfl hab hregular ha hb (by
       filter_upwards [hevent] with n hn
       intro j hj
-      have hzero := scaled_innerSourceSet_eq_empty_of_corner_neg (U n) (dyadic (level n)) j
+      have hzero := scaled_innerSourceSet_eq_empty_of_corner_neg (hαL := hαL) (U n) (dyadic (level n)) j
         (hn _ hj)
       simpa only [zero_mul, zero_add] using
         (hU n).curvature_atom_le_error_of_source_empty (hc n) _ hzero)

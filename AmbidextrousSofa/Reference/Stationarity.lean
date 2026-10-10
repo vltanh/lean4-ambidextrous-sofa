@@ -71,22 +71,24 @@ theorem R_mul_sin_lastPhase :
 theorem adjustedMomentP_eq {t : ℝ} (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) :
     adjustedMomentP t = momentP t + min (momentP t) 0 := by
   by_cases hearly : t ≤ beta
-  · simp only [min_eq_right (momentP_nonneg_early ⟨ht.1, hearly⟩), add_zero,
-      momentP_phases, adjustedMomentP, if_pos hearly]
-  · simp only [min_eq_left (momentP_nonpos_after_beta ⟨(le_of_not_ge hearly), ht.2⟩),
-      momentP_phases, adjustedMomentP, if_neg hearly]
+  · rw [min_eq_right (momentP_nonneg_early ⟨ht.1, hearly⟩), add_zero]
+    simp only [momentP_phases, adjustedMomentP, if_pos hearly]
+  · rw [min_eq_left (momentP_nonpos_after_beta ⟨(le_of_not_ge hearly), ht.2⟩)]
+    simp only [momentP_phases, adjustedMomentP, if_neg hearly]
     split_ifs <;> ring
 
 theorem adjustedMomentQ_eq {t : ℝ} (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) :
     adjustedMomentQ t = momentQ t + max (momentQ t) 0 := by
   by_cases hbefore : t ≤ lateSwitch
   · have hq := momentQ_nonneg_before_lateSwitch ⟨ht.1, hbefore⟩
+    rw [max_eq_left hq]
     by_cases hearly : t ≤ beta
-    · simp only [max_eq_left hq, momentQ_phases, adjustedMomentQ, if_pos hearly] <;> ring
-    · simp only [max_eq_left hq, momentQ_phases, adjustedMomentQ,
-        if_neg hearly, if_pos hbefore] <;> ring
-  · simp only [max_eq_right (momentQ_nonpos_late ⟨(le_of_not_ge hbefore), ht.2⟩), add_zero,
-      momentQ_phases, adjustedMomentQ,
+    · simp only [momentQ_phases, adjustedMomentQ, if_pos hearly]
+      ring
+    · simp only [momentQ_phases, adjustedMomentQ, if_neg hearly, if_pos hbefore]
+      ring
+  · rw [max_eq_right (momentQ_nonpos_late ⟨(le_of_not_ge hbefore), ht.2⟩), add_zero]
+    simp only [momentQ_phases, adjustedMomentQ,
       if_neg (not_le.mpr (beta_lt_lateSwitch.trans (lt_of_not_ge hbefore))), if_neg hbefore]
 
 theorem hasDerivAt_adjustedMomentP (t : ℝ) :
@@ -182,20 +184,25 @@ theorem adjustedMomentPD_eq {t : ℝ} (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) :
     adjustedMomentPD t = -1 - 2 * momentQ t + max (momentQ t) 0 := by
   by_cases hearly : t ≤ beta
   · have hq := momentQ_nonneg_before_lateSwitch ⟨ht.1, hearly.trans beta_lt_lateSwitch.le⟩
-    simp only [max_eq_left hq, momentQ_phases, adjustedMomentPD, if_pos hearly] <;> ring
+    rw [max_eq_left hq]
+    simp only [momentQ_phases, adjustedMomentPD, if_pos hearly]
+    ring
   · by_cases hmiddle : t ≤ lateSwitch
-    · simp only [max_eq_left (momentQ_nonneg_before_lateSwitch ⟨ht.1, hmiddle⟩),
-        momentQ_phases, adjustedMomentPD, if_neg hearly, if_pos hmiddle] <;> ring
-    · simp only [max_eq_right (momentQ_nonpos_late ⟨(le_of_not_ge hmiddle), ht.2⟩),
-        momentQ_phases, adjustedMomentPD, if_neg hearly, if_neg hmiddle] <;> ring
+    · rw [max_eq_left (momentQ_nonneg_before_lateSwitch ⟨ht.1, hmiddle⟩)]
+      simp only [momentQ_phases, adjustedMomentPD, if_neg hearly, if_pos hmiddle]
+      ring
+    · rw [max_eq_right (momentQ_nonpos_late ⟨(le_of_not_ge hmiddle), ht.2⟩)]
+      simp only [momentQ_phases, adjustedMomentPD, if_neg hearly, if_neg hmiddle]
+      ring
 
 theorem adjustedMomentQD_eq {t : ℝ} (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) :
     adjustedMomentQD t = -1 + 2 * momentP t - min (momentP t) 0 := by
   by_cases hearly : t ≤ beta
-  · simp only [min_eq_right (momentP_nonneg_early ⟨ht.1, hearly⟩),
-      momentP_phases, adjustedMomentQD, if_pos hearly] <;> ring
-  · simp only [min_eq_left (momentP_nonpos_after_beta ⟨(le_of_not_ge hearly), ht.2⟩),
-      momentP_phases, adjustedMomentQD, if_neg hearly]
+  · rw [min_eq_right (momentP_nonneg_early ⟨ht.1, hearly⟩)]
+    simp only [momentP_phases, adjustedMomentQD, if_pos hearly]
+    ring
+  · rw [min_eq_left (momentP_nonpos_after_beta ⟨(le_of_not_ge hearly), ht.2⟩)]
+    simp only [momentP_phases, adjustedMomentQD, if_neg hearly]
     split_ifs <;> ring
 
 theorem referencePair_fluxF_eq {t : ℝ} (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) :
@@ -219,7 +226,7 @@ theorem referencePair_eulerF {t : ℝ} (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) 
     unfold QuarterPair.forceF QuarterPair.q referencePair momentQ
     ring
   apply (h.congr_deriv hderiv).hasDerivWithinAt.congr_of_eventuallyEq
-  · filter_upwards [(Ioo_mem_nhds ht.1 ht.2).filter_mono nhdsWithin_le_nhds] with s hs
+  · filter_upwards [mem_nhdsWithin_of_mem_nhds (Ioo_mem_nhds ht.1 ht.2)] with s hs
     exact referencePair_fluxF_eq ⟨hs.1.le, hs.2.le⟩
   · exact referencePair_fluxF_eq ⟨ht.1.le, ht.2.le⟩
 
@@ -232,7 +239,7 @@ theorem referencePair_eulerG {t : ℝ} (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) 
     unfold QuarterPair.forceG QuarterPair.p referencePair momentP
     ring
   apply (h.congr_deriv hderiv).hasDerivWithinAt.congr_of_eventuallyEq
-  · filter_upwards [(Ioo_mem_nhds ht.1 ht.2).filter_mono nhdsWithin_le_nhds] with s hs
+  · filter_upwards [mem_nhdsWithin_of_mem_nhds (Ioo_mem_nhds ht.1 ht.2)] with s hs
     exact referencePair_fluxG_eq ⟨hs.1.le, hs.2.le⟩
   · exact referencePair_fluxG_eq ⟨ht.1.le, ht.2.le⟩
 

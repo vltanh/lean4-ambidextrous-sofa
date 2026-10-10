@@ -45,7 +45,7 @@ theorem ae_density_le_of_conditional_local_bound
     exact Eventually.of_forall (fun t => by
       rw [Real.norm_eq_abs, abs_of_nonneg (hρ0 t)]
       exact hρC t)
-  filter_upwards [hint.ae_hasDerivAt_integral] with t hdt ht hP
+  filter_upwards [LocallyIntegrable.ae_hasDerivAt_integral hint] with t hdt ht hP
   have hderiv := hdt t
   have hstep : Tendsto AngularGrid.selectionRate atTop (𝓝[>] (0 : ℝ)) :=
     tendsto_nhdsWithin_iff.mpr
@@ -54,7 +54,7 @@ theorem ae_density_le_of_conditional_local_bound
       (∫ s in t..(t + AngularGrid.selectionRate n), ρ s) / AngularGrid.selectionRate n)
       atTop (𝓝 (ρ t)) := by
     simpa only [intervalIntegral.integral_same, sub_zero, smul_eq_mul,
-      div_eq_mul_inv, mul_comm] using hderiv.tendsto_slope_zero_right.comp hstep
+      div_eq_mul_inv, mul_comm, Function.comp_def] using hderiv.tendsto_slope_zero_right.comp hstep
   obtain ⟨a, b, htIoo, hIoo⟩ := mem_nhds_iff_exists_Ioo_subset.mp (hS.mem_nhds ht)
   apply le_of_forall_pos_le_add
   intro ε hε
@@ -162,16 +162,20 @@ theorem curvature_Ioc_le_of_eventual_atom_bound
     have hright := MovingSofaOptimality.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim hb
     have hFormula (n : ℕ) := (hcap n).upperCurvature_real_Ioc hab
     simpa only [hFormula, hTarget.upperCurvature_real_Ioc hab] using hright.sub hleft
-  have hmiddle := middleOuterMass_sum_tendsto_of_compact hHausdorff hcap hTarget
-    (fun n => (hU n).polygon_eq) hbox hwidth haffine isCompact_Icc hupper hperp
-  have herr := selectionDefect_sum_tendsto hTarget hcap hc hrate hHausdorff
+  have hmiddle : Tendsto (fun n =>
+      ∑ j ∈ Finset.univ.filter (fun j : SourceIndex (dyadic (level n)) =>
+        fullAngle (dyadic (level n)) j ∈ Icc a b), middleOuterMass (U n) (dyadic (level n)) j)
+      atTop (𝓝 0) := by
+    convert middleOuterMass_sum_tendsto_of_compact (E := Icc a b) hHausdorff hcap hTarget
+      (fun n => (hU n).polygon_eq) hbox hwidth haffine isCompact_Icc hupper hperp
+  have herr := selectionDefect_sum_tendsto (level := level) hTarget hcap hc hrate hHausdorff
   have hmesh := mesh_tendsto.comp hlevel
   have hrhs : Tendsto (fun n => C * (b - a + mesh (level n)) +
       (∑ j ∈ Finset.univ.filter (fun j : SourceIndex (dyadic (level n)) =>
         fullAngle (dyadic (level n)) j ∈ Icc a b), middleOuterMass (U n) (dyadic (level n)) j) +
       ∑ j, selectionDefect target (U n) (level n) (coefficient n) j) atTop
         (𝓝 (C * (b - a))) := by
-    simpa only [add_zero] using
+    simpa only [add_zero, Function.comp_apply] using
       (((tendsto_const_nhds.add hmesh).const_mul C).add hmiddle).add herr
   apply le_of_tendsto_of_tendsto hmass hrhs
   filter_upwards [hatom] with n hn

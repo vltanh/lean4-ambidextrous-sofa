@@ -55,7 +55,7 @@ theorem IsDownwardCap.capRoof_le_lowCeiling_of_affine_middle
   have hCmem : C ∈ horizontalProjection U := by rw [hproj]; constructor <;> linarith
   have hchord : capRoof U x ≤ roofChord (capRoof U) (-C) C x := by
     by_cases hxc : x ≤ -C
-    · exact hU.concaveOn_capRoof.le_roofChord_of_le hxU hCmem hneg hxc
+    · exact ConcaveOn.le_roofChord_of_le hU.concaveOn_capRoof hxU hCmem hneg hxc
     · exact (hcentral ⟨le_of_not_ge hxc, hx.2⟩).le
   let t : ℝ := (x + C) / (2 * C)
   have ht : t ≤ 1 := by
@@ -83,9 +83,10 @@ theorem IsDownwardCap.capRoof_le_lowCeiling_of_affine_middle
 theorem integral_lowCeiling_left {C : ℝ} (hC : 0 < C) :
     (∫ x in (-2 * C)..(-C), lowCeiling C x) = 3 * C / 8 := by
   unfold lowCeiling
-  rw [intervalIntegral.integral_add (continuous_const.intervalIntegrable _ _)
+  rw [intervalIntegral.integral_add (f := fun _ => (3 / 4 : ℝ)) (g := fun x => x / (4 * C))
+    (continuous_const.intervalIntegrable _ _)
     ((continuous_id.div_const (4 * C)).intervalIntegrable _ _),
-    intervalIntegral.integral_const, intervalIntegral.integral_div_const, integral_id]
+    intervalIntegral.integral_const, intervalIntegral.integral_div, integral_id]
   simp only [smul_eq_mul]
   field_simp [hC.ne']
   ring

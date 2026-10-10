@@ -30,7 +30,7 @@ theorem ae_realRnDensity_eq_on_of_withDensity_restrict
     funext t
     by_cases ht : t ∈ S
     · simp only [indicator_of_mem ht]
-    · simp only [indicator_of_not_mem ht, ENNReal.ofReal_zero]
+    · simp only [indicator_of_notMem ht, ENNReal.ofReal_zero]
   have hμ' : μ = volume.withDensity (fun t => ENNReal.ofReal (S.indicator ρ t)) := by
     rw [hind, withDensity_indicator hS]
     exact hμ
@@ -38,7 +38,7 @@ theorem ae_realRnDensity_eq_on_of_withDensity_restrict
     intro t
     by_cases ht : t ∈ S
     · simpa only [indicator_of_mem ht] using hρ0 t
-    · simp only [indicator_of_not_mem ht, le_refl]
+    · simp only [indicator_of_notMem ht, le_refl]
   have hd := ae_realRnDensity_eq_of_withDensity (hρ.indicator hS) h0 hμ'
   filter_upwards [ae_restrict_mem hS, ae_restrict_of_ae hd] with t ht heq
   simpa only [indicator_of_mem ht] using heq
@@ -55,13 +55,13 @@ theorem map_second_quarter_density {ρ : ℝ → ℝ} (hρ : Measurable ρ) :
     constructor <;> intro ht <;> constructor <;> linarith only [ht.1, ht.2]
   have hv : (volume.restrict (Ioo (Real.pi / 2) Real.pi)).map
       (fun t => t - Real.pi / 2) = volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)) := by
-    rw [← hpre, ← Measure.restrict_map (measurable_id.sub_const _) measurableSet_Ioo,
+    rw [← hpre, ← Measure.restrict_map (measurable_sub_const' _) measurableSet_Ioo,
       map_sub_right_eq_self]
   have hmap := map_withDensity_comp
     (volume.restrict (Ioo (Real.pi / 2) Real.pi))
-    (measurable_id.sub_const (Real.pi / 2))
-    (hρ.comp (measurable_id.add_const (Real.pi / 2))).ennreal_ofReal
-  simpa only [sub_add_cancel, hv] using hmap
+    (measurable_sub_const' (Real.pi / 2))
+    (hρ.comp (measurable_add_const (Real.pi / 2))).ennreal_ofReal
+  simpa only [Function.comp_apply, sub_add_cancel, hv] using hmap
 
 namespace AngularGrid.SelectedJointSourceLimit
 
@@ -77,9 +77,10 @@ theorem first_branchAngular_sum (hTarget : IsDownwardCap target)
     (J.sourceBranchMeasure (firstCornerSource target)).map (fun z => z.1 - 0) = _
   rw [← Measure.map_add _ _ (measurable_fst.sub_const 0),
     J.first_source_partition hTarget hpositive]
-  simpa only [sourceBranchMeasure, firstSourceSlice, sub_zero, angularMeasure] using
-    (Measure.restrict_map (μ := (J.measure : Measure Plane)) measurable_fst
+  have h := (Measure.restrict_map (μ := (J.measure : Measure Plane)) measurable_fst
       (s := Ioo (0 : ℝ) (Real.pi / 2)) measurableSet_Ioo).symm
+  simp only [sourceBranchMeasure, firstSourceSlice, sub_zero, angularMeasure]
+  exact h
 
 theorem second_branchAngular_sum (hTarget : IsDownwardCap target)
     (hpositive : ∀ᵐ z ∂(J.measure : Measure Plane),
@@ -93,7 +94,7 @@ theorem second_branchAngular_sum (hTarget : IsDownwardCap target)
   rw [← Measure.map_add _ _ (measurable_fst.sub_const _),
     J.second_source_partition hTarget hpositive]
   rw [angularMeasure, Measure.restrict_map measurable_fst measurableSet_Ioo,
-    Measure.map_map (measurable_id.sub_const _) measurable_fst]
+    Measure.map_map (measurable_sub_const' _) measurable_fst]
   rfl
 
 section ActualDensity
@@ -108,6 +109,7 @@ variable (hTarget : IsFullCapMaximizer target) (hheight : capHeight target = 1)
   (heq : (upperCurvature target).restrict (regularCurvatureDomain m) =
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
+include hTarget hheight haffine hTargetBox hleft hright heq in
 theorem first_branchAngular_sum_eq_density
     (hpositive : ∀ᵐ z ∂(J.measure : Measure Plane),
       0 < sweptNiche target (Real.pi / 2) z.2) :
@@ -121,6 +123,7 @@ theorem first_branchAngular_sum_eq_density
     Measure.restrict_restrict_of_subset (Ioo_subset_Ioo le_rfl
       (show Real.pi / 2 ≤ Real.pi by linarith only [Real.pi_pos]))]
 
+include hTarget hheight haffine hTargetBox hleft hright hρ heq in
 theorem second_branchAngular_sum_eq_density
     (hpositive : ∀ᵐ z ∂(J.measure : Measure Plane),
       0 < sweptNiche target (Real.pi / 2) z.2) :
@@ -134,6 +137,7 @@ theorem second_branchAngular_sum_eq_density
     Measure.restrict_restrict_of_subset (Ioo_subset_Ioo
       (show (0 : ℝ) ≤ Real.pi / 2 by positivity) le_rfl), map_second_quarter_density hρ]
 
+include hTarget hheight haffine hTargetBox hleft hright hρ hρ0 heq in
 theorem ae_first_source_density_sum
     (hpositive : ∀ᵐ z ∂(J.measure : Measure Plane),
       0 < sweptNiche target (Real.pi / 2) z.2) :
@@ -148,6 +152,7 @@ theorem ae_first_source_density_sum
   filter_upwards [hd, ae_restrict_of_ae ha] with t ht hs
   exact hs.symm.trans ht
 
+include hTarget hheight haffine hTargetBox hleft hright hρ hρ0 heq in
 theorem ae_second_source_density_sum
     (hpositive : ∀ᵐ z ∂(J.measure : Measure Plane),
       0 < sweptNiche target (Real.pi / 2) z.2) :
@@ -165,6 +170,7 @@ theorem ae_second_source_density_sum
   filter_upwards [hd, ae_restrict_of_ae ha] with t ht hs
   exact hs.symm.trans ht
 
+include hTarget hheight haffine hTargetBox hleft hright heq in
 theorem ae_sourceBranchDensity_eq_zero_on
     {S : Set Plane} {d : ℝ} {E : Set ℝ} (hE : MeasurableSet E)
     (hzero : ∀ᵐ z ∂J.sourceBranchMeasure S, z.1 - d ∉ E) :

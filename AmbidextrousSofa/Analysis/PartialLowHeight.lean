@@ -166,10 +166,14 @@ theorem IsJointCapMaximizer.middle_endpoints_gt_half_of_affine
       (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4) := by
   obtain ⟨m, c, haffine⟩ := haffine
   by_cases hm : 0 ≤ m
-  · have hhigh := hU.middle_right_eq_one_of_affine_nonneg hheight hm haffine
+  · have hhigh : capRoof U
+        (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4) = 1 :=
+      hU.middle_right_eq_one_of_affine_nonneg hheight hm haffine
     exact ⟨hU.middle_left_gt_half_of_right_eq_one hhigh ⟨m, c, haffine⟩,
       by rw [hhigh]; norm_num⟩
-  · have hhigh := hU.middle_left_eq_one_of_affine_nonpos hheight (le_of_not_ge hm) haffine
+  · have hhigh : capRoof U
+        (horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4) = 1 :=
+      hU.middle_left_eq_one_of_affine_nonpos hheight (le_of_not_ge hm) haffine
     exact ⟨by rw [hhigh]; norm_num,
       hU.middle_right_gt_half_of_left_eq_one hhigh ⟨m, c, haffine⟩⟩
 

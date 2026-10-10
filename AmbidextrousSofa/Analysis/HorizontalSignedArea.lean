@@ -197,8 +197,13 @@ theorem IsFullCapMaximizer.twice_middle_niche_eq_signed_support
     have hsign := hpminus t ⟨ht.1.le, ht.2.le⟩
     rw [(horizontalSupportQuarterPair_velocities hU.isCap hρ hρ0 hρK heq htL).1] at hsign
     linarith
+  have hN : Continuous (sweptNiche U (Real.pi / 2)) := by
+    have hpb : partialBarrier U (Real.pi / 2) = sweptNiche U (Real.pi / 2) :=
+      funext hU.isCap.partialBarrier_pi_div_two
+    rw [← hpb]
+    exact hU.isCap.continuous_partialBarrier_pi_div_two
   have hsigned := signedRoof_integral_of_graphs_ac hb.1.le hd.1.le hd.2.le
-    hU.isCap.continuous_sweptNiche_pi_div_two hf hg hfD hgD
+    hN hf hg hfD hgD
     hac.1 hac.2.1 hac.2.2.1 hac.2.2.2 hderiv hfDD hgDD
     hfL hg0 hpb hqd hgraphD hgraphC hgraphB
   have hpcont : Continuous (supportP F.fD F.g) := (hfD.sub hg).add continuous_const
@@ -207,7 +212,7 @@ theorem IsFullCapMaximizer.twice_middle_niche_eq_signed_support
   have hqclip := integral_max_sq_of_sign_switch (hb.1.trans hd.1).le hd.2.le
     hqcont hqplus hqminus
   rw [← hpclip, ← hqclip] at hsigned
-  simp only [hgD0, hfDL, neg_neg] at hsigned
+  rw [hgD0, hfDL, neg_neg, neg_neg] at hsigned
   have hlr := horizontalLeft_le_horizontalRight hU.isCap.nonempty hU.isCap.isCompact
   have hmidle : horizontalLeft U + capWidth U / 4 ≤
       horizontalRight U - capWidth U / 4 := by

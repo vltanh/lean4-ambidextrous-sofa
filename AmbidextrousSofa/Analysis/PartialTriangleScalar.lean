@@ -119,9 +119,9 @@ theorem fullTriangleBound_add_partial_loss_lt {h k c : ℝ}
     dsimp [D]
     constructor <;> linarith only [hc0, hc1, hk0, hk1]
   have hAs : A * s0 < (3 / 5) * (71 / 100) :=
-    mul_lt_mul hA.2 hs.2 (by linarith only [hs.1] : 0 < s0) (by norm_num)
+    mul_lt_mul hA.2 hs.2.le (by linarith only [hs.1] : 0 < s0) (by norm_num)
   have hγD : γ * D < (3 / 10) * (47 / 200) :=
-    mul_lt_mul hγ.2 hD.2 hD.1 (by norm_num)
+    mul_lt_mul hγ.2 hD.2.le hD.1 (by norm_num)
   have hell : ell < -22 / 375 := by
     dsimp [ell]
     linarith only [hAs, hγD, hk0]

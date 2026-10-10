@@ -23,7 +23,7 @@ namespace AmbidextrousSofa
 theorem hasDerivAt_positivePart_square (x : ℝ) :
     HasDerivAt (fun t : ℝ => (max t 0) ^ 2) (2 * max x 0) x := by
   have hquad (t : ℝ) : HasDerivAt (fun y : ℝ => y ^ 2) (2 * t) t := by
-    simpa only [pow_one, mul_one] using (hasDerivAt_id t).pow 2
+    simpa using hasDerivAt_pow 2 t
   have h := Reference.hasDerivAt_if_le 0 (fun t => hasDerivAt_const t (0 : ℝ)) hquad
     (by norm_num) (by norm_num) x
   have hfun : (fun t : ℝ => if t ≤ 0 then 0 else t ^ 2) =
@@ -73,6 +73,7 @@ theorem integral_positive_tent {a b d : ℝ} (had : a ≤ d) (hdb : d ≤ b) (h 
     apply intervalIntegral.integral_congr
     rw [uIcc_of_le had]
     intro x hx
+    dsimp only
     rw [abs_of_nonpos (sub_nonpos.mpr hx.2)]
     congr 1
     ring
@@ -81,6 +82,7 @@ theorem integral_positive_tent {a b d : ℝ} (had : a ≤ d) (hdb : d ≤ b) (h 
     apply intervalIntegral.integral_congr
     rw [uIcc_of_le hdb]
     intro x hx
+    dsimp only
     rw [abs_of_nonneg (sub_nonneg.mpr hx.1)]
     congr 1
     ring

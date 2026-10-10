@@ -62,6 +62,7 @@ theorem IsDownwardCap.firstWall_eq_horizontal_density_kernel
             Real.sin t * (ρ s * Real.cos s - Real.cos s) := by
         apply intervalIntegral.integral_congr
         intro s _hs
+        dsimp only
         rw [Real.sin_sub]
         ring
       _ = _ := by
@@ -71,7 +72,7 @@ theorem IsDownwardCap.firstWall_eq_horizontal_density_kernel
           intervalIntegral.integral_const_mul, intervalIntegral.integral_const_mul,
           intervalIntegral.integral_sub hsin (Real.continuous_sin.intervalIntegrable _ _),
           intervalIntegral.integral_sub hcos (Real.continuous_cos.intervalIntegrable _ _),
-          hx', hy, intervalIntegral.integral_sin, intervalIntegral.integral_cos,
+          hx', hy, integral_sin, integral_cos,
           Real.sin_pi_div_two, Real.cos_pi_div_two, sub_zero]
   have hsupp := MovingSofaOptimality.dot_vplus_uvec U t
   change (MovingSofaOptimality.vplus U t).1 * Real.cos t +

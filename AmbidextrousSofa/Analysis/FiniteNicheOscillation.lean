@@ -47,8 +47,9 @@ theorem affineGraph_barrier (U : Set Plane) (normal : ι → Plane)
     (barrierExpr corners terminal).affineGraph (wallSlope normal)
         (barrierIntercept normal (fun i => support U (normal i))) =
       finiteBarrier U normal corners terminal := by
+  funext x
   simpa only [WallExpr.affineEnvelope, WallExpr.affineGraph, zero_mul, add_zero] using
-    affineEnvelope_barrier_zero U normal corners terminal (fun _ => 0)
+    congrFun (affineEnvelope_barrier_zero U normal corners terminal (fun _ => 0)) x
 
 theorem erosionMoments_add_eq_absolute_source_integrals [Fintype ι]
     {U : Set Plane} (hU : IsDownwardCap U) (normal : ι → Plane)
@@ -105,7 +106,7 @@ theorem finiteBarrier_peak_le_end_heights_and_moments [Fintype ι]
   have hH : ∀ z ∈ Icc l r, (roofExpr (ι := ι)).affineGraph (wallSlope normal)
       (roofIntercept normal (fun i => support U (normal i))) z ≤ 1 := by
     intro z _
-    simpa only [wallSlope, roofIntercept, zero_mul, zero_add] using
+    simpa only [WallExpr.affineGraph, wallSlope, roofIntercept, zero_mul, zero_add] using
       roofExpr_eval_le
         (fun i => wallSlope normal i * z + roofIntercept normal (fun j => support U (normal j)) i)
         none

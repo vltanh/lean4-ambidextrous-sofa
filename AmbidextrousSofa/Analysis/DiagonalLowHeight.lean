@@ -41,7 +41,7 @@ theorem IsDownwardCap.lowHeight_diagonal_integral_lower {U : Set Plane}
     intro x
     rw [hU.diagonalBarrier_eq_tent, hheight, hcenter]
   have hc : Continuous (fun x : ℝ => max (h - |x - d|) 0) := by fun_prop
-  have hmono := intervalIntegral.integral_mono_on (by linarith : -C ≤ C)
+  have hmono := intervalIntegral.integral_mono_on (μ := volume) (by linarith : -C ≤ C)
     (hc.intervalIntegrable (-C) C)
     ((continuous_diagonalBarrier U).intervalIntegrable (-C) C)
     (fun x _ => hpoint x)
@@ -71,7 +71,7 @@ theorem IsDownwardCap.baseline_positive_tent_integral_le_diagonal {U : Set Plane
     rw [heq] at h
     exact max_le_max h le_rfl
   have hc : Continuous (fun x : ℝ => max (2 * C - Real.sqrt 2 - |x - 0|) 0) := by fun_prop
-  have hmono := intervalIntegral.integral_mono_on (by linarith : -C ≤ C)
+  have hmono := intervalIntegral.integral_mono_on (μ := volume) (by linarith : -C ≤ C)
     (hc.intervalIntegrable (-C) C)
     ((continuous_diagonalBarrier U).intervalIntegrable (-C) C)
     (fun x _ => by simpa only [sub_zero] using hpoint x)

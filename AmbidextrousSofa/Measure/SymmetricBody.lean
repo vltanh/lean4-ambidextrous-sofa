@@ -160,8 +160,13 @@ theorem volumeReal_symmetricTrim_eq_cap_area {K : Set Plane} (hne : K.Nonempty)
   rw [hlength] at hvol
   have hOne : IntegrableOn (fun _x : ℝ => (1 : ℝ)) (horizontalProjection K) :=
     integrableOn_const hfinite
-  rw [integral_sub ((hroofI.const_mul 2).sub hOne) (hNI.const_mul 2),
-    integral_sub (hroofI.const_mul 2) hOne, integral_const_mul, integral_const_mul,
+  have hroof2 : IntegrableOn (fun x => 2 * capRoof (upperCap K) x) (horizontalProjection K) :=
+    hroofI.const_mul 2
+  have hroof21 : IntegrableOn (fun x => 2 * capRoof (upperCap K) x - 1)
+      (horizontalProjection K) := hroof2.sub hOne
+  have hN2 : IntegrableOn (fun x => 2 * N x) (horizontalProjection K) := hNI.const_mul 2
+  rw [integral_sub hroof21 hN2,
+    integral_sub hroof2 hOne, integral_const_mul, integral_const_mul,
     setIntegral_const, smul_eq_mul, mul_one] at hvol
   have hcapArea := hcap.volumeReal_eq_integral_capRoof
   rw [← horizontalProjection_eq_Icc hcap.nonempty hcap.isCompact hcap.convex,

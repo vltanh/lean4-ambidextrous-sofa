@@ -36,6 +36,7 @@ local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK h
 set_option quotPrecheck false in
 local notation "B" => firstTangentPoint (F).f (F).fD
 
+include hU hm haffine hρ hρ0 hρK heq in
 theorem fullTiltedSupportQuarterPair_first_wall_pos_left {C h x t : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hC : 1 / 2 < C) (hmpos : 0 < m) (hheight : capHeight U = 1)
@@ -56,7 +57,7 @@ theorem fullTiltedSupportQuarterPair_first_wall_pos_left {C h x t : ℝ}
   have hcont : ContinuousOn (fun s => firstWall U s x) (Icc t (Real.pi / 2)) :=
     hnum.continuousOn.div Real.continuous_sin.continuousOn hsin
   have hanti : StrictAntiOn (fun s => firstWall U s x) (Icc t (Real.pi / 2)) := by
-    apply strictAntiOn_of_deriv_neg convex_Icc hcont
+    apply strictAntiOn_of_deriv_neg (convex_Icc _ _) hcont
     intro s hs
     have hs' : s ∈ Ioo t (Real.pi / 2) := by simpa only [interior_Icc] using hs
     have hsq : s ∈ Ioo (0 : ℝ) (Real.pi / 2) := ⟨ht.1.trans hs'.1, hs'.2⟩
@@ -66,6 +67,7 @@ theorem fullTiltedSupportQuarterPair_first_wall_pos_left {C h x t : ℝ}
     have hmatch := fullTiltedSupportQuarterPair_first_tangency
       hU hm haffine hρ hρ0 hρK heq ⟨hsq.1.le, hsq.2⟩
     have hlo := horder ⟨le_rfl, by positivity⟩ (Ioo_subset_Icc_self hsq) hsq.1.le
+    dsimp only at hlo
     rw [hB0] at hlo
     rw [← hmatch]
     exact div_neg_of_neg_of_pos (by linarith only [hlo, hC, hx])
@@ -76,8 +78,10 @@ theorem fullTiltedSupportQuarterPair_first_wall_pos_left {C h x t : ℝ}
       mul_zero, sub_zero, div_one]
     change capHeight U - 1 = 0
     rw [hheight, sub_self]
+  dsimp only at hstrict
   rwa [hterminal] at hstrict
 
+include hU hm haffine hρ hρ0 hρK heq in
 theorem fullTiltedSupportQuarterPair_positive_middle_iff {C h x : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hC : 1 / 2 < C) (hmpos : 0 < m) (hheight : capHeight U = 1)
@@ -129,6 +133,7 @@ theorem fullTiltedSupportQuarterPair_positive_middle_iff {C h x : ℝ}
     · exact hU.isCap.sweptNiche_pos_of_top_point_right hhighPoint hx.2
         (by rw [hl]; linarith only [lt_of_not_ge hsplit])
 
+include hU hm haffine hρ hρ0 hρK heq in
 theorem fullTiltedSupportQuarterPair_positive_middle_eq {C h : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hC : 1 / 2 < C) (hmpos : 0 < m) (hheight : capHeight U = 1)
@@ -235,7 +240,8 @@ theorem IsFullCapMaximizer.firstUnit_top_projection_eq
       {x : ℝ | 0 < sweptNiche U (Real.pi / 2) x}) ≤
       volume.real (Icc (-2 * C) (-C) \ Ioo C b) +
         volume.real (Icc C (2 * C) \ Ioo C b) := by
-    simpa only [hJL, hJR, hl, hr] using hmoment
+    rw [hJL, hJR] at hmoment
+    simpa only [hl, hr] using hmoment
   have houterL := real_left_window_without_top_le
     (show -2 * C ≤ -C by linarith only [hC])
     (show -2 * C ≤ C by linarith only [hC]) (show -C ≤ b by linarith only [hCb, hC])

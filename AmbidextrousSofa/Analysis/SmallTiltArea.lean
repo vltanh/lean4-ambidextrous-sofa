@@ -82,7 +82,7 @@ theorem IsFullCapMaximizer.ordinary_area_ge_score_of_dry_left_and_excess
   have hzeroL : sweptNiche U (Real.pi / 2) (-2 * C) = 0 := by
     rw [← hl]
     exact hU.isCap.sweptNiche_eq_zero_of_le_left le_rfl
-  have hL := hconv.integral_le_trapezoid (show -2 * C < -C by linarith only [hC0])
+  have hL := ConvexOn.integral_le_trapezoid hconv (show -2 * C < -C by linarith only [hC0])
     (hU.isCap.continuous_sweptNiche_pi_div_two.intervalIntegrable _ _)
   rw [hzeroL, hnzero, add_zero, mul_zero, zero_div] at hL
   have hcorner : ∀ t ∈ Ioo (0 : ℝ) (Real.pi / 2), (attachedCorner U t).1 ≤ C :=

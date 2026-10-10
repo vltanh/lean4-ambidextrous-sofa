@@ -66,7 +66,7 @@ theorem measure_restrict_Ioo_le_of_compactly_contained
     have hpos := AngularGrid.selectionRate_pos n
     by_cases hab : A + AngularGrid.selectionRate n ≤ B - AngularGrid.selectionRate n
     · exact h _ _ (by linarith) hab (by linarith)
-    · have hempty : insetInterval A B n = ∅ := Ioo_eq_empty (le_of_not_ge hab)
+    · have hempty : insetInterval A B n = ∅ := Ioo_eq_empty (fun h => hab h.le)
       rw [hempty, Measure.restrict_empty, Measure.restrict_empty]
   apply Measure.le_iff.mpr
   intro s hs
@@ -139,10 +139,10 @@ theorem curvature_density_sharp_on_open_wing
             (Ioo A B) := by
       apply measure_restrict_Ioo_le_of_compactly_contained
       intro a b ha hab hb
-      simpa only [Measure.restrict_withDensity measurableSet_Ioo] using
+      simpa only [restrict_withDensity measurableSet_Ioo] using
         curvature_restrict_le_source_density hTarget hU hHausdorff hlevel hc hrate hR hbox
           hwidth haffine hA hB htop hperp ha hab hb
-    simpa only [Measure.restrict_withDensity measurableSet_Ioo] using h
+    simpa only [restrict_withDensity measurableSet_Ioo] using h
   letI : IsFiniteMeasure ((upperCurvature target).restrict (Ioo A B)) :=
     isFiniteMeasure_restrict.mpr measure_Ioo_lt_top.ne
   letI : IsFiniteMeasure ((volume : Measure ℝ).restrict (Ioo A B)) :=

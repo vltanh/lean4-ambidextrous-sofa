@@ -235,8 +235,9 @@ theorem fullTiltedSupportQuarterPair_exists_initial_stopping_circle {C h : ℝ}
     capRoof_nonneg hU.isCap.isCompact (fun x hx => (hU.isCap.inStrip hx).1) _
   let z : ℝ → ℝ := fun t => min (p t) (min (q t) (-(D t).2))
   have hzcont : ContinuousOn z (Icc 0 L) := by
-    simpa only [uIcc_of_le hL.le] using
-      hpAC.continuousOn.min (hqAC.continuousOn.min hDy.continuousOn.neg)
+    have h := hpAC.continuousOn.inf (hqAC.continuousOn.inf hDy.continuousOn.neg)
+    rw [uIcc_of_le hL.le] at h
+    exact h
   have hz0 : 0 < z 0 := by
     dsimp only [z]
     rw [hp0, hq0, hD0, neg_neg]
@@ -284,7 +285,7 @@ theorem fullTiltedSupportQuarterPair_exists_initial_stopping_circle {C h : ℝ}
   let b : ℝ := capRoof U (horizontalRight U) - 1 + h
   have hpinitial : p 0 = 1 + b := by dsimp only [b]; linarith only [hp0]
   have hradius : (p τ - 1) ^ 2 + (q τ + 1) ^ 2 = (3 * C) ^ 2 + b ^ 2 := by
-    rw [hpcircle τ hτmem, hqcircle τ hτmem]
+    rw [hpcircle hτmem, hqcircle hτmem]
     exact Analysis.initialFloorCircle_radius (3 * C) b τ
   have hd : 2 < (3 * C) ^ 2 := by
     have hprod := mul_pos (show 0 < 3 * C - 3 / 2 by linarith only [hC])
@@ -308,7 +309,7 @@ theorem fullTiltedSupportQuarterPair_exists_initial_stopping_circle {C h : ℝ}
   have hτL : τ < L := by
     apply lt_of_le_of_ne hτ.2
     intro heqτ
-    have hpL := hpcircle τ hτmem
+    have hpL := hpcircle hτmem
     simp only [heqτ, L, Analysis.initialFloorCircleP, Real.cos_pi_div_two,
       Real.sin_pi_div_two, mul_zero, mul_one, add_zero] at hpL
     rw [heqτ] at hpτ
@@ -323,7 +324,7 @@ theorem fullTiltedSupportQuarterPair_exists_initial_stopping_circle {C h : ℝ}
         have hzpositive : 0 < z τ := lt_min hppos (lt_min hqpositive (neg_pos.mpr hDnegative))
         linarith only [hzτ, hzpositive]
       have hcos : Real.cos τ = 1 - h := by
-        have hc := hDcircle τ hτmem
+        have hc := hDcircle hτmem
         linarith only [hc, hDzero]
       right
       rw [Analysis.initialFloorAngle, ← hcos, Real.arccos_cos hτ.1.le

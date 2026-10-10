@@ -44,6 +44,7 @@ theorem IsDownwardCap.volumeReal_oneTurnSurvivor_eq_integral {U : Set Plane}
     hU.continuous_sweptNiche_pi_div_two.measurable hU.measurable_capRoof
   rw [← hregion] at hvol
   have hof := ofReal_integral_eq_lintegral_ofReal (hroof.sub hniche) hnonneg
+  simp only [Pi.sub_apply] at hof
   change (volume (oneTurnSurvivor U)).toReal = _
   rw [hvol, ← hof, ENNReal.toReal_ofReal (integral_nonneg_of_ae hnonneg)]
 
@@ -93,9 +94,9 @@ theorem IsDownwardCap.volumeReal_oneTurnSurvivor_eq_centered_integrals
   have hroofL := hU.intervalIntegrable_capRoof (-2 * C) (-C)
   have hroofM := hU.intervalIntegrable_capRoof (-C) C
   have hroofR := hU.intervalIntegrable_capRoof C (2 * C)
-  have hnicheL := hU.continuous_sweptNiche_pi_div_two.intervalIntegrable (-2 * C) (-C)
-  have hnicheM := hU.continuous_sweptNiche_pi_div_two.intervalIntegrable (-C) C
-  have hnicheR := hU.continuous_sweptNiche_pi_div_two.intervalIntegrable C (2 * C)
+  have hnicheL := hU.continuous_sweptNiche_pi_div_two.intervalIntegrable (μ := volume) (-2 * C) (-C)
+  have hnicheM := hU.continuous_sweptNiche_pi_div_two.intervalIntegrable (μ := volume) (-C) C
+  have hnicheR := hU.continuous_sweptNiche_pi_div_two.intervalIntegrable (μ := volume) C (2 * C)
   have hroofLM := intervalIntegral.integral_add_adjacent_intervals hroofL hroofM
   have hroofAll := intervalIntegral.integral_add_adjacent_intervals (hroofL.trans hroofM) hroofR
   have hnicheLM := intervalIntegral.integral_add_adjacent_intervals hnicheL hnicheM
@@ -121,11 +122,17 @@ theorem ConvexOn.le_roofChord {s : Set ℝ} {f : ℝ → ℝ}
 theorem integral_roofChord (f : ℝ → ℝ) {a b : ℝ} (hab : a < b) :
     (∫ x in a..b, roofChord f a b x) = (b - a) * (f a + f b) / 2 := by
   unfold roofChord
-  rw [intervalIntegral.integral_add (continuous_const.intervalIntegrable _ _)
-      (((continuous_id.sub continuous_const).const_mul _).intervalIntegrable _ _),
+  have hconst : IntervalIntegrable (fun _ : ℝ => f a) volume a b :=
+    continuous_const.intervalIntegrable _ _
+  have hlin : IntervalIntegrable (fun x : ℝ => (f b - f a) / (b - a) * (x - a)) volume a b :=
+    ((continuous_id.sub continuous_const).const_mul _).intervalIntegrable _ _
+  have hid : IntervalIntegrable (fun x : ℝ => x) volume a b :=
+    continuous_id.intervalIntegrable _ _
+  have ha : IntervalIntegrable (fun _ : ℝ => a) volume a b :=
+    continuous_const.intervalIntegrable _ _
+  rw [intervalIntegral.integral_add hconst hlin,
     intervalIntegral.integral_const_mul,
-    intervalIntegral.integral_sub (continuous_id.intervalIntegrable _ _)
-      (continuous_const.intervalIntegrable _ _), integral_id]
+    intervalIntegral.integral_sub hid ha, integral_id]
   simp only [intervalIntegral.integral_const, smul_eq_mul]
   field_simp [(sub_pos.mpr hab).ne']
   ring
@@ -138,7 +145,7 @@ theorem ConvexOn.integral_le_trapezoid {f : ℝ → ℝ} {a b : ℝ}
   apply intervalIntegral.integral_mono_on hab.le hfi
     ((continuous_roofChord f a b).intervalIntegrable a b)
   intro x hx
-  exact hf.le_roofChord ⟨le_rfl, hab.le⟩ ⟨hab.le, le_rfl⟩ hab hx
+  exact ConvexOn.le_roofChord hf ⟨le_rfl, hab.le⟩ ⟨hab.le, le_rfl⟩ hab hx
 
 theorem IsDownwardCap.wing_niche_integrals_le
     {U : Set Plane} (hU : IsDownwardCap U) {C : ℝ} (hC : 0 < C)
@@ -154,9 +161,9 @@ theorem IsDownwardCap.wing_niche_integrals_le
   have hzeroR : sweptNiche U (Real.pi / 2) (2 * C) = 0 := by
     rw [← hr]
     exact hU.sweptNiche_eq_zero_of_right_le le_rfl
-  have hL := hconvL.integral_le_trapezoid (by linarith)
+  have hL := ConvexOn.integral_le_trapezoid hconvL (by linarith)
     (hU.continuous_sweptNiche_pi_div_two.intervalIntegrable _ _)
-  have hR := hconvR.integral_le_trapezoid (by linarith)
+  have hR := ConvexOn.integral_le_trapezoid hconvR (by linarith)
     (hU.continuous_sweptNiche_pi_div_two.intervalIntegrable _ _)
   rw [hzeroL] at hL
   rw [hzeroR] at hR

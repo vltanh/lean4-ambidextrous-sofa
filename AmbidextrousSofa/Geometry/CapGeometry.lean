@@ -274,7 +274,8 @@ theorem capRoof_superlevel_eq_projection {K : Set Plane} (hK : IsCompact K)
     have hxproj : x ∈ horizontalProjection K := by
       by_contra hnot
       have hz := capRoof_eq_zero_of_not_mem hnot
-      have hcle : c ≤ 0 := by simpa only [hz] using hx
+      have hx' : c ≤ capRoof K x := hx
+      have hcle : c ≤ 0 := by simpa only [hz] using hx'
       exact (not_le_of_gt hc) hcle
     exact ⟨(x, capRoof K x), ⟨capRoof_mem hK hxproj, hx⟩, rfl⟩
   · rintro x ⟨p, ⟨hp, hcp⟩, hpx⟩

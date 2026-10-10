@@ -58,7 +58,7 @@ theorem IsDownwardCap.middle_face_projection_eq_empty {U : Set Plane}
     Ioc (horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4)
       (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4) ∩
         horizontalProjection (MovingSofaOptimality.edge U t) = ∅ := by
-  apply Set.eq_empty_iff_forall_not_mem.mpr
+  apply Set.eq_empty_iff_forall_notMem.mpr
   rintro x ⟨hx, p, hp, hpx⟩
   have hx' : p.1 ∈ Icc
       (horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4)

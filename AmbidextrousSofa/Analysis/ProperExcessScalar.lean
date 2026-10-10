@@ -98,7 +98,7 @@ theorem properExcessEnd_mono_width {d D e δ : ℝ}
   have hsum : 0 < properCrossingRoot D e + properCrossingRoot d e := by
     linarith only [hx.1, hX.1]
   have hpay : properCrossingRoot D e - properCrossingRoot d e ≤ 2 * (D - d) := by
-    apply (mul_le_mul_right hsum).mp
+    apply (mul_le_mul_iff_left₀ hsum).mp
     have hp := mul_nonneg (sub_nonneg.mpr hdD)
       (show 0 ≤ 2 * (properCrossingRoot D e + properCrossingRoot d e) - D - d by
         linarith only [hx.1, hX.1, hD1, hdD])
@@ -127,7 +127,7 @@ theorem properExcessEnd_mono_width {d D e δ : ℝ}
         ring
       _ = 4 * (D - d) * (D + d) := by rw [hy.2.2, hY.2.2]; ring
   have hgain : D - d ≤ properDecayRoot D e δ - properDecayRoot d e δ := by
-    apply (mul_le_mul_right hdenpos).mp
+    apply (mul_le_mul_iff_left₀ hdenpos).mp
     rw [hid]
     convert mul_le_mul_of_nonneg_left hden (sub_nonneg.mpr hdD) using 1 <;> ring
   unfold properExcessEnd properFirstZeroTime properDecayLength
@@ -145,7 +145,7 @@ theorem properExcessEnd_mono_height {d e E δ : ℝ}
   have hsum : 0 < properCrossingRoot d e + properCrossingRoot d E := by
     linarith only [hx.1, hX.1]
   have hgain : (E - e) / 3 ≤ properCrossingRoot d e - properCrossingRoot d E := by
-    apply (mul_le_mul_right hsum).mp
+    apply (mul_le_mul_iff_left₀ hsum).mp
     have hp := mul_nonneg (sub_nonneg.mpr heE)
       (show 0 ≤ 6 - (properCrossingRoot d e + properCrossingRoot d E) by
         linarith only [hx.2.1, hX.2.1, hd1])
@@ -175,7 +175,7 @@ theorem properExcessEnd_mono_height {d e E δ : ℝ}
         ring
       _ = 4 * (E - e) * (E + e - 1) := by rw [hy.2.2, hY.2.2]; ring
   have hloss : -(E - e) / 3 ≤ properDecayRoot d E δ - properDecayRoot d e δ := by
-    apply (mul_le_mul_right hdenpos).mp
+    apply (mul_le_mul_iff_left₀ hdenpos).mp
     rw [hid]
     have hp := mul_nonneg (sub_nonneg.mpr heE)
       (show 0 ≤ 4 * (E + e - 1) +
@@ -198,7 +198,7 @@ theorem properFirstZeroTime_lt_of_quadratic {d e T : ℝ}
     (hnegative : e - d * T + T ^ 2 / 2 < 0) : properFirstZeroTime d e < T := by
   apply first_zero_lt_of_quadratic (show properFirstZeroTime d e ≤ d from
     sub_le_self _ (Real.sqrt_nonneg _)) hTd
-    (properFirstZeroTime_quadratic hrad).le hnegative
+    (properFirstZeroTime_quadratic hrad).ge hnegative
 
 theorem properDecayLength_lt_of_energy {d e δ ell : ℝ}
     (henergy : 0 ≤ d ^ 2 - e * (1 - e) + δ)

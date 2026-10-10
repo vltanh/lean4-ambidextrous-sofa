@@ -58,7 +58,7 @@ theorem selected_right_height_limit_eq {target : Set Plane} {U : ℕ → Set Pla
   have hcap : ∀ n, IsDownwardCap (U n) := fun n => (hU n).isCap
   have hcb : ∀ n, MovingSofaOptimality.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
   have hlim := hHausdorff.imported_hausdorffTendsto hcap hTarget
-  have herr := selectionDefect_sum_tendsto hTarget hcap hc hrate hHausdorff
+  have herr := selectionDefect_sum_tendsto (level := level) hTarget hcap hc hrate hHausdorff
   have hupper := MovingSofaOptimality.ang_le_sigmaAt_of_tendsto hcb hTarget.imported_isConvexBody hlim
     hheight (fun n => (hcap n).axis_curvature_zero.symm.le)
   change H ≤ (upperCurvature target {0}).toReal at hupper
@@ -109,7 +109,7 @@ theorem selected_left_height_limit_eq {target : Set Plane} {U : ℕ → Set Plan
   have hcap : ∀ n, IsDownwardCap (U n) := fun n => (hU n).isCap
   have hcb : ∀ n, MovingSofaOptimality.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
   have hlim := hHausdorff.imported_hausdorffTendsto hcap hTarget
-  have herr := selectionDefect_sum_tendsto hTarget hcap hc hrate hHausdorff
+  have herr := selectionDefect_sum_tendsto (level := level) hTarget hcap hc hrate hHausdorff
   have hupper := MovingSofaOptimality.ang_le_sigmaAt_of_tendsto hcb hTarget.imported_isConvexBody hlim
     hheight (fun n => (hcap n).axis_curvature_pi.symm.le)
   change H ≤ (upperCurvature target {Real.pi}).toReal at hupper

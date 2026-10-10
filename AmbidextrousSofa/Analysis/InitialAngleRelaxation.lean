@@ -155,6 +155,7 @@ theorem initialAngleRightLoss_eq_ramps {C k u b : ℝ}
       rw [intervalIntegral.integral_add (hcfirst.intervalIntegrable C (2 * C))
         (hcsecond.intervalIntegrable C (2 * C)), intervalIntegral.integral_const_mul,
         intervalIntegral.integral_const_mul]
+      rfl
 
 theorem initialAngleRampLoss_le_rightLoss {C : ℝ} (hC : 0 ≤ C) (k u b : ℝ) :
     initialAngleRampLoss C u ≤ initialAngleRightLoss C k u b := by
@@ -195,6 +196,7 @@ theorem initialAngle_diagonal_integral_full {K C u v : ℝ}
     _ = ∫ x in (-C)..C, max (((u + v) / 2 - K) - |x - (u - v) / 2|) 0 := by
       apply intervalIntegral.integral_congr
       intro x _
+      dsimp only
       rw [show u - K - x = ((u + v) / 2 - K) + (u - v) / 2 - x by ring,
         show v - K + x = ((u + v) / 2 - K) - (u - v) / 2 + x by ring,
         min_symmetric_lines, max_comm]

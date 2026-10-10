@@ -104,6 +104,7 @@ theorem fullTiltedSupportQuarterPair_p_le_one_after_affine
     (ht : t ∈ Ico 0 (Real.pi / 2)) (hmt : Real.arctan m ≤ t) :
     let F := fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
     supportP F.fD F.g t ≤ 1 := by
+  dsimp only
   rw [(fullTiltedSupportQuarterPair_after_affine hU hm haffine hρ hρ0 hρK heq ht hmt).2.2.1]
   exact hU.isCap.neg_secondCornerVelocity_le_one t
 

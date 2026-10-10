@@ -93,12 +93,9 @@ theorem horizontalOuterDensity_eq_zero_of_no_edge {U : Set Plane}
     (hno : ∀ t ∈ E, (x, capRoof U x) ∉ MovingSofaOptimality.edge U t) :
     horizontalOuterDensity U grid E x = 0 := by
   classical
-  let v := fun i => wallSlope (normal grid) i * x +
-    roofIntercept (normal grid) (fun j => support U (normal grid j)) i
-  change (match (roofExpr (ι := SourceIndex grid)).source v with
-    | none => 0
-    | some j => if j ∈ Finset.univ.filter (fun i => fullAngle grid i ∈ E) then 1 else 0) = 0
-  cases hsource : (roofExpr (ι := SourceIndex grid)).source v with
+  unfold horizontalOuterDensity WallExpr.horizontalSourceDensity WallExpr.sourceDensity
+  cases hsource : (roofExpr (ι := SourceIndex grid)).source (fun i => wallSlope (normal grid) i * x +
+    roofIntercept (normal grid) (fun j => support U (normal grid j)) i) with
   | none => rfl
   | some j =>
     have hj : j ∉ Finset.univ.filter (fun i : SourceIndex grid => fullAngle grid i ∈ E) := by
@@ -106,7 +103,7 @@ theorem horizontalOuterDensity_eq_zero_of_no_edge {U : Set Plane}
       apply hno (fullAngle grid j) (Finset.mem_filter.mp hj).2
       exact outerSource_mem_edge hU (normal grid) (normal_snd_pos grid) hpoly j
         (normal_eq_unitNormal grid j) hx hsource
-    exact if_neg hj
+    simp only [hj, ite_false]
 
 theorem normal_snd_mul_innerSourceMass_eq {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (j : SourceIndex grid) :
@@ -119,12 +116,13 @@ theorem normal_snd_mul_innerSourceMass_eq {U : Set Plane} (hU : IsDownwardCap U)
         (barrierIntercept (normal grid) (fun i => support U (normal grid i)))
         (horizontalLeft U + capWidth U / 4) (horizontalRight U - capWidth U / 4) (some j) := by
     unfold innerSourceMass innerDensity
-    rw [integral_sourceDensity_outward _ _ _ _ (by linarith)]
-    unfold WallExpr.sourceMass
-    field_simp [(normal_snd_pos grid j).ne']
+    rw [integral_sourceDensity_outward _ _ _ _ (by linarith),
+      mul_div_cancel₀ _ (normal_snd_pos grid j).ne']
+    rfl
   rw [hinner]
-  unfold normalizedExposureDefect finiteExposureDefect finiteWingMass
-  field_simp [(normal_snd_pos grid j).ne'] <;> ring
+  unfold normalizedExposureDefect finiteExposureDefect finiteWingMass capWidth
+  rw [mul_div_cancel₀ _ (normal_snd_pos grid j).ne']
+  ring
 
 open Classical in
 /-- The finite neighboring-wall estimate controls the complete inner
@@ -169,7 +167,7 @@ theorem finitePositiveLength_le_horizontalOuterMass_add_cutoff {U : Set Plane}
     apply Finset.sum_le_sum
     intro j _
     rw [normal_snd_mul_innerSourceMass_eq hU]
-    apply add_le_add_left
+    apply add_le_add_right
     calc
       (normal grid j).2 * normalizedExposureDefect U grid j ≤
           (normal grid j).2 * |normalizedExposureDefect U grid j| :=
@@ -188,7 +186,7 @@ theorem finitePositiveLength_le_horizontalOuterMass_add_cutoff {U : Set Plane}
     have hs : (normal grid j).2 ≤ 1 := by rw [normal_eq_unitNormal]; exact Real.sin_le_one _
     simpa only [one_mul] using mul_le_mul_of_nonneg_right hs (innerSourceMass_nonneg hU grid j)
   exact add_le_add
-    (hmain.trans (add_le_add_left (sum_abs_defect_on_set_le_cos_sum U grid hδ hE) _)) hrest
+    (hmain.trans (add_le_add_right (sum_abs_defect_on_set_le_cos_sum U grid hδ hE) _)) hrest
 
 theorem finitePositiveLength_le_horizontalOuterMass_away_top {U : Set Plane}
     (hU : IsDownwardCap U) {R η : ℝ} (hR : 0 ≤ R)
@@ -203,22 +201,19 @@ theorem finitePositiveLength_le_horizontalOuterMass_away_top {U : Set Plane}
         (4 * R + 12) * (2 * η + mesh level) := by
   classical
   have hsin : 0 < Real.sin η := Real.sin_pos_of_pos_of_lt_pi hη.1 (by linarith [hη.2, Real.pi_pos])
-  have h := finitePositiveLength_le_horizontalOuterMass_add_cutoff hU (dyadic level) hsin
+  have h := finitePositiveLength_le_horizontalOuterMass_add_cutoff hU (dyadic level)
+    (E := Ioo (0 : ℝ) Real.pi \ Icc (Real.pi / 2 - η) (Real.pi / 2 + η)) hsin
     (fun t ht => abs_cos_ge_sin_of_outside_top_interval hη ht.1 ht.2)
-  have hfilter :
-      Finset.univ.filter (fun j : SourceIndex (dyadic level) => fullAngle (dyadic level) j ∉
-        Ioo (0 : ℝ) Real.pi \ Icc (Real.pi / 2 - η) (Real.pi / 2 + η)) =
-      Finset.univ.filter (fun j : SourceIndex (dyadic level) => fullAngle (dyadic level) j ∈
-        Icc (Real.pi / 2 - η) (Real.pi / 2 + η)) := by
-    ext j
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and, mem_diff,
-      fullAngle_mem, true_and, not_not]
-  rw [hfilter] at h
   have hsmall := innerSourceMass_sum_interval_le hU hR hbox level
     (show Real.pi / 2 - η ≤ Real.pi / 2 + η by linarith [hη.1])
   have hid : Real.pi / 2 + η - (Real.pi / 2 - η) + mesh level = 2 * η + mesh level := by ring
   rw [hid] at hsmall
-  exact h.trans (add_le_add_left hsmall _)
+  refine h.trans (add_le_add_right (le_trans (le_of_eq ?_) hsmall) _)
+  -- the two filters agree: a source angle lies in `(0, π)`
+  refine Finset.sum_congr ?_ (fun _ _ => rfl)
+  ext j
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and, Set.mem_sdiff,
+    fullAngle_mem, true_and, not_not]
 
 end AngularGrid
 

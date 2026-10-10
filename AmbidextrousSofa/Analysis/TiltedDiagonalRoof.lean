@@ -66,8 +66,9 @@ theorem IsDownwardCap.tilted_diagonalLeft_le
   apply support_le_of_forall hU.nonempty
   intro p hp
   have hx : -a ≤ p.1 := by
-    have h := (hU.fst_mem_Icc hp).1
-    rwa [hl] at h
+    have h : p.1 ∈ horizontalProjection U := ⟨p, hp, rfl⟩
+    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hl] at h
+    exact h.1
   have hy := (le_capRoof hU.isCompact (show (p.1, p.2) ∈ U by simpa using hp)).trans
     (hU.capRoof_le_tiltedAffineCeiling ha hl hr hleft hright haffine p.1 ⟨p, hp, rfl⟩)
   have hprod := mul_nonneg (sub_nonneg.mpr hz) (show 0 ≤ p.1 + a by linarith only [hx])
@@ -91,10 +92,11 @@ theorem integral_tiltedAffineCeiling_left {a : ℝ} (ha : 0 < a) (h : ℝ) :
     (∫ x in (-a)..(-a / 2), tiltedAffineCeiling a h x) = a / 2 - 5 * a * h / 8 := by
   unfold tiltedAffineCeiling
   rw [intervalIntegral.integral_add (continuous_const.intervalIntegrable _ _)
-      ((continuous_const.mul continuous_id).intervalIntegrable _ _),
+      ((show Continuous (fun x : ℝ => h / a * x) by fun_prop).intervalIntegrable _ _),
     intervalIntegral.integral_const, intervalIntegral.integral_const_mul, integral_id]
   simp only [smul_eq_mul]
-  field_simp [ha.ne'] <;> ring
+  field_simp [ha.ne']
+  ring
 
 theorem integral_tilted_diagonal_left_roof {a h v : ℝ} (ha : 0 < a) (hha : h < a)
     (hv0 : a / 2 ≤ v) (hv1 : v ≤ a - h / 2) :
@@ -134,8 +136,9 @@ theorem integral_tilted_diagonal_left_roof {a h v : ℝ} (ha : 0 < a) (hha : h <
 theorem tilted_diagonal_roof_loss {a h : ℝ} (ha : 0 < a) (hha : h < a) (v : ℝ) :
     (a - v - h / 2) ^ 2 / (2 * (1 - h / a)) - (a - v) ^ 2 / 2 + a * h / 8 =
       h * (v - a / 2) ^ 2 / (2 * (a - h)) := by
-  rw [show 1 - h / a = (a - h) / a by field_simp [ha.ne']; ring]
-  field_simp [ha.ne', (sub_pos.mpr hha).ne'] <;> ring
+  rw [show 1 - h / a = (a - h) / a by field_simp [ha.ne']]
+  field_simp [ha.ne', (sub_pos.mpr hha).ne']
+  ring
 
 /-- The literal left charged roof, integrated under its two actual
 supporting lines. -/

@@ -36,10 +36,10 @@ theorem integral_affineCutTriangle_full {k δ p A B : ℝ}
     (∫ x in A..B, affineCutTriangle k δ p x) = δ ^ 2 / (2 * k * (1 - k)) := by
   have hj : 0 < 1 - k := sub_pos.mpr hk1
   have hl : A ≤ p - δ / k := by
-    have h := (div_le_iff₀ hk).mpr hleft
+    have h := (div_le_iff₀' hk).mpr hleft
     linarith
   have hr : p + δ / (1 - k) ≤ B := by
-    have h := (div_le_iff₀ hj).mpr hright
+    have h := (div_le_iff₀' hj).mpr hright
     linarith
   have hwidth : 0 ≤ (p + δ / (1 - k)) - (p - δ / k) := by
     linarith [div_nonneg hδ hk.le, div_nonneg hδ hj.le]
@@ -99,7 +99,7 @@ theorem IsDownwardCap.diagonalRoofDeficit_ge_near_cuts {U : Set Plane}
       rw [hv] at h
       exact h
     have hcut := hU.capRoof_le_nearDiagonalLeft h k v hxU
-    simpa only [sub_neg_eq_add, mul_neg] using
+    simpa only [sub_neg_eq_add, mul_neg, Function.comp_apply] using
       (affineCutTriangle_le_roof_gap (k := k) (δ := δL) (p := v) (H := 1 - h)
         (x := -x) (y := capRoof U x) (by simpa only [sub_neg_eq_add] using hbase)
         (by nlinarith))
@@ -166,14 +166,14 @@ theorem IsDownwardCap.short_diagonal_cut_payment {U : Set Plane}
     have hcut := hU.diagonalRoofDeficit_ge_near_cuts ha hh hk hk1 hl hr hleft hright hu hv
       hL0 (le_refl (0 : ℝ)) (le_of_not_ge hbad) hR.1
       ((le_of_not_ge hbad).trans hL.2) le_rfl (hR.1.trans hR.2) hR0
-    simp only [zero_pow, add_zero] at hcut
+    simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, add_zero] at hcut
     exact (not_lt_of_ge hcut) ((short_outer_cut_area_gt hk0 hk1 hksq hvu).trans' hD)
   have hRout : nearDiagonalRightDeficit U k u ≤ (1 - k) * (a - u) := by
     by_contra hbad
     have hcut := hU.diagonalRoofDeficit_ge_near_cuts ha hh hk hk1 hl hr hleft hright hu hv
       (le_refl (0 : ℝ)) hR0 hL.1 (le_of_not_ge hbad)
       (hL.1.trans hL.2) hL0 ((le_of_not_ge hbad).trans hR.2) le_rfl
-    simp only [zero_pow, zero_add] at hcut
+    simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_add] at hcut
     exact (not_lt_of_ge hcut) ((short_outer_cut_area_gt hk0 hk1 hksq huu).trans' hD)
   exact ⟨hLout, hRout, hU.diagonalRoofDeficit_ge_near_cuts ha hh hk hk1 hl hr hleft hright
     hu hv hL.1 hR.1 le_rfl le_rfl hL.2 hLout hR.2 hRout⟩

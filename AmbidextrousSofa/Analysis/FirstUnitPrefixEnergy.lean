@@ -33,7 +33,7 @@ theorem charged_prefix_energy_le_five {a b : ℝ}
     (hlower : ∀ᵐ t ∂volume.restrict (Ioo a b), 1 + q t ≤ 2 * u t) :
     ∀ t ∈ Icc a b, (p t - 1) ^ 2 + (q t + 1) ^ 2 ≤ 5 := by
   have hqone : ∀ t ∈ Icc a b, q t ≤ 1 :=
-    D.continuousOn.2.le_on_Icc_of_ae_le_on_Ioo hab (by
+    ContinuousOn.le_on_Icc_of_ae_le_on_Ioo D.continuousOn.2 hab (by
       filter_upwards [hunit, hlower] with t hu hl
       linarith only [hu, hl])
   let E : ℝ → ℝ := fun t => Analysis.momentumQuadraticEnergy 1 (-1) 0 (p t) (q t)
@@ -75,11 +75,11 @@ theorem uncharged_prefix_quantity_le_initial {a b : ℝ}
     ∀ t ∈ Icc a b,
       q t + (p t - 1) ^ 2 / 4 ≤ q a + (p a - 1) ^ 2 / 4 := by
   let E : ℝ → ℝ := fun t => q t + (p t - 1) ^ 2 / 4
-  have hp' := D.first_ac.sub (absolutelyContinuousOnInterval_const_real 1 a b)
+  have hp' := D.first_ac.sub (Analysis.absolutelyContinuousOnInterval_const_real 1 a b)
   have hE : AbsolutelyContinuousOnInterval E a b := by
-    simpa only [E, pow_two, Pi.add_apply, Pi.sub_apply, Pi.mul_apply, div_eq_mul_inv] using
+    simpa only [E, pow_two, Pi.add_def, Pi.sub_def, Pi.mul_def, div_eq_mul_inv] using
       D.second_ac.add ((hp'.mul hp').mul
-        (absolutelyContinuousOnInterval_const_real ((4 : ℝ)⁻¹) a b))
+        (Analysis.absolutelyContinuousOnInterval_const_real ((4 : ℝ)⁻¹) a b))
   have hEd : ∀ᵐ t ∂volume.restrict (Ioo a b), deriv E t ≤ 0 := by
     filter_upwards [ae_restrict_mem measurableSet_Ioo, D.ode, D.source, hlower]
       with t ht hd hk hl

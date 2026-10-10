@@ -43,7 +43,7 @@ theorem hasDerivAt_le_of_right_linear_bound {f : ℝ → ℝ} {d K : ℝ}
     (hf : HasDerivAt f d 0)
     (hbound : ∀ᶠ ε in 𝓝[>] (0 : ℝ), f ε ≤ f 0 + ε * K) : d ≤ K := by
   have hlinear : HasDerivAt (fun ε : ℝ => ε * K) K 0 := by
-    simpa only [one_mul] using (hasDerivAt_id (0 : ℝ)).mul_const K
+    simpa only [one_mul] using (hasDerivAt_id' (0 : ℝ)).mul_const K
   have hmax : ∀ᶠ ε in 𝓝[>] (0 : ℝ), f ε - ε * K ≤ f 0 - 0 * K := by
     filter_upwards [hbound] with ε hε
     simp only [zero_mul, sub_zero]
@@ -180,7 +180,7 @@ theorem finiteBarrier_le_displayed {U : Set Plane} (normal : ι → Plane)
   cases i with
   | none => exact le_rfl
   | some i =>
-    apply add_le_add_left
+    apply add_le_add_right
     exact div_le_div_of_nonneg_right (sub_le_sub_right (hheight i) 1) (hnormal i)
 
 /-- A non-tight displayed polygon has the same roof as its actual body,

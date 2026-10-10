@@ -71,11 +71,11 @@ theorem hasDerivWithinAt_if_le_right (c : ℝ) {f g fD gD : ℝ → ℝ}
   rcases lt_trichotomy x c with hlt | rfl | hgt
   · rw [if_pos hlt]
     apply (hf x).congr_of_eventuallyEq
-    · filter_upwards [(Iio_mem_nhds hlt).filter_mono nhdsWithin_le_nhds] with y hy
-      exact if_pos hy.le
+    · filter_upwards [mem_nhdsWithin_of_mem_nhds (Iio_mem_nhds hlt)] with y hy
+      exact if_pos (le_of_lt hy)
     · exact if_pos hlt.le
-  · rw [if_neg (lt_irrefl c)]
-    apply (hg c).congr
+  · rw [if_neg (lt_irrefl x)]
+    apply (hg x).congr
     · intro y hy
       exact if_neg (not_le.mpr hy)
     · simpa only [if_pos le_rfl] using hvalue
@@ -91,8 +91,8 @@ theorem hasDerivWithinAt_supportProjection {h hD : ℝ → ℝ} {hDD φ t : ℝ}
     (hhD : HasDerivWithinAt hD hDD (Ioi t) t) :
     HasDerivWithinAt (supportProjection h hD φ)
       ((h t + hDD) * Real.sin (φ - t)) (Ioi t) t := by
-  have hangle : HasDerivAt (fun x : ℝ => φ - x) (-1) t := by
-    simpa using (hasDerivAt_const t φ).sub (hasDerivAt_id t)
+  have hangle : HasDerivAt (fun x : ℝ => φ - x) (-1) t :=
+    (hasDerivAt_id' t).const_sub φ
   unfold supportProjection
   apply ((hh.mul hangle.cos.hasDerivWithinAt).add
     (hhD.mul hangle.sin.hasDerivWithinAt)).congr_deriv
@@ -113,6 +113,7 @@ theorem le_of_right_derivative_nonpos {f fD : ℝ → ℝ} {a b : ℝ}
     (hnonpos : ∀ x ∈ Ioo a b, fD x ≤ 0) : f b ≤ f a := by
   have h := le_of_right_derivative_nonneg hab hf.neg
     (fun x hx => (hfD x hx).neg) (fun x hx => neg_nonneg.mpr (hnonpos x hx))
+  simp only [Pi.neg_apply] at h
   linarith
 
 /-- Projection increases as a nonnegative-curvature arc approaches its normal. -/

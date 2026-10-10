@@ -36,14 +36,14 @@ theorem mem_horizontalMirror_iff (U : Set Plane) (p : Plane) :
     p ∈ horizontalMirror U ↔ horizontalReflection p ∈ U := by
   constructor
   · rintro ⟨q, hq, rfl⟩
-    simpa only [horizontalReflection_involutive] using hq
+    simpa only [horizontalReflection_involutive q] using hq
   · intro hp
     exact ⟨horizontalReflection p, hp, horizontalReflection_involutive p⟩
 
 theorem horizontalMirror_involutive (U : Set Plane) :
     horizontalMirror (horizontalMirror U) = U := by
   ext p
-  simp only [mem_horizontalMirror_iff, horizontalReflection_involutive]
+  simp only [mem_horizontalMirror_iff, horizontalReflection_involutive p]
 
 theorem horizontalReflection_combo (p q : Plane) (a b : ℝ) :
     horizontalReflection (a • p + b • q) =
@@ -56,7 +56,7 @@ theorem IsDownwardCap.horizontalMirror {U : Set Plane} (hU : IsDownwardCap U) :
   · rintro p ⟨p, hp, rfl⟩ q ⟨q, hq, rfl⟩ a b ha hb hab
     exact ⟨a • p + b • q, hU.convex hp hq ha hb hab, horizontalReflection_combo p q a b⟩
   · rintro p ⟨q, hq, rfl⟩
-    exact hU.inStrip hq
+    exact (hU.inStrip hq : q ∈ unitStrip)
   · intro p hp y hy0 hyp
     rw [mem_horizontalMirror_iff] at hp ⊢
     exact hU.downward (horizontalReflection p) hp y hy0 hyp
@@ -74,6 +74,9 @@ theorem horizontalProjection_horizontalMirror_iff (U : Set Plane) (x : ℝ) :
 theorem capRoof_horizontalMirror (U : Set Plane) (x : ℝ) :
     capRoof (horizontalMirror U) x = capRoof U (-x) := by
   simp only [capRoof, horizontalProjection_horizontalMirror_iff, verticalFiber_horizontalMirror]
+  by_cases hx : -x ∈ horizontalProjection U
+  · rw [if_pos hx, if_pos ((horizontalProjection_horizontalMirror_iff U x).mpr hx)]
+  · rw [if_neg hx, if_neg (fun h => hx ((horizontalProjection_horizontalMirror_iff U x).mp h))]
 
 theorem support_horizontalMirror (U : Set Plane) (v : Plane) :
     support (horizontalMirror U) v = support U (horizontalReflection v) := by
@@ -135,6 +138,7 @@ theorem sweptNiche_horizontalMirror (U : Set Plane) (x : ℝ) :
         (cornerWall_horizontalMirror U t x).symm⟩
     · rintro ⟨t, ht, rfl⟩
       refine ⟨Real.pi / 2 - t, ⟨by linarith [ht.2], by linarith [ht.1]⟩, ?_⟩
+      dsimp only
       rw [cornerWall_horizontalMirror, show Real.pi / 2 - (Real.pi / 2 - t) = t by ring]
   simp only [sweptNiche, hvalues]
 

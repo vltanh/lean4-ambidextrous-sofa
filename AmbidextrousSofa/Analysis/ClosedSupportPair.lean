@@ -100,8 +100,9 @@ theorem IsDownwardCap.supportTangent_sub_eq_integral_of_density_Ioc
         measurableSet_Ioc hsub
     change MovingSofaOptimality.dot (MovingSofaOptimality.vplus U b) (MovingSofaOptimality.vvec b) -
       MovingSofaOptimality.dot (MovingSofaOptimality.vplus U a) (MovingSofaOptimality.vvec a) = _
-    rw [AmbidextrousSofa.dot_vplus_vvec_sub hU.imported_isConvexBody hab, hmass,
-      intervalIntegral.integral_sub
+    rw [AmbidextrousSofa.dot_vplus_vvec_sub hU.imported_isConvexBody hab, hmass]
+    simp only [angleSupport_eq_imported_supp]
+    rw [intervalIntegral.integral_sub
         (intervalIntegrable_bounded_real_density hρ hρ0 hρK a b)
         (hU.imported_isConvexBody.continuous_supp.intervalIntegrable a b)]
 
@@ -173,7 +174,7 @@ theorem IsDownwardCap.hasDerivAt_shiftedSupport_of_open_density
   have hx : t + d ∈ Ioo (d + t / 2) (d + (t + Real.pi / 2) / 2) := by
     constructor <;> linarith [ht.1, ht.2]
   have hd := hU.hasDerivAt_angleSupport_of_density hρ hρ0 hρK heq hI hx
-  simpa only [Function.comp_def, mul_one] using
+  simpa only [Function.comp_def, mul_one, id_eq] using
     hd.comp t ((hasDerivAt_id t).add_const d)
 
 theorem IsDownwardCap.shiftedSupport_eq_closed_primitive
@@ -300,6 +301,7 @@ theorem supportPoint_eq_of_frame {f fD : ℝ → ℝ} {p : Plane} {t : ℝ}
   apply Prod.ext
   · change f t * Real.cos t - fD t * Real.sin t = p.1
     rw [hf, hfD]
+    simp only [MovingSofaOptimality.uvec, MovingSofaOptimality.vvec]
     nlinarith only [hx]
   · change f t * Real.sin t + fD t * Real.cos t = p.2
     rw [hf, hfD]
@@ -342,7 +344,7 @@ theorem supportQuarterPair_second_point {t : ℝ} (ht : t ∈ Ico 0 (Real.pi / 2
     Reference.companionSupportPoint (F).g (F).gD t = MovingSofaOptimality.vplus V (t + Real.pi / 2) := by
   rw [companionSupportPoint_eq_shifted_supportPoint]
   apply supportPoint_eq_of_frame
-  · simpa only [supportQuarterPair, add_sub_cancel_right] using
+  · simpa only [supportQuarterPair, add_sub_cancel_right, angleSupport_eq_imported_supp] using
       (MovingSofaOptimality.dot_vplus_uvec V (t + Real.pi / 2)).symm
   · dsimp only [supportQuarterPair]
     rw [add_sub_cancel_right]
@@ -362,7 +364,8 @@ theorem supportQuarterPair_second_end :
     Reference.companionSupportPoint (F).g (F).gD (Real.pi / 2) = MovingSofaOptimality.vminus V Real.pi := by
   rw [companionSupportPoint_eq_shifted_supportPoint]
   apply supportPoint_eq_of_frame
-  · simpa only [supportQuarterPair, add_sub_cancel_right,
+  · simpa only [supportQuarterPair, add_sub_cancel_right, sub_add_cancel,
+      angleSupport_eq_imported_supp,
       show Real.pi / 2 + Real.pi / 2 = Real.pi by ring] using
       (MovingSofaOptimality.dot_vminus_uvec V Real.pi).symm
   · dsimp only [supportQuarterPair]
@@ -405,8 +408,8 @@ theorem supportQuarterPair_traces :
   have hadd : Real.pi / 2 + Real.pi / 2 = Real.pi := by ring
   dsimp only [supportQuarterPair]
   refine ⟨imported_supp_zero U, ?_, imported_supp_pi_div_two U, ?_, ?_, ?_, ?_, ?_⟩
-  · simpa only [zero_add] using imported_supp_pi_div_two V
-  · simpa only [hadd] using hV.imported_supp_pi
+  · simpa only [zero_add, angleSupport_eq_imported_supp] using imported_supp_pi_div_two V
+  · simpa only [hadd, angleSupport_eq_imported_supp] using hV.imported_supp_pi
   · simp only [closedSupportDerivative_zero, supportTangent, hU.axis_vplus_zero,
       MovingSofaOptimality.dot, MovingSofaOptimality.vvec, Real.sin_zero, Real.cos_zero, neg_zero,
       mul_zero, mul_one, zero_add]
@@ -442,8 +445,8 @@ theorem supportQuarterPair_ae_derivatives :
       Ioo (0 : ℝ) (Real.pi / 2) ⊆ Ioo 0 (Real.pi / 2))) ht
   have hdg := hV.hasDerivAt_shiftedSupport_of_open_density hσ hσ0 hσJ hsecond
     (d := Real.pi / 2) (by intro s hs; exact ⟨hs.1, by linarith [hs.2]⟩) ht
-  exact ⟨by simpa only [add_zero] using hdf, hdg,
-    by simpa only [add_zero] using hfDD, hgDD⟩
+  simp only [add_zero] at hdf hfDD
+  exact ⟨hdf, hdg, hfDD, hgDD⟩
 
 theorem supportQuarterPair_derivatives_on_closed :
     ∀ t ∈ Icc 0 (Real.pi / 2),
@@ -451,10 +454,12 @@ theorem supportQuarterPair_derivatives_on_closed :
       HasDerivWithinAt (F).g ((F).gD t) (Icc 0 (Real.pi / 2)) t := by
   intro t ht
   constructor
-  · simpa only [add_zero] using hU.hasDerivWithinAt_shiftedSupport_closed
+  · have h := hU.hasDerivWithinAt_shiftedSupport_closed
       hρ hρ0 hρK hfirst (d := 0)
       (by simpa only [zero_add] using (Subset.rfl :
         Ioo (0 : ℝ) (Real.pi / 2) ⊆ Ioo 0 (Real.pi / 2))) ht
+    simp only [add_zero] at h
+    exact h
   · exact hV.hasDerivWithinAt_shiftedSupport_closed hσ hσ0 hσJ hsecond
       (d := Real.pi / 2) (by intro s hs; exact ⟨hs.1, by linarith [hs.2]⟩) ht
 
@@ -471,20 +476,20 @@ theorem horizontal_density_quarter_restrictions
   have hfirst : Ioo (0 : ℝ) (Real.pi / 2) ⊆ regularCurvatureDomain 0 := by
     intro t ht
     simp only [regularCurvatureDomain, affineNormalAngle, Real.arctan_zero, zero_add,
-      mem_sdiff, mem_Ioo, mem_insert_iff, mem_singleton_iff, or_self]
+      Set.mem_sdiff, mem_Ioo, mem_insert_iff, mem_singleton_iff, or_self]
     exact ⟨⟨ht.1, by linarith [ht.2, Real.pi_pos]⟩, ne_of_lt ht.2⟩
   have hsecond : Ioo (Real.pi / 2) Real.pi ⊆ regularCurvatureDomain 0 := by
     intro t ht
     simp only [regularCurvatureDomain, affineNormalAngle, Real.arctan_zero, zero_add,
-      mem_sdiff, mem_Ioo, mem_insert_iff, mem_singleton_iff, or_self]
+      Set.mem_sdiff, mem_Ioo, mem_insert_iff, mem_singleton_iff, or_self]
     exact ⟨⟨by linarith [ht.1, Real.pi_pos], ht.2⟩, ne_of_gt ht.1⟩
   constructor
   · have h := congrArg (fun ν : Measure ℝ => ν.restrict (Ioo 0 (Real.pi / 2))) heq
     simpa only [Measure.restrict_restrict_of_subset hfirst,
-      Measure.restrict_withDensity measurableSet_Ioo] using h
+      restrict_withDensity measurableSet_Ioo] using h
   · have h := congrArg (fun ν : Measure ℝ => ν.restrict (Ioo (Real.pi / 2) Real.pi)) heq
     simpa only [Measure.restrict_restrict_of_subset hsecond,
-      Measure.restrict_withDensity measurableSet_Ioo] using h
+      restrict_withDensity measurableSet_Ioo] using h
 
 def horizontalSupportQuarterPair {U : Set Plane} (hU : IsDownwardCap U)
     {ρ : ℝ → ℝ} {K : ℝ}

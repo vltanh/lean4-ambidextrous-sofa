@@ -187,7 +187,7 @@ theorem selected_right_axis_pressure [Fintype ι] {l r e : ℝ}
       (barrierEnvelope normal height corners terminal) l (r + ε) -
     heightPenalty weight target height - endpointWeight * (r + ε - endpointTarget) ^ 2
   have hline : HasDerivAt (fun ε : ℝ => r + ε - endpointTarget) 1 0 := by
-    simpa only [zero_add, sub_zero] using
+    simpa only [zero_add, sub_zero, Pi.add_apply, id_eq] using
       ((hasDerivAt_const (0 : ℝ) r).add (hasDerivAt_id (0 : ℝ))).sub_const endpointTarget
   have hpenalty : HasDerivAt (fun ε : ℝ => endpointWeight * (r + ε - endpointTarget) ^ 2)
       (2 * endpointWeight * (r - endpointTarget)) 0 := by
@@ -209,7 +209,11 @@ theorem selected_right_axis_pressure [Fintype ι] {l r e : ℝ}
       horizontalRight_upperPolygon normal height hlr' hbase,
       finiteSpatialScore_upperPolygon normal height hlr hnormal hbaseline hexact,
       sampledPenalty_eq_heightPenalty normal weight target height hexact] at h
-    simpa only [F, barrierEnvelope, add_zero] using h
+    have hfold : (fun x => (barrierExpr corners terminal).eval
+        (fun i => wallSlope normal i * x + barrierIntercept normal height i)) =
+        barrierEnvelope normal height corners terminal := rfl
+    rw [hfold] at h
+    simpa only [F, add_zero] using h
   have hsign := hasDerivAt_nonpos_of_right_max hderiv hFmax
   linarith
 
@@ -262,7 +266,11 @@ theorem selected_left_axis_pressure [Fintype ι] {l r e : ℝ}
       horizontalLeft_upperPolygon normal height hlr' hbase,
       finiteSpatialScore_upperPolygon normal height hlr hnormal hbaseline hexact,
       sampledPenalty_eq_heightPenalty normal weight target height hexact] at h
-    simpa only [F, barrierEnvelope, sub_zero] using h
+    have hfold : (fun x => (barrierExpr corners terminal).eval
+        (fun i => wallSlope normal i * x + barrierIntercept normal height i)) =
+        barrierEnvelope normal height corners terminal := rfl
+    rw [hfold] at h
+    simpa only [F, sub_zero] using h
   have hsign := hasDerivAt_nonpos_of_right_max hderiv hFmax
   linarith
 

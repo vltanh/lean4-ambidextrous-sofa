@@ -170,7 +170,7 @@ theorem roofEnvelope_update [Fintype ι] [DecidableEq ι]
   | some i =>
     by_cases hij : i = j
     · subst i
-      simp only [wallSlope, roofIntercept, outwardVelocity, Function.update_same, if_pos rfl]
+      simp only [wallSlope, roofIntercept, outwardVelocity, Function.update_self, ↓reduceIte]
       ring
     · simp [wallSlope, roofIntercept, outwardVelocity, Function.update_of_ne hij, hij]
 
@@ -302,7 +302,7 @@ theorem finiteBarrier_eq_affineEnvelope_update [DecidableEq ι]
   | some i =>
     by_cases hij : i = j
     · subst i
-      simp only [wallSlope, barrierIntercept, outwardVelocity, Function.update_same, if_pos rfl]
+      simp only [wallSlope, barrierIntercept, outwardVelocity, Function.update_self, ↓reduceIte]
       ring
     · simp [wallSlope, barrierIntercept, outwardVelocity, Function.update_of_ne hij, hij]
 

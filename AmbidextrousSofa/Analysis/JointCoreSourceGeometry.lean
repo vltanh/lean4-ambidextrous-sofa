@@ -111,6 +111,7 @@ set_option quotPrecheck false in
 local notation "X" => (fun t => (Z t).1)
 local notation "XD" => (fun t => p t * Real.cos t - q t * Real.sin t)
 
+include hl hr hC hheight hlow hhigh hh hunit hleft hright in
 theorem ae_first_corner_core_geometry {α η : ℝ}
     (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η) :
     ∀ᵐ z ∂J.sourceBranchMeasure (firstCornerSource target),
@@ -134,6 +135,7 @@ theorem ae_first_corner_core_geometry {α η : ℝ}
     hU hm.le haffine hρ hρ0 hρK heq hphase hc.1 hmt.le hnα hnη hd hn
   exact ⟨hcore, hcalc.1, hcalc.2.1⟩
 
+include hl hr hC hheight hlow hhigh hh hunit hleft hright in
 theorem ae_second_corner_core_geometry {α η : ℝ}
     (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η) :
     ∀ᵐ z ∂J.sourceBranchMeasure (secondCornerSource target),

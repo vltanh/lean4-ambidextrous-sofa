@@ -38,6 +38,7 @@ theorem referenceFD_pi_div_two : referenceFD (Real.pi / 2) = 2 / 3 * A - 1 := by
 theorem referenceGD_pi_div_two : referenceGD (Real.pi / 2) = -1 / 2 := by
   simp only [referenceGD, if_neg (not_le.mpr beta_lt_pi_div_two),
     if_neg (not_le.mpr lateSwitch_lt_pi_div_two), gLateD_pi_div_two]
+  ring
 
 theorem referenceF_beta : referenceF beta = cosBeta + 1 / 2 * sinBeta := by
   simp only [referenceF, if_pos le_rfl, fEarly, sinBeta, cosBeta]
@@ -48,14 +49,14 @@ theorem referenceG_beta : referenceG beta =
 
 theorem referenceF_lateSwitch : referenceF lateSwitch =
     (1 - 2 / 3 * A) * sinBeta + 1 / 2 * cosBeta + 1 / 2 := by
-  simp only [referenceF, if_neg (not_le.mpr beta_lt_lateSwitch), if_pos le_rfl,
-    f_matching_last, fLate, lateSwitch, Real.cos_pi_div_two_sub,
+  rw [referenceF, if_neg (not_le.mpr beta_lt_lateSwitch), if_pos le_rfl, f_matching_last]
+  simp only [fLate, lateSwitch, Real.cos_pi_div_two_sub,
     Real.sin_pi_div_two_sub, sinBeta, cosBeta]
 
 theorem referenceG_lateSwitch : referenceG lateSwitch =
     (8 / 3 * A - 1) * cosBeta + 1 / 2 * sinBeta := by
-  simp only [referenceG, if_neg (not_le.mpr beta_lt_lateSwitch), if_pos le_rfl,
-    g_matching_last, gLate, lateSwitch, Real.cos_pi_div_two_sub,
+  rw [referenceG, if_neg (not_le.mpr beta_lt_lateSwitch), if_pos le_rfl, g_matching_last]
+  simp only [gLate, lateSwitch, Real.cos_pi_div_two_sub,
     Real.sin_pi_div_two_sub, sinBeta, cosBeta]
 
 /-- Subtracting the self-variation leaves only the linear and constant
@@ -67,7 +68,8 @@ theorem twice_density_sub_self_variation (u : QuarterPair) (t : ℝ) :
   all_goals
     simp only [adaptiveDensity, adaptiveLinearDensity, min_eq_left hp,
       min_eq_right hp, max_eq_left hq, max_eq_right hq]
-    unfold QuarterPair.p QuarterPair.q
+    try unfold QuarterPair.p
+    try unfold QuarterPair.q
     ring
 
 def referenceValueRemainder (t : ℝ) : ℝ :=
@@ -179,13 +181,13 @@ theorem integral_referenceValueRemainder_late :
 theorem integral_referenceValueRemainder :
     (∫ t in (0 : ℝ)..(Real.pi / 2), referenceValueRemainder t) =
       4 * A * cosBeta - 8 / 3 * A - 1 + beta := by
-  have hE := ContinuousOn.intervalIntegrable_of_Icc beta_pos.le
+  have hE := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) beta_pos.le
     (continuousOn_referenceValueRemainder.mono (fun _ ht =>
       ⟨ht.1, ht.2.trans beta_lt_pi_div_two.le⟩))
-  have hM := ContinuousOn.intervalIntegrable_of_Icc beta_lt_lateSwitch.le
+  have hM := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) beta_lt_lateSwitch.le
     (continuousOn_referenceValueRemainder.mono (fun _ ht =>
       ⟨beta_pos.le.trans ht.1, ht.2.trans lateSwitch_lt_pi_div_two.le⟩))
-  have hL := ContinuousOn.intervalIntegrable_of_Icc lateSwitch_lt_pi_div_two.le
+  have hL := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) lateSwitch_lt_pi_div_two.le
     (continuousOn_referenceValueRemainder.mono (fun _ ht =>
       ⟨lateSwitch_pos.le.trans ht.1, ht.2⟩))
   rw [← intervalIntegral.integral_add_adjacent_intervals (hE.trans hM) hL,
@@ -218,8 +220,9 @@ theorem reference_self_variation :
 theorem adaptiveFunctional_reference_exact :
     adaptiveFunctional referencePair = 4 / 3 * A + 2 * A * cosBeta - 1 + beta / 2 := by
   have hL : (0 : ℝ) ≤ Real.pi / 2 := by linarith [Real.pi_pos]
-  have hd := ContinuousOn.intervalIntegrable_of_Icc hL (continuousOn_adaptiveDensity referencePair)
-  have hv := ContinuousOn.intervalIntegrable_of_Icc hL
+  have hd := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) hL
+    (continuousOn_adaptiveDensity referencePair)
+  have hv := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) hL
     (continuousOn_adaptiveLinearDensity referencePair referencePair)
   have h := integral_referenceValueRemainder
   unfold referenceValueRemainder at h
@@ -382,10 +385,10 @@ theorem adaptiveFunctional_reference_eq_cap_area_sub_niche :
     (continuous_momentP.min continuous_const).pow 2
   have hQ : Continuous (fun t => max (momentQ t) 0 ^ 2) :=
     (continuous_momentQ.max continuous_const).pow 2
-  have hEi := hE.intervalIntegrable 0 (Real.pi / 2)
-  have hCi := hC.intervalIntegrable 0 (Real.pi / 2)
-  have hPi := hP.intervalIntegrable 0 (Real.pi / 2)
-  have hQi := hQ.intervalIntegrable 0 (Real.pi / 2)
+  have hEi := hE.intervalIntegrable (μ := volume) 0 (Real.pi / 2)
+  have hCi := hC.intervalIntegrable (μ := volume) 0 (Real.pi / 2)
+  have hPi := hP.intervalIntegrable (μ := volume) 0 (Real.pi / 2)
+  have hQi := hQ.intervalIntegrable (μ := volume) 0 (Real.pi / 2)
   have hsplit : 2 * adaptiveFunctional referencePair =
       (∫ t in (0 : ℝ)..(Real.pi / 2),
         (referenceF t ^ 2 - referenceFD t ^ 2) +

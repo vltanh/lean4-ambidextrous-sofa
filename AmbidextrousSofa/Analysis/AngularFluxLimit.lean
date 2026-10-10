@@ -52,12 +52,14 @@ theorem localized_quarter_source_projection (grid : Finset QuarterAngle)
   rw [sourceQuarterAngle_fullAngle] at hj
   cases j with
   | inl u =>
+    simp only [Sum.elim_inl] at hj
     right
     refine ⟨⟨hj.1, hj.2.le⟩, ?_⟩
     exact (le_abs_self _).trans (Real.abs_sin_le_abs.trans
       (abs_le.mpr ⟨by change -(t - s) ≤ (u.val : ℝ) - θ; linarith [hj.1, hθ.2],
         by change (u.val : ℝ) - θ ≤ t - s; linarith [hj.2, hθ.1]⟩))
   | inr u =>
+    simp only [Sum.elim_inr] at hj
     left
     change s + Real.pi / 2 < (u.val : ℝ) + Real.pi / 2 ∧
       (u.val : ℝ) + Real.pi / 2 ≤ t + Real.pi / 2
@@ -153,7 +155,7 @@ theorem nicheGraphProjection_add_le_curvature_of_selected_sequence
       (show horizontalLeft (U n) + capWidth (U n) / 4 ≤
         horizontalRight (U n) - capWidth (U n) / 4 by linarith)
     simp only [innerAngularMassOn_middle] at hbound hm
-    exact hbound.trans (add_le_add_left (mul_le_mul_of_nonneg_left hm hδ) _)
+    exact hbound.trans (add_le_add_right (mul_le_mul_of_nonneg_left hm hδ) _)
   have hbase := innerAngularMass_Ioc_tendsto_of_canonical_maximum hTarget hheight haffine hTargetBox
     hU hHausdorff hlevel hc hrate hleft hright hst hregular
   have hcomp := innerAngularMass_Ioc_tendsto_of_canonical_maximum hTarget hheight haffine hTargetBox

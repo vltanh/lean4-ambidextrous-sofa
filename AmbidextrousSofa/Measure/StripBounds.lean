@@ -54,7 +54,7 @@ theorem volume_horizontalIntervalRegion_eq_lintegral
           ext x
           simp [horizontalIntervalRegion, hy]
         rw [hsection, measure_empty, indicator_of_notMem hy]
-    _ = ∫⁻ y in I, ENNReal.ofReal (right y - left y) := lintegral_indicator hI
+    _ = ∫⁻ y in I, ENNReal.ofReal (right y - left y) := lintegral_indicator hI _
 
 theorem volume_horizontalIntervalRegion_unit_of_constant_width
     {left right : ℝ → ℝ} {w : ℝ}
@@ -192,8 +192,8 @@ theorem mem_wrongWay_frameHall_iff (a b : ℝ) (p : Plane) :
     · simpa only [min_eq_right hba] using hv
   · rintro ⟨hlo, hhi⟩
     refine ⟨?_, ?_, min_le_iff.mp hlo⟩
-    · exact hhi.trans (add_le_add_right (min_le_left _ _) _)
-    · exact hhi.trans (add_le_add_right (min_le_right _ _) _)
+    · exact hhi.trans (add_le_add_left (min_le_left _ _) _)
+    · exact hhi.trans (add_le_add_left (min_le_right _ _) _)
 
 /-- Visiting the wrong-handed angle forces the actual body area below `√2`.
 Both hallway offsets are arbitrary and the body need not be convex. -/

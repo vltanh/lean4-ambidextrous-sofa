@@ -57,7 +57,7 @@ theorem IsDownwardCap.max_secondWall_le_circle_of_density
       hU.exists_positive_localized_secondWall_max hα0 hαL hB0 hBα le_rfl hpositive
     have hmom := hU.shiftedCompanion_eq_initial_add_integral_of_density
       hρ hρ0 hρK heq ht.1.le
-      ((Ioc_subset_Ioc le_rfl (add_le_add_right htB _)).trans hsub)
+      ((Ioc_subset_Ioc le_rfl (add_le_add_left htB _)).trans hsub)
     have hX : shiftedCompanionX U t = x := hcontactX
     have hY : secondWall U t x = shiftedCompanionY U t := hcontactY
     have hhorizontal : (∫ q in 0..t, (1 - ρ (q + Real.pi / 2)) * Real.cos q) =

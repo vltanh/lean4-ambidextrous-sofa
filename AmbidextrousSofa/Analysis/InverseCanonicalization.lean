@@ -111,7 +111,7 @@ theorem IsDownwardCap.capScore_lt_verticalExtrusion_of_middle_barrier_lt
       exact hU.partialBarrier_verticalExtrusion_le hε (by linarith [Real.pi_pos]) le_rfl x
     · refine ⟨x₀, hx₀, ?_⟩
       exact hsmall.trans_le (le_add_of_nonneg_left (partialBarrier_nonneg U _ x₀))
-  rw [intervalIntegral.integral_add hbarrierU.intervalIntegrable intervalIntegrable_const,
+  rw [intervalIntegral.integral_add (hbarrierU.intervalIntegrable _ _) intervalIntegrable_const,
     intervalIntegral.integral_const, smul_eq_mul] at hstrict
   rw [hU.capScore_eq_intervalSpatialScore, hV.capScore_eq_intervalSpatialScore,
     hleft, hright]
@@ -138,11 +138,11 @@ theorem IsDownwardCap.verticalExtrusion_eq_reference_of_score_eq
     ε = 0 ∧ U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap c := by
   have hproj := hU.horizontalProjection_verticalExtrusion hε
   have hleft : horizontalLeft U = horizontalLeft Reference.referenceCap + c := by
-    have h := congrArg sInf hproj
+    have h : horizontalLeft (verticalExtrusion U ε) = horizontalLeft U := congrArg sInf hproj
     rw [href, horizontalLeft_horizontalTranslate Reference.isDownwardCap_referenceCap] at h
     exact h.symm
   have hright : horizontalRight U = horizontalRight Reference.referenceCap + c := by
-    have h := congrArg sSup hproj
+    have h : horizontalRight (verticalExtrusion U ε) = horizontalRight U := congrArg sSup hproj
     rw [href, horizontalRight_horizontalTranslate Reference.isDownwardCap_referenceCap] at h
     exact h.symm
   have hwidth : 0 < capWidth U := by
@@ -219,11 +219,11 @@ theorem IsDownwardCap.eq_reference_of_heightSaturation_middleChordCap_eq
   have hproj : horizontalProjection V = horizontalProjection U :=
     hU.horizontalProjection_middleChordCap hwidth
   have hleft : horizontalLeft U = horizontalLeft Reference.referenceCap + c := by
-    have h := congrArg sInf hproj
+    have h : horizontalLeft V = horizontalLeft U := congrArg sInf hproj
     rw [hVref, horizontalLeft_horizontalTranslate Reference.isDownwardCap_referenceCap] at h
     exact h.symm
   have hright : horizontalRight U = horizontalRight Reference.referenceCap + c := by
-    have h := congrArg sSup hproj
+    have h : horizontalRight V = horizontalRight U := congrArg sSup hproj
     rw [hVref, horizontalRight_horizontalTranslate Reference.isDownwardCap_referenceCap] at h
     exact h.symm
   have hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),

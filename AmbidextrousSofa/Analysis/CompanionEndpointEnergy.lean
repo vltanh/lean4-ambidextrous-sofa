@@ -158,8 +158,8 @@ theorem IsFullCapMaximizer.actualCompanionEnergy_tendsto_pi_div_two_left
     Tendsto (actualCompanionEnergy U) (𝓝[<] (Real.pi / 2))
       (𝓝 ((capRoof U (horizontalLeft U) - 1 / 2) ^ 2 + (3 * capWidth U / 4) ^ 2)) := by
   have hvel := hU.cornerVelocities_tendsto_pi_div_two_left hheight hmiddle
-  have hE := (((hvel.fst.neg.max tendsto_const_nhds).sub_const (1 / 2)).pow 2).add
-    ((hvel.snd.add_const 1).pow 2)
+  have hE := (((hvel.fst_nhds.neg.max (tendsto_const_nhds (x := (0 : ℝ)))).sub_const (1 / 2)).pow 2).add
+    ((hvel.snd_nhds.add_const 1).pow 2)
   change Tendsto (actualCompanionEnergy U) _ _ at hE
   have heL : 0 ≤ capRoof U (horizontalLeft U) :=
     capRoof_nonneg hU.isCap.isCompact (fun p hp => (hU.isCap.inStrip hp).1) _

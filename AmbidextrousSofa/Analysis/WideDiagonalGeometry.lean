@@ -37,7 +37,9 @@ theorem wideLeftIntersection_mem {a h v : ℝ} (ha : 0 < a) (hha : h < a)
   have h := tilted_diagonal_intersection_mem ha hha
     (show a / 2 ≤ v + h by linarith only [hv0])
     (show v + h ≤ a - h / 2 by linarith only [hv1])
-  convert h using 1 <;> unfold wideLeftIntersection <;> congr 2 <;> ring
+  convert h using 1
+  unfold wideLeftIntersection
+  ring
 
 theorem IsDownwardCap.wide_diagonal_parameters {U : Set Plane}
     (hU : IsDownwardCap U) {a h : ℝ} (ha : 0 < a) (hh : 0 ≤ h) (hh1 : h ≤ a / 2)
@@ -94,6 +96,7 @@ theorem IsDownwardCap.wideRoofDeficit_eq {U : Set Plane} (hU : IsDownwardCap U)
       ((show Continuous (fun x : ℝ => min 1 (1 + u - x)) by fun_prop).intervalIntegrable _ _)
       (hU.intervalIntegrable_capRoof _ _), hleft', integral_diagonal_right_roof hu.1 hu.2]
   unfold wideExteriorMajorant
+  rw [div_mul_eq_div_div_swap]
   ring
 
 theorem IsDownwardCap.wideRoofDeficit_nonneg {U : Set Plane}

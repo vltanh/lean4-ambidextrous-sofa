@@ -52,16 +52,20 @@ theorem diskPair_q (t : ℝ) : diskPair.q t = -1 / 2 := by
   ring
 
 theorem diskPair_fluxF (t : ℝ) : diskPair.fluxF t = 1 / 4 - 3 / 4 * Real.cos t := by
-  norm_num [QuarterPair.fluxF, diskPair_p, diskPair] <;> ring
+  rw [QuarterPair.fluxF, diskPair_p]
+  norm_num [diskPair] <;> ring
 
 theorem diskPair_fluxG (t : ℝ) : diskPair.fluxG t = 3 / 4 * Real.sin t - 1 / 4 := by
-  norm_num [QuarterPair.fluxG, diskPair_q, diskPair] <;> ring
+  rw [QuarterPair.fluxG, diskPair_q]
+  norm_num [diskPair] <;> ring
 
 theorem diskPair_forceF (t : ℝ) : diskPair.forceF t = 3 / 4 * Real.sin t := by
-  norm_num [QuarterPair.forceF, diskPair_q, diskPair] <;> ring
+  rw [QuarterPair.forceF, diskPair_q]
+  norm_num [diskPair] <;> ring
 
 theorem diskPair_forceG (t : ℝ) : diskPair.forceG t = 3 / 4 * Real.cos t := by
-  norm_num [QuarterPair.forceG, diskPair_p, diskPair] <;> ring
+  rw [QuarterPair.forceG, diskPair_p]
+  norm_num [diskPair] <;> ring
 
 theorem diskPair_eulerF (t : ℝ) :
     HasDerivWithinAt diskPair.fluxF (diskPair.forceF t) (Ioi t) t := by
@@ -154,8 +158,8 @@ theorem two_cos_tailAngle0_lt_five_sin :
   by_contra h
   have hle : 5 * Real.sin tailAngle0 ≤ 2 * Real.cos tailAngle0 := le_of_not_gt h
   have hprod := mul_nonneg (sub_nonneg.mpr hle)
-    (add_nonneg (mul_nonneg (by norm_num) cos_tailAngle0_pos.le)
-      (mul_nonneg (by norm_num) sin_tailAngle0_pos.le))
+    (add_nonneg (mul_nonneg (by norm_num : (0 : ℝ) ≤ 2) cos_tailAngle0_pos.le)
+      (mul_nonneg (by norm_num : (0 : ℝ) ≤ 5) sin_tailAngle0_pos.le))
   have hcross := mul_nonneg (sub_nonneg.mpr hle) cos_tailAngle0_pos.le
   nlinarith [mul_self_pos.mpr (ne_of_gt cos_tailAngle0_pos)]
 
@@ -269,7 +273,7 @@ theorem tailPair_eulerF {r t : ℝ} (hr : 2 / 3 ≤ r * Real.sin tailAngle0)
     rw [tailPair_forceF hr ⟨ht.1.le, ht.2.le⟩]
     ring
   apply (h.congr_deriv hd).hasDerivWithinAt.congr_of_eventuallyEq
-  · filter_upwards [(Ioo_mem_nhds ht.1 ht.2).filter_mono nhdsWithin_le_nhds] with s hs
+  · filter_upwards [mem_nhdsWithin_of_mem_nhds (Ioo_mem_nhds ht.1 ht.2)] with s hs
     exact tailPair_fluxF hr ⟨hs.1.le, hs.2.le⟩
   · exact tailPair_fluxF hr ⟨ht.1.le, ht.2.le⟩
 
@@ -283,7 +287,7 @@ theorem tailPair_eulerG {r t : ℝ} (hr : 2 / 3 ≤ r * Real.sin tailAngle0)
     rw [tailPair_forceG hr ⟨ht.1.le, ht.2.le⟩]
     ring
   apply (h.congr_deriv hd).hasDerivWithinAt.congr_of_eventuallyEq
-  · filter_upwards [(Ioo_mem_nhds ht.1 ht.2).filter_mono nhdsWithin_le_nhds] with s hs
+  · filter_upwards [mem_nhdsWithin_of_mem_nhds (Ioo_mem_nhds ht.1 ht.2)] with s hs
     exact tailPair_fluxG hr ⟨hs.1.le, hs.2.le⟩
   · exact tailPair_fluxG hr ⟨ht.1.le, ht.2.le⟩
 
@@ -322,8 +326,10 @@ theorem adaptiveFunctional_tailPair {r : ℝ} (hr : 2 / 3 ≤ r * Real.sin tailA
       3 * r ^ 2 * Real.sin tailAngle0 * Real.cos tailAngle0 := by
   let u := tailPair r
   have hL : (0 : ℝ) ≤ Real.pi / 2 := by linarith [Real.pi_pos]
-  have hd := ContinuousOn.intervalIntegrable_of_Icc hL (continuousOn_adaptiveDensity u)
-  have hv := ContinuousOn.intervalIntegrable_of_Icc hL (continuousOn_adaptiveLinearDensity u u)
+  have hd := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) hL
+    (continuousOn_adaptiveDensity u)
+  have hv := ContinuousOn.intervalIntegrable_of_Icc (μ := volume) hL
+    (continuousOn_adaptiveLinearDensity u u)
   have hftc : (∫ t in (0 : ℝ)..(Real.pi / 2), (u.gD t - u.fD t) / 2) =
       r * Real.cos tailAngle0 - 1 := by
     have h := intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le hL
@@ -361,7 +367,7 @@ theorem tailPair_score_lt_two_thirds {r : ℝ} (hr : 2 / 3 ≤ r * Real.sin tail
       (show 0 ≤ r * Real.sin tailAngle0 - 1 / 3 by linarith)
     nlinarith
   have hmul := mul_le_mul_of_nonneg_left hpar
-    (mul_nonneg (by norm_num) cos_tailAngle0_pos.le)
+    (mul_nonneg (by norm_num : (0 : ℝ) ≤ 3) cos_tailAngle0_pos.le)
   rw [adaptiveFunctional_tailPair hr]
   apply (mul_lt_mul_iff_left₀ sin_tailAngle0_pos).mp
   nlinarith [two_cos_tailAngle0_lt_five_sin]

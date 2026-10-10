@@ -137,8 +137,8 @@ theorem tan_div_self_tendsto {δ : ℕ → ℝ} (hδ : Tendsto δ atTop (𝓝 0)
       (Real.hasDerivAt_tan (x := 0) (by simp))
   have hwithin : Tendsto δ atTop (𝓝[>] 0) :=
     tendsto_nhdsWithin_iff.mpr ⟨hδ, Eventually.of_forall hpos⟩
-  simpa only [zero_add, Real.tan_zero, sub_zero, smul_eq_mul, div_eq_mul_inv, mul_comm] using
-    hderiv.tendsto_slope_zero_right.comp hwithin
+  simpa only [zero_add, Real.tan_zero, sub_zero, smul_eq_mul, div_eq_mul_inv, mul_comm,
+    Function.comp_def] using hderiv.tendsto_slope_zero_right.comp hwithin
 
 theorem finiteCurvatureDensity_div_eq {q δ : ℝ} (hδ : 0 ≤ δ) :
     finiteCurvatureDensity q δ / δ =
@@ -162,7 +162,7 @@ theorem finiteCurvatureDensity_div_tendsto {q δ : ℕ → ℝ} {v : ℝ}
     simpa only [div_div, div_mul_cancel₀ _ (by norm_num : (2 : ℝ) ≠ 0)] using h
   have htan : Tendsto (fun n => Real.tan (δ n / 2)) atTop (𝓝 0) := by
     have hcont := (Real.hasDerivAt_tan (x := 0) (by simp)).continuousAt.tendsto
-    simpa only [Real.tan_zero] using hcont.comp hhalf
+    simpa only [Real.tan_zero, Function.comp_def] using hcont.comp hhalf
   have hA := hratio.mul (hq.abs.add htan)
   have hB := (hA.add (hhalfRatio'.const_mul 2)).div_const 2
   have hmax := hA.max hB
@@ -185,7 +185,8 @@ theorem CapHausdorffTendsto.firstCornerSecant_tendsto
   have hnormal : Tendsto (fun n => unitNormal (angle n)) atTop (𝓝 (unitNormal t)) :=
     (Real.continuous_cos.tendsto t |>.comp hangle).prodMk_nhds
       (Real.continuous_sin.tendsto t |>.comp hangle)
-  have hsupp := h.support_tendsto_moving hU hK hnormal
+  have hsupp : Tendsto (fun n => MovingSofaOptimality.supp (U n) (angle n)) atTop
+      (𝓝 (MovingSofaOptimality.supp K t)) := h.support_tendsto_moving hU hK hnormal
   have hsec := h.forwardAngularSecant_tendsto hU hK hB hbox
     (hangle.add_const (Real.pi / 2)) hδ hsin hcos ht
   simpa only [AngularGrid.firstCornerSecant_eq_forward, firstCornerVelocity] using
@@ -206,7 +207,9 @@ theorem CapHausdorffTendsto.secondCornerSecant_tendsto
       (𝓝 (unitNormal (t + Real.pi / 2))) :=
     (Real.continuous_cos.tendsto _ |>.comp hshift).prodMk_nhds
       (Real.continuous_sin.tendsto _ |>.comp hshift)
-  have hsupp := h.support_tendsto_moving hU hK hnormal
+  have hsupp : Tendsto (fun n => MovingSofaOptimality.supp (U n) (angle n + Real.pi / 2)) atTop
+      (𝓝 (MovingSofaOptimality.supp K (t + Real.pi / 2))) :=
+    h.support_tendsto_moving hU hK hnormal
   have hsec := h.backwardAngularSecant_tendsto hU hK hB hbox hangle hδ hsin hcos ht
   simpa only [AngularGrid.secondCornerSecant_eq_backward, secondCornerVelocity] using
     (hsupp.sub hsec).sub_const 1
@@ -235,13 +238,14 @@ theorem cornerSecant_tendsto
         firstCornerSecant (U n) (fullAngle (dyadic (level n)) (j n)) (mesh (level n)) := by
       filter_upwards [hangle.eventually (isOpen_Iio.mem_nhds hleft)] with n hn
       cases hj : j n with
-      | inl s => simp only [hj, cornerSecant, fullAngle]
+      | inl s => simp only [cornerSecant, fullAngle]
       | inr s =>
         have hs := interiorPoint_mem (dyadic (level n)) s
         have hbad : (s.val : ℝ) + Real.pi / 2 < Real.pi / 2 := by
           simpa only [hj, fullAngle] using hn
         exact False.elim (by linarith [hs.1])
-    simpa only [upperCornerVelocity, if_pos hleft] using hsec.congr' heq.symm
+    simpa only [upperCornerVelocity, if_pos hleft] using
+      hsec.congr' (heq.mono fun _ hn => hn.symm)
   · have hright : Real.pi / 2 < t := lt_of_le_of_ne (le_of_not_gt hleft) htop.symm
     have hsec := h.secondCornerSecant_tendsto hU hK hB hbox
       (hangle.sub_const (Real.pi / 2)) hmesh
@@ -257,8 +261,9 @@ theorem cornerSecant_tendsto
         have hbad : Real.pi / 2 < (s.val : ℝ) := by
           simpa only [hj, fullAngle] using hn
         exact False.elim (by linarith [hs.2])
-      | inr s => simp only [hj, cornerSecant, fullAngle, add_sub_cancel_right]
-    simpa only [upperCornerVelocity, if_neg hleft] using hsec.congr' heq.symm
+      | inr s => simp only [cornerSecant, fullAngle, add_sub_cancel_right]
+    simpa only [upperCornerVelocity, if_neg hleft] using
+      hsec.congr' (heq.mono fun _ hn => hn.symm)
 
 theorem sampledCurvatureDensity_tendsto
     {U : ℕ → Set Plane} {K B : Set Plane} (h : CapHausdorffTendsto U K)

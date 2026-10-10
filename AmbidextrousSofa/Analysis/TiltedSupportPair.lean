@@ -174,13 +174,15 @@ theorem fullTiltedSupportQuarterPair_after_affine {t : ℝ}
   refine ⟨hg, hgD, ?_, ?_⟩
   · dsimp only [supportP]
     rw [hfD, hg]
-    dsimp only [supportTangent, secondCornerVelocity, angleSupport]
+    simp only [angleSupport_eq_imported_supp]
+    dsimp only [supportTangent, secondCornerVelocity]
     ring
   · dsimp only [supportQ]
     rw [hgD]
     change supportTangent U (t + Real.pi / 2) + angleSupport U t - 1 =
       firstCornerVelocity U t
-    dsimp only [supportTangent, firstCornerVelocity, angleSupport]
+    simp only [angleSupport_eq_imported_supp]
+    dsimp only [supportTangent, firstCornerVelocity]
     ring
 
 /-- The first tangent is always the original cap's tangent, regardless

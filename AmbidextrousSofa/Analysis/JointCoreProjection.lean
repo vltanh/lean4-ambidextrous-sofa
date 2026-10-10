@@ -51,14 +51,16 @@ theorem sourceBranches_sine_graph_add_le {S T : Set Plane}
       ((J.sourceBranchMeasure S).withDensity
         (fun z => ENNReal.ofReal (Real.sin z.1))).map Prod.snd := by
     simpa only [sourceBranchAngular, sub_add_cancel] using
-      (graph_weighted_map_eq (measurable_fst.sub_const d) hX
+      (graph_weighted_map_eq (W := fun t => ENNReal.ofReal (Real.sin (t + d)))
+        (measurable_fst.sub_const d) hX
         (Real.measurable_sin.comp (measurable_id.add_const d)).ennreal_ofReal hgraphS).symm
   have hsecond : ((J.sourceBranchAngular T e).withDensity
       (fun t => ENNReal.ofReal (Real.sin (t + e)))).map X =
       ((J.sourceBranchMeasure T).withDensity
         (fun z => ENNReal.ofReal (Real.sin z.1))).map Prod.snd := by
     simpa only [sourceBranchAngular, sub_add_cancel] using
-      (graph_weighted_map_eq (measurable_fst.sub_const e) hX
+      (graph_weighted_map_eq (W := fun t => ENNReal.ofReal (Real.sin (t + e)))
+        (measurable_fst.sub_const e) hX
         (Real.measurable_sin.comp (measurable_id.add_const e)).ennreal_ofReal hgraphT).symm
   rw [hfirst, hsecond]
   exact J.sourceBranches_sine_spatial_add_le hS hT hST
@@ -74,18 +76,21 @@ variable (hTarget : IsFullCapMaximizer target) (hheight : capHeight target = 1)
   (heq : (upperCurvature target).restrict (regularCurvatureDomain m) =
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
+include hTarget hheight haffine hTargetBox hleft hright heq in
 theorem sourceBranch_density_sine_eq (S : Set Plane) (d : ℝ) :
     (J.sourceBranchAngular S d).withDensity
       (fun t => ENNReal.ofReal (Real.sin (t + d))) =
       volume.withDensity (fun t => ENNReal.ofReal
         (J.sourceBranchDensity S d t * Real.sin (t + d))) := by
   rw [J.sourceBranchAngular_eq_density hTarget hheight haffine hTargetBox hleft hright heq,
-    ← withDensity_mul volume (J.measurable_sourceBranchDensity S d).ennreal_ofReal
+    ← withDensity_mul volume (g := fun t => ENNReal.ofReal (Real.sin (t + d)))
+      (J.measurable_sourceBranchDensity S d).ennreal_ofReal
       (Real.measurable_sin.comp (measurable_id.add_const d)).ennreal_ofReal]
   congr 1
   funext t
   exact (ENNReal.ofReal_mul (J.sourceBranchDensity_nonneg S d t)).symm
 
+include hTarget hheight haffine hTargetBox hleft hright heq in
 theorem sourceBranches_density_sine_graph_add_le {S T : Set Plane}
     (hS : MeasurableSet S) (hT : MeasurableSet T) (hST : Disjoint S T)
     (d e : ℝ) {X : ℝ → ℝ} (hX : Measurable X)
@@ -113,6 +118,7 @@ theorem sourceBranches_density_sine_graph_add_le {S T : Set Plane}
       rw [withDensity_add_left hf.ennreal_ofReal, Measure.map_add _ _ hX]
     _ ≤ volume := hraw
 
+include hTarget hheight haffine hTargetBox hleft hright heq in
 theorem ae_sourceBranchDensities_mul_sin_add_le_abs_deriv_on
     {S T : Set Plane} (hS : MeasurableSet S) (hT : MeasurableSet T) (hST : Disjoint S T)
     (d e : ℝ) {X XD : ℝ → ℝ} (hX : Measurable X)
@@ -170,6 +176,7 @@ local notation "XD" => (fun t => p t * Real.cos t - q t * Real.sin t)
 local notation "aZ" => J.sourceBranchDensity (firstCornerSource target) 0
 local notation "aW" => J.sourceBranchDensity (secondCornerSource target) (Real.pi / 2)
 
+include hl hr hC hheight hlow hhigh hh hunit hTargetBox hleft hright in
 theorem ae_corner_source_weighted_sum_le_core_speed {α η : ℝ}
     (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η) :
     ∀ᵐ t ∂volume.restrict (Ioo α η),

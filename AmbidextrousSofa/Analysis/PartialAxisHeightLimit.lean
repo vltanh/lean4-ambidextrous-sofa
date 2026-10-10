@@ -41,7 +41,8 @@ theorem selected_right_height_limit_eq {target : Set Plane} {U : ℕ → Set Pla
   have hcap : ∀ n, IsDownwardCap (U n) := fun n => (hU n).isCap
   have hcb : ∀ n, MovingSofaOptimality.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
   have hlim := hHausdorff.imported_hausdorffTendsto hcap hTarget
-  have herr := selectionDefect_sum_tendsto (α := α) hTarget hcap hc hrate hHausdorff
+  have herr := selectionDefect_sum_tendsto (α := α) (level := level) hTarget hcap hc hrate
+    hHausdorff
   have hmesh := (mesh_tendsto α).comp hlevel
   have hupper := MovingSofaOptimality.ang_le_sigmaAt_of_tendsto hcb hTarget.imported_isConvexBody hlim
     hheight (fun n => (hcap n).axis_curvature_zero.symm.le)
@@ -76,7 +77,8 @@ theorem selected_right_height_limit_eq {target : Set Plane} {U : ℕ → Set Pla
       (fun n => C * (t + mesh α (level n)) +
         ∑ j, selectionDefect target (U n) α (level n) (coefficient n) j) atTop
       (𝓝 (C * t)) := by
-    simpa only [add_zero] using ((tendsto_const_nhds.add hmesh).const_mul C).add herr
+    simpa only [add_zero, Function.comp_apply] using
+      ((tendsto_const_nhds.add hmesh).const_mul C).add herr
   have hle := le_of_tendsto_of_tendsto hleft hright hbound
   have hmono := MovingSofaOptimality.monotone_sigmaFun hTarget.imported_isConvexBody ht.1.le
   rw [hTarget.sigmaFun_zero] at hmono
@@ -96,7 +98,8 @@ theorem selected_left_height_limit_eq {target : Set Plane} {U : ℕ → Set Plan
   have hcap : ∀ n, IsDownwardCap (U n) := fun n => (hU n).isCap
   have hcb : ∀ n, MovingSofaOptimality.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
   have hlim := hHausdorff.imported_hausdorffTendsto hcap hTarget
-  have herr := selectionDefect_sum_tendsto (α := α) hTarget hcap hc hrate hHausdorff
+  have herr := selectionDefect_sum_tendsto (α := α) (level := level) hTarget hcap hc hrate
+    hHausdorff
   have hmesh := (mesh_tendsto α).comp hlevel
   have hupper := MovingSofaOptimality.ang_le_sigmaAt_of_tendsto hcb hTarget.imported_isConvexBody hlim
     hheight (fun n => (hcap n).axis_curvature_pi.symm.le)
@@ -147,7 +150,8 @@ theorem selected_left_height_limit_eq {target : Set Plane} {U : ℕ → Set Plan
       (fun n => C * (ε + mesh α (level n)) +
         ∑ j, selectionDefect target (U n) α (level n) (coefficient n) j) atTop
       (𝓝 (C * ε)) := by
-    simpa only [add_zero] using ((tendsto_const_nhds.add hmesh).const_mul C).add herr
+    simpa only [add_zero, Function.comp_apply] using
+      ((tendsto_const_nhds.add hmesh).const_mul C).add herr
   have hle := le_of_tendsto_of_tendsto hleft hright hbound
   have hmono := (MovingSofaOptimality.monotone_sigmaFun hTarget.imported_isConvexBody).le_leftLim ht.2
   rw [hTarget.sigmaFun_leftLim_pi] at hmono

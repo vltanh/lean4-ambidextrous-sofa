@@ -37,11 +37,11 @@ theorem intervalSpatialScore_eq_whole_sub_middle {roof niche : ℝ → ℝ}
     intervalSpatialScore roof niche l r = (∫ x in l..r, roof x) -
       ∫ x in (l + (r - l) / 4)..(r - (r - l) / 4), roof x + niche x := by
   have hfirst := intervalIntegral.integral_add_adjacent_intervals
-    (hroof.intervalIntegrable l (l + (r - l) / 4))
-    (hroof.intervalIntegrable (l + (r - l) / 4) (r - (r - l) / 4))
+    (hroof.intervalIntegrable (μ := volume) l (l + (r - l) / 4))
+    (hroof.intervalIntegrable (μ := volume) (l + (r - l) / 4) (r - (r - l) / 4))
   have hsecond := intervalIntegral.integral_add_adjacent_intervals
-    (hroof.intervalIntegrable l (r - (r - l) / 4))
-    (hroof.intervalIntegrable (r - (r - l) / 4) r)
+    (hroof.intervalIntegrable (μ := volume) l (r - (r - l) / 4))
+    (hroof.intervalIntegrable (μ := volume) (r - (r - l) / 4) r)
   rw [intervalIntegral.integral_add (hroof.intervalIntegrable _ _)
     (hniche.intervalIntegrable _ _)]
   unfold intervalSpatialScore
@@ -51,12 +51,12 @@ theorem hasDerivAt_primitive_affine_endpoint {f : ℝ → ℝ} (hf : Continuous 
     (x d : ℝ) :
     HasDerivAt (fun ε : ℝ => ∫ t in (0 : ℝ)..(x + ε * d), f t) (f x * d) 0 := by
   have hline : HasDerivAt (fun ε : ℝ => x + ε * d) d 0 := by
-    simpa only [zero_add, one_mul] using
+    simpa only [zero_add, one_mul, Pi.add_def, id_eq] using
       (hasDerivAt_const (0 : ℝ) x).add ((hasDerivAt_id (0 : ℝ)).mul_const d)
   have hprimitive := intervalIntegral.integral_hasDerivAt_right
     (hf.intervalIntegrable 0 (x + 0 * d))
     hf.aestronglyMeasurable.stronglyMeasurableAtFilter hf.continuousAt
-  simpa only [zero_mul, add_zero] using hprimitive.comp 0 hline
+  simpa only [zero_mul, add_zero, Function.comp_def] using hprimitive.comp 0 hline
 
 /-- The ordinary two-endpoint Leibniz rule is obtained from continuous
 primitives; no derivative of a set indicator is used. -/
@@ -91,7 +91,9 @@ theorem hasDerivAt_intervalSpatialScore_endpoints {roof niche : ℝ → ℝ}
     rw [intervalSpatialScore_eq_whole_sub_middle hroof hniche]
     congr 2 <;> ring
   rw [heq]
-  convert hwhole.sub hmiddle using 1 <;> ring
+  convert hwhole.sub hmiddle using 1
+  simp only [Pi.add_apply]
+  ring
 
 /-- FE.6: moving the right endpoint moves the middle endpoints with speeds
 one quarter and three quarters, respectively. -/

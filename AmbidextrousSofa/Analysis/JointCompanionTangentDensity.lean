@@ -41,6 +41,7 @@ variable (hTarget : IsFullCapMaximizer target) (hheight : capHeight target = 1)
 
 local notation "aD" => J.sourceBranchDensity (secondTangentSource target) (Real.pi / 2)
 
+include hTarget hheight haffine hTargetBox hleft hright hρ hρ0 hρK heq in
 theorem ae_second_tangent_source_graph :
     ∀ᵐ z ∂J.sourceBranchMeasure (secondTangentSource target),
       z.2 = (secondTangency target (z.1 - Real.pi / 2)).1 := by
@@ -48,6 +49,7 @@ theorem ae_second_tangent_source_graph :
     hTargetBox hleft hright hρ hρ0 hρK heq] with z hz
   exact congrArg Prod.fst hz.2
 
+include hTarget hheight haffine hTargetBox hleft hright hρ hρ0 hρK heq in
 theorem ae_second_tangent_density_eq_zero_of_original_excess :
     ∀ᵐ t ∂volume, 1 < ρ (t + Real.pi / 2) → aD t = 0 := by
   let E : Set ℝ := {t | 1 < ρ (t + Real.pi / 2)}
@@ -61,6 +63,7 @@ theorem ae_second_tangent_density_eq_zero_of_original_excess :
   exact J.ae_sourceBranchDensity_eq_zero_on hTarget hheight haffine hTargetBox
     hleft hright heq hE hz
 
+include hTarget hheight haffine hTargetBox hleft hright hρ hρ0 hρK heq in
 theorem ae_second_tangent_density_eq_zero_of_original_negative :
     ∀ᵐ t ∂volume, (secondTangency target t).2 < 0 → aD t = 0 := by
   let E : Set ℝ := {t | (secondTangency target t).2 < 0}
@@ -78,6 +81,7 @@ theorem ae_second_tangent_density_eq_zero_of_original_negative :
   exact J.ae_sourceBranchDensity_eq_zero_on hTarget hheight haffine hTargetBox
     hleft hright heq hE hz
 
+include hTarget hheight m haffine hTargetBox hleft hright hρ hρ0 hρK heq in
 theorem ae_second_tangent_density_le_max_one_sub_original :
     ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)),
       aD t ≤ max (1 - ρ (t + Real.pi / 2)) 0 := by
@@ -105,7 +109,7 @@ theorem ae_second_tangent_density_le_max_one_sub_original :
       ⟨by linarith only [ht.1, Real.pi_pos], ht.2⟩
     rw [Real.sin_add_pi_div_two,
       abs_of_nonneg (mul_nonneg (sub_nonneg.mpr hle) hc.le)] at hb
-    exact ((mul_le_mul_right hc).mp hb).trans (le_max_left _ _)
+    exact (le_of_mul_le_mul_right hb hc).trans (le_max_left _ _)
   · rw [hz (lt_of_not_ge hle)]
     exact le_max_right _ _
 
@@ -122,6 +126,7 @@ set_option quotPrecheck false in
 local notation "D" => secondTangentPoint (F).g (F).gD
 local notation "v" => fun t => leftCompanionWingDensity m ρ (t + Real.pi / 2)
 
+include hTarget hheight haffine hTargetBox hleft hright hρ hρ0 hρK heq hl hr hC hm hlow hhigh hh hunit in
 theorem ae_companion_tangent_density_le_max_one_sub :
     ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), aD t ≤ max (1 - v t) 0 := by
   have hequal := J.ae_original_companion_density_eq_cut hTarget hl hr hC hm hheight
@@ -130,6 +135,7 @@ theorem ae_companion_tangent_density_le_max_one_sub :
     hTarget hheight haffine hTargetBox hleft hright hρ hρ0 hρK heq] with t ht hb
   simpa only [ht] using hb
 
+include hTarget hheight haffine hTargetBox hleft hright hρ hρ0 hρK heq hl hr hC hm hlow hhigh hh hunit in
 theorem ae_companion_tangent_density_eq_zero_through_affine :
     ∀ᵐ t ∂volume, t ≤ Real.arctan m → aD t = 0 := by
   have hz : ∀ᵐ z ∂J.sourceBranchMeasure (secondTangentSource target),
@@ -142,6 +148,7 @@ theorem ae_companion_tangent_density_eq_zero_through_affine :
   exact J.ae_sourceBranchDensity_eq_zero_on hTarget hheight haffine hTargetBox
     hleft hright heq measurableSet_Iic hz
 
+include hTarget hheight haffine hTargetBox hleft hright hρ hρ0 hρK heq hl hr hC hm hlow hhigh hh hunit in
 theorem ae_companion_tangent_density_eq_zero_of_excess :
     ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), 1 < v t → aD t = 0 := by
   filter_upwards [J.ae_companion_tangent_density_le_max_one_sub hTarget hheight haffine
@@ -151,6 +158,7 @@ theorem ae_companion_tangent_density_eq_zero_of_excess :
   rw [hmax] at ht
   exact le_antisymm ht (J.sourceBranchDensity_nonneg _ _ _)
 
+include hheight hTargetBox hleft hright hl hr hC hlow hhigh hh hunit in
 theorem ae_companion_tangent_density_eq_zero_of_negative :
     ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), (D t).2 < 0 → aD t = 0 := by
   filter_upwards [ae_restrict_mem measurableSet_Ioo,
@@ -166,6 +174,7 @@ theorem ae_companion_tangent_density_eq_zero_of_negative :
       hTarget hm.le haffine hρ hρ0 hρK heq ⟨ht.1.le, ht.2⟩ (lt_of_not_ge hpre).le).1
     exact hnegative (by simpa only [hmatch] using hy)
 
+include hheight hTargetBox hleft hright hl hr hC hlow hhigh hh hunit in
 theorem ae_companion_tangent_density_controls :
     ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)),
       aD t ≤ max (1 - v t) 0 ∧ (1 < v t → aD t = 0) ∧

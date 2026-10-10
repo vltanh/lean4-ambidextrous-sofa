@@ -52,6 +52,23 @@ theorem measure_restrict_Ioo_eq_of_closed_subintervals
   have hd := selectionRate_pos n
   exact ⟨by linarith only [hx.1, hd], by linarith only [hx.2, hd]⟩
 
+/-- The finite neighboring-wall estimate on a closed angular interval, with one boundary mesh
+cell: the bound `innerSourceMass_sum_interval_le` of `HorizontalCutoff` (not imported here),
+stated for `innerAngularMass`, whose filter carries the classical decidability instance. -/
+private theorem innerAngularMass_Icc_le {U : Set Plane} (hU : IsDownwardCap U)
+    {R s t : ℝ} (hR : 0 ≤ R) (hbox : U ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1)
+    (level : ℕ) (hst : s ≤ t) :
+    innerAngularMass U (dyadic level) (Icc s t) ≤ (4 * R + 12) * (t - s + mesh level) := by
+  classical
+  have hmesh := sum_mesh_interval_sources_le level hst
+  unfold innerAngularMass
+  calc
+    _ ≤ ∑ j ∈ _, (4 * R + 12) * mesh level :=
+      Finset.sum_le_sum (fun j _ => innerSourceMass_dyadic_le hU hR hbox level j)
+    _ = (4 * R + 12) * ∑ j ∈ _, mesh level := by rw [Finset.mul_sum]
+    _ ≤ _ := mul_le_mul_of_nonneg_left
+      (Eq.trans_le (by congr 1; exact Finset.filter_congr_decidable _ _ _) hmesh) (by linarith)
+
 namespace SelectedJointSourceLimit
 
 variable {target : Set Plane} {a b : ℝ} (J : SelectedJointSourceLimit target a b)
@@ -81,7 +98,7 @@ theorem angular_open_mass_le {s t : ℝ} (hst : s ≤ t) :
       _ = innerAngularMass (J.caps n) (dyadic (J.level n)) (Icc s t) :=
         J.finite_angular_mass n measurableSet_Icc
       _ ≤ K * (t - s + mesh (J.level n)) :=
-        innerSourceMass_sum_interval_le (J.isCap n) hR
+        innerAngularMass_Icc_le (J.isCap n) hR
           (subset_symmetricBox_of_horizontalBox (J.selected n).inBox) (J.level n) hst
   have hmesh : Tendsto (fun n => mesh (J.level n)) (sourceLimitFilter : Filter ℕ) (𝓝 0) :=
     (mesh_tendsto.comp J.level_tendsto).mono_left sourceLimitFilter_le_atTop
@@ -102,7 +119,7 @@ theorem angular_fiber_eq_zero (θ : ℝ) :
     calc
       _ ≤ (J.measure : Measure Plane).real
           (Ioo (θ - selectionRate n) (θ + selectionRate n) ×ˢ univ) := by
-        apply measureReal_mono
+        apply measureReal_mono _ (measure_ne_top _ _)
         rintro ⟨x, y⟩ ⟨hx, hy⟩
         simp only [mem_singleton_iff] at hx
         subst x

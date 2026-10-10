@@ -35,6 +35,7 @@ theorem integral_firstTangent_density_ac {a b : ℝ} {f g fD gD fDD : ℝ → �
       (∫ t in a..b, supportP fD g t ^ 2) +
       firstMomentumPrimitive f g fD b - firstMomentumPrimitive f g fD a := by
   have hp : Continuous (supportP fD g) := (hfD.sub hg).add continuous_const
+  have hp2 : Continuous (fun t => supportP fD g t ^ 2) := hp.pow 2
   have hc : Continuous (cornerDensity f g fD gD) := by
     unfold cornerDensity supportP supportQ
     fun_prop
@@ -59,9 +60,9 @@ theorem integral_firstTangent_density_ac {a b : ℝ} {f g fD gD fDD : ℝ → �
       exact firstTangent_density_identity f g fD gD fDD t
     _ = _ := by
       rw [intervalIntegral.integral_add
-        ((hc.intervalIntegrable _ _).sub ((hp.pow 2).intervalIntegrable _ _)) hd,
+        ((hc.intervalIntegrable _ _).sub (hp2.intervalIntegrable _ _)) hd,
         intervalIntegral.integral_sub (hc.intervalIntegrable _ _)
-          ((hp.pow 2).intervalIntegrable _ _), hftc]
+          (hp2.intervalIntegrable _ _), hftc]
       ring
 
 theorem integral_secondTangent_density_ac {a b : ℝ} {f g fD gD gDD : ℝ → ℝ}
@@ -79,6 +80,7 @@ theorem integral_secondTangent_density_ac {a b : ℝ} {f g fD gD gDD : ℝ → �
       (∫ t in a..b, supportQ gD f t ^ 2) +
       secondMomentumPrimitive f g gD b - secondMomentumPrimitive f g gD a := by
   have hq : Continuous (supportQ gD f) := (hgD.add hf).sub continuous_const
+  have hq2 : Continuous (fun t => supportQ gD f t ^ 2) := hq.pow 2
   have hc : Continuous (cornerDensity f g fD gD) := by
     unfold cornerDensity supportP supportQ
     fun_prop
@@ -103,9 +105,9 @@ theorem integral_secondTangent_density_ac {a b : ℝ} {f g fD gD gDD : ℝ → �
       exact secondTangent_density_identity f g fD gD gDD t
     _ = _ := by
       rw [intervalIntegral.integral_add
-        ((hc.intervalIntegrable _ _).sub ((hq.pow 2).intervalIntegrable _ _)) hd,
+        ((hc.intervalIntegrable _ _).sub (hq2.intervalIntegrable _ _)) hd,
         intervalIntegral.integral_sub (hc.intervalIntegrable _ _)
-          ((hq.pow 2).intervalIntegrable _ _), hftc]
+          (hq2.intervalIntegrable _ _), hftc]
       ring
 
 /-- The middle graph arc is traversed in reverse. Absolute continuity of
@@ -149,11 +151,11 @@ theorem twice_integral_three_graph_arcs_ac
   rw [hPQ, hPzero, mul_zero] at hpi
   rw [← hQR, hRzero, mul_zero] at hri
   have hsplit := intervalIntegral.integral_add_adjacent_intervals
-    (hF.intervalIntegrable (P a).1 (Q b).1)
-    (hF.intervalIntegrable (Q b).1 (Q d).1)
+    (hF.intervalIntegrable (μ := volume) (P a).1 (Q b).1)
+    (hF.intervalIntegrable (μ := volume) (Q b).1 (Q d).1)
   have hjoin := intervalIntegral.integral_add_adjacent_intervals
-    (hF.intervalIntegrable (P a).1 (Q b).1)
-    (hF.intervalIntegrable (Q b).1 (R e).1)
+    (hF.intervalIntegrable (μ := volume) (P a).1 (Q b).1)
+    (hF.intervalIntegrable (μ := volume) (Q b).1 (R e).1)
   linarith
 
 /-- Signed integration for the actual three graph arcs with measurable
@@ -220,12 +222,16 @@ theorem signedRoof_integral_of_graphs_ac
     ((hfAC.sub hconst).mul hsin).add (hfDAC.mul hcos)
   have hDXac : AbsolutelyContinuousOnInterval (fun t => (secondTangentPoint g gD t).1)
       0 (Real.pi / 2) := by
-    simpa only [secondTangentPoint, companionSupportPoint_coordinates] using
-      (((hgAC.sub hconst).neg.mul hsin).sub (hgDAC.mul hcos))
+    have h : AbsolutelyContinuousOnInterval
+        (fun t => -(g t - 1) * Real.sin t - gD t * Real.cos t) 0 (Real.pi / 2) :=
+      ((hgAC.sub hconst).neg.mul hsin).sub (hgDAC.mul hcos)
+    simpa only [secondTangentPoint, companionSupportPoint_coordinates] using h
   have hDYac : AbsolutelyContinuousOnInterval (fun t => (secondTangentPoint g gD t).2)
       0 (Real.pi / 2) := by
-    simpa only [secondTangentPoint, companionSupportPoint_coordinates] using
-      (((hgAC.sub hconst).mul hcos).sub (hgDAC.mul hsin))
+    have h : AbsolutelyContinuousOnInterval
+        (fun t => (g t - 1) * Real.cos t - gD t * Real.sin t) 0 (Real.pi / 2) :=
+      ((hgAC.sub hconst).mul hcos).sub (hgDAC.mul hsin)
+    simpa only [secondTangentPoint, companionSupportPoint_coordinates] using h
   have hCXac : AbsolutelyContinuousOnInterval (fun t => (innerCornerPoint f g t).1)
       0 (Real.pi / 2) :=
     ((hfAC.sub hconst).mul hcos).sub ((hgAC.sub hconst).mul hsin)
@@ -259,8 +265,12 @@ theorem signedRoof_integral_of_graphs_ac
       Real.sin_pi_div_two, Real.cos_pi_div_two, zero_mul, mul_zero, add_zero]
   have hDzero : (secondTangentPoint g gD 0).2 = 0 := by
     simp only [secondTangentPoint, companionSupportPoint_coordinates, hGtop,
-      sub_self, Real.sin_zero, Real.cos_zero, zero_mul, mul_zero, sub_zero]
+      sub_self, Real.sin_zero, Real.cos_zero, zero_mul, mul_zero]
   have hgraphs := twice_integral_three_graph_arcs_ac h0d hbd hbL
+    (PX := companionSupportPointDX (fun s => g s - 1) gDD)
+    (PY := companionSupportPointDY (fun s => g s - 1) gDD)
+    (RX := supportPointDX (fun s => f s - 1) fDD)
+    (RY := supportPointDY (fun s => f s - 1) fDD)
     (hDXac.mono hsubD) (hDYac.mono hsubD) (hCXac.mono hsubC) (hCYac.mono hsubC)
     (hBXac.mono hsubB) (hBYac.mono hsubB)
     (by
@@ -314,7 +324,7 @@ theorem signedRoof_integral_of_graphs_ac
   rw [hdetD, hdetC, hdetB] at hgraphs
   simp only [secondTangentPoint, companionSupportPoint_coordinates, firstTangentPoint,
     Reference.supportPoint, Real.cos_zero, Real.sin_zero, Real.cos_pi_div_two,
-    Real.sin_pi_div_two, mul_zero, mul_one, zero_sub, zero_mul] at hgraphs
+    Real.sin_pi_div_two, mul_zero, mul_one, zero_sub] at hgraphs
   have hBint := integral_firstTangent_density_ac hbL hf hg hfD hgD
     (hfAC.mono hsubB) (hgAC.mono hsubB) (hfDAC.mono hsubB)
     (hderivB.mono fun _ ht => ht.1) (hderivB.mono fun _ ht => ht.2.1)
@@ -331,9 +341,9 @@ theorem signedRoof_integral_of_graphs_ac
     unfold cornerDensity supportP supportQ
     fun_prop
   have hsplit0 := intervalIntegral.integral_add_adjacent_intervals
-    (hc.intervalIntegrable 0 d) (hc.intervalIntegrable d (Real.pi / 2))
+    (hc.intervalIntegrable (μ := volume) 0 d) (hc.intervalIntegrable d (Real.pi / 2))
   have hsplitb := intervalIntegral.integral_add_adjacent_intervals
-    (hc.intervalIntegrable b d) (hc.intervalIntegrable d (Real.pi / 2))
+    (hc.intervalIntegrable (μ := volume) b d) (hc.intervalIntegrable d (Real.pi / 2))
   linarith
 
 end AmbidextrousSofa

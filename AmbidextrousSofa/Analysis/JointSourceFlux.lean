@@ -141,7 +141,8 @@ theorem sine_integral_eq_length_of_positive
       (fun n => ∫ z : Plane, Real.sin z.1
         ∂innerJointMeasure (J.caps n) (dyadic (J.level n)) l r)
       (sourceLimitFilter : Filter ℕ) (𝓝 (r - l)) :=
-    tendsto_const_nhds.congr' (heq.filter_mono sourceLimitFilter_le_atTop).symm
+    tendsto_const_nhds.congr'
+      (Filter.EventuallyEq.symm (Filter.Eventually.filter_mono sourceLimitFilter_le_atTop heq))
   exact tendsto_nhds_unique
     (J.local_test_integral_tendsto hTarget sourceSineFunction hL hR) hconst
 

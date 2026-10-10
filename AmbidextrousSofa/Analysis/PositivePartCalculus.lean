@@ -26,8 +26,7 @@ namespace AmbidextrousSofa
 theorem absolutelyContinuousOnInterval_max_const
     {f : ℝ → ℝ} {a b : ℝ} (hf : AbsolutelyContinuousOnInterval f a b) (c : ℝ) :
     AbsolutelyContinuousOnInterval (fun x => max (f x) c) a b := by
-  simpa only [Function.comp_def] using
-    (LipschitzWith.id.max_const c).comp_absolutelyContinuousOnInterval hf
+  exact (LipschitzWith.id.max_const c).comp_absolutelyContinuousOnInterval hf
 
 /-- This is an almost-everywhere derivative formula, including the
 clipping level. The latter case follows from the level set of the

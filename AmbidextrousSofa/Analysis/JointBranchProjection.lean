@@ -50,7 +50,8 @@ theorem sourceBranch_sine_graph_le {S : Set Plane} (hS : MeasurableSet S)
     _ = ((J.sourceBranchMeasure S).withDensity
         (fun z => ENNReal.ofReal (Real.sin z.1))).map Prod.snd := by
       simpa only [sourceBranchAngular, sub_add_cancel] using
-        (graph_weighted_map_eq (measurable_fst.sub_const d) hX
+        (graph_weighted_map_eq (W := fun t => ENNReal.ofReal (Real.sin (t + d)))
+          (measurable_fst.sub_const d) hX
           (Real.measurable_sin.comp (measurable_id.add_const d)).ennreal_ofReal hgraph).symm
     _ ≤ volume := J.sourceBranch_sine_spatial_le hS
 
@@ -65,6 +66,7 @@ variable (hTarget : IsFullCapMaximizer target) (hheight : capHeight target = 1)
   (heq : (upperCurvature target).restrict (regularCurvatureDomain m) =
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
+include hTarget hheight haffine hTargetBox hleft hright heq in
 theorem sourceBranch_density_sine_graph_le {S : Set Plane} (hS : MeasurableSet S)
     (d : ℝ) {X : ℝ → ℝ} (hX : Measurable X)
     (hgraph : ∀ᵐ z ∂J.sourceBranchMeasure S, z.2 = X (z.1 - d)) :
@@ -72,7 +74,8 @@ theorem sourceBranch_density_sine_graph_le {S : Set Plane} (hS : MeasurableSet S
       (J.sourceBranchDensity S d t * Real.sin (t + d)))).map X ≤ volume := by
   have hmap := J.sourceBranch_sine_graph_le hS d hX hgraph
   rw [J.sourceBranchAngular_eq_density hTarget hheight haffine hTargetBox hleft hright heq,
-    ← withDensity_mul volume (J.measurable_sourceBranchDensity S d).ennreal_ofReal
+    ← withDensity_mul volume (g := fun t => ENNReal.ofReal (Real.sin (t + d)))
+      (J.measurable_sourceBranchDensity S d).ennreal_ofReal
       (Real.measurable_sin.comp (measurable_id.add_const d)).ennreal_ofReal] at hmap
   have hprod : (fun t => ENNReal.ofReal
       (J.sourceBranchDensity S d t * Real.sin (t + d))) =
@@ -83,6 +86,7 @@ theorem sourceBranch_density_sine_graph_le {S : Set Plane} (hS : MeasurableSet S
   rw [hprod]
   exact hmap
 
+include hTarget hheight haffine hTargetBox hleft hright heq in
 theorem ae_sourceBranchDensity_mul_sin_le_abs_deriv_on
     {S : Set Plane} (hS : MeasurableSet S) (d : ℝ)
     {X XD : ℝ → ℝ} (hX : Measurable X)

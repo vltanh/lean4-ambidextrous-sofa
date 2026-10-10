@@ -29,7 +29,7 @@ theorem firstTangent_dominates_support {f fD fDD : ℝ → ℝ}
     f t - 1 ≤ coordDot (firstTangentPoint f fD s) (unitNormal t) := by
   have h := Reference.supportProjection_le_self
     (continuous_const.sub hf) hfD.neg
-    (fun x => by simpa only [zero_sub] using
+    (fun x => by simpa only [zero_sub, Pi.neg_apply] using
       (hasDerivWithinAt_const (x := x) (s := Ioi x) (c := (1 : ℝ))).sub (hderiv x))
     (fun x => (hsecond x).neg)
     (hDD := fun x => -fDD x)
@@ -50,7 +50,7 @@ theorem secondTangent_dominates_support {g gD gDD : ℝ → ℝ}
     g t - 1 ≤ coordDot (secondTangentPoint g gD s) (companionNormal t) := by
   have h := Reference.supportProjection_le_self
     (continuous_const.sub hg) hgD.neg
-    (fun x => by simpa only [zero_sub] using
+    (fun x => by simpa only [zero_sub, Pi.neg_apply] using
       (hasDerivWithinAt_const (x := x) (s := Ioi x) (c := (1 : ℝ))).sub (hderiv x))
     (fun x => (hsecond x).neg)
     (hDD := fun x => -gDD x)
@@ -150,7 +150,7 @@ theorem firstWall_le_of_support_depth {U : Set Plane} {θ : ℝ} {p : Plane}
     firstWall U θ p.1 ≤ p.2 := by
   unfold firstWall
   apply (div_le_iff₀ hs).mpr
-  unfold coordDot unitNormal at h
+  simp only [coordDot, unitNormal] at h ⊢
   nlinarith
 
 theorem secondWall_le_of_support_depth {U : Set Plane} {θ : ℝ} {p : Plane}
@@ -159,7 +159,7 @@ theorem secondWall_le_of_support_depth {U : Set Plane} {θ : ℝ} {p : Plane}
     secondWall U θ p.1 ≤ p.2 := by
   unfold secondWall
   apply (div_le_iff₀ hc).mpr
-  unfold coordDot companionNormal at h
+  simp only [coordDot, companionNormal] at h ⊢
   nlinarith
 
 theorem le_firstWall_of_support_depth {U : Set Plane} {θ : ℝ} {p : Plane}
@@ -167,7 +167,7 @@ theorem le_firstWall_of_support_depth {U : Set Plane} {θ : ℝ} {p : Plane}
     p.2 ≤ firstWall U θ p.1 := by
   unfold firstWall
   apply (le_div_iff₀ hs).mpr
-  unfold coordDot unitNormal at h
+  simp only [coordDot, unitNormal] at h ⊢
   nlinarith
 
 theorem le_secondWall_of_support_depth {U : Set Plane} {θ : ℝ} {p : Plane}
@@ -176,7 +176,7 @@ theorem le_secondWall_of_support_depth {U : Set Plane} {θ : ℝ} {p : Plane}
     p.2 ≤ secondWall U θ p.1 := by
   unfold secondWall
   apply (le_div_iff₀ hc).mpr
-  unfold coordDot companionNormal at h
+  simp only [coordDot, companionNormal] at h ⊢
   nlinarith
 
 theorem firstWall_eq_of_support_depth {U : Set Plane} {θ : ℝ} {p : Plane}
@@ -216,7 +216,7 @@ theorem sweptNiche_firstTangent {U : Set Plane} (hU : IsCompact U)
     (by linarith [hs.2, Real.pi_pos])
   have hcos : 0 < Real.cos s := Real.cos_pos_of_mem_Ioo
     ⟨by linarith [hs.1, Real.pi_pos], hs.2⟩
-  apply sweptNiche_eq_of_global_contact hU (firstTangent_snd_nonneg hFtop hdom) ?_ hs
+  refine sweptNiche_eq_of_global_contact hU (firstTangent_snd_nonneg hFtop hdom) ?_ hs ?_
   · intro t ht
     apply (min_le_left _ _).trans
     apply firstWall_le_of_support_depth (Real.sin_pos_of_pos_of_lt_pi ht.1
@@ -244,7 +244,7 @@ theorem sweptNiche_secondTangent {U : Set Plane} (hU : IsCompact U)
     (by linarith [hs.2, Real.pi_pos])
   have hcos : 0 < Real.cos s := Real.cos_pos_of_mem_Ioo
     ⟨by linarith [hs.1, Real.pi_pos], hs.2⟩
-  apply sweptNiche_eq_of_global_contact hU (secondTangent_snd_nonneg hGtop hdom) ?_ hs
+  refine sweptNiche_eq_of_global_contact hU (secondTangent_snd_nonneg hGtop hdom) ?_ hs ?_
   · intro t ht
     apply (min_le_right _ _).trans
     apply secondWall_le_of_support_depth (Real.cos_pos_of_mem_Ioo
@@ -281,7 +281,7 @@ theorem sweptNiche_innerCorner {U : Set Plane} (hU : IsCompact U)
     rw [innerCorner_snd_eq_firstTangent f g fD]
     exact sub_nonneg.mpr ((mul_nonpos_of_nonpos_of_nonneg hp hcos.le).trans
       (firstTangent_snd_nonneg hFtop hB))
-  apply sweptNiche_eq_of_global_contact hU hy ?_ hs
+  refine sweptNiche_eq_of_global_contact hU hy ?_ hs ?_
   · intro t ht
     rcases le_total s t with hst | hts
     · apply (min_le_left _ _).trans

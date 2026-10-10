@@ -35,8 +35,9 @@ theorem absolutelyContinuousOnInterval_clippedCornerEnergy
     (LipschitzWith.const c).lipschitzOnWith.absolutelyContinuousOnInterval
   have hp' := (absolutelyContinuousOnInterval_max_const hp 0).sub (hc (1 / 2))
   have hq' := hq.add (hc 1)
-  simpa only [clippedCornerEnergy, Pi.add_apply, Pi.sub_apply, Pi.mul_apply, pow_two] using
-    (hp'.mul hp').add (hq'.mul hq')
+  convert (hp'.mul hp').add (hq'.mul hq') using 1
+  funext x
+  simp only [clippedCornerEnergy, Pi.add_apply, Pi.sub_apply, Pi.mul_apply, pow_two]
 
 /-- The clipping-level derivative is included in this formula; it is
 zero almost everywhere there, rather than being assigned arbitrarily. -/
@@ -171,12 +172,12 @@ theorem ae_curvature_le_one_of_cornerEnergy
     (hshadow : ∀ᵐ t : ℝ ∂volume.restrict (Ioo a b),
       0 < p t → 0 < q t → u t = 0 ∧ v t ≤ 1 / 2) :
     ∀ᵐ t : ℝ ∂volume.restrict (Ioo a b), u t ≤ 1 := by
-  have hE := clippedCornerEnergy_le_of_initial hp hq hab hstart hode hbound
-    (hκ.mono (fun _ ht => ht.2)) hshadow
+  have hE := fun (t : ℝ) (ht : t ∈ Icc a b) => clippedCornerEnergy_le_of_initial hp hq hab
+    hstart hode hbound (hκ.mono (fun _ ht => ht.2)) hshadow ht
   filter_upwards [ae_restrict_mem measurableSet_Ioo, hbound, hκ, hshadow]
     with t ht hb hk hs
   exact curvature_le_one_of_clippedCornerEnergy hb.2 hk.1
-    (fun hp hq => (hs hp hq).1) (hE ⟨ht.1.le, ht.2.le⟩)
+    (fun hp hq => (hs hp hq).1) (hE t ⟨ht.1.le, ht.2.le⟩)
 
 def actualCornerEnergy (U : Set Plane) : ℝ → ℝ :=
   clippedCornerEnergy (fun t => -secondCornerVelocity U t) (firstCornerVelocity U)
@@ -212,7 +213,7 @@ theorem IsFullCapMaximizer.ae_density_le_one_of_cornerEnergy_on_interval
     intro t ht
     have hm : t - Real.pi / 2 ∈ Icc a b := by
       constructor <;> linarith [ht.1, ht.2]
-    simpa only [sub_add_cancel] using (hsub hm).2.2
+    simpa only [Set.mem_preimage, sub_add_cancel] using (hsub hm).2.2
   have hac := hU.isCap.absolutelyContinuousOnInterval_cornerVelocities_of_density
     hρ hρ0 hρC heq hab hbase hshift
   have hode : ∀ᵐ t : ℝ ∂volume.restrict (Ioo a b),

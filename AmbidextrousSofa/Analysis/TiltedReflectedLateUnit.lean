@@ -93,6 +93,7 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
 
+include hU hm haffine hρ hρ0 hρK heq in
 theorem fullTiltedSupportQuarterPair_companion_unit_prefix_of_collapsed_top {C h : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hC0 : 2 / 3 ≤ C) (hC1 : C ≤ 37 / 50)

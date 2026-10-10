@@ -121,7 +121,8 @@ theorem fullTiltedSupportQuarterPair_strict_first_contact_unique
     exact hy
   have hgt := fullTiltedSupportQuarterPair_niche_derivative_first_tangency
     hU hm haffine hρ hρ0 hρK heq hunit ht hp hy.le hderiv
-  have hcorner := positive_fullWallClip_eq_cornerWall hpositive hmax
+  have hcorner : cornerWall U s (B t).1 = sweptNiche U (Real.pi / 2) (B t).1 :=
+    positive_fullWallClip_eq_cornerWall (U := hU.isCap.toCompactCap) hpositive hmax
   rcases lt_trichotomy (firstWall U s (B t).1) (secondWall U s (B t).1)
       with hfirst | htie | hsecond
   · have hcontact : firstWall U s (B t).1 = sweptNiche U (Real.pi / 2) (B t).1 := by
@@ -131,7 +132,7 @@ theorem fullTiltedSupportQuarterPair_strict_first_contact_unique
   · have hfirst : firstWall U s (B t).1 = sweptNiche U (Real.pi / 2) (B t).1 := by
       simpa only [cornerWall, min_eq_left htie.le] using hcorner
     have hpoint := wall_tie_eq_attachedCorner hs hfirst (htie.symm.trans hfirst)
-    have hx : (B t).1 = (attachedCorner U s).1 := congrArg Prod.fst hpoint
+    have hx : (B t).1 = (attachedCorner U s).1 := by rw [← hpoint]
     have hy' : sweptNiche U (Real.pi / 2) (B t).1 = (attachedCorner U s).2 :=
       congrArg Prod.snd hpoint
     have hcontact : sweptNiche U (Real.pi / 2) (attachedCorner U s).1 =

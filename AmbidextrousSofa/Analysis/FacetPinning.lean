@@ -39,10 +39,10 @@ theorem IsDownwardCap.capRoof_le_affine_of_affine_segment {U : Set Plane}
   have hfb := haffine b ⟨hab.le, le_rfl⟩
   intro x hx
   rcases le_total x a with hxa | hax
-  · have h := hU.concaveOn_capRoof.le_roofChord_of_le hx hb hab hxa
+  · have h := ConcaveOn.le_roofChord_of_le hU.concaveOn_capRoof hx hb hab hxa
     rwa [roofChord_eq_affine hab hfa hfb] at h
   · rcases le_total b x with hbx | hxb
-    · have h := hU.concaveOn_capRoof.le_roofChord_of_ge ha hx hab hbx
+    · have h := ConcaveOn.le_roofChord_of_ge hU.concaveOn_capRoof ha hx hab hbx
       rwa [roofChord_eq_affine hab hfa hfb] at h
     · exact (haffine x ⟨hax, hxb⟩).le
 
@@ -189,7 +189,7 @@ theorem IsDownwardCap.capRoof_eq_affine_between_contacts {U : Set Plane}
   have hxU : x ∈ horizontalProjection U :=
     (convex_horizontalProjection hU.convex).ordConnected.out hu hv hx
   apply le_antisymm (hceiling x hxU)
-  have h := hU.concaveOn_capRoof.roofChord_le hu hv huv hx
+  have h := ConcaveOn.roofChord_le hU.concaveOn_capRoof hu hv huv hx
   rwa [roofChord_eq_affine huv hfu hfv] at h
 
 /-- A literal supporting face, not an assigned facet, is pinned to the

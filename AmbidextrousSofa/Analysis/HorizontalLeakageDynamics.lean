@@ -42,7 +42,7 @@ theorem exists_first_level_crossing_of_right_limit
       intro t ht
       exact lt_of_le_of_ne ht.1.1 (Ne.symm ht.2)
   obtain ⟨t, ht, hft, hbefore⟩ := exists_first_level_crossing hb.1 hcont
-    (by simpa only [Function.update_same] using hf0)
+    (by simpa only [Function.update_self] using hf0)
     (by simpa only [Function.update_of_ne hb.1.ne'] using hfb)
   refine ⟨t, ht, ?_, ?_⟩
   · simpa only [Function.update_of_ne ht.1.ne'] using hft
@@ -125,8 +125,9 @@ theorem energy_le_max_endpoint (D : HorizontalCornerDynamics p q u v L)
         (e - 1 / 2) ^ 2 + 9 * C ^ 2 := by
       rw [max_eq_left he]
       ring
-    simpa only [clippedCornerEnergy, hvalue] using hElim
-  apply le_of_tendsto ((tendsto_const_nhds (x := (17 / 4 : ℝ))).max hElim')
+    rw [← hvalue]
+    exact hElim
+  apply ge_of_tendsto ((tendsto_const_nhds (x := (17 / 4 : ℝ))).max hElim')
   filter_upwards [self_mem_nhdsWithin,
     (eventually_lt_nhds ht.1).filter_mono nhdsWithin_le_nhds] with a ha hat
   have hI : Ioo a t ⊆ Ioo (0 : ℝ) L := Ioo_subset_Ioo ha.le ht.2.le
@@ -195,7 +196,7 @@ theorem first_quadratic_before_crossing (D : HorizontalCornerDynamics p q u v L)
     simpa only [sub_zero, zero_pow (by decide : (2 : ℕ) ≠ 0)] using
       (hplim.sub (((tendsto_const_nhds (x := t)).sub ha).const_mul (3 * C))).add
         (((tendsto_const_nhds (x := t ^ 2)).sub (ha.pow 2)).div_const 2)
-  apply le_of_tendsto hlim
+  apply ge_of_tendsto hlim
   filter_upwards [self_mem_nhdsWithin,
     (eventually_lt_nhds ht.1).filter_mono nhdsWithin_le_nhds] with a ha hat
   have hI : Ioo a t ⊆ Ioo (0 : ℝ) L :=

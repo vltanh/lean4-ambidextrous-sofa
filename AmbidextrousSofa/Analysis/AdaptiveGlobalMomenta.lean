@@ -394,7 +394,7 @@ theorem familyPair_eulerF {b t : ℝ}
     unfold QuarterPair.forceF QuarterPair.q familyPair
     ring
   apply (h.congr_deriv hd).hasDerivWithinAt.congr_of_eventuallyEq
-  · filter_upwards [(Ioo_mem_nhds ht.1 ht.2).filter_mono nhdsWithin_le_nhds] with s hs
+  · filter_upwards [mem_nhdsWithin_of_mem_nhds (Ioo_mem_nhds ht.1 ht.2)] with s hs
     exact familyPair_fluxF_eq hb ⟨hs.1.le, hs.2.le⟩
   · exact familyPair_fluxF_eq hb ⟨ht.1.le, ht.2.le⟩
 
@@ -408,7 +408,7 @@ theorem familyPair_eulerG {b t : ℝ}
     unfold QuarterPair.forceG QuarterPair.p familyPair
     ring
   apply (h.congr_deriv hd).hasDerivWithinAt.congr_of_eventuallyEq
-  · filter_upwards [(Ioo_mem_nhds ht.1 ht.2).filter_mono nhdsWithin_le_nhds] with s hs
+  · filter_upwards [mem_nhdsWithin_of_mem_nhds (Ioo_mem_nhds ht.1 ht.2)] with s hs
     exact familyPair_fluxG_eq hb ⟨hs.1.le, hs.2.le⟩
   · exact familyPair_fluxG_eq hb ⟨ht.1.le, ht.2.le⟩
 

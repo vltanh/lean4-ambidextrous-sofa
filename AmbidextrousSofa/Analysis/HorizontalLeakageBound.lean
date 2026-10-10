@@ -118,7 +118,7 @@ theorem IsFullCapMaximizer.right_endpoint_niche_le_horizontalLeakageRow
       max_le_max (by linarith [hA.2]) le_rfl
     have hmom : horizontalLeakageA0 R.h * max (A - b) 0 + horizontalLeakageA1 R.h ≤
         R.B * horizontalLeakageBoxSine R.b := by
-      apply (add_le_add_right
+      apply (add_le_add_left
         (mul_le_mul_of_nonneg_left hfactor (horizontalLeakageA0_nonneg R.h_nonneg)) _).trans
       exact R.leakage
     have hsin : horizontalLeakageBoxSine R.b ≤ Real.sin t :=

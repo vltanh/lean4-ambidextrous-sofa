@@ -104,7 +104,7 @@ theorem positive_middle_measure_le_outer_without_top_of_selected
     have hUR := integral_topRemovedWindowEnvelope_tendsto hHausdorff hcap hTarget.isCap
       (fun n => (hU n).polygon_eq) ha hb hheight hsin hE hjR hr hwindowR hboxR
     have herror : Tendsto (fun n => C * (2 * η + mesh (level n))) atTop (𝓝 (C * (2 * η))) := by
-      simpa only [add_zero] using
+      simpa only [add_zero, Function.comp_apply] using
         (tendsto_const_nhds.add (mesh_tendsto.comp hlevel)).const_mul C
     have hbound (n : ℕ) :
         (∫ x in middleHalfInterval (horizontalLeft (U n)) (horizontalRight (U n)),
@@ -116,13 +116,14 @@ theorem positive_middle_measure_le_outer_without_top_of_selected
         C * (2 * η + mesh (level n)) := by
       have hfinite := finitePositiveLength_le_horizontalOuterMass_away_top (hcap n) hB
         (hbox n) (level n) hη
-      have houter := (integral_horizontalOuterDensity_le_envelope (U n) (dyadic (level n)) E
-        (horder n).1 a b).add
+      have houter := add_le_add
+        (integral_horizontalOuterDensity_le_envelope (U n) (dyadic (level n)) E
+          (horder n).1 a b)
         (integral_horizontalOuterDensity_le_envelope (U n) (dyadic (level n)) E
           (horder n).2.2 a b)
       rw [← horizontalOuterMass_eq_integrals (hcap n)] at houter
       exact (integral_positiveNicheOverlap_le hTarget.isCap _).trans
-        (hfinite.trans (add_le_add_right (add_le_add_right houter _) _))
+        (hfinite.trans (add_le_add_left (add_le_add_left houter _) _))
     have hlim := ((hUL.add hUR).add (hcos.div_const (Real.sin η))).add herror
     have hineq := le_of_tendsto_of_tendsto hpositive hlim (Eventually.of_forall hbound)
     simpa only [zero_div, add_zero] using hineq

@@ -36,8 +36,8 @@ theorem forward_cosine_self_interaction
     hsin.absolutelyContinuousOnInterval_intervalIntegral (by simp)
   have hE : AbsolutelyContinuousOnInterval (fun t => 1 / 2 * (A t ^ 2 + B t ^ 2)) a b := by
     simpa only [pow_two, Pi.mul_apply, Pi.add_apply] using
-      (absolutelyContinuousOnInterval_const_real (1 / 2) a b).mul
-        ((hA.mul hA).add (hB.mul hB))
+      (absolutelyContinuousOnInterval_const_real (1 / 2) a b).fun_mul
+        ((hA.fun_mul hA).fun_add (hB.fun_mul hB))
   have hD : ∀ᵐ t ∂volume, t ∈ uIcc a b →
       HasDerivAt (fun s => 1 / 2 * (A s ^ 2 + B s ^ 2))
         (r t * forwardCosineConvolution r a t) t := by
@@ -71,8 +71,8 @@ theorem backward_cosine_self_interaction
   have hB : AbsolutelyContinuousOnInterval B a b := absolutelyContinuousOnInterval_integral_left hsin
   have hE : AbsolutelyContinuousOnInterval (fun t => 1 / 2 * (A t ^ 2 + B t ^ 2)) a b := by
     simpa only [pow_two, Pi.mul_apply, Pi.add_apply] using
-      (absolutelyContinuousOnInterval_const_real (1 / 2) a b).mul
-        ((hA.mul hA).add (hB.mul hB))
+      (absolutelyContinuousOnInterval_const_real (1 / 2) a b).fun_mul
+        ((hA.fun_mul hA).fun_add (hB.fun_mul hB))
   have hAeq : A = (fun t => -(∫ s in b..t, r s * Real.cos s)) := by
     funext t
     exact intervalIntegral.integral_symm b t
@@ -152,6 +152,7 @@ theorem firstUnit_initial_harmonic_moment
           r t * forwardSineConvolution u 0 t - r t * forwardCosineConvolution r 0 t := by
         apply intervalIntegral.integral_congr
         intro t ht
+        dsimp only
         rw [hpoint t (by simpa only [uIcc_of_le hγ] using ht)]
         ring
       _ = _ := by
@@ -215,6 +216,7 @@ theorem firstUnit_right_harmonic_moment
             r t * backwardCosineConvolution r (Real.pi / 2) t := by
         apply intervalIntegral.integral_congr
         intro t ht
+        dsimp only
         rw [hpoint t (by simpa only [uIcc_of_le hβ] using ht)]
         ring
       _ = _ := by

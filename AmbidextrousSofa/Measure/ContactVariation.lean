@@ -86,7 +86,7 @@ theorem tendsto_integral_contactRamp_quotient {X : Type*} [MeasurableSpace X]
     simpa only [E, indicator, mem_setOf_eq] using tendsto_contactRamp_quotient hx
   have h := tendsto_integral_filter_of_dominated_convergence
     (fun _ : X => (1 : ℝ)) hmeas hbound (integrable_const 1) hlim
-  simpa only [integral_indicator_const 1 hE, smul_eq_mul, mul_one, E] using h
+  simpa only [integral_indicator_const (1 : ℝ) hE, smul_eq_mul, mul_one, E] using h
 
 theorem tendsto_integral_strictGapRamp_quotient {X : Type*} [MeasurableSpace X]
     (μ : Measure X) [IsFiniteMeasure μ] {d : X → ℝ} (hd : Measurable d) :
@@ -112,6 +112,6 @@ theorem tendsto_integral_strictGapRamp_quotient {X : Type*} [MeasurableSpace X]
       simpa only [E, indicator, mem_setOf_eq] using tendsto_strictGapRamp_quotient (d x))
   have h := tendsto_integral_filter_of_dominated_convergence
     (fun _ : X => (1 : ℝ)) hmeas hbound (integrable_const 1) hlim
-  simpa only [integral_indicator_const 1 hE, smul_eq_mul, mul_one, E] using h
+  simpa only [integral_indicator_const (1 : ℝ) hE, smul_eq_mul, mul_one, E] using h
 
 end AmbidextrousSofa

@@ -110,7 +110,7 @@ theorem IsDownwardCap.clippedCorner_inserted_top_left {U : Set Plane}
       nlinarith [Real.sin_le_one θ, mul_nonneg (sub_nonneg.mpr hax) hc.le]
     have hfirstOld : firstWall U θ x ≤ 0 :=
       (firstWall_mono (hU.subset_insertedCap hp) hU.nonempty hV.isCompact hs x).trans hfirst
-    rw [max_eq_right ((min_le_left _ _).trans hfirst),
+    rw [cornerWall, cornerWall, max_eq_right ((min_le_left _ _).trans hfirst),
       max_eq_right ((min_le_left _ _).trans hfirstOld)]
 
 /-- Insertion from the right preserves the swept family and the entire

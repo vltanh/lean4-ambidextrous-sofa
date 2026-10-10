@@ -38,10 +38,10 @@ theorem IsDownwardCap.horizontalTranslate {U : Set Plane} (hU : IsDownwardCap U)
   · rintro p ⟨p, hp, rfl⟩ q ⟨q, hq, rfl⟩ a b ha hb hab
     refine ⟨a • p + b • q, hU.convex hp hq ha hb hab, ?_⟩
     apply Prod.ext
-    · simp only [Prod.fst_add, Prod.fst_smul, smul_eq_mul]
+    · simp only [Prod.fst_add, Prod.smul_fst, smul_eq_mul]
       have hc : (a + b) * c = c := by rw [hab, one_mul]
       nlinarith [hc]
-    · simp only [Prod.snd_add, Prod.snd_smul, smul_eq_mul, add_zero]
+    · simp only [Prod.snd_add, Prod.smul_snd, smul_eq_mul, add_zero]
   · rintro p ⟨q, hq, rfl⟩
     simpa only [unitStrip, mem_setOf_eq, Prod.snd_add, add_zero] using hU.inStrip hq
   · intro p hp y hy0 hyp
@@ -60,6 +60,7 @@ theorem horizontalProjection_horizontalTranslate_iff (U : Set Plane) (c x : ℝ)
 
 theorem capRoof_horizontalTranslate (U : Set Plane) (c x : ℝ) :
     capRoof (horizontalTranslate U c) x = capRoof U (x - c) := by
+  classical
   simp only [capRoof, horizontalProjection_horizontalTranslate_iff, verticalFiber_horizontalTranslate]
 
 theorem horizontalRight_horizontalTranslate {U : Set Plane} (hU : IsDownwardCap U) (c : ℝ) :
@@ -70,7 +71,8 @@ theorem horizontalRight_horizontalTranslate {U : Set Plane} (hU : IsDownwardCap 
 
 theorem horizontalLeft_horizontalTranslate {U : Set Plane} (hU : IsDownwardCap U) (c : ℝ) :
     horizontalLeft (horizontalTranslate U c) = horizontalLeft U + c := by
-  have h := support_translate hU.isCompact hU.nonempty (c, 0) (-1, 0)
+  have h : support (horizontalTranslate U c) (-1, 0) = support U (-1, 0) + coordDot (c, 0) (-1, 0) :=
+    support_translate hU.isCompact hU.nonempty (c, 0) (-1, 0)
   rw [support_horizontal_left (hU.horizontalTranslate c).isCompact
       (hU.horizontalTranslate c).nonempty,
     support_horizontal_left hU.isCompact hU.nonempty] at h
@@ -133,7 +135,7 @@ theorem capScore_horizontalTranslate {U : Set Plane} (hU : IsDownwardCap U) (c �
   rw [capScore_eq_integrals, capScore_eq_integrals,
     horizontalLeft_horizontalTranslate hU, horizontalRight_horizontalTranslate hU,
     middleHalfInterval_add, ← image_add_const_Icc]
-  rw [← image_sdiff (add_right_injective c)]
+  rw [← image_sdiff (add_left_injective c)]
   simp only [capRoof_horizontalTranslate, partialBarrier_horizontalTranslate hU,
     setIntegral_horizontal_shift]
 

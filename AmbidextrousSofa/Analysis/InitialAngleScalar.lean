@@ -242,7 +242,7 @@ theorem initialAngle_apex_variation_budget {k ξ η ζ : ℝ}
       _ = (((η - k * ζ) ^ 2 / (1 + k)) * (1 + k)) * (1 - k) := by ring
       _ = _ := by rw [div_mul_cancel₀ _ (ne_of_gt hp)]; ring
   apply (div_le_iff₀ (by norm_num : (0 : ℝ) < 2)).2
-  apply (mul_le_mul_right hden).mp
+  apply (mul_le_mul_iff_left₀ hden).mp
   have hnum : (ξ - η) ^ 2 * (1 - k ^ 2) ≤
       2 * ((1 + k) * (ξ - k * ζ) ^ 2 + (1 - k) * (η - k * ζ) ^ 2) := by
     nlinarith only [sq_nonneg ((1 + k) * (ξ - k * ζ) + (1 - k) * (η - k * ζ))]

@@ -24,6 +24,19 @@ theorem middleHalfInterval_centered (a : ℝ) :
   unfold middleHalfInterval
   congr 1 <;> ring
 
+/-- `41/50 < M/2`; the same statement and proof as `forty_one_fiftieths_lt_half_M` of
+`TerminalScalar`, which this module does not import. -/
+private theorem fullWidthGap_forty_one_fiftieths_lt_half_M : (41 / 50 : ℝ) < M / 2 := by
+  have hY : (19 / 64 : ℝ) < Y := by
+    apply (cubic_strictMono.lt_iff_lt).mp
+    rw [Y_cubic]
+    norm_num [cubic]
+  have hbeta : Y - Y ^ 3 / 3 ≤ beta := self_sub_cube_div_three_le_arctan Y_pos.le
+  have hYsq := mul_pos (sub_pos.mpr hY)
+    (show 0 < Y + 19 / 64 by linarith [Y_pos])
+  unfold M
+  nlinarith [Y_equation]
+
 theorem IsFullCapMaximizer.centered_half_projection_width_gt_of_affine_nonneg
     {U : Set Plane} (hU : IsFullCapMaximizer U) {a m c : ℝ}
     (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
@@ -51,7 +64,7 @@ theorem IsFullCapMaximizer.centered_half_projection_width_gt_of_affine_nonneg
       (by linarith [sqrt_two_sub_one_strict_bounds.1])).le
   have hscore := hU.isCap.capScore_lt_forty_one_fiftieths_of_short_width ha
     (le_of_not_gt hbad) hh hl hr hleft hright hAff hangle le_rfl
-  exact (not_lt_of_ge hU.reference_le) (hscore.trans forty_one_fiftieths_lt_half_M)
+  exact (not_lt_of_ge hU.reference_le) (hscore.trans fullWidthGap_forty_one_fiftieths_lt_half_M)
 
 theorem IsFullCapMaximizer.centered_half_projection_width_gt_of_affine
     {U : Set Plane} (hU : IsFullCapMaximizer U) {a m c : ℝ}

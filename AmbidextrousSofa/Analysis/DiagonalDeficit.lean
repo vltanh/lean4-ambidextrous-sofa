@@ -128,7 +128,7 @@ theorem IsDownwardCap.capScore_le_tilted_charged_rectangle {U : Set Plane}
   have hR := intervalIntegral.integral_mono_on (by linarith : a / 2 ≤ a)
     (hU.intervalIntegrable_capRoof _ _) (continuous_const.intervalIntegrable _ _)
     (fun x (_ : x ∈ Icc (a / 2) a) => capRoof_le_one hU.isCompact hU.inStrip x)
-  have hN := intervalIntegral.integral_nonneg_of_forall (by linarith : -a / 2 ≤ a / 2)
+  have hN := intervalIntegral.integral_nonneg_of_forall (μ := volume) (by linarith : -a / 2 ≤ a / 2)
     (partialBarrier_nonneg U α)
   rw [intervalIntegral.integral_const] at hL hR
   simp only [smul_eq_mul] at hL hR

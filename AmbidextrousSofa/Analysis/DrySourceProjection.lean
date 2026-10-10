@@ -61,9 +61,10 @@ theorem CapHausdorffTendsto.eventually_secondWallNumerator_neg_on_compact
   let seq : ℕ → ℕ := fun n => ns (ms n)
   have hseq : Tendsto seq atTop atTop :=
     (tendsto_atTop_mono hns tendsto_id).comp hms.tendsto_atTop
-  have hlim := (h.comp hseq).secondWallNumerator_tendsto
-    (fun n => hU (seq n)) hK hpair.fst hpair.snd
-  have hnonnegative : 0 ≤ secondWallNumerator K z.2 z.1 := le_of_tendsto hlim
+  have hsub : CapHausdorffTendsto (fun n => U (seq n)) K := h.comp hseq
+  have hlim := hsub.secondWallNumerator_tendsto
+    (fun n => hU (seq n)) hK hpair.fst_nhds hpair.snd_nhds
+  have hnonnegative : 0 ≤ secondWallNumerator K z.2 z.1 := ge_of_tendsto hlim
     (Eventually.of_forall (fun n => le_of_not_gt (hnonneg (ms n))))
   exact not_lt_of_ge hnonnegative
     (hnegative z.1 hz.1 z.2 ⟨hη.trans_le hz.2.1, hz.2.2⟩)
@@ -105,6 +106,7 @@ theorem fullAngle_mem_initial_pair_of_quarter_lt
   cases j with
   | inl t => exact Or.inl ⟨(interiorPoint_mem grid t).1.le, h.le⟩
   | inr t =>
+    simp only [Sum.elim_inr] at h
     right
     change Real.pi / 2 ≤ (t.val : ℝ) + Real.pi / 2 ∧
       (t.val : ℝ) + Real.pi / 2 ≤ Real.pi / 2 + η

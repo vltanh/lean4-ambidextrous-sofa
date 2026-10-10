@@ -85,7 +85,8 @@ theorem IsFullCapMaximizer.tilted_endpoint_laws
     ⟨m, c, by simpa only [show -(2 * C) / 2 = -C by ring,
       show 2 * C / 2 = C by ring] using haffine⟩
   simpa only [hl, hr, show -(2 * C) / 2 = -C by ring,
-    show 2 * C / 2 = C by ring, show -(2 * C) = -2 * C by ring] using h
+    show 2 * C / 2 = C by ring, show -(2 * C) = -2 * C by ring,
+    show -2 * C / 2 = -C by ring] using h
 
 /-- All bounds refer to the original right endpoint and original niche.
 The stronger lower bound keeps the low-wing floor clipping until the

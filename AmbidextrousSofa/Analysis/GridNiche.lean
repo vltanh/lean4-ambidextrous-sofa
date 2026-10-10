@@ -38,11 +38,13 @@ def niche (U : CompactCap) (grid : Finset QuarterAngle) (x : ℝ) : ℝ := by
 theorem clip_le_niche (U : CompactCap) (grid : Finset QuarterAngle) (x : ℝ)
     {t : QuarterAngle} (ht : t ∈ grid) : fullWallClip U x t ≤ niche U grid x := by
   classical
-  exact Finset.le_sup' _ (Finset.mem_insert_of_mem ht)
+  unfold niche
+  exact Finset.le_sup' (fun t : QuarterAngle => fullWallClip U x t) (Finset.mem_insert_of_mem ht)
 
 theorem niche_nonneg (U : CompactCap) (grid : Finset QuarterAngle) (x : ℝ) :
     0 ≤ niche U grid x := by
   classical
+  unfold niche
   have h := Finset.le_sup' (fun t : QuarterAngle => fullWallClip U x t)
     (Finset.mem_insert_self zeroAngle grid)
   simpa only [zeroAngle, fullWallClip_zero] using h
@@ -72,13 +74,17 @@ theorem continuous_niche (grid : Finset QuarterAngle) :
   unfold niche
   apply Continuous.finset_sup'_apply
   intro t _
-  exact continuous_fullWallClip_on_angles.comp (continuous_id.prodMk continuous_const)
+  have h := continuous_fullWallClip_on_angles.comp
+    (continuous_id.prodMk continuous_const :
+      Continuous fun p : CompactCap × ℝ => ((p, t) : (CompactCap × ℝ) × QuarterAngle))
+  exact h
 
 theorem clip_le_sweptNiche (U : CompactCap) (x : ℝ) (t : QuarterAngle) :
     fullWallClip U x t ≤ sweptNiche U.carrier (Real.pi / 2) x := by
   rw [sweptNiche_eq_sSup_clipped]
-  have hc : Continuous (fun t : QuarterAngle => fullWallClip U x t) :=
-    continuous_fullWallClip_on_angles.comp (continuous_const.prodMk continuous_id)
+  have hc' := continuous_fullWallClip_on_angles.comp
+    (continuous_const.prodMk continuous_id : Continuous fun s : QuarterAngle => ((U, x), s))
+  have hc : Continuous (fun t : QuarterAngle => fullWallClip U x t) := hc'
   exact le_csSup ((isCompact_univ : IsCompact (univ : Set QuarterAngle)).bddAbove_image
     hc.continuousOn) (mem_image_of_mem _ (mem_univ t))
 
@@ -99,15 +105,15 @@ theorem isLUB_niche (grids : ℕ → Finset QuarterAngle)
   · intro b hb
     have hclip : ∀ t : QuarterAngle, fullWallClip U x t ≤ b := by
       intro t
-      apply hdense.induction ?_ ?_ t
+      refine hdense.induction (P := fun t : QuarterAngle => fullWallClip U x t ≤ b) ?_ ?_ t
       · intro s hs
         obtain ⟨n, hn⟩ := mem_iUnion.mp hs
         exact (clip_le_niche U (grids n) x hn).trans (hb (mem_range_self n))
-      · exact isClosed_le
-          (continuous_fullWallClip_on_angles.comp (continuous_const.prodMk continuous_id))
-          continuous_const
+      · have hc := continuous_fullWallClip_on_angles.comp
+          (continuous_const.prodMk continuous_id : Continuous fun s : QuarterAngle => ((U, x), s))
+        exact isClosed_le hc continuous_const
     rw [sweptNiche_eq_sSup_clipped]
-    apply csSup_le ⟨fullWallClip U x zeroAngle, zeroAngle, mem_univ _, rfl⟩
+    refine csSup_le ⟨fullWallClip U x zeroAngle, zeroAngle, mem_univ _, rfl⟩ ?_
     rintro y ⟨t, _, rfl⟩
     exact hclip t
 

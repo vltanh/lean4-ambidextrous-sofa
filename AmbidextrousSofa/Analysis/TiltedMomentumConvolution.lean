@@ -76,7 +76,7 @@ theorem momentum_rotation_integrals
     have hm : t ∈ Icc a b := by simpa only [uIcc_of_le hab] using hmem
     have hd := ((((ht hm).1.sub_const 1).neg).mul (Real.hasDerivAt_sin t)).add
       (((ht hm).2.add_const 1).mul (Real.hasDerivAt_cos t))
-    exact hd.congr_deriv (by ring)
+    exact hd.congr_deriv (by simp only [Pi.neg_apply]; ring)
 
 theorem momentum_rotation_inverse (p q : ℝ → ℝ) (t : ℝ) :
     momentumRotX p q t * Real.cos t - momentumRotY p q t * Real.sin t = p t - 1 ∧
@@ -99,6 +99,7 @@ theorem forwardSineConvolution_eq_moments
         Real.sin t * (u s * Real.cos s) - Real.cos t * (u s * Real.sin s) := by
       apply intervalIntegral.integral_congr
       intro s hs
+      dsimp only
       rw [Real.sin_sub]
       ring
     _ = _ := by
@@ -118,6 +119,7 @@ theorem forwardCosineConvolution_eq_moments
         Real.cos t * (r s * Real.cos s) + Real.sin t * (r s * Real.sin s) := by
       apply intervalIntegral.integral_congr
       intro s hs
+      dsimp only
       rw [Real.cos_sub]
       ring
     _ = _ := by
@@ -137,6 +139,7 @@ theorem backwardCosineConvolution_eq_moments
         Real.cos t * (r s * Real.cos s) + Real.sin t * (r s * Real.sin s) := by
       apply intervalIntegral.integral_congr
       intro s hs
+      dsimp only
       rw [Real.cos_sub]
       ring
     _ = _ := by
@@ -157,10 +160,11 @@ theorem secondMomentum_forward_convolution
   have hus := hu.mul_continuousOn Real.continuous_sin.continuousOn
   have hvc := hv.mul_continuousOn Real.continuous_cos.continuousOn
   have hvs := hv.mul_continuousOn Real.continuous_sin.continuousOn
+  have hus' : IntervalIntegrable (fun s => -(u s * Real.sin s)) volume 0 t := hus.neg
   rw [intervalIntegral.integral_add huc hvs] at hX
   rw [show (fun s => -u s * Real.sin s + v s * Real.cos s) =
       (fun s => -(u s * Real.sin s) + v s * Real.cos s) by funext s; ring,
-    intervalIntegral.integral_add hus.neg hvc, intervalIntegral.integral_neg] at hY
+    intervalIntegral.integral_add hus' hvc, intervalIntegral.integral_neg] at hY
   have hXm := congrArg (fun x : ℝ => x * Real.sin t) hX
   have hYm := congrArg (fun x : ℝ => x * Real.cos t) hY
   have hi := (momentum_rotation_inverse p q t).2
@@ -188,10 +192,11 @@ theorem firstMomentum_backward_convolution
   have hus := hu.mul_continuousOn Real.continuous_sin.continuousOn
   have hvc := hv.mul_continuousOn Real.continuous_cos.continuousOn
   have hvs := hv.mul_continuousOn Real.continuous_sin.continuousOn
+  have hus' : IntervalIntegrable (fun s => -(u s * Real.sin s)) volume t (Real.pi / 2) := hus.neg
   rw [intervalIntegral.integral_add huc hvs] at hX
   rw [show (fun s => -u s * Real.sin s + v s * Real.cos s) =
       (fun s => -(u s * Real.sin s) + v s * Real.cos s) by funext s; ring,
-    intervalIntegral.integral_add hus.neg hvc, intervalIntegral.integral_neg] at hY
+    intervalIntegral.integral_add hus' hvc, intervalIntegral.integral_neg] at hY
   have hXm := congrArg (fun x : ℝ => x * Real.cos t) hX
   have hYm := congrArg (fun x : ℝ => x * Real.sin t) hY
   have hi := (momentum_rotation_inverse p q t).1

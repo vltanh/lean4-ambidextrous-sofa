@@ -375,6 +375,7 @@ theorem IsDownwardCap.capScore_le_three_support_integrals_centered
         (a := -2 * C) (b := -C)
       rw [show -(-C) = C by ring, show -(-2 * C) = 2 * C by ring] at h
       exact h
+    simp only [Pi.sub_apply] at hmono
     rw [intervalIntegral.integral_sub (continuous_const.intervalIntegrable _ _)
       (hleftLoss.intervalIntegrable _ _), intervalIntegral.integral_const,
       hreflect] at hmono
@@ -387,6 +388,7 @@ theorem IsDownwardCap.capScore_le_three_support_integrals_centered
       (fun x hx => hU.capRoof_le_right_support_reward hαpos hαL (by
         rw [hprojection]
         exact ⟨by linarith [hx.1], hx.2⟩))
+    simp only [Pi.sub_apply] at hmono
     rw [intervalIntegral.integral_sub (continuous_const.intervalIntegrable _ _)
       (hrightLoss.intervalIntegrable _ _), intervalIntegral.integral_const] at hmono
     simpa only [smul_eq_mul, mul_one, show 2 * C - C = C by ring] using hmono

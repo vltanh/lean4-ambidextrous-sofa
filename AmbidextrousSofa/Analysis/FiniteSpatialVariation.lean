@@ -42,7 +42,7 @@ theorem hasDerivAt_affineGraph (e : WallExpr ι) (a b : ι → ℝ) (x : ℝ)
   have hd' : HasDerivAt (fun ε => e.affineEnvelope a b a ε x)
       (e.sourceDensity a b a x) (x - x) := by
     simpa only [sub_self] using hd
-  have h := hd'.comp x ((hasDerivAt_id x).sub_const x)
+  have h := hd'.comp (h := fun y : ℝ => y - x) x ((hasDerivAt_id x).sub_const x)
   convert h using 1
   · funext y
     unfold affineGraph affineEnvelope

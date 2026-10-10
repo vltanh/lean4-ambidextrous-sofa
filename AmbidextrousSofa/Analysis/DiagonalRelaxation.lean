@@ -76,7 +76,7 @@ theorem IsDownwardCap.left_roof_le_middle_height
   intro x hx
   have hxU : x ∈ horizontalProjection U := by rw [hproj]; exact ⟨hx.1, by linarith [hx.2]⟩
   have haU : a / 2 ∈ horizontalProjection U := by rw [hproj]; constructor <;> linarith
-  have hchord := hU.concaveOn_capRoof.le_roofChord_of_le hxU haU
+  have hchord := ConcaveOn.le_roofChord_of_le hU.concaveOn_capRoof hxU haU
     (by linarith : -a / 2 < a / 2) hx.2
   have hnonpos : (capRoof U (a / 2) - capRoof U (-a / 2)) /
       (a / 2 - (-a / 2)) * (x - (-a / 2)) ≤ 0 := by

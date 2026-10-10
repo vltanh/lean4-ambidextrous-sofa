@@ -39,7 +39,7 @@ theorem IsDownwardCap.horizontalProjection_edge {U : Set Plane} (hU : IsDownward
   rw [MovingSofaOptimality.edge_eq_segment hU.imported_isConvexBody]
   change (AffineMap.fst : Plane →ᵃ[ℝ] ℝ) ''
     segment ℝ (MovingSofaOptimality.vminus U t) (MovingSofaOptimality.vplus U t) = _
-  rw [image_segment, segment_symm, segment_eq_Icc (hU.face_fst_order ht)]
+  rw [image_segment, segment_symm, AffineMap.coe_fst, segment_eq_Icc (hU.face_fst_order ht)]
 
 theorem IsDownwardCap.upperCurvature_atom_eq_projection {U : Set Plane}
     (hU : IsDownwardCap U) {t : ℝ} (ht : 0 < Real.sin t) :
@@ -61,7 +61,7 @@ theorem IsDownwardCap.capRoof_eq_of_mem_upper_edge {U : Set Plane}
   have hle := le_capRoof hU.isCompact hp.1
   unfold coordDot unitNormal at hroof hface
   apply le_antisymm hle
-  apply (mul_le_mul_right ht).mp
+  apply (mul_le_mul_iff_left₀ ht).mp
   nlinarith
 
 namespace FinitePolygon
@@ -101,6 +101,7 @@ theorem outerSource_ae_eq_faceProjection [Fintype ι] [DecidableEq ι]
     capRoof_eq_roofEnvelope_of_circumscription hU normal hnormal hpoly hx
   filter_upwards [WallExpr.ae_injective_affine
     (b := roofIntercept normal (fun i => support U (normal i))) hslopes] with x hinj
+  rw [eq_iff_iff]
   constructor
   · rintro ⟨hx, hsource⟩
     have hxU : x ∈ horizontalProjection U := by
@@ -116,7 +117,8 @@ theorem outerSource_ae_eq_faceProjection [Fintype ι] [DecidableEq ι]
         support U (normal j) / (normal j).2 := (hroof x hx).trans hvalue
     have hdot := (eq_upper_line_iff (hnormal j).ne' (support U (normal j)) x (capRoof U x)).mp hline
     refine ⟨(x, capRoof U x), ⟨capRoof_mem hU.isCompact hxU, ?_⟩, rfl⟩
-    simpa only [hangle] using hdot
+    rw [hangle] at hdot
+    exact hdot
   · rintro ⟨p, hp, rfl⟩
     have hx : p.1 ∈ Icc (horizontalLeft U) (horizontalRight U) := by
       rw [← horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]

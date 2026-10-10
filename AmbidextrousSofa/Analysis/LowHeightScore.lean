@@ -23,9 +23,8 @@ namespace AmbidextrousSofa
 theorem IsDownwardCap.intervalIntegrable_partialBarrier {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hα0 : 0 < α) (hα : α ≤ Real.pi / 2) (a b : ℝ) :
     IntervalIntegrable (partialBarrier U α) volume a b := by
-  apply intervalIntegrable_iff'.mpr
-  simpa only [uIcc] using integrableOn_partialBarrier_Icc hU.isCompact hα0 hα
-    (min a b) (max a b)
+  exact (integrableOn_partialBarrier_Icc hU.isCompact hα0 hα
+    (min a b) (max a b)).intervalIntegrable
 
 theorem capScore_centered_quarters {U : Set Plane} (hU : IsDownwardCap U) {C : ℝ}
     (hleft : horizontalLeft U = -2 * C) (hright : horizontalRight U = 2 * C) (α : ℝ) :
@@ -63,7 +62,6 @@ theorem IsDownwardCap.lowHeight_right_reward_le {U : Set Plane}
       show 1 - 2 * C - u + 2 * C = 1 - u by ring,
       show 1 - 2 * C - u + C = 1 - C - u by ring,
       max_eq_left (sub_nonneg.mpr hu1), max_eq_right (by linarith : 1 - C - u ≤ 0)]
-    simp only [smul_eq_mul]
     ring
   exact hintegral ▸ hmono
 

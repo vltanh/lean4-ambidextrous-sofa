@@ -41,7 +41,7 @@ def outerGrid (α : TerminalAngle) (grid : Finset AngularGrid.QuarterAngle) :
 theorem subset_outerGrid (α : TerminalAngle) (grid : Finset AngularGrid.QuarterAngle) :
     grid ⊆ outerGrid α grid := by
   classical
-  exact Finset.subset_insert_of_subset _ (Finset.subset_union_left)
+  exact Finset.subset_union_left.trans (Finset.subset_insert _ _)
 
 theorem scaled_mem_outerGrid (α : TerminalAngle) {grid : Finset AngularGrid.QuarterAngle}
     {t : AngularGrid.QuarterAngle} (ht : t ∈ grid) : scaleAngle α t ∈ outerGrid α grid := by

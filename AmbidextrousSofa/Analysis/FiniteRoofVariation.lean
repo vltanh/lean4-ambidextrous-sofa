@@ -140,7 +140,7 @@ theorem roofGraph_le_middle_left (a b : Option ι → ℝ) {u v x : ℝ}
     (hvalue : (roofExpr (ι := ι)).affineGraph a b u ≤
       (roofExpr (ι := ι)).affineGraph a b v) :
     (roofExpr (ι := ι)).affineGraph a b x ≤ (roofExpr (ι := ι)).affineGraph a b u := by
-  have hchord := (concaveOn_roofGraph a b).le_roofChord_of_le
+  have hchord := ConcaveOn.le_roofChord_of_le (concaveOn_roofGraph a b)
     (mem_univ x) (mem_univ v) huv hx
   have hprod := mul_nonpos_of_nonneg_of_nonpos
     (div_nonneg (sub_nonneg.mpr hvalue) (sub_pos.mpr huv).le) (sub_nonpos.mpr hx)
@@ -152,7 +152,7 @@ theorem roofGraph_le_middle_right (a b : Option ι → ℝ) {u v x : ℝ}
     (hvalue : (roofExpr (ι := ι)).affineGraph a b v ≤
       (roofExpr (ι := ι)).affineGraph a b u) :
     (roofExpr (ι := ι)).affineGraph a b x ≤ (roofExpr (ι := ι)).affineGraph a b v := by
-  have hchord := (concaveOn_roofGraph a b).le_roofChord_of_ge
+  have hchord := ConcaveOn.le_roofChord_of_ge (concaveOn_roofGraph a b)
     (mem_univ u) (mem_univ x) huv hx
   have hprod := mul_nonpos_of_nonpos_of_nonneg
     (div_nonpos_of_nonpos_of_nonneg (sub_nonpos.mpr hvalue) (sub_pos.mpr huv).le)

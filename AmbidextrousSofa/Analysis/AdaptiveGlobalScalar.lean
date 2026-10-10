@@ -52,8 +52,9 @@ theorem familyWidth_derivative_neg {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi 
 
 theorem strictMonoOn_familyBoundary :
     StrictMonoOn (fun b => 2 * familyEndpoint b - 1) (Icc (0 : ℝ) (Real.pi / 4)) := by
-  apply strictMonoOn_of_deriv_pos (convex_Icc _ _)
-    ((continuousOn_familyEndpoint.const_mul 2).sub continuousOn_const)
+  have hcont : ContinuousOn (fun b => 2 * familyEndpoint b - 1) (Icc (0 : ℝ) (Real.pi / 4)) :=
+    (continuousOn_familyEndpoint.const_mul 2).sub continuousOn_const
+  apply strictMonoOn_of_deriv_pos (convex_Icc _ _) hcont
   intro b hb
   rw [interior_Icc] at hb
   have hi : b ∈ Icc (0 : ℝ) (Real.pi / 4) := ⟨hb.1.le, hb.2.le⟩
@@ -113,6 +114,7 @@ theorem hasDerivAt_familyScore {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)
       (((hasDerivAt_familyWidth hb).const_mul 3).mul (Real.hasDerivAt_cos b))).add
         (hasDerivAt_id b)).sub_const 2).div_const 2).congr_deriv
   unfold familyWidth familyEndpoint
+  simp only [Pi.add_apply]
   nlinarith [Real.sin_sq_add_cos_sq b]
 
 theorem continuousOn_familyScore :
@@ -128,6 +130,7 @@ theorem strictMonoOn_familyScore_before_beta : StrictMonoOn familyScore (Icc (0 
     ⟨hb.1.le, (hb.2.trans beta_lt_pi_div_four).le⟩
   rw [(hasDerivAt_familyScore hi).deriv]
   have hbound := strictMonoOn_familyBoundary hi beta_mem_family_interval hb.2
+  dsimp only at hbound
   rw [familyEndpoint_beta] at hbound
   exact mul_pos_of_neg_of_neg (by linarith) (familyWidth_derivative_neg hi)
 
@@ -141,6 +144,7 @@ theorem strictAntiOn_familyScore_after_beta :
     ⟨(beta_pos.trans hb.1).le, hb.2.le⟩
   rw [(hasDerivAt_familyScore hi).deriv]
   have hbound := strictMonoOn_familyBoundary beta_mem_family_interval hi hb.1
+  dsimp only at hbound
   rw [familyEndpoint_beta] at hbound
   exact mul_neg_of_pos_of_neg (by linarith) (familyWidth_derivative_neg hi)
 

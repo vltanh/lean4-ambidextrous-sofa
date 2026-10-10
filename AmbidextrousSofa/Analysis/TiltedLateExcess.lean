@@ -61,6 +61,7 @@ theorem fullTiltedSupportQuarterPair_cornerArcDynamics {C : ℝ}
   · intro t ht
     exact fullTiltedSupportQuarterPair_q_ge_neg_one hU hm haffine hρ hρ0 hρK heq ht
 
+include hU hm haffine hρ hρ0 hρK heq in
 /-- The compact quadratic envelope uses the actual first momentum
 zero and actual excess height, unless the whole first source is already
 unit bounded. No crossing or energy premise remains in this theorem. -/
@@ -111,6 +112,7 @@ theorem fullTiltedSupportQuarterPair_exists_short_quadratic_excess_envelope {C h
     exact ⟨A, Analysis.quadraticExcessLength (q A - 1), hA.1.le,
       Analysis.quadraticExcessLength_nonneg (by linarith only [hqA]), hell, hend, henv.2⟩
 
+include hU hm haffine hρ hρ0 hρK heq in
 theorem fullTiltedSupportQuarterPair_late_first_controls {C h : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hC0 : 2 / 3 < C) (hC1 : C < 37 / 50)

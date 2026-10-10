@@ -27,7 +27,10 @@ def hullSimplexMap (S : Set Plane) (n : ℕ)
 theorem continuous_hullSimplexMap (S : Set Plane) (n : ℕ) :
     Continuous (hullSimplexMap S n) := by
   unfold hullSimplexMap
-  fun_prop
+  apply continuous_finset_sum
+  intro i _
+  exact ((continuous_apply i).comp (continuous_subtype_val.comp continuous_fst)).smul
+    (continuous_subtype_val.comp ((continuous_apply i).comp continuous_snd))
 
 /-- Every simplex combination stays in the actual convex hull. -/
 theorem hullSimplexMap_mem_actualHull (S : Set Plane) (n : ℕ)

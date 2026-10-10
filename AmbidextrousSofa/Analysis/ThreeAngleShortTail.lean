@@ -105,7 +105,7 @@ theorem IsDownwardCap.diagonal_two_tails_le_threeAngleBarrier {U : Set Plane}
       (B := 1 + k * u - nearDiagonalRightDeficit U k u - nearDiagonalNorm k)
     · nlinarith only [hR]
     · exact shortRightTailHeight_peak hη
-    · simpa only [sub_neg_eq_add, mul_neg] using
+    · simpa only [sub_neg_eq_add, mul_neg, ← sub_eq_add_neg] using
         hU.threeAngle_right_competitor_le hk hkoffset hcompL x
 
 theorem IsDownwardCap.threeAngle_integral_ge_diagonal_two_tails {U : Set Plane}
@@ -160,10 +160,12 @@ theorem IsDownwardCap.threeAngle_integral_ge_diagonal_two_tails {U : Set Plane}
     rw [intervalIntegral.integral_comp_neg]
     simpa only [neg_div, neg_neg] using hIR₀
   have hIB := (show Continuous (fun x : ℝ =>
-    max (min (u - k - x) (v - h - k + x)) 0) by fun_prop).intervalIntegrable (-a / 2) (a / 2)
-  have hITL := (continuous_affineCutTriangle k EL (k - v + h)).intervalIntegrable (-a / 2) (a / 2)
-  have hITR := ((continuous_affineCutTriangle k ER (k - u)).comp continuous_neg).intervalIntegrable
+    max (min (u - k - x) (v - h - k + x)) 0) by fun_prop).intervalIntegrable (μ := volume)
+      (-a / 2) (a / 2)
+  have hITL := (continuous_affineCutTriangle k EL (k - v + h)).intervalIntegrable (μ := volume)
     (-a / 2) (a / 2)
+  have hITR := ((continuous_affineCutTriangle k ER (k - u)).comp continuous_neg).intervalIntegrable
+    (μ := volume) (-a / 2) (a / 2)
   have hi := intervalIntegral.integral_mono_on (by linarith only [ha] : -a / 2 ≤ a / 2)
     ((hIB.add hITL).add hITR) ((continuous_threeAngleBarrier U).intervalIntegrable _ _)
     (fun x (_ : x ∈ Icc (-a / 2) (a / 2)) =>
@@ -171,6 +173,7 @@ theorem IsDownwardCap.threeAngle_integral_ge_diagonal_two_tails {U : Set Plane}
         hcompR hcompL hη hendL hendR hL hR x)
   rw [intervalIntegral.integral_add (hIB.add hITL) hITR,
     intervalIntegral.integral_add hIB hITL, integral_tilted_diagonal_tent k hd] at hi
+  simp only [Function.comp_apply] at hi
   have heq : nearTriangleCoefficient k * (EL ^ 2 + ER ^ 2) =
       EL ^ 2 / (2 * k * (1 - k)) + ER ^ 2 / (2 * k * (1 - k)) := by
     unfold nearTriangleCoefficient

@@ -74,6 +74,7 @@ theorem fullTiltedSupportQuarterPair_core_phase_positive_and_right {C h α η t 
     hU hm haffine hρ hρ0 hρK heq hphase.first_mem.1.le hphase.second_mem.2.le
     hphase.core_signs ⟨le_rfl, hαη.le⟩ ⟨ht.1.le, ht.2⟩ ht.1
   have hright : (Z t).1 < C := by
+    dsimp only at hreverse
     rw [hjoin] at hreverse
     exact hreverse.trans hBxα
   have hp : p t < 0 := by
@@ -329,6 +330,7 @@ theorem fullTiltedSupportQuarterPair_first_floor_lt_bad_entry_of_regular_visible
   have hBt := hBmono hβ
     ⟨(hphase.first_mem.1.trans htphase.1).le, htphase.2.le.trans hphase.second_mem.2.le⟩
     (hβτ.trans ht.1.le)
+  dsimp only at hBt
   rw [hβx] at hBt
   exact hs (hphase.core_signs t htphase).1 (hphase.core_signs t htphase).2
     hgeo.1 hgeo.2.1 hBt hcontact hunique
@@ -336,3 +338,4 @@ theorem fullTiltedSupportQuarterPair_first_floor_lt_bad_entry_of_regular_visible
 end ActualPair
 
 end AmbidextrousSofa
+

@@ -43,7 +43,7 @@ theorem mem_affine_halfMinus_iff (p : Plane) (m c : ℝ) :
   change coordDot p (unitNormal (affineNormalAngle m)) ≤
     c * Real.cos (Real.arctan m) ↔ _
   rw [coordDot_affineNormalAngle, mul_comm c,
-    mul_le_mul_left (Real.cos_arctan_pos m)]
+    mul_le_mul_iff_right₀ (Real.cos_arctan_pos m)]
   constructor <;> intro h <;> linarith
 
 end AmbidextrousSofa

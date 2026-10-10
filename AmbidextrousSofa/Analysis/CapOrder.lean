@@ -32,7 +32,7 @@ theorem secondWall_mono {U V : Set Plane} (hUV : U ⊆ V) (hne : U.Nonempty)
     secondWall U θ x ≤ secondWall V θ x := by
   unfold secondWall
   exact div_le_div_of_nonneg_right
-    (add_le_add_right (sub_le_sub_right (support_mono hUV hne hV _) 1) _) hc.le
+    (add_le_add_left (sub_le_sub_right (support_mono hUV hne hV _) 1) _) hc.le
 
 theorem cornerWall_mono {U V : Set Plane} (hUV : U ⊆ V) (hne : U.Nonempty)
     (hV : IsCompact V) {θ : ℝ} (hs : 0 < Real.sin θ) (hc : 0 < Real.cos θ)

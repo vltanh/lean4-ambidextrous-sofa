@@ -35,7 +35,8 @@ theorem integrable_realRnDensity (μ ν : Measure ℝ) [IsFiniteMeasure μ] :
     Integrable (realRnDensity μ ν) ν := by
   have hi := Measure.integrableOn_toReal_rnDeriv
     (μ := μ) (ν := ν) (s := univ) (measure_ne_top _ _)
-  simpa only [IntegrableOn, Measure.restrict_univ] using hi
+  simp only [IntegrableOn, Measure.restrict_univ] at hi
+  exact hi
 
 theorem withDensity_realRnDensity (μ ν : Measure ℝ)
     [IsFiniteMeasure μ] [SigmaFinite ν] (hμν : μ ≪ ν) :

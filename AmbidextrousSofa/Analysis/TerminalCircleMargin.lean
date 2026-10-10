@@ -70,7 +70,7 @@ theorem terminal_circle_shift_bounds {c s : ℝ}
     nlinarith [mul_pos hc hs]
   have hidentity : c / (1 + s) - c / 2 = c ^ 3 / (2 * (1 + s) ^ 2) := by
     have hscaled := congrArg (fun x : ℝ => c * x) hcs
-    field_simp [hden.ne'] <;> nlinarith only [hscaled]
+    field_simp [hden.ne'] <;> nlinarith only [hscaled, hcs]
   refine ⟨by linarith, by linarith, ?_⟩
   rw [hidentity]
   exact div_le_div_of_nonneg_left (pow_nonneg hc.le 3)

@@ -95,7 +95,7 @@ theorem IsDownwardCap.threeAngleScore_lt_of_short_width
     nlinarith only [hpayL, hpayR]
   have htotal : G / 2 * (((2 / 25) - (1 - k) * h) ^ 2 + (2 / 25) ^ 2) ≤
       D + G * (EL ^ 2 + ER ^ 2) :=
-    hpay.trans (add_le_add_right hcut' _)
+    hpay.trans (add_le_add_left hcut' _)
   have hcritical := diagonalRelaxation_le_critical a h k u v
     (by linarith only [hk1, hh23, ha9])
     (by linarith only [hk, hh]) (by linarith only [hk0, hh23])

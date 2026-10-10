@@ -59,13 +59,16 @@ theorem QuarterPair.normIntegral_le_derivativeIntegral {p : QuarterPair}
   have hg := quarter_dirichlet_integral_square_le p.continuous_g p.hasDeriv_g
     (ContinuousOn.intervalIntegrable_of_Icc hL p.continuous_gD)
     (ContinuousOn.intervalIntegrable_of_Icc hL (p.continuous_gD.pow 2)) hg0 hgL
+  have hfi : IntervalIntegrable (fun t => p.f t ^ 2) volume 0 (Real.pi / 2) :=
+    ContinuousOn.intervalIntegrable_of_Icc hL (p.continuous_f.pow 2)
+  have hgi : IntervalIntegrable (fun t => p.g t ^ 2) volume 0 (Real.pi / 2) :=
+    ContinuousOn.intervalIntegrable_of_Icc hL (p.continuous_g.pow 2)
+  have hfDi : IntervalIntegrable (fun t => p.fD t ^ 2) volume 0 (Real.pi / 2) :=
+    ContinuousOn.intervalIntegrable_of_Icc hL (p.continuous_fD.pow 2)
+  have hgDi : IntervalIntegrable (fun t => p.gD t ^ 2) volume 0 (Real.pi / 2) :=
+    ContinuousOn.intervalIntegrable_of_Icc hL (p.continuous_gD.pow 2)
   rw [QuarterPair.normIntegral, QuarterPair.derivativeIntegral,
-    intervalIntegral.integral_add
-      (ContinuousOn.intervalIntegrable_of_Icc hL (p.continuous_f.pow 2))
-      (ContinuousOn.intervalIntegrable_of_Icc hL (p.continuous_g.pow 2)),
-    intervalIntegral.integral_add
-      (ContinuousOn.intervalIntegrable_of_Icc hL (p.continuous_fD.pow 2))
-      (ContinuousOn.intervalIntegrable_of_Icc hL (p.continuous_gD.pow 2))]
+    intervalIntegral.integral_add hfi hgi, intervalIntegral.integral_add hfDi hgDi]
   linarith
 
 theorem quadraticEnergy_eq_gauge (p : QuarterPair) :
@@ -102,8 +105,10 @@ theorem QuarterPair.eqOn_zero_of_normIntegral_eq_zero {p : QuarterPair}
     EqOn p.f (fun _ => 0) (Icc 0 (Real.pi / 2)) ∧
       EqOn p.g (fun _ => 0) (Icc 0 (Real.pi / 2)) := by
   have hL : (0 : ℝ) < Real.pi / 2 := by linarith [Real.pi_pos]
-  have hfi := ContinuousOn.intervalIntegrable_of_Icc hL.le (p.continuous_f.pow 2)
-  have hgi := ContinuousOn.intervalIntegrable_of_Icc hL.le (p.continuous_g.pow 2)
+  have hfi : IntervalIntegrable (fun t => p.f t ^ 2) volume 0 (Real.pi / 2) :=
+    ContinuousOn.intervalIntegrable_of_Icc hL.le (p.continuous_f.pow 2)
+  have hgi : IntervalIntegrable (fun t => p.g t ^ 2) volume 0 (Real.pi / 2) :=
+    ContinuousOn.intervalIntegrable_of_Icc hL.le (p.continuous_g.pow 2)
   have hfnonneg : 0 ≤ ∫ t in (0 : ℝ)..(Real.pi / 2), p.f t ^ 2 :=
     intervalIntegral.integral_nonneg hL.le (fun t _ => sq_nonneg _)
   have hgnonneg : 0 ≤ ∫ t in (0 : ℝ)..(Real.pi / 2), p.g t ^ 2 :=
