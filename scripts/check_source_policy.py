@@ -323,9 +323,10 @@ def main() -> int:
         if re.search(r"#(?:eval|reduce|run|compile)\b|debug\.skipKernelTC", code):
             source_errors.append(f"{label}: prohibited evaluation or trust-bypass command")
         imports = [name for row in IMPORT.findall(code) for name in row.split()]
-        graph[module] = [name for name in imports if name != "Mathlib"]
+        graph[module] = [name for name in imports
+            if name != "Mathlib" and not name.startswith("Mathlib.")]
         for name in imports:
-            if name != "Mathlib" and name not in modules:
+            if name != "Mathlib" and not name.startswith("Mathlib.") and name not in modules:
                 source_errors.append(f"{label}: import outside Mathlib/project: {name}")
         entries, scope_errors = inventory_source(module, label, code)
         source_errors.extend(scope_errors)

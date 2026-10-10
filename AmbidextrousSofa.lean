@@ -1,32 +1,115 @@
-import AmbidextrousSofa.ExactConstant
-import AmbidextrousSofa.Geometry.Plane
-import AmbidextrousSofa.Geometry.Motions
-import AmbidextrousSofa.Geometry.Caps
-import AmbidextrousSofa.Geometry.CapGeometry
-import AmbidextrousSofa.Geometry.HullCompact
-import AmbidextrousSofa.Geometry.Support
-import AmbidextrousSofa.Geometry.Reflection
-import AmbidextrousSofa.Geometry.Hallway
-import AmbidextrousSofa.Geometry.Barriers
-import AmbidextrousSofa.Geometry.BarrierAnalysis
-import AmbidextrousSofa.Geometry.AngularDomain
 import AmbidextrousSofa.Algebra.Deficit
-import AmbidextrousSofa.Topology.RegularClosed
-import AmbidextrousSofa.Measure.Fibers
-import AmbidextrousSofa.Measure.Partition
-import AmbidextrousSofa.Measure.CapScore
+import AmbidextrousSofa.Analysis.AdaptiveFunctional
+import AmbidextrousSofa.Analysis.AdaptiveGlobalBoundary
+import AmbidextrousSofa.Analysis.AdaptiveGlobalBranches
+import AmbidextrousSofa.Analysis.AdaptiveGlobalComparison
+import AmbidextrousSofa.Analysis.AdaptiveGlobalFamily
+import AmbidextrousSofa.Analysis.AdaptiveGlobalMomenta
+import AmbidextrousSofa.Analysis.AdaptiveGlobalParameters
+import AmbidextrousSofa.Analysis.AdaptiveGlobalScalar
+import AmbidextrousSofa.Analysis.AdaptiveGlobalValue
+import AmbidextrousSofa.Analysis.AdaptiveTranslation
+import AmbidextrousSofa.Analysis.AxisVariation
+import AmbidextrousSofa.Analysis.CapCompactness
+import AmbidextrousSofa.Analysis.CapInsertion
+import AmbidextrousSofa.Analysis.CapMaximum
+import AmbidextrousSofa.Analysis.CapNicheContinuity
+import AmbidextrousSofa.Analysis.CapOrder
+import AmbidextrousSofa.Analysis.CapReflection
+import AmbidextrousSofa.Analysis.CapRoofConvergence
+import AmbidextrousSofa.Analysis.CapScoreContinuity
+import AmbidextrousSofa.Analysis.CapTranslation
+import AmbidextrousSofa.Analysis.CapVolumeContinuity
+import AmbidextrousSofa.Analysis.Chord
+import AmbidextrousSofa.Analysis.Circumscription
+import AmbidextrousSofa.Analysis.DiagonalTent
+import AmbidextrousSofa.Analysis.DirichletEnergy
+import AmbidextrousSofa.Analysis.DyadicGrid
+import AmbidextrousSofa.Analysis.EndpointPolygons
+import AmbidextrousSofa.Analysis.EndpointPressure
+import AmbidextrousSofa.Analysis.EndpointTrimming
+import AmbidextrousSofa.Analysis.ErosionVariation
+import AmbidextrousSofa.Analysis.EulerFlux
+import AmbidextrousSofa.Analysis.ExactEstimates
+import AmbidextrousSofa.Analysis.ExposureMoments
+import AmbidextrousSofa.Analysis.Extrusion
+import AmbidextrousSofa.Analysis.FacetCurvature
+import AmbidextrousSofa.Analysis.FiniteEnvelope
+import AmbidextrousSofa.Analysis.FiniteScore
+import AmbidextrousSofa.Analysis.FiniteVariation
+import AmbidextrousSofa.Analysis.GlobalCapMaximum
+import AmbidextrousSofa.Analysis.GridNiche
+import AmbidextrousSofa.Analysis.GridPolygon
+import AmbidextrousSofa.Analysis.GridScore
+import AmbidextrousSofa.Analysis.GridSeparation
+import AmbidextrousSofa.Analysis.LowHeightAlgebra
+import AmbidextrousSofa.Analysis.LowHeightGeometry
+import AmbidextrousSofa.Analysis.LowHeightMaximizer
+import AmbidextrousSofa.Analysis.LowHeightScore
+import AmbidextrousSofa.Analysis.PersistentPenalty
+import AmbidextrousSofa.Analysis.PolygonEnvelope
+import AmbidextrousSofa.Analysis.PolygonExposure
+import AmbidextrousSofa.Analysis.PolygonVariation
+import AmbidextrousSofa.Analysis.PositiveTent
+import AmbidextrousSofa.Analysis.QuadraticEnergy
+import AmbidextrousSofa.Analysis.QuarterFunctions
+import AmbidextrousSofa.Analysis.RoofContinuity
+import AmbidextrousSofa.Analysis.SelectedCurvature
+import AmbidextrousSofa.Analysis.SelectedSequence
+import AmbidextrousSofa.Analysis.SupportCurvature
+import AmbidextrousSofa.Analysis.TopFacetEndpoints
+import AmbidextrousSofa.Analysis.TopInsertion
+import AmbidextrousSofa.Analysis.WideCap
+import AmbidextrousSofa.ExactConstant
+import AmbidextrousSofa.Geometry.AngularDomain
+import AmbidextrousSofa.Geometry.BarrierAnalysis
+import AmbidextrousSofa.Geometry.Barriers
+import AmbidextrousSofa.Geometry.CapGeometry
+import AmbidextrousSofa.Geometry.Caps
+import AmbidextrousSofa.Geometry.Hallway
+import AmbidextrousSofa.Geometry.HullCompact
+import AmbidextrousSofa.Geometry.MotionReduction
+import AmbidextrousSofa.Geometry.Motions
+import AmbidextrousSofa.Geometry.Plane
+import AmbidextrousSofa.Geometry.Reflection
+import AmbidextrousSofa.Geometry.RigidMotion
+import AmbidextrousSofa.Geometry.Support
+import AmbidextrousSofa.Geometry.UpwardSupport
+import AmbidextrousSofa.Imported.ConvexBody
+import AmbidextrousSofa.Imported.LebesgueStieltjes
+import AmbidextrousSofa.Imported.Plane
+import AmbidextrousSofa.Imported.SurfaceArea
 import AmbidextrousSofa.Measure.CapAssembly
-import AmbidextrousSofa.Reference.Parameters
-import AmbidextrousSofa.Reference.Support
+import AmbidextrousSofa.Measure.CapScore
+import AmbidextrousSofa.Measure.Fibers
+import AmbidextrousSofa.Measure.GraphIntegral
+import AmbidextrousSofa.Measure.Partition
+import AmbidextrousSofa.Measure.RigidInvariance
+import AmbidextrousSofa.Measure.SignedRoof
+import AmbidextrousSofa.Measure.SignedRoofIntegral
+import AmbidextrousSofa.Measure.StripBounds
+import AmbidextrousSofa.Measure.SupportArea
+import AmbidextrousSofa.Measure.SymmetricBody
+import AmbidextrousSofa.Reference.Body
+import AmbidextrousSofa.Reference.Faces
 import AmbidextrousSofa.Reference.Hull
+import AmbidextrousSofa.Reference.Momenta
+import AmbidextrousSofa.Reference.Niche
+import AmbidextrousSofa.Reference.Parameters
+import AmbidextrousSofa.Reference.Realization
+import AmbidextrousSofa.Reference.Regularity
+import AmbidextrousSofa.Reference.Stationarity
+import AmbidextrousSofa.Reference.Support
+import AmbidextrousSofa.Reference.Value
+import AmbidextrousSofa.Topology.RegularClosed
 
 /-!
-# Ambidextrous sofa: an uncompiled geometric and analytic draft
+# Ambidextrous sofa: uncompiled proof source
 
-This entry point imports every implementation module in the draft: the actual
-hull and cap constructions, complete angular barriers, integrated physical
-area and deficit assembly, and the explicit reference formulas and hull.
-Every declared theorem has a complete source proof body. The full sharp cap
-bounds, reference attainment, and original-domain optimality and uniqueness
-remain listed in `docs/FORMALIZATION-ROADMAP.md`. This project has not been compiled.
+The entry point covers the actual geometry, original-motion reduction,
+reference attainment, cap optimization and variation modules, and the
+explicit analytic calibration developed so far. Every declared theorem has
+an explicit source proof body. The remaining universal cap estimates and
+original-domain equality assembly are tracked in the formalization roadmap.
+No project source has been compiled; the separate axiom queries are unexecuted.
 -/

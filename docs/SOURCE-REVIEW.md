@@ -1,191 +1,244 @@
-# Uncompiled draft: source-review record
+# Uncompiled source: review record
 
 **Review date:** October 10, 2026.
 
-**Verification mode:** source inspection and source-policy checks only.
-No Lean execution or CI.
+**Mode:** source inspection, pinned-source API lookup and Python-only lexical
+checks. No project Lean source has been compiled; no CI or axiom queries have
+been run. Successful elaboration and actual transitive axioms remain unchecked.
+This record is not a kernel proof log or an external referee report.
 
-This record covers the foundations and the subsequent actual-cap, motion,
-integral, and reference-geometry extension. It is not a Lean build log, a
-kernel axiom report, or an external referee's acceptance of the underlying
-research manuscript.
+## Current source inventory
 
-## Reviewed source scope
+The entry point covers **104 implementation modules**, containing
+**1816 named theorems** and **2176 explicitly named declarations**.
+Every declared theorem has an explicit proof body. `AxiomAudit.lean` prepares
+one unexecuted `#print axioms` query per explicitly named declaration.
+Generated constructors, projections, recursors and equation lemmas are not
+separate source commands in this inventory.
 
-The **21 implementation modules** contain **441 named theorems**, each with
-a complete source proof body, and **536 explicitly named declarations** in
-total. The preceding foundations draft contained 67 theorems in six modules;
-this extension adds 374 theorems in 15 modules. The library entry point imports
-all implementation modules and does not import the audit.
+The four adapted objective-independent modules under `Imported` are counted
+in these totals. They retain their source revision, path, modification notice
+and Apache-2.0 license. The original ordinary one-turn optimality theorem is
+not among those four modules.
 
-`AxiomAudit.lean` contains one prepared, **unexecuted** `#print axioms` query
-for every explicitly named declaration. The inventory respects the distinct
-`AmbidextrousSofa` and `AmbidextrousSofa.Reference` namespaces. Automatically
-generated recursors, projections, and equation lemmas are not additional
-explicit source declarations; their transitive use is part of the later
-kernel audit.
+## Substantive source reviews
 
-| Implementation module | Theorems | Named declarations | Review emphasis |
-| --- | ---: | ---: | --- |
-| `Algebra/Deficit.lean` | 22 | 26 | Signed fibers, positive-part defects, exact zero conditions, arithmetic deficit and extrusion identities |
-| `ExactConstant.lean` | 22 | 26 | IVT endpoints, strict monotonicity, classical selection from proved existence, exact rational bounds |
-| `Geometry/AngularDomain.lean` | 9 | 11 | IVT despite backtracking, visited versus terminal angles, reflected rigid-path conjugation |
-| `Geometry/BarrierAnalysis.lean` | 23 | 23 | A proved finite supremum at every abscissa, semicontinuity, measurability, bounded integrability |
-| `Geometry/Barriers.lean` | 15 | 21 | Minimum of both inner rays, all interior angles, complete terminal first wall |
-| `Geometry/CapGeometry.lean` | 34 | 38 | Compact downward filling, attained concave roofs, exact fibers, upper semicontinuity |
-| `Geometry/Caps.lean` | 9 | 13 | Actual convex hull, broad intrinsic cap domain, no full-height premise |
-| `Geometry/Hallway.lean` | 15 | 19 | Retained-body support tightening, actual outgoing strip, continuous canonical placement |
-| `Geometry/HullCompact.lean` | 8 | 9 | Finite simplex parametrization of the actual planar hull, including the empty case |
-| `Geometry/Motions.lean` | 2 | 8 | Whole-body passage conditions, independent paths, same initial rotation maps |
-| `Geometry/Plane.lean` | 9 | 20 | Correct reflected corridors; Euclidean squared length distinct from the product norm |
-| `Geometry/Reflection.lean` | 37 | 40 | Reflected support correction, reversed fibers, original connected projection, literal hull recovery |
-| `Geometry/Support.lean` | 40 | 45 | Compact attainment and continuity, separation, actual-hull and transformation identities |
-| `Measure/CapAssembly.lean` | 9 | 13 | Actual cap endpoints, physical fibers, ordinary area, exact geometric deficit, independent passages |
-| `Measure/CapScore.lean` | 14 | 17 | Actual integral score, elementary width branch, full-turn identity, zero-width null sets |
-| `Measure/Fibers.lean` | 31 | 34 | Tonelli, positive-part area, justified signed formulas, finite ordinary missing area |
-| `Measure/Partition.lean` | 23 | 26 | Equal-measure split, integral identities, a.e. equality conditions, geometric four-term deficit |
-| `Reference/Hull.lean` | 31 | 36 | Explicit center witness, endpoint rectangle, compact convex symmetric intersection |
-| `Reference/Parameters.lean` | 27 | 34 | Cubic factorization, exact trigonometric matching, positivity selecting the correct branch |
-| `Reference/Support.lean` | 58 | 74 | Phase derivatives, switch matching, global C¹ gluing, curvature and center inequalities |
-| `Topology/RegularClosed.lean` | 3 | 3 | Finite measure, null open difference, literal closed-set recovery |
-| **Total** | **441** | **536** | **Source reviewed; uncompiled** |
+Independent collaborating reviewers inspected the actual geometric and
+measure-theoretic reductions, significant proof bodies, and pinned Mathlib
+interfaces. The following completed reviews cover the principal new chains:
 
-## Independent source reviews
+- Original rigid normalization, exact area invariance, strip exclusions and
+  independent angular reach from genuine passages. The original
+  `IsAmbidextrous` predicate was retained.
+- Actual reference support realization, exact faces and niche, physical body
+  feasibility, regular closedness, and the complete actual-area computation.
+  In particular the identity `volumeReal_referenceSofa = M` is derived from
+  actual cap and niche integrals, without an area certificate.
+- Hausdorff compactness of actual caps, convex frontier nullity, indicator
+  and roof convergence, continuity of the whole-angle niche at singular
+  endpoint angles, and score continuity with moving integration domains.
+- Finite min/max source derivatives, repeated source handling, actual
+  floating-wall variations and the conversion to finite spatial scores.
+- Actual cuts and erosions, exact shortened projections, min-roof identities,
+  support changes and the product-metric Hausdorff estimate. The finite
+  erosion halfplanes are identified as sets before retightening to actual
+  supports. Inward endpoint pressures use genuine contained cap variations.
+- Point insertion's actual max-support identity; whole-angle niche invariance
+  on the charged middle; strict exterior roof gain; horizontal reflection;
+  high-endpoint localization; and the translation/reflection application of
+  the low-height estimate.
+- The half-angle energy identity, two-endpoint Dirichlet coercivity,
+  fixed-trace strictness, clipped-functional first variation, reference Euler
+  stationarity, natural width boundary formula and the explicit large-width
+  analytic branch.
 
-Separate collaborating reviewers inspected the mathematical statements,
-proof bodies, interfaces, and relevant Mathlib declarations. The cap/support
-and reference components were reviewed across their implementation authors.
-The hallway and barrier definitions received both geometric and analytical
-reviews. `CapAssembly.lean` received separate geometric and measure/API reviews.
-These are reviews within this session, not external validation.
+The explicit analytic family now has a complete global comparison and exact
+equality classification. Source reviews checked the C1 joins, including the
+degenerate switches; all clipped signs and Euler identities; actual integral
+values; the strict scalar maximum; width coverage and the translation of the
+reference equality data. The translation and integral-value modules received
+independent review. A pinned multiplication-inequality rewrite was corrected.
 
-The reviews specifically checked several points that can invalidate an
-apparently plausible moving-sofa reduction:
+The dense-grid/persistent-penalty selection, actual polygon-curvature atoms,
+vanishing selection defects, moving-envelope derivatives and source moments
+are included with complete proof bodies. Their authors performed focused
+static review; the final independent cross-module review and remaining
+geometric applications are continuing.
 
-- Tightening preserves the original retained points. It does not establish
-  that the entire convex hull fits the nonconvex hallway.
-- A proper terminal angle retains its outgoing whole-body first wall. At a
-  full quarter turn, redundancy follows from the actual top-support bound.
-- The angular sweep includes every interior angle. The IVT supplies those
-  angles even when the original path backtracks.
-- Reflection of a rigid path uses angle `-a` and shift
-  `(bx - sin a, 1 - cos a - by)`, so both body and placements are conjugated
-  by the actual strip-center reflection.
-- Both cap windows are the original connected projection interval. Original
-  points certify nonnegative signed fibers before signed integrals are
-  identified with ordinary envelope area.
-- The reference hull is a real half-plane intersection with an explicit
-  witness. Its support upper bounds are not confused with support attainment.
-- The exact four-term identity does not establish nonnegativity of the two
-  scalar score deficits; that requires the remaining sharp cap theorem.
+The integration scan found two duplicate helper declarations:
+`convex_verticalFiber` and `IsDownwardCap.intervalIntegrable_capRoof`.
+Their duplicate copies were removed and the existing proved helpers are
+imported. Review also made the affine translation's scalar identity explicit
+and replaced several variable-index rewrite shortcuts by local quantified
+lemmas. These are source corrections; no elaborator was invoked to test them.
 
-The planar hull proof was refined to make the two finite-sum reindexings
-explicit. The initial squared-length proof also had a redundant tactic
-removed during its original review. The audit-generator review also added
-explicit rejection of unsupported declaration prefixes, preventing future
-inventory omissions. No additional concrete Lean proof correction was
-requested by the final independent reviews. Successful elaboration remains
-untested.
+## Source-policy guard
 
-## Pinned primary-source API checks
-
-Relevant external declarations were inspected through the GitHub API at
-Mathlib revision [`c55e6e786f49471c72fbddbec5415808896aec1e`][mathlib].
-
-| Source | Checked use |
-| --- | --- |
-| [Intermediate value theorem][ivt] | `intermediate_value_Icc`, image-witness equality orientation, restriction to a visited time |
-| [Monotone functions][mono], [arctangent][atan], [trigonometric identities][trig] | Strict monotonicity/injectivity, exact switching-angle bounds and identities |
-| [Carathéodory][caratheodory], [standard simplex][simplex], [finite affine dimension][affine] | Positive finite convex combinations, simplex compactness, affine-independent cardinality bound |
-| [Convex hulls][hull], [convex combinations][combination] | Hull minimality, finite convex combinations, actual-set containment |
-| [Finite-dimensional linear algebra][dimension] | Planar dimension and finite product rank |
-| [Geometric Hahn–Banach separation][separation] | Strict point-versus-closed-convex-set separation for support determination |
-| [Compactness][compact] | Compact subtypes, finite unions, compact ranges, actual supremum/infimum attainment |
-| [One-dimensional derivatives][deriv], [order-closed topology][orderclosed], [continuous derivatives][contdiff] | One-sided derivative congruence and union, `Continuous.if_le`, `contDiff_one_iff_deriv` |
-| [Positive measure on open sets][openpos], [measure difference][measure], [finite measure on compacts][finite] | Finite equal-area recovery and ordinary missing-envelope area |
-
-The measure implementations additionally use the pinned product
-measure/Tonelli APIs, real interval volume, `Integrable.mono'`, integral
-subtraction and set difference, conversion between nonnegative real integrals
-and `ENNReal` lintegrals, and semicontinuity/Borel measurability. Their
-significant signatures and hypothesis orders were inspected by the
-implementing and reviewing agents. No current-branch declaration was
-substituted for a pinned declaration merely because a search result used a
-newer revision.
-
-Mathlib's `lean-toolchain` specifies `leanprover/lean4:v4.35.0-rc3`, matching
-this project. Its eight transitive package revisions were read from the
-[pinned upstream lockfile][lockfile]. The project lockfile was assembled from
-those entries plus the exact Mathlib dependency. No Lake command generated
-the lockfile and no dependencies were installed.
-
-## Source-policy verification
-
-The source-only policy command is:
+The source-only command is:
 
 ```sh
 python3 scripts/check_source_policy.py
 ```
 
-It strips comments and strings, rejects admissions, custom axioms and the
-prohibited native/metaprogramming constructs, checks imports and cycles,
-checks entry-point coverage, inventories namespace-qualified declarations,
-verifies future axiom-query coverage, checks full dependency revisions and
-`autoImplicit = false`, and rejects CI configuration.
+Its `--write-axiom-audit` option generates Lean query text without executing
+it. `--inventory-json` emits the namespace-qualified source inventory.
+The guard strips comments and strings, rejects admissions, custom axioms,
+unsafe/native/metaprogramming proof shortcuts, checks names and audit-query
+coverage, detects import cycles, checks entry-point coverage and pins, and
+rejects CI configuration. Only Mathlib (including its submodules) and
+project-local modules are permitted imports.
 
-The inventory can be emitted as JSON with `--inventory-json`. The
-`--write-axiom-audit` option regenerates prepared query text from a valid
-source inventory; it does not run those queries. The checker is a conservative
-lexical guard, not a Lean parser. It does not contain a subprocess or invoke
-Lean.
-
-The final source inventory passed with:
-
-- 23 authored Lean files, including the library entry point and audit.
-- 21 implementation modules.
-- 441 named theorems and 536 named declarations.
-- Exactly 536 prepared, unexecuted axiom queries.
-- No source-policy errors, missing imports, import cycles, dependency-pin
-  mismatches, or CI configuration.
-
-Git whitespace and local documentation-target checks also passed. Publication
-uses the GitHub Git Data API; the published tree and blob hashes are compared
-with the reviewed local files.
-
-## Unexecuted verification and remaining mathematics
-
-No Lean, Lake, elan, language server, compilation, native evaluation, axiom
-query, or GitHub Actions workflow was invoked. No CI workflow is added.
 The intended axiom allowlist is `propext`, `Classical.choice`, and `Quot.sound`.
-The actual transitive dependency sets must still be obtained and checked
-during a later separately requested Lean verification pass.
+The lexical guard cannot compute actual transitive axiom dependencies or
+establish that any theorem elaborates. The prepared queries have not been
+run and the actual axiom sets are unverified.
 
-The project does not yet contain the universal sharp full-turn or partial-turn
-cap theorem, the global original-motion reach reduction, reference physical
-body feasibility and exact attainment, or optimality and uniqueness for
-`IsAmbidextrous`. The completed actual-body deficit identity and generic
-regular-closed recovery lemma do not discharge those obligations. The
-[roadmap](FORMALIZATION-ROADMAP.md) identifies their order and the retained
-ordinary one-turn dependency. No missing global result is installed as an
-axiom, placeholder theorem, or target-shaped certificate.
+The checked snapshot has **106 Lean files**, including entry point and
+audit, **104 implementation modules**, **1816 named theorems**,
+and **2176 prepared queries**. The source-policy guard passed.
+Whitespace and local documentation links are checked before publication.
+Publication uses GitHub's Git Data API with exact tree/blob comparisons;
+no workflow is added and commits use `[skip ci]`.
+
+## Pinned source and scope of verification
+
+Lean is pinned to `leanprover/lean4:v4.35.0-rc3`; Mathlib is pinned to
+[`c55e6e786f49471c72fbddbec5415808896aec1e`][mathlib]. Relevant Mathlib
+source declarations are inspected locally from that exact revision and
+through the GitHub API. The lockfile preserves the exact upstream package
+revisions. No build compatibility or transitive kernel audit is claimed.
+
+The adapted planar convex-body/Stieltjes source is from
+[`20489723dc8777a82ee70ae60510115dc6f21085`][research]. Its project-local
+namespace and import transformations preserve the mathematical definitions;
+private helpers received stable public names for the prepared audit. The
+bridge in `Analysis/SupportCurvature.lean` identifies the actual support
+functions and transfers product-metric Hausdorff convergence to uniform
+angular-support convergence. That import supplies no assumed sharp bound.
+
+## Remaining mathematics
+
+F7 source closure is **not yet achieved**. The current project has actual
+reference attainment and an original-domain reduction, but still lacks the
+universal full and proper-angle sharp cap theorems and their complete
+equality classification. Weak source-curvature and exposure balances,
+tilted/full/terminal exclusions, the retained ordinary one-turn input,
+inverse canonicalization and final original-body assembly remain on the
+[critical path](FORMALIZATION-ROADMAP.md).
+
+No unproved global result is installed as an axiom, placeholder or a
+certificate field equivalent to the desired conclusion. Kernel verification
+is a separate future task and is excluded by the current no-compilation
+instruction.
+
+## Per-module inventory
+
+| Implementation module | Theorems | Named declarations |
+| --- | ---: | ---: |
+| `AmbidextrousSofa/Algebra/Deficit.lean` | 22 | 26 |
+| `AmbidextrousSofa/Analysis/AdaptiveFunctional.lean` | 13 | 24 |
+| `AmbidextrousSofa/Analysis/AdaptiveGlobalBoundary.lean` | 12 | 19 |
+| `AmbidextrousSofa/Analysis/AdaptiveGlobalBranches.lean` | 39 | 44 |
+| `AmbidextrousSofa/Analysis/AdaptiveGlobalComparison.lean` | 9 | 10 |
+| `AmbidextrousSofa/Analysis/AdaptiveGlobalFamily.lean` | 43 | 61 |
+| `AmbidextrousSofa/Analysis/AdaptiveGlobalMomenta.lean` | 39 | 55 |
+| `AmbidextrousSofa/Analysis/AdaptiveGlobalParameters.lean` | 21 | 28 |
+| `AmbidextrousSofa/Analysis/AdaptiveGlobalScalar.lean` | 18 | 18 |
+| `AmbidextrousSofa/Analysis/AdaptiveGlobalValue.lean` | 17 | 20 |
+| `AmbidextrousSofa/Analysis/AdaptiveTranslation.lean` | 11 | 14 |
+| `AmbidextrousSofa/Analysis/AxisVariation.lean` | 8 | 9 |
+| `AmbidextrousSofa/Analysis/CapCompactness.lean` | 14 | 15 |
+| `AmbidextrousSofa/Analysis/CapInsertion.lean` | 10 | 11 |
+| `AmbidextrousSofa/Analysis/CapMaximum.lean` | 5 | 6 |
+| `AmbidextrousSofa/Analysis/CapNicheContinuity.lean` | 16 | 20 |
+| `AmbidextrousSofa/Analysis/CapOrder.lean` | 7 | 7 |
+| `AmbidextrousSofa/Analysis/CapReflection.lean` | 22 | 24 |
+| `AmbidextrousSofa/Analysis/CapRoofConvergence.lean` | 6 | 6 |
+| `AmbidextrousSofa/Analysis/CapScoreContinuity.lean` | 6 | 6 |
+| `AmbidextrousSofa/Analysis/CapTranslation.lean` | 21 | 23 |
+| `AmbidextrousSofa/Analysis/CapVolumeContinuity.lean` | 7 | 8 |
+| `AmbidextrousSofa/Analysis/Chord.lean` | 24 | 28 |
+| `AmbidextrousSofa/Analysis/Circumscription.lean` | 9 | 10 |
+| `AmbidextrousSofa/Analysis/DiagonalTent.lean` | 10 | 12 |
+| `AmbidextrousSofa/Analysis/DirichletEnergy.lean` | 7 | 7 |
+| `AmbidextrousSofa/Analysis/DyadicGrid.lean` | 7 | 10 |
+| `AmbidextrousSofa/Analysis/EndpointPolygons.lean` | 8 | 8 |
+| `AmbidextrousSofa/Analysis/EndpointPressure.lean` | 25 | 29 |
+| `AmbidextrousSofa/Analysis/EndpointTrimming.lean` | 66 | 71 |
+| `AmbidextrousSofa/Analysis/ErosionVariation.lean` | 6 | 7 |
+| `AmbidextrousSofa/Analysis/EulerFlux.lean` | 7 | 11 |
+| `AmbidextrousSofa/Analysis/ExactEstimates.lean` | 3 | 3 |
+| `AmbidextrousSofa/Analysis/ExposureMoments.lean` | 12 | 14 |
+| `AmbidextrousSofa/Analysis/Extrusion.lean` | 22 | 25 |
+| `AmbidextrousSofa/Analysis/FacetCurvature.lean` | 9 | 9 |
+| `AmbidextrousSofa/Analysis/FiniteEnvelope.lean` | 14 | 20 |
+| `AmbidextrousSofa/Analysis/FiniteScore.lean` | 11 | 11 |
+| `AmbidextrousSofa/Analysis/FiniteVariation.lean` | 9 | 10 |
+| `AmbidextrousSofa/Analysis/GlobalCapMaximum.lean` | 7 | 8 |
+| `AmbidextrousSofa/Analysis/GridNiche.lean` | 15 | 20 |
+| `AmbidextrousSofa/Analysis/GridPolygon.lean` | 14 | 20 |
+| `AmbidextrousSofa/Analysis/GridScore.lean` | 6 | 7 |
+| `AmbidextrousSofa/Analysis/GridSeparation.lean` | 2 | 2 |
+| `AmbidextrousSofa/Analysis/LowHeightAlgebra.lean` | 9 | 11 |
+| `AmbidextrousSofa/Analysis/LowHeightGeometry.lean` | 7 | 8 |
+| `AmbidextrousSofa/Analysis/LowHeightMaximizer.lean` | 4 | 4 |
+| `AmbidextrousSofa/Analysis/LowHeightScore.lean` | 9 | 9 |
+| `AmbidextrousSofa/Analysis/PersistentPenalty.lean` | 18 | 28 |
+| `AmbidextrousSofa/Analysis/PolygonEnvelope.lean` | 23 | 37 |
+| `AmbidextrousSofa/Analysis/PolygonExposure.lean` | 6 | 8 |
+| `AmbidextrousSofa/Analysis/PolygonVariation.lean` | 12 | 13 |
+| `AmbidextrousSofa/Analysis/PositiveTent.lean` | 6 | 6 |
+| `AmbidextrousSofa/Analysis/QuadraticEnergy.lean` | 11 | 14 |
+| `AmbidextrousSofa/Analysis/QuarterFunctions.lean` | 4 | 9 |
+| `AmbidextrousSofa/Analysis/RoofContinuity.lean` | 3 | 3 |
+| `AmbidextrousSofa/Analysis/SelectedCurvature.lean` | 10 | 13 |
+| `AmbidextrousSofa/Analysis/SelectedSequence.lean` | 9 | 10 |
+| `AmbidextrousSofa/Analysis/SupportCurvature.lean` | 9 | 11 |
+| `AmbidextrousSofa/Analysis/TopFacetEndpoints.lean` | 3 | 3 |
+| `AmbidextrousSofa/Analysis/TopInsertion.lean` | 6 | 6 |
+| `AmbidextrousSofa/Analysis/WideCap.lean` | 10 | 10 |
+| `AmbidextrousSofa/ExactConstant.lean` | 22 | 26 |
+| `AmbidextrousSofa/Geometry/AngularDomain.lean` | 9 | 11 |
+| `AmbidextrousSofa/Geometry/BarrierAnalysis.lean` | 23 | 23 |
+| `AmbidextrousSofa/Geometry/Barriers.lean` | 15 | 21 |
+| `AmbidextrousSofa/Geometry/CapGeometry.lean` | 34 | 38 |
+| `AmbidextrousSofa/Geometry/Caps.lean` | 9 | 13 |
+| `AmbidextrousSofa/Geometry/Hallway.lean` | 15 | 19 |
+| `AmbidextrousSofa/Geometry/HullCompact.lean` | 8 | 9 |
+| `AmbidextrousSofa/Geometry/MotionReduction.lean` | 10 | 10 |
+| `AmbidextrousSofa/Geometry/Motions.lean` | 2 | 8 |
+| `AmbidextrousSofa/Geometry/Plane.lean` | 9 | 20 |
+| `AmbidextrousSofa/Geometry/Reflection.lean` | 37 | 40 |
+| `AmbidextrousSofa/Geometry/RigidMotion.lean` | 18 | 22 |
+| `AmbidextrousSofa/Geometry/Support.lean` | 40 | 45 |
+| `AmbidextrousSofa/Geometry/UpwardSupport.lean` | 5 | 5 |
+| `AmbidextrousSofa/Imported/ConvexBody.lean` | 67 | 78 |
+| `AmbidextrousSofa/Imported/LebesgueStieltjes.lean` | 40 | 42 |
+| `AmbidextrousSofa/Imported/Plane.lean` | 116 | 133 |
+| `AmbidextrousSofa/Imported/SurfaceArea.lean` | 35 | 41 |
+| `AmbidextrousSofa/Measure/CapAssembly.lean` | 9 | 13 |
+| `AmbidextrousSofa/Measure/CapScore.lean` | 14 | 17 |
+| `AmbidextrousSofa/Measure/Fibers.lean` | 31 | 34 |
+| `AmbidextrousSofa/Measure/GraphIntegral.lean` | 7 | 8 |
+| `AmbidextrousSofa/Measure/Partition.lean` | 23 | 26 |
+| `AmbidextrousSofa/Measure/RigidInvariance.lean` | 11 | 12 |
+| `AmbidextrousSofa/Measure/SignedRoof.lean` | 23 | 23 |
+| `AmbidextrousSofa/Measure/SignedRoofIntegral.lean` | 16 | 23 |
+| `AmbidextrousSofa/Measure/StripBounds.lean` | 11 | 13 |
+| `AmbidextrousSofa/Measure/SupportArea.lean` | 11 | 20 |
+| `AmbidextrousSofa/Measure/SymmetricBody.lean` | 8 | 9 |
+| `AmbidextrousSofa/Reference/Body.lean` | 29 | 32 |
+| `AmbidextrousSofa/Reference/Faces.lean` | 21 | 24 |
+| `AmbidextrousSofa/Reference/Hull.lean` | 31 | 36 |
+| `AmbidextrousSofa/Reference/Momenta.lean` | 16 | 18 |
+| `AmbidextrousSofa/Reference/Niche.lean` | 24 | 27 |
+| `AmbidextrousSofa/Reference/Parameters.lean` | 27 | 34 |
+| `AmbidextrousSofa/Reference/Realization.lean` | 38 | 45 |
+| `AmbidextrousSofa/Reference/Regularity.lean` | 13 | 14 |
+| `AmbidextrousSofa/Reference/Stationarity.lean` | 15 | 20 |
+| `AmbidextrousSofa/Reference/Support.lean` | 58 | 74 |
+| `AmbidextrousSofa/Reference/Value.lean` | 45 | 48 |
+| `AmbidextrousSofa/Topology/RegularClosed.lean` | 3 | 3 |
 
 [mathlib]: https://github.com/leanprover-community/mathlib4/tree/c55e6e786f49471c72fbddbec5415808896aec1e
-[ivt]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/Topology/Order/IntermediateValue.lean
-[mono]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/Order/Monotone/Basic.lean
-[atan]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/Analysis/SpecialFunctions/Trigonometric/Arctan.lean
-[trig]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/Analysis/Complex/Trigonometric.lean
-[caratheodory]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/Analysis/Convex/Caratheodory.lean
-[simplex]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/Analysis/Convex/StdSimplex.lean
-[affine]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/LinearAlgebra/AffineSpace/FiniteDimensional.lean
-[hull]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/Analysis/Convex/Hull.lean
-[combination]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/Analysis/Convex/Combination.lean
-[dimension]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/LinearAlgebra/Dimension/Constructions.lean
-[separation]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/Analysis/LocallyConvex/Separation.lean
-[compact]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/Topology/Compactness/Compact.lean
-[deriv]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/Analysis/Calculus/Deriv/Basic.lean
-[orderclosed]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/Topology/Order/OrderClosed.lean
-[contdiff]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/Analysis/Calculus/ContDiff/Deriv.lean
-[openpos]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/MeasureTheory/Measure/OpenPos.lean
-[measure]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/MeasureTheory/Measure/Basic.lean
-[finite]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/Mathlib/MeasureTheory/Measure/Typeclasses/Finite.lean
-[lockfile]: https://github.com/leanprover-community/mathlib4/blob/c55e6e786f49471c72fbddbec5415808896aec1e/lake-manifest.json
+[research]: https://github.com/vltanh/lean4-moving-sofa/commit/20489723dc8777a82ee70ae60510115dc6f21085

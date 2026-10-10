@@ -4,8 +4,8 @@ import AmbidextrousSofa
 # Prepared axiom queries — not executed
 
 Regenerate with `python scripts/check_source_policy.py --write-axiom-audit`.
-The source-only inventory lists 536 explicitly named declarations
-across 21 implementation modules, respecting their namespace scopes.
+The source-only inventory lists 2176 explicitly named declarations
+across 104 implementation modules, respecting their namespace scopes.
 Generated constructors, projections, recursors, and local proof terms are not
 separately enumerated by this lexical inventory.
 
@@ -45,6 +45,1101 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.extrusion_truncation_nonneg
 #print axioms AmbidextrousSofa.extrusion_truncation_eq_zero_iff
 #print axioms AmbidextrousSofa.extrusion_truncation_pos_iff
+
+-- AmbidextrousSofa/Analysis/AdaptiveFunctional.lean
+#print axioms AmbidextrousSofa.Analysis.negativeSquareBregman
+#print axioms AmbidextrousSofa.Analysis.positiveSquareBregman
+#print axioms AmbidextrousSofa.Analysis.negativeSquareBregman_nonneg
+#print axioms AmbidextrousSofa.Analysis.positiveSquareBregman_nonneg
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.p
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.q
+#print axioms AmbidextrousSofa.Analysis.adaptiveDensity
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional
+#print axioms AmbidextrousSofa.Analysis.adaptiveLinearDensity
+#print axioms AmbidextrousSofa.Analysis.adaptiveFirstVariation
+#print axioms AmbidextrousSofa.Analysis.quadraticDensity
+#print axioms AmbidextrousSofa.Analysis.contactDefectDensity
+#print axioms AmbidextrousSofa.Analysis.contactDefectDensity_nonneg
+#print axioms AmbidextrousSofa.Analysis.continuousOn_adaptiveDensity
+#print axioms AmbidextrousSofa.Analysis.continuousOn_adaptiveLinearDensity
+#print axioms AmbidextrousSofa.Analysis.continuousOn_quadraticDensity
+#print axioms AmbidextrousSofa.Analysis.continuousOn_contactDefectDensity
+#print axioms AmbidextrousSofa.Analysis.adaptiveDensity_taylor
+#print axioms AmbidextrousSofa.Analysis.quadraticEnergy_eq_integral_density
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional_taylor
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional_le_tangent_sub_quadratic
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.Stationary
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional_le_of_stationary
+#print axioms AmbidextrousSofa.Analysis.eqOn_of_stationary_of_sameTraces_of_ge
+
+-- AmbidextrousSofa/Analysis/AdaptiveGlobalBoundary.lean
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.WidthTraces
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.addScaled
+#print axioms AmbidextrousSofa.Analysis.negativeSquareBregman_le_square
+#print axioms AmbidextrousSofa.Analysis.positiveSquareBregman_le_square
+#print axioms AmbidextrousSofa.Analysis.variationContactDensity
+#print axioms AmbidextrousSofa.Analysis.variationContactIntegral
+#print axioms AmbidextrousSofa.Analysis.continuousOn_variationContactDensity
+#print axioms AmbidextrousSofa.Analysis.contactDefectDensity_addScaled_le
+#print axioms AmbidextrousSofa.Analysis.adaptiveFirstVariation_addScaled_sub
+#print axioms AmbidextrousSofa.Analysis.quadraticEnergy_addScaled_sub
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional_addScaled_lower
+#print axioms AmbidextrousSofa.Analysis.adaptiveFirstVariation_eq_of_local_max_addScaled
+#print axioms AmbidextrousSofa.Analysis.widthVariation
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.widthTraces_addScaled_widthVariation
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.adjustedP
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.adjustedQ
+#print axioms AmbidextrousSofa.Analysis.adaptiveFirstVariation_widthVariation
+#print axioms AmbidextrousSofa.Analysis.natural_width_boundary
+#print axioms AmbidextrousSofa.Analysis.natural_width_boundary_of_momentum_reflection
+
+-- AmbidextrousSofa/Analysis/AdaptiveGlobalBranches.lean
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.sameTraces_of_widthTraces
+#print axioms AmbidextrousSofa.Analysis.diskPair
+#print axioms AmbidextrousSofa.Analysis.diskPair_widthTraces
+#print axioms AmbidextrousSofa.Analysis.diskPair_p
+#print axioms AmbidextrousSofa.Analysis.diskPair_q
+#print axioms AmbidextrousSofa.Analysis.diskPair_fluxF
+#print axioms AmbidextrousSofa.Analysis.diskPair_fluxG
+#print axioms AmbidextrousSofa.Analysis.diskPair_forceF
+#print axioms AmbidextrousSofa.Analysis.diskPair_forceG
+#print axioms AmbidextrousSofa.Analysis.diskPair_eulerF
+#print axioms AmbidextrousSofa.Analysis.diskPair_eulerG
+#print axioms AmbidextrousSofa.Analysis.diskPair_stationary
+#print axioms AmbidextrousSofa.Analysis.adaptiveDensity_diskPair
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional_diskPair
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional_sub_width_lt_half_M_at_half
+#print axioms AmbidextrousSofa.Analysis.tailAngle0
+#print axioms AmbidextrousSofa.Analysis.tailPhase
+#print axioms AmbidextrousSofa.Analysis.tailCoefficient
+#print axioms AmbidextrousSofa.Analysis.tailAngle0_pos
+#print axioms AmbidextrousSofa.Analysis.tailAngle0_lt_pi_div_two
+#print axioms AmbidextrousSofa.Analysis.sin_tailAngle0_pos
+#print axioms AmbidextrousSofa.Analysis.cos_tailAngle0_pos
+#print axioms AmbidextrousSofa.Analysis.tailPhase_zero
+#print axioms AmbidextrousSofa.Analysis.tailPhase_pi_div_two
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_tailPhase
+#print axioms AmbidextrousSofa.Analysis.two_cos_tailAngle0_lt_five_sin
+#print axioms AmbidextrousSofa.Analysis.tailPair
+#print axioms AmbidextrousSofa.Analysis.tailPair_widthTraces
+#print axioms AmbidextrousSofa.Analysis.tailPair_p
+#print axioms AmbidextrousSofa.Analysis.tailPair_q
+#print axioms AmbidextrousSofa.Analysis.tailPair_momentum_signs
+#print axioms AmbidextrousSofa.Analysis.tailPair_fluxF
+#print axioms AmbidextrousSofa.Analysis.tailPair_fluxG
+#print axioms AmbidextrousSofa.Analysis.tailPair_forceF
+#print axioms AmbidextrousSofa.Analysis.tailPair_forceG
+#print axioms AmbidextrousSofa.Analysis.tailPair_eulerF
+#print axioms AmbidextrousSofa.Analysis.tailPair_eulerG
+#print axioms AmbidextrousSofa.Analysis.tailPair_stationary
+#print axioms AmbidextrousSofa.Analysis.twice_density_sub_self_of_active
+#print axioms AmbidextrousSofa.Analysis.tailPair_self_variation
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional_tailPair
+#print axioms AmbidextrousSofa.Analysis.tailPair_score_lt_two_thirds
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional_sub_width_lt_half_M_of_tail
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional_sub_width_lt_half_M_of_two_le
+
+-- AmbidextrousSofa/Analysis/AdaptiveGlobalComparison.lean
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional_sub_width_lt_half_M_of_familyWidth_zero_le
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional_sub_width_le_half_M_of_four_fifths_le
+#print axioms AmbidextrousSofa.Analysis.width_eq_reference_of_adaptiveFunctional_eq
+#print axioms AmbidextrousSofa.Analysis.centeredReferencePair
+#print axioms AmbidextrousSofa.Analysis.centeredReferencePair_widthTraces
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional_centeredReferencePair
+#print axioms AmbidextrousSofa.Analysis.familyPair_beta_eqOn_centeredReference
+#print axioms AmbidextrousSofa.Analysis.eqOn_centeredReference_of_adaptiveFunctional_eq
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional_sub_halfWidth_le_half_M
+#print axioms AmbidextrousSofa.Analysis.eqOn_reference_translate_of_adaptiveFunctional_eq
+
+-- AmbidextrousSofa/Analysis/AdaptiveGlobalFamily.lean
+#print axioms AmbidextrousSofa.Analysis.joinThree
+#print axioms AmbidextrousSofa.Analysis.joinThree_eq_early
+#print axioms AmbidextrousSofa.Analysis.joinThree_eq_middle
+#print axioms AmbidextrousSofa.Analysis.joinThree_eq_late
+#print axioms AmbidextrousSofa.Analysis.continuous_joinThree
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_joinThree
+#print axioms AmbidextrousSofa.Analysis.familyFEarly
+#print axioms AmbidextrousSofa.Analysis.familyGEarly
+#print axioms AmbidextrousSofa.Analysis.familyFMiddle
+#print axioms AmbidextrousSofa.Analysis.familyGMiddle
+#print axioms AmbidextrousSofa.Analysis.familyFLate
+#print axioms AmbidextrousSofa.Analysis.familyGLate
+#print axioms AmbidextrousSofa.Analysis.familyFEarlyD
+#print axioms AmbidextrousSofa.Analysis.familyGEarlyD
+#print axioms AmbidextrousSofa.Analysis.familyFMiddleD
+#print axioms AmbidextrousSofa.Analysis.familyGMiddleD
+#print axioms AmbidextrousSofa.Analysis.familyFLateD
+#print axioms AmbidextrousSofa.Analysis.familyGLateD
+#print axioms AmbidextrousSofa.Analysis.familyF
+#print axioms AmbidextrousSofa.Analysis.familyG
+#print axioms AmbidextrousSofa.Analysis.familyFD
+#print axioms AmbidextrousSofa.Analysis.familyGD
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyFEarly
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyGEarly
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyFMiddle
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyGMiddle
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyFLate
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyGLate
+#print axioms AmbidextrousSofa.Analysis.familyF_matching_first
+#print axioms AmbidextrousSofa.Analysis.familyG_matching_first
+#print axioms AmbidextrousSofa.Analysis.familyFD_matching_first
+#print axioms AmbidextrousSofa.Analysis.familyGD_matching_first
+#print axioms AmbidextrousSofa.Analysis.tailPhase_reflection
+#print axioms AmbidextrousSofa.Analysis.familyFMiddle_reflection
+#print axioms AmbidextrousSofa.Analysis.familyGMiddle_reflection
+#print axioms AmbidextrousSofa.Analysis.familyFLate_reflection
+#print axioms AmbidextrousSofa.Analysis.familyGLate_reflection
+#print axioms AmbidextrousSofa.Analysis.familyFMiddleD_reflection
+#print axioms AmbidextrousSofa.Analysis.familyGMiddleD_reflection
+#print axioms AmbidextrousSofa.Analysis.familyFLateD_reflection
+#print axioms AmbidextrousSofa.Analysis.familyGLateD_reflection
+#print axioms AmbidextrousSofa.Analysis.familyF_matching_last
+#print axioms AmbidextrousSofa.Analysis.familyG_matching_last
+#print axioms AmbidextrousSofa.Analysis.familyFD_matching_last
+#print axioms AmbidextrousSofa.Analysis.familyGD_matching_last
+#print axioms AmbidextrousSofa.Analysis.continuous_familyF
+#print axioms AmbidextrousSofa.Analysis.continuous_familyG
+#print axioms AmbidextrousSofa.Analysis.continuous_familyFD
+#print axioms AmbidextrousSofa.Analysis.continuous_familyGD
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyF
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyG
+#print axioms AmbidextrousSofa.Analysis.familyPair
+#print axioms AmbidextrousSofa.Analysis.familyF_eq_middle
+#print axioms AmbidextrousSofa.Analysis.familyG_eq_middle
+#print axioms AmbidextrousSofa.Analysis.familyFD_eq_middle
+#print axioms AmbidextrousSofa.Analysis.familyGD_eq_middle
+#print axioms AmbidextrousSofa.Analysis.familyF_eq_late
+#print axioms AmbidextrousSofa.Analysis.familyG_eq_late
+#print axioms AmbidextrousSofa.Analysis.familyFD_eq_late
+#print axioms AmbidextrousSofa.Analysis.familyGD_eq_late
+#print axioms AmbidextrousSofa.Analysis.familyPair_widthTraces
+
+-- AmbidextrousSofa/Analysis/AdaptiveGlobalMomenta.lean
+#print axioms AmbidextrousSofa.Analysis.familyPEarly
+#print axioms AmbidextrousSofa.Analysis.familyQEarly
+#print axioms AmbidextrousSofa.Analysis.familyPMiddle
+#print axioms AmbidextrousSofa.Analysis.familyQMiddle
+#print axioms AmbidextrousSofa.Analysis.familyPLate
+#print axioms AmbidextrousSofa.Analysis.familyQLate
+#print axioms AmbidextrousSofa.Analysis.familyPEarlyD
+#print axioms AmbidextrousSofa.Analysis.familyQEarlyD
+#print axioms AmbidextrousSofa.Analysis.familyPMiddleD
+#print axioms AmbidextrousSofa.Analysis.familyQMiddleD
+#print axioms AmbidextrousSofa.Analysis.familyPLateD
+#print axioms AmbidextrousSofa.Analysis.familyQLateD
+#print axioms AmbidextrousSofa.Analysis.familyP
+#print axioms AmbidextrousSofa.Analysis.familyQ
+#print axioms AmbidextrousSofa.Analysis.familyPD
+#print axioms AmbidextrousSofa.Analysis.familyQD
+#print axioms AmbidextrousSofa.Analysis.familyPEarly_from_switch
+#print axioms AmbidextrousSofa.Analysis.familyQEarly_from_switch
+#print axioms AmbidextrousSofa.Analysis.familyEarly_momentum_signs
+#print axioms AmbidextrousSofa.Analysis.familyMiddle_momentum_signs
+#print axioms AmbidextrousSofa.Analysis.familyPLate_reflection
+#print axioms AmbidextrousSofa.Analysis.familyQLate_reflection
+#print axioms AmbidextrousSofa.Analysis.familyLate_momentum_signs
+#print axioms AmbidextrousSofa.Analysis.familyPair_momenta_early
+#print axioms AmbidextrousSofa.Analysis.familyPair_momenta_middle
+#print axioms AmbidextrousSofa.Analysis.familyPair_momenta_late
+#print axioms AmbidextrousSofa.Analysis.familyPair_signs_early
+#print axioms AmbidextrousSofa.Analysis.familyPair_signs_middle
+#print axioms AmbidextrousSofa.Analysis.familyPair_signs_late
+#print axioms AmbidextrousSofa.Analysis.familyP_matching_first
+#print axioms AmbidextrousSofa.Analysis.familyQ_matching_first
+#print axioms AmbidextrousSofa.Analysis.familyPD_matching_first
+#print axioms AmbidextrousSofa.Analysis.familyQD_matching_first
+#print axioms AmbidextrousSofa.Analysis.familyP_matching_last
+#print axioms AmbidextrousSofa.Analysis.familyQ_matching_last
+#print axioms AmbidextrousSofa.Analysis.familyPD_matching_last
+#print axioms AmbidextrousSofa.Analysis.familyQD_matching_last
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyPEarly
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyQEarly
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyPMiddle
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyQMiddle
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyPLate
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyQLate
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyP
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyQ
+#print axioms AmbidextrousSofa.Analysis.familyP_eq_adjusted
+#print axioms AmbidextrousSofa.Analysis.familyQ_eq_adjusted
+#print axioms AmbidextrousSofa.Analysis.familyPD_eq
+#print axioms AmbidextrousSofa.Analysis.familyQD_eq
+#print axioms AmbidextrousSofa.Analysis.familyPair_fluxF_eq
+#print axioms AmbidextrousSofa.Analysis.familyPair_fluxG_eq
+#print axioms AmbidextrousSofa.Analysis.familyPair_eulerF
+#print axioms AmbidextrousSofa.Analysis.familyPair_eulerG
+#print axioms AmbidextrousSofa.Analysis.familyPair_stationary
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional_le_family_of_widthTraces
+
+-- AmbidextrousSofa/Analysis/AdaptiveGlobalParameters.lean
+#print axioms AmbidextrousSofa.Analysis.familyCot
+#print axioms AmbidextrousSofa.Analysis.familyWidth
+#print axioms AmbidextrousSofa.Analysis.familyEndpoint
+#print axioms AmbidextrousSofa.Analysis.familyRadius
+#print axioms AmbidextrousSofa.Analysis.familySineCoefficient
+#print axioms AmbidextrousSofa.Analysis.familyLateSwitch
+#print axioms AmbidextrousSofa.Analysis.familyScore
+#print axioms AmbidextrousSofa.Analysis.family_phase_bounds
+#print axioms AmbidextrousSofa.Analysis.sin_family_phase_pos
+#print axioms AmbidextrousSofa.Analysis.cos_family_phase_pos
+#print axioms AmbidextrousSofa.Analysis.sin_le_cos_on_first_eighth
+#print axioms AmbidextrousSofa.Analysis.one_le_familyCot
+#print axioms AmbidextrousSofa.Analysis.familyCot_pos
+#print axioms AmbidextrousSofa.Analysis.familyCot_mul_sin_le_cos
+#print axioms AmbidextrousSofa.Analysis.one_le_cos_add_half_sin
+#print axioms AmbidextrousSofa.Analysis.familyRadius_pos
+#print axioms AmbidextrousSofa.Analysis.familyRadius_mul_sin
+#print axioms AmbidextrousSofa.Analysis.familyRadius_mul_cos
+#print axioms AmbidextrousSofa.Analysis.family_width_endpoint_rotation
+#print axioms AmbidextrousSofa.Analysis.family_switch_order
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyCot
+#print axioms AmbidextrousSofa.Analysis.continuousOn_familyCot
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyWidth
+#print axioms AmbidextrousSofa.Analysis.continuousOn_familyWidth
+#print axioms AmbidextrousSofa.Analysis.familyWidth_zero
+#print axioms AmbidextrousSofa.Analysis.familyWidth_pi_div_four
+#print axioms AmbidextrousSofa.Analysis.familyWidth_pi_div_four_lt_four_fifths
+#print axioms AmbidextrousSofa.Analysis.exists_familyWidth
+
+-- AmbidextrousSofa/Analysis/AdaptiveGlobalScalar.lean
+#print axioms AmbidextrousSofa.Analysis.beta_mem_family_interval
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyEndpoint
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyBoundary
+#print axioms AmbidextrousSofa.Analysis.continuousOn_familyEndpoint
+#print axioms AmbidextrousSofa.Analysis.familyWidth_derivative_neg
+#print axioms AmbidextrousSofa.Analysis.strictMonoOn_familyBoundary
+#print axioms AmbidextrousSofa.Analysis.familyCot_beta_identity
+#print axioms AmbidextrousSofa.Analysis.familyEndpoint_beta
+#print axioms AmbidextrousSofa.Analysis.familyWidth_beta
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyScore
+#print axioms AmbidextrousSofa.Analysis.continuousOn_familyScore
+#print axioms AmbidextrousSofa.Analysis.strictMonoOn_familyScore_before_beta
+#print axioms AmbidextrousSofa.Analysis.strictAntiOn_familyScore_after_beta
+#print axioms AmbidextrousSofa.Analysis.familyScore_lt_beta_of_ne
+#print axioms AmbidextrousSofa.Analysis.familyScore_le_beta
+#print axioms AmbidextrousSofa.Analysis.familyScore_beta
+#print axioms AmbidextrousSofa.Analysis.familyScore_le_half_M
+#print axioms AmbidextrousSofa.Analysis.familyScore_eq_half_M_iff
+
+-- AmbidextrousSofa/Analysis/AdaptiveGlobalValue.lean
+#print axioms AmbidextrousSofa.Analysis.familyValueRemainder
+#print axioms AmbidextrousSofa.Analysis.continuousOn_familyValueRemainder
+#print axioms AmbidextrousSofa.Analysis.familyValueRemainder_early
+#print axioms AmbidextrousSofa.Analysis.familyValueRemainder_middle
+#print axioms AmbidextrousSofa.Analysis.familyValueRemainder_late
+#print axioms AmbidextrousSofa.Analysis.familyEarlyValuePrimitive
+#print axioms AmbidextrousSofa.Analysis.familyLateValuePrimitive
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyEarlyValuePrimitive
+#print axioms AmbidextrousSofa.Analysis.hasDerivAt_familyLateValuePrimitive
+#print axioms AmbidextrousSofa.Analysis.intervalIntegrable_familyValueRemainder
+#print axioms AmbidextrousSofa.Analysis.integral_familyValueRemainder_early
+#print axioms AmbidextrousSofa.Analysis.integral_familyValueRemainder_middle
+#print axioms AmbidextrousSofa.Analysis.integral_familyValueRemainder_late
+#print axioms AmbidextrousSofa.Analysis.integral_familyValueRemainder
+#print axioms AmbidextrousSofa.Analysis.familyP_zero
+#print axioms AmbidextrousSofa.Analysis.familyQ_zero
+#print axioms AmbidextrousSofa.Analysis.familyP_pi_div_two
+#print axioms AmbidextrousSofa.Analysis.familyQ_pi_div_two
+#print axioms AmbidextrousSofa.Analysis.familyPair_self_variation
+#print axioms AmbidextrousSofa.Analysis.familyPair_score
+
+-- AmbidextrousSofa/Analysis/AdaptiveTranslation.lean
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.horizontalTranslate
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.p_horizontalTranslate
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.q_horizontalTranslate
+#print axioms AmbidextrousSofa.Analysis.horizontalTranslationDensity
+#print axioms AmbidextrousSofa.Analysis.horizontalTranslationPrimitive
+#print axioms AmbidextrousSofa.Analysis.continuousOn_horizontalTranslationDensity
+#print axioms AmbidextrousSofa.Analysis.continuousOn_horizontalTranslationPrimitive
+#print axioms AmbidextrousSofa.Analysis.hasDerivWithinAt_horizontalTranslationPrimitive
+#print axioms AmbidextrousSofa.Analysis.adaptiveDensity_horizontalTranslate
+#print axioms AmbidextrousSofa.Analysis.integral_horizontalTranslationDensity
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional_horizontalTranslate
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional_horizontalTranslate_of_equal_top_traces
+#print axioms AmbidextrousSofa.Analysis.adaptiveFunctional_horizontalTranslate_of_topTraces
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.widthTraces_centered
+
+-- AmbidextrousSofa/Analysis/AxisVariation.lean
+#print axioms AmbidextrousSofa.FinitePolygon.baseline_halfspace_of_endpoints
+#print axioms AmbidextrousSofa.FinitePolygon.upperPolygon_subset_of_interval_subset
+#print axioms AmbidextrousSofa.FinitePolygon.support_upperPolygon_of_interval_subset
+#print axioms AmbidextrousSofa.FinitePolygon.exists_right_axis_variation
+#print axioms AmbidextrousSofa.FinitePolygon.exists_left_axis_variation
+#print axioms AmbidextrousSofa.FinitePolygon.barrierEnvelope
+#print axioms AmbidextrousSofa.FinitePolygon.continuous_barrierEnvelope
+#print axioms AmbidextrousSofa.FinitePolygon.selected_right_axis_pressure
+#print axioms AmbidextrousSofa.FinitePolygon.selected_left_axis_pressure
+
+-- AmbidextrousSofa/Analysis/CapCompactness.lean
+#print axioms AmbidextrousSofa.CapHausdorffTendsto
+#print axioms AmbidextrousSofa.hausdorffEDist_ne_top_of_compact
+#print axioms AmbidextrousSofa.exists_mem_dist_le_hausdorff
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.exists_points_tendsto
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.mem_of_tendsto
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.convex_limit
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.subset_closed_limit
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.isDownwardCap_limit
+#print axioms AmbidextrousSofa.exists_cap_hausdorff_subsequence
+#print axioms AmbidextrousSofa.abs_coordDot_sub_le_dist
+#print axioms AmbidextrousSofa.support_le_add_hausdorff
+#print axioms AmbidextrousSofa.abs_support_sub_le_hausdorff
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.support_tendsto
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.horizontalRight_tendsto
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.horizontalLeft_tendsto
+
+-- AmbidextrousSofa/Analysis/CapInsertion.lean
+#print axioms AmbidextrousSofa.insertedCap
+#print axioms AmbidextrousSofa.support_insert
+#print axioms AmbidextrousSofa.IsDownwardCap.isDownwardCap_insertedCap
+#print axioms AmbidextrousSofa.IsDownwardCap.subset_insertedCap
+#print axioms AmbidextrousSofa.inserted_point_mem
+#print axioms AmbidextrousSofa.IsDownwardCap.support_insertedCap
+#print axioms AmbidextrousSofa.IsDownwardCap.support_insertedCap_eq_of_dominated
+#print axioms AmbidextrousSofa.IsDownwardCap.horizontalLeft_insertedCap
+#print axioms AmbidextrousSofa.IsDownwardCap.horizontalRight_insertedCap
+#print axioms AmbidextrousSofa.IsDownwardCap.horizontalProjection_insertedCap
+#print axioms AmbidextrousSofa.IsDownwardCap.capRoof_inserted_one
+
+-- AmbidextrousSofa/Analysis/CapMaximum.lean
+#print axioms AmbidextrousSofa.boxedCaps
+#print axioms AmbidextrousSofa.isCompact_boxedCaps
+#print axioms AmbidextrousSofa.continuous_capScore_on_box
+#print axioms AmbidextrousSofa.continuousOn_capScore_box
+#print axioms AmbidextrousSofa.exists_boxed_cap_max
+#print axioms AmbidextrousSofa.exists_capScore_max_of_compact_containment
+
+-- AmbidextrousSofa/Analysis/CapNicheContinuity.lean
+#print axioms AmbidextrousSofa.continuous_hyperspaceSupport
+#print axioms AmbidextrousSofa.CompactCap
+#print axioms AmbidextrousSofa.CompactCap.carrier
+#print axioms AmbidextrousSofa.CompactCap.isCap
+#print axioms AmbidextrousSofa.IsDownwardCap.toCompactCap
+#print axioms AmbidextrousSofa.IsDownwardCap.toCompactCap_carrier
+#print axioms AmbidextrousSofa.continuous_capSupport
+#print axioms AmbidextrousSofa.CompactCap.tendsto_iff_hausdorff
+#print axioms AmbidextrousSofa.IsDownwardCap.tendsto_toCompactCap
+#print axioms AmbidextrousSofa.fullWallClip
+#print axioms AmbidextrousSofa.fullWallClip_nonneg
+#print axioms AmbidextrousSofa.fullWallClip_zero
+#print axioms AmbidextrousSofa.fullWallClip_pi_div_two
+#print axioms AmbidextrousSofa.continuous_capFirstSupport
+#print axioms AmbidextrousSofa.continuous_capSecondSupport
+#print axioms AmbidextrousSofa.continuousAt_fullWallClip
+#print axioms AmbidextrousSofa.continuous_fullWallClip_on_angles
+#print axioms AmbidextrousSofa.sweptNiche_eq_sSup_clipped
+#print axioms AmbidextrousSofa.continuous_capSweptNiche
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.sweptNiche_tendsto
+
+-- AmbidextrousSofa/Analysis/CapOrder.lean
+#print axioms AmbidextrousSofa.firstWall_mono
+#print axioms AmbidextrousSofa.secondWall_mono
+#print axioms AmbidextrousSofa.cornerWall_mono
+#print axioms AmbidextrousSofa.sweptNiche_mono
+#print axioms AmbidextrousSofa.partialBarrier_mono
+#print axioms AmbidextrousSofa.IsDownwardCap.capRoof_mono
+#print axioms AmbidextrousSofa.capScore_le_of_subset_of_exterior_roof_eq
+
+-- AmbidextrousSofa/Analysis/CapReflection.lean
+#print axioms AmbidextrousSofa.horizontalReflection
+#print axioms AmbidextrousSofa.horizontalMirror
+#print axioms AmbidextrousSofa.horizontalReflection_involutive
+#print axioms AmbidextrousSofa.continuous_horizontalReflection
+#print axioms AmbidextrousSofa.mem_horizontalMirror_iff
+#print axioms AmbidextrousSofa.horizontalMirror_involutive
+#print axioms AmbidextrousSofa.horizontalReflection_combo
+#print axioms AmbidextrousSofa.IsDownwardCap.horizontalMirror
+#print axioms AmbidextrousSofa.verticalFiber_horizontalMirror
+#print axioms AmbidextrousSofa.horizontalProjection_horizontalMirror_iff
+#print axioms AmbidextrousSofa.capRoof_horizontalMirror
+#print axioms AmbidextrousSofa.support_horizontalMirror
+#print axioms AmbidextrousSofa.horizontalRight_horizontalMirror
+#print axioms AmbidextrousSofa.horizontalLeft_horizontalMirror
+#print axioms AmbidextrousSofa.capWidth_horizontalMirror
+#print axioms AmbidextrousSofa.firstWall_horizontalMirror
+#print axioms AmbidextrousSofa.secondWall_horizontalMirror
+#print axioms AmbidextrousSofa.cornerWall_horizontalMirror
+#print axioms AmbidextrousSofa.sweptNiche_horizontalMirror
+#print axioms AmbidextrousSofa.partialBarrier_horizontalMirror
+#print axioms AmbidextrousSofa.intervalSpatialScore_reflect
+#print axioms AmbidextrousSofa.capScore_horizontalMirror
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.horizontalMirror
+#print axioms AmbidextrousSofa.capHeight_horizontalMirror
+
+-- AmbidextrousSofa/Analysis/CapRoofConvergence.lean
+#print axioms AmbidextrousSofa.IsDownwardCap.integral_vertical_indicator
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.capRoof_tendsto_ae
+#print axioms AmbidextrousSofa.eventually_mem_Icc_iff_of_tendsto
+#print axioms AmbidextrousSofa.eventually_mem_Icc_iff_ae_of_tendsto
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.projection_membership_ae
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.middle_membership_ae
+
+-- AmbidextrousSofa/Analysis/CapScoreContinuity.lean
+#print axioms AmbidextrousSofa.tendsto_setIntegral_moving_domain
+#print axioms AmbidextrousSofa.IsDownwardCap.projection_subset_bounds_of_subset
+#print axioms AmbidextrousSofa.exists_uniform_sweptNiche_bound_of_compact_containment
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.exterior_roof_integral_tendsto
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.middle_niche_integral_tendsto
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.capScore_pi_div_two_tendsto
+
+-- AmbidextrousSofa/Analysis/CapTranslation.lean
+#print axioms AmbidextrousSofa.horizontalTranslate
+#print axioms AmbidextrousSofa.mem_horizontalTranslate_iff
+#print axioms AmbidextrousSofa.IsDownwardCap.horizontalTranslate
+#print axioms AmbidextrousSofa.verticalFiber_horizontalTranslate
+#print axioms AmbidextrousSofa.horizontalProjection_horizontalTranslate_iff
+#print axioms AmbidextrousSofa.capRoof_horizontalTranslate
+#print axioms AmbidextrousSofa.horizontalRight_horizontalTranslate
+#print axioms AmbidextrousSofa.horizontalLeft_horizontalTranslate
+#print axioms AmbidextrousSofa.capWidth_horizontalTranslate
+#print axioms AmbidextrousSofa.firstWall_horizontalTranslate
+#print axioms AmbidextrousSofa.secondWall_horizontalTranslate
+#print axioms AmbidextrousSofa.cornerWall_horizontalTranslate
+#print axioms AmbidextrousSofa.sweptNiche_horizontalTranslate
+#print axioms AmbidextrousSofa.partialBarrier_horizontalTranslate
+#print axioms AmbidextrousSofa.middleHalfInterval_add
+#print axioms AmbidextrousSofa.setIntegral_horizontal_shift
+#print axioms AmbidextrousSofa.capScore_horizontalTranslate
+#print axioms AmbidextrousSofa.centeredCap
+#print axioms AmbidextrousSofa.IsDownwardCap.centeredCap
+#print axioms AmbidextrousSofa.horizontalLeft_centeredCap
+#print axioms AmbidextrousSofa.horizontalRight_centeredCap
+#print axioms AmbidextrousSofa.capScore_centeredCap
+#print axioms AmbidextrousSofa.centeredCap_subset_box_of_width_le
+
+-- AmbidextrousSofa/Analysis/CapVolumeContinuity.lean
+#print axioms AmbidextrousSofa.supportBoxCorner
+#print axioms AmbidextrousSofa.norm_supportBoxCorner
+#print axioms AmbidextrousSofa.coordDot_supportBoxCorner
+#print axioms AmbidextrousSofa.support_margin_of_ball_subset
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.eventually_mem_of_mem_interior
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.eventually_notMem_of_notMem
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.indicator_tendsto_ae
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.volumeReal_tendsto
+
+-- AmbidextrousSofa/Analysis/Chord.lean
+#print axioms AmbidextrousSofa.capCut
+#print axioms AmbidextrousSofa.capCut_subset
+#print axioms AmbidextrousSofa.IsDownwardCap.isDownwardCap_capCut
+#print axioms AmbidextrousSofa.IsDownwardCap.horizontalProjection_capCut
+#print axioms AmbidextrousSofa.IsDownwardCap.capRoof_capCut
+#print axioms AmbidextrousSofa.roofChord
+#print axioms AmbidextrousSofa.continuous_roofChord
+#print axioms AmbidextrousSofa.roofChord_left
+#print axioms AmbidextrousSofa.roofChord_right
+#print axioms AmbidextrousSofa.roofChord_eq_interpolation
+#print axioms AmbidextrousSofa.concaveOn_roofChord
+#print axioms AmbidextrousSofa.ConcaveOn.roofChord_le
+#print axioms AmbidextrousSofa.ConcaveOn.le_roofChord_of_le
+#print axioms AmbidextrousSofa.ConcaveOn.le_roofChord_of_ge
+#print axioms AmbidextrousSofa.roofChord_nonneg_of_mem_Icc
+#print axioms AmbidextrousSofa.IsDownwardCap.roofChord_nonneg
+#print axioms AmbidextrousSofa.chordCap
+#print axioms AmbidextrousSofa.IsDownwardCap.isDownwardCap_chordCap
+#print axioms AmbidextrousSofa.IsDownwardCap.horizontalProjection_chordCap
+#print axioms AmbidextrousSofa.IsDownwardCap.capRoof_chordCap
+#print axioms AmbidextrousSofa.IsDownwardCap.capRoof_chordCap_inside
+#print axioms AmbidextrousSofa.IsDownwardCap.capRoof_chordCap_outside
+#print axioms AmbidextrousSofa.middleChordCap
+#print axioms AmbidextrousSofa.IsDownwardCap.middleChord_endpoints
+#print axioms AmbidextrousSofa.IsDownwardCap.isDownwardCap_middleChordCap
+#print axioms AmbidextrousSofa.IsDownwardCap.horizontalProjection_middleChordCap
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_le_middleChordCap
+#print axioms AmbidextrousSofa.IsDownwardCap.exists_heightOne_affine_middle
+
+-- AmbidextrousSofa/Analysis/Circumscription.lean
+#print axioms AmbidextrousSofa.FinitePolygon.circumscription
+#print axioms AmbidextrousSofa.FinitePolygon.circumscription_baseline
+#print axioms AmbidextrousSofa.FinitePolygon.subset_circumscription
+#print axioms AmbidextrousSofa.FinitePolygon.isDownwardCap_circumscription
+#print axioms AmbidextrousSofa.FinitePolygon.horizontalProjection_circumscription
+#print axioms AmbidextrousSofa.FinitePolygon.support_circumscription
+#print axioms AmbidextrousSofa.FinitePolygon.finiteBarrier_circumscription
+#print axioms AmbidextrousSofa.FinitePolygon.sampledPenalty_circumscription
+#print axioms AmbidextrousSofa.FinitePolygon.circumscription_subset_box
+#print axioms AmbidextrousSofa.FinitePolygon.finiteSpatialScore_le_circumscription
+
+-- AmbidextrousSofa/Analysis/DiagonalTent.lean
+#print axioms AmbidextrousSofa.diagonalRight
+#print axioms AmbidextrousSofa.diagonalLeft
+#print axioms AmbidextrousSofa.firstWall_pi_div_four_eq_diagonal
+#print axioms AmbidextrousSofa.secondWall_pi_div_four_eq_diagonal
+#print axioms AmbidextrousSofa.cornerWall_pi_div_four_eq_tent
+#print axioms AmbidextrousSofa.IsDownwardCap.diagonal_tent_le_partialBarrier
+#print axioms AmbidextrousSofa.IsDownwardCap.diagonalRight_ge
+#print axioms AmbidextrousSofa.IsDownwardCap.diagonalLeft_ge
+#print axioms AmbidextrousSofa.IsDownwardCap.capRoof_le_diagonalRight
+#print axioms AmbidextrousSofa.IsDownwardCap.capRoof_le_diagonalLeft
+#print axioms AmbidextrousSofa.IsDownwardCap.diagonalRight_le
+#print axioms AmbidextrousSofa.IsDownwardCap.diagonalLeft_le
+
+-- AmbidextrousSofa/Analysis/DirichletEnergy.lean
+#print axioms AmbidextrousSofa.Analysis.square_integral_le_length_mul_integral_square
+#print axioms AmbidextrousSofa.Analysis.integral_dirichlet_weight
+#print axioms AmbidextrousSofa.Analysis.dirichlet_pointwise
+#print axioms AmbidextrousSofa.Analysis.dirichlet_integral_square_le
+#print axioms AmbidextrousSofa.Analysis.quarter_dirichlet_coefficient_lt
+#print axioms AmbidextrousSofa.Analysis.quarter_dirichlet_integral_square_le
+#print axioms AmbidextrousSofa.Analysis.eqOn_zero_of_integral_square_eq_zero
+
+-- AmbidextrousSofa/Analysis/DyadicGrid.lean
+#print axioms AmbidextrousSofa.AngularGrid.divisions
+#print axioms AmbidextrousSofa.AngularGrid.divisions_pos
+#print axioms AmbidextrousSofa.AngularGrid.divisions_ge_two
+#print axioms AmbidextrousSofa.AngularGrid.dyadicPoint
+#print axioms AmbidextrousSofa.AngularGrid.dyadic
+#print axioms AmbidextrousSofa.AngularGrid.mem_dyadic_iff
+#print axioms AmbidextrousSofa.AngularGrid.dyadic_mono
+#print axioms AmbidextrousSofa.AngularGrid.exists_dyadic_near
+#print axioms AmbidextrousSofa.AngularGrid.dense_iUnion_dyadic
+#print axioms AmbidextrousSofa.AngularGrid.tendstoUniformlyOn_dyadic_box
+
+-- AmbidextrousSofa/Analysis/EndpointPolygons.lean
+#print axioms AmbidextrousSofa.FinitePolygon.horizontalCut_upperPolygon
+#print axioms AmbidextrousSofa.FinitePolygon.rightTrim_upperPolygon
+#print axioms AmbidextrousSofa.FinitePolygon.leftTrim_upperPolygon
+#print axioms AmbidextrousSofa.FinitePolygon.coordDot_horizontal_add
+#print axioms AmbidextrousSofa.FinitePolygon.coordDot_horizontal_sub
+#print axioms AmbidextrousSofa.FinitePolygon.rightErosion_upperPolygon
+#print axioms AmbidextrousSofa.FinitePolygon.leftErosion_upperPolygon
+#print axioms AmbidextrousSofa.FinitePolygon.upperPolygon_actual_support_eq
+
+-- AmbidextrousSofa/Analysis/EndpointPressure.lean
+#print axioms AmbidextrousSofa.extendedCapRoof
+#print axioms AmbidextrousSofa.IsDownwardCap.extendedCapRoof_eq
+#print axioms AmbidextrousSofa.IsDownwardCap.continuous_extendedCapRoof
+#print axioms AmbidextrousSofa.rightEndpointPressure
+#print axioms AmbidextrousSofa.leftEndpointPressure
+#print axioms AmbidextrousSofa.rightEndpointPressure_congr_roof
+#print axioms AmbidextrousSofa.leftEndpointPressure_congr_roof
+#print axioms AmbidextrousSofa.hasDerivAt_intervalSpatialScore_inward_right
+#print axioms AmbidextrousSofa.hasDerivAt_intervalSpatialScore_inward_left
+#print axioms AmbidextrousSofa.rightEndpointPressure_le_of_inward_comparison
+#print axioms AmbidextrousSofa.leftEndpointPressure_le_of_inward_comparison
+#print axioms AmbidextrousSofa.intervalSpatialScore_le_of_roof_eq_of_niche_le
+#print axioms AmbidextrousSofa.abs_sq_sub_sq_le_of_abs_le
+#print axioms AmbidextrousSofa.abs_support_le_of_pointwise_bound
+#print axioms AmbidextrousSofa.FinitePolygon.supportWall_mono
+#print axioms AmbidextrousSofa.FinitePolygon.finiteNiche_mono
+#print axioms AmbidextrousSofa.FinitePolygon.finiteBarrier_mono
+#print axioms AmbidextrousSofa.FinitePolygon.supportPenaltyLipschitz
+#print axioms AmbidextrousSofa.FinitePolygon.supportPenaltyLipschitz_nonneg
+#print axioms AmbidextrousSofa.FinitePolygon.abs_sampledPenalty_sub_le_of_support_control
+#print axioms AmbidextrousSofa.FinitePolygon.rightTrim_frozen_barrier_comparison
+#print axioms AmbidextrousSofa.FinitePolygon.leftTrim_frozen_barrier_comparison
+#print axioms AmbidextrousSofa.FinitePolygon.selected_right_inward_pressure
+#print axioms AmbidextrousSofa.FinitePolygon.selected_left_inward_pressure
+#print axioms AmbidextrousSofa.IsDownwardCap.continuous_partialBarrier_pi_div_two
+#print axioms AmbidextrousSofa.rightTrim_full_barrier_comparison
+#print axioms AmbidextrousSofa.leftTrim_full_barrier_comparison
+#print axioms AmbidextrousSofa.IsDownwardCap.rightEndpointPressure_le_of_max
+#print axioms AmbidextrousSofa.IsDownwardCap.leftEndpointPressure_le_of_max
+
+-- AmbidextrousSofa/Analysis/EndpointTrimming.lean
+#print axioms AmbidextrousSofa.IsDownwardCap.fst_mem_Icc
+#print axioms AmbidextrousSofa.IsDownwardCap.baseline_mem_of_mem_projection
+#print axioms AmbidextrousSofa.IsDownwardCap.inter
+#print axioms AmbidextrousSofa.horizontalCut
+#print axioms AmbidextrousSofa.horizontalCut_subset
+#print axioms AmbidextrousSofa.IsDownwardCap.horizontalCut
+#print axioms AmbidextrousSofa.horizontalProjection_horizontalCut
+#print axioms AmbidextrousSofa.horizontalLeft_horizontalCut
+#print axioms AmbidextrousSofa.horizontalRight_horizontalCut
+#print axioms AmbidextrousSofa.capRoof_horizontalCut
+#print axioms AmbidextrousSofa.rightTrim
+#print axioms AmbidextrousSofa.leftTrim
+#print axioms AmbidextrousSofa.mem_rightTrim_iff
+#print axioms AmbidextrousSofa.mem_leftTrim_iff
+#print axioms AmbidextrousSofa.rightTrim_subset
+#print axioms AmbidextrousSofa.leftTrim_subset
+#print axioms AmbidextrousSofa.rightTrim_interval_subset
+#print axioms AmbidextrousSofa.leftTrim_interval_subset
+#print axioms AmbidextrousSofa.IsDownwardCap.rightTrim
+#print axioms AmbidextrousSofa.IsDownwardCap.leftTrim
+#print axioms AmbidextrousSofa.horizontalProjection_rightTrim
+#print axioms AmbidextrousSofa.horizontalProjection_leftTrim
+#print axioms AmbidextrousSofa.horizontalLeft_rightTrim
+#print axioms AmbidextrousSofa.horizontalRight_rightTrim
+#print axioms AmbidextrousSofa.horizontalLeft_leftTrim
+#print axioms AmbidextrousSofa.horizontalRight_leftTrim
+#print axioms AmbidextrousSofa.capWidth_rightTrim
+#print axioms AmbidextrousSofa.capWidth_leftTrim
+#print axioms AmbidextrousSofa.capRoof_rightTrim
+#print axioms AmbidextrousSofa.capRoof_leftTrim
+#print axioms AmbidextrousSofa.rightErosion
+#print axioms AmbidextrousSofa.leftErosion
+#print axioms AmbidextrousSofa.rightErosion_eq_inter_horizontalTranslate
+#print axioms AmbidextrousSofa.leftErosion_eq_inter_horizontalTranslate
+#print axioms AmbidextrousSofa.rightErosion_subset
+#print axioms AmbidextrousSofa.leftErosion_subset
+#print axioms AmbidextrousSofa.rightErosion_subset_rightTrim
+#print axioms AmbidextrousSofa.leftErosion_subset_leftTrim
+#print axioms AmbidextrousSofa.IsDownwardCap.rightErosion
+#print axioms AmbidextrousSofa.IsDownwardCap.leftErosion
+#print axioms AmbidextrousSofa.horizontalProjection_rightErosion
+#print axioms AmbidextrousSofa.horizontalProjection_leftErosion
+#print axioms AmbidextrousSofa.horizontalLeft_rightErosion
+#print axioms AmbidextrousSofa.horizontalRight_rightErosion
+#print axioms AmbidextrousSofa.horizontalLeft_leftErosion
+#print axioms AmbidextrousSofa.horizontalRight_leftErosion
+#print axioms AmbidextrousSofa.capWidth_rightErosion
+#print axioms AmbidextrousSofa.capWidth_leftErosion
+#print axioms AmbidextrousSofa.capRoof_rightErosion
+#print axioms AmbidextrousSofa.capRoof_leftErosion
+#print axioms AmbidextrousSofa.support_rightErosion_le
+#print axioms AmbidextrousSofa.support_leftErosion_le
+#print axioms AmbidextrousSofa.dist_baseline_contraction_le
+#print axioms AmbidextrousSofa.exists_rightErosion_point_dist_le
+#print axioms AmbidextrousSofa.exists_leftErosion_point_dist_le
+#print axioms AmbidextrousSofa.hausdorffDist_rightErosion_le
+#print axioms AmbidextrousSofa.hausdorffDist_leftErosion_le
+#print axioms AmbidextrousSofa.hausdorffDist_rightTrim_le
+#print axioms AmbidextrousSofa.hausdorffDist_leftTrim_le
+#print axioms AmbidextrousSofa.hausdorffDist_rightErosion_le_of_one_le_width
+#print axioms AmbidextrousSofa.hausdorffDist_leftErosion_le_of_one_le_width
+#print axioms AmbidextrousSofa.hausdorffDist_rightTrim_le_of_one_le_width
+#print axioms AmbidextrousSofa.hausdorffDist_leftTrim_le_of_one_le_width
+#print axioms AmbidextrousSofa.abs_support_rightTrim_sub_le
+#print axioms AmbidextrousSofa.abs_support_leftTrim_sub_le
+#print axioms AmbidextrousSofa.abs_support_rightErosion_sub_le
+#print axioms AmbidextrousSofa.abs_support_leftErosion_sub_le
+#print axioms AmbidextrousSofa.partialBarrier_rightTrim_le
+#print axioms AmbidextrousSofa.partialBarrier_leftTrim_le
+#print axioms AmbidextrousSofa.sweptNiche_rightTrim_le
+#print axioms AmbidextrousSofa.sweptNiche_leftTrim_le
+
+-- AmbidextrousSofa/Analysis/ErosionVariation.lean
+#print axioms AmbidextrousSofa.hasDerivAt_zero_of_quadratic_bound
+#print axioms AmbidextrousSofa.endpointIntegralError
+#print axioms AmbidextrousSofa.endpointIntegralError_zero
+#print axioms AmbidextrousSofa.abs_endpointIntegralError_le
+#print axioms AmbidextrousSofa.integral_moving_eq_fixed_add_error
+#print axioms AmbidextrousSofa.WallExpr.hasDerivAt_integral_affineEnvelope_moving
+#print axioms AmbidextrousSofa.hasDerivAt_finite_intervalSpatialScore_moving
+
+-- AmbidextrousSofa/Analysis/EulerFlux.lean
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.fluxF
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.fluxG
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.forceF
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.forceG
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.continuous_fluxF
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.continuous_fluxG
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.continuous_forceF
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.continuous_forceG
+#print axioms AmbidextrousSofa.Analysis.adaptiveLinearDensity_eq_flux
+#print axioms AmbidextrousSofa.Analysis.adaptiveFirstVariation_eq_boundary
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.stationary_of_euler
+
+-- AmbidextrousSofa/Analysis/ExactEstimates.lean
+#print axioms AmbidextrousSofa.self_sub_cube_div_three_le_arctan
+#print axioms AmbidextrousSofa.eight_fifths_lt_M
+#print axioms AmbidextrousSofa.sqrt_two_lt_M
+
+-- AmbidextrousSofa/Analysis/ExposureMoments.lean
+#print axioms AmbidextrousSofa.WallExpr.sourceMass
+#print axioms AmbidextrousSofa.WallExpr.sourceMass_nonneg
+#print axioms AmbidextrousSofa.WallExpr.sourceDensity_eq_sum
+#print axioms AmbidextrousSofa.WallExpr.intervalIntegrable_sourceIndicator
+#print axioms AmbidextrousSofa.WallExpr.intervalIntegrable_sourceDensity
+#print axioms AmbidextrousSofa.WallExpr.integral_sourceDensity_eq_sum
+#print axioms AmbidextrousSofa.WallExpr.sum_sourceMass
+#print axioms AmbidextrousSofa.WallExpr.affineEnvelope_translation
+#print axioms AmbidextrousSofa.finiteSourceVariation
+#print axioms AmbidextrousSofa.finiteSourceVariation_eq_integrals
+#print axioms AmbidextrousSofa.finiteSourceVariation_add
+#print axioms AmbidextrousSofa.finiteSourceVariation_neg
+#print axioms AmbidextrousSofa.intervalSpatialScore_translate
+#print axioms AmbidextrousSofa.finiteSourceVariation_translation
+
+-- AmbidextrousSofa/Analysis/Extrusion.lean
+#print axioms AmbidextrousSofa.verticalExtrusion
+#print axioms AmbidextrousSofa.mem_verticalExtrusion_iff
+#print axioms AmbidextrousSofa.IsDownwardCap.subset_verticalExtrusion
+#print axioms AmbidextrousSofa.IsDownwardCap.verticalLift_nonneg
+#print axioms AmbidextrousSofa.IsDownwardCap.isCompact_verticalExtrusion
+#print axioms AmbidextrousSofa.IsDownwardCap.horizontalProjection_verticalExtrusion
+#print axioms AmbidextrousSofa.IsDownwardCap.isDownwardCap_verticalExtrusion
+#print axioms AmbidextrousSofa.IsDownwardCap.capRoof_verticalExtrusion
+#print axioms AmbidextrousSofa.IsDownwardCap.support_verticalExtrusion
+#print axioms AmbidextrousSofa.IsDownwardCap.firstWall_verticalExtrusion
+#print axioms AmbidextrousSofa.IsDownwardCap.secondWall_verticalExtrusion
+#print axioms AmbidextrousSofa.IsDownwardCap.cornerWall_verticalExtrusion
+#print axioms AmbidextrousSofa.IsDownwardCap.sweptNiche_verticalExtrusion_le
+#print axioms AmbidextrousSofa.IsDownwardCap.partialBarrier_verticalExtrusion_le
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_le_verticalExtrusion
+#print axioms AmbidextrousSofa.capHeight
+#print axioms AmbidextrousSofa.IsDownwardCap.capHeight_nonneg
+#print axioms AmbidextrousSofa.IsDownwardCap.capHeight_le_one
+#print axioms AmbidextrousSofa.IsDownwardCap.snd_le_capHeight
+#print axioms AmbidextrousSofa.heightSaturation
+#print axioms AmbidextrousSofa.IsDownwardCap.isDownwardCap_heightSaturation
+#print axioms AmbidextrousSofa.IsDownwardCap.horizontalProjection_heightSaturation
+#print axioms AmbidextrousSofa.IsDownwardCap.capHeight_heightSaturation
+#print axioms AmbidextrousSofa.IsDownwardCap.exists_top_heightSaturation
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_le_heightSaturation
+
+-- AmbidextrousSofa/Analysis/FacetCurvature.lean
+#print axioms AmbidextrousSofa.IsDownwardCap.face_fst_order
+#print axioms AmbidextrousSofa.IsDownwardCap.horizontalProjection_edge
+#print axioms AmbidextrousSofa.IsDownwardCap.upperCurvature_atom_eq_projection
+#print axioms AmbidextrousSofa.IsDownwardCap.capRoof_eq_of_mem_upper_edge
+#print axioms AmbidextrousSofa.FinitePolygon.eq_upper_line_iff
+#print axioms AmbidextrousSofa.FinitePolygon.capRoof_eq_roofEnvelope_of_circumscription
+#print axioms AmbidextrousSofa.FinitePolygon.outerSource_ae_eq_faceProjection
+#print axioms AmbidextrousSofa.FinitePolygon.integral_outerSource_eq_curvature_atom
+#print axioms AmbidextrousSofa.FinitePolygon.integral_outerSource_eq_clipped_projection
+
+-- AmbidextrousSofa/Analysis/FiniteEnvelope.lean
+#print axioms AmbidextrousSofa.WallExpr
+#print axioms AmbidextrousSofa.WallExpr.eval
+#print axioms AmbidextrousSofa.WallExpr.source
+#print axioms AmbidextrousSofa.WallExpr.eval_eq_source
+#print axioms AmbidextrousSofa.WallExpr.continuous_eval
+#print axioms AmbidextrousSofa.WallExpr.lipschitz_eval
+#print axioms AmbidextrousSofa.WallExpr.measurable_sourceWeight
+#print axioms AmbidextrousSofa.WallExpr.eventuallyEq_source
+#print axioms AmbidextrousSofa.WallExpr.affineEnvelope
+#print axioms AmbidextrousSofa.WallExpr.sourceDensity
+#print axioms AmbidextrousSofa.WallExpr.continuous_affineEnvelope
+#print axioms AmbidextrousSofa.WallExpr.measurable_sourceDensity
+#print axioms AmbidextrousSofa.WallExpr.hasDerivAt_affineEnvelope
+#print axioms AmbidextrousSofa.WallExpr.ae_injective_affine
+#print axioms AmbidextrousSofa.WallExpr.lipschitz_affineEnvelope_parameter
+#print axioms AmbidextrousSofa.WallExpr.hasDerivAt_integral_affineEnvelope
+#print axioms AmbidextrousSofa.WallExpr.sourceSet
+#print axioms AmbidextrousSofa.WallExpr.measurableSet_sourceSet
+#print axioms AmbidextrousSofa.WallExpr.sourceDensity_single
+#print axioms AmbidextrousSofa.WallExpr.hasDerivAt_integral_single_wall
+
+-- AmbidextrousSofa/Analysis/FiniteScore.lean
+#print axioms AmbidextrousSofa.FinitePolygon.intervalSpatialScore_eq_setIntegrals
+#print axioms AmbidextrousSofa.FinitePolygon.finiteSpatialScore_eq_integrals
+#print axioms AmbidextrousSofa.FinitePolygon.continuous_finiteBarrier_caps
+#print axioms AmbidextrousSofa.FinitePolygon.middle_finiteBarrier_integral_tendsto
+#print axioms AmbidextrousSofa.FinitePolygon.finiteSpatialScore_tendsto
+#print axioms AmbidextrousSofa.FinitePolygon.continuous_finiteSpatialScore_box
+#print axioms AmbidextrousSofa.FinitePolygon.continuousOn_finiteSpatialScore_box
+#print axioms AmbidextrousSofa.FinitePolygon.continuous_sampledPenalty_caps
+#print axioms AmbidextrousSofa.FinitePolygon.circumscription_idem
+#print axioms AmbidextrousSofa.FinitePolygon.exists_boxed_selected_polygon
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_eq_intervalSpatialScore
+
+-- AmbidextrousSofa/Analysis/FiniteVariation.lean
+#print axioms AmbidextrousSofa.intervalSpatialScore
+#print axioms AmbidextrousSofa.intervalSpatialScore_eq_whole_sub_middle
+#print axioms AmbidextrousSofa.hasDerivAt_primitive_affine_endpoint
+#print axioms AmbidextrousSofa.hasDerivAt_integral_affine_endpoints
+#print axioms AmbidextrousSofa.hasDerivAt_intervalSpatialScore_endpoints
+#print axioms AmbidextrousSofa.hasDerivAt_intervalSpatialScore_right
+#print axioms AmbidextrousSofa.hasDerivAt_intervalSpatialScore_left
+#print axioms AmbidextrousSofa.hasDerivAt_nonpos_of_right_max
+#print axioms AmbidextrousSofa.hasDerivAt_finite_intervalSpatialScore
+#print axioms AmbidextrousSofa.finite_selected_exposure_inequality
+
+-- AmbidextrousSofa/Analysis/GlobalCapMaximum.lean
+#print axioms AmbidextrousSofa.IsFullCapMaximizer
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.isCap
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.reference_le
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.width_bounds
+#print axioms AmbidextrousSofa.exists_fullCapMaximizer
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.of_score_le
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.exists_heightOne_affine_middle
+#print axioms AmbidextrousSofa.exists_canonical_fullCapMaximizer
+
+-- AmbidextrousSofa/Analysis/GridNiche.lean
+#print axioms AmbidextrousSofa.AngularGrid.QuarterAngle
+#print axioms AmbidextrousSofa.AngularGrid.zeroAngle
+#print axioms AmbidextrousSofa.AngularGrid.niche
+#print axioms AmbidextrousSofa.AngularGrid.clip_le_niche
+#print axioms AmbidextrousSofa.AngularGrid.niche_nonneg
+#print axioms AmbidextrousSofa.AngularGrid.niche_le_iff
+#print axioms AmbidextrousSofa.AngularGrid.niche_mono
+#print axioms AmbidextrousSofa.AngularGrid.continuous_niche
+#print axioms AmbidextrousSofa.AngularGrid.clip_le_sweptNiche
+#print axioms AmbidextrousSofa.AngularGrid.niche_le_sweptNiche
+#print axioms AmbidextrousSofa.AngularGrid.isLUB_niche
+#print axioms AmbidextrousSofa.AngularGrid.tendsto_niche
+#print axioms AmbidextrousSofa.AngularGrid.tendstoUniformlyOn_niche
+#print axioms AmbidextrousSofa.AngularGrid.tendstoUniformlyOn_niche_box
+#print axioms AmbidextrousSofa.AngularGrid.denseAngles
+#print axioms AmbidextrousSofa.AngularGrid.denseRange_denseAngles
+#print axioms AmbidextrousSofa.AngularGrid.exhaustion
+#print axioms AmbidextrousSofa.AngularGrid.exhaustion_mono
+#print axioms AmbidextrousSofa.AngularGrid.dense_iUnion_exhaustion
+#print axioms AmbidextrousSofa.AngularGrid.tendstoUniformlyOn_exhaustion_box
+
+-- AmbidextrousSofa/Analysis/GridPolygon.lean
+#print axioms AmbidextrousSofa.AngularGrid.interior
+#print axioms AmbidextrousSofa.AngularGrid.InteriorPoint
+#print axioms AmbidextrousSofa.AngularGrid.SourceIndex
+#print axioms AmbidextrousSofa.AngularGrid.interiorPoint_mem
+#print axioms AmbidextrousSofa.AngularGrid.interiorPoint_mem_grid
+#print axioms AmbidextrousSofa.AngularGrid.normal
+#print axioms AmbidextrousSofa.AngularGrid.fullAngle
+#print axioms AmbidextrousSofa.AngularGrid.pairList
+#print axioms AmbidextrousSofa.AngularGrid.pair_mem_pairList
+#print axioms AmbidextrousSofa.AngularGrid.normal_eq_unitNormal
+#print axioms AmbidextrousSofa.AngularGrid.fullAngle_mem
+#print axioms AmbidextrousSofa.AngularGrid.fullAngle_injective
+#print axioms AmbidextrousSofa.AngularGrid.normal_snd_pos
+#print axioms AmbidextrousSofa.AngularGrid.normal_fst_ne_zero
+#print axioms AmbidextrousSofa.AngularGrid.normal_unit
+#print axioms AmbidextrousSofa.AngularGrid.sourceSlope_eq_tan
+#print axioms AmbidextrousSofa.AngularGrid.sourceSlope_injective
+#print axioms AmbidextrousSofa.AngularGrid.normal_det_ne_zero
+#print axioms AmbidextrousSofa.AngularGrid.wallSlopes_injective
+#print axioms AmbidextrousSofa.AngularGrid.finiteBarrier_eq_niche
+
+-- AmbidextrousSofa/Analysis/GridScore.lean
+#print axioms AmbidextrousSofa.AngularGrid.score
+#print axioms AmbidextrousSofa.AngularGrid.score_eq_integrals
+#print axioms AmbidextrousSofa.AngularGrid.score_sub_capScore_eq
+#print axioms AmbidextrousSofa.AngularGrid.capScore_le_score
+#print axioms AmbidextrousSofa.AngularGrid.score_sub_capScore_le
+#print axioms AmbidextrousSofa.AngularGrid.eventually_score_error_le
+#print axioms AmbidextrousSofa.AngularGrid.exists_level_score_error_le
+
+-- AmbidextrousSofa/Analysis/GridSeparation.lean
+#print axioms AmbidextrousSofa.AngularGrid.eqOn_quarter_of_interior_dyadic
+#print axioms AmbidextrousSofa.AngularGrid.eq_of_dyadic_support_eq
+
+-- AmbidextrousSofa/Analysis/LowHeightAlgebra.lean
+#print axioms AmbidextrousSofa.lowHeightBound
+#print axioms AmbidextrousSofa.lowHeightSurrogate
+#print axioms AmbidextrousSofa.lowHeightBound_lt_four_fifths
+#print axioms AmbidextrousSofa.lowHeightBound_lt_half_M
+#print axioms AmbidextrousSofa.lowHeight_sqrt_bounds
+#print axioms AmbidextrousSofa.positivePart_square_pair_bound
+#print axioms AmbidextrousSofa.lowHeight_unclipped_bound
+#print axioms AmbidextrousSofa.lowHeight_surrogate_bound
+#print axioms AmbidextrousSofa.lowHeight_large_width_unclipped_bound
+#print axioms AmbidextrousSofa.lowHeight_large_width_clipped_bound
+#print axioms AmbidextrousSofa.lowHeight_small_width_bound
+
+-- AmbidextrousSofa/Analysis/LowHeightGeometry.lean
+#print axioms AmbidextrousSofa.lowCeiling
+#print axioms AmbidextrousSofa.continuous_lowCeiling
+#print axioms AmbidextrousSofa.eqOn_roofChord_of_affine
+#print axioms AmbidextrousSofa.IsDownwardCap.capRoof_le_lowCeiling_of_affine_middle
+#print axioms AmbidextrousSofa.integral_lowCeiling_left
+#print axioms AmbidextrousSofa.lowCeiling_eq_quarter_add
+#print axioms AmbidextrousSofa.IsDownwardCap.lowHeight_diagonal_excess_bounds
+#print axioms AmbidextrousSofa.IsDownwardCap.lowHeight_reward_le
+
+-- AmbidextrousSofa/Analysis/LowHeightMaximizer.lean
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_lt_lowHeightBound_of_low_middle_left
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.middle_left_gt_half_of_right_eq_one
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.middle_endpoints_gt_half_of_affine_nonneg
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.middle_endpoints_gt_half_of_affine
+
+-- AmbidextrousSofa/Analysis/LowHeightScore.lean
+#print axioms AmbidextrousSofa.IsDownwardCap.intervalIntegrable_partialBarrier
+#print axioms AmbidextrousSofa.capScore_centered_quarters
+#print axioms AmbidextrousSofa.IsDownwardCap.lowHeight_right_reward_le
+#print axioms AmbidextrousSofa.IsDownwardCap.lowHeight_left_reward_le
+#print axioms AmbidextrousSofa.IsDownwardCap.lowHeight_refined_reward_le
+#print axioms AmbidextrousSofa.IsDownwardCap.lowHeight_middle_niche_lower
+#print axioms AmbidextrousSofa.IsDownwardCap.baseline_positive_tent_integral_le
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_lt_lowHeightBound_of_ceiling
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_lt_lowHeightBound_of_affine_middle
+
+-- AmbidextrousSofa/Analysis/PersistentPenalty.lean
+#print axioms AmbidextrousSofa.FinitePolygon.aggregateWeight
+#print axioms AmbidextrousSofa.FinitePolygon.aggregateWeight_nonneg
+#print axioms AmbidextrousSofa.FinitePolygon.sum_aggregateWeight
+#print axioms AmbidextrousSofa.FinitePolygon.heightPenalty_aggregate
+#print axioms AmbidextrousSofa.FinitePolygon.sampledPenalty_nonneg
+#print axioms AmbidextrousSofa.FinitePolygon.sampledPenalty_mul
+#print axioms AmbidextrousSofa.FinitePolygon.sampledPenalty_self
+#print axioms AmbidextrousSofa.AngularGrid.liftInterior
+#print axioms AmbidextrousSofa.AngularGrid.liftSource
+#print axioms AmbidextrousSofa.AngularGrid.normal_liftSource
+#print axioms AmbidextrousSofa.AngularGrid.SampleIndex
+#print axioms AmbidextrousSofa.AngularGrid.sampleSource
+#print axioms AmbidextrousSofa.AngularGrid.levelWeight
+#print axioms AmbidextrousSofa.AngularGrid.levelWeight_pos
+#print axioms AmbidextrousSofa.AngularGrid.sampleWeight
+#print axioms AmbidextrousSofa.AngularGrid.stageWeight
+#print axioms AmbidextrousSofa.AngularGrid.stageWeight_nonneg
+#print axioms AmbidextrousSofa.AngularGrid.sum_levelWeight_le
+#print axioms AmbidextrousSofa.AngularGrid.sum_half_pow
+#print axioms AmbidextrousSofa.AngularGrid.sum_stageWeight_le_one
+#print axioms AmbidextrousSofa.AngularGrid.stagePenalty
+#print axioms AmbidextrousSofa.AngularGrid.stagePenalty_nonneg
+#print axioms AmbidextrousSofa.AngularGrid.stagePenalty_eq_sum
+#print axioms AmbidextrousSofa.AngularGrid.persistent_sample_bound
+#print axioms AmbidextrousSofa.AngularGrid.stagePenalty_self
+#print axioms AmbidextrousSofa.AngularGrid.selectionRate
+#print axioms AmbidextrousSofa.AngularGrid.selectionRate_pos
+#print axioms AmbidextrousSofa.AngularGrid.selectionRate_tendsto
+
+-- AmbidextrousSofa/Analysis/PolygonEnvelope.lean
+#print axioms AmbidextrousSofa.FinitePolygon.roofExprList
+#print axioms AmbidextrousSofa.FinitePolygon.roofExpr
+#print axioms AmbidextrousSofa.FinitePolygon.le_eval_roofExprList_iff
+#print axioms AmbidextrousSofa.FinitePolygon.le_eval_roofExpr_iff
+#print axioms AmbidextrousSofa.FinitePolygon.wallSlope
+#print axioms AmbidextrousSofa.FinitePolygon.roofIntercept
+#print axioms AmbidextrousSofa.FinitePolygon.barrierIntercept
+#print axioms AmbidextrousSofa.FinitePolygon.outwardVelocity
+#print axioms AmbidextrousSofa.FinitePolygon.wallSlope_injective
+#print axioms AmbidextrousSofa.FinitePolygon.roofEnvelope
+#print axioms AmbidextrousSofa.FinitePolygon.le_upper_line_iff
+#print axioms AmbidextrousSofa.FinitePolygon.le_roofEnvelope_iff
+#print axioms AmbidextrousSofa.FinitePolygon.mem_upperPolygon_iff_roofEnvelope
+#print axioms AmbidextrousSofa.FinitePolygon.capRoof_upperPolygon
+#print axioms AmbidextrousSofa.FinitePolygon.continuous_roofEnvelope
+#print axioms AmbidextrousSofa.FinitePolygon.roofEnvelope_update
+#print axioms AmbidextrousSofa.FinitePolygon.supportWall
+#print axioms AmbidextrousSofa.FinitePolygon.supportWall_unitNormal
+#print axioms AmbidextrousSofa.FinitePolygon.supportWall_companionNormal
+#print axioms AmbidextrousSofa.FinitePolygon.cornerExpr
+#print axioms AmbidextrousSofa.FinitePolygon.nicheExpr
+#print axioms AmbidextrousSofa.FinitePolygon.barrierExpr
+#print axioms AmbidextrousSofa.FinitePolygon.finiteNiche
+#print axioms AmbidextrousSofa.FinitePolygon.finiteBarrier
+#print axioms AmbidextrousSofa.FinitePolygon.finiteNiche_le_iff
+#print axioms AmbidextrousSofa.FinitePolygon.finiteNiche_nonneg
+#print axioms AmbidextrousSofa.FinitePolygon.finiteBarrier_nonneg
+#print axioms AmbidextrousSofa.FinitePolygon.finiteNiche_eq_eval
+#print axioms AmbidextrousSofa.FinitePolygon.finiteBarrier_eq_eval
+#print axioms AmbidextrousSofa.FinitePolygon.continuous_finiteBarrier
+#print axioms AmbidextrousSofa.FinitePolygon.finiteBarrier_eq_affineEnvelope_update
+#print axioms AmbidextrousSofa.FinitePolygon.finiteBarrier_le_partialBarrier
+#print axioms AmbidextrousSofa.FinitePolygon.horizontalLeft_upperPolygon
+#print axioms AmbidextrousSofa.FinitePolygon.horizontalRight_upperPolygon
+#print axioms AmbidextrousSofa.FinitePolygon.finiteSpatialScore
+#print axioms AmbidextrousSofa.FinitePolygon.intervalSpatialScore_congr_roof
+#print axioms AmbidextrousSofa.FinitePolygon.finiteSpatialScore_upperPolygon
+
+-- AmbidextrousSofa/Analysis/PolygonExposure.lean
+#print axioms AmbidextrousSofa.FinitePolygon.heightPenalty
+#print axioms AmbidextrousSofa.FinitePolygon.sampledPenalty
+#print axioms AmbidextrousSofa.FinitePolygon.sampledPenalty_eq_heightPenalty
+#print axioms AmbidextrousSofa.FinitePolygon.hasDerivAt_heightPenalty_update
+#print axioms AmbidextrousSofa.FinitePolygon.finiteSpatialScore_upperPolygon_update
+#print axioms AmbidextrousSofa.FinitePolygon.selected_polygon_exposure_inequality
+#print axioms AmbidextrousSofa.FinitePolygon.outwardVelocity_eq_single
+#print axioms AmbidextrousSofa.FinitePolygon.integral_sourceDensity_outward
+
+-- AmbidextrousSofa/Analysis/PolygonVariation.lean
+#print axioms AmbidextrousSofa.FinitePolygon.upperPolygon
+#print axioms AmbidextrousSofa.FinitePolygon.mem_upperPolygon_iff
+#print axioms AmbidextrousSofa.FinitePolygon.isCompact_upperPolygon
+#print axioms AmbidextrousSofa.FinitePolygon.convex_upperPolygon
+#print axioms AmbidextrousSofa.FinitePolygon.isDownwardCap_upperPolygon
+#print axioms AmbidextrousSofa.FinitePolygon.horizontalProjection_upperPolygon
+#print axioms AmbidextrousSofa.FinitePolygon.upperPolygon_mono
+#print axioms AmbidextrousSofa.FinitePolygon.upperPolygon_subset_outward
+#print axioms AmbidextrousSofa.FinitePolygon.support_outward_unchanged
+#print axioms AmbidextrousSofa.FinitePolygon.exists_outward_attaining_point
+#print axioms AmbidextrousSofa.FinitePolygon.coordDot_ne_on_face
+#print axioms AmbidextrousSofa.FinitePolygon.midpoint_strict_face
+#print axioms AmbidextrousSofa.FinitePolygon.exists_outward_support_variation
+
+-- AmbidextrousSofa/Analysis/PositiveTent.lean
+#print axioms AmbidextrousSofa.hasDerivAt_positivePart_square
+#print axioms AmbidextrousSofa.integral_positive_ramp_add
+#print axioms AmbidextrousSofa.integral_positive_ramp_sub
+#print axioms AmbidextrousSofa.integral_positive_tent
+#print axioms AmbidextrousSofa.integral_positive_tent_centered
+#print axioms AmbidextrousSofa.min_symmetric_lines
+
+-- AmbidextrousSofa/Analysis/QuadraticEnergy.lean
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.normIntegral
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.derivativeIntegral
+#print axioms AmbidextrousSofa.Analysis.quadraticEnergy
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.integrable_normSquare
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.integrable_derivativeSquare
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.normIntegral_nonneg
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.derivativeIntegral_nonneg
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.normIntegral_le_derivativeIntegral
+#print axioms AmbidextrousSofa.Analysis.quadraticEnergy_eq_gauge
+#print axioms AmbidextrousSofa.Analysis.quadraticEnergy_ge_gauge_derivative
+#print axioms AmbidextrousSofa.Analysis.quadraticEnergy_nonneg
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.eqOn_zero_of_normIntegral_eq_zero
+#print axioms AmbidextrousSofa.Analysis.eqOn_zero_of_quadraticEnergy_eq_zero
+#print axioms AmbidextrousSofa.Analysis.quadraticEnergy_pos_of_ne_zero
+
+-- AmbidextrousSofa/Analysis/QuarterFunctions.lean
+#print axioms AmbidextrousSofa.Analysis.QuarterPair
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.ZeroTraces
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.SameTraces
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.sub
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.zeroTraces_sub
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.gauge
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.gauge_zeroTraces
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.gauge_norm_sq
+#print axioms AmbidextrousSofa.Analysis.QuarterPair.gauge_energy_identity
+
+-- AmbidextrousSofa/Analysis/RoofContinuity.lean
+#print axioms AmbidextrousSofa.continuousWithinAt_of_upperSemicontinuousWithinAt_of_lower_support
+#print axioms AmbidextrousSofa.IsDownwardCap.continuousOn_capRoof_Icc
+#print axioms AmbidextrousSofa.IsDownwardCap.continuousOn_capRoof
+
+-- AmbidextrousSofa/Analysis/SelectedCurvature.lean
+#print axioms AmbidextrousSofa.FinitePolygon.outward_sourceDensity_nonneg
+#print axioms AmbidextrousSofa.FinitePolygon.intervalIntegrable_outward_sourceDensity
+#print axioms AmbidextrousSofa.AngularGrid.outerDensity
+#print axioms AmbidextrousSofa.AngularGrid.innerDensity
+#print axioms AmbidextrousSofa.AngularGrid.outerDensity_nonneg
+#print axioms AmbidextrousSofa.AngularGrid.innerDensity_nonneg
+#print axioms AmbidextrousSofa.AngularGrid.intervalIntegrable_outerDensity
+#print axioms AmbidextrousSofa.AngularGrid.intervalIntegrable_innerDensity
+#print axioms AmbidextrousSofa.AngularGrid.selectionDefect
+#print axioms AmbidextrousSofa.AngularGrid.selectionDefect_nonneg
+#print axioms AmbidextrousSofa.AngularGrid.IsSelectedPolygon.curvature_atom_le
+#print axioms AmbidextrousSofa.AngularGrid.sum_selectionDefect_le
+#print axioms AmbidextrousSofa.AngularGrid.selectionDefect_sum_tendsto
+
+-- AmbidextrousSofa/Analysis/SelectedSequence.lean
+#print axioms AmbidextrousSofa.AngularGrid.IsSelectedPolygon
+#print axioms AmbidextrousSofa.AngularGrid.IsSelectedPolygon.isCap
+#print axioms AmbidextrousSofa.AngularGrid.IsSelectedPolygon.inBox
+#print axioms AmbidextrousSofa.AngularGrid.IsSelectedPolygon.polygon_eq
+#print axioms AmbidextrousSofa.AngularGrid.IsSelectedPolygon.maximizes
+#print axioms AmbidextrousSofa.AngularGrid.exists_selected_polygon
+#print axioms AmbidextrousSofa.AngularGrid.IsSelectedPolygon.penalty_le
+#print axioms AmbidextrousSofa.AngularGrid.exists_selected_approximations
+#print axioms AmbidextrousSofa.AngularGrid.eq_of_penalty_tendsto
+#print axioms AmbidextrousSofa.AngularGrid.exists_selected_sequence
+
+-- AmbidextrousSofa/Analysis/SupportCurvature.lean
+#print axioms AmbidextrousSofa.coordDot_eq_imported_dot
+#print axioms AmbidextrousSofa.unitNormal_eq_imported_uvec
+#print axioms AmbidextrousSofa.angleSupport_eq_imported_supp
+#print axioms AmbidextrousSofa.IsDownwardCap.imported_isConvexBody
+#print axioms AmbidextrousSofa.imported_hausdorffDist_le_two_mul
+#print axioms AmbidextrousSofa.CapHausdorffTendsto.imported_hausdorffTendsto
+#print axioms AmbidextrousSofa.upperCurvature
+#print axioms AmbidextrousSofa.upperCurvature_isLocallyFiniteMeasure
+#print axioms AmbidextrousSofa.IsDownwardCap.upperCurvature_Ioc
+#print axioms AmbidextrousSofa.IsDownwardCap.angleSupport_right_deriv
+#print axioms AmbidextrousSofa.IsDownwardCap.angleSupport_left_deriv
+
+-- AmbidextrousSofa/Analysis/TopFacetEndpoints.lean
+#print axioms AmbidextrousSofa.roofChord_eq_affine
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.middle_right_eq_one_of_affine_nonneg
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.middle_left_eq_one_of_affine_nonpos
+
+-- AmbidextrousSofa/Analysis/TopInsertion.lean
+#print axioms AmbidextrousSofa.IsDownwardCap.firstWall_inserted_top
+#print axioms AmbidextrousSofa.IsDownwardCap.clippedCorner_inserted_top
+#print axioms AmbidextrousSofa.IsDownwardCap.sweptNiche_inserted_top
+#print axioms AmbidextrousSofa.IsDownwardCap.partialBarrier_inserted_top
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_lt_inserted_middle_right
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.middle_right_eq_one_of_top_right
+
+-- AmbidextrousSofa/Analysis/WideCap.lean
+#print axioms AmbidextrousSofa.IsDownwardCap.left_baseline_mem
+#print axioms AmbidextrousSofa.IsDownwardCap.right_baseline_mem
+#print axioms AmbidextrousSofa.IsDownwardCap.firstWall_pi_div_four_lower
+#print axioms AmbidextrousSofa.IsDownwardCap.secondWall_pi_div_four_lower
+#print axioms AmbidextrousSofa.cornerWall_pi_div_four_le_partialBarrier
+#print axioms AmbidextrousSofa.IsDownwardCap.baseline_tent_le_partialBarrier
+#print axioms AmbidextrousSofa.integral_middleHalf_baseline_tent
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_le_width_quadratic
+#print axioms AmbidextrousSofa.IsDownwardCap.capScore_lt_half_M_of_six_le_width
+#print axioms AmbidextrousSofa.IsDownwardCap.competitive_width_bounds
 
 -- AmbidextrousSofa/ExactConstant.lean
 #print axioms AmbidextrousSofa.cubic
@@ -222,6 +1317,18 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.isClosed_actualHull
 #print axioms AmbidextrousSofa.isDownwardCap_upper_actualHull
 
+-- AmbidextrousSofa/Geometry/MotionReduction.lean
+#print axioms AmbidextrousSofa.Passage.subset_frameHall_at
+#print axioms AmbidextrousSofa.Passage.terminal_frameStrip
+#print axioms AmbidextrousSofa.Passage.volumeReal_le_sqrt_two_of_wrongWay
+#print axioms AmbidextrousSofa.Passage.volumeReal_le_sqrt_two_of_small_terminalAngle
+#print axioms AmbidextrousSofa.Passage.frameAngle_gt_neg_pi_div_four
+#print axioms AmbidextrousSofa.Passage.terminal_frameAngle_gt_pi_div_four
+#print axioms AmbidextrousSofa.Passage.exists_effectiveAngle
+#print axioms AmbidextrousSofa.hullCap_constraints_of_large_passages
+#print axioms AmbidextrousSofa.IsAmbidextrous.exists_normalized_angularConstraints
+#print axioms AmbidextrousSofa.IsAmbidextrous.original_domain_score_reduction
+
 -- AmbidextrousSofa/Geometry/Motions.lean
 #print axioms AmbidextrousSofa.motionInterval
 #print axioms AmbidextrousSofa.RigidMotionPath
@@ -296,6 +1403,30 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.eq_upperCap_inter_reflectedCap
 #print axioms AmbidextrousSofa.actualHull_eq_inter_hullCaps
 
+-- AmbidextrousSofa/Geometry/RigidMotion.lean
+#print axioms AmbidextrousSofa.rotate_rotate
+#print axioms AmbidextrousSofa.rotate_add_vector
+#print axioms AmbidextrousSofa.rotate_sub_vector
+#print axioms AmbidextrousSofa.rotate_neg_rotate
+#print axioms AmbidextrousSofa.rotate_rotate_neg
+#print axioms AmbidextrousSofa.continuous_rotate
+#print axioms AmbidextrousSofa.continuous_rigidMap
+#print axioms AmbidextrousSofa.rotationLinearMap
+#print axioms AmbidextrousSofa.rotationLinearMap_apply
+#print axioms AmbidextrousSofa.coe_rotationLinearMap
+#print axioms AmbidextrousSofa.det_rotationLinearMap
+#print axioms AmbidextrousSofa.rotationHomeomorph
+#print axioms AmbidextrousSofa.rigidHomeomorph
+#print axioms AmbidextrousSofa.rigidMap_injective
+#print axioms AmbidextrousSofa.rigidMap_surjective
+#print axioms AmbidextrousSofa.rigidMap_eq_of_rotate_eq
+#print axioms AmbidextrousSofa.RigidMotionPath.rebase
+#print axioms AmbidextrousSofa.RigidMotionPath.rebase_angle_zero
+#print axioms AmbidextrousSofa.RigidMotionPath.rebase_placement
+#print axioms AmbidextrousSofa.Passage.rebase
+#print axioms AmbidextrousSofa.Passage.rebase_of_same_rotation
+#print axioms AmbidextrousSofa.IsAmbidextrous.exists_normalized_passages
+
 -- AmbidextrousSofa/Geometry/Support.lean
 #print axioms AmbidextrousSofa.coordDot
 #print axioms AmbidextrousSofa.coordDot_comm
@@ -342,6 +1473,315 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.IsDownwardCap.support_downward
 #print axioms AmbidextrousSofa.IsDownwardCap.support_upward_nonneg
 #print axioms AmbidextrousSofa.IsDownwardCap.support_upward_le_one
+
+-- AmbidextrousSofa/Geometry/UpwardSupport.lean
+#print axioms AmbidextrousSofa.exists_quarter_polar
+#print axioms AmbidextrousSofa.exists_upper_polar
+#print axioms AmbidextrousSofa.IsDownwardCap.support_eq_horizontal_of_snd_nonpos
+#print axioms AmbidextrousSofa.IsDownwardCap.eq_of_upward_support_eq
+#print axioms AmbidextrousSofa.IsDownwardCap.eq_of_quarter_support_eq
+
+-- AmbidextrousSofa/Imported/ConvexBody.lean
+#print axioms AmbidextrousSofa.Imported.IsConvexBody
+#print axioms AmbidextrousSofa.Imported.supp
+#print axioms AmbidextrousSofa.Imported.suppLine
+#print axioms AmbidextrousSofa.Imported.suppHalf
+#print axioms AmbidextrousSofa.Imported.width
+#print axioms AmbidextrousSofa.Imported.edge
+#print axioms AmbidextrousSofa.Imported.vplus
+#print axioms AmbidextrousSofa.Imported.vminus
+#print axioms AmbidextrousSofa.Imported.vint
+#print axioms AmbidextrousSofa.Imported.hausdorffDist
+#print axioms AmbidextrousSofa.Imported.HausdorffTendsto
+#print axioms AmbidextrousSofa.Imported.IsConvexBody.isClosed
+#print axioms AmbidextrousSofa.Imported.IsConvexBody.isBounded
+#print axioms AmbidextrousSofa.Imported.cb_bddAbove
+#print axioms AmbidextrousSofa.Imported.cb_bddBelow
+#print axioms AmbidextrousSofa.Imported.dot_le_supp
+#print axioms AmbidextrousSofa.Imported.exists_dot_eq_supp
+#print axioms AmbidextrousSofa.Imported.supp_le_of_forall
+#print axioms AmbidextrousSofa.Imported.supp_mono
+#print axioms AmbidextrousSofa.Imported.supp_eq_of_mem
+#print axioms AmbidextrousSofa.Imported.supp_eq_of_squeeze
+#print axioms AmbidextrousSofa.Imported.supp_add_two_pi
+#print axioms AmbidextrousSofa.Imported.continuous_supp
+#print axioms AmbidextrousSofa.Imported.IsConvexBody.continuous_supp
+#print axioms AmbidextrousSofa.Imported.exists_lipschitzWith_supp
+#print axioms AmbidextrousSofa.Imported.mem_iff_forall_dot_le_supp
+#print axioms AmbidextrousSofa.Imported.eq_of_supp_eq
+#print axioms AmbidextrousSofa.Imported.supp_translate
+#print axioms AmbidextrousSofa.Imported.exists_abs_supp_le
+#print axioms AmbidextrousSofa.Imported.abs_supp_le_box
+#print axioms AmbidextrousSofa.Imported.abs_supp_sub_le_hausdorffDist
+#print axioms AmbidextrousSofa.Imported.hausdorffDist_nonneg
+#print axioms AmbidextrousSofa.Imported.tendsto_supp
+#print axioms AmbidextrousSofa.Imported.mem_edge_iff
+#print axioms AmbidextrousSofa.Imported.isCompact_edge
+#print axioms AmbidextrousSofa.Imported.cb_edge_nonempty
+#print axioms AmbidextrousSofa.Imported.cb_eq_of_mem_edge
+#print axioms AmbidextrousSofa.Imported.dot_vplus_vvec
+#print axioms AmbidextrousSofa.Imported.dot_vminus_vvec
+#print axioms AmbidextrousSofa.Imported.cb_vplus_mem_edge
+#print axioms AmbidextrousSofa.Imported.cb_vminus_mem_edge
+#print axioms AmbidextrousSofa.Imported.dot_le_dot_vplus
+#print axioms AmbidextrousSofa.Imported.dot_vminus_le_dot
+#print axioms AmbidextrousSofa.Imported.vplus_mem_edge
+#print axioms AmbidextrousSofa.Imported.vminus_mem_edge
+#print axioms AmbidextrousSofa.Imported.edge_eq_segment
+#print axioms AmbidextrousSofa.Imported.dot_vplus_uvec
+#print axioms AmbidextrousSofa.Imported.dot_vminus_uvec
+#print axioms AmbidextrousSofa.Imported.dot_vminus_le_dot_vplus
+#print axioms AmbidextrousSofa.Imported.vint_mem_line_left
+#print axioms AmbidextrousSofa.Imported.vint_mem_line_right
+#print axioms AmbidextrousSofa.Imported.cb_dot_uvec_left
+#print axioms AmbidextrousSofa.Imported.cb_frame_left
+#print axioms AmbidextrousSofa.Imported.cb_tendsto_of_dot
+#print axioms AmbidextrousSofa.Imported.cb_tendsto_core
+#print axioms AmbidextrousSofa.Imported.cb_coef_core
+#print axioms AmbidextrousSofa.Imported.cb_tendsto_cos_right
+#print axioms AmbidextrousSofa.Imported.cb_tendsto_sin_right
+#print axioms AmbidextrousSofa.Imported.cb_tendsto_cos_left
+#print axioms AmbidextrousSofa.Imported.cb_tendsto_sin_left
+#print axioms AmbidextrousSofa.Imported.cb_sin_pos_right
+#print axioms AmbidextrousSofa.Imported.cb_sin_pos_left
+#print axioms AmbidextrousSofa.Imported.cb_tendsto_right
+#print axioms AmbidextrousSofa.Imported.cb_tendsto_left
+#print axioms AmbidextrousSofa.Imported.cb_dot_vint_left
+#print axioms AmbidextrousSofa.Imported.tendsto_vplus_right
+#print axioms AmbidextrousSofa.Imported.tendsto_vminus_right
+#print axioms AmbidextrousSofa.Imported.tendsto_vint_right
+#print axioms AmbidextrousSofa.Imported.tendsto_vplus_left
+#print axioms AmbidextrousSofa.Imported.tendsto_vminus_left
+#print axioms AmbidextrousSofa.Imported.tendsto_vint_left
+#print axioms AmbidextrousSofa.Imported.cb_tendsto_sin_div
+#print axioms AmbidextrousSofa.Imported.cb_tendsto_cos_sub_div
+#print axioms AmbidextrousSofa.Imported.cb_tendsto_sub
+#print axioms AmbidextrousSofa.Imported.hasDerivWithinAt_supp_right
+#print axioms AmbidextrousSofa.Imported.hasDerivWithinAt_supp_left
+#print axioms AmbidextrousSofa.Imported.dot_vminus_vvec_of_hasDerivAt
+#print axioms AmbidextrousSofa.Imported.dot_vplus_vvec_of_hasDerivAt
+
+-- AmbidextrousSofa/Imported/LebesgueStieltjes.lean
+#print axioms AmbidextrousSofa.Imported.clampFun
+#print axioms AmbidextrousSofa.Imported.lsMeasure
+#print axioms AmbidextrousSofa.Imported.clampFun_of_mem
+#print axioms AmbidextrousSofa.Imported.clampFun_of_le
+#print axioms AmbidextrousSofa.Imported.clamp_mem
+#print axioms AmbidextrousSofa.Imported.clampFun_congr
+#print axioms AmbidextrousSofa.Imported.monotone_clamp
+#print axioms AmbidextrousSofa.Imported.continuous_clamp
+#print axioms AmbidextrousSofa.Imported.boundedVariationOn_clampFun
+#print axioms AmbidextrousSofa.Imported.continuousWithinAt_clampFun_Ici
+#print axioms AmbidextrousSofa.Imported.continuous_clampFun
+#print axioms AmbidextrousSofa.Imported.rightLim_clampFun
+#print axioms AmbidextrousSofa.Imported.leftLim_clampFun
+#print axioms AmbidextrousSofa.Imported.eVariationOn_add_le
+#print axioms AmbidextrousSofa.Imported.boundedVariationOn_add
+#print axioms AmbidextrousSofa.Imported.boundedVariationOn_const_mul
+#print axioms AmbidextrousSofa.Imported.boundedVariationOn_of_lipschitz
+#print axioms AmbidextrousSofa.Imported.lsMeasure_eq_vectorMeasure
+#print axioms AmbidextrousSofa.Imported.Icc_eq_iInter_Ioc
+#print axioms AmbidextrousSofa.Imported.antitone_Ioc
+#print axioms AmbidextrousSofa.Imported.vectorMeasure_ext_Ioc
+#print axioms AmbidextrousSofa.Imported.lsMeasure_singleton_left
+#print axioms AmbidextrousSofa.Imported.lsMeasure_Ioc
+#print axioms AmbidextrousSofa.Imported.lsMeasure_Ioc_of_le
+#print axioms AmbidextrousSofa.Imported.rightLim_lin
+#print axioms AmbidextrousSofa.Imported.leftLim_lin
+#print axioms AmbidextrousSofa.Imported.proposition5_1_1
+#print axioms AmbidextrousSofa.Imported.lsmul_flip
+#print axioms AmbidextrousSofa.Imported.lemma5_1_2
+#print axioms AmbidextrousSofa.Imported.Iic_sdiff_Iic
+#print axioms AmbidextrousSofa.Imported.vectorMeasure_eq_of_Ioc
+#print axioms AmbidextrousSofa.Imported.lsMeasure_restrict_Ioc
+#print axioms AmbidextrousSofa.Imported.lemma5_1_3_of_continuous
+#print axioms AmbidextrousSofa.Imported.lemma5_1_3
+#print axioms AmbidextrousSofa.Imported.integral_Ioc_stieltjes
+#print axioms AmbidextrousSofa.Imported.lsMeasure_eq_withDensityᵥ
+#print axioms AmbidextrousSofa.Imported.sub_eq_integral_of_lsMeasure_eq
+#print axioms AmbidextrousSofa.Imported.integrableOn_Icc_of_abs_le
+#print axioms AmbidextrousSofa.Imported.proposition5_1_4
+#print axioms AmbidextrousSofa.Imported.absolutelyContinuousOnInterval_of_lsMeasure_eq
+#print axioms AmbidextrousSofa.Imported.proposition5_1_4_deriv
+#print axioms AmbidextrousSofa.Imported.proposition5_1_4_as_stated_false
+
+-- AmbidextrousSofa/Imported/Plane.lean
+#print axioms AmbidextrousSofa.Imported.uvec
+#print axioms AmbidextrousSofa.Imported.vvec
+#print axioms AmbidextrousSofa.Imported.dot
+#print axioms AmbidextrousSofa.Imported.cross
+#print axioms AmbidextrousSofa.Imported.rot
+#print axioms AmbidextrousSofa.Imported.line
+#print axioms AmbidextrousSofa.Imported.halfMinus
+#print axioms AmbidextrousSofa.Imported.halfMinusOpen
+#print axioms AmbidextrousSofa.Imported.halfPlus
+#print axioms AmbidextrousSofa.Imported.halfPlusOpen
+#print axioms AmbidextrousSofa.Imported.area
+#print axioms AmbidextrousSofa.Imported.lineLength
+#print axioms AmbidextrousSofa.Imported.norm2
+#print axioms AmbidextrousSofa.Imported.IsFurther
+#print axioms AmbidextrousSofa.Imported.IsStrictlyFurther
+#print axioms AmbidextrousSofa.Imported.uvec_fst
+#print axioms AmbidextrousSofa.Imported.uvec_snd
+#print axioms AmbidextrousSofa.Imported.vvec_fst
+#print axioms AmbidextrousSofa.Imported.vvec_snd
+#print axioms AmbidextrousSofa.Imported.dot_mk
+#print axioms AmbidextrousSofa.Imported.dot_add_left
+#print axioms AmbidextrousSofa.Imported.dot_add_right
+#print axioms AmbidextrousSofa.Imported.dot_sub_left
+#print axioms AmbidextrousSofa.Imported.dot_sub_right
+#print axioms AmbidextrousSofa.Imported.dot_smul_left
+#print axioms AmbidextrousSofa.Imported.dot_smul_right
+#print axioms AmbidextrousSofa.Imported.dot_neg_left
+#print axioms AmbidextrousSofa.Imported.dot_neg_right
+#print axioms AmbidextrousSofa.Imported.dot_zero_left
+#print axioms AmbidextrousSofa.Imported.dot_zero_right
+#print axioms AmbidextrousSofa.Imported.cross_anticomm
+#print axioms AmbidextrousSofa.Imported.cross_self
+#print axioms AmbidextrousSofa.Imported.cross_add_left
+#print axioms AmbidextrousSofa.Imported.cross_add_right
+#print axioms AmbidextrousSofa.Imported.cross_smul_left
+#print axioms AmbidextrousSofa.Imported.cross_smul_right
+#print axioms AmbidextrousSofa.Imported.dot_uvec_self
+#print axioms AmbidextrousSofa.Imported.dot_vvec_self
+#print axioms AmbidextrousSofa.Imported.dot_uvec_vvec
+#print axioms AmbidextrousSofa.Imported.dot_vvec_uvec
+#print axioms AmbidextrousSofa.Imported.dot_uvec_uvec
+#print axioms AmbidextrousSofa.Imported.dot_vvec_vvec
+#print axioms AmbidextrousSofa.Imported.dot_uvec_vvec'
+#print axioms AmbidextrousSofa.Imported.dot_vvec_uvec'
+#print axioms AmbidextrousSofa.Imported.uvec_add_pi_div_two
+#print axioms AmbidextrousSofa.Imported.vvec_add_pi_div_two
+#print axioms AmbidextrousSofa.Imported.uvec_add_pi
+#print axioms AmbidextrousSofa.Imported.vvec_add_pi
+#print axioms AmbidextrousSofa.Imported.uvec_add_two_pi
+#print axioms AmbidextrousSofa.Imported.vvec_add_two_pi
+#print axioms AmbidextrousSofa.Imported.cross_vvec
+#print axioms AmbidextrousSofa.Imported.cross_uvec
+#print axioms AmbidextrousSofa.Imported.eq_dot_uvec_smul_add
+#print axioms AmbidextrousSofa.Imported.eq_of_dot_frame
+#print axioms AmbidextrousSofa.Imported.vvec_eq_frame
+#print axioms AmbidextrousSofa.Imported.uvec_zero
+#print axioms AmbidextrousSofa.Imported.uvec_pi_div_two
+#print axioms AmbidextrousSofa.Imported.uvec_pi
+#print axioms AmbidextrousSofa.Imported.uvec_three_pi_div_two
+#print axioms AmbidextrousSofa.Imported.vvec_zero
+#print axioms AmbidextrousSofa.Imported.vvec_pi_div_two
+#print axioms AmbidextrousSofa.Imported.vvec_three_pi_div_two
+#print axioms AmbidextrousSofa.Imported.dot_uvec_zero
+#print axioms AmbidextrousSofa.Imported.dot_uvec_pi_div_two
+#print axioms AmbidextrousSofa.Imported.dot_uvec_pi
+#print axioms AmbidextrousSofa.Imported.dot_uvec_add_pi
+#print axioms AmbidextrousSofa.Imported.dot_uvec_three_pi_div_two
+#print axioms AmbidextrousSofa.Imported.dot_uvec_eq_cos_add_sin
+#print axioms AmbidextrousSofa.Imported.dot_uvec_comb
+#print axioms AmbidextrousSofa.Imported.eq_smul_vvec_of_dot_uvec_eq_zero
+#print axioms AmbidextrousSofa.Imported.sub_eq_smul_vvec
+#print axioms AmbidextrousSofa.Imported.eq_of_dot_uvec_eq
+#print axioms AmbidextrousSofa.Imported.rot_zero
+#print axioms AmbidextrousSofa.Imported.rot_add
+#print axioms AmbidextrousSofa.Imported.rot_uvec
+#print axioms AmbidextrousSofa.Imported.rot_vvec
+#print axioms AmbidextrousSofa.Imported.rot_add_vec
+#print axioms AmbidextrousSofa.Imported.rot_smul
+#print axioms AmbidextrousSofa.Imported.rot_neg_rot
+#print axioms AmbidextrousSofa.Imported.rot_rot_neg
+#print axioms AmbidextrousSofa.Imported.rot_injective
+#print axioms AmbidextrousSofa.Imported.rot_pair
+#print axioms AmbidextrousSofa.Imported.rot_frame_coords
+#print axioms AmbidextrousSofa.Imported.dot_rot_uvec_eq_fst
+#print axioms AmbidextrousSofa.Imported.dot_rot_vvec_eq_snd
+#print axioms AmbidextrousSofa.Imported.continuous_uvec
+#print axioms AmbidextrousSofa.Imported.continuous_vvec
+#print axioms AmbidextrousSofa.Imported.continuous_rot
+#print axioms AmbidextrousSofa.Imported.continuous_dot
+#print axioms AmbidextrousSofa.Imported.continuous_dot_pair
+#print axioms AmbidextrousSofa.Imported.continuousOn_dot
+#print axioms AmbidextrousSofa.Imported.continuous_dot_uvec
+#print axioms AmbidextrousSofa.Imported.continuousOn_cross
+#print axioms AmbidextrousSofa.Imported.lipschitz_uvec
+#print axioms AmbidextrousSofa.Imported.lipschitz_vvec
+#print axioms AmbidextrousSofa.Imported.norm_uvec_le
+#print axioms AmbidextrousSofa.Imported.norm_vvec_le
+#print axioms AmbidextrousSofa.Imported.abs_dot_le
+#print axioms AmbidextrousSofa.Imported.abs_dot_uvec_le
+#print axioms AmbidextrousSofa.Imported.abs_dot_uvec_sub_le
+#print axioms AmbidextrousSofa.Imported.isLinearMap_dot
+#print axioms AmbidextrousSofa.Imported.dotCLM
+#print axioms AmbidextrousSofa.Imported.dotCLM_apply
+#print axioms AmbidextrousSofa.Imported.isClosed_line
+#print axioms AmbidextrousSofa.Imported.convex_line
+#print axioms AmbidextrousSofa.Imported.isClosed_halfMinus
+#print axioms AmbidextrousSofa.Imported.isOpen_halfMinusOpen
+#print axioms AmbidextrousSofa.Imported.convex_halfMinus
+#print axioms AmbidextrousSofa.Imported.isClosed_halfPlus
+#print axioms AmbidextrousSofa.Imported.convex_halfPlus
+#print axioms AmbidextrousSofa.Imported.hasDerivAt_uvec
+#print axioms AmbidextrousSofa.Imported.hasDerivAt_vvec
+#print axioms AmbidextrousSofa.Imported.hasDerivAt_fst
+#print axioms AmbidextrousSofa.Imported.hasDerivAt_snd
+#print axioms AmbidextrousSofa.Imported.hasDerivWithinAt_dot'
+#print axioms AmbidextrousSofa.Imported.hasDerivAt_dot'
+#print axioms AmbidextrousSofa.Imported.hasDerivWithinAt_dot
+#print axioms AmbidextrousSofa.Imported.hasDerivAt_dot
+#print axioms AmbidextrousSofa.Imported.hasDerivAt_dot_uvec
+#print axioms AmbidextrousSofa.Imported.hasDerivAt_dot_vvec
+#print axioms AmbidextrousSofa.Imported.hasDerivAt_cross
+#print axioms AmbidextrousSofa.Imported.hasDerivAt_quad
+#print axioms AmbidextrousSofa.Imported.le_of_right_deriv_nonneg
+#print axioms AmbidextrousSofa.Imported.le_of_right_deriv_nonpos
+#print axioms AmbidextrousSofa.Imported.tan_half_mul_sin
+#print axioms AmbidextrousSofa.Imported.volume_preimage_linearMap
+#print axioms AmbidextrousSofa.Imported.rotLM
+#print axioms AmbidextrousSofa.Imported.det_rotLM
+#print axioms AmbidextrousSofa.Imported.volume_preimage_rot
+#print axioms AmbidextrousSofa.Imported.volume_image_rot
+#print axioms AmbidextrousSofa.Imported.area_image_rot
+#print axioms AmbidextrousSofa.Imported.volume_preimage_add
+#print axioms AmbidextrousSofa.Imported.area_image_add
+
+-- AmbidextrousSofa/Imported/SurfaceArea.lean
+#print axioms AmbidextrousSofa.Imported.sigmaFun
+#print axioms AmbidextrousSofa.Imported.sa_integral_dot_uvec
+#print axioms AmbidextrousSofa.Imported.sa_intervalIntegrable_supp
+#print axioms AmbidextrousSofa.Imported.continuous_integral_supp
+#print axioms AmbidextrousSofa.Imported.hasDerivAt_integral_supp
+#print axioms AmbidextrousSofa.Imported.sa_continuousWithinAt_vplus
+#print axioms AmbidextrousSofa.Imported.vplus_eq_frame
+#print axioms AmbidextrousSofa.Imported.sa_lipschitz_primitive
+#print axioms AmbidextrousSofa.Imported.sa_sigmaFun_sub
+#print axioms AmbidextrousSofa.Imported.monotone_sigmaFun
+#print axioms AmbidextrousSofa.Imported.continuousWithinAt_sigmaFun
+#print axioms AmbidextrousSofa.Imported.sigmaStieltjes
+#print axioms AmbidextrousSofa.Imported.sigma
+#print axioms AmbidextrousSofa.Imported.sigmaAt
+#print axioms AmbidextrousSofa.Imported.sigma_isLocallyFiniteMeasure
+#print axioms AmbidextrousSofa.Imported.sigma_Ioc
+#print axioms AmbidextrousSofa.Imported.sigma_eq_measure
+#print axioms AmbidextrousSofa.Imported.sigmaAt_eq_jump
+#print axioms AmbidextrousSofa.Imported.countable_sigma_singleton_ne
+#print axioms AmbidextrousSofa.Imported.sigmaFun_eq_of_vplus_const
+#print axioms AmbidextrousSofa.Imported.sigma_Ioc_eq_zero_of_vplus_const
+#print axioms AmbidextrousSofa.Imported.sigma_Ioo_eq_zero_of_vplus_const
+#print axioms AmbidextrousSofa.Imported.edge_add_two_pi
+#print axioms AmbidextrousSofa.Imported.vplus_add_two_pi
+#print axioms AmbidextrousSofa.Imported.sa_sigmaFun_add_two_pi
+#print axioms AmbidextrousSofa.Imported.sigma_periodic
+#print axioms AmbidextrousSofa.Imported.sigmaStieltjes_apply
+#print axioms AmbidextrousSofa.Imported.leftLim_sigmaFun
+#print axioms AmbidextrousSofa.Imported.sa_sigmaAt_eq_dot_sub
+#print axioms AmbidextrousSofa.Imported.sa_vplus_sub_vminus
+#print axioms AmbidextrousSofa.Imported.proposition2_1_2
+#print axioms AmbidextrousSofa.Imported.sigmaAt_eq_dot_sub
+#print axioms AmbidextrousSofa.Imported.sa_bv_sPlus
+#print axioms AmbidextrousSofa.Imported.lemma5_2_1
+#print axioms AmbidextrousSofa.Imported.sa_Phi
+#print axioms AmbidextrousSofa.Imported.sa_hasDerivWithinAt_Phi
+#print axioms AmbidextrousSofa.Imported.sa_continuous_Phi
+#print axioms AmbidextrousSofa.Imported.sa_integral_sigmaFun_uvec
+#print axioms AmbidextrousSofa.Imported.sa_vplus_eq_Phi
+#print axioms AmbidextrousSofa.Imported.vplus_sub_vplus
+#print axioms AmbidextrousSofa.Imported.theorem5_2_2
 
 -- AmbidextrousSofa/Measure/CapAssembly.lean
 #print axioms AmbidextrousSofa.bodyProjectionInterval
@@ -413,6 +1853,16 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.volumeReal_sdiff_fourWallEnvelope_eq_signedIntegral_sub
 #print axioms AmbidextrousSofa.eq_fourWallEnvelope_of_volumeReal_eq_signedIntegral
 
+-- AmbidextrousSofa/Measure/GraphIntegral.lean
+#print axioms AmbidextrousSofa.coordDet
+#print axioms AmbidextrousSofa.integral_graph_parametrization
+#print axioms AmbidextrousSofa.twice_integral_graph_parametrization
+#print axioms AmbidextrousSofa.IsDownwardCap.eq_verticalIntervalRegion
+#print axioms AmbidextrousSofa.IsDownwardCap.volumeReal_eq_integral_capRoof
+#print axioms AmbidextrousSofa.IsDownwardCap.intervalIntegrable_capRoof
+#print axioms AmbidextrousSofa.IsDownwardCap.volumeReal_eq_intervalIntegral_capRoof
+#print axioms AmbidextrousSofa.IsDownwardCap.volumeReal_eq_wing_integrals
+
 -- AmbidextrousSofa/Measure/Partition.lean
 #print axioms AmbidextrousSofa.middleHalfInterval
 #print axioms AmbidextrousSofa.measurableSet_middleHalfInterval
@@ -440,6 +1890,178 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.volumeReal_le_spatialScore_sum_middleHalf
 #print axioms AmbidextrousSofa.spatialScore_sum_sub_volumeReal_eq_defects
 #print axioms AmbidextrousSofa.actualBody_four_term_deficit_identity
+
+-- AmbidextrousSofa/Measure/RigidInvariance.lean
+#print axioms AmbidextrousSofa.measurePreserving_rotate
+#print axioms AmbidextrousSofa.volume_image_rotate
+#print axioms AmbidextrousSofa.volume_image_translate
+#print axioms AmbidextrousSofa.measurePreserving_rigidMap
+#print axioms AmbidextrousSofa.volume_image_rigidMap
+#print axioms AmbidextrousSofa.volumeReal_image_rigidMap
+#print axioms AmbidextrousSofa.verticalFlipLinearMap
+#print axioms AmbidextrousSofa.verticalFlipLinearMap_apply
+#print axioms AmbidextrousSofa.det_verticalFlipLinearMap
+#print axioms AmbidextrousSofa.volume_image_reflect
+#print axioms AmbidextrousSofa.volumeReal_image_reflect
+#print axioms AmbidextrousSofa.IsAmbidextrous.exists_normalized
+
+-- AmbidextrousSofa/Measure/SignedRoof.lean
+#print axioms AmbidextrousSofa.firstTangent_dominates_support
+#print axioms AmbidextrousSofa.secondTangent_dominates_support
+#print axioms AmbidextrousSofa.coordDot_firstTangent_unit
+#print axioms AmbidextrousSofa.coordDot_firstTangent_companion
+#print axioms AmbidextrousSofa.coordDot_secondTangent_unit
+#print axioms AmbidextrousSofa.coordDot_secondTangent_companion
+#print axioms AmbidextrousSofa.coordDot_innerCorner_unit
+#print axioms AmbidextrousSofa.coordDot_innerCorner_companion
+#print axioms AmbidextrousSofa.innerCorner_dot_eq_firstTangent
+#print axioms AmbidextrousSofa.innerCorner_dot_eq_secondTangent
+#print axioms AmbidextrousSofa.innerCorner_snd_eq_firstTangent
+#print axioms AmbidextrousSofa.firstTangent_snd_nonneg
+#print axioms AmbidextrousSofa.secondTangent_snd_nonneg
+#print axioms AmbidextrousSofa.firstWall_le_of_support_depth
+#print axioms AmbidextrousSofa.secondWall_le_of_support_depth
+#print axioms AmbidextrousSofa.le_firstWall_of_support_depth
+#print axioms AmbidextrousSofa.le_secondWall_of_support_depth
+#print axioms AmbidextrousSofa.firstWall_eq_of_support_depth
+#print axioms AmbidextrousSofa.secondWall_eq_of_support_depth
+#print axioms AmbidextrousSofa.sweptNiche_eq_of_global_contact
+#print axioms AmbidextrousSofa.sweptNiche_firstTangent
+#print axioms AmbidextrousSofa.sweptNiche_secondTangent
+#print axioms AmbidextrousSofa.sweptNiche_innerCorner
+
+-- AmbidextrousSofa/Measure/SignedRoofIntegral.lean
+#print axioms AmbidextrousSofa.innerCornerDX
+#print axioms AmbidextrousSofa.innerCornerDY
+#print axioms AmbidextrousSofa.cornerDensity
+#print axioms AmbidextrousSofa.firstMomentumPrimitive
+#print axioms AmbidextrousSofa.secondMomentumPrimitive
+#print axioms AmbidextrousSofa.firstMomentumDerivative
+#print axioms AmbidextrousSofa.secondMomentumDerivative
+#print axioms AmbidextrousSofa.hasDerivWithinAt_innerCorner_fst
+#print axioms AmbidextrousSofa.hasDerivWithinAt_innerCorner_snd
+#print axioms AmbidextrousSofa.coordDet_innerCorner
+#print axioms AmbidextrousSofa.innerCorner_eq_firstTangent_of_momentum_zero
+#print axioms AmbidextrousSofa.innerCorner_eq_secondTangent_of_momentum_zero
+#print axioms AmbidextrousSofa.hasDerivWithinAt_firstMomentumPrimitive
+#print axioms AmbidextrousSofa.hasDerivWithinAt_secondMomentumPrimitive
+#print axioms AmbidextrousSofa.firstTangent_density_identity
+#print axioms AmbidextrousSofa.secondTangent_density_identity
+#print axioms AmbidextrousSofa.integral_firstTangent_density
+#print axioms AmbidextrousSofa.integral_secondTangent_density
+#print axioms AmbidextrousSofa.twice_integral_three_graph_arcs
+#print axioms AmbidextrousSofa.signedRoof_integral_of_graphs
+#print axioms AmbidextrousSofa.sweptNiche_integral_eq_signed_formula
+#print axioms AmbidextrousSofa.integral_min_sq_of_sign_switch
+#print axioms AmbidextrousSofa.integral_max_sq_of_sign_switch
+
+-- AmbidextrousSofa/Measure/StripBounds.lean
+#print axioms AmbidextrousSofa.horizontalIntervalRegion
+#print axioms AmbidextrousSofa.measurableSet_horizontalIntervalRegion
+#print axioms AmbidextrousSofa.volume_horizontalIntervalRegion_eq_lintegral
+#print axioms AmbidextrousSofa.volume_horizontalIntervalRegion_unit_of_constant_width
+#print axioms AmbidextrousSofa.volumeReal_le_of_horizontal_intervals
+#print axioms AmbidextrousSofa.volumeReal_le_of_unitStrip_and_frameStrip
+#print axioms AmbidextrousSofa.cos_ge_sqrt_two_div_two_of_mem_smallAngle
+#print axioms AmbidextrousSofa.volumeReal_le_sqrt_two_of_unitStrip_and_smallAngleStrip
+#print axioms AmbidextrousSofa.sqrt_two_mul_dot_wrongWay_unit
+#print axioms AmbidextrousSofa.sqrt_two_mul_dot_wrongWay_companion
+#print axioms AmbidextrousSofa.wrongWayLeft
+#print axioms AmbidextrousSofa.mem_wrongWay_frameHall_iff
+#print axioms AmbidextrousSofa.volumeReal_le_sqrt_two_of_wrongWay_frameHall
+
+-- AmbidextrousSofa/Measure/SupportArea.lean
+#print axioms AmbidextrousSofa.innerCornerPoint
+#print axioms AmbidextrousSofa.firstTangentPoint
+#print axioms AmbidextrousSofa.secondTangentPoint
+#print axioms AmbidextrousSofa.supportP
+#print axioms AmbidextrousSofa.supportQ
+#print axioms AmbidextrousSofa.supportPointDX
+#print axioms AmbidextrousSofa.supportPointDY
+#print axioms AmbidextrousSofa.companionSupportPointDX
+#print axioms AmbidextrousSofa.companionSupportPointDY
+#print axioms AmbidextrousSofa.companionSupportPoint_coordinates
+#print axioms AmbidextrousSofa.hasDerivWithinAt_supportPoint_fst
+#print axioms AmbidextrousSofa.hasDerivWithinAt_supportPoint_snd
+#print axioms AmbidextrousSofa.hasDerivWithinAt_companionSupportPoint_fst
+#print axioms AmbidextrousSofa.hasDerivWithinAt_companionSupportPoint_snd
+#print axioms AmbidextrousSofa.coordDet_supportPoint
+#print axioms AmbidextrousSofa.coordDet_companionSupportPoint
+#print axioms AmbidextrousSofa.integral_support_density
+#print axioms AmbidextrousSofa.support_energy_graph_identity
+#print axioms AmbidextrousSofa.IsDownwardCap.capRoof_eq_of_support_eq
+#print axioms AmbidextrousSofa.IsDownwardCap.volumeReal_eq_support_energy
+
+-- AmbidextrousSofa/Measure/SymmetricBody.lean
+#print axioms AmbidextrousSofa.symmetricTrim
+#print axioms AmbidextrousSofa.verticalFiber_eq_Icc_of_reflection
+#print axioms AmbidextrousSofa.mem_symmetricHull_iff_roof
+#print axioms AmbidextrousSofa.half_le_capRoof_of_reflection
+#print axioms AmbidextrousSofa.symmetricTrim_eq_fourWallEnvelope
+#print axioms AmbidextrousSofa.symmetricTrim_signedFiber_nonneg
+#print axioms AmbidextrousSofa.symmetricTrim_signedFiber_eq
+#print axioms AmbidextrousSofa.volumeReal_symmetricTrim_eq_cap_area
+#print axioms AmbidextrousSofa.setIntegral_eq_subset_of_zero_off
+
+-- AmbidextrousSofa/Reference/Body.lean
+#print axioms AmbidextrousSofa.Reference.referenceSofa
+#print axioms AmbidextrousSofa.Reference.referenceSofa_subset_referenceHull
+#print axioms AmbidextrousSofa.Reference.isClosed_referenceSofa
+#print axioms AmbidextrousSofa.Reference.isCompact_referenceSofa
+#print axioms AmbidextrousSofa.Reference.measurableSet_referenceSofa
+#print axioms AmbidextrousSofa.Reference.reflect_mem_referenceSofa
+#print axioms AmbidextrousSofa.Reference.image_reflect_referenceSofa
+#print axioms AmbidextrousSofa.Reference.midline_mem_referenceHull
+#print axioms AmbidextrousSofa.Reference.midline_mem_referenceSofa
+#print axioms AmbidextrousSofa.Reference.center_mem_referenceSofa
+#print axioms AmbidextrousSofa.Reference.referenceSofa_nonempty
+#print axioms AmbidextrousSofa.Reference.horizontalProjection_referenceSofa
+#print axioms AmbidextrousSofa.Reference.fBoundary_mem_referenceSofa
+#print axioms AmbidextrousSofa.Reference.gBoundary_mem_referenceSofa
+#print axioms AmbidextrousSofa.Reference.angleSupport_referenceSofa_eq_f
+#print axioms AmbidextrousSofa.Reference.angleSupport_referenceSofa_eq_g
+#print axioms AmbidextrousSofa.Reference.vertical_to_midline_mem_referenceSofa
+#print axioms AmbidextrousSofa.Reference.joinedIn_referenceSofa_midline
+#print axioms AmbidextrousSofa.Reference.joinedIn_referenceSofa_center_midline
+#print axioms AmbidextrousSofa.Reference.isPathConnected_referenceSofa
+#print axioms AmbidextrousSofa.Reference.isConnected_referenceSofa
+#print axioms AmbidextrousSofa.Reference.lowerReferencePath
+#print axioms AmbidextrousSofa.Reference.upperReferencePath
+#print axioms AmbidextrousSofa.Reference.quarterAngle_mem
+#print axioms AmbidextrousSofa.Reference.lowerReferencePath_eq_canonical
+#print axioms AmbidextrousSofa.Reference.referenceSofa_subset_canonicalHall
+#print axioms AmbidextrousSofa.Reference.lowerReferencePath_start
+#print axioms AmbidextrousSofa.Reference.lowerReferencePath_finish
+#print axioms AmbidextrousSofa.Reference.referenceSofa_lowerPassage
+#print axioms AmbidextrousSofa.Reference.upperReferencePath_eq_reflect
+#print axioms AmbidextrousSofa.Reference.referenceSofa_upperPassage
+#print axioms AmbidextrousSofa.Reference.isAmbidextrous_referenceSofa
+
+-- AmbidextrousSofa/Reference/Faces.lean
+#print axioms AmbidextrousSofa.Reference.topLeft
+#print axioms AmbidextrousSofa.Reference.topRight
+#print axioms AmbidextrousSofa.Reference.topInterval
+#print axioms AmbidextrousSofa.Reference.topLeft_lt_topRight
+#print axioms AmbidextrousSofa.Reference.horizontalRight_referenceHull
+#print axioms AmbidextrousSofa.Reference.horizontalLeft_referenceHull
+#print axioms AmbidextrousSofa.Reference.horizontalProjection_referenceHull
+#print axioms AmbidextrousSofa.Reference.horizontalLeft_referenceCap
+#print axioms AmbidextrousSofa.Reference.horizontalRight_referenceCap
+#print axioms AmbidextrousSofa.Reference.capWidth_referenceCap
+#print axioms AmbidextrousSofa.Reference.middleHalfInterval_referenceCap
+#print axioms AmbidextrousSofa.Reference.topLeft_mem_referenceHull
+#print axioms AmbidextrousSofa.Reference.topRight_mem_referenceHull
+#print axioms AmbidextrousSofa.Reference.topFace_mem_referenceHull
+#print axioms AmbidextrousSofa.Reference.capRoof_referenceCap_eq_one
+#print axioms AmbidextrousSofa.Reference.referenceF_le_topRight_disk
+#print axioms AmbidextrousSofa.Reference.referenceG_le_topLeft_disk
+#print axioms AmbidextrousSofa.Reference.referenceNiche_eq_zero_of_topRight_le
+#print axioms AmbidextrousSofa.Reference.referenceNiche_eq_zero_of_le_topLeft
+#print axioms AmbidextrousSofa.Reference.referenceNiche_eq_zero_outside
+#print axioms AmbidextrousSofa.Reference.topRight_le_fBoundary_fst
+#print axioms AmbidextrousSofa.Reference.gBoundary_fst_le_topLeft
+#print axioms AmbidextrousSofa.Reference.referenceNiche_fBoundary
+#print axioms AmbidextrousSofa.Reference.referenceNiche_gBoundary
 
 -- AmbidextrousSofa/Reference/Hull.lean
 #print axioms AmbidextrousSofa.Reference.center
@@ -479,6 +2101,55 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.Reference.angleSupport_referenceHull_neg
 #print axioms AmbidextrousSofa.Reference.angleSupport_referenceCap
 
+-- AmbidextrousSofa/Reference/Momenta.lean
+#print axioms AmbidextrousSofa.Reference.momentP
+#print axioms AmbidextrousSofa.Reference.momentQ
+#print axioms AmbidextrousSofa.Reference.momentP_phases
+#print axioms AmbidextrousSofa.Reference.momentQ_phases
+#print axioms AmbidextrousSofa.Reference.R_mul_cos_lastPhase
+#print axioms AmbidextrousSofa.Reference.one_lt_two_mul_A_mul_cosBeta
+#print axioms AmbidextrousSofa.Reference.momentP_zero
+#print axioms AmbidextrousSofa.Reference.momentQ_pi_div_two
+#print axioms AmbidextrousSofa.Reference.momentP_beta
+#print axioms AmbidextrousSofa.Reference.momentQ_lateSwitch
+#print axioms AmbidextrousSofa.Reference.momentP_nonneg_early
+#print axioms AmbidextrousSofa.Reference.momentP_nonpos_after_beta
+#print axioms AmbidextrousSofa.Reference.momentQ_nonneg_before_lateSwitch
+#print axioms AmbidextrousSofa.Reference.momentQ_nonpos_late
+#print axioms AmbidextrousSofa.Reference.referenceF_right_curvature_lt_one
+#print axioms AmbidextrousSofa.Reference.referenceG_right_curvature_lt_one
+#print axioms AmbidextrousSofa.Reference.referenceF_right_curvature_le_one
+#print axioms AmbidextrousSofa.Reference.referenceG_right_curvature_le_one
+
+-- AmbidextrousSofa/Reference/Niche.lean
+#print axioms AmbidextrousSofa.Reference.referenceNiche
+#print axioms AmbidextrousSofa.Reference.referenceApexHeight
+#print axioms AmbidextrousSofa.Reference.referenceWallClip
+#print axioms AmbidextrousSofa.Reference.R_sq_eq_matching_components
+#print axioms AmbidextrousSofa.Reference.R_sq_lt_sixty_five_over_thirty_six
+#print axioms AmbidextrousSofa.Reference.R_lt_sqrt_two
+#print axioms AmbidextrousSofa.Reference.continuous_referenceApexHeight
+#print axioms AmbidextrousSofa.Reference.referenceApexHeight_zero
+#print axioms AmbidextrousSofa.Reference.earlyApex_lt_half
+#print axioms AmbidextrousSofa.Reference.lateApex_lt_half
+#print axioms AmbidextrousSofa.Reference.middlePhase_sin_le_cos_center
+#print axioms AmbidextrousSofa.Reference.sin_add_cos_eq_sqrt_two_cos_center
+#print axioms AmbidextrousSofa.Reference.middleApex_lt_half
+#print axioms AmbidextrousSofa.Reference.referenceApexHeight_lt_half
+#print axioms AmbidextrousSofa.Reference.firstWall_referenceHull
+#print axioms AmbidextrousSofa.Reference.secondWall_referenceHull
+#print axioms AmbidextrousSofa.Reference.cornerWall_referenceHull_le_apex
+#print axioms AmbidextrousSofa.Reference.referenceNiche_nonneg
+#print axioms AmbidextrousSofa.Reference.exists_referenceNiche_uniform_bound
+#print axioms AmbidextrousSofa.Reference.referenceNiche_lt_half
+#print axioms AmbidextrousSofa.Reference.referenceWallClip_zero
+#print axioms AmbidextrousSofa.Reference.referenceWallClip_pi_div_two
+#print axioms AmbidextrousSofa.Reference.referenceWallClip_eq_actual
+#print axioms AmbidextrousSofa.Reference.continuousAt_referenceWallClip
+#print axioms AmbidextrousSofa.Reference.continuous_referenceWallClip_on_angles
+#print axioms AmbidextrousSofa.Reference.referenceNiche_eq_sSup_clipped
+#print axioms AmbidextrousSofa.Reference.continuous_referenceNiche
+
 -- AmbidextrousSofa/Reference/Parameters.lean
 #print axioms AmbidextrousSofa.Reference.sinBeta
 #print axioms AmbidextrousSofa.Reference.cosBeta
@@ -514,6 +2185,91 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.Reference.R_mul_sin_T
 #print axioms AmbidextrousSofa.Reference.R_mul_cos_firstPhase
 #print axioms AmbidextrousSofa.Reference.R_mul_sin_firstPhase
+
+-- AmbidextrousSofa/Reference/Realization.lean
+#print axioms AmbidextrousSofa.Reference.supportPoint
+#print axioms AmbidextrousSofa.Reference.companionSupportPoint
+#print axioms AmbidextrousSofa.Reference.supportProjection
+#print axioms AmbidextrousSofa.Reference.coordDot_supportPoint
+#print axioms AmbidextrousSofa.Reference.coordDot_companionSupportPoint
+#print axioms AmbidextrousSofa.Reference.supportProjection_self
+#print axioms AmbidextrousSofa.Reference.continuous_supportProjection
+#print axioms AmbidextrousSofa.Reference.hasDerivWithinAt_if_le_right
+#print axioms AmbidextrousSofa.Reference.hasDerivWithinAt_supportProjection
+#print axioms AmbidextrousSofa.Reference.le_of_right_derivative_nonneg
+#print axioms AmbidextrousSofa.Reference.le_of_right_derivative_nonpos
+#print axioms AmbidextrousSofa.Reference.supportProjection_le_of_le
+#print axioms AmbidextrousSofa.Reference.supportProjection_le_of_ge
+#print axioms AmbidextrousSofa.Reference.supportProjection_le_self
+#print axioms AmbidextrousSofa.Reference.referenceFSecond
+#print axioms AmbidextrousSofa.Reference.referenceGSecond
+#print axioms AmbidextrousSofa.Reference.hasDerivWithinAt_referenceFD_right
+#print axioms AmbidextrousSofa.Reference.hasDerivWithinAt_referenceGD_right
+#print axioms AmbidextrousSofa.Reference.referenceF_eq_right_phases
+#print axioms AmbidextrousSofa.Reference.referenceG_eq_right_phases
+#print axioms AmbidextrousSofa.Reference.referenceF_right_curvature_nonneg
+#print axioms AmbidextrousSofa.Reference.referenceG_right_curvature_nonneg
+#print axioms AmbidextrousSofa.Reference.fBoundary
+#print axioms AmbidextrousSofa.Reference.gBoundary
+#print axioms AmbidextrousSofa.Reference.coordDot_fBoundary
+#print axioms AmbidextrousSofa.Reference.coordDot_gBoundary
+#print axioms AmbidextrousSofa.Reference.coordDot_fBoundary_self
+#print axioms AmbidextrousSofa.Reference.coordDot_gBoundary_self
+#print axioms AmbidextrousSofa.Reference.fBoundary_zero
+#print axioms AmbidextrousSofa.Reference.fBoundary_pi_div_two
+#print axioms AmbidextrousSofa.Reference.gBoundary_zero
+#print axioms AmbidextrousSofa.Reference.gBoundary_pi_div_two
+#print axioms AmbidextrousSofa.Reference.fBoundary_below_first_support
+#print axioms AmbidextrousSofa.Reference.gBoundary_below_companion_support
+#print axioms AmbidextrousSofa.Reference.fBoundary_above_midline
+#print axioms AmbidextrousSofa.Reference.gBoundary_above_midline
+#print axioms AmbidextrousSofa.Reference.fBoundary_below_companion_support
+#print axioms AmbidextrousSofa.Reference.gBoundary_below_first_support
+#print axioms AmbidextrousSofa.Reference.coordDot_reflect_le
+#print axioms AmbidextrousSofa.Reference.fBoundary_mem_referenceHull
+#print axioms AmbidextrousSofa.Reference.gBoundary_mem_referenceHull
+#print axioms AmbidextrousSofa.Reference.angleSupport_referenceHull_eq_f
+#print axioms AmbidextrousSofa.Reference.angleSupport_referenceHull_eq_g
+#print axioms AmbidextrousSofa.Reference.angleSupport_referenceCap_eq_f
+#print axioms AmbidextrousSofa.Reference.angleSupport_referenceCap_eq_g
+
+-- AmbidextrousSofa/Reference/Regularity.lean
+#print axioms AmbidextrousSofa.Reference.exists_quarter_polar
+#print axioms AmbidextrousSofa.Reference.exists_upper_polar
+#print axioms AmbidextrousSofa.Reference.support_referenceSofa_eq_hull_of_upward
+#print axioms AmbidextrousSofa.Reference.support_referenceSofa_eq_hull
+#print axioms AmbidextrousSofa.Reference.actualHull_referenceSofa
+#print axioms AmbidextrousSofa.Reference.topRectangle_subset_referenceHull
+#print axioms AmbidextrousSofa.Reference.center_mem_interior_referenceHull
+#print axioms AmbidextrousSofa.Reference.closure_interior_referenceHull
+#print axioms AmbidextrousSofa.Reference.strictReferenceBand
+#print axioms AmbidextrousSofa.Reference.isOpen_strictReferenceBand
+#print axioms AmbidextrousSofa.Reference.strictBand_inter_interior_hull_subset
+#print axioms AmbidextrousSofa.Reference.strictBand_inter_hull_subset_closure_interior
+#print axioms AmbidextrousSofa.Reference.vertical_to_midline_mem_strictBand
+#print axioms AmbidextrousSofa.Reference.closure_interior_referenceSofa
+
+-- AmbidextrousSofa/Reference/Stationarity.lean
+#print axioms AmbidextrousSofa.Reference.referencePair
+#print axioms AmbidextrousSofa.Reference.adjustedMomentP
+#print axioms AmbidextrousSofa.Reference.adjustedMomentQ
+#print axioms AmbidextrousSofa.Reference.adjustedMomentPD
+#print axioms AmbidextrousSofa.Reference.adjustedMomentQD
+#print axioms AmbidextrousSofa.Reference.R_mul_cos_firstPhase_explicit
+#print axioms AmbidextrousSofa.Reference.R_mul_sin_lastPhase
+#print axioms AmbidextrousSofa.Reference.adjustedMomentP_eq
+#print axioms AmbidextrousSofa.Reference.adjustedMomentQ_eq
+#print axioms AmbidextrousSofa.Reference.hasDerivAt_adjustedMomentP
+#print axioms AmbidextrousSofa.Reference.hasDerivAt_adjustedMomentQ
+#print axioms AmbidextrousSofa.Reference.adjustedMomentPD_eq
+#print axioms AmbidextrousSofa.Reference.adjustedMomentQD_eq
+#print axioms AmbidextrousSofa.Reference.referencePair_fluxF_eq
+#print axioms AmbidextrousSofa.Reference.referencePair_fluxG_eq
+#print axioms AmbidextrousSofa.Reference.referencePair_eulerF
+#print axioms AmbidextrousSofa.Reference.referencePair_eulerG
+#print axioms AmbidextrousSofa.Reference.referencePair_stationary
+#print axioms AmbidextrousSofa.Reference.adaptiveFunctional_le_reference_of_sameTraces
+#print axioms AmbidextrousSofa.Reference.eqOn_reference_of_sameTraces_of_ge
 
 -- AmbidextrousSofa/Reference/Support.lean
 #print axioms AmbidextrousSofa.Reference.fEarly
@@ -590,6 +2346,56 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.Reference.curvature_gMiddle_lt_seven_eighths
 #print axioms AmbidextrousSofa.Reference.referenceF_ge_center
 #print axioms AmbidextrousSofa.Reference.referenceG_ge_center
+
+-- AmbidextrousSofa/Reference/Value.lean
+#print axioms AmbidextrousSofa.Reference.referenceFD_zero
+#print axioms AmbidextrousSofa.Reference.referenceGD_zero
+#print axioms AmbidextrousSofa.Reference.referenceFD_pi_div_two
+#print axioms AmbidextrousSofa.Reference.referenceGD_pi_div_two
+#print axioms AmbidextrousSofa.Reference.referenceF_beta
+#print axioms AmbidextrousSofa.Reference.referenceG_beta
+#print axioms AmbidextrousSofa.Reference.referenceF_lateSwitch
+#print axioms AmbidextrousSofa.Reference.referenceG_lateSwitch
+#print axioms AmbidextrousSofa.Reference.twice_density_sub_self_variation
+#print axioms AmbidextrousSofa.Reference.referenceValueRemainder
+#print axioms AmbidextrousSofa.Reference.continuousOn_referenceValueRemainder
+#print axioms AmbidextrousSofa.Reference.referenceValueRemainder_early
+#print axioms AmbidextrousSofa.Reference.referenceValueRemainder_middle
+#print axioms AmbidextrousSofa.Reference.referenceValueRemainder_late
+#print axioms AmbidextrousSofa.Reference.earlyValuePrimitive
+#print axioms AmbidextrousSofa.Reference.lateValuePrimitive
+#print axioms AmbidextrousSofa.Reference.hasDerivAt_earlyValuePrimitive
+#print axioms AmbidextrousSofa.Reference.hasDerivAt_lateValuePrimitive
+#print axioms AmbidextrousSofa.Reference.integral_referenceValueRemainder_early
+#print axioms AmbidextrousSofa.Reference.integral_referenceValueRemainder_middle
+#print axioms AmbidextrousSofa.Reference.integral_referenceValueRemainder_late
+#print axioms AmbidextrousSofa.Reference.integral_referenceValueRemainder
+#print axioms AmbidextrousSofa.Reference.reference_self_variation
+#print axioms AmbidextrousSofa.Reference.adaptiveFunctional_reference_exact
+#print axioms AmbidextrousSofa.Reference.four_A_cosBeta_eq_reciprocal
+#print axioms AmbidextrousSofa.Reference.adaptiveFunctional_reference_eq_M_add_width
+#print axioms AmbidextrousSofa.Reference.twice_adaptiveFunctional_reference_sub_width
+#print axioms AmbidextrousSofa.Reference.intervalIntegrable_if_lt
+#print axioms AmbidextrousSofa.Reference.intervalIntegrable_referenceFSecond
+#print axioms AmbidextrousSofa.Reference.intervalIntegrable_referenceGSecond
+#print axioms AmbidextrousSofa.Reference.neg_referenceGD_zero
+#print axioms AmbidextrousSofa.Reference.neg_referenceFD_pi_div_two
+#print axioms AmbidextrousSofa.Reference.volumeReal_referenceCap_eq_support_integral
+#print axioms AmbidextrousSofa.Reference.twice_integral_referenceNiche
+#print axioms AmbidextrousSofa.Reference.continuous_momentP
+#print axioms AmbidextrousSofa.Reference.continuous_momentQ
+#print axioms AmbidextrousSofa.Reference.integral_reference_negative_momentum_sq
+#print axioms AmbidextrousSofa.Reference.integral_reference_positive_momentum_sq
+#print axioms AmbidextrousSofa.Reference.adaptiveFunctional_reference_eq_cap_area_sub_niche
+#print axioms AmbidextrousSofa.Reference.sweptNiche_referenceCap
+#print axioms AmbidextrousSofa.Reference.integral_topInterval_referenceNiche
+#print axioms AmbidextrousSofa.Reference.integral_topInterval_referenceCap_roof
+#print axioms AmbidextrousSofa.Reference.capScore_referenceCap_eq_adaptiveFunctional
+#print axioms AmbidextrousSofa.Reference.capScore_referenceCap
+#print axioms AmbidextrousSofa.Reference.topInterval_subset_horizontalProjection_referenceHull
+#print axioms AmbidextrousSofa.Reference.integral_projection_referenceNiche
+#print axioms AmbidextrousSofa.Reference.volumeReal_referenceSofa
+#print axioms AmbidextrousSofa.Reference.volume_referenceSofa
 
 -- AmbidextrousSofa/Topology/RegularClosed.lean
 #print axioms AmbidextrousSofa.closure_interior_subset_of_measure_sdiff_eq_zero
