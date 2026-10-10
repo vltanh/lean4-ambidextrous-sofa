@@ -30,8 +30,8 @@ closures and research-session reviews are distinct from formal verification.
 | F1 | Actual compact hull/caps, attained roofs/supports, complete barriers, measurability and actual area integration | Implemented |
 | F2 | Original two-motion normalization, area invariance, angular reach, genuine terminal constraints and actual-cap score reduction | Implemented for the unchanged `IsAmbidextrous` predicate with continuous real-angle rigid paths |
 | F3 | Actual reference support/hull/body, both feasible passages, regular closedness and exact area `M` | Implemented, including exact reference cap score `M/2` |
-| F4 | Universal full-angle cap score at most `M/2`, including nonsmooth, asymmetric and subunit caps | Actual regular-domain density/ODE, inner-source interval occupation, negative-corner nullity, endpoint laws, central height, Green/chord limit and one-turn survivor implemented; floor and same-sign corner laws and actual short-width exclusion implemented; fractional positive-corner occupation, global unit-wing and remaining tilted sharpness steps remain |
-| F5 | Universal proper-angle cap bound retaining the whole outgoing wall, independently for the two motions | Actual joint/largest-angle maximum, top insertion, used-support saturation, unused curvature gaps, initial-angle exclusion through arctan(8/3), actual terminal facet/exposure bounds and circle margin implemented; top-projection/source moment and final terminal comparison remain |
+| F4 | Universal full-angle cap score at most `M/2`, including nonsmooth, asymmetric and subunit caps | Actual regular-domain density/ODE, inner-source interval occupation, negative-corner nullity, endpoint laws, central height, Green/chord limit and one-turn survivor implemented; floor/same-sign laws, actual full width C<37/50, horizontal visible flux and one-good-quarter propagation implemented; full horizontal leakage application, global unit-wing and tilted sharpness steps remain |
+| F5 | Universal proper-angle cap bound retaining the whole outgoing wall, independently for the two motions | Actual joint/largest-angle maximum, top insertion, used-support saturation, unused curvature gaps, initial-angle exclusion through arctan(8/3), actual terminal facet/exposure bounds and circle margin implemented; actual rescaled source selection, sharp cut density, proper endpoint/erosion moments and top projection implemented; axis-face identification, proper width transfer and early weighted excess remain |
 | F6 | Every equality cap, inverse canonicalization, strict proper-angle inequality and literal original compact-body recovery | Exact deficit, reference regularity and actual inverse canonicalization implemented; sharp cap classification and original-body assembly remain |
 | F7 source closure | Unconditional original-domain area bound and exact uniqueness, with no missing mathematical input | In progress; depends on F4–F6 |
 | F7 kernel check | Elaboration and actual standard-axiom output | Not performed; compilation and CI prohibited for this task |
@@ -163,8 +163,12 @@ proved in `AdaptiveGlobalValue` and `AdaptiveGlobalScalar`.
    `SelectedGreenLimit` give the exact stationary finite Green limit.
    `FiniteGraphLength` and `CanonicalWingChord` derive actual wing chord
    inequalities. `NonpositiveCornerCurvature` combines negative and floor
-   laws; `ShadowCurvature` gives the actual same-sign density bounds. Complete
-   fractional positive-corner occupation and geometric calibration.
+   laws; `ShadowCurvature` gives the actual same-sign density bounds.
+   `VisibleFluxDensity` proves the horizontal positive-corner flux from two
+   literal visible graph projections. `CornerPropagation` proves actual
+   one-good-quarter propagation and `CornerEndpointEnergy` includes the
+   actual axis limit. Complete the global unit-wing application and
+   geometric calibration.
 3. Complete strict corner laws, horizontal unit curvature and geometric
    comparison to the analytic functional. Complete all tilted-width/height
    exclusions from the written full-cap proof. `TiltedInitialEnergy` and
@@ -178,7 +182,13 @@ proved in `AdaptiveGlobalValue` and `AdaptiveGlobalScalar`.
    bounds and exact short-width stability. `ShortWidthExclusion` now
    combines actual exterior support cuts with both extra niche tails and
    their exact clipped areas, proving the exclusion through a=1001/1000.
-   The wider tilted and intermediate width/height exclusions remain.
+   `FullWidthCeiling` and `FullTriangleWidth` now close the wider and
+   intermediate full-width exclusions, with C<37/50 for every actual full
+   maximum. The complete floor correction in `FullTriangleFloor` and
+   exact square payment in `FullTriangleScalar` retain all clipped cases.
+   `HorizontalLeakageScalar` proves all seven rational bootstrap rows,
+   and `HorizontalOrdinaryArea` supplies the actual one-turn obstruction.
+   The actual leakage envelope and the later tilted applications remain.
 4. Apply the completed analytic global comparison and strict equality
    classification to the actual geometric domain after these reductions.
 
@@ -227,9 +237,18 @@ proves α>arctan(8/3); `InitialAngleWidth` gives width>49/25.
 `TerminalCorner` derives the actual terminal facet reserve from same-cap
 extension, and `TerminalExposure` derives strict terminal occupation by an
 inward supporting-line cut. `TerminalCircleMargin` proves the exact scalar
-MP.24 comparison with actual-parameter inputs. Complete the top-projection
-horizontal source moment, remaining reflected impulse, weighted companion
-bounds and final terminal comparison. The entire first
+MP.24 comparison with actual-parameter inputs. The `PartialGrid*`,
+`PartialSelected*` and `PartialCurvature*` chains construct the literal
+proper selected sequence and bounded density while retaining the whole
+terminal wall and old support penalties. The sharp local source bound and
+`LeftCompanionDensity` splice give the actual charged cut density.
+`PartialEndpointMoments`, `PartialPressureLimit`, `PartialErosionMoments`,
+`PartialEndpointPositivity` and `PartialSourceBalance` supply the actual
+proper moments. `TerminalTopProjection` derives the weighted top budget
+and strict interior outgoing zero. `TerminalActualComparison` now supplies
+the actual initial coordinates and terminal circle comparison. Complete
+axis-height identification, the proper width transfer, and the actual
+early weighted-excess bound before asserting the terminal contradiction. The entire first
 terminal wall remains in the objective. The two original motion angles must
 stay independent, all angular endpoints must be covered, and `π/2` must be
 handled by the full-cap theorem.

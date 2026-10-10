@@ -9,8 +9,8 @@ This record is not a kernel proof log or an external referee report.
 
 ## Current source inventory
 
-The entry point covers **268 implementation modules**, containing
-**4880 named theorems** and **5767 explicitly named declarations**.
+The entry point covers **348 implementation modules**, containing
+**5448 named theorems** and **6433 explicitly named declarations**.
 Every declared theorem has an explicit proof body. `AxiomAudit.lean` prepares
 one unexecuted `#print axioms` query per explicitly named declaration.
 Generated constructors, projections, recursors and equation lemmas are not
@@ -154,10 +154,46 @@ radical endpoint margins, convex-average comparisons and restoration of
 the height and top-overhang parameters.
 
 NeighborShadowing and ShadowSecants received independent source review.
-AtomIntervalLimit and ShadowCurvature have complete source bodies; the
-independent review of their selected-atom-to-density passage is continuing.
-No fractional positive-corner flux or global unit-wing bound is claimed
-from these local laws alone.
+AtomIntervalLimit and ShadowCurvature also received complete independent
+source review of the actual selected-atom sums, both vanishing errors and
+Lebesgue differentiation. Their conclusions retain both curvature sign
+regimes and the two exceptional normals.
+
+The wide and full three-triangle source chain received independent
+review through `FullTriangleWidth`. This covered literal support cuts,
+the asymmetric triangular floor correction, all clipped signed-gain
+cases, the exact six-square payment, the joint supporting-plane bound,
+the strict rational margin `25811237/31500000 < 41/50`, and preservation
+of actual width under reflection and canonicalization.
+
+The horizontal tangency and visible-source chain received independent
+review through `CornerEndpointEnergy`. This includes actual top endpoints,
+nonnegative flat tangency pieces, angular order, the two graph fluxes,
+translated Lebesgue differentiation, genuine first level crossings,
+the zero-level derivative regime and the true axis-limit energy bound.
+The seven rows in `HorizontalLeakageScalar` separately passed 14 exact
+Python Fraction checks per row; this does not execute their Lean tactics.
+The endpoint-envelope application and global geometric sharpness remain
+uncompleted at this checkpoint.
+
+The complete proper rescaled source chain received independent review:
+retained terminal wall, aggregated old penalties, selected convergence,
+nonterminal interval counts, vanishing middle mass, bounded density,
+sharp single-family counts and the actual left-cut joining-atom splice.
+Review also covered `PartialEndpointMoments`, `PartialPressureLimit`,
+`PartialErosionMoments`, the symmetric diagonal comparison/low-height
+chain, `PartialEndpointPositivity` and `PartialSourceBalance`. It checked
+actual outward competitors and pressure limits without assuming target
+axis-face continuity. The top-cutoff, positive-set overlap limit,
+`PartialHorizontalMoment` and `TerminalTopProjection` received complete
+review, including the whole terminal source and the physical overhangs.
+
+The terminal companion moments, circle comparison and
+`TerminalActualComparison` received independent review. All initial
+coordinates, the actual cut height, top budget and strict reserve
+exposure are now derived from actual geometry. Proper axis-face
+identification, width transfer and early weighted curvature excess are
+still required; the new comparison theorem records that boundary.
 
 The explicit analytic family now has a complete global comparison and exact
 equality classification. Source reviews checked the C1 joins, including the
@@ -209,9 +245,9 @@ The lexical guard cannot compute actual transitive axiom dependencies or
 establish that any theorem elaborates. The prepared queries have not been
 run and the actual axiom sets are unverified.
 
-The checked snapshot has **270 Lean files**, including entry point and
-audit, **268 implementation modules**, **4880 named theorems**,
-and **5767 prepared queries**. The source-policy guard passed.
+The checked snapshot has **350 Lean files**, including entry point and
+audit, **348 implementation modules**, **5448 named theorems**,
+and **6433 prepared queries**. The source-policy guard passed.
 Whitespace and local documentation links are checked before publication.
 Publication uses GitHub's Git Data API with exact tree/blob comparisons;
 no workflow is added and commits use `[skip ci]`.
@@ -269,6 +305,7 @@ instruction.
 | `AmbidextrousSofa/Analysis/AdaptiveGlobalValue.lean` | 17 | 20 |
 | `AmbidextrousSofa/Analysis/AdaptiveTranslation.lean` | 11 | 14 |
 | `AmbidextrousSofa/Analysis/AffineNormal.lean` | 3 | 4 |
+| `AmbidextrousSofa/Analysis/AngularFluxLimit.lean` | 5 | 6 |
 | `AmbidextrousSofa/Analysis/AsymmetricTent.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/AtomIntervalLimit.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/AxisFaces.lean` | 14 | 14 |
@@ -293,10 +330,17 @@ instruction.
 | `AmbidextrousSofa/Analysis/Circumscription.lean` | 9 | 10 |
 | `AmbidextrousSofa/Analysis/ClippedTailIntegral.lean` | 7 | 7 |
 | `AmbidextrousSofa/Analysis/CornerConfinement.lean` | 9 | 10 |
+| `AmbidextrousSofa/Analysis/CornerCrossing.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/CornerDynamics.lean` | 7 | 9 |
+| `AmbidextrousSofa/Analysis/CornerEndpointEnergy.lean` | 6 | 6 |
+| `AmbidextrousSofa/Analysis/CornerEnergy.lean` | 12 | 14 |
+| `AmbidextrousSofa/Analysis/CornerPropagation.lean` | 2 | 2 |
+| `AmbidextrousSofa/Analysis/CornerThreshold.lean` | 8 | 8 |
 | `AmbidextrousSofa/Analysis/CornerTrigonometry.lean` | 6 | 6 |
+| `AmbidextrousSofa/Analysis/DiagonalComparisonScore.lean` | 10 | 12 |
 | `AmbidextrousSofa/Analysis/DiagonalCutTriangles.lean` | 7 | 8 |
 | `AmbidextrousSofa/Analysis/DiagonalDeficit.lean` | 6 | 7 |
+| `AmbidextrousSofa/Analysis/DiagonalLowHeight.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/DiagonalRelaxation.lean` | 8 | 9 |
 | `AmbidextrousSofa/Analysis/DiagonalScalar.lean` | 10 | 10 |
 | `AmbidextrousSofa/Analysis/DiagonalTent.lean` | 10 | 12 |
@@ -319,8 +363,10 @@ instruction.
 | `AmbidextrousSofa/Analysis/FacetCurvature.lean` | 9 | 9 |
 | `AmbidextrousSofa/Analysis/FacetPinning.lean` | 10 | 10 |
 | `AmbidextrousSofa/Analysis/FiniteEnvelope.lean` | 14 | 20 |
+| `AmbidextrousSofa/Analysis/FiniteGraphFlux.lean` | 16 | 19 |
 | `AmbidextrousSofa/Analysis/FiniteGraphGreen.lean` | 6 | 10 |
 | `AmbidextrousSofa/Analysis/FiniteGraphLength.lean` | 7 | 8 |
+| `AmbidextrousSofa/Analysis/FiniteHorizontalMoment.lean` | 12 | 15 |
 | `AmbidextrousSofa/Analysis/FiniteNicheOscillation.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/FiniteRoofVariation.lean` | 11 | 11 |
 | `AmbidextrousSofa/Analysis/FiniteScore.lean` | 11 | 11 |
@@ -328,12 +374,24 @@ instruction.
 | `AmbidextrousSofa/Analysis/FiniteSpatialVariation.lean` | 7 | 8 |
 | `AmbidextrousSofa/Analysis/FiniteVariation.lean` | 9 | 10 |
 | `AmbidextrousSofa/Analysis/FloorContactCurvature.lean` | 9 | 10 |
+| `AmbidextrousSofa/Analysis/FullTriangleArea.lean` | 2 | 4 |
+| `AmbidextrousSofa/Analysis/FullTriangleFloor.lean` | 7 | 9 |
+| `AmbidextrousSofa/Analysis/FullTriangleParameters.lean` | 8 | 9 |
+| `AmbidextrousSofa/Analysis/FullTriangleScalar.lean` | 8 | 13 |
+| `AmbidextrousSofa/Analysis/FullTriangleWidth.lean` | 4 | 4 |
+| `AmbidextrousSofa/Analysis/FullWidthCeiling.lean` | 4 | 4 |
+| `AmbidextrousSofa/Analysis/FullWidthGap.lean` | 5 | 5 |
 | `AmbidextrousSofa/Analysis/GlobalCapMaximum.lean` | 7 | 8 |
 | `AmbidextrousSofa/Analysis/GridCounting.lean` | 15 | 17 |
 | `AmbidextrousSofa/Analysis/GridNiche.lean` | 15 | 20 |
 | `AmbidextrousSofa/Analysis/GridPolygon.lean` | 14 | 20 |
 | `AmbidextrousSofa/Analysis/GridScore.lean` | 6 | 7 |
 | `AmbidextrousSofa/Analysis/GridSeparation.lean` | 2 | 2 |
+| `AmbidextrousSofa/Analysis/HorizontalCutoff.lean` | 10 | 12 |
+| `AmbidextrousSofa/Analysis/HorizontalLeakageScalar.lean` | 14 | 25 |
+| `AmbidextrousSofa/Analysis/HorizontalOrdinaryArea.lean` | 2 | 2 |
+| `AmbidextrousSofa/Analysis/HorizontalTopFacet.lean` | 3 | 3 |
+| `AmbidextrousSofa/Analysis/HorizontalWindowLimit.lean` | 6 | 7 |
 | `AmbidextrousSofa/Analysis/InactiveNormals.lean` | 7 | 8 |
 | `AmbidextrousSofa/Analysis/InitialAngleBound.lean` | 8 | 8 |
 | `AmbidextrousSofa/Analysis/InitialAngleCalibration.lean` | 15 | 16 |
@@ -343,8 +401,12 @@ instruction.
 | `AmbidextrousSofa/Analysis/InitialAngleRelaxation.lean` | 16 | 20 |
 | `AmbidextrousSofa/Analysis/InitialAngleScalar.lean` | 19 | 21 |
 | `AmbidextrousSofa/Analysis/InitialAngleWidth.lean` | 3 | 3 |
+| `AmbidextrousSofa/Analysis/IntermediateTilt.lean` | 7 | 9 |
 | `AmbidextrousSofa/Analysis/InverseCanonicalization.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/JointCapMaximum.lean` | 15 | 16 |
+| `AmbidextrousSofa/Analysis/LeftCompanionCap.lean` | 9 | 10 |
+| `AmbidextrousSofa/Analysis/LeftCompanionCurvature.lean` | 9 | 9 |
+| `AmbidextrousSofa/Analysis/LeftCompanionDensity.lean` | 7 | 8 |
 | `AmbidextrousSofa/Analysis/LevelSetDerivative.lean` | 2 | 2 |
 | `AmbidextrousSofa/Analysis/LocalSourceDensity.lean` | 5 | 5 |
 | `AmbidextrousSofa/Analysis/LowHeightAlgebra.lean` | 9 | 11 |
@@ -366,31 +428,62 @@ instruction.
 | `AmbidextrousSofa/Analysis/NeighborWalls.lean` | 15 | 22 |
 | `AmbidextrousSofa/Analysis/NicheBoxBounds.lean` | 3 | 3 |
 | `AmbidextrousSofa/Analysis/NicheFit.lean` | 3 | 3 |
+| `AmbidextrousSofa/Analysis/NichePositiveMiddle.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/NicheWings.lean` | 7 | 7 |
 | `AmbidextrousSofa/Analysis/NonpositiveCornerCurvature.lean` | 7 | 7 |
 | `AmbidextrousSofa/Analysis/NormalTrimming.lean` | 15 | 17 |
 | `AmbidextrousSofa/Analysis/OneTurnArea.lean` | 11 | 11 |
 | `AmbidextrousSofa/Analysis/OneTurnSurvivor.lean` | 12 | 14 |
+| `AmbidextrousSofa/Analysis/OpenGraphFlux.lean` | 5 | 5 |
 | `AmbidextrousSofa/Analysis/OpenWingCurvature.lean` | 7 | 8 |
 | `AmbidextrousSofa/Analysis/OrdinarySofaBound.lean` | 10 | 10 |
 | `AmbidextrousSofa/Analysis/PartialCapContinuity.lean` | 14 | 15 |
+| `AmbidextrousSofa/Analysis/PartialCurvatureDensity.lean` | 7 | 8 |
+| `AmbidextrousSofa/Analysis/PartialCurvatureIntervals.lean` | 3 | 3 |
+| `AmbidextrousSofa/Analysis/PartialEndpointMoments.lean` | 12 | 12 |
+| `AmbidextrousSofa/Analysis/PartialEndpointPositivity.lean` | 4 | 4 |
+| `AmbidextrousSofa/Analysis/PartialErosionMoments.lean` | 14 | 14 |
 | `AmbidextrousSofa/Analysis/PartialFacetPinning.lean` | 2 | 2 |
+| `AmbidextrousSofa/Analysis/PartialGridNiche.lean` | 15 | 19 |
+| `AmbidextrousSofa/Analysis/PartialGridPolygon.lean` | 16 | 25 |
+| `AmbidextrousSofa/Analysis/PartialGridScore.lean` | 6 | 7 |
+| `AmbidextrousSofa/Analysis/PartialHorizontalCutoff.lean` | 7 | 7 |
+| `AmbidextrousSofa/Analysis/PartialHorizontalMoment.lean` | 2 | 2 |
 | `AmbidextrousSofa/Analysis/PartialInactiveNormals.lean` | 6 | 6 |
+| `AmbidextrousSofa/Analysis/PartialLowHeight.lean` | 5 | 5 |
+| `AmbidextrousSofa/Analysis/PartialNeighborLength.lean` | 4 | 4 |
+| `AmbidextrousSofa/Analysis/PartialNeighborWalls.lean` | 12 | 14 |
+| `AmbidextrousSofa/Analysis/PartialPressureLimit.lean` | 9 | 13 |
+| `AmbidextrousSofa/Analysis/PartialSelectedCurvature.lean` | 8 | 11 |
+| `AmbidextrousSofa/Analysis/PartialSelectedSequence.lean` | 8 | 9 |
+| `AmbidextrousSofa/Analysis/PartialSharpCurvatureDensity.lean` | 6 | 6 |
+| `AmbidextrousSofa/Analysis/PartialSharpSourceDensity.lean` | 4 | 4 |
+| `AmbidextrousSofa/Analysis/PartialSourceBalance.lean` | 3 | 4 |
+| `AmbidextrousSofa/Analysis/PartialSourceCounting.lean` | 5 | 5 |
+| `AmbidextrousSofa/Analysis/PartialSourceMass.lean` | 17 | 21 |
+| `AmbidextrousSofa/Analysis/PartialSourceVelocity.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/PartialTopInsertion.lean` | 11 | 11 |
 | `AmbidextrousSofa/Analysis/PersistentPenalty.lean` | 18 | 28 |
 | `AmbidextrousSofa/Analysis/PolygonEnvelope.lean` | 23 | 37 |
 | `AmbidextrousSofa/Analysis/PolygonExposure.lean` | 6 | 8 |
 | `AmbidextrousSofa/Analysis/PolygonVariation.lean` | 12 | 13 |
+| `AmbidextrousSofa/Analysis/PositiveNicheLimit.lean` | 4 | 5 |
+| `AmbidextrousSofa/Analysis/PositivePartCalculus.lean` | 4 | 4 |
+| `AmbidextrousSofa/Analysis/PositivePartialBarrierLimit.lean` | 4 | 5 |
 | `AmbidextrousSofa/Analysis/PositiveTent.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/QuadraticEnergy.lean` | 11 | 14 |
 | `AmbidextrousSofa/Analysis/QuarterFunctions.lean` | 4 | 9 |
+| `AmbidextrousSofa/Analysis/RampCutIntegral.lean` | 3 | 3 |
+| `AmbidextrousSofa/Analysis/RegularCorner.lean` | 5 | 5 |
 | `AmbidextrousSofa/Analysis/RegularCurvatureDomain.lean` | 10 | 11 |
+| `AmbidextrousSofa/Analysis/RegularTangency.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/RoofContinuity.lean` | 3 | 3 |
 | `AmbidextrousSofa/Analysis/RoofGain.lean` | 1 | 1 |
 | `AmbidextrousSofa/Analysis/SelectedCurvature.lean` | 10 | 13 |
 | `AmbidextrousSofa/Analysis/SelectedEndpointMoments.lean` | 15 | 16 |
 | `AmbidextrousSofa/Analysis/SelectedErosionMoments.lean` | 15 | 15 |
 | `AmbidextrousSofa/Analysis/SelectedGreenLimit.lean` | 4 | 4 |
+| `AmbidextrousSofa/Analysis/SelectedHorizontalMoment.lean` | 2 | 2 |
 | `AmbidextrousSofa/Analysis/SelectedNicheHeight.lean` | 3 | 3 |
 | `AmbidextrousSofa/Analysis/SelectedPressureLimit.lean` | 11 | 15 |
 | `AmbidextrousSofa/Analysis/SelectedSequence.lean` | 9 | 10 |
@@ -400,25 +493,38 @@ instruction.
 | `AmbidextrousSofa/Analysis/ShortTailGeometry.lean` | 6 | 8 |
 | `AmbidextrousSofa/Analysis/ShortWidthExclusion.lean` | 1 | 1 |
 | `AmbidextrousSofa/Analysis/ShortWidthPayment.lean` | 7 | 10 |
+| `AmbidextrousSofa/Analysis/SourceLocalization.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/SourceOccupation.lean` | 9 | 10 |
 | `AmbidextrousSofa/Analysis/SourceVelocity.lean` | 22 | 27 |
 | `AmbidextrousSofa/Analysis/SupportCurvature.lean` | 9 | 11 |
 | `AmbidextrousSofa/Analysis/SupportDensityCalculus.lean` | 18 | 19 |
 | `AmbidextrousSofa/Analysis/SupportHeightControl.lean` | 3 | 3 |
+| `AmbidextrousSofa/Analysis/TangencyEndpoints.lean` | 18 | 18 |
+| `AmbidextrousSofa/Analysis/TangencyLoci.lean` | 11 | 13 |
+| `AmbidextrousSofa/Analysis/TangencyOrder.lean` | 5 | 5 |
+| `AmbidextrousSofa/Analysis/TerminalActualComparison.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/TerminalAngleDerivative.lean` | 12 | 14 |
 | `AmbidextrousSofa/Analysis/TerminalAngleIntegral.lean` | 16 | 18 |
 | `AmbidextrousSofa/Analysis/TerminalCircleEndpoints.lean` | 11 | 12 |
 | `AmbidextrousSofa/Analysis/TerminalCircleMargin.lean` | 4 | 4 |
+| `AmbidextrousSofa/Analysis/TerminalCompanionComparison.lean` | 3 | 3 |
+| `AmbidextrousSofa/Analysis/TerminalCompanionCurvature.lean` | 9 | 13 |
+| `AmbidextrousSofa/Analysis/TerminalCompanionLocalization.lean` | 9 | 10 |
+| `AmbidextrousSofa/Analysis/TerminalCompanionMoment.lean` | 8 | 8 |
 | `AmbidextrousSofa/Analysis/TerminalCorner.lean` | 8 | 8 |
 | `AmbidextrousSofa/Analysis/TerminalCubicPayment.lean` | 12 | 13 |
 | `AmbidextrousSofa/Analysis/TerminalExposure.lean` | 9 | 9 |
 | `AmbidextrousSofa/Analysis/TerminalExtension.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/TerminalFacet.lean` | 11 | 16 |
 | `AmbidextrousSofa/Analysis/TerminalHistory.lean` | 12 | 13 |
+| `AmbidextrousSofa/Analysis/TerminalLeftComparison.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/TerminalScalar.lean` | 8 | 8 |
+| `AmbidextrousSofa/Analysis/TerminalStrictComparison.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/TerminalSupportTails.lean` | 17 | 17 |
 | `AmbidextrousSofa/Analysis/TerminalThreeSupports.lean` | 22 | 25 |
+| `AmbidextrousSofa/Analysis/TerminalTopProjection.lean` | 8 | 10 |
 | `AmbidextrousSofa/Analysis/TerminalWallBound.lean` | 6 | 6 |
+| `AmbidextrousSofa/Analysis/TiltedDiagonalRoof.lean` | 10 | 11 |
 | `AmbidextrousSofa/Analysis/TiltedFirstUnitClosure.lean` | 1 | 1 |
 | `AmbidextrousSofa/Analysis/TiltedFirstUnitEnergy.lean` | 17 | 23 |
 | `AmbidextrousSofa/Analysis/TiltedFirstUnitMoments.lean` | 8 | 12 |
@@ -431,7 +537,17 @@ instruction.
 | `AmbidextrousSofa/Analysis/TopInsertion.lean` | 6 | 6 |
 | `AmbidextrousSofa/Analysis/UnusedCurvature.lean` | 8 | 12 |
 | `AmbidextrousSofa/Analysis/UsedSupportSaturation.lean` | 16 | 18 |
+| `AmbidextrousSofa/Analysis/VisibleFluxDensity.lean` | 7 | 7 |
+| `AmbidextrousSofa/Analysis/VisibleGraphFlux.lean` | 1 | 1 |
+| `AmbidextrousSofa/Analysis/WallVisibility.lean` | 17 | 17 |
 | `AmbidextrousSofa/Analysis/WideCap.lean` | 10 | 10 |
+| `AmbidextrousSofa/Analysis/WideDiagonalGeometry.lean` | 7 | 10 |
+| `AmbidextrousSofa/Analysis/WideDiagonalScalar.lean` | 9 | 11 |
+| `AmbidextrousSofa/Analysis/WideGainScalar.lean` | 12 | 14 |
+| `AmbidextrousSofa/Analysis/WideNicheGeometry.lean` | 6 | 6 |
+| `AmbidextrousSofa/Analysis/WideNichePieces.lean` | 7 | 15 |
+| `AmbidextrousSofa/Analysis/WideSupportCuts.lean` | 5 | 7 |
+| `AmbidextrousSofa/Analysis/WideWidthExclusion.lean` | 2 | 2 |
 | `AmbidextrousSofa/Analysis/WingCurvatureDensity.lean` | 4 | 4 |
 | `AmbidextrousSofa/Analysis/WingCurvatureIntervals.lean` | 4 | 4 |
 | `AmbidextrousSofa/ExactConstant.lean` | 22 | 26 |

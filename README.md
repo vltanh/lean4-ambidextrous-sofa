@@ -54,6 +54,12 @@ refereeing and Lean kernel verification are separate from those records.
 | Actual short-width exclusion | Literal near-diagonal supports, two exterior cuts and two disjoint additional niche tails, including both clipped outer tips; actual score is strictly below `41/50` for `a ≤ 1001/1000` in canonical tilted form | [ShortWidthExclusion](AmbidextrousSofa/Analysis/ShortWidthExclusion.lean), [NearDiagonalTail](AmbidextrousSofa/Analysis/NearDiagonalTail.lean) |
 | Actual proper terminal facet and exposure | Largest-angle same-cap extension bounds the whole terminal facet; a genuine inward support cut and dominated convergence bound strict terminal exposure by that facet | [TerminalCorner](AmbidextrousSofa/Analysis/TerminalCorner.lean), [TerminalExposure](AmbidextrousSofa/Analysis/TerminalExposure.lean) |
 | Proper circle comparison | Exact circle-slope averages and endpoint margins retain the terminal height, both top overhangs and the whole reserve interval in MP.24 | [TerminalCircleMargin](AmbidextrousSofa/Analysis/TerminalCircleMargin.lean) |
+| Actual full-width restriction | The literal wide, intermediate-tilt and full three-triangle inequalities give quarter-width `C < 37/50` for every actual full maximum; floor corrections retain all clipped cases | [FullWidthCeiling](AmbidextrousSofa/Analysis/FullWidthCeiling.lean), [FullTriangleWidth](AmbidextrousSofa/Analysis/FullTriangleWidth.lean) |
+| Actual horizontal positive-corner flux | Two visible graph projections, actual tangency endpoint limits and a.e. differentiation give the companion flux law; genuine first crossings prove that one unit companion quarter forces a unit first quarter | [VisibleFluxDensity](AmbidextrousSofa/Analysis/VisibleFluxDensity.lean), [CornerPropagation](AmbidextrousSofa/Analysis/CornerPropagation.lean), [CornerEndpointEnergy](AmbidextrousSofa/Analysis/CornerEndpointEnergy.lean) |
+| Horizontal leakage arithmetic | Seven explicit rational interval rows, exact envelope moments and an actual ordinary-area obstruction; the actual leakage-envelope application remains in progress | [HorizontalLeakageScalar](AmbidextrousSofa/Analysis/HorizontalLeakageScalar.lean), [HorizontalOrdinaryArea](AmbidextrousSofa/Analysis/HorizontalOrdinaryArea.lean) |
+| Actual proper source selection and density | Rescaled visited families retain the whole terminal wall and all old support penalties; selected limits give bounded and sharp actual companion curvature densities, including the literal cut-cap splice | [PartialSelectedSequence](AmbidextrousSofa/Analysis/PartialSelectedSequence.lean), [PartialSharpCurvatureDensity](AmbidextrousSofa/Analysis/PartialSharpCurvatureDensity.lean) |
+| Actual proper moments and top projection | Both selected endpoint/erosion moments, low-height exclusion and vanishing source balance yield `TL + 2 TR ≤ terminal inset` for the actual top overhangs, with outgoing zero strictly inside the actual middle | [PartialEndpointPositivity](AmbidextrousSofa/Analysis/PartialEndpointPositivity.lean), [TerminalTopProjection](AmbidextrousSofa/Analysis/TerminalTopProjection.lean) |
+| Actual proper circle comparison | The actual cut density and top projection discharge every initial-coordinate and overhang input; proper width and the early weighted-excess estimate remain to be supplied | [TerminalActualComparison](AmbidextrousSofa/Analysis/TerminalActualComparison.lean) |
 | Geometric equality infrastructure | Exact four-term physical deficit, a.e. partition equality, actual hull recovery and finite-measure regular-closed set recovery | [CapAssembly](AmbidextrousSofa/Measure/CapAssembly.lean), [RegularClosed](AmbidextrousSofa/Topology/RegularClosed.lean) |
 
 All statements in this table refer to source proof bodies, not successful
@@ -134,12 +140,36 @@ derives all support deficits and triangle payments from the cap itself.
 entire initial proper-angle range. At a canonical largest-angle maximum,
 `terminalFaceWidth_le_reserve` and
 `terminal_strict_exposure_measure_le_reserve` derive the terminal geometric
-bounds from actual extension and inward-cut competitors. The top-projection
-moment and the remaining sharp terminal applications are still required.
+bounds from actual extension and inward-cut competitors. The actual
+top-projection moment and sharp cut-curvature density are now written.
+The remaining width and early-excess bounds are still required.
+
+`IsFullCapMaximizer.quarter_width_lt_thirty_seven_fiftieths` now proves
+`capWidth U / 4 < 37/50` for every actual full maximum, including arbitrary
+height and middle slope before canonicalization. The three-triangle proof
+uses actual supports, actual endpoint laws, explicit floor losses and the
+strict rational bound `25811237/31500000 < 41/50`.
+
+`IsFullCapMaximizer.ae_first_density_le_one_of_unit_companion` now derives
+the other quarter's unit density from an actual good companion quarter.
+Its positive-corner flux, tangency containment and genuine first level
+crossings are proved internally. `CornerEndpointEnergy` treats the actual
+axis limit and the threshold equality case. The rational horizontal
+leakage rows and actual one-turn area contradiction are ready; the full
+actual leakage application is still being assembled.
+
+`IsJointCapMaximizer.terminal_top_projection_bound` uses the literal top
+endpoints and the actual proper source limit. It proves the weighted
+overhang budget and places the outgoing zero strictly inside the middle.
+`leftCompanion_curvature_density_sharp` constructs the density of the
+actual left cut on its complete open companion arc. The middle joining
+atom and the initial top atom are treated explicitly. The resulting
+`exists_actual_leftCompanion_density_excess_gt` reduces the proper
+contradiction to the remaining actual width and weighted-excess bounds.
 
 These results do not yet assemble an upper bound `M` for every ambidextrous
-body. The remaining fractional positive-corner occupation, full and partial
-sharp bounds, and equality classifications are substantive obligations.
+body. The remaining global unit-curvature and tilted geometric applications,
+proper sharp bound, and equality classifications are substantive obligations.
 
 ## Source policy and dependencies
 

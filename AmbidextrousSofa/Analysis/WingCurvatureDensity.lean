@@ -94,7 +94,7 @@ theorem curvature_restrict_le_on_wing
     apply (ENNReal.toReal_le_toReal measure_Ioo_lt_top.ne ENNReal.ofReal_ne_top).mp
     rw [ENNReal.toReal_ofReal (mul_nonneg hC (sub_nonneg.mpr hxy.le))]
     exact hmono.trans hbound
-  · rw [Ioo_eq_empty (le_of_not_gt hxy), measure_empty, measure_empty, mul_zero]
+  · rw [Ioo_eq_empty hxy, measure_empty, measure_empty, mul_zero]
 
 theorem curvature_density_on_wing
     {target : Set Plane} {U : ℕ → Set Plane}
