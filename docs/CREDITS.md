@@ -72,7 +72,8 @@ Figures, from 15:27 to 17:08:
 
 The owner asked to make the repository public, to merge pull request #1, to move the research of
 lean4-moving-sofa's pull request #3 here, keeping only its final manuscript, to point lean4-moving-sofa to this
-repository, and for a README with figures in the manner of lean4-moving-sofa's.
+repository, and for a README with figures in the manner of lean4-moving-sofa's; then, when Palomar's check
+found no `formalization.yaml`, for the metadata.
 
 How it was made:
 - Pull request #1 was merged into `main`. The manuscript was archived in [`docs/archive/`](archive); the
@@ -80,3 +81,13 @@ How it was made:
 - The figures were drawn from the definitions of the Challenge
   ([`scripts/figures/`](../scripts/figures)), with checks that the computed sofa has area `M` and stays inside
   the hallways; the README and the pages of `docs/` were written by the main session.
+- The Palomar metadata, [`formalization.yaml`](../formalization.yaml), was written from the run log, the
+  review of the statements and [docs/layout.md](layout.md), and checked with the metadata, source and
+  dependency checks of Palomar's verifier (PalomarSubmission at commit `d4e41c1`) on a fresh clone.
+
+Figures, from 17:08 to 17:43:
+- elapsed time: 35 minutes;
+- sub-agents: none;
+- tool calls: 126 by the main session;
+- tokens: 0.15 million output, 0.29 million input, 76 million cache reads;
+- model calls: 128, all to `claude-opus-5-5`.

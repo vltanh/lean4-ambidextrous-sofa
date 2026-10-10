@@ -184,6 +184,7 @@ More on each module: [docs/layout.md](docs/layout.md).
 ```text
 Challenge.lean, Solution.lean   the statements of record and their proofs
 comparator.json                 Comparator's configuration
+formalization.yaml              the metadata for the Palomar registry
 AmbidextrousSofa/               the formalization of the manuscript (466 modules)
   ChallengeDefs.lean            the definitions that Challenge.lean copies
   Main.lean                     the main theorems in the Challenge's vocabulary

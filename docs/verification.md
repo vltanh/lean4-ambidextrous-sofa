@@ -42,6 +42,15 @@ Lake's Comparator checks in a sandbox that [`Solution.lean`](../Solution.lean) p
 [`Challenge.lean`](../Challenge.lean), over identical definitions, with the three standard axioms only, and
 replays the proofs through Lean's kernel and the NanoDa kernel. It ends with `Your solution is okay!`.
 
+## Palomar
+
+[`formalization.yaml`](../formalization.yaml) describes the formalization for the
+[Palomar](https://palomar-registry.org) registry: its sources, its scope, how it was made, its readings of the
+manuscript and its departures from it, and the eight theorems that Comparator checks. The checks of Palomar's
+verifier ([PalomarSubmission](https://github.com/PalomarRegistry/PalomarSubmission)), run on a fresh clone,
+accept the metadata and the 469 Lean files. The pins of [`lake-manifest.json`](../lake-manifest.json) agree with
+Mathlib's own, as the verifier requires, and with those of Verso, which renders the Challenge.
+
 ## Continuous integration
 
 [`.github/workflows/lean_action_ci.yml`](../.github/workflows/lean_action_ci.yml) builds the project on every push and
