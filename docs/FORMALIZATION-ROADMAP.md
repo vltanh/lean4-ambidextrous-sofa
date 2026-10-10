@@ -2,10 +2,12 @@
 
 ## Status and target
 
-This roadmap starts a new formalization project. Written Gate 0–3 completion
-does not constitute completion of any Lean gate. The initial pull request
-contains complete source proof bodies for a limited foundation, **uncompiled**
-at the user's request. Source review is recorded separately from kernel checks.
+This roadmap tracks the formalization from its initial foundations through
+the actual cap, motion, integral, and reference-geometry layers. Written Gate
+0–3 completion does not constitute completion of any Lean gate. The pull
+request contains complete source proof bodies for every declared theorem,
+**uncompiled** at the user's request. Source review is recorded separately
+from kernel checks.
 
 The source proof is pinned to research commit
 [`20489723dc8777a82ee70ae60510115dc6f21085`][research]. Its controlling
@@ -28,12 +30,12 @@ complete proof body.
 | Stage | Written-proof dependency | Deliverable and acceptance criterion | Current Lean status |
 | --- | --- | --- | --- |
 | F0: foundations | MS.1–2, ED.1–6, TB4 | Exact constant; original coordinate domain; signed fiber algebra; finite-measure regular-closed recovery | Complete source bodies in this PR; uncompiled |
-| F1: actual hull and cap analysis | Gate 0, MS.4–7 | Hull compactness, cap roofs and support, measurability, true barriers, signed envelope and area integrals | Not yet formalized |
-| F2: original-motion bridge | Gate 0 / original-motion audit | Lift proper rigid paths, recover both actual terminal strips, justify canonical angular intervals and common-hull containment | Definitions only in this PR |
-| F3: reference geometry | Gate 1 calibration, MS.11–13 | Construct the reference support, hull, physical body and both motions; prove its area equals `M` | Exact scalar parameter only in this PR |
-| F4: full-turn cap theorem | Written Gate 1 | Universal score at most `M/2` on the full cap domain; exact reference attainment | Not yet formalized |
-| F5: partial-turn cap theorem | Written Gate 2 | Independent terminal-angle bound retaining the whole outgoing wall, including the full-turn endpoint | Not yet formalized |
-| F6: equality and original body | Written Gate 3 | Equality classification, inverse canonicalization, proper-angle strictness, actual hull and literal set recovery | Pointwise deficit algebra and generic recovery lemma only |
+| F1: actual hull and cap analysis | Gate 0, MS.4–7 | Hull compactness, cap roofs and support, measurability, true barriers, signed envelope and area integrals | Complete source bodies for this geometric and integral layer; uncompiled |
+| F2: original-motion bridge | Gate 0 / original-motion audit | Lift proper rigid paths, recover both actual terminal strips, justify canonical angular intervals and common-hull containment | Support tightening, real endpoint walls, reflected paths, IVT reach, and normalized terminal-passage area assembly implemented; full reduction remains |
+| F3: reference geometry | Gate 1 calibration, MS.11–13 | Construct the reference support, hull, physical body and both motions; prove its area equals `M` | Exact parameters, piecewise C¹ coordinates, phase curvature, and explicit compact symmetric hull implemented; support realization and attainment remain |
+| F4: full-turn cap theorem | Written Gate 1 | Universal score at most `M/2` on the full cap domain; exact reference attainment | Actual score and elementary small-width branch implemented; universal variational theorem remains |
+| F5: partial-turn cap theorem | Written Gate 2 | Independent terminal-angle bound retaining the whole outgoing wall, including the full-turn endpoint | Actual partial barriers and two-cap assembly implemented; universal sharp partial-cap estimate remains |
+| F6: equality and original body | Written Gate 3 | Equality classification, inverse canonicalization, proper-angle strictness, actual hull and literal set recovery | Actual four-term geometric deficit, exact a.e. partition equality, literal two-cap hull recovery, and generic physical-set recovery implemented; sharp equality classification remains |
 | F7: final verification | All stages | Unconditional original-domain optimality and uniqueness with audited standard axioms | Deferred; no compilation or CI in this PR |
 
 ### F0 — exact constants and reusable elementary lemmas
@@ -50,10 +52,11 @@ equivalent to a nonnegative **signed** length. Negative auxiliary lengths
 are retained in the comparison identities. The middle and exterior positive
 parts give exact defects and exact pointwise equality conditions.
 
-The four-term deficit theorem is explicitly arithmetic. Its parameters named
-`area`, `envelope`, and `scoreU` are arbitrary real numbers; their geometric
-interpretation and bounds are hypotheses, not established geometric results.
-Its usefulness is to isolate the final algebra after those facts are proved.
+The original four-term theorem in `Algebra/Deficit.lean` is arithmetic.
+The subsequent `Measure/Partition.lean` and `Measure/CapAssembly.lean`
+instantiate it with genuine integrals, the actual body, and the ordinary
+measure of the missing envelope. Scalar sharpness is still not a conclusion
+of any of these identities.
 
 `Topology/RegularClosed.lean` proves the finite-measure set-recovery step in
 a general space. An open null difference is empty, then closedness recovers
@@ -62,24 +65,39 @@ suffice, so finite measure is explicit or supplied by compactness.
 
 ### F1 — hulls, roofs, support and integration
 
-Start with `actualHull S`, not an unrelated maximizer. Prove compactness and
-preservation of the horizontal projection for a connected compact physical
-body. Establish that upper and reflected-lower hull caps satisfy
-`IsDownwardCap`, with no positive-width or full-height premise added silently.
+`HullCompact.lean` proves compactness of `actualHull S` itself. Carathéodory's
+theorem expresses the hull as a finite union of continuous images of compact
+simplices and compact point tuples; zero through three vertices cover the
+two-dimensional case. No closure is silently substituted for the hull.
 
-Define roof values, projection endpoints, width and the middle-half interval.
-Separate zero-width cases before division by width or use of nondegenerate
-integral formulas. Prove measurability and integrability of roofs and barriers.
-Define full-turn positive niches and the proper-terminal barrier with the
-actual outgoing first wall. Handle the endpoint `π/2` separately wherever
-the cosine denominator vanishes.
+`CapGeometry.lean` proves that downward filling preserves compactness and
+convexity, that roofs are attained and concave on the projection, and that the
+zero-extended roof is upper semicontinuous and measurable. `Support.lean`
+proves compact support attainment and continuity, actual-hull support
+invariance, support determination by separation, and the required rotation,
+reflection, translation, and downward-filling identities.
 
-Construct the envelope from the four walls. Establish Fubini/Cavalieri area
-formulas and the equal lengths of the middle and exterior regions. The
-pointwise identities already in F0 then yield the integral partition deficit.
-For auxiliary hulls with empty fibers, ordinary area uses the positive part
-of the signed length. The original-body bridge must justify nonempty fibers
-before identifying signed integral and physical envelope area.
+`Reflection.lean` proves that the original connected compact body's projection
+is unchanged by convexification. Both actual hull caps have precisely that
+projection, and their reflected intersection is literally the actual hull.
+All boundary points are retained.
+
+`Barriers.lean` defines every interior-angle corner constraint and the entire
+proper-terminal first wall. At `π/2`, the latter becomes the top-support
+excess and is proved redundant for a cap in the unit strip. `BarrierAnalysis.lean`
+proves the swept supremum bounded above for every horizontal coordinate:
+at least one of sine and cosine is at least `1/2`, so one wall bounds their
+minimum. This yields lower semicontinuity, measurability, and actual
+integrability on compact intervals, including intervals outside the cap
+projection. Roof integrability is also proved.
+
+`Measure/Fibers.lean` proves Tonelli/Cavalieri formulas. Ordinary envelope
+area uses the positive part of signed fiber length until physical nonemptiness
+is supplied. `Measure/Partition.lean` proves equal measures of the middle and
+exterior regions, the integrated partition identity, and exact a.e. equality
+conditions. `Measure/CapAssembly.lean` supplies physical fibers from the
+original connected projection and instantiates the complete actual-body
+area and deficit identities. No positive-width assumption is needed.
 
 ### F2 — preserve the original motion domain
 
@@ -91,12 +109,21 @@ angle lifts and invariance of area under rigid placements. The coordinate
 plane uses the product topology; its product norm must not be mistaken for
 the Euclidean norm when applying isometry APIs.
 
-Formalize the Gate 0 wrong-way angular reach, both independent terminal
-strips, common incoming normalization, and actual-hull tightening. Preserve
-whole-body endpoint conditions. Carry connectedness to nonempty envelope
-fibers, and prove the compact parameter-domain and gap-compression reductions
-used later. Do not infer a full quarter-turn passage from a proper terminal
-angle.
+Completed source results in `Hallway.lean` tighten the supports while
+preserving the actual retained body and separately recover the real outgoing
+strip. `AngularDomain.lean` proves the intermediate-angle result by the IVT,
+with no monotonicity premise, both for a genuine terminal angle and for a
+visited full quarter turn. It also constructs the explicit reflected upper
+motion and proves its lower-passage property. `CapAssembly.lean` derives the
+actual area inequality from independent normalized terminal passages with
+angles in `(0,π/2]`, discharging cap regularity and integration conditions.
+
+The remaining Gate 0 work is the global wrong-way exclusion and angular-reach
+dichotomy, common incoming normalization, area invariance under the coordinate
+rigid maps, the correspondence with arbitrary proper-isometry paths, and the
+compact parameter-domain/gap-compression reductions used later. These are
+substantive obligations. The normalized terminal theorem does not imply them,
+and its angle premises have not been added to `IsAmbidextrous`.
 
 **Lean Gate 0 acceptance:** an end-to-end theorem from the stated two original
 motions to the correct signed joint inequality problem, with both actual
@@ -104,10 +131,27 @@ terminal strips retained and physical area justified.
 
 ### F3–F4 — reference body and the universal full-turn bound
 
-Construct the piecewise reference support from `Y` and `beta`. Prove exact
-matching values and first derivatives, nonnegative curvature measure, the
-actual convex support body, the compact physical sofa, and its two feasible
-motions. Prove exact area `M` and the geometric facts later needed for equality.
+`Reference/Parameters.lean` proves the exact trigonometric matching equations
+from the cubic, including the sign choice needed in the doubled-angle
+factorization. `Reference/Support.lean` gives all six phase formulas, first
+and second derivatives, matching values and derivatives at both switches,
+reflection identities, endpoint conditions, and the strict middle curvature
+margin. A one-sided derivative gluing proof establishes actual global C¹
+regularity of the displayed coordinates.
+
+`Reference/Hull.lean` defines the four-family half-plane intersection, proves
+that the explicit center `(k,1/2)` lies in it, obtains a compact bounding box
+from endpoint normals, and proves compactness, convexity, connectedness, and
+literal reflection symmetry. The actual hull support is bounded above by the
+prescribed functions. **Reverse support inequalities are not yet proved.**
+The next reference work is support realization, the physical niche-cut sofa,
+its two feasible motions, and exact area `M`.
+
+`Measure/CapScore.lean` defines the actual integral score and proves the
+elementary bound `Pα(U) ≤ width(U)/2` for every cap and every `α`. It therefore
+closes the scalar small-width branch `width(U) ≤ M`, with strict inequality
+when the width is smaller. This is one branch of the scalar problem, not the
+universal sharp cap theorem.
 
 For arbitrary caps, formalize the chord and height reductions, compactness
 of the cap optimization problem, source-measure extraction and approximation,
@@ -151,10 +195,12 @@ still requires F6.
 
 ### F6 — equality, inverse reductions and exact set recovery
 
-Instantiate the four-term deficit with actual cap scores, the integrated
-partition remainder, and the measure omitted from the actual envelope. Show
-all four terms are nonnegative. Equality then identifies both **original**
-cap scores and forces both remainders to vanish.
+The actual four-term deficit is now instantiated in
+`actual_cap_four_term_deficit`. The partition term is nonnegative and the
+filling term is actual missing area. The two scalar terms require the still
+open sharp cap estimates before their nonnegativity can be concluded. Once
+those are proved, equality will identify both **original** cap scores and
+force both remainders to vanish.
 
 Classify every full-turn equality cap, including the translation mode, and
 reverse the chord cut and vertical extrusion exactly. The current extrusion
@@ -173,6 +219,24 @@ to obtain the converse equality direction.
 **Lean Gate 3 acceptance:** the unconditional optimality-and-uniqueness
 theorem in the original two-motion domain, actual-hull identification and
 necessary full angular reach, with every retained mathematical input proved.
+
+## Next implementation sequence
+
+1. Complete the original-motion normalization and reach dichotomy, including
+   rigorous area estimates for excluded angular excursions. Join the existing
+   terminal and visited-full-turn branches, allowing different branches for
+   the two independent motions.
+2. Prove support realization for the explicit reference hull, construct the
+   physical reference sofa and its two motions, and evaluate its exact area.
+3. Develop compactness, chord/height reductions, prescribed-optimizer
+   regularity, and the variational/calibration machinery for the universal
+   full-turn scalar theorem. Discharge the retained ordinary one-turn input.
+4. Formalize the proper-terminal variational estimate with its whole wall,
+   then classify equality, reverse reductions, and apply exact set recovery.
+5. When separately requested, elaborate the entire pinned project and run
+   the prepared transitive axiom queries. Repair every compilation issue
+   while preserving the source policy. No such verification is performed
+   by this uncompiled draft.
 
 ## Source discipline and later verification
 

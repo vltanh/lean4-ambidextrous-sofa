@@ -1,6 +1,6 @@
 # Lean ambidextrous sofa
 
-An initial Lean 4 formalization of the ambidextrous moving sofa problem.
+A Lean 4 formalization draft of the ambidextrous moving sofa problem.
 
 **Status: uncompiled draft.** Every theorem currently declared has a complete
 source proof body. The full optimality and uniqueness theorem is **not yet
@@ -30,20 +30,59 @@ refereeing and Lean kernel verification remain outstanding. Its ordinary
 one-turn theorem and Gerver-area enclosure are explicit external inputs;
 they will also need fully proved formal dependencies.
 
-## What this draft contains
+## What this draft now contains
 
-| Module | Completed source content | Boundary of the result |
+| Source modules | Completed source content | Boundary of the result |
 | --- | --- | --- |
 | [ExactConstant](AmbidextrousSofa/ExactConstant.lean) | Existence and uniqueness of the cubic root, `2/7 < Y < 3/10`, switching-angle bounds, and exact identities for `M` | No geometric area is assigned to `M` yet |
-| [Geometry/Plane](AmbidextrousSofa/Geometry/Plane.lean) | Coordinate rotations, Euclidean squared-length preservation, and the two reflected corridors | The product norm is not used as a Euclidean metric |
-| [Geometry/Motions](AmbidextrousSofa/Geometry/Motions.lean) | Independent continuous two-passage domain and inheritance by compact connected subsets | Angle lifting from arbitrary proper isometry paths remains to be proved |
-| [Geometry/Caps](AmbidextrousSofa/Geometry/Caps.lean) | Actual convex hulls, broad downward caps, exact projection and downward-filling identities | No normalization to full height or special contact chart is assumed |
-| [Algebra/Deficit](AmbidextrousSofa/Algebra/Deficit.lean) | Signed four-wall fibers, exact partition defects, four-term arithmetic deficit, and extrusion identity | Identifying geometric integrals and proving sharp cap bounds remain separate tasks |
-| [Topology/RegularClosed](AmbidextrousSofa/Topology/RegularClosed.lean) | Closed-subset recovery from finite equal measure and regular closedness | The reference body's geometry and regular closedness remain to be constructed |
+| [Plane](AmbidextrousSofa/Geometry/Plane.lean), [Motions](AmbidextrousSofa/Geometry/Motions.lean) | Coordinate rigid motions, Euclidean squared-length preservation, reflected corridors, independent continuous passages | The product norm is not a Euclidean norm; lifting arbitrary proper-isometry paths remains open |
+| [Caps](AmbidextrousSofa/Geometry/Caps.lean), [CapGeometry](AmbidextrousSofa/Geometry/CapGeometry.lean), [HullCompact](AmbidextrousSofa/Geometry/HullCompact.lean) | Compactness of the actual convex hull by finite Carathéodory parametrizations; compact downward caps; attained concave roofs; exact fibers; roof measurability | The domain includes subunit height, zero width, facets, and nonsmooth caps |
+| [Support](AmbidextrousSofa/Geometry/Support.lean), [Reflection](AmbidextrousSofa/Geometry/Reflection.lean) | Attained continuous supports, separation and support determination, support transformations, exact original connected projection, literal hull recovery from its two caps | No feasible motion of the whole convex hull is inferred |
+| [Hallway](AmbidextrousSofa/Geometry/Hallway.lean), [Barriers](AmbidextrousSofa/Geometry/Barriers.lean), [BarrierAnalysis](AmbidextrousSofa/Geometry/BarrierAnalysis.lean) | Genuine frame constraints, support tightening, all-angle swept niches, true terminal first walls, boundedness, lower semicontinuity, and integrability | The proper-terminal wall is kept; its omission is proved only at a full quarter turn |
+| [AngularDomain](AmbidextrousSofa/Geometry/AngularDomain.lean) | IVT extraction of every intervening frame despite backtracking; full-turn reach and genuine terminal-angle cases; explicit reflected rigid path | The global wrong-way exclusion and angular-reach dichotomy remain open |
+| [Deficit](AmbidextrousSofa/Algebra/Deficit.lean), [Fibers](AmbidextrousSofa/Measure/Fibers.lean), [Partition](AmbidextrousSofa/Measure/Partition.lean) | Tonelli area formulas; positive-part versus signed fibers; integrated partition identity; exact a.e. equality conditions; ordinary missing-envelope area | Signed length is identified with ordinary area only after nonempty fibers are proved |
+| [CapScore](AmbidextrousSofa/Measure/CapScore.lean), [CapAssembly](AmbidextrousSofa/Measure/CapAssembly.lean) | Actual cap scores and the elementary width bound; actual-body area bounded by its two cap scores; exact four-term geometric deficit; assembly from independent normalized terminal passages | The universal sharp full-turn and partial-turn cap bounds remain open |
+| [Reference/Parameters](AmbidextrousSofa/Reference/Parameters.lean), [Reference/Support](AmbidextrousSofa/Reference/Support.lean), [Reference/Hull](AmbidextrousSofa/Reference/Hull.lean) | Exact cubic-to-trigonometric matching; six phase formulas and curvature identities; globally C¹ support coordinates; explicit nonempty compact convex symmetric half-plane intersection | Reverse support inequalities, physical sofa construction, feasible motions, and exact area attainment remain open |
+| [RegularClosed](AmbidextrousSofa/Topology/RegularClosed.lean) | Closed-subset recovery from finite equal measure and regular closedness | Application to the genuine reference physical sofa remains open |
+
+### The assembled geometric result
+
+`volumeReal_le_capScore_sum_of_terminal_passages` starts with two genuine
+continuous passages of the same compact connected body in the incoming unit
+strip. With normalized initial angle zero and independent correctly directed
+terminal angles `α, γ ∈ (0, π/2]`, it proves
+
+\[
+\operatorname{area}(S)
+\le P_\alpha(U_S)+P_\gamma(V_S),
+\]
+
+where `U_S = upperCap (actualHull S)` and
+`V_S = upperCap (reflect '' actualHull S)`. Both are the actual hull caps.
+No monotonicity of either path, smoothness of the body, or nonempty-fiber
+assumption is added: intervening angles come from continuity, and physical
+fibers come from the connected original projection. A separate theorem
+handles a visited full quarter turn even if the path subsequently reverses.
+
+`actual_cap_four_term_deficit` also proves the exact identity
+
+\[
+C-\operatorname{area}(S)
+=\bigl(C/2-P_\alpha(U_S)\bigr)
++\bigl(C/2-P_\gamma(V_S)\bigr)
++D_{\rm partition}
++\operatorname{area}(E_{S,\alpha,\gamma}\setminus S).
+\]
+
+The partition defect and missing area are genuine geometric quantities.
+The identity holds for every real `C`. To use `C = M` to conclude sharp
+optimality and uniqueness, the scalar cap bounds and their equality
+classification still have to be proved. Those claims are not assumed by
+these theorems.
 
 The entry point is [AmbidextrousSofa.lean](AmbidextrousSofa.lean).
 The [formalization roadmap](docs/FORMALIZATION-ROADMAP.md) gives the dependency
-order and acceptance criteria for extending this foundation through all four
+order and acceptance criteria for extending this draft through all four
 written gates. The [source-review record](docs/SOURCE-REVIEW.md) describes the
 checks actually performed.
 
