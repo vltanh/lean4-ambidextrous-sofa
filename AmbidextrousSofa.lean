@@ -18,6 +18,7 @@ import AmbidextrousSofa.Analysis.AxisHeightLimit
 import AmbidextrousSofa.Analysis.AxisVariation
 import AmbidextrousSofa.Analysis.BoxedSecants
 import AmbidextrousSofa.Analysis.CanonicalOneTurn
+import AmbidextrousSofa.Analysis.CanonicalTiltParameters
 import AmbidextrousSofa.Analysis.CanonicalWingChord
 import AmbidextrousSofa.Analysis.CapCompactness
 import AmbidextrousSofa.Analysis.CapInsertion
@@ -41,7 +42,10 @@ import AmbidextrousSofa.Analysis.CompanionEndpointEnergy
 import AmbidextrousSofa.Analysis.CompanionEndpointKernel
 import AmbidextrousSofa.Analysis.CompanionFloorShadow
 import AmbidextrousSofa.Analysis.CompanionZero
+import AmbidextrousSofa.Analysis.ContactGraphSlope
+import AmbidextrousSofa.Analysis.ContactSlopeBounds
 import AmbidextrousSofa.Analysis.CoreContactGeometry
+import AmbidextrousSofa.Analysis.CoreContactPhase
 import AmbidextrousSofa.Analysis.CoreSourceLowerBounds
 import AmbidextrousSofa.Analysis.CornerArcCrossing
 import AmbidextrousSofa.Analysis.CornerArcDynamics
@@ -93,18 +97,24 @@ import AmbidextrousSofa.Analysis.FiniteScore
 import AmbidextrousSofa.Analysis.FiniteSourceBalance
 import AmbidextrousSofa.Analysis.FiniteSpatialVariation
 import AmbidextrousSofa.Analysis.FiniteVariation
+import AmbidextrousSofa.Analysis.FirstFloorOrder
 import AmbidextrousSofa.Analysis.FirstFloorTrapping
 import AmbidextrousSofa.Analysis.FirstFloorVisibility
 import AmbidextrousSofa.Analysis.FirstSourceDensity
 import AmbidextrousSofa.Analysis.FirstSourceFlux
 import AmbidextrousSofa.Analysis.FirstUnitBadEntry
 import AmbidextrousSofa.Analysis.FirstUnitCrossings
+import AmbidextrousSofa.Analysis.FirstUnitEventSelection
+import AmbidextrousSofa.Analysis.FirstUnitFoldBudget
 import AmbidextrousSofa.Analysis.FirstUnitGeometricMoments
 import AmbidextrousSofa.Analysis.FirstUnitLateWindowClosure
 import AmbidextrousSofa.Analysis.FirstUnitNiche
+import AmbidextrousSofa.Analysis.FirstUnitOccupationClosure
+import AmbidextrousSofa.Analysis.FirstUnitOccupationGeometry
 import AmbidextrousSofa.Analysis.FirstUnitPhases
 import AmbidextrousSofa.Analysis.FirstUnitPrefixEnergy
 import AmbidextrousSofa.Analysis.FirstUnitProjection
+import AmbidextrousSofa.Analysis.FirstUnitSourceSectors
 import AmbidextrousSofa.Analysis.FirstUnitTangency
 import AmbidextrousSofa.Analysis.FirstUnitTopOverhang
 import AmbidextrousSofa.Analysis.FloorContactCurvature
@@ -154,14 +164,30 @@ import AmbidextrousSofa.Analysis.InitialAngleScalar
 import AmbidextrousSofa.Analysis.InitialAngleWidth
 import AmbidextrousSofa.Analysis.IntermediateTilt
 import AmbidextrousSofa.Analysis.InverseCanonicalization
+import AmbidextrousSofa.Analysis.JointBranchDensity
+import AmbidextrousSofa.Analysis.JointBranchIntegrals
+import AmbidextrousSofa.Analysis.JointBranchProjection
 import AmbidextrousSofa.Analysis.JointCapMaximum
+import AmbidextrousSofa.Analysis.JointCompanionTangentDensity
+import AmbidextrousSofa.Analysis.JointFirstTangentDensity
+import AmbidextrousSofa.Analysis.JointNicheDerivative
+import AmbidextrousSofa.Analysis.JointSourceAffine
+import AmbidextrousSofa.Analysis.JointSourceBranches
+import AmbidextrousSofa.Analysis.JointSourceContactLimit
+import AmbidextrousSofa.Analysis.JointSourceContacts
+import AmbidextrousSofa.Analysis.JointSourceDensity
+import AmbidextrousSofa.Analysis.JointSourceFlux
 import AmbidextrousSofa.Analysis.JointSourceLimit
 import AmbidextrousSofa.Analysis.JointSourceMarginal
 import AmbidextrousSofa.Analysis.JointSourceMeasure
+import AmbidextrousSofa.Analysis.JointSourceNicheCalculus
+import AmbidextrousSofa.Analysis.JointSourcePositive
+import AmbidextrousSofa.Analysis.JointSourceSpatial
 import AmbidextrousSofa.Analysis.LeftCompanionCap
 import AmbidextrousSofa.Analysis.LeftCompanionCurvature
 import AmbidextrousSofa.Analysis.LeftCompanionDensity
 import AmbidextrousSofa.Analysis.LevelSetDerivative
+import AmbidextrousSofa.Analysis.LocalOccupationDensity
 import AmbidextrousSofa.Analysis.LocalSourceDensity
 import AmbidextrousSofa.Analysis.LowHeightAlgebra
 import AmbidextrousSofa.Analysis.LowHeightGeometry
@@ -242,9 +268,11 @@ import AmbidextrousSofa.Analysis.PositivePartCalculus
 import AmbidextrousSofa.Analysis.PositivePartialBarrierLimit
 import AmbidextrousSofa.Analysis.PositiveTent
 import AmbidextrousSofa.Analysis.PositiveWallContacts
+import AmbidextrousSofa.Analysis.ProperAngleStrictness
 import AmbidextrousSofa.Analysis.ProperExcessEnvelope
 import AmbidextrousSofa.Analysis.ProperExcessScalar
 import AmbidextrousSofa.Analysis.ProperReflectedEntry
+import AmbidextrousSofa.Analysis.ProperTailRegime
 import AmbidextrousSofa.Analysis.ProperTerminalExclusion
 import AmbidextrousSofa.Analysis.QuadraticEnergy
 import AmbidextrousSofa.Analysis.QuarterFunctions
@@ -282,6 +310,7 @@ import AmbidextrousSofa.Analysis.SupportDensityCalculus
 import AmbidextrousSofa.Analysis.SupportHeightControl
 import AmbidextrousSofa.Analysis.TangencyEndpoints
 import AmbidextrousSofa.Analysis.TangencyLoci
+import AmbidextrousSofa.Analysis.TangencyMeasurable
 import AmbidextrousSofa.Analysis.TangencyOrder
 import AmbidextrousSofa.Analysis.TerminalActualComparison
 import AmbidextrousSofa.Analysis.TerminalAngleDerivative
@@ -297,6 +326,7 @@ import AmbidextrousSofa.Analysis.TerminalCubicPayment
 import AmbidextrousSofa.Analysis.TerminalExposure
 import AmbidextrousSofa.Analysis.TerminalExtension
 import AmbidextrousSofa.Analysis.TerminalFacet
+import AmbidextrousSofa.Analysis.TerminalFacetAtom
 import AmbidextrousSofa.Analysis.TerminalHistory
 import AmbidextrousSofa.Analysis.TerminalImpulseEnergy
 import AmbidextrousSofa.Analysis.TerminalLeftComparison
@@ -374,6 +404,7 @@ import AmbidextrousSofa.Geometry.MotionReduction
 import AmbidextrousSofa.Geometry.Motions
 import AmbidextrousSofa.Geometry.Plane
 import AmbidextrousSofa.Geometry.Reflection
+import AmbidextrousSofa.Geometry.RigidImage
 import AmbidextrousSofa.Geometry.RigidMotion
 import AmbidextrousSofa.Geometry.Support
 import AmbidextrousSofa.Geometry.UpwardSupport
@@ -434,8 +465,12 @@ import AmbidextrousSofa.Measure.CapScore
 import AmbidextrousSofa.Measure.ContactVariation
 import AmbidextrousSofa.Measure.Fibers
 import AmbidextrousSofa.Measure.FiniteMeasurePortmanteau
+import AmbidextrousSofa.Measure.GraphDensityDomination
 import AmbidextrousSofa.Measure.GraphIntegral
+import AmbidextrousSofa.Measure.GraphMeasureTransfer
 import AmbidextrousSofa.Measure.Partition
+import AmbidextrousSofa.Measure.RealRadonNikodym
+import AmbidextrousSofa.Measure.ReferenceOrbit
 import AmbidextrousSofa.Measure.RigidInvariance
 import AmbidextrousSofa.Measure.SignedRoof
 import AmbidextrousSofa.Measure.SignedRoofIntegral
@@ -444,6 +479,7 @@ import AmbidextrousSofa.Measure.StripBounds
 import AmbidextrousSofa.Measure.SupportArea
 import AmbidextrousSofa.Measure.SupportAreaAC
 import AmbidextrousSofa.Measure.SymmetricBody
+import AmbidextrousSofa.Measure.WeightedFiniteMeasure
 import AmbidextrousSofa.Reference.Body
 import AmbidextrousSofa.Reference.Faces
 import AmbidextrousSofa.Reference.HorizontalSymmetry
@@ -459,13 +495,4 @@ import AmbidextrousSofa.Reference.Value
 import AmbidextrousSofa.Topology.RegularClosed
 import AmbidextrousSofa.Topology.VerticalRegion
 
-/-!
-# Ambidextrous sofa: uncompiled proof source
-
-The entry point covers the actual geometry, original-motion reduction,
-reference attainment, cap optimization and variation modules, and the
-explicit analytic calibration developed so far. Every declared theorem has
-an explicit source proof body. The remaining universal cap estimates and
-original-domain equality assembly are tracked in the formalization roadmap.
-No project source has been compiled; the separate axiom queries are unexecuted.
--/
+/-! Uncompiled source draft. No compiler or CI has been run for this snapshot. -/

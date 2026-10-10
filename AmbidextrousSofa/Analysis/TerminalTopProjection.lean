@@ -149,15 +149,15 @@ theorem IsJointCapMaximizer.positive_partial_middle_measure_le_width_sub_topOver
 /-- The terminal tail abscissa is the right middle endpoint plus its
 actual top overhang. A negative middle has no right top overhang and the
 tail is its pinned middle endpoint. -/
-theorem IsJointCapMaximizer.terminalTailPoint_fst_eq_middle_add_topOverhangRight
+theorem IsJointCapMaximizer.terminalTailPoint_fst_eq_middle_add_topOverhangRight_of_tail_regime
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hregime : ProperTailRegime U α m)
     (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
     (terminalTailPoint U α).1 = horizontalRight U - capWidth U / 4 + topOverhangRight U := by
   by_cases hm : m < 0
-  · have hαm := (hU.negative_remaining_tail_geometry hLargest hproper hheight hm haffine).1
+  · have hαm := (hU.negative_remaining_tail_geometry_of_tail_regime hregime hproper hheight hm haffine).1
     have hmL : affineNormalAngle m < Real.pi / 2 := by
       have h := Real.arctan_lt_zero.mpr hm
       unfold affineNormalAngle
@@ -175,19 +175,29 @@ theorem IsJointCapMaximizer.terminalTailPoint_fst_eq_middle_add_topOverhangRight
     rw [hv, htop]
     simp only [max_eq_right hneg, add_zero]
   · have hv := hU.first_terminal_vplus_of_middle_nonneg hproper (le_of_not_gt hm) haffine
-    have hbound := (hU.terminalTailPoint_bounds hLargest hproper hheight haffine).1
+    have hbound := (hU.terminalTailPoint_bounds_of_tail_regime hregime hproper hheight haffine).1
     change horizontalRight U - capWidth U / 4 ≤ (Imported.vplus U α).1 at hbound
     rw [hv] at hbound
     unfold terminalTailPoint topOverhangRight
     rw [hv, max_eq_left (sub_nonneg.mpr hbound)]
     ring
 
+theorem IsJointCapMaximizer.terminalTailPoint_fst_eq_middle_add_topOverhangRight
+    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c) :
+    (terminalTailPoint U α).1 = horizontalRight U - capWidth U / 4 + topOverhangRight U := by
+  exact IsJointCapMaximizer.terminalTailPoint_fst_eq_middle_add_topOverhangRight_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine
+
 /-- TP's projection inequality is derived from the actual source limit.
 The outgoing zero lies strictly inside the middle interval, and both top
 overhangs satisfy the displayed weighted bound. -/
-theorem IsJointCapMaximizer.terminal_top_projection_bound
+theorem IsJointCapMaximizer.terminal_top_projection_bound_of_tail_regime
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hregime : ProperTailRegime U α m)
     (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
@@ -204,12 +214,12 @@ theorem IsJointCapMaximizer.terminal_top_projection_bound
   have hw : 0 < capWidth U := by linarith [hU.width_bounds.1, one_lt_M]
   have hab : a < b := by dsimp [a, b]; unfold capWidth at *; linarith
   have hwidth : b - a = capWidth U / 2 := by dsimp [a, b, capWidth]; ring
-  have htail := hU.terminalTailPoint_bounds hLargest hproper hheight haffine
+  have htail := hU.terminalTailPoint_bounds_of_tail_regime hregime hproper hheight haffine
   obtain ⟨hdpos, hdcos, _, _, _⟩ :=
     hU.isCap.terminalTailInset_bounds hU.angle_pos hproper htail.2.1
   have hzero : z = b + topOverhangRight U - d := by
     dsimp [z, terminalTailZero]
-    rw [hU.terminalTailPoint_fst_eq_middle_add_topOverhangRight hLargest hproper hheight haffine]
+    rw [hU.terminalTailPoint_fst_eq_middle_add_topOverhangRight_of_tail_regime hregime hproper hheight haffine]
     rfl
   have hwide := hU.width_gt_forty_nine_twenty_fifths hproper
   have hcos := (terminal_sin_cos_bounds_after_initialAngle
@@ -250,13 +260,36 @@ theorem IsJointCapMaximizer.terminal_top_projection_bound
   change topOverhangLeft U + 2 * topOverhangRight U ≤ d
   linarith only [hbound, hwidth, hzero]
 
+theorem IsJointCapMaximizer.terminal_top_projection_bound
+    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c) :
+    topOverhangLeft U + 2 * topOverhangRight U ≤ terminalTailInset U α ∧
+      topOverhangRight U < terminalTailInset U α ∧
+      horizontalLeft U + capWidth U / 4 < terminalTailZero U α ∧
+      terminalTailZero U α < horizontalRight U - capWidth U / 4 := by
+  exact IsJointCapMaximizer.terminal_top_projection_bound_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine
+
+theorem IsJointCapMaximizer.topOverhangLeft_add_twice_right_le_terminalInset_of_tail_regime
+    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hregime : ProperTailRegime U α m)
+    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c) :
+    topOverhangLeft U + 2 * topOverhangRight U ≤ terminalTailInset U α :=
+  (hU.terminal_top_projection_bound_of_tail_regime hregime hproper hheight haffine).1
+
 theorem IsJointCapMaximizer.topOverhangLeft_add_twice_right_le_terminalInset
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
     (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    topOverhangLeft U + 2 * topOverhangRight U ≤ terminalTailInset U α :=
-  (hU.terminal_top_projection_bound hLargest hproper hheight haffine).1
+    topOverhangLeft U + 2 * topOverhangRight U ≤ terminalTailInset U α := by
+  exact IsJointCapMaximizer.topOverhangLeft_add_twice_right_le_terminalInset_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine
 
 end AmbidextrousSofa

@@ -152,6 +152,50 @@ theorem IsDownwardCap.sweptNiche_lt_terminalWall_of_leftCompanion_weighted_exces
   rw [hwall]
   linarith only [hniche, hexcess, hmargin]
 
+theorem IsJointCapMaximizer.false_of_leftCompanion_weighted_excess_of_tail_regime
+    {U : Set Plane} {α m c C T_L T_R K : ℝ} {ρ : ℝ → ℝ}
+    (hU : IsJointCapMaximizer U α)
+    (hregime : ProperTailRegime U α m)
+    (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c)
+    (hleft : horizontalLeft U = -2 * C) (hright : horizontalRight U = 2 * C)
+    (hinitial : companionInitialOffset (leftCompanionCap U (-C)) = C - T_L)
+    (htail : (terminalTailPoint U α).1 = C + T_R)
+    (hC0 : (1 / 2 : ℝ) ≤ C) (hC1 : C ≤ 37 / 50)
+    (hcut : 73 * Real.cos α ^ 2 ≤ 9)
+    (hTL : 0 ≤ T_L) (hTR : 0 ≤ T_R)
+    (htop : T_L + 2 * T_R ≤ terminalTailInset U α)
+    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
+    (heq : (upperCurvature (leftCompanionCap U (-C))).restrict (Ioo (Real.pi / 2) Real.pi) =
+      (volume.restrict (Ioo (Real.pi / 2) Real.pi)).withDensity
+        (fun t => ENNReal.ofReal (ρ t)))
+    (hexcess : terminalWeightedExcess (fun t => ρ (t + Real.pi / 2))
+      (Real.arcsin (C - T_L)) ≤ (39 / 4400 : ℝ) * Real.cos α) : False := by
+  have hH := (hU.terminalTailPoint_bounds_of_tail_regime hregime hαL hheight haffine).2.1
+  obtain ⟨_hd0, _hdc, hw0, _hwbound, hwhalf⟩ :=
+    hU.isCap.terminalTailInset_bounds hU.angle_pos hαL hH
+  have hc : 0 < Real.cos α := Real.cos_pos_of_mem_Ioo
+    ⟨by linarith only [hU.angle_pos, Real.pi_pos], hαL⟩
+  have hcsmall := terminal_cosine_lt_forty_four_one_twenty_fifths hc hcut
+  have hwr : -C + terminalTailReserve U α < C := by linarith only [hwhalf, hcsmall, hC0]
+  have haff : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c := by
+    simpa only [middleHalfInterval_eq_centered hleft hright] using haffine
+  have hstrict : ∀ x ∈ Icc (-C) (-C + terminalTailReserve U α),
+      sweptNiche U α x < firstWall U α x := by
+    intro x hx
+    have h := hU.isCap.sweptNiche_lt_terminalWall_of_leftCompanion_weighted_excess
+      hρ hρ0 hρK heq hU.angle_pos hαL hleft hright haff hinitial htail hC0 hC1 hcut hH
+      hTL hTR htop hexcess (z := x + C)
+      (by linarith only [hx.1]) (by linarith only [hx.2])
+    simpa only [show -C + (x + C) = x by ring] using h
+  have hlarge := volume_real_strict_region_gt_of_initial_interval
+    (hU.isCap.continuous_sweptNiche_terminalAngle hU.angle_mem)
+    (continuous_firstWall U α) hw0.le hwr hstrict
+  have hsmall := hU.terminal_strict_exposure_measure_le_reserve_of_tail_regime hregime hαL hheight haffine
+  rw [middleHalfInterval_eq_centered hleft hright] at hsmall
+  exact (not_lt_of_ge hsmall) hlarge
+
 theorem IsJointCapMaximizer.false_of_leftCompanion_weighted_excess
     {U : Set Plane} {α m c C T_L T_R K : ℝ} {ρ : ℝ → ℝ}
     (hU : IsJointCapMaximizer U α)
@@ -172,37 +216,17 @@ theorem IsJointCapMaximizer.false_of_leftCompanion_weighted_excess
         (fun t => ENNReal.ofReal (ρ t)))
     (hexcess : terminalWeightedExcess (fun t => ρ (t + Real.pi / 2))
       (Real.arcsin (C - T_L)) ≤ (39 / 4400 : ℝ) * Real.cos α) : False := by
-  have hH := (hU.terminalTailPoint_bounds hLargest hαL hheight haffine).2.1
-  obtain ⟨_hd0, _hdc, hw0, _hwbound, hwhalf⟩ :=
-    hU.isCap.terminalTailInset_bounds hU.angle_pos hαL hH
-  have hc : 0 < Real.cos α := Real.cos_pos_of_mem_Ioo
-    ⟨by linarith only [hU.angle_pos, Real.pi_pos], hαL⟩
-  have hcsmall := terminal_cosine_lt_forty_four_one_twenty_fifths hc hcut
-  have hwr : -C + terminalTailReserve U α < C := by linarith only [hwhalf, hcsmall, hC0]
-  have haff : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c := by
-    simpa only [middleHalfInterval_eq_centered hleft hright] using haffine
-  have hstrict : ∀ x ∈ Icc (-C) (-C + terminalTailReserve U α),
-      sweptNiche U α x < firstWall U α x := by
-    intro x hx
-    have h := hU.isCap.sweptNiche_lt_terminalWall_of_leftCompanion_weighted_excess
-      hρ hρ0 hρK heq hU.angle_pos hαL hleft hright haff hinitial htail hC0 hC1 hcut hH
-      hTL hTR htop hexcess (z := x + C)
-      (by linarith only [hx.1]) (by linarith only [hx.2])
-    simpa only [show -C + (x + C) = x by ring] using h
-  have hlarge := volume_real_strict_region_gt_of_initial_interval
-    (hU.isCap.continuous_sweptNiche_terminalAngle hU.angle_mem)
-    (continuous_firstWall U α) hw0.le hwr hstrict
-  have hsmall := hU.terminal_strict_exposure_measure_le_reserve hLargest hαL hheight haffine
-  rw [middleHalfInterval_eq_centered hleft hright] at hsmall
-  exact (not_lt_of_ge hsmall) hlarge
+  exact IsJointCapMaximizer.false_of_leftCompanion_weighted_excess_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hαL hheight haffine) hαL hheight haffine hleft hright
+    hinitial htail hC0 hC1 hcut hTL hTR htop hρ hρ0 hρK heq hexcess
 
 /-- A genuine proper maximum with the terminal and top geometry must
 have excessive early weighted curvature on its actual left charged
 wing. The density in this conclusion is constructed inside the theorem. -/
-theorem IsJointCapMaximizer.exists_leftCompanion_density_excess_gt
+theorem IsJointCapMaximizer.exists_leftCompanion_density_excess_gt_of_tail_regime
     {U : Set Plane} {α m c C T_L T_R : ℝ}
     (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hregime : ProperTailRegime U α m)
     (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c)
@@ -228,8 +252,33 @@ theorem IsJointCapMaximizer.exists_leftCompanion_density_excess_gt
   rw [hquarter] at heq
   refine ⟨ρ, hρ, hbounds, heq, ?_⟩
   by_contra hbad
-  exact hU.false_of_leftCompanion_weighted_excess hLargest hαL hheight haffine
+  exact hU.false_of_leftCompanion_weighted_excess_of_tail_regime hregime hαL hheight haffine
     hleft hright hinitial htail hC0 hC1 hcut hTL hTR htop hρ
     (fun t => (hbounds t).1) (fun t => (hbounds t).2) heq (le_of_not_gt hbad)
+
+theorem IsJointCapMaximizer.exists_leftCompanion_density_excess_gt
+    {U : Set Plane} {α m c C T_L T_R : ℝ}
+    (hU : IsJointCapMaximizer U α)
+    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c)
+    (hleft : horizontalLeft U = -2 * C) (hright : horizontalRight U = 2 * C)
+    (hinitial : companionInitialOffset (leftCompanionCap U (-C)) = C - T_L)
+    (htail : (terminalTailPoint U α).1 = C + T_R)
+    (hC0 : (1 / 2 : ℝ) ≤ C) (hC1 : C ≤ 37 / 50)
+    (hcut : 73 * Real.cos α ^ 2 ≤ 9)
+    (hTL : 0 ≤ T_L) (hTR : 0 ≤ T_R)
+    (htop : T_L + 2 * T_R ≤ terminalTailInset U α) :
+    ∃ ρ : ℝ → ℝ, Measurable ρ ∧
+      (∀ t, 0 ≤ ρ t ∧ ρ t ≤ 8 * (|horizontalLeft U| + |horizontalRight U| + 1) + 24) ∧
+      (upperCurvature (leftCompanionCap U (-C))).restrict (Ioo (Real.pi / 2) Real.pi) =
+        (volume.restrict (Ioo (Real.pi / 2) Real.pi)).withDensity
+          (fun t => ENNReal.ofReal (ρ t)) ∧
+      (39 / 4400 : ℝ) * Real.cos α <
+        terminalWeightedExcess (fun t => ρ (t + Real.pi / 2)) (Real.arcsin (C - T_L)) := by
+  exact IsJointCapMaximizer.exists_leftCompanion_density_excess_gt_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hαL hheight haffine) hαL hheight haffine hleft hright
+    hinitial htail hC0 hC1 hcut hTL hTR htop
 
 end AmbidextrousSofa

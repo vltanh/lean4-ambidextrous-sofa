@@ -1,5 +1,11 @@
 # Roadmap to F7 source closure
 
+## Current uncompiled-draft publication
+
+The source draft is being published in dependency stages; the detailed roadmap records the completed work and the next publication step. Full source auditing and kernel verification are deferred.
+
+The current, detailed execution plan is [F7-DRAFT-ROADMAP.md](F7-DRAFT-ROADMAP.md). The longer sections below retain the earlier implementation history.
+
 ## Acceptance and current status
 
 The requested deliverable is an **uncompiled Lean proof source**, with no

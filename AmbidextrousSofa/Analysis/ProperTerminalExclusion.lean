@@ -40,9 +40,9 @@ theorem leftCompanion_excess_bound_of_reflected
     show Real.pi / 2 - (Real.pi / 2 - t) + Real.pi / 2 = t + Real.pi / 2 by ring,
     show B - (Real.pi / 2 - t) = t - (Real.pi / 2 - B) by ring] using h
 
-theorem IsJointCapMaximizer.proper_companion_prefix_bounds
+theorem IsJointCapMaximizer.proper_companion_prefix_bounds_of_tail_regime
     {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hregime : ProperTailRegime U α m)
     (hproper : α < Real.pi / 2)
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hheight : capHeight U = 1)
@@ -54,8 +54,8 @@ theorem IsJointCapMaximizer.proper_companion_prefix_bounds
   have hw : capWidth U / 4 = C := by unfold capWidth; rw [hl, hr]; ring
   have hC := hU.proper_quarter_width_bounds hproper
   rw [hw] at hC
-  have hTP := hU.topOverhangLeft_add_twice_right_le_terminalInset hLargest hproper hheight haffine
-  have hH := (hU.terminalTailPoint_bounds hLargest hproper hheight haffine).2.1
+  have hTP := hU.topOverhangLeft_add_twice_right_le_terminalInset_of_tail_regime hregime hproper hheight haffine
+  have hH := (hU.terminalTailPoint_bounds_of_tail_regime hregime hproper hheight haffine).2.1
   have hinset := (hU.isCap.terminalTailInset_bounds hU.angle_pos hproper hH).2.1
   have hcos := (terminal_sin_cos_bounds_after_initialAngle
     hU.terminal_angle_gt_arctan_eight_thirds.le hproper).2
@@ -72,8 +72,66 @@ theorem IsJointCapMaximizer.proper_companion_prefix_bounds
       (hU.proper_terminalSlope_lt_three_eighths hproper)
   exact ⟨hCT, hCT1, by linarith only [hcut, hgap], by linarith only [hcut]⟩
 
+theorem IsJointCapMaximizer.proper_companion_prefix_bounds
+    {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hproper : α < Real.pi / 2)
+    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
+    (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c) :
+    0 < C - topOverhangLeft U ∧ C - topOverhangLeft U ≤ 37 / 50 ∧
+      Real.arcsin (C - topOverhangLeft U) < α ∧
+      Real.arcsin (C - topOverhangLeft U) < Real.pi / 2 - 73 / 100 := by
+  exact IsJointCapMaximizer.proper_companion_prefix_bounds_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
+
 /-- The early weighted excess of the actual companion is strictly below
 the already proved terminal margin, in both terminal-slope ranges. -/
+theorem IsJointCapMaximizer.proper_leftCompanion_weighted_excess_lt_of_tail_regime
+    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
+    (hregime : ProperTailRegime U α m)
+    (hproper : α < Real.pi / 2)
+    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
+    (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c)
+    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
+    (hsharp : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
+    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
+      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
+        (fun t => ENNReal.ofReal (ρ t))) :
+    terminalWeightedExcess (fun t => leftCompanionWingDensity m ρ (t + Real.pi / 2))
+      (Real.arcsin (C - topOverhangLeft U)) < (39 / 4400 : ℝ) * Real.cos α := by
+  obtain ⟨hCT, hCT1, hθα, hθcut⟩ := hU.proper_companion_prefix_bounds_of_tail_regime
+    hregime hproper hl hr hheight haffine
+  by_cases hκ : terminalSlope α ≤ 1 / 8
+  · have hbound := leftCompanion_excess_bound_of_reflected hθα.le
+      (hU.properReflected_ae_near_full_excess_bound_of_tail_regime
+        hregime hproper hl hr hheight haffine hρ hρ0 hρK hsharp heq hκ)
+    have hunit : ∀ᵐ t ∂volume.restrict (Icc 0 (Real.arcsin (C - topOverhangLeft U))),
+        leftCompanionWingDensity m ρ (t + Real.pi / 2) ≤ 1 := by
+      filter_upwards [hbound, ae_restrict_mem measurableSet_Icc] with t ht hmem
+      rw [max_eq_right (show t - (Real.pi / 2 - 73 / 100) ≤ 0 by
+        linarith only [hmem.2, hθcut]), mul_zero] at ht
+      have h := (le_max_left (leftCompanionWingDensity m ρ (t + Real.pi / 2) - 1) 0).trans ht
+      linarith only [h]
+    rw [terminalWeightedExcess_eq_zero_of_unit_prefix (Real.arcsin_nonneg.mpr hCT.le) hunit]
+    exact mul_pos (by norm_num) (Real.cos_pos_of_mem_Ioo
+      ⟨by linarith only [hU.angle_pos, Real.pi_pos], hproper⟩)
+  · have hbound := leftCompanion_excess_bound_of_reflected hθα.le
+      (hU.properReflected_ae_excess_bound_of_tail_regime
+        hregime hproper hl hr hheight haffine hρ hρ0 hρK hsharp heq)
+    have hint : IntervalIntegrable
+        (fun t => leftCompanionWingDensity m ρ (t + Real.pi / 2)) volume
+        0 (Real.arcsin (C - topOverhangLeft U)) :=
+      intervalIntegrable_bounded_real_density
+        ((measurable_leftCompanionWingDensity hρ m).comp (measurable_id.add_const _))
+        (fun t => (leftCompanionWingDensity_bounds hρ0 hρK _).1)
+        (fun t => (leftCompanionWingDensity_bounds hρ0 hρK _).2) _ _
+    exact terminalWeightedExcess_lt_allowance_of_late_tail hCT.le hCT1 hU.angle_pos hproper
+      (le_of_not_ge hκ) (terminalWeightedExcess_intervalIntegrable hint) hbound
+
 theorem IsJointCapMaximizer.proper_leftCompanion_weighted_excess_lt
     {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
     (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
@@ -89,40 +147,15 @@ theorem IsJointCapMaximizer.proper_leftCompanion_weighted_excess_lt
         (fun t => ENNReal.ofReal (ρ t))) :
     terminalWeightedExcess (fun t => leftCompanionWingDensity m ρ (t + Real.pi / 2))
       (Real.arcsin (C - topOverhangLeft U)) < (39 / 4400 : ℝ) * Real.cos α := by
-  obtain ⟨hCT, hCT1, hθα, hθcut⟩ := hU.proper_companion_prefix_bounds
-    hLargest hproper hl hr hheight haffine
-  by_cases hκ : terminalSlope α ≤ 1 / 8
-  · have hbound := leftCompanion_excess_bound_of_reflected hθα.le
-      (hU.properReflected_ae_near_full_excess_bound
-        hLargest hproper hl hr hheight haffine hρ hρ0 hρK hsharp heq hκ)
-    have hunit : ∀ᵐ t ∂volume.restrict (Icc 0 (Real.arcsin (C - topOverhangLeft U))),
-        leftCompanionWingDensity m ρ (t + Real.pi / 2) ≤ 1 := by
-      filter_upwards [hbound, ae_restrict_mem measurableSet_Icc] with t ht hmem
-      rw [max_eq_right (show t - (Real.pi / 2 - 73 / 100) ≤ 0 by
-        linarith only [hmem.2, hθcut]), mul_zero] at ht
-      have h := (le_max_left (leftCompanionWingDensity m ρ (t + Real.pi / 2) - 1) 0).trans ht
-      linarith only [h]
-    rw [terminalWeightedExcess_eq_zero_of_unit_prefix (Real.arcsin_nonneg.mpr hCT.le) hunit]
-    exact mul_pos (by norm_num) (Real.cos_pos_of_mem_Ioo
-      ⟨by linarith only [hU.angle_pos, Real.pi_pos], hproper⟩)
-  · have hbound := leftCompanion_excess_bound_of_reflected hθα.le
-      (hU.properReflected_ae_excess_bound
-        hLargest hproper hl hr hheight haffine hρ hρ0 hρK hsharp heq)
-    have hint : IntervalIntegrable
-        (fun t => leftCompanionWingDensity m ρ (t + Real.pi / 2)) volume
-        0 (Real.arcsin (C - topOverhangLeft U)) :=
-      intervalIntegrable_bounded_real_density
-        ((measurable_leftCompanionWingDensity hρ m).comp (measurable_id.add_const _))
-        (fun t => (leftCompanionWingDensity_bounds hρ0 hρK _).1)
-        (fun t => (leftCompanionWingDensity_bounds hρ0 hρK _).2) _ _
-    exact terminalWeightedExcess_lt_allowance_of_late_tail hCT.le hCT1 hU.angle_pos hproper
-      (le_of_not_ge hκ) (terminalWeightedExcess_intervalIntegrable hint) hbound
+  exact IsJointCapMaximizer.proper_leftCompanion_weighted_excess_lt_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
+    hρ hρ0 hρK hsharp heq
 
 /-- Every density and endpoint input in the contradiction is produced
 from the same actual maximizing cap. -/
-theorem IsJointCapMaximizer.false_of_centered_proper_largest_angle
+theorem IsJointCapMaximizer.false_of_centered_proper_tail_regime
     {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hregime : ProperTailRegime U α m)
     (hproper : α < Real.pi / 2)
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hheight : capHeight U = 1)
@@ -132,7 +165,7 @@ theorem IsJointCapMaximizer.false_of_centered_proper_largest_angle
     hU.curvature_density_on_regular_proper_domain hproper haffine
   have hρ0 := fun t => (hsharp t).1
   have hκ := fun t => (hsharp t).2
-  have hupper := hU.proper_leftCompanion_weighted_excess_lt hLargest hproper hl hr hheight
+  have hupper := hU.proper_leftCompanion_weighted_excess_lt_of_tail_regime hregime hproper hl hr hheight
     haffine hρ hρ0 hcoarse hκ heq
   have hcut := hU.proper_leftCompanion_density_of_regular hproper haffine heq
   have hwidth : capWidth U / 4 = C := by unfold capWidth; rw [hl, hr]; ring
@@ -142,17 +175,28 @@ theorem IsJointCapMaximizer.false_of_centered_proper_largest_angle
   rw [hwidth] at hC
   have hinitial := (hU.leftCompanion_actual_initial_data hheight haffine).2.1
   rw [hleftMiddle, hwidth] at hinitial
-  have htail := hU.terminalTailPoint_fst_eq_middle_add_topOverhangRight
-    hLargest hproper hheight haffine
+  have htail := hU.terminalTailPoint_fst_eq_middle_add_topOverhangRight_of_tail_regime
+    hregime hproper hheight haffine
   rw [hrightMiddle] at htail
   rw [hleftMiddle] at hcut
-  exact hU.false_of_leftCompanion_weighted_excess hLargest hproper hheight haffine hl hr
+  exact hU.false_of_leftCompanion_weighted_excess_of_tail_regime hregime hproper hheight haffine hl hr
     hinitial htail (by linarith only [hC.1]) hC.2.le (hU.terminal_cosine_square_cut hproper)
     (topOverhangLeft_nonneg U) (topOverhangRight_nonneg U)
-    (hU.topOverhangLeft_add_twice_right_le_terminalInset hLargest hproper hheight haffine)
+    (hU.topOverhangLeft_add_twice_right_le_terminalInset_of_tail_regime hregime hproper hheight haffine)
     (measurable_leftCompanionWingDensity hρ m)
     (fun t => (leftCompanionWingDensity_bounds hρ0 hcoarse t).1)
     (fun t => (leftCompanionWingDensity_bounds hρ0 hcoarse t).2) hcut hupper.le
+
+theorem IsJointCapMaximizer.false_of_centered_proper_largest_angle
+    {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hproper : α < Real.pi / 2)
+    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
+    (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c) : False := by
+  exact IsJointCapMaximizer.false_of_centered_proper_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
 
 theorem IsJointCapMaximizer.angle_eq_pi_div_two_of_largest
     {U : Set Plane} {α : ℝ} (hU : IsJointCapMaximizer U α)

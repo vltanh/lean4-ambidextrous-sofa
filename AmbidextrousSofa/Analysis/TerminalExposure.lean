@@ -198,9 +198,9 @@ theorem IsJointCapMaximizer.terminal_strict_exposure_measure_le_faceWidth_of_bas
 
 /-- This is an actual cap-variation consequence at the selected canonical
 maximizer. Historical ties remain unrestricted. -/
-theorem IsJointCapMaximizer.terminal_strict_exposure_measure_le_faceWidth
+theorem IsJointCapMaximizer.terminal_strict_exposure_measure_le_faceWidth_of_tail_regime
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hregime : ProperTailRegime U α m)
     (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
@@ -210,7 +210,29 @@ theorem IsJointCapMaximizer.terminal_strict_exposure_measure_le_faceWidth
     (by linarith [Real.pi_pos])
   exact hU.terminal_strict_exposure_measure_le_faceWidth_of_baseline hαL
     (hU.isCap.support_right_baseline_strict hs (hs.trans_le
-      (hU.terminal_vminus_height_ge_sin hLargest hαL hheight haffine)))
+      (hU.terminal_vminus_height_ge_sin_of_tail_regime hregime hαL hheight haffine)))
+
+theorem IsJointCapMaximizer.terminal_strict_exposure_measure_le_faceWidth
+    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c) :
+    volume.real (middleHalfInterval (horizontalLeft U) (horizontalRight U) ∩
+      terminalStrictRegion U α) ≤ terminalFaceWidth U α := by
+  exact IsJointCapMaximizer.terminal_strict_exposure_measure_le_faceWidth_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hαL hheight haffine) hαL hheight haffine
+
+theorem IsJointCapMaximizer.terminal_strict_exposure_measure_le_reserve_of_tail_regime
+    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hregime : ProperTailRegime U α m)
+    (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c) :
+    volume.real (middleHalfInterval (horizontalLeft U) (horizontalRight U) ∩
+      terminalStrictRegion U α) ≤ terminalTailReserve U α :=
+  (hU.terminal_strict_exposure_measure_le_faceWidth_of_tail_regime hregime hαL hheight haffine).trans
+    (hU.terminalFaceWidth_le_reserve_of_tail_regime hregime hαL hheight haffine)
 
 theorem IsJointCapMaximizer.terminal_strict_exposure_measure_le_reserve
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
@@ -219,8 +241,8 @@ theorem IsJointCapMaximizer.terminal_strict_exposure_measure_le_reserve
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
     volume.real (middleHalfInterval (horizontalLeft U) (horizontalRight U) ∩
-      terminalStrictRegion U α) ≤ terminalTailReserve U α :=
-  (hU.terminal_strict_exposure_measure_le_faceWidth hLargest hαL hheight haffine).trans
-    (hU.terminalFaceWidth_le_reserve hLargest hαL hheight haffine)
+      terminalStrictRegion U α) ≤ terminalTailReserve U α := by
+  exact IsJointCapMaximizer.terminal_strict_exposure_measure_le_reserve_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hαL hheight haffine) hαL hheight haffine
 
 end AmbidextrousSofa

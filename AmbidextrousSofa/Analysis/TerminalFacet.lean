@@ -1,4 +1,4 @@
-import AmbidextrousSofa.Analysis.NegativeCompletion
+import AmbidextrousSofa.Analysis.ProperTailRegime
 
 /-!
 # Actual terminal facet coordinates and tail geometry
@@ -97,16 +97,16 @@ theorem IsDownwardCap.terminal_vminus_eq {U : Set Plane} (hU : IsDownwardCap U)
 
 /-- The three signs of the affine middle are handled on the original
 orientation. No reflection of the outgoing wall is used. -/
-theorem IsJointCapMaximizer.terminalTailPoint_bounds
+theorem IsJointCapMaximizer.terminalTailPoint_bounds_of_tail_regime
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hregime : ProperTailRegime U α m)
     (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
     horizontalRight U - capWidth U / 4 ≤ (terminalTailPoint U α).1 ∧
       Real.sin α < (terminalTailPoint U α).2 ∧ (terminalTailPoint U α).2 ≤ 1 := by
   by_cases hm : m < 0
-  · obtain ⟨hαm, hH⟩ := hU.negative_remaining_tail_geometry hLargest hαL hheight hm haffine
+  · obtain ⟨hαm, hH⟩ := hregime.negative hm
     have hmL : affineNormalAngle m < Real.pi / 2 := by
       have h := Real.arctan_lt_zero.mpr hm
       unfold affineNormalAngle
@@ -137,6 +137,19 @@ theorem IsJointCapMaximizer.terminalTailPoint_bounds
       Real.sin α < (Imported.vplus U α).2 ∧ (Imported.vplus U α).2 ≤ 1
     rw [hv, hpy]
     exact ⟨hx, hs1, le_rfl⟩
+
+/-- The original largest-angle interface is preserved for the value
+reduction; its proof now supplies only the local tail regime. -/
+theorem IsJointCapMaximizer.terminalTailPoint_bounds
+    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c) :
+    horizontalRight U - capWidth U / 4 ≤ (terminalTailPoint U α).1 ∧
+      Real.sin α < (terminalTailPoint U α).2 ∧ (terminalTailPoint U α).2 ≤ 1 :=
+  hU.terminalTailPoint_bounds_of_tail_regime
+    (hU.properTailRegime_of_largest hLargest hαL hheight haffine) hαL hheight haffine
 
 theorem IsDownwardCap.terminalTailInset_bounds {U : Set Plane} (hU : IsDownwardCap U)
     {α : ℝ} (hα0 : 0 < α) (hαL : α < Real.pi / 2)

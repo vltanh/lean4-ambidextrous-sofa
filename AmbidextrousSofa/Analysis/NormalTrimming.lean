@@ -228,9 +228,9 @@ theorem terminalTailReserve_mul_cos_div_sin (U : Set Plane) {α : ℝ}
 
 /-- The terminal facet estimate puts its entire lower endpoint strictly
 above the baseline; this provides the actual admissible cut margin. -/
-theorem IsJointCapMaximizer.terminal_vminus_height_ge_sin
+theorem IsJointCapMaximizer.terminal_vminus_height_ge_sin_of_tail_regime
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hregime : ProperTailRegime U α m)
     (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
@@ -241,10 +241,20 @@ theorem IsJointCapMaximizer.terminal_vminus_height_ge_sin
     ⟨by linarith [hU.angle_pos, Real.pi_pos], hαL⟩
   have hm := div_le_div_of_nonneg_right
     (mul_le_mul_of_nonneg_right
-      (hU.terminalFaceWidth_le_reserve hLargest hαL hheight haffine) hc.le) hs.le
+      (hU.terminalFaceWidth_le_reserve_of_tail_regime hregime hαL hheight haffine) hc.le) hs.le
   rw [terminalTailReserve_mul_cos_div_sin U hc.ne' hs.ne'] at hm
   rw [hU.isCap.terminal_vminus_eq hs.ne']
   dsimp only
   linarith only [hm]
+
+theorem IsJointCapMaximizer.terminal_vminus_height_ge_sin
+    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c) :
+    Real.sin α ≤ (Imported.vminus U α).2 := by
+  exact IsJointCapMaximizer.terminal_vminus_height_ge_sin_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hαL hheight haffine) hαL hheight haffine
 
 end AmbidextrousSofa

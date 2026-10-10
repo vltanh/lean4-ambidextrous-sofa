@@ -101,6 +101,22 @@ theorem terminal_freeCircle_second_pos {d e α : ℝ}
 
 end Analysis
 
+theorem IsJointCapMaximizer.properReflected_free_second_pos_of_tail_regime
+    {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hregime : ProperTailRegime U α m)
+    (hproper : α < Real.pi / 2)
+    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
+    (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c) :
+    0 < Analysis.initialFloorCircleQ (terminalReflectedSpan U α)
+      (terminalReflectedHeight U α - 1) (Real.pi / 2 - α) := by
+  have hparams := hU.centered_terminal_reflected_parameters_of_tail_regime hregime hproper hl hr hheight haffine
+  have htrig := terminal_sin_cos_bounds_after_initialAngle
+    hU.terminal_angle_gt_arctan_eight_thirds.le hproper
+  exact Analysis.terminal_freeCircle_second_pos hU.angle_pos hproper hparams.1 hparams.2.1
+    (by linarith only [htrig.1]) (by linarith only [htrig.2])
+
 theorem IsJointCapMaximizer.properReflected_free_second_pos
     {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
@@ -111,11 +127,38 @@ theorem IsJointCapMaximizer.properReflected_free_second_pos
       capRoof U x = m * x + c) :
     0 < Analysis.initialFloorCircleQ (terminalReflectedSpan U α)
       (terminalReflectedHeight U α - 1) (Real.pi / 2 - α) := by
-  have hparams := hU.centered_terminal_reflected_parameters hLargest hproper hl hr hheight haffine
-  have htrig := terminal_sin_cos_bounds_after_initialAngle
-    hU.terminal_angle_gt_arctan_eight_thirds.le hproper
-  exact Analysis.terminal_freeCircle_second_pos hU.angle_pos hproper hparams.1 hparams.2.1
-    (by linarith only [htrig.1]) (by linarith only [htrig.2])
+  exact IsJointCapMaximizer.properReflected_free_second_pos_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
+
+theorem IsJointCapMaximizer.properReflected_entry_quadratic_of_tail_regime
+    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
+    (hregime : ProperTailRegime U α m)
+    (hproper : α < Real.pi / 2)
+    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
+    (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c)
+    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
+    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
+      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
+        (fun t => ENNReal.ofReal (ρ t)))
+    (hpos : 0 < properReflectedP U m ρ (Real.pi / 2 - α)) :
+    properReflectedP U m ρ (Real.pi / 2 - α) ≤ terminalReflectedHeight U α -
+      terminalReflectedSpan U α * (Real.pi / 2 - α) + (Real.pi / 2 - α) ^ 2 / 2 ∧
+      terminalReflectedSpan U α - 1 - (Real.pi / 2 - α) ≤
+        properReflectedQ U m ρ (Real.pi / 2 - α) := by
+  have hparams := hU.centered_terminal_reflected_parameters_of_tail_regime hregime hproper hl hr hheight haffine
+  have he1 : terminalReflectedHeight U α ≤ 1 := by
+    rcases hparams.2.2 with h | h <;> linarith only [h.2.2]
+  have htrace := hU.properReflected_terminal_impulse_of_tail_regime hregime hproper hheight haffine hρ hρ0 hρK heq
+  have h := Analysis.initialFloorCircle_entry_quadratic
+    (show 0 ≤ terminalReflectedSpan U α by linarith only [hparams.1]) he1
+    (show 0 ≤ Real.pi / 2 - α by linarith only [hproper])
+    (show Real.pi / 2 - α ≤ Real.pi / 2 by linarith only [hU.angle_pos])
+    (hU.properReflected_free_second_pos_of_tail_regime hregime hproper hl hr hheight haffine)
+    (by rw [← htrace.1]; exact hpos)
+  rw [htrace.1, htrace.2]
+  exact ⟨h.1, h.2.trans (le_add_of_nonneg_right ENNReal.toReal_nonneg)⟩
 
 theorem IsJointCapMaximizer.properReflected_entry_quadratic
     {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
@@ -134,18 +177,41 @@ theorem IsJointCapMaximizer.properReflected_entry_quadratic
       terminalReflectedSpan U α * (Real.pi / 2 - α) + (Real.pi / 2 - α) ^ 2 / 2 ∧
       terminalReflectedSpan U α - 1 - (Real.pi / 2 - α) ≤
         properReflectedQ U m ρ (Real.pi / 2 - α) := by
-  have hparams := hU.centered_terminal_reflected_parameters hLargest hproper hl hr hheight haffine
+  exact IsJointCapMaximizer.properReflected_entry_quadratic_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
+    hρ hρ0 hρK heq hpos
+
+theorem IsJointCapMaximizer.properReflected_initial_energy_lt_payment_of_tail_regime
+    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
+    (hregime : ProperTailRegime U α m)
+    (hproper : α < Real.pi / 2)
+    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
+    (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c)
+    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
+    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
+      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
+        (fun t => ENNReal.ofReal (ρ t))) :
+    clippedCornerEnergy (properReflectedP U m ρ) (properReflectedQ U m ρ)
+      (Real.pi / 2 - α) < terminalReflectedSpan U α ^ 2 -
+        terminalReflectedHeight U α * (1 - terminalReflectedHeight U α) + 1 / 4 + 1 / 30 := by
+  have hparams := hU.centered_terminal_reflected_parameters_of_tail_regime hregime hproper hl hr hheight haffine
   have he1 : terminalReflectedHeight U α ≤ 1 := by
     rcases hparams.2.2 with h | h <;> linarith only [h.2.2]
-  have htrace := hU.properReflected_terminal_impulse hLargest hproper hheight haffine hρ hρ0 hρK heq
-  have h := Analysis.initialFloorCircle_entry_quadratic
-    (show 0 ≤ terminalReflectedSpan U α by linarith only [hparams.1]) he1
-    (show 0 ≤ Real.pi / 2 - α by linarith only [hproper])
-    (show Real.pi / 2 - α ≤ Real.pi / 2 by linarith only [hU.angle_pos])
-    (hU.properReflected_free_second_pos hLargest hproper hl hr hheight haffine)
-    (by rw [← htrace.1]; exact hpos)
-  rw [htrace.1, htrace.2]
-  exact ⟨h.1, h.2.trans (le_add_of_nonneg_right ENNReal.toReal_nonneg)⟩
+  have hQ := hU.properReflected_free_second_pos_of_tail_regime hregime hproper hl hr hheight haffine
+  simp only [Analysis.initialFloorCircleQ, Real.cos_pi_div_two_sub, Real.sin_pi_div_two_sub] at hQ
+  have hmass := hU.terminal_curvature_atom_le_inset_of_tail_regime hregime hproper hheight haffine
+  have hpay := Analysis.terminalImpulseEnergyChange_lt_one_thirtieth
+    (d := terminalReflectedSpan U α) (e := terminalReflectedHeight U α) hU.angle_pos hproper
+    (hU.proper_terminalSlope_lt_three_eighths hproper).le
+    (by linarith only [hparams.1]) he1 hmass.1 hmass.2
+    (by nlinarith only [hQ])
+  have he := hU.properReflected_initial_energy_of_tail_regime hregime hproper hheight haffine hρ hρ0 hρK heq
+  have hclip := clippedCornerEnergy_le_initialFloorEnergy
+    (properReflectedP U m ρ) (properReflectedQ U m ρ) (Real.pi / 2 - α)
+  rw [he] at hclip
+  linarith only [hclip, hpay]
 
 theorem IsJointCapMaximizer.properReflected_initial_energy_lt_payment
     {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
@@ -162,18 +228,35 @@ theorem IsJointCapMaximizer.properReflected_initial_energy_lt_payment
     clippedCornerEnergy (properReflectedP U m ρ) (properReflectedQ U m ρ)
       (Real.pi / 2 - α) < terminalReflectedSpan U α ^ 2 -
         terminalReflectedHeight U α * (1 - terminalReflectedHeight U α) + 1 / 4 + 1 / 30 := by
-  have hparams := hU.centered_terminal_reflected_parameters hLargest hproper hl hr hheight haffine
-  have he1 : terminalReflectedHeight U α ≤ 1 := by
-    rcases hparams.2.2 with h | h <;> linarith only [h.2.2]
-  have hQ := hU.properReflected_free_second_pos hLargest hproper hl hr hheight haffine
+  exact IsJointCapMaximizer.properReflected_initial_energy_lt_payment_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
+    hρ hρ0 hρK heq
+
+theorem IsJointCapMaximizer.properReflected_initial_energy_lt_near_full_payment_of_tail_regime
+    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
+    (hregime : ProperTailRegime U α m)
+    (hproper : α < Real.pi / 2)
+    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
+    (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c)
+    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
+    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
+      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
+        (fun t => ENNReal.ofReal (ρ t))) (hκ : terminalSlope α ≤ 1 / 8) :
+    clippedCornerEnergy (properReflectedP U m ρ) (properReflectedQ U m ρ)
+      (Real.pi / 2 - α) < terminalReflectedSpan U α ^ 2 -
+        terminalReflectedHeight U α * (1 - terminalReflectedHeight U α) + 1 / 4 + 1 / 480 := by
+  have hparams := hU.centered_terminal_reflected_near_full_parameters_of_tail_regime
+    hregime hproper hl hr hheight haffine hκ
+  have hQ := hU.properReflected_free_second_pos_of_tail_regime hregime hproper hl hr hheight haffine
   simp only [Analysis.initialFloorCircleQ, Real.cos_pi_div_two_sub, Real.sin_pi_div_two_sub] at hQ
-  have hmass := hU.terminal_curvature_atom_le_inset hLargest hproper hheight haffine
-  have hpay := Analysis.terminalImpulseEnergyChange_lt_one_thirtieth
-    (d := terminalReflectedSpan U α) (e := terminalReflectedHeight U α) hU.angle_pos hproper
-    (hU.proper_terminalSlope_lt_three_eighths hproper).le
-    (by linarith only [hparams.1]) he1 hmass.1 hmass.2
-    (by nlinarith only [hQ])
-  have he := hU.properReflected_initial_energy hLargest hproper hheight haffine hρ hρ0 hρK heq
+  have hmass := hU.terminal_curvature_atom_le_inset_of_tail_regime hregime hproper hheight haffine
+  have hpay := Analysis.terminalImpulseEnergyChange_lt_one_four_hundred_eightieth
+    (d := terminalReflectedSpan U α) (e := terminalReflectedHeight U α)
+    hU.angle_pos hproper hκ (by linarith only [hparams.1]) hparams.2.2.2.le
+    hmass.1 hmass.2 (by nlinarith only [hQ])
+  have he := hU.properReflected_initial_energy_of_tail_regime hregime hproper hheight haffine hρ hρ0 hρK heq
   have hclip := clippedCornerEnergy_le_initialFloorEnergy
     (properReflectedP U m ρ) (properReflectedQ U m ρ) (Real.pi / 2 - α)
   rw [he] at hclip
@@ -194,19 +277,8 @@ theorem IsJointCapMaximizer.properReflected_initial_energy_lt_near_full_payment
     clippedCornerEnergy (properReflectedP U m ρ) (properReflectedQ U m ρ)
       (Real.pi / 2 - α) < terminalReflectedSpan U α ^ 2 -
         terminalReflectedHeight U α * (1 - terminalReflectedHeight U α) + 1 / 4 + 1 / 480 := by
-  have hparams := hU.centered_terminal_reflected_near_full_parameters
-    hLargest hproper hl hr hheight haffine hκ
-  have hQ := hU.properReflected_free_second_pos hLargest hproper hl hr hheight haffine
-  simp only [Analysis.initialFloorCircleQ, Real.cos_pi_div_two_sub, Real.sin_pi_div_two_sub] at hQ
-  have hmass := hU.terminal_curvature_atom_le_inset hLargest hproper hheight haffine
-  have hpay := Analysis.terminalImpulseEnergyChange_lt_one_four_hundred_eightieth
-    (d := terminalReflectedSpan U α) (e := terminalReflectedHeight U α)
-    hU.angle_pos hproper hκ (by linarith only [hparams.1]) hparams.2.2.2.le
-    hmass.1 hmass.2 (by nlinarith only [hQ])
-  have he := hU.properReflected_initial_energy hLargest hproper hheight haffine hρ hρ0 hρK heq
-  have hclip := clippedCornerEnergy_le_initialFloorEnergy
-    (properReflectedP U m ρ) (properReflectedQ U m ρ) (Real.pi / 2 - α)
-  rw [he] at hclip
-  linarith only [hclip, hpay]
+  exact IsJointCapMaximizer.properReflected_initial_energy_lt_near_full_payment_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
+    hρ hρ0 hρK heq hκ
 
 end AmbidextrousSofa

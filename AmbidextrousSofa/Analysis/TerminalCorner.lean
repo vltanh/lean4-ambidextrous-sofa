@@ -1,4 +1,4 @@
-import AmbidextrousSofa.Analysis.TerminalExtension
+import AmbidextrousSofa.Analysis.TerminalFacetAtom
 import AmbidextrousSofa.Analysis.InitialAngleExclusion
 import AmbidextrousSofa.Analysis.InitialAngleWidth
 
@@ -83,15 +83,15 @@ theorem IsJointCapMaximizer.terminal_corner_difference
 
 /-- The preliminary width `49/25` is already sufficient. Its exact
 margin is `3*(49/100)*(187/200)-9/25 = 20289/20000 > 1`. -/
-theorem IsJointCapMaximizer.terminal_corner_lt_rightAbscissa_of_width_angle
+theorem IsJointCapMaximizer.terminal_corner_lt_rightAbscissa_of_width_angle_of_tail_regime
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hregime : ProperTailRegime U α m)
     (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c)
     (hwidth : (49 / 25 : ℝ) ≤ capWidth U) (hangle : Real.arctan (8 / 3) ≤ α) :
     (attachedCorner U α).1 < terminalFirstRightAbscissa U α := by
-  have htail := hU.terminalTailPoint_bounds hLargest hαL hheight haffine
+  have htail := hU.terminalTailPoint_bounds_of_tail_regime hregime hαL hheight haffine
   have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi hU.angle_pos
     (by linarith [Real.pi_pos])
   have hc : 0 < Real.cos α := Real.cos_pos_of_mem_Ioo
@@ -122,30 +122,72 @@ theorem IsJointCapMaximizer.terminal_corner_lt_rightAbscissa_of_width_angle
   rw [← hU.terminal_corner_difference hαL haffine] at hnegative
   exact sub_neg.mp hnegative
 
+theorem IsJointCapMaximizer.terminal_corner_lt_rightAbscissa_of_width_angle
+    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c)
+    (hwidth : (49 / 25 : ℝ) ≤ capWidth U) (hangle : Real.arctan (8 / 3) ≤ α) :
+    (attachedCorner U α).1 < terminalFirstRightAbscissa U α := by
+  exact IsJointCapMaximizer.terminal_corner_lt_rightAbscissa_of_width_angle_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hαL hheight haffine) hαL hheight haffine hwidth hangle
+
 /-- The angle and width assumptions above are supplied by actual scalar
 score exclusions for this same maximizer. -/
+theorem IsJointCapMaximizer.terminal_corner_lt_rightAbscissa_of_tail_regime
+    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hregime : ProperTailRegime U α m)
+    (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c) :
+    (attachedCorner U α).1 < terminalFirstRightAbscissa U α :=
+  hU.terminal_corner_lt_rightAbscissa_of_width_angle_of_tail_regime hregime hαL hheight haffine
+    (hU.width_gt_forty_nine_twenty_fifths hαL).le
+    hU.terminal_angle_gt_arctan_eight_thirds.le
+
 theorem IsJointCapMaximizer.terminal_corner_lt_rightAbscissa
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
     (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    (attachedCorner U α).1 < terminalFirstRightAbscissa U α :=
-  hU.terminal_corner_lt_rightAbscissa_of_width_angle hLargest hαL hheight haffine
-    (hU.width_gt_forty_nine_twenty_fifths hαL).le
-    hU.terminal_angle_gt_arctan_eight_thirds.le
+    (attachedCorner U α).1 < terminalFirstRightAbscissa U α := by
+  exact IsJointCapMaximizer.terminal_corner_lt_rightAbscissa_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hαL hheight haffine) hαL hheight haffine
 
 /-- The complete horizontal width of the actual first terminal facet is
 bounded at the canonical maximizer selected with largest terminal angle. -/
+theorem IsJointCapMaximizer.terminalFaceWidth_le_reserve_of_tail_regime
+    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hregime : ProperTailRegime U α m)
+    (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c) :
+    terminalFaceWidth U α ≤ terminalTailReserve U α :=
+  hU.terminalFaceWidth_le_reserve_of_corner_lt_of_tail_regime hregime hαL hheight haffine
+    (hU.terminal_corner_lt_rightAbscissa_of_tail_regime hregime hαL hheight haffine)
+
 theorem IsJointCapMaximizer.terminalFaceWidth_le_reserve
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
     (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    terminalFaceWidth U α ≤ terminalTailReserve U α :=
-  hU.terminalFaceWidth_le_reserve_of_corner_lt hLargest hαL hheight haffine
-    (hU.terminal_corner_lt_rightAbscissa hLargest hαL hheight haffine)
+    terminalFaceWidth U α ≤ terminalTailReserve U α := by
+  exact IsJointCapMaximizer.terminalFaceWidth_le_reserve_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hαL hheight haffine) hαL hheight haffine
+
+theorem IsJointCapMaximizer.terminalFaceWidth_lt_half_cos_of_tail_regime
+    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hregime : ProperTailRegime U α m)
+    (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c) :
+    terminalFaceWidth U α < Real.cos α / 2 := by
+  have hH := (hU.terminalTailPoint_bounds_of_tail_regime hregime hαL hheight haffine).2.1
+  obtain ⟨_, _, _, _, hreserve⟩ := hU.isCap.terminalTailInset_bounds hU.angle_pos hαL hH
+  exact (hU.terminalFaceWidth_le_reserve_of_tail_regime hregime hαL hheight haffine).trans_lt hreserve
 
 theorem IsJointCapMaximizer.terminalFaceWidth_lt_half_cos
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
@@ -154,13 +196,12 @@ theorem IsJointCapMaximizer.terminalFaceWidth_lt_half_cos
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
     terminalFaceWidth U α < Real.cos α / 2 := by
-  have hH := (hU.terminalTailPoint_bounds hLargest hαL hheight haffine).2.1
-  obtain ⟨_, _, _, _, hreserve⟩ := hU.isCap.terminalTailInset_bounds hU.angle_pos hαL hH
-  exact (hU.terminalFaceWidth_le_reserve hLargest hαL hheight haffine).trans_lt hreserve
+  exact IsJointCapMaximizer.terminalFaceWidth_lt_half_cos_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hαL hheight haffine) hαL hheight haffine
 
-theorem IsJointCapMaximizer.terminal_curvature_atom_le_reserve_div_sin
+theorem IsJointCapMaximizer.terminal_curvature_atom_le_reserve_div_sin_of_tail_regime
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hregime : ProperTailRegime U α m)
     (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
@@ -169,6 +210,16 @@ theorem IsJointCapMaximizer.terminal_curvature_atom_le_reserve_div_sin
     (by linarith [Real.pi_pos])
   apply (le_div_iff₀ hs).mpr
   rw [← hU.isCap.terminalFaceWidth_eq_curvature_atom α]
-  exact hU.terminalFaceWidth_le_reserve hLargest hαL hheight haffine
+  exact hU.terminalFaceWidth_le_reserve_of_tail_regime hregime hαL hheight haffine
+
+theorem IsJointCapMaximizer.terminal_curvature_atom_le_reserve_div_sin
+    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c) :
+    (upperCurvature U {α}).toReal ≤ terminalTailReserve U α / Real.sin α := by
+  exact IsJointCapMaximizer.terminal_curvature_atom_le_reserve_div_sin_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hαL hheight haffine) hαL hheight haffine
 
 end AmbidextrousSofa

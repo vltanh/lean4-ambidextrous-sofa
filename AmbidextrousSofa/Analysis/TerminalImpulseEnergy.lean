@@ -137,16 +137,16 @@ theorem IsJointCapMaximizer.proper_terminalSlope_lt_three_eighths
 
 /-- The actual whole terminal curvature atom is bounded by the small
 universal inset, using the proved terminal facet reserve. -/
-theorem IsJointCapMaximizer.terminal_curvature_atom_le_inset
+theorem IsJointCapMaximizer.terminal_curvature_atom_le_inset_of_tail_regime
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hregime : ProperTailRegime U α m)
     (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
     0 ≤ Imported.sigmaAt U α ∧ Imported.sigmaAt U α ≤ terminalInset α := by
   have hs := Real.sin_pos_of_pos_of_lt_pi hU.angle_pos (by linarith only [hproper, Real.pi_pos])
-  have hmass := hU.terminal_curvature_atom_le_reserve_div_sin hLargest hproper hheight haffine
-  have hH := (hU.terminalTailPoint_bounds hLargest hproper hheight haffine).2.1
+  have hmass := hU.terminal_curvature_atom_le_reserve_div_sin_of_tail_regime hregime hproper hheight haffine
+  have hH := (hU.terminalTailPoint_bounds_of_tail_regime hregime hproper hheight haffine).2.1
   obtain ⟨_, _, _, hreserve, _⟩ := hU.isCap.terminalTailInset_bounds hU.angle_pos hproper hH
   have hdiv : terminalTailReserve U α / Real.sin α ≤ Real.cos α / (1 + Real.sin α) := by
     apply (div_le_iff₀ hs).mpr
@@ -157,6 +157,16 @@ theorem IsJointCapMaximizer.terminal_curvature_atom_le_inset
   refine ⟨ENNReal.toReal_nonneg, ?_⟩
   change Imported.sigmaAt U α ≤ terminalTailReserve U α / Real.sin α at hmass
   exact (hmass.trans hdiv).trans_eq hk.symm
+
+theorem IsJointCapMaximizer.terminal_curvature_atom_le_inset
+    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
+    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c) :
+    0 ≤ Imported.sigmaAt U α ∧ Imported.sigmaAt U α ≤ terminalInset α := by
+  exact IsJointCapMaximizer.terminal_curvature_atom_le_inset_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine
 
 namespace Analysis
 
@@ -257,6 +267,26 @@ theorem terminalImpulseEnergyChange_lt_one_thirtieth {d e α j : ℝ}
 
 end Analysis
 
+theorem IsJointCapMaximizer.properReflected_initial_energy_of_tail_regime
+    {U : Set Plane} {α m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
+    (hregime : ProperTailRegime U α m)
+    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c)
+    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
+    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
+      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
+        (fun t => ENNReal.ofReal (ρ t))) :
+    Analysis.initialFloorEnergy (properReflectedP U m ρ (Real.pi / 2 - α))
+      (properReflectedQ U m ρ (Real.pi / 2 - α)) =
+        terminalReflectedSpan U α ^ 2 -
+          terminalReflectedHeight U α * (1 - terminalReflectedHeight U α) + 1 / 4 +
+          Analysis.terminalImpulseEnergyChange (terminalReflectedSpan U α)
+            (terminalReflectedHeight U α) α (Imported.sigmaAt U α) := by
+  have h := hU.properReflected_terminal_impulse_of_tail_regime hregime hproper hheight haffine hρ hρ0 hρK heq
+  rw [h.1, h.2]
+  exact Analysis.initialFloorCircle_impulse_energy _ _ _ _
+
 theorem IsJointCapMaximizer.properReflected_initial_energy
     {U : Set Plane} {α m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
     (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
@@ -273,8 +303,8 @@ theorem IsJointCapMaximizer.properReflected_initial_energy
           terminalReflectedHeight U α * (1 - terminalReflectedHeight U α) + 1 / 4 +
           Analysis.terminalImpulseEnergyChange (terminalReflectedSpan U α)
             (terminalReflectedHeight U α) α (Imported.sigmaAt U α) := by
-  have h := hU.properReflected_terminal_impulse hLargest hproper hheight haffine hρ hρ0 hρK heq
-  rw [h.1, h.2]
-  exact Analysis.initialFloorCircle_impulse_energy _ _ _ _
+  exact IsJointCapMaximizer.properReflected_initial_energy_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine hρ hρ0
+    hρK heq
 
 end AmbidextrousSofa

@@ -1,5 +1,14 @@
 # Uncompiled source: review record
 
+## Deferred full audit of the completed draft
+
+The user requested frequent commits and an uncompiled version before the full audit.
+New checkpoint publication uses basic lexical policy and local-import checks only.
+The record and per-module inventory below describe the earlier review checkpoint;
+they are not a claim that the complete current draft has received a full audit.
+The current completion plan is [F7-DRAFT-ROADMAP.md](F7-DRAFT-ROADMAP.md).
+
+
 **Review date:** October 10, 2026.
 
 **Mode:** source inspection, pinned-source API lookup and Python-only lexical

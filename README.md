@@ -190,39 +190,14 @@ selects its own density, proves that its late first wing is unit, and
 bounds the first excess moment by `1/40`. `SmallTiltArea` connects the
 small-height initial-floor tests to actual chord and ordinary-area bounds.
 
-### Current completion frontier
+### Current uncompiled-draft roadmap
 
-`ProperTerminalExclusion` constructs the actual reflected density and
-weighted-excess estimate, contradicts the strict terminal comparison, and
-proves that a largest-angle joint maximizer has full angle. Thus every
-full-cap maximum also maximizes over all cap/angle pairs. This is the
-value reduction; it does not alone exclude an individual proper equality
-cap. The separate fixed-cap extension and atom argument for that equality
-case remains in progress.
+The source draft is being published in dependency stages; the detailed roadmap records the completed work and the next publication step. Full source auditing and kernel verification are deferred.
 
-`TiltedUnitSelection` now selects a first-unit density throughout the
-remaining tilted range `1/2<C<37/50`, `0<h<17/50`.
-`FirstUnitTopOverhang` proves positive top overhang and the dry low middle.
-`FirstUnitGeometricMoments` derives all four literal tangent displacement
-moments and their geometric bounds. The actual sign phases, first bad
-crossing after the middle, and `q≤1/4` at every excess point are written.
-The companion-unit analytic contradiction handles both orders of the
-middle crossing and the core endpoint.
-
-`JointSourceMeasure`, `JointSourceLimit` and `JointSourceMarginal` construct
-one common angle/abscissa source limit and identify its exact actual
-regular-domain angular marginal. `CoreContactGeometry`, `FirstSourceFlux`
-and `FirstSourceDensity` derive the actual prefix source lower laws.
-`PositiveWallContacts` classifies strict tangent contacts and corner ties,
-and excludes a strict companion tangent on excess. `FirstFloorVisibility`
-and `FirstFloorTrapping` include the zero-height bad-entry boundary case.
-
-F7 source closure remains open. The common fractional corner occupation,
-its final actual phase/floor/fold assembly, full-cap classification,
-individual proper-angle equality exclusion, and unconditional original
-optimality and exact compact-body uniqueness theorem are the remaining
-critical path. All declared proof bodies are source drafts, without Lean
-execution. See the [roadmap](docs/FORMALIZATION-ROADMAP.md).
+See the [detailed F7 roadmap](docs/F7-DRAFT-ROADMAP.md) for the source measures,
+occupation identities, tilted contradiction, individual cap equality, and
+original-domain assembly. Commits are published at each coherent dependency
+stage. Comprehensive auditing is deferred; no Lean or CI is run.
 
 ## Source policy and dependencies
 

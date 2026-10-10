@@ -137,6 +137,51 @@ theorem ae_linear_excess_of_proper_scalar_bounds
 
 end CornerArcDynamics
 
+theorem IsJointCapMaximizer.properReflected_ae_near_full_excess_bound_of_tail_regime
+    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
+    (hregime : ProperTailRegime U α m)
+    (hproper : α < Real.pi / 2)
+    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
+    (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c)
+    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
+    (hsharp : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
+    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
+      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
+        (fun t => ENNReal.ofReal (ρ t))) (hκ : terminalSlope α ≤ 1 / 8) :
+    ∀ᵐ r ∂volume.restrict (Ioo (Real.pi / 2 - α) (Real.pi / 2)),
+      max (properReflectedFirstDensity m ρ r - 1) 0 ≤
+        (19 / 25 : ℝ) * max (73 / 100 - r) 0 := by
+  have D := hU.properReflected_cornerArcDynamics_of_tail_regime hregime hproper hl hr hheight haffine
+    hρ hρ0 hρK hsharp heq
+  have hparams := hU.centered_terminal_reflected_near_full_parameters_of_tail_regime
+    hregime hproper hl hr hheight haffine hκ
+  have hgap := (terminal_near_full_bounds hU.angle_pos hproper hκ).2.2.1
+  have harms := hU.properReflected_arm_bounds_of_tail_regime hregime hproper hheight haffine hρ hρ0 hρK heq
+  have hentry := hU.properReflected_entry_quadratic_of_tail_regime
+    hregime hproper hl hr hheight haffine hρ hρ0 hρK heq
+  have henergy := hU.properReflected_initial_energy_lt_near_full_payment_of_tail_regime
+    hregime hproper hl hr hheight haffine hρ hρ0 hρK heq hκ
+  have hactive := D.ae_linear_excess_of_proper_scalar_bounds
+    (δ := (1 / 480 : ℝ)) (B := (73 / 100 : ℝ)) (ellMax := (43 / 100 : ℝ))
+    (fun t ht => (harms t ht).1) (fun hp => (hentry hp).1) (fun hp => (hentry hp).2)
+    hparams.1 (by linarith only [hparams.2.1]) hparams.2.2.1
+    (by linarith only [hparams.2.2.2]) (by norm_num) (by norm_num)
+    (by linarith only [hgap, hparams.1]) henergy.le
+    (fun hd => (Analysis.properExcessEnd_lt_near_full hd hparams.2.1.le
+      hparams.2.2.1 hparams.2.2.2.le (by norm_num) le_rfl).le)
+    (fun hd => (Analysis.properDecayLength_lt_near_full hd hparams.2.1.le
+      hparams.2.2.1 (by linarith only [hparams.2.2.2]) (by norm_num) le_rfl).le)
+    (by linarith only [hgap])
+  have hzero := hU.properReflected_densities_zero_after_active
+    hproper hl hr hheight haffine hρ hρ0 heq
+  apply ae_Ioo_splice_real hactive
+  filter_upwards [hzero] with r hr
+  rw [hr.1]
+  simp only [zero_sub, max_eq_right (by norm_num : (-1 : ℝ) ≤ 0)]
+  exact mul_nonneg (by norm_num) (le_max_right _ _)
+
 theorem IsJointCapMaximizer.properReflected_ae_near_full_excess_bound
     {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
     (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
@@ -153,26 +198,57 @@ theorem IsJointCapMaximizer.properReflected_ae_near_full_excess_bound
     ∀ᵐ r ∂volume.restrict (Ioo (Real.pi / 2 - α) (Real.pi / 2)),
       max (properReflectedFirstDensity m ρ r - 1) 0 ≤
         (19 / 25 : ℝ) * max (73 / 100 - r) 0 := by
-  have D := hU.properReflected_cornerArcDynamics hLargest hproper hl hr hheight haffine
+  exact IsJointCapMaximizer.properReflected_ae_near_full_excess_bound_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
+    hρ hρ0 hρK hsharp heq hκ
+
+theorem IsJointCapMaximizer.properReflected_ae_excess_bound_of_tail_regime
+    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
+    (hregime : ProperTailRegime U α m)
+    (hproper : α < Real.pi / 2)
+    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
+    (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c)
+    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
+    (hsharp : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
+    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
+      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
+        (fun t => ENNReal.ofReal (ρ t))) :
+    ∀ᵐ r ∂volume.restrict (Ioo (Real.pi / 2 - α) (Real.pi / 2)),
+      max (properReflectedFirstDensity m ρ r - 1) 0 ≤
+        (19 / 25 : ℝ) * max (91 / 100 - r) 0 := by
+  have D := hU.properReflected_cornerArcDynamics_of_tail_regime hregime hproper hl hr hheight haffine
     hρ hρ0 hρK hsharp heq
-  have hparams := hU.centered_terminal_reflected_near_full_parameters
-    hLargest hproper hl hr hheight haffine hκ
-  have hgap := (terminal_near_full_bounds hU.angle_pos hproper hκ).2.2.1
-  have harms := hU.properReflected_arm_bounds hLargest hproper hheight haffine hρ hρ0 hρK heq
-  have hentry := hU.properReflected_entry_quadratic
-    hLargest hproper hl hr hheight haffine hρ hρ0 hρK heq
-  have henergy := hU.properReflected_initial_energy_lt_near_full_payment
-    hLargest hproper hl hr hheight haffine hρ hρ0 hρK heq hκ
+  have hparams := hU.centered_terminal_reflected_parameters_of_tail_regime hregime hproper hl hr hheight haffine
+  have hd1 : terminalReflectedSpan U α ≤ 2311 / 1000 := by
+    rcases hparams.2.2 with h | h <;> linarith only [h.2.1]
+  have he1 : terminalReflectedHeight U α ≤ 1 := by
+    rcases hparams.2.2 with h | h <;> linarith only [h.2.2]
+  have hgap : Real.pi / 2 - α < 3 / 8 := by
+    rw [terminal_gap_eq_arctan_slope hU.angle_pos hproper]
+    exact (Real.arctan_lt_self (terminalSlope_pos hU.angle_pos hproper)).trans
+      (hU.proper_terminalSlope_lt_three_eighths hproper)
+  have harms := hU.properReflected_arm_bounds_of_tail_regime hregime hproper hheight haffine hρ hρ0 hρK heq
+  have hentry := hU.properReflected_entry_quadratic_of_tail_regime
+    hregime hproper hl hr hheight haffine hρ hρ0 hρK heq
+  have henergy := hU.properReflected_initial_energy_lt_payment_of_tail_regime
+    hregime hproper hl hr hheight haffine hρ hρ0 hρK heq
+  have hstop (hd : 199 / 100 ≤ terminalReflectedSpan U α) :
+      Analysis.properExcessEnd (terminalReflectedSpan U α) (terminalReflectedHeight U α)
+        (1 / 30) ≤ 91 / 100 := by
+    rcases hparams.2.2 with h | h
+    · exact (Analysis.properExcessEnd_lt_negative_middle hd h.2.1.le hparams.2.1 h.2.2.le
+        (by norm_num) le_rfl).le.trans (by norm_num)
+    · exact (Analysis.properExcessEnd_lt_nonnegative_middle hd h.2.1.le hparams.2.1 h.2.2.le
+        (by norm_num) le_rfl).le
   have hactive := D.ae_linear_excess_of_proper_scalar_bounds
-    (δ := (1 / 480 : ℝ)) (B := (73 / 100 : ℝ)) (ellMax := (43 / 100 : ℝ))
+    (δ := (1 / 30 : ℝ)) (B := (91 / 100 : ℝ)) (ellMax := (13 / 25 : ℝ))
     (fun t ht => (harms t ht).1) (fun hp => (hentry hp).1) (fun hp => (hentry hp).2)
-    hparams.1 (by linarith only [hparams.2.1]) hparams.2.2.1
-    (by linarith only [hparams.2.2.2]) (by norm_num) (by norm_num)
-    (by linarith only [hgap, hparams.1]) henergy.le
-    (fun hd => (Analysis.properExcessEnd_lt_near_full hd hparams.2.1.le
-      hparams.2.2.1 hparams.2.2.2.le (by norm_num) le_rfl).le)
-    (fun hd => (Analysis.properDecayLength_lt_near_full hd hparams.2.1.le
-      hparams.2.2.1 (by linarith only [hparams.2.2.2]) (by norm_num) le_rfl).le)
+    hparams.1 hd1 hparams.2.1 he1 (by norm_num) le_rfl
+    (by linarith only [hgap, hparams.1]) henergy.le hstop
+    (fun hd => (Analysis.properDecayLength_lt_fifty_two_hundredths
+      hd hd1 hparams.2.1 he1 (by norm_num) le_rfl).le)
     (by linarith only [hgap])
   have hzero := hU.properReflected_densities_zero_after_active
     hproper hl hr hheight haffine hρ hρ0 heq
@@ -198,44 +274,8 @@ theorem IsJointCapMaximizer.properReflected_ae_excess_bound
     ∀ᵐ r ∂volume.restrict (Ioo (Real.pi / 2 - α) (Real.pi / 2)),
       max (properReflectedFirstDensity m ρ r - 1) 0 ≤
         (19 / 25 : ℝ) * max (91 / 100 - r) 0 := by
-  have D := hU.properReflected_cornerArcDynamics hLargest hproper hl hr hheight haffine
+  exact IsJointCapMaximizer.properReflected_ae_excess_bound_of_tail_regime hU
+    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
     hρ hρ0 hρK hsharp heq
-  have hparams := hU.centered_terminal_reflected_parameters hLargest hproper hl hr hheight haffine
-  have hd1 : terminalReflectedSpan U α ≤ 2311 / 1000 := by
-    rcases hparams.2.2 with h | h <;> linarith only [h.2.1]
-  have he1 : terminalReflectedHeight U α ≤ 1 := by
-    rcases hparams.2.2 with h | h <;> linarith only [h.2.2]
-  have hgap : Real.pi / 2 - α < 3 / 8 := by
-    rw [terminal_gap_eq_arctan_slope hU.angle_pos hproper]
-    exact (Real.arctan_lt_self (terminalSlope_pos hU.angle_pos hproper)).trans
-      (hU.proper_terminalSlope_lt_three_eighths hproper)
-  have harms := hU.properReflected_arm_bounds hLargest hproper hheight haffine hρ hρ0 hρK heq
-  have hentry := hU.properReflected_entry_quadratic
-    hLargest hproper hl hr hheight haffine hρ hρ0 hρK heq
-  have henergy := hU.properReflected_initial_energy_lt_payment
-    hLargest hproper hl hr hheight haffine hρ hρ0 hρK heq
-  have hstop (hd : 199 / 100 ≤ terminalReflectedSpan U α) :
-      Analysis.properExcessEnd (terminalReflectedSpan U α) (terminalReflectedHeight U α)
-        (1 / 30) ≤ 91 / 100 := by
-    rcases hparams.2.2 with h | h
-    · exact (Analysis.properExcessEnd_lt_negative_middle hd h.2.1.le hparams.2.1 h.2.2.le
-        (by norm_num) le_rfl).le.trans (by norm_num)
-    · exact (Analysis.properExcessEnd_lt_nonnegative_middle hd h.2.1.le hparams.2.1 h.2.2.le
-        (by norm_num) le_rfl).le
-  have hactive := D.ae_linear_excess_of_proper_scalar_bounds
-    (δ := (1 / 30 : ℝ)) (B := (91 / 100 : ℝ)) (ellMax := (13 / 25 : ℝ))
-    (fun t ht => (harms t ht).1) (fun hp => (hentry hp).1) (fun hp => (hentry hp).2)
-    hparams.1 hd1 hparams.2.1 he1 (by norm_num) le_rfl
-    (by linarith only [hgap, hparams.1]) henergy.le hstop
-    (fun hd => (Analysis.properDecayLength_lt_fifty_two_hundredths
-      hd hd1 hparams.2.1 he1 (by norm_num) le_rfl).le)
-    (by linarith only [hgap])
-  have hzero := hU.properReflected_densities_zero_after_active
-    hproper hl hr hheight haffine hρ hρ0 heq
-  apply ae_Ioo_splice_real hactive
-  filter_upwards [hzero] with r hr
-  rw [hr.1]
-  simp only [zero_sub, max_eq_right (by norm_num : (-1 : ℝ) ≤ 0)]
-  exact mul_nonneg (by norm_num) (le_max_right _ _)
 
 end AmbidextrousSofa
