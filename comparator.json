@@ -1,0 +1,21 @@
+{
+  "challenge_module": "Challenge",
+  "solution_module": "Solution",
+  "theorem_names": [
+    "Ambidextrous.existsUnique_root",
+    "Ambidextrous.value_eq_romik",
+    "Ambidextrous.volume_le",
+    "Ambidextrous.isAmbidextrous_referenceSofa",
+    "Ambidextrous.volume_referenceSofa",
+    "Ambidextrous.isAmbidextrous_image_referenceSofa",
+    "Ambidextrous.convexHull_referenceSofa",
+    "Ambidextrous.volume_eq_iff"
+  ],
+  "definition_names": [],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "enable_nanoda": true
+}

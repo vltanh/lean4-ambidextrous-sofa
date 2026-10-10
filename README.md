@@ -1,272 +1,89 @@
-# Lean ambidextrous sofa
+# Optimality and uniqueness of Romik's ambidextrous sofa, in Lean 4
 
-A Lean 4 formalization draft of the ambidextrous moving sofa problem.
+[![Lean Action CI](https://github.com/vltanh/lean4-ambidextrous-sofa/actions/workflows/lean_action_ci.yml/badge.svg)](https://github.com/vltanh/lean4-ambidextrous-sofa/actions/workflows/lean_action_ci.yml)
 
-**Status: complete uncompiled F7 source draft; full audit deferred.**
-The draft now includes the actual common occupation, tilted exclusion,
-full and individual proper cap classifications, and unconditional
-original-domain optimality, exact uniqueness, and attainment declarations.
-Every declared theorem has an explicit proof body. The complete source
-chain is supplied for later auditing; successful elaboration and its
-transitive axiom set are not established. No project Lean source has been
-compiled, no axiom query has been executed, and no CI is included.
+The ambidextrous moving sofa problem asks for the largest area of a shape that can be moved around the
+right-angled corner of a hallway of unit width that turns right, and also, from the same starting
+position, around the corner of a hallway that turns left. Dan Romik (2016) constructed a shape of area
 
-The [detailed F7 roadmap](docs/F7-DRAFT-ROADMAP.md) records the completed
-source steps and the intentionally deferred full audit. The main result is
-in [Theorems/Optimality.lean](AmbidextrousSofa/Theorems/Optimality.lean).
+  `1 + 4Y² + arctan Y = ∛(3 + 2√2) + ∛(3 − 2√2) − 1 + arctan(½(∛(√2 + 1) − ∛(√2 − 1))) = 1.64495…`,
 
-## Final declarations in the draft
+where `Y = 0.2980…` is the positive root of `4Y³ + 3Y = 1`, and proposed it as a likely solution. This
+repository proves in Lean 4, with Mathlib, that Romik's ambidextrous sofa
 
-```lean
-theorem IsAmbidextrous.volumeReal_le_M
-    {S : Set Plane} (hS : IsAmbidextrous S) : volume.real S ≤ M
+- **is optimal**: every ambidextrous sofa has area at most `1 + 4Y² + arctan Y`;
+- **is the only optimal shape**: an ambidextrous sofa of that area is the image of Romik's sofa by a
+  rotation and a translation.
 
-theorem IsAmbidextrous.volumeReal_eq_M_iff
-    {S : Set Plane} (hS : IsAmbidextrous S) :
-    volume.real S = M ↔ ∃ (θ : ℝ) (v : Plane),
-      S = rigidMap θ v '' Reference.referenceSofa
+The proof formalizes the manuscript *Sharp area and exact uniqueness for the ambidextrous moving sofa
+problem* (the "Gate 3 manuscript",
+[lean4-moving-sofa@2048972, docs/ambidextrous/GATE3-MANUSCRIPT.md](https://github.com/vltanh/lean4-moving-sofa/blob/20489723dc8777a82ee70ae60510115dc6f21085/docs/ambidextrous/GATE3-MANUSCRIPT.md)).
+ChatGPT 6 Pro (OpenAI) wrote the manuscript and an uncompiled Lean draft of this formalization; Claude
+Opus 5.5 (Anthropic) made the draft compile. No person has reviewed the manuscript or the proofs; Lean's
+kernel checks every proof. The proof uses one result from the literature, Jineon Baek's theorem that
+Gerver's sofa is optimal for the ordinary problem (arXiv:2411.19826), through its Lean formalization
+[lean4-moving-sofa](https://github.com/vltanh/lean4-moving-sofa), on which this project depends.
 
-theorem isGreatest_ambidextrous_areas :
-    IsGreatest {a : ℝ | ∃ S : Set Plane,
-      IsAmbidextrous S ∧ volume.real S = a} M
+## Statements
+
+[`Challenge.lean`](Challenge.lean) states the results in Mathlib's vocabulary only, with all the
+definitions they need: the two hallways, motions, ambidextrous sofas (compact connected sets that move
+through both hallways by two continuous rigid motions with the same starting orientation) and Romik's
+ambidextrous sofa `referenceSofa Y` (its convex hull, given by an explicit support function, minus the
+two regions swept by the hallways' inner corners). Its eight theorems, for `Y` with
+`0 < Y ∧ 4 * Y ^ 3 + 3 * Y = 1`:
+
+| Theorem | Statement |
+| --- | --- |
+| `existsUnique_root` | the equation `4Y³ + 3Y = 1` has exactly one positive solution |
+| `value_eq_romik` | `1 + 4Y² + arctan Y` is Romik's closed form above |
+| `volume_le` | every ambidextrous sofa has area at most `1 + 4Y² + arctan Y` |
+| `isAmbidextrous_referenceSofa` | Romik's sofa is an ambidextrous sofa |
+| `volume_referenceSofa` | Romik's sofa has area `1 + 4Y² + arctan Y` |
+| `isAmbidextrous_image_referenceSofa` | so is every image of it by a rotation and a translation |
+| `convexHull_referenceSofa` | its convex hull is the explicit hull `referenceHull Y` |
+| `volume_eq_iff` | an ambidextrous sofa has area `1 + 4Y² + arctan Y` iff it is such an image of Romik's sofa |
+
+[`Solution.lean`](Solution.lean) proves them from the library; [`comparator.json`](comparator.json)
+configures Comparator to check that it proves exactly the Challenge.
+
+## Layout
+
+```text
+Challenge.lean, Solution.lean   the statements of record and their proofs
+comparator.json                 Comparator's configuration
+AmbidextrousSofa/               the formalization of the manuscript (466 modules)
+  ChallengeDefs.lean            the definitions that Challenge.lean copies
+  Main.lean                     the main theorems in the Challenge's vocabulary
+  Theorems/Optimality.lean      the main theorems in the library's vocabulary
+  ExactConstant.lean            the root Y and the value M = 1 + 4Y² + arctan Y
+  Geometry/, Measure/, Topology/, Algebra/   the plane, motions, caps, hulls, areas
+  Reference/                    Romik's ambidextrous sofa: support function, body, motions, area
+  Analysis/                     the cap-score bound and its equality cases
+scripts/                        the axiom audit and the tools that CI runs
 ```
 
-The implementation includes complete source proof bodies and the separate
-forward equality theorem. The area and equality statements retain the
-original admissibility predicate; no cap, occupation, phase, or rigidity
-certificate is added to their public assumptions.
-
-## Mathematical target
-
-Let `Y` be the positive solution of
-
-\[
-4Y^3+3Y-1=0,\qquad M=1+4Y^2+\arctan Y.
-\]
-
-The target quantifies over every compact connected planar body admitting
-both genuine unit-corridor passages from a common incoming orientation. It
-asserts area at most `M` and equality exactly for compact sets congruent to
-Romik's ambidextrous construction. The two continuous motions may backtrack
-and have independent terminal rotations. Uniqueness concerns the actual
-compact body, not its motion's time parametrization.
-
-The [written Gate 3 manuscript][manuscript] is the research source. Its Gate
-0–3 closure records are reviews within that research session. External
-refereeing and Lean kernel verification are separate from those records.
-
-## Completed source layers
-
-| Layer | Actual content in the draft | Main source |
-| --- | --- | --- |
-| Geometry and integration | Actual compact convex hulls, downward caps, attained concave roofs, support determination, both attached walls, true terminal wall, Tonelli and signed-fiber identities | [CapGeometry](AmbidextrousSofa/Geometry/CapGeometry.lean), [Support](AmbidextrousSofa/Geometry/Support.lean), [CapAssembly](AmbidextrousSofa/Measure/CapAssembly.lean) |
-| Original motion reduction | Rigid normalization and area invariance; strip-area exclusions; IVT angular reach despite backtracking; independent effective angles and actual upper/lower hull caps | [MotionReduction](AmbidextrousSofa/Geometry/MotionReduction.lean) |
-| Reference realization and feasibility | Reverse support inequalities, exact faces, actual niche-cut physical body, path connectedness, two explicit valid passages, regular closedness | [Realization](AmbidextrousSofa/Reference/Realization.lean), [Body](AmbidextrousSofa/Reference/Body.lean), [Regularity](AmbidextrousSofa/Reference/Regularity.lean) |
-| Exact reference attainment | Actual support-area and niche integrals give reference cap score `M/2` and ordinary reference sofa area `M` | [Value](AmbidextrousSofa/Reference/Value.lean) |
-| Full-cap optimization | Width coercivity; Hausdorff compactness; actual roof, niche and score continuity; global maximum existence; genuine middle-chord and height saturation | [GlobalCapMaximum](AmbidextrousSofa/Analysis/GlobalCapMaximum.lean) |
-| Finite selection and variations | Literal finite min/max source derivatives; floating and axis wall variations; exact support circumscription; uniform dense-grid score approximation; selected polygons converging to any prescribed full maximum | [PolygonExposure](AmbidextrousSofa/Analysis/PolygonExposure.lean), [SelectedSequence](AmbidextrousSofa/Analysis/SelectedSequence.lean) |
-| Endpoint geometry | Actual inward cuts and erosions, exact shortened projections, support perturbation bounds, inward pressures, top insertion, and low-middle-height exclusion | [EndpointPressure](AmbidextrousSofa/Analysis/EndpointPressure.lean), [LowHeightMaximizer](AmbidextrousSofa/Analysis/LowHeightMaximizer.lean) |
-| Finite curvature and endpoint limits | Actual facet atoms, neighboring-wall source bounds, finite curvature concentration, punctured-axis mass estimates, moving pressure convergence and exact limits of finite erosion moments | [DiscreteCurvature](AmbidextrousSofa/Analysis/DiscreteCurvature.lean), [DyadicCurvatureMass](AmbidextrousSofa/Analysis/DyadicCurvatureMass.lean), [SelectedErosionMoments](AmbidextrousSofa/Analysis/SelectedErosionMoments.lean) |
-| Actual endpoint stationarity and central niche height | Axis-height limits identified with actual faces, full-maximizer complementarity, strictly positive canonical pressures, vanishing finite erosion moments and the central niche bound `n ≤ (eR+eL)/2` | [EndpointComplementarity](AmbidextrousSofa/Analysis/EndpointComplementarity.lean), [EndpointPositivity](AmbidextrousSofa/Analysis/EndpointPositivity.lean), [SelectedNicheHeight](AmbidextrousSofa/Analysis/SelectedNicheHeight.lean) |
-| Actual sharp wing density | Middle-facet mass vanishes away from its normal; moving support secants and finite source bounds give an actual measurable curvature density bounded by `max |q| ((|q|+1)/2)` | [MiddleMassLimit](AmbidextrousSofa/Analysis/MiddleMassLimit.lean), [SharpCurvatureDensity](AmbidextrousSofa/Analysis/SharpCurvatureDensity.lean) |
-| Regular support calculus and source occupation | One actual sharp density off the two exceptional normals, support/tangent absolute continuity and coupled velocity equations, literal inner-source interval convergence, and zero curvature at strictly negative corners | [RegularCurvatureDomain](AmbidextrousSofa/Analysis/RegularCurvatureDomain.lean), [SupportDensityCalculus](AmbidextrousSofa/Analysis/SupportDensityCalculus.lean), [SourceOccupation](AmbidextrousSofa/Analysis/SourceOccupation.lean), [NegativeCornerCurvature](AmbidextrousSofa/Analysis/NegativeCornerCurvature.lean) |
-| Actual floor-contact curvature | Ordinary level-set derivative nullity, actual corner velocity and acceleration equations, and strict unit density at almost every floor contact | [LevelSetDerivative](AmbidextrousSofa/Analysis/LevelSetDerivative.lean), [CornerDynamics](AmbidextrousSofa/Analysis/CornerDynamics.lean), [FloorContactCurvature](AmbidextrousSofa/Analysis/FloorContactCurvature.lean) |
-| Actual Green and wing chord comparison | Exact finite Green identity including top mass and both endpoint defects; vanishing weighted defect; actual selected wing-length limit; Euclidean chord comparison and the stronger ordinary-area constraint | [FiniteGraphGreen](AmbidextrousSofa/Analysis/FiniteGraphGreen.lean), [SelectedGreenLimit](AmbidextrousSofa/Analysis/SelectedGreenLimit.lean), [CanonicalWingChord](AmbidextrousSofa/Analysis/CanonicalWingChord.lean) |
-| Facet geometry and reference recovery | Whole-angle support inactivity, exact position of a tilted middle facet, and reversal of the actual chord and height operations at the reference | [FacetPinning](AmbidextrousSofa/Analysis/FacetPinning.lean), [InverseCanonicalization](AmbidextrousSofa/Analysis/InverseCanonicalization.lean) |
-| Analytic comparison | Two-endpoint Dirichlet coercivity, exact clipped-functional expansion, fixed-trace strictness, Euler boundary formula, reference stationarity, global sharp value `M/2` for arbitrary support pairs of competitive width, and exact equality up to horizontal translation | [AdaptiveFunctional](AmbidextrousSofa/Analysis/AdaptiveFunctional.lean), [AdaptiveGlobalComparison](AmbidextrousSofa/Analysis/AdaptiveGlobalComparison.lean) |
-| Ordinary one-turn input | Complete retained source dependency, actual continuous-passage bridge, and the rational area bound `22199/10000` | [OrdinarySofaBound](AmbidextrousSofa/Analysis/OrdinarySofaBound.lean), [Imported source map](AmbidextrousSofa/Imported/README.md) |
-| Actual tilted survivor | Exact corner confinement, convex wing niches, actual cap containment, a compact connected survivor with a genuine passage, and its ordinary-area necessary inequality | [CanonicalOneTurn](AmbidextrousSofa/Analysis/CanonicalOneTurn.lean), [OneTurnArea](AmbidextrousSofa/Analysis/OneTurnArea.lean) |
-| Proper-angle maximizer structure | Joint angle/cap continuity, a largest-angle maximum, actual top insertion, used-support saturation, unused curvature gaps, terminal three-support bounds and exclusion of angles through `arctan(8/3)` | [JointCapMaximum](AmbidextrousSofa/Analysis/JointCapMaximum.lean), [UnusedCurvature](AmbidextrousSofa/Analysis/UnusedCurvature.lean), [TerminalThreeSupports](AmbidextrousSofa/Analysis/TerminalThreeSupports.lean), [TerminalScalar](AmbidextrousSofa/Analysis/TerminalScalar.lean) |
-| Actual terminal variation and completion | Integrated one-sided angle derivative with the full historical tie term; genuine partial facet pinning; actual missing-support tails; same-cap completion of the specified negative-tilt branches | [TerminalAngleIntegral](AmbidextrousSofa/Analysis/TerminalAngleIntegral.lean), [PartialFacetPinning](AmbidextrousSofa/Analysis/PartialFacetPinning.lean), [TerminalSupportTails](AmbidextrousSofa/Analysis/TerminalSupportTails.lean), [NegativeCompletion](AmbidextrousSofa/Analysis/NegativeCompletion.lean) |
-| Exact finite-angle comparisons in progress | Actual tilted diagonal relaxation and global supporting-plane bounds; exact critical clipping and value of the initial-angle relaxation | [DiagonalRelaxation](AmbidextrousSofa/Analysis/DiagonalRelaxation.lean), [DiagonalScalar](AmbidextrousSofa/Analysis/DiagonalScalar.lean), [InitialAngleCritical](AmbidextrousSofa/Analysis/InitialAngleCritical.lean) |
-| Actual short-width exclusion | Literal near-diagonal supports, two exterior cuts and two disjoint additional niche tails, including both clipped outer tips; actual score is strictly below `41/50` for `a ≤ 1001/1000` in canonical tilted form | [ShortWidthExclusion](AmbidextrousSofa/Analysis/ShortWidthExclusion.lean), [NearDiagonalTail](AmbidextrousSofa/Analysis/NearDiagonalTail.lean) |
-| Actual proper terminal facet and exposure | Largest-angle same-cap extension bounds the whole terminal facet; a genuine inward support cut and dominated convergence bound strict terminal exposure by that facet | [TerminalCorner](AmbidextrousSofa/Analysis/TerminalCorner.lean), [TerminalExposure](AmbidextrousSofa/Analysis/TerminalExposure.lean) |
-| Proper circle comparison | Exact circle-slope averages and endpoint margins retain the terminal height, both top overhangs and the whole reserve interval in MP.24 | [TerminalCircleMargin](AmbidextrousSofa/Analysis/TerminalCircleMargin.lean) |
-| Actual full-width restriction | The literal wide, intermediate-tilt and full three-triangle inequalities give quarter-width `C < 37/50` for every actual full maximum; floor corrections retain all clipped cases | [FullWidthCeiling](AmbidextrousSofa/Analysis/FullWidthCeiling.lean), [FullTriangleWidth](AmbidextrousSofa/Analysis/FullTriangleWidth.lean) |
-| Actual horizontal positive-corner flux | Two visible graph projections, actual tangency endpoint limits and a.e. differentiation give the companion flux law; genuine first crossings prove that one unit companion quarter forces a unit first quarter | [VisibleFluxDensity](AmbidextrousSofa/Analysis/VisibleFluxDensity.lean), [CornerPropagation](AmbidextrousSofa/Analysis/CornerPropagation.lean), [CornerEndpointEnergy](AmbidextrousSofa/Analysis/CornerEndpointEnergy.lean) |
-| Horizontal leakage arithmetic | Seven explicit rational interval rows, exact envelope moments and an actual ordinary-area obstruction; the complete actual leakage application now yields global horizontal unit curvature | [HorizontalLeakageScalar](AmbidextrousSofa/Analysis/HorizontalLeakageScalar.lean), [HorizontalOrdinaryArea](AmbidextrousSofa/Analysis/HorizontalOrdinaryArea.lean) |
-| Actual proper source selection and density | Rescaled visited families retain the whole terminal wall and all old support penalties; selected limits give bounded and sharp actual companion curvature densities, including the literal cut-cap splice | [PartialSelectedSequence](AmbidextrousSofa/Analysis/PartialSelectedSequence.lean), [PartialSharpCurvatureDensity](AmbidextrousSofa/Analysis/PartialSharpCurvatureDensity.lean) |
-| Actual proper moments and top projection | Both selected endpoint/erosion moments, low-height exclusion and vanishing source balance yield `TL + 2 TR ≤ terminal inset` for the actual top overhangs, with outgoing zero strictly inside the actual middle | [PartialEndpointPositivity](AmbidextrousSofa/Analysis/PartialEndpointPositivity.lean), [TerminalTopProjection](AmbidextrousSofa/Analysis/TerminalTopProjection.lean) |
-| Actual proper circle comparison | The actual cut density and top projection discharge every initial-coordinate and overhang input; the actual proper width restriction is proved; the actual reflected weighted-excess contradiction and largest-angle reduction are written | [TerminalActualComparison](AmbidextrousSofa/Analysis/TerminalActualComparison.lean) |
-| Horizontal full-cap rigidity | Actual global unit density, signed niche/support area calibration, analytic equality and literal reference translation | [HorizontalClassification](AmbidextrousSofa/Analysis/HorizontalClassification.lean), [HorizontalRigidity](AmbidextrousSofa/Analysis/HorizontalRigidity.lean) |
-| Actual tilted initial and late controls | The stopped initial circle, whole-quarter energy barrier, actual parameter regions and internally selected sharp density give first-unit criteria and late curvature at most one after `11/15`, with excess moment below `1/40` | [TiltedInitialUnitRegions](AmbidextrousSofa/Analysis/TiltedInitialUnitRegions.lean), [TiltedLateExcess](AmbidextrousSofa/Analysis/TiltedLateExcess.lean) |
-| Actual tilted projection | An attained low-wing circle minimum, strict dry-source localization, selected floor/top balance and literal top localization prove the exact top-overhang identity | [CompanionZero](AmbidextrousSofa/Analysis/CompanionZero.lean), [TiltedTopProjection](AmbidextrousSofa/Analysis/TiltedTopProjection.lean) |
-| Actual small-tilt area test | Three literal wing chords and the outside-niche excess triangle derive both initial-energy tests from ordinary area, with exact rational strict margins | [SplitWingChord](AmbidextrousSofa/Analysis/SplitWingChord.lean), [SmallTiltArea](AmbidextrousSofa/Analysis/SmallTiltArea.lean) |
-| Actual proper width and reflected controls | Full retained terminal geometry, three-angle width transfer, actual source laws and literal reflected active-arc dynamics; terminal atom energy is paid explicitly | [PartialWidthBounds](AmbidextrousSofa/Analysis/PartialWidthBounds.lean), [PartialReflectedDynamics](AmbidextrousSofa/Analysis/PartialReflectedDynamics.lean), [TerminalImpulseEnergy](AmbidextrousSofa/Analysis/TerminalImpulseEnergy.lean) |
-| Actual equality recovery | Concrete canonicalization and its inverse, alignment of the two actual caps, literal hull/body containment and regular-closed equal-area recovery | [FullCapRecovery](AmbidextrousSofa/Analysis/FullCapRecovery.lean), [ActualReferenceRecovery](AmbidextrousSofa/Measure/ActualReferenceRecovery.lean) |
-| Geometric equality infrastructure | Exact four-term physical deficit, a.e. partition equality, actual hull recovery and finite-measure regular-closed set recovery | [CapAssembly](AmbidextrousSofa/Measure/CapAssembly.lean), [RegularClosed](AmbidextrousSofa/Topology/RegularClosed.lean) |
-
-All statements in this table refer to source proof bodies, not successful
-elaboration or kernel validation.
-
-### Concrete assembled statements
-
-`IsAmbidextrous.original_domain_score_reduction` derives from the original
-two-motion predicate either a strict small-area branch or
-
-\[
-\operatorname{area}(S)\le P_\alpha(U_S)+P_\gamma(V_S)
-\]
-
-for the actual normalized hull caps and independently obtained angles in
-`(π/4, π/2]`. The whole terminal wall remains in each proper-angle score.
-
-`Reference.isAmbidextrous_referenceSofa` supplies two actual continuous
-corridor passages. `Reference.volumeReal_referenceSofa` proves its ordinary
-area equals `M`, and `Reference.capScore_referenceCap` proves the full-angle
-reference cap score is `M/2`. These are explicit attainment statements.
-
-`exists_fullCapMaximizer` quantifies over the entire downward-cap domain.
-`AngularGrid.exists_selected_sequence` targets any prescribed maximum with
-actual finite selected polygons. Neither result presupposes its sharp value.
-`IsFullCapMaximizer.middle_endpoints_gt_half_of_affine` proves both middle
-endpoint roofs exceed one half after the actual canonical reduction.
-
-`IsFullCapMaximizer.endpoint_complementarity` identifies each actual axis
-height with the positive part of its endpoint pressure. In a height-one
-maximum with an affine middle, both pressures are strictly positive.
-`IsFullCapMaximizer.sweptNiche_le_half_endpoint_height_sum_of_affine` then
-bounds the entire central niche using the actual selected polygon moments.
-The construction includes disappearing floor intervals and all source ties.
-
-`IsFullCapMaximizer.curvature_density_sharp_on_wing` constructs its own
-selected sequence and outputs the actual sharp curvature density on each
-compactly contained wing interval away from the top and middle-facet normals.
-No supplied density or variational certificate is used.
-
-`IsFullCapMaximizer.wing_chords_le_twice_score_of_affine` derives the
-two-wing chord inequality from actual selected polygons and their exact
-Green identity. `ordinary_area_chord_necessary_of_canonical_range` combines
-it with the genuine one-turn survivor. These statements construct their
-own approximations and do not assume a limiting perimeter identity.
-
-`adaptiveFunctional_sub_halfWidth_le_half_M` proves the sharp analytic
-comparison for every `QuarterPair` with the natural top traces and total
-width at least `8/5`. Its equality theorem gives the reference width and
-actual support functions up to a horizontal translation. The geometric
-conditions needed to apply it universally remain to be established.
-
-`IsDownwardCap.eq_reference_of_heightSaturation_middleChordCap_eq` recovers
-an original equality cap from its actual reference canonicalization. The
-proof uses the zero reference niche at the middle endpoints to force zero
-extrusion, then recovers the original middle roof from the unit ceiling.
-The classification of all canonical equality caps is still required.
-
-`volumeReal_le_ordinaryBound_of_lowerPassage` now derives the retained
-ordinary area bound from a genuine compact connected lower passage, with
-its original unrestricted terminal angle. `CanonicalOneTurn` now applies it
-to the actual niche-cut cap in the required tilted parameter range: the
-source proves its fit, connectedness and actual continuous passage first.
-
-`exists_canonical_jointCapMaximizer_largest_angle` supplies a genuine
-height-one affine-middle maximum over both caps and terminal angles.
-`TerminalThreeSupports` derives the clipped integral relaxation directly
-from its actual support. The largest-angle terminal comparison is now closed at source level;
-strictness for each individual proper equality cap remains a separate step.
-
-`IsDownwardCap.capScore_lt_forty_one_fiftieths_of_short_width` now
-proves the actual score is below `41/50` in the centered height-one canonical
-form with half-projection width at most `1001/1000`. It allows every
-nonnegative tilt and terminal angles at least `π/2 - arctan(√2-1)`. The proof
-derives all support deficits and triangle payments from the cap itself.
-
-`IsJointCapMaximizer.terminal_angle_gt_arctan_eight_thirds` excludes the
-entire initial proper-angle range. At a canonical largest-angle maximum,
-`terminalFaceWidth_le_reserve` and
-`terminal_strict_exposure_measure_le_reserve` derive the terminal geometric
-bounds from actual extension and inward-cut competitors. The actual
-top-projection moment and sharp cut-curvature density are now written.
-The actual axis faces and proper width are now identified. The actual early-excess bound and largest-angle exclusion are now written.
-
-`IsFullCapMaximizer.quarter_width_lt_thirty_seven_fiftieths` now proves
-`capWidth U / 4 < 37/50` for every actual full maximum, including arbitrary
-height and middle slope before canonicalization. The three-triangle proof
-uses actual supports, actual endpoint laws, explicit floor losses and the
-strict rational bound `25811237/31500000 < 41/50`.
-
-`IsFullCapMaximizer.ae_first_density_le_one_of_unit_companion` now derives
-the other quarter's unit density from an actual good companion quarter.
-Its positive-corner flux, tangency containment and genuine first level
-crossings are proved internally. `CornerEndpointEnergy` treats the actual
-axis limit and the threshold equality case. The rational horizontal
-leakage rows and actual one-turn area contradiction now give global unit
-curvature. The actual signed niche graph and support-area identity then
-calibrate the analytic functional and classify every horizontal full maximum.
-
-`IsJointCapMaximizer.terminal_top_projection_bound` uses the literal top
-endpoints and the actual proper source limit. It proves the weighted
-overhang budget and places the outgoing zero strictly inside the middle.
-`leftCompanion_curvature_density_sharp` constructs the density of the
-actual left cut on its complete open companion arc. The middle joining
-atom and the initial top atom are treated explicitly. The resulting
-`exists_actual_leftCompanion_density_excess_gt` reduces the proper
-contradiction to the remaining weighted-excess bound; the actual proper
-width now satisfies `1001/2000 < C < 37/50`.
-
-`IsFullCapMaximizer.eq_reference_translate_of_horizontal` now identifies
-the literal horizontal maximizing cap with a translated reference cap.
-`FullCapRecovery` implements the concrete height/chord canonicalization
-and its inverse. `Measure/ActualReferenceRecovery` recovers the original
-compact body once both actual cap classifications and zero deficits are
-known. These are completed source interfaces; the remaining tilted classification and individual proper-angle
-equality exclusion are still needed for a universal application.
-
-`IsFullCapMaximizer.tilted_top_projection_eq` proves
-`b - C = max (C + companionZero (leftCompanionCap U (-C))) 0` from
-actual selected polygons. `exists_tilted_first_density_with_late_controls`
-selects its own density, proves that its late first wing is unit, and
-bounds the first excess moment by `1/40`. `SmallTiltArea` connects the
-small-height initial-floor tests to actual chord and ordinary-area bounds.
-
-### Current uncompiled-draft roadmap
-
-The source dependency chain through the original-domain final theorems is now present in the uncompiled draft. Full source auditing and kernel verification are deferred.
-
-See the [detailed F7 roadmap](docs/F7-DRAFT-ROADMAP.md) for the source measures,
-occupation identities, tilted contradiction, individual cap equality, and
-original-domain assembly. Commits are published at each coherent dependency
-stage. Comprehensive auditing is deferred; no Lean or CI is run.
-
-## Source policy and dependencies
-
-The only permitted foundational axioms are `propext`, `Classical.choice`,
-and `Quot.sound`. There are no custom axioms, admissions, `sorry`, `admit`,
-native proof shortcuts, or target-shaped certificates replacing a global
-mathematical obligation. Classical choice selects objects only after an
-existence theorem has been proved.
-
-Mathlib is the sole direct package dependency, pinned to
-[`c55e6e786f49471c72fbddbec5415808896aec1e`][mathlib], with Lean
-`leanprover/lean4:v4.35.0-rc3`. The pinned Mathlib source is used to inspect
-relevant APIs. Package build compatibility remains unchecked.
-
-The complete 51-module transitive source dependency of the retained ordinary
-one-turn theorem is adapted from the [pinned earlier repository][research]
-under [Imported](AmbidextrousSofa/Imported/README.md). It includes the actual
-convex-body/Stieltjes calculus, Gerver parameter existence, ordinary value
-theorem and rational area enclosure. Source paths, revision, namespace/import
-transformations and the original Apache-2.0 license are recorded there.
-No ordinary uniqueness theorem is used. This source adaptation has not been
-compiled or independently re-reviewed in its entirety.
-
-The entry point [AmbidextrousSofa.lean](AmbidextrousSofa.lean) imports every
-implementation module. [AxiomAudit.lean](AxiomAudit.lean) prepares one
-`#print axioms` query for every explicitly named declaration. Those queries
-have not been run. Actual transitive axiom sets remain unverified.
-
-The Python-only source guard is:
+## Building and checking
 
 ```sh
-python3 scripts/check_source_policy.py
+lake exe cache get
+lake build
+lake env lean scripts/Audit.lean
+python3 scripts/sync_challenge_defs.py --check
+lake env lake comparator --config=comparator.json
 ```
 
-It checks prohibited tokens, namespace-qualified declaration and audit
-coverage, import cycles, package pins and absence of CI configuration. It
-does not execute Lean or prove that the files elaborate. The
-[source-review record](docs/SOURCE-REVIEW.md) preserves the earlier review
-scope and inventory. The complete current draft is published before its full
-audit, as requested; kernel verification remains excluded from this task.
+Lean and Mathlib are pinned at `v4.35.0-rc3`, and lean4-moving-sofa at commit `1174c5c`.
 
-[manuscript]: https://github.com/vltanh/lean4-moving-sofa/blob/20489723dc8777a82ee70ae60510115dc6f21085/docs/ambidextrous/GATE3-MANUSCRIPT.md
-[research]: https://github.com/vltanh/lean4-moving-sofa/commit/20489723dc8777a82ee70ae60510115dc6f21085
-[mathlib]: https://github.com/leanprover-community/mathlib4/tree/c55e6e786f49471c72fbddbec5415808896aec1e
+## License
+
+Apache-2.0 ([`LICENSE`](LICENSE)), as for Mathlib.
+
+## Credits
+
+- The-Anh Vu-Le directed the work.
+- ChatGPT 6 Pro (OpenAI) wrote the manuscript and the uncompiled Lean draft (about 92,000 lines in 463
+  modules, pull request #1).
+- Claude Opus 5.5 (Anthropic), in Claude Code, following the
+  [formalize-math-paper](https://github.com/vltanh/formalize-math-paper) skill, made the draft compile,
+  wrote the Challenge and the Solution, and reviewed the statements against the manuscript.
