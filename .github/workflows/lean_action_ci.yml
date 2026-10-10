@@ -14,6 +14,12 @@ jobs:
     timeout-minutes: 360
 
     steps:
+      # The build needs about 12 GB, close to what the runner has free: remove preinstalled
+      # toolchains that the build does not use.
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup /opt/hostedtoolcache/CodeQL
+          df -h /
       - uses: actions/checkout@v7
       - uses: leanprover/lean-action@v1
       # The audit sees a module's proofs only through its own `import all` line.
