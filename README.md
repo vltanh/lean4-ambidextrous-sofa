@@ -1,6 +1,6 @@
 # Optimality and uniqueness of Romik's ambidextrous sofa, in Lean 4
 
-[![Lean Action CI](https://github.com/vltanh/lean4-ambidextrous-sofa/actions/workflows/lean_action_ci.yml/badge.svg)](https://github.com/vltanh/lean4-ambidextrous-sofa/actions/workflows/lean_action_ci.yml)
+[![Lean Action CI](https://github.com/vltanh/lean4-ambidextrous-sofa/actions/workflows/lean_action_ci.yml/badge.svg?branch=main)](https://github.com/vltanh/lean4-ambidextrous-sofa/actions/workflows/lean_action_ci.yml?query=branch%3Amain)
 
 The ambidextrous moving sofa problem asks for the largest area of a shape that can be moved around the
 right-angled corner of a hallway of unit width that turns right, and also, from the same starting position,
