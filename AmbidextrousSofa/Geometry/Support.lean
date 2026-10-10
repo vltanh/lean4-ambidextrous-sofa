@@ -23,17 +23,8 @@ namespace AmbidextrousSofa
 /-- Euclidean coordinate pairing, independent of the product norm. -/
 def coordDot (p v : Plane) : ℝ := p.1 * v.1 + p.2 * v.2
 
-theorem coordDot_comm (p v : Plane) : coordDot p v = coordDot v p := by
-  unfold coordDot
-  ring
-
 theorem coordDot_add_left (p q v : Plane) :
     coordDot (p + q) v = coordDot p v + coordDot q v := by
-  simp only [coordDot, Prod.fst_add, Prod.snd_add]
-  ring
-
-theorem coordDot_add_right (p v w : Plane) :
-    coordDot p (v + w) = coordDot p v + coordDot p w := by
   simp only [coordDot, Prod.fst_add, Prod.snd_add]
   ring
 
@@ -46,14 +37,6 @@ theorem coordDot_smul_right (a : ℝ) (p v : Plane) :
     coordDot p (a • v) = a * coordDot p v := by
   simp only [coordDot, Prod.smul_fst, Prod.smul_snd, smul_eq_mul]
   ring
-
-@[simp]
-theorem coordDot_zero_left (v : Plane) : coordDot 0 v = 0 := by
-  simp [coordDot]
-
-@[simp]
-theorem coordDot_zero_right (p : Plane) : coordDot p 0 = 0 := by
-  simp [coordDot]
 
 theorem continuous_coordDot_right (v : Plane) : Continuous (fun p => coordDot p v) := by
   unfold coordDot
@@ -159,17 +142,6 @@ theorem mem_iff_forall_coordDot_le_support {K : Set Plane} (hK : IsCompact K)
   rw [← hqmax] at hpbound
   linarith
 
-theorem subset_iff_support_le {K L : Set Plane} (hK : IsCompact K) (hKne : K.Nonempty)
-    (hL : IsCompact L) (hLne : L.Nonempty) (hLconvex : Convex ℝ L) :
-    K ⊆ L ↔ ∀ v : Plane, support K v ≤ support L v := by
-  constructor
-  · intro hKL v
-    exact support_mono hKL hKne hL v
-  · intro hsupport p hp
-    apply (mem_iff_forall_coordDot_le_support hL hLne hLconvex p).mpr
-    intro v
-    exact (coordDot_le_support hK hp v).trans (hsupport v)
-
 /-- Equality of support data determines the compact convex sets, including their boundaries. -/
 theorem eq_of_support_eq {K L : Set Plane} (hK : IsCompact K) (hKne : K.Nonempty)
     (hKconvex : Convex ℝ K) (hL : IsCompact L) (hLne : L.Nonempty)
@@ -226,21 +198,10 @@ theorem support_smul_direction {K : Set Plane} (hK : IsCompact K) (hne : K.Nonem
     rw [← hpv, ← coordDot_smul_right]
     exact coordDot_le_support hK hp (a • v)
 
-theorem support_subadditive {K : Set Plane} (hK : IsCompact K) (hne : K.Nonempty)
-    (v w : Plane) : support K (v + w) ≤ support K v + support K w := by
-  apply support_le_of_forall hne
-  intro p hp
-  rw [coordDot_add_right]
-  exact add_le_add (coordDot_le_support hK hp v) (coordDot_le_support hK hp w)
-
 theorem coordDot_rotate (θ : ℝ) (p v : Plane) :
     coordDot (rotate θ p) v = coordDot p (rotate (-θ) v) := by
   simp only [coordDot, rotate, Real.cos_neg, Real.sin_neg]
   ring
-
-theorem support_rotate (K : Set Plane) (θ : ℝ) (v : Plane) :
-    support (rotate θ '' K) v = support K (rotate (-θ) v) := by
-  simp only [support, Set.image_image, coordDot_rotate]
 
 theorem rotate_unitNormal (θ φ : ℝ) :
     rotate θ (unitNormal φ) = unitNormal (θ + φ) := by
@@ -248,33 +209,9 @@ theorem rotate_unitNormal (θ φ : ℝ) :
   · simp only [rotate, unitNormal, Real.cos_add]
   · simp only [rotate, unitNormal, Real.sin_add]
 
-theorem angleSupport_rotate (K : Set Plane) (θ φ : ℝ) :
-    angleSupport (rotate θ '' K) φ = angleSupport K (φ - θ) := by
-  unfold angleSupport
-  rw [support_rotate, rotate_unitNormal]
-  congr 2
-  ring
-
 /-- A support face consists of actual points attaining the support maximum. -/
 def supportFace (K : Set Plane) (v : Plane) : Set Plane :=
   K ∩ {p | coordDot p v = support K v}
-
-theorem supportFace_nonempty {K : Set Plane} (hK : IsCompact K) (hne : K.Nonempty)
-    (v : Plane) : (supportFace K v).Nonempty := by
-  obtain ⟨p, hp, hpv⟩ := exists_coordDot_eq_support hK hne v
-  exact ⟨p, hp, hpv⟩
-
-theorem isCompact_supportFace {K : Set Plane} (hK : IsCompact K) (v : Plane) :
-    IsCompact (supportFace K v) :=
-  hK.inter_right (isClosed_eq (continuous_coordDot_right v) continuous_const)
-
-theorem convex_supportFace {K : Set Plane} (hK : Convex ℝ K) (v : Plane) :
-    Convex ℝ (supportFace K v) := by
-  intro p hp q hq a b ha hb hab
-  refine ⟨hK hp.1 hq.1 ha hb hab, ?_⟩
-  change coordDot (a • p + b • q) v = support K v
-  rw [coordDot_add_left, coordDot_smul_left, coordDot_smul_left, hp.2, hq.2,
-    ← add_mul, hab, one_mul]
 
 theorem support_horizontal_right (K : Set Plane) :
     support K (1, 0) = horizontalRight K := by
@@ -291,23 +228,6 @@ theorem support_horizontal_left {K : Set Plane} (hK : IsCompact K) (hne : K.None
     simp only [coordDot, mul_neg, mul_one, mul_zero, add_zero]
     exact neg_le_neg hleft
   · simp only [coordDot, mul_neg, mul_one, mul_zero, add_zero, hpLeft]
-
-/-- The baseline is a genuine support line of every downward cap. -/
-theorem IsDownwardCap.support_downward {U : Set Plane} (hU : IsDownwardCap U) :
-    support U (0, -1) = 0 := by
-  obtain ⟨p, hp⟩ := hU.nonempty
-  apply support_eq_of_mem hU.isCompact (q := (p.1, 0)) ?_ (hU.baseline_mem hp) ?_
-  · intro q hq
-    have hy0 := (hU.inStrip hq).1
-    simp only [coordDot, mul_zero, zero_add, mul_neg, mul_one]
-    exact neg_nonpos.mpr hy0
-  · simp [coordDot]
-
-theorem IsDownwardCap.support_upward_nonneg {U : Set Plane} (hU : IsDownwardCap U) :
-    0 ≤ support U (0, 1) := by
-  obtain ⟨p, hp⟩ := hU.nonempty
-  have h := coordDot_le_support hU.isCompact (hU.baseline_mem hp) (0, 1)
-  simpa only [coordDot, mul_zero, zero_mul, add_zero] using h
 
 theorem IsDownwardCap.support_upward_le_one {U : Set Plane} (hU : IsDownwardCap U) :
     support U (0, 1) ≤ 1 := by

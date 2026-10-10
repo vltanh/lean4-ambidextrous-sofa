@@ -91,13 +91,4 @@ theorem IsFullCapMaximizer.exists_heightOne_affine_middle
     le_antisymm (hU.2 V hV) hscore, m, c, ?_⟩
   simpa only [hleft, hright] using haffine
 
-theorem exists_canonical_fullCapMaximizer :
-    ∃ U : Set Plane, IsFullCapMaximizer U ∧ capHeight U = 1 ∧
-      M ≤ capWidth U ∧ capWidth U < 6 ∧
-      ∃ m c : ℝ, ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-        capRoof U x = m * x + c := by
-  obtain ⟨U, hU, _⟩ := exists_fullCapMaximizer
-  obtain ⟨V, hV, _, hheight, _, haffine⟩ := hU.exists_heightOne_affine_middle
-  exact ⟨V, hV, hheight, hV.width_bounds.1, hV.width_bounds.2, haffine⟩
-
 end AmbidextrousSofa

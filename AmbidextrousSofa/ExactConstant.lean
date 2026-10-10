@@ -60,13 +60,6 @@ theorem cubic_root_unique {x y : ℝ} (hx : cubic x = 0) (hy : cubic y = 0) :
     x = y :=
   cubic_strictMono.injective (hx.trans hy.symm)
 
-/-- There is exactly one positive real root of the reference cubic. -/
-theorem existsUnique_positive_root : ∃! y : ℝ, 0 < y ∧ cubic y = 0 := by
-  obtain ⟨y, hy, heq⟩ := exists_positive_root
-  refine ⟨y, ⟨hy, heq⟩, ?_⟩
-  intro z hz
-  exact cubic_root_unique hz.2 heq
-
 /-- The reference parameter, selected from the proved positive-root existence. -/
 def Y : ℝ := Classical.choose exists_positive_root
 
@@ -87,14 +80,6 @@ theorem Y_equation : 4 * Y ^ 3 + 3 * Y = 1 := by
 /-- Every real solution of the cubic is the selected parameter. -/
 theorem eq_Y_of_cubic_eq_zero {y : ℝ} (hy : cubic y = 0) : y = Y :=
   cubic_root_unique hy Y_cubic
-
-/-- A root characterization independent of the choice used to define `Y`. -/
-theorem cubic_eq_zero_iff_eq_Y (y : ℝ) : cubic y = 0 ↔ y = Y := by
-  constructor
-  · exact eq_Y_of_cubic_eq_zero
-  · intro h
-    rw [h]
-    exact Y_cubic
 
 /-- The lower rational bound used in the geometric reference construction. -/
 theorem two_sevenths_lt_Y : (2 / 7 : ℝ) < Y := by
@@ -143,10 +128,6 @@ def M : ℝ := 1 + 4 * Y ^ 2 + beta
 theorem one_lt_M : 1 < M := by
   unfold M
   nlinarith [sq_nonneg Y, beta_pos]
-
-/-- Positivity of the reference constant. -/
-theorem M_pos : 0 < M := by
-  linarith [one_lt_M]
 
 /-- A division-free form of the manuscript identity `M = 1 / Y - 2 + beta`. -/
 theorem M_sub_beta_add_two_mul_Y : (M - beta + 2) * Y = 1 := by

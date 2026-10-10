@@ -220,9 +220,6 @@ theorem IsDownwardCap.capScore_le_verticalExtrusion {U : Set Plane}
 /-- Height is the actual attained upward support. -/
 def capHeight (U : Set Plane) : ℝ := support U (0, 1)
 
-theorem IsDownwardCap.capHeight_nonneg {U : Set Plane} (hU : IsDownwardCap U) :
-    0 ≤ capHeight U := hU.support_upward_nonneg
-
 theorem IsDownwardCap.capHeight_le_one {U : Set Plane} (hU : IsDownwardCap U) :
     capHeight U ≤ 1 := hU.support_upward_le_one
 
@@ -251,14 +248,6 @@ theorem IsDownwardCap.capHeight_heightSaturation {U : Set Plane}
     hU.support_verticalExtrusion (sub_nonneg.mpr hU.capHeight_le_one) (by norm_num)]
   unfold capHeight
   ring
-
-theorem IsDownwardCap.exists_top_heightSaturation {U : Set Plane}
-    (hU : IsDownwardCap U) : ∃ p ∈ heightSaturation U, p.2 = 1 := by
-  have hV := hU.isDownwardCap_heightSaturation
-  obtain ⟨p, hp, htop⟩ := exists_coordDot_eq_support hV.isCompact hV.nonempty (0, 1)
-  refine ⟨p, hp, ?_⟩
-  have heq := hU.capHeight_heightSaturation
-  simpa only [coordDot, mul_zero, mul_one, zero_add] using htop.trans heq
 
 theorem IsDownwardCap.capScore_le_heightSaturation {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hα0 : 0 < α) (hα : α ≤ Real.pi / 2) :

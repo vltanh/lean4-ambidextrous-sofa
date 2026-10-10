@@ -64,12 +64,6 @@ def innerJointFiniteMeasure (U : Set Plane) (grid : Finset QuarterAngle)
     (l r : ℝ) : FiniteMeasure Plane :=
   ⟨innerJointMeasure U grid l r, inferInstance⟩
 
-@[simp]
-theorem innerJointFiniteMeasure_toMeasure (U : Set Plane) (grid : Finset QuarterAngle)
-    (l r : ℝ) :
-    (innerJointFiniteMeasure U grid l r : Measure Plane) =
-      innerJointMeasure U grid l r := rfl
-
 theorem innerSpatialMeasure_real_univ (U : Set Plane) (grid : Finset QuarterAngle)
     {l r : ℝ} (hlr : l ≤ r) (j : SourceIndex grid) :
     (innerSpatialMeasure U grid l r j).real univ = innerSourceMassOn U grid l r j := by

@@ -22,9 +22,6 @@ namespace AmbidextrousSofa.Analysis
 def joinThree (c d : ℝ) (E N W : ℝ → ℝ) (t : ℝ) : ℝ :=
   if t ≤ c then E t else if t ≤ d then N t else W t
 
-theorem joinThree_eq_early {c d t : ℝ} {E N W : ℝ → ℝ} (ht : t ≤ c) :
-    joinThree c d E N W t = E t := by simp only [joinThree, if_pos ht]
-
 theorem joinThree_eq_middle {c d t : ℝ} {E N W : ℝ → ℝ}
     (hmatch : E c = N c) (ht : t ∈ Icc c d) :
     joinThree c d E N W t = N t := by

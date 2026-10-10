@@ -225,23 +225,4 @@ theorem IsFullCapMaximizer.curvature_density_on_regular_domain
     (continuous_sourceKappa.measurable.comp hK.isCap.measurable_upperCornerVelocity)
     (fun t => sourceKappa_nonneg _) hcoarse hsharp
 
-/-- The exceptional part is exactly the actual measure on the two
-exceptional face normals; no other singular upper curvature remains. -/
-theorem curvature_restrict_upper_decomposition (K : Set Plane) (m : ℝ) :
-    (upperCurvature K).restrict (Ioo (0 : ℝ) Real.pi) =
-      (upperCurvature K).restrict (regularCurvatureDomain m) +
-        (upperCurvature K).restrict {Real.pi / 2, affineNormalAngle m} := by
-  have hpair : ({Real.pi / 2, affineNormalAngle m} : Set ℝ) ⊆ Ioo (0 : ℝ) Real.pi := by
-    intro t ht
-    rcases ht with rfl | ht
-    · constructor <;> linarith [Real.pi_pos]
-    · rcases ht with rfl
-      exact affineNormalAngle_mem m
-  have heq : regularCurvatureDomain m ∪ {Real.pi / 2, affineNormalAngle m} =
-      Ioo (0 : ℝ) Real.pi := by
-    exact sdiff_union_of_subset hpair
-  have hdisj : Disjoint (regularCurvatureDomain m) {Real.pi / 2, affineNormalAngle m} :=
-    disjoint_sdiff_left
-  rw [← heq, Measure.restrict_union hdisj ((measurableSet_singleton _).insert _)]
-
 end AmbidextrousSofa

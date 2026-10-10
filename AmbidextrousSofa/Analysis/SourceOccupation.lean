@@ -43,11 +43,6 @@ def innerAngularMass (U : Set Plane) (grid : Finset QuarterAngle) (E : Set ℝ) 
   exact ∑ j ∈ Finset.univ.filter (fun j : SourceIndex grid => fullAngle grid j ∈ E),
     innerSourceMass U grid j
 
-theorem innerAngularMass_nonneg {U : Set Plane} (hU : IsDownwardCap U)
-    (grid : Finset QuarterAngle) (E : Set ℝ) : 0 ≤ innerAngularMass U grid E := by
-  classical
-  exact Finset.sum_nonneg (fun j _ => innerSourceMass_nonneg hU grid j)
-
 theorem innerSourceMass_sub_atom_eq {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (hpoly : U = circumscription U (normal grid))
     (j : SourceIndex grid) :

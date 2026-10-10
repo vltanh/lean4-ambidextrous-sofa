@@ -79,11 +79,6 @@ def innerSourceSet (U : Set Plane) (grid : Finset QuarterAngle) (j : SourceIndex
   (barrierExpr (pairList grid) none).sourceSet (wallSlope (normal grid))
     (barrierIntercept (normal grid) (fun i => support U (normal grid i))) (some j)
 
-theorem measurableSet_innerSourceSet (U : Set Plane) (grid : Finset QuarterAngle)
-    (j : SourceIndex grid) : MeasurableSet (innerSourceSet U grid j) := by
-  classical
-  exact WallExpr.measurableSet_sourceSet _ _ _ _
-
 theorem innerSource_height (U : Set Plane) (grid : Finset QuarterAngle)
     (j : SourceIndex grid) {x : ℝ} (hx : x ∈ innerSourceSet U grid j) :
     finiteBarrier U (normal grid) (pairList grid) none x = supportWall U (normal grid j) x := by

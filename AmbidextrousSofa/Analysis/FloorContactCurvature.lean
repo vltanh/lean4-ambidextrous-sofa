@@ -211,21 +211,4 @@ theorem regularCornerDomain_zero : regularCornerDomain 0 = Ioo (0 : ℝ) (Real.p
       have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
       simpa only [zero_mul, add_zero, Real.cos_add_pi_div_two, neg_ne_zero] using hs.ne'
 
-/-- In the horizontal-middle case no interior quarter-turn angle is
-exceptional, so the actual floor-contact estimate holds on the whole
-open quarter. -/
-theorem IsFullCapMaximizer.horizontal_curvature_density_floor_control
-    {U : Set Plane} (hU : IsFullCapMaximizer U) {c : ℝ}
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = c) :
-    ∃ ρ : ℝ → ℝ, Measurable ρ ∧
-      (∀ t, 0 ≤ ρ t ∧ ρ t ≤ sourceKappa (upperCornerVelocity U t)) ∧
-      (∀ t, ρ t ≤ 4 * (|horizontalLeft U| + |horizontalRight U| + 1) + 10) ∧
-      (upperCurvature U).restrict (regularCurvatureDomain 0) =
-        (volume.restrict (regularCurvatureDomain 0)).withDensity (fun t => ENNReal.ofReal (ρ t)) ∧
-      (∀ᵐ x ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), (attachedCorner U x).2 = 0 →
-        0 < cornerVelocityX U x ∧ ρ x < 1 ∧ ρ (x + Real.pi / 2) < 1) := by
-  have h := hU.curvature_density_floor_control
-    (m := 0) (c := c) (by simpa only [zero_mul, zero_add] using haffine)
-  simpa only [regularCornerDomain_zero] using h
-
 end AmbidextrousSofa

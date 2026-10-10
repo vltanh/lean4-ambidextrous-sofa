@@ -124,12 +124,6 @@ theorem CapHausdorffTendsto.forwardAngularSecant_tendsto
 def backwardAngularSecant (U : Set Plane) (t δ : ℝ) : ℝ :=
   (MovingSofaOptimality.supp U t * Real.cos δ - MovingSofaOptimality.supp U (t - δ)) / Real.sin δ
 
-theorem backwardAngularSecant_eq_forward (U : Set Plane) (t δ : ℝ) :
-    backwardAngularSecant U t δ = forwardAngularSecant U t (-δ) := by
-  simp only [backwardAngularSecant, forwardAngularSecant, Real.cos_neg, Real.sin_neg,
-    ← sub_eq_add_neg, div_neg]
-  ring
-
 theorem IsDownwardCap.backwardAngularSecant_bounds {U : Set Plane} (hU : IsDownwardCap U)
     {t δ : ℝ} (hsin : 0 < Real.sin δ) (hcos : 0 ≤ Real.cos δ) :
     MovingSofaOptimality.dot (MovingSofaOptimality.vplus U (t - δ)) (MovingSofaOptimality.vvec t) ≤ backwardAngularSecant U t δ ∧

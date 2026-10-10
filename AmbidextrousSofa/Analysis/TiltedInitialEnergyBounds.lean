@@ -128,18 +128,6 @@ theorem initialFloorTest_mono_B {d B U h : ℝ}
   unfold initialFloorTest
   nlinarith
 
-theorem initialFloorTest_le_max_endpoints {d B L U h : ℝ}
-    (hLB : L ≤ B) (hBU : B ≤ U) :
-    initialFloorTest d B h ≤ max (initialFloorTest d L h) (initialFloorTest d U h) := by
-  by_cases hsum : 0 ≤ B + U + 1 - h
-  · exact (initialFloorTest_mono_B hBU hsum).trans (le_max_right _ _)
-  · have hprod := mul_nonpos_of_nonneg_of_nonpos (sub_nonneg.mpr hLB)
-      (show B + L + 1 - h ≤ 0 by linarith)
-    have hleft : initialFloorTest d B h ≤ initialFloorTest d L h := by
-      unfold initialFloorTest
-      nlinarith
-    exact hleft.trans (le_max_left _ _)
-
 theorem tiltedBoxHeight_lt_of_width_bound {C D H : ℝ}
     (hC0 : 0 ≤ C) (hCD : C ≤ D) (hH : 0 ≤ 1 - H)
     (hsq : D ^ 2 + (1 - H) ^ 2 < 1) : tiltedBoxHeight C < H := by
@@ -156,10 +144,6 @@ theorem tiltedBoxHeight_lt_of_width_bound {C D H : ℝ}
     (add_nonneg hH hroot0)
   nlinarith
 
-theorem tiltedBoxHeight_lt_thirty_one_hundredths {C : ℝ}
-    (hC0 : 0 ≤ C) (hC : C ≤ 18 / 25) : tiltedBoxHeight C < 31 / 100 :=
-  tiltedBoxHeight_lt_of_width_bound hC0 hC (by norm_num) (by norm_num)
-
 theorem tiltedBoxHeight_lt_thirty_three_hundredths {C : ℝ}
     (hC0 : 0 ≤ C) (hC : C ≤ 37 / 50) : tiltedBoxHeight C < 33 / 100 :=
   tiltedBoxHeight_lt_of_width_bound hC0 hC (by norm_num) (by norm_num)
@@ -167,36 +151,6 @@ theorem tiltedBoxHeight_lt_thirty_three_hundredths {C : ℝ}
 theorem tiltedBoxHeight_lt_eight_twenty_fifths {C : ℝ}
     (hC0 : 0 ≤ C) (hC : C ≤ 73 / 100) : tiltedBoxHeight C < 8 / 25 :=
   tiltedBoxHeight_lt_of_width_bound hC0 hC (by norm_num) (by norm_num)
-
-/-- IE5, with the two affine endpoint bounds left visible. -/
-theorem initialFloorEnergyConditions_small_width
-    {C B h : ℝ} (hC0 : 2 / 3 ≤ C) (hC : C ≤ 18 / 25)
-    (hh0 : 3 / 100 ≤ h) (hh1 : h ≤ 17 / 50)
-    (hBlo : -231 / 400 + 5 / 4 * h ≤ B)
-    (hBhi : B ≤ -107 / 400 + 5 / 4 * h) :
-    InitialFloorEnergyConditions (3 * C) B h := by
-  have hB0 : -27 / 50 ≤ B := by linarith
-  have hB1 : B ≤ 27 / 50 := by linarith
-  have hdsq : (3 * C) ^ 2 ≤ (54 / 25) ^ 2 := by
-    nlinarith [mul_nonneg (show 0 ≤ 54 / 25 - 3 * C by linarith)
-      (show 0 ≤ 54 / 25 + 3 * C by linarith)]
-  have hBsq : B ^ 2 ≤ (27 / 50) ^ 2 := by
-    nlinarith [mul_nonneg (show 0 ≤ B + 27 / 50 by linarith)
-      (show 0 ≤ 27 / 50 - B by linarith)]
-  have hleft : initialFloorTest (54 / 25) (-231 / 400 + 5 / 4 * h) h ≤ 4 :=
-    initialFloorTest_affine_le_of_endpoint_bounds
-      (l := 3 / 100) (r := 17 / 50) (sl := 243 / 1000) (sr := 3 / 4)
-      (by norm_num) (by norm_num) (by norm_num) (by norm_num) ⟨hh0, hh1⟩
-      (by norm_num) (by norm_num) (by norm_num) (by norm_num)
-  have hright : initialFloorTest (54 / 25) (-107 / 400 + 5 / 4 * h) h ≤ 4 :=
-    initialFloorTest_affine_le_of_endpoint_bounds
-      (l := 3 / 100) (r := 17 / 50) (sl := 243 / 1000) (sr := 3 / 4)
-      (by norm_num) (by norm_num) (by norm_num) (by norm_num) ⟨hh0, hh1⟩
-      (by norm_num) (by norm_num) (by norm_num) (by norm_num)
-  refine ⟨by nlinarith, ?_⟩
-  exact (initialFloorTest_mono_d (by linarith) (by linarith)
-    (by linarith) (show 3 * C ≤ 54 / 25 by linarith)).trans
-      ((initialFloorTest_le_max_endpoints hBlo hBhi).trans (max_le hleft hright))
 
 /-- IE8, including its narrow exact radius margin. -/
 theorem initialFloorEnergyConditions_high_tilt
@@ -247,16 +201,6 @@ theorem initialFloorEnergyConditions_middle_tilt_low_width
   exact (initialFloorTest_mono_B hBhi (by linarith)).trans
     ((initialFloorTest_mono_d (by linarith) (by linarith)
       (by linarith) (show 3 * C ≤ 219 / 100 by linarith)).trans htop)
-
-theorem initialFloorEnergyConditions_small_width_of_endpoint_box
-    {C h z w : ℝ} (hC0 : 2 / 3 ≤ C) (hC : C ≤ 18 / 25)
-    (hh0 : 3 / 100 ≤ h) (hh1 : h ≤ 17 / 50)
-    (hz0 : 0 ≤ z) (hz : z ≤ tiltedBoxHeight C)
-    (hw0 : 0 ≤ w) (hw : w ≤ tiltedBoxHeight C) :
-    InitialFloorEnergyConditions (3 * C) (tiltedEndpointMomentum h z w) h := by
-  have hH := tiltedBoxHeight_lt_thirty_one_hundredths (by linarith) hC
-  apply initialFloorEnergyConditions_small_width hC0 hC hh0 hh1 <;>
-    unfold tiltedEndpointMomentum <;> linarith
 
 theorem initialFloorEnergyConditions_high_tilt_of_endpoint_box
     {C h z w : ℝ} (hC0 : 2 / 3 ≤ C) (hC : C ≤ 37 / 50)

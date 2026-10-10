@@ -206,7 +206,6 @@ import all AmbidextrousSofa.Analysis.LeftCompanionCap
 import all AmbidextrousSofa.Analysis.LeftCompanionCurvature
 import all AmbidextrousSofa.Analysis.LeftCompanionDensity
 import all AmbidextrousSofa.Analysis.LevelSetDerivative
-import all AmbidextrousSofa.Analysis.LocalOccupationDensity
 import all AmbidextrousSofa.Analysis.LocalSourceDensity
 import all AmbidextrousSofa.Analysis.LowHeightAlgebra
 import all AmbidextrousSofa.Analysis.LowHeightGeometry
@@ -272,7 +271,6 @@ import all AmbidextrousSofa.Analysis.PartialSharpSourceDensity
 import all AmbidextrousSofa.Analysis.PartialSourceBalance
 import all AmbidextrousSofa.Analysis.PartialSourceCounting
 import all AmbidextrousSofa.Analysis.PartialSourceMass
-import all AmbidextrousSofa.Analysis.PartialSourceOccupation
 import all AmbidextrousSofa.Analysis.PartialSourceVelocity
 import all AmbidextrousSofa.Analysis.PartialTopInsertion
 import all AmbidextrousSofa.Analysis.PartialTriangleScalar
@@ -352,7 +350,6 @@ import all AmbidextrousSofa.Analysis.TerminalFacetAtom
 import all AmbidextrousSofa.Analysis.TerminalHistory
 import all AmbidextrousSofa.Analysis.TerminalImpulseEnergy
 import all AmbidextrousSofa.Analysis.TerminalLeftComparison
-import all AmbidextrousSofa.Analysis.TerminalProperComparison
 import all AmbidextrousSofa.Analysis.TerminalReflectedParameters
 import all AmbidextrousSofa.Analysis.TerminalScalar
 import all AmbidextrousSofa.Analysis.TerminalStrictComparison
@@ -574,7 +571,7 @@ meta def paperResults : List (String × Name) :=
    ("The reduction to two caps", ``AmbidextrousSofa.IsAmbidextrous.original_domain_score_reduction),
    ("The area of Romik's sofa", ``AmbidextrousSofa.Reference.volumeReal_referenceSofa),
    ("M > sqrt 2", ``AmbidextrousSofa.sqrt_two_lt_M),
-   ("The ordinary bound 2.2199", ``AmbidextrousSofa.IsAmbidextrous.volumeReal_le_ordinaryBound)]
+   ("The ordinary bound 2.2199", ``AmbidextrousSofa.volumeReal_le_ordinaryBound_of_lowerPassage)]
 
 /-- The theorems that Palomar's comparator checks (`theorem_names` of `comparator.json`). -/
 meta def solutionResults : List Name :=

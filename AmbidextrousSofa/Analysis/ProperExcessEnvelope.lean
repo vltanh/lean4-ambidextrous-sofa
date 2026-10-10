@@ -187,26 +187,6 @@ theorem IsJointCapMaximizer.properReflected_ae_near_full_excess_bound_of_tail_re
   simp only [zero_sub, max_eq_right (by norm_num : (-1 : ℝ) ≤ 0)]
   exact mul_nonneg (by norm_num) (le_max_right _ _)
 
-theorem IsJointCapMaximizer.properReflected_ae_near_full_excess_bound
-    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (hsharp : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) (hκ : terminalSlope α ≤ 1 / 8) :
-    ∀ᵐ r ∂volume.restrict (Ioo (Real.pi / 2 - α) (Real.pi / 2)),
-      max (properReflectedFirstDensity m ρ r - 1) 0 ≤
-        (19 / 25 : ℝ) * max (73 / 100 - r) 0 := by
-  exact IsJointCapMaximizer.properReflected_ae_near_full_excess_bound_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
-    hρ hρ0 hρK hsharp heq hκ
-
 theorem IsJointCapMaximizer.properReflected_ae_excess_bound_of_tail_regime
     {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
     (hregime : ProperTailRegime U α m)
@@ -262,25 +242,5 @@ theorem IsJointCapMaximizer.properReflected_ae_excess_bound_of_tail_regime
   rw [hr.1]
   simp only [zero_sub, max_eq_right (by norm_num : (-1 : ℝ) ≤ 0)]
   exact mul_nonneg (by norm_num) (le_max_right _ _)
-
-theorem IsJointCapMaximizer.properReflected_ae_excess_bound
-    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (hsharp : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
-    ∀ᵐ r ∂volume.restrict (Ioo (Real.pi / 2 - α) (Real.pi / 2)),
-      max (properReflectedFirstDensity m ρ r - 1) 0 ≤
-        (19 / 25 : ℝ) * max (91 / 100 - r) 0 := by
-  exact IsJointCapMaximizer.properReflected_ae_excess_bound_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
-    hρ hρ0 hρK hsharp heq
 
 end AmbidextrousSofa

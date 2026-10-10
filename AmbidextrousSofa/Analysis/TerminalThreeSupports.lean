@@ -131,20 +131,6 @@ theorem IsDownwardCap.capRoof_le_terminal_support {U : Set Plane}
   change capRoof U x ≤ support U (unitNormal α) / Real.sin α - terminalSlope α * x at h
   rwa [terminal_support_line_eq U hs.ne' hc.ne' x] at h
 
-/-- The actual roof lies below all three outer support lines and the
-unit-strip ceiling simultaneously. -/
-theorem IsDownwardCap.capRoof_le_three_supports {U : Set Plane}
-    (hU : IsDownwardCap U) {α x : ℝ}
-    (hα0 : 0 < α) (hαL : α < Real.pi / 2)
-    (hx : x ∈ horizontalProjection U) :
-    capRoof U x ≤ min (min (min 1 (1 + (diagonalRight U - 1) - x))
-      (1 + (diagonalLeft U - 1) + x))
-      (1 - terminalSlope α * (x - terminalSupportPosition U α)) := by
-  refine le_min (le_min (le_min (capRoof_le_one hU.isCompact hU.inStrip x) ?_) ?_)
-    (hU.capRoof_le_terminal_support hα0 hαL hx)
-  · linarith [hU.capRoof_le_diagonalRight hx]
-  · linarith [hU.capRoof_le_diagonalLeft hx]
-
 /-- The visited diagonal corner and the entire terminal first wall are
 both actual lower bounds for the partial barrier. -/
 theorem IsDownwardCap.three_supports_le_partialBarrier {U : Set Plane}
@@ -287,28 +273,6 @@ theorem IsJointCapMaximizer.top_endpoint_of_affine {U : Set Plane} {α : ℝ}
       constructor <;> linarith
     have hp := capRoof_mem hU.isCap.isCompact hx
     rwa [hU.middle_left_eq_one_of_affine_nonpos hheight (le_of_not_ge hm) haffine] at hp
-
-theorem IsJointCapMaximizer.three_support_top_alternatives_centered
-    {U : Set Plane} {C α : ℝ} (hU : IsJointCapMaximizer U α)
-    (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (hleft : horizontalLeft U = -2 * C) (hright : horizontalRight U = 2 * C)
-    {m c : ℝ}
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    (C ≤ diagonalLeft U - 1 ∧ -C ≤ diagonalRight U - 1 ∧
-      -C ≤ terminalSupportPosition U α) ∨
-    (-C ≤ diagonalLeft U - 1 ∧ C ≤ diagonalRight U - 1 ∧
-      C ≤ terminalSupportPosition U α) := by
-  have hw : capWidth U = 4 * C := by unfold capWidth; rw [hleft, hright]; ring
-  have hmidleft : horizontalLeft U + capWidth U / 4 = -C := by rw [hleft, hw]; ring
-  have hmidright : horizontalRight U - capWidth U / 4 = C := by rw [hright, hw]; ring
-  rcases hU.top_endpoint_of_affine hheight haffine with ht | ht
-  · left
-    rw [hmidleft] at ht
-    simpa only [neg_neg] using hU.isCap.three_support_lower_of_top hU.angle_pos hαL ht
-  · right
-    rw [hmidright] at ht
-    exact hU.isCap.three_support_lower_of_top hU.angle_pos hαL ht
 
 theorem IsDownwardCap.capRoof_le_left_support_reward {U : Set Plane}
     (hU : IsDownwardCap U) {x : ℝ} (hx : x ∈ horizontalProjection U) :

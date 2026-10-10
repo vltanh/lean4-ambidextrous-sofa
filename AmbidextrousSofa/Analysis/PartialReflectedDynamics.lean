@@ -60,24 +60,4 @@ theorem IsJointCapMaximizer.properReflected_cornerArcDynamics_of_tail_regime
     exact Or.inl (harms t (Ioo_subset_Icc_self ht)).1
   · exact hsource.mono (fun _ ht => ht.2.2.2.2.1)
 
-theorem IsJointCapMaximizer.properReflected_cornerArcDynamics
-    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (hκ : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
-    CornerArcDynamics (properReflectedP U m ρ) (properReflectedQ U m ρ)
-      (properReflectedFirstDensity m ρ) (properReflectedSecondDensity ρ)
-      (Real.pi / 2 - α) (properReflectedActiveEnd m) := by
-  exact IsJointCapMaximizer.properReflected_cornerArcDynamics_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
-    hρ hρ0 hρK hκ heq
-
 end AmbidextrousSofa

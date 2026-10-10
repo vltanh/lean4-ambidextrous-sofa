@@ -65,12 +65,6 @@ def innerSourceSet (U : Set Plane) (α : TerminalAngle)
     (wallSlope (normal α grid))
     (barrierIntercept (normal α grid) (fun i => support U (normal α grid i))) (some j)
 
-theorem measurableSet_innerSourceSet (U : Set Plane) (α : TerminalAngle)
-    (hαL : (α : ℝ) < Real.pi / 2) (grid : Finset QuarterAngle)
-    (j : SourceIndex α grid) : MeasurableSet (innerSourceSet U α hαL grid j) := by
-  classical
-  exact WallExpr.measurableSet_sourceSet _ _ _ _
-
 theorem innerSource_height (U : Set Plane) (α : TerminalAngle)
     (hαL : (α : ℝ) < Real.pi / 2) (grid : Finset QuarterAngle)
     (j : SourceIndex α grid) {x : ℝ} (hx : x ∈ innerSourceSet U α hαL grid j) :

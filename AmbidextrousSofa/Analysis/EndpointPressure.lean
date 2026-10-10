@@ -193,14 +193,6 @@ selection parameter. -/
 def supportPenaltyLipschitz [Fintype κ] (B : ℝ) (normal : κ → Plane) (weight : κ → ℝ) : ℝ :=
   4 * B * ∑ i, weight i * (|(normal i).1| + |(normal i).2|)
 
-theorem supportPenaltyLipschitz_nonneg [Fintype κ] {B : ℝ} (hB : 0 ≤ B)
-    (normal : κ → Plane) (weight : κ → ℝ) (hweight : ∀ i, 0 ≤ weight i) :
-    0 ≤ supportPenaltyLipschitz B normal weight := by
-  unfold supportPenaltyLipschitz
-  exact mul_nonneg (mul_nonneg (by norm_num) hB)
-    (Finset.sum_nonneg (fun i _ => mul_nonneg (hweight i)
-      (add_nonneg (abs_nonneg _) (abs_nonneg _))))
-
 /-- The penalty is estimated at the new actual supports, including any
 support whose displayed halfplane became redundant. -/
 theorem abs_sampledPenalty_sub_le_of_support_control [Fintype κ]
@@ -391,102 +383,5 @@ theorem IsDownwardCap.continuous_partialBarrier_pi_div_two {U : Set Plane}
     (show Continuous (fun x : ℝ => (hU.toCompactCap, x)) from
       continuous_const.prodMk continuous_id)
   exact hcomp
-
-theorem rightTrim_full_barrier_comparison {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) :
-    intervalSpatialScore (extendedCapRoof U) (partialBarrier U (Real.pi / 2))
-      (horizontalLeft U) (horizontalRight U - ε) ≤ capScore (rightTrim U ε) (Real.pi / 2) := by
-  have hT := hU.rightTrim hε0 hεW
-  rw [hT.capScore_eq_intervalSpatialScore,
-    horizontalLeft_rightTrim hU hε0 hεW, horizontalRight_rightTrim hU hε0 hεW]
-  refine intervalSpatialScore_le_of_roof_eq_of_niche_le
-    (by unfold capWidth at hεW; linarith) ?_
-    hU.continuous_partialBarrier_pi_div_two hT.continuous_partialBarrier_pi_div_two ?_
-  · intro x hx
-    rw [capRoof_rightTrim hU hε0 hεW hx]
-    exact hU.extendedCapRoof_eq ⟨hx.1, hx.2.trans (sub_le_self _ hε0)⟩
-  · exact partialBarrier_rightTrim_le hU hε0 hεW (by positivity) le_rfl
-
-theorem leftTrim_full_barrier_comparison {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) :
-    intervalSpatialScore (extendedCapRoof U) (partialBarrier U (Real.pi / 2))
-      (horizontalLeft U + ε) (horizontalRight U) ≤ capScore (leftTrim U ε) (Real.pi / 2) := by
-  have hT := hU.leftTrim hε0 hεW
-  rw [hT.capScore_eq_intervalSpatialScore,
-    horizontalLeft_leftTrim hU hε0 hεW, horizontalRight_leftTrim hU hε0 hεW]
-  refine intervalSpatialScore_le_of_roof_eq_of_niche_le
-    (by unfold capWidth at hεW; linarith) ?_
-    hU.continuous_partialBarrier_pi_div_two hT.continuous_partialBarrier_pi_div_two ?_
-  · intro x hx
-    rw [capRoof_leftTrim hU hε0 hεW hx]
-    exact hU.extendedCapRoof_eq ⟨(le_add_of_nonneg_right hε0).trans hx.1, hx.2⟩
-  · exact partialBarrier_leftTrim_le hU hε0 hεW (by positivity) le_rfl
-
-/-- The full unpenalized inward inequality follows directly at an actual
-maximum; no passage through finite endpoint face lengths is needed for
-this direction. -/
-theorem IsDownwardCap.rightEndpointPressure_le_of_max {U : Set Plane}
-    (hU : IsDownwardCap U) (hW : 0 < capWidth U)
-    (hmax : ∀ V : Set Plane, IsDownwardCap V → V ⊆ U →
-      capScore V (Real.pi / 2) ≤ capScore U (Real.pi / 2)) :
-    rightEndpointPressure (capRoof U) (partialBarrier U (Real.pi / 2))
-      (horizontalLeft U) (horizontalRight U) ≤ capRoof U (horizontalRight U) := by
-  have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
-  have hroof : EqOn (extendedCapRoof U) (capRoof U)
-      (Icc (horizontalLeft U) (horizontalRight U)) := fun _ hx => hU.extendedCapRoof_eq hx
-  have hscore : intervalSpatialScore (extendedCapRoof U) (partialBarrier U (Real.pi / 2))
-      (horizontalLeft U) (horizontalRight U) = capScore U (Real.pi / 2) :=
-    (FinitePolygon.intervalSpatialScore_congr_roof hlr hroof).trans
-      (hU.capScore_eq_intervalSpatialScore (Real.pi / 2)).symm
-  have hcomparison : ∀ᶠ ε in 𝓝[>] (0 : ℝ),
-      intervalSpatialScore (extendedCapRoof U) (partialBarrier U (Real.pi / 2))
-        (horizontalLeft U) (horizontalRight U - ε) ≤
-      intervalSpatialScore (extendedCapRoof U) (partialBarrier U (Real.pi / 2))
-        (horizontalLeft U) (horizontalRight U) + ε * 0 := by
-    have hsmall : Iio (capWidth U) ∈ 𝓝[>] (0 : ℝ) :=
-      mem_nhdsWithin_of_mem_nhds (Iio_mem_nhds hW)
-    filter_upwards [hsmall, self_mem_nhdsWithin] with ε hεW hεpos
-    have hε0 : 0 ≤ ε := (show 0 < ε from hεpos).le
-    rw [hscore, mul_zero, add_zero]
-    exact (rightTrim_full_barrier_comparison hU hε0 hεW.le).trans
-      (hmax _ (hU.rightTrim hε0 hεW.le) (rightTrim_subset U ε))
-  have hpressure := rightEndpointPressure_le_of_inward_comparison
-    hU.continuous_extendedCapRoof hU.continuous_partialBarrier_pi_div_two
-    (horizontalLeft U) (horizontalRight U) 0 hcomparison
-  rw [rightEndpointPressure_congr_roof hlr hroof,
-    hU.extendedCapRoof_eq ⟨hlr, le_rfl⟩, add_zero] at hpressure
-  exact hpressure
-
-theorem IsDownwardCap.leftEndpointPressure_le_of_max {U : Set Plane}
-    (hU : IsDownwardCap U) (hW : 0 < capWidth U)
-    (hmax : ∀ V : Set Plane, IsDownwardCap V → V ⊆ U →
-      capScore V (Real.pi / 2) ≤ capScore U (Real.pi / 2)) :
-    leftEndpointPressure (capRoof U) (partialBarrier U (Real.pi / 2))
-      (horizontalLeft U) (horizontalRight U) ≤ capRoof U (horizontalLeft U) := by
-  have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
-  have hroof : EqOn (extendedCapRoof U) (capRoof U)
-      (Icc (horizontalLeft U) (horizontalRight U)) := fun _ hx => hU.extendedCapRoof_eq hx
-  have hscore : intervalSpatialScore (extendedCapRoof U) (partialBarrier U (Real.pi / 2))
-      (horizontalLeft U) (horizontalRight U) = capScore U (Real.pi / 2) :=
-    (FinitePolygon.intervalSpatialScore_congr_roof hlr hroof).trans
-      (hU.capScore_eq_intervalSpatialScore (Real.pi / 2)).symm
-  have hcomparison : ∀ᶠ ε in 𝓝[>] (0 : ℝ),
-      intervalSpatialScore (extendedCapRoof U) (partialBarrier U (Real.pi / 2))
-        (horizontalLeft U + ε) (horizontalRight U) ≤
-      intervalSpatialScore (extendedCapRoof U) (partialBarrier U (Real.pi / 2))
-        (horizontalLeft U) (horizontalRight U) + ε * 0 := by
-    have hsmall : Iio (capWidth U) ∈ 𝓝[>] (0 : ℝ) :=
-      mem_nhdsWithin_of_mem_nhds (Iio_mem_nhds hW)
-    filter_upwards [hsmall, self_mem_nhdsWithin] with ε hεW hεpos
-    have hε0 : 0 ≤ ε := (show 0 < ε from hεpos).le
-    rw [hscore, mul_zero, add_zero]
-    exact (leftTrim_full_barrier_comparison hU hε0 hεW.le).trans
-      (hmax _ (hU.leftTrim hε0 hεW.le) (leftTrim_subset U ε))
-  have hpressure := leftEndpointPressure_le_of_inward_comparison
-    hU.continuous_extendedCapRoof hU.continuous_partialBarrier_pi_div_two
-    (horizontalLeft U) (horizontalRight U) 0 hcomparison
-  rw [leftEndpointPressure_congr_roof hlr hroof,
-    hU.extendedCapRoof_eq ⟨le_rfl, hlr⟩, add_zero] at hpressure
-  exact hpressure
 
 end AmbidextrousSofa

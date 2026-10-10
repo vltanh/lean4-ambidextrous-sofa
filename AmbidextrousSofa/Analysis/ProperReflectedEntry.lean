@@ -121,19 +121,6 @@ theorem IsJointCapMaximizer.properReflected_free_second_pos_of_tail_regime
   exact Analysis.terminal_freeCircle_second_pos hU.angle_pos hproper hparams.1 hparams.2.1
     (by linarith only [htrig.1]) (by linarith only [htrig.2])
 
-theorem IsJointCapMaximizer.properReflected_free_second_pos
-    {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    0 < Analysis.initialFloorCircleQ (terminalReflectedSpan U α)
-      (terminalReflectedHeight U α - 1) (Real.pi / 2 - α) := by
-  exact IsJointCapMaximizer.properReflected_free_second_pos_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
-
 theorem IsJointCapMaximizer.properReflected_entry_quadratic_of_tail_regime
     {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
     (hregime : ProperTailRegime U α m)
@@ -163,27 +150,6 @@ theorem IsJointCapMaximizer.properReflected_entry_quadratic_of_tail_regime
     (by rw [← htrace.1]; exact hpos)
   rw [htrace.1, htrace.2]
   exact ⟨h.1, h.2.trans (le_add_of_nonneg_right ENNReal.toReal_nonneg)⟩
-
-theorem IsJointCapMaximizer.properReflected_entry_quadratic
-    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t)))
-    (hpos : 0 < properReflectedP U m ρ (Real.pi / 2 - α)) :
-    properReflectedP U m ρ (Real.pi / 2 - α) ≤ terminalReflectedHeight U α -
-      terminalReflectedSpan U α * (Real.pi / 2 - α) + (Real.pi / 2 - α) ^ 2 / 2 ∧
-      terminalReflectedSpan U α - 1 - (Real.pi / 2 - α) ≤
-        properReflectedQ U m ρ (Real.pi / 2 - α) := by
-  exact IsJointCapMaximizer.properReflected_entry_quadratic_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
-    hρ hρ0 hρK heq hpos
 
 theorem IsJointCapMaximizer.properReflected_initial_energy_lt_payment_of_tail_regime
     {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
@@ -217,25 +183,6 @@ theorem IsJointCapMaximizer.properReflected_initial_energy_lt_payment_of_tail_re
   rw [he] at hclip
   linarith only [hclip, hpay]
 
-theorem IsJointCapMaximizer.properReflected_initial_energy_lt_payment
-    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
-    clippedCornerEnergy (properReflectedP U m ρ) (properReflectedQ U m ρ)
-      (Real.pi / 2 - α) < terminalReflectedSpan U α ^ 2 -
-        terminalReflectedHeight U α * (1 - terminalReflectedHeight U α) + 1 / 4 + 1 / 30 := by
-  exact IsJointCapMaximizer.properReflected_initial_energy_lt_payment_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
-    hρ hρ0 hρK heq
-
 theorem IsJointCapMaximizer.properReflected_initial_energy_lt_near_full_payment_of_tail_regime
     {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
     (hregime : ProperTailRegime U α m)
@@ -265,24 +212,5 @@ theorem IsJointCapMaximizer.properReflected_initial_energy_lt_near_full_payment_
     (properReflectedP U m ρ) (properReflectedQ U m ρ) (Real.pi / 2 - α)
   rw [he] at hclip
   linarith only [hclip, hpay]
-
-theorem IsJointCapMaximizer.properReflected_initial_energy_lt_near_full_payment
-    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) (hκ : terminalSlope α ≤ 1 / 8) :
-    clippedCornerEnergy (properReflectedP U m ρ) (properReflectedQ U m ρ)
-      (Real.pi / 2 - α) < terminalReflectedSpan U α ^ 2 -
-        terminalReflectedHeight U α * (1 - terminalReflectedHeight U α) + 1 / 4 + 1 / 480 := by
-  exact IsJointCapMaximizer.properReflected_initial_energy_lt_near_full_payment_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
-    hρ hρ0 hρK heq hκ
 
 end AmbidextrousSofa

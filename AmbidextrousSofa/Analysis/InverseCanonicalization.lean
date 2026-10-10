@@ -39,27 +39,6 @@ theorem IsDownwardCap.verticalExtrusion_zero {U : Set Plane} (hU : IsDownwardCap
     simpa only [hqx, Prod.mk.eta] using h
   · exact hU.subset_verticalExtrusion le_rfl
 
-/-- The inverse barrier formula keeps the clipping at zero. It is valid
-for the whole visited angular interval, including a proper terminal range. -/
-theorem IsDownwardCap.sweptNiche_before_verticalExtrusion {U : Set Plane}
-    (hU : IsDownwardCap U) {ε α : ℝ} (hε : 0 ≤ ε)
-    (hα0 : 0 < α) (hα : α ≤ Real.pi / 2) (x : ℝ) :
-    sweptNiche U α x = max (sweptNiche (verticalExtrusion U ε) α x - ε) 0 := by
-  apply le_antisymm
-  · apply sweptNiche_le_of_forall hα0 (le_max_right _ _)
-    intro θ hθ
-    have hs : 0 < Real.sin θ := Real.sin_pos_of_pos_of_lt_pi hθ.1
-      (by linarith [hθ.2, hα, Real.pi_pos])
-    have hc : 0 < Real.cos θ := Real.cos_pos_of_mem_Ioo
-      ⟨by linarith [hθ.1, Real.pi_pos], hθ.2.trans_le hα⟩
-    have hwall := cornerWall_le_sweptNiche
-      (sweptWallValues_bddAbove (hU.isCompact_verticalExtrusion hε) hα x) hθ
-    rw [hU.cornerWall_verticalExtrusion hε hs hc] at hwall
-    exact (by linarith : cornerWall U θ x ≤
-      sweptNiche (verticalExtrusion U ε) α x - ε).trans (le_max_left _ _)
-  · apply max_le _ (sweptNiche_nonneg U α x)
-    linarith [hU.sweptNiche_verticalExtrusion_le hε hα0 hα x]
-
 /-- The charged exterior roof gains exactly the extrusion height. If the
 final full barrier has not gained that much at even one middle point,
 continuity makes the total score increase strict. The point may be either

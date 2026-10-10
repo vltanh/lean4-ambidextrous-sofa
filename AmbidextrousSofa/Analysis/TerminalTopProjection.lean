@@ -287,14 +287,4 @@ theorem IsJointCapMaximizer.topOverhangLeft_add_twice_right_le_terminalInset_of_
     topOverhangLeft U + 2 * topOverhangRight U ≤ terminalTailInset U α :=
   (hU.terminal_top_projection_bound_of_tail_regime hregime hproper hheight haffine).1
 
-theorem IsJointCapMaximizer.topOverhangLeft_add_twice_right_le_terminalInset
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    topOverhangLeft U + 2 * topOverhangRight U ≤ terminalTailInset U α := by
-  exact IsJointCapMaximizer.topOverhangLeft_add_twice_right_le_terminalInset_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine
-
 end AmbidextrousSofa

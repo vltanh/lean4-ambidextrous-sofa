@@ -258,21 +258,6 @@ theorem sourceDensity_single [DecidableEq ι] (e : WallExpr ι)
   · simp [sourceDensity, sourceSet, hx]
   · simp [sourceDensity, sourceSet, hx]
 
-/-- A one-wall height variation differentiates to the actual exposed
-horizontal length times its height velocity. -/
-theorem hasDerivAt_integral_single_wall [Fintype ι] [DecidableEq ι]
-    (e : WallExpr ι) (a b : ι → ℝ) (ha : Function.Injective a)
-    (j : ι) (k : ℝ) {l r : ℝ} (hlr : l ≤ r) :
-    HasDerivAt (fun ε => ∫ x in l..r,
-      e.affineEnvelope a b (fun i => if i = j then k else 0) ε x)
-      ((volume.real (Ioc l r ∩ e.sourceSet a b j)) * k) 0 := by
-  have h := e.hasDerivAt_integral_affineEnvelope a b
-    (fun i => if i = j then k else 0) ha l r
-  rw [e.sourceDensity_single a b j k, intervalIntegral.integral_of_le hlr,
-    setIntegral_indicator (e.measurableSet_sourceSet a b j), setIntegral_const,
-    smul_eq_mul] at h
-  exact h
-
 end WallExpr
 
 end AmbidextrousSofa

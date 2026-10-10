@@ -27,24 +27,10 @@ def horizontalLeakageBoxSine (C : ℝ) : ℝ := (1 - C ^ 2) / (1 + C ^ 2)
 theorem horizontalLeakageA0_nonneg {h : ℝ} (hh : 0 ≤ h) :
     0 ≤ horizontalLeakageA0 h := by unfold horizontalLeakageA0; positivity
 
-theorem horizontalLeakageA1_nonneg {h : ℝ} (hh : 0 ≤ h) :
-    0 ≤ horizontalLeakageA1 h := by unfold horizontalLeakageA1; positivity
-
 theorem horizontalLeakageA0_mono {h k : ℝ} (hh : 0 ≤ h) (hhk : h ≤ k) :
     horizontalLeakageA0 h ≤ horizontalLeakageA0 k := by
   unfold horizontalLeakageA0
   gcongr
-
-theorem horizontalLeakageA1_mono {h k : ℝ} (hh : 0 ≤ h) (hhk : h ≤ k) :
-    horizontalLeakageA1 h ≤ horizontalLeakageA1 k := by
-  unfold horizontalLeakageA1
-  gcongr
-
-theorem horizontalLeakageBoxSine_pos {C : ℝ} (hC0 : 0 ≤ C) (hC1 : C < 1) :
-    0 < horizontalLeakageBoxSine C := by
-  unfold horizontalLeakageBoxSine
-  apply div_pos _ (by positivity)
-  nlinarith [mul_pos (sub_pos.mpr hC1) (by linarith : 0 < 1 + C)]
 
 theorem horizontalLeakageBoxSine_antitone {a b : ℝ}
     (ha : 0 ≤ a) (hab : a ≤ b) :
@@ -307,39 +293,6 @@ theorem HorizontalLeakageRow.box_height_le (R : HorizontalLeakageRow) {C : ℝ}
   have hsq := (sq_le_sq₀ hC0 hb0).2 hCb
   have hroot := Real.le_sqrt_of_sq_le
     (show (1 - R.H) ^ 2 ≤ 1 - C ^ 2 from R.box.trans (by linarith))
-  linarith
-
-theorem HorizontalLeakageRow.crossing_time_le (R : HorizontalLeakageRow) {C e : ℝ}
-    (haC : R.a ≤ C) (he : e ≤ 1 / 2 + 3 * R.H / 4) :
-    3 * C - Real.sqrt (9 * C ^ 2 - 2 * e) ≤ R.T := by
-  have hmul := mul_nonneg (sub_nonneg.mpr haC) R.T_nonneg
-  have hsq : (3 * C - R.T) ^ 2 ≤ 9 * C ^ 2 - 2 * e := by
-    nlinarith [R.crossing]
-  have hroot := Real.le_sqrt_of_sq_le hsq
-  linarith
-
-theorem HorizontalLeakageRow.excess_le (R : HorizontalLeakageRow) {C e : ℝ}
-    (hC0 : 0 ≤ C) (hCb : C ≤ R.b)
-    (he0 : 1 / 2 - R.H / 4 ≤ e) (he1 : e ≤ 1 / 2 + 3 * R.H / 4) :
-    max (Real.sqrt (9 * C ^ 2 - e * (1 - e)) - 2) 0 ≤
-      (R.h ^ 2 + 2 * R.h) / 4 := by
-  have hsqC := (sq_le_sq₀ hC0 (R.a_pos.le.trans R.a_le_b)).2 hCb
-  have he0' : 0 ≤ e - 1 / 2 + 3 * R.H / 4 := by linarith [R.H_nonneg]
-  have he1' : 0 ≤ 3 * R.H / 4 - (e - 1 / 2) := by linarith
-  have hsqe := mul_nonneg he0' he1'
-  have hrad : 9 * C ^ 2 - e * (1 - e) ≤
-      (2 + (R.h ^ 2 + 2 * R.h) / 4) ^ 2 := by nlinarith [R.excess]
-  have hh0 := R.h_nonneg
-  have hε : 0 ≤ (R.h ^ 2 + 2 * R.h) / 4 := by positivity
-  have hroot := (Real.sqrt_le_left (by linarith :
-    0 ≤ 2 + (R.h ^ 2 + 2 * R.h) / 4)).2 hrad
-  exact max_le (by linarith) hε
-
-theorem HorizontalLeakageRow.envelope_length_le (R : HorizontalLeakageRow) {ε : ℝ}
-    (hε : ε ≤ (R.h ^ 2 + 2 * R.h) / 4) :
-    Real.sqrt (1 + 4 * ε) - 1 ≤ R.h := by
-  have hroot := (Real.sqrt_le_left (by linarith [R.h_nonneg] : 0 ≤ R.h + 1)).2
-    (show 1 + 4 * ε ≤ (R.h + 1) ^ 2 by nlinarith)
   linarith
 
 theorem HorizontalLeakageRow.box_angle_le (R : HorizontalLeakageRow) {C : ℝ}

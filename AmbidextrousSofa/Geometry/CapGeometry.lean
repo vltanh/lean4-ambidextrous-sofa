@@ -259,12 +259,6 @@ theorem capRoof_upperCap {K : Set Plane} (hK : IsCompact K)
       exact hx
     rw [capRoof_eq_zero_of_not_mem hxcap, capRoof_eq_zero_of_not_mem hx]
 
-/-- Positive-dimensional caps with interior are regular closed as actual sets. -/
-theorem IsDownwardCap.closure_interior_eq {U : Set Plane} (hU : IsDownwardCap U)
-    (hinterior : (interior U).Nonempty) : closure (interior U) = U := by
-  rw [hU.convex.closure_interior_eq_closure_of_nonempty_interior hinterior,
-    hU.isCompact.isClosed.closure_eq]
-
 /-- Positive superlevels of the roof are projections of actual closed cap slices. -/
 theorem capRoof_superlevel_eq_projection {K : Set Plane} (hK : IsCompact K)
     {c : ℝ} (hc : 0 < c) :

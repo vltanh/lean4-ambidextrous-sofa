@@ -28,15 +28,4 @@ theorem IsDownwardCap.capScore_le_half_M
   have hbound := hV.isJointCapMaximizer.score_le hU hα
   rwa [hV.capScore_eq_half_M] at hbound
 
-theorem Reference.isFullCapMaximizer_referenceCap :
-    IsFullCapMaximizer Reference.referenceCap := by
-  refine ⟨Reference.isDownwardCap_referenceCap, ?_⟩
-  intro U hU
-  rw [Reference.capScore_referenceCap]
-  exact hU.capScore_le_half_M ⟨by linarith only [Real.pi_pos], le_rfl⟩
-
-theorem Reference.isJointCapMaximizer_referenceCap :
-    IsJointCapMaximizer Reference.referenceCap (Real.pi / 2) :=
-  Reference.isFullCapMaximizer_referenceCap.isJointCapMaximizer
-
 end AmbidextrousSofa

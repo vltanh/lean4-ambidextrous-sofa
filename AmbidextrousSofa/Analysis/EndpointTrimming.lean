@@ -156,18 +156,6 @@ theorem IsDownwardCap.leftTrim {U : Set Plane} (hU : IsDownwardCap U)
     {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) : IsDownwardCap (AmbidextrousSofa.leftTrim U ε) :=
   hU.horizontalCut (by unfold capWidth at hεW; linarith) (leftTrim_interval_subset hU hε0)
 
-theorem horizontalProjection_rightTrim {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) :
-    horizontalProjection (rightTrim U ε) =
-      Icc (horizontalLeft U) (horizontalRight U - ε) :=
-  horizontalProjection_horizontalCut hU (rightTrim_interval_subset hU hε0)
-
-theorem horizontalProjection_leftTrim {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) :
-    horizontalProjection (leftTrim U ε) =
-      Icc (horizontalLeft U + ε) (horizontalRight U) :=
-  horizontalProjection_horizontalCut hU (leftTrim_interval_subset hU hε0)
-
 theorem horizontalLeft_rightTrim {U : Set Plane} (hU : IsDownwardCap U)
     {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) :
     horizontalLeft (rightTrim U ε) = horizontalLeft U :=
@@ -191,22 +179,6 @@ theorem horizontalRight_leftTrim {U : Set Plane} (hU : IsDownwardCap U)
     horizontalRight (leftTrim U ε) = horizontalRight U :=
   horizontalRight_horizontalCut hU (by unfold capWidth at hεW; linarith)
     (leftTrim_interval_subset hU hε0)
-
-theorem capWidth_rightTrim {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) :
-    capWidth (rightTrim U ε) = capWidth U - ε := by
-  rw [capWidth, horizontalLeft_rightTrim hU hε0 hεW,
-    horizontalRight_rightTrim hU hε0 hεW]
-  unfold capWidth
-  ring
-
-theorem capWidth_leftTrim {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) :
-    capWidth (leftTrim U ε) = capWidth U - ε := by
-  rw [capWidth, horizontalLeft_leftTrim hU hε0 hεW,
-    horizontalRight_leftTrim hU hε0 hεW]
-  unfold capWidth
-  ring
 
 theorem capRoof_rightTrim {U : Set Plane} (hU : IsDownwardCap U)
     {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) {x : ℝ}
@@ -341,106 +313,6 @@ theorem horizontalRight_leftErosion {U : Set Plane} (hU : IsDownwardCap U)
     horizontalRight (leftErosion U ε) = horizontalRight U := by
   rw [horizontalRight, horizontalProjection_leftErosion hU hε0,
     csSup_Icc (by unfold capWidth at hεW; linarith)]
-
-theorem capWidth_rightErosion {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) :
-    capWidth (rightErosion U ε) = capWidth U - ε := by
-  rw [capWidth, horizontalLeft_rightErosion hU hε0 hεW,
-    horizontalRight_rightErosion hU hε0 hεW]
-  unfold capWidth
-  ring
-
-theorem capWidth_leftErosion {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) :
-    capWidth (leftErosion U ε) = capWidth U - ε := by
-  rw [capWidth, horizontalLeft_leftErosion hU hε0 hεW,
-    horizontalRight_leftErosion hU hε0 hεW]
-  unfold capWidth
-  ring
-
-theorem capRoof_rightErosion {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) {x : ℝ}
-    (hx : x ∈ Icc (horizontalLeft U) (horizontalRight U - ε)) :
-    capRoof (rightErosion U ε) x = min (capRoof U x) (capRoof U (x + ε)) := by
-  have hE := hU.rightErosion hε0 hεW
-  have hxE : x ∈ horizontalProjection (rightErosion U ε) := by
-    rw [horizontalProjection_rightErosion hU hε0]
-    exact hx
-  have hxU := rightTrim_interval_subset hU hε0 hx
-  have hxshift : x + ε ∈ horizontalProjection U := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
-    exact ⟨by linarith [hx.1], by linarith [hx.2]⟩
-  have hnonneg : 0 ≤ min (capRoof U x) (capRoof U (x + ε)) :=
-    le_min (capRoof_nonneg hU.isCompact (fun p hp => (hU.inStrip hp).1) x)
-      (capRoof_nonneg hU.isCompact (fun p hp => (hU.inStrip hp).1) (x + ε))
-  apply le_antisymm
-  · have hp := capRoof_mem hE.isCompact hxE
-    exact le_min (le_capRoof hU.isCompact hp.1) (le_capRoof hU.isCompact hp.2)
-  · apply le_capRoof hE.isCompact
-    exact ⟨(hU.mem_iff_projection_and_roof _).mpr
-        ⟨hxU, hnonneg, min_le_left _ _⟩,
-      (hU.mem_iff_projection_and_roof _).mpr
-        ⟨hxshift, hnonneg, min_le_right _ _⟩⟩
-
-theorem capRoof_leftErosion {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) {x : ℝ}
-    (hx : x ∈ Icc (horizontalLeft U + ε) (horizontalRight U)) :
-    capRoof (leftErosion U ε) x = min (capRoof U x) (capRoof U (x - ε)) := by
-  have hE := hU.leftErosion hε0 hεW
-  have hxE : x ∈ horizontalProjection (leftErosion U ε) := by
-    rw [horizontalProjection_leftErosion hU hε0]
-    exact hx
-  have hxU := leftTrim_interval_subset hU hε0 hx
-  have hxshift : x - ε ∈ horizontalProjection U := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
-    exact ⟨by linarith [hx.1], by linarith [hx.2]⟩
-  have hnonneg : 0 ≤ min (capRoof U x) (capRoof U (x - ε)) :=
-    le_min (capRoof_nonneg hU.isCompact (fun p hp => (hU.inStrip hp).1) x)
-      (capRoof_nonneg hU.isCompact (fun p hp => (hU.inStrip hp).1) (x - ε))
-  apply le_antisymm
-  · have hp := capRoof_mem hE.isCompact hxE
-    exact le_min (le_capRoof hU.isCompact hp.1) (le_capRoof hU.isCompact hp.2)
-  · apply le_capRoof hE.isCompact
-    exact ⟨(hU.mem_iff_projection_and_roof _).mpr
-        ⟨hxU, hnonneg, min_le_left _ _⟩,
-      (hU.mem_iff_projection_and_roof _).mpr
-        ⟨hxshift, hnonneg, min_le_right _ _⟩⟩
-
-/-- The virtual tightened support dominates the actual right erosion.
-Equality is not asserted when a horizontal section disappears. -/
-theorem support_rightErosion_le {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) (v : Plane) :
-    support (rightErosion U ε) v ≤ support U v - ε * max v.1 0 := by
-  have hE := hU.rightErosion hε0 hεW
-  rcases le_total v.1 0 with hv | hv
-  · rw [max_eq_right hv, mul_zero, sub_zero]
-    exact support_mono (rightErosion_subset U ε) hE.nonempty hU.isCompact v
-  · rw [max_eq_left hv]
-    apply support_le_of_forall hE.nonempty
-    intro p hp
-    have h := coordDot_le_support hU.isCompact hp.2 v
-    have heq : coordDot (p.1 + ε, p.2) v = coordDot p v + ε * v.1 := by
-      unfold coordDot
-      ring
-    rw [heq] at h
-    linarith
-
-theorem support_leftErosion_le {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U) (v : Plane) :
-    support (leftErosion U ε) v ≤ support U v - ε * max (-v.1) 0 := by
-  have hE := hU.leftErosion hε0 hεW
-  rcases le_total (-v.1) 0 with hv | hv
-  · rw [max_eq_right hv, mul_zero, sub_zero]
-    exact support_mono (leftErosion_subset U ε) hE.nonempty hU.isCompact v
-  · rw [max_eq_left hv]
-    apply support_le_of_forall hE.nonempty
-    intro p hp
-    have h := coordDot_le_support hU.isCompact hp.2 v
-    have heq : coordDot (p.1 - ε, p.2) v = coordDot p v + ε * (-v.1) := by
-      unfold coordDot
-      ring
-    rw [heq] at h
-    linarith
 
 /-- Coordinate distance to a contraction toward any baseline point. -/
 theorem dist_baseline_contraction_le {U : Set Plane} (hU : IsDownwardCap U)
@@ -643,33 +515,5 @@ theorem abs_support_leftErosion_sub_le {U : Set Plane} (hU : IsDownwardCap U)
   exact (abs_support_sub_le_hausdorff hE.isCompact hE.nonempty hU.isCompact hU.nonempty v).trans
     (mul_le_mul_of_nonneg_right (hausdorffDist_leftErosion_le_of_one_le_width hU hW hε0 hεW)
       (add_nonneg (abs_nonneg _) (abs_nonneg _)))
-
-theorem partialBarrier_rightTrim_le {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U)
-    {α : ℝ} (hα0 : 0 < α) (hαL : α ≤ Real.pi / 2) (x : ℝ) :
-    partialBarrier (rightTrim U ε) α x ≤ partialBarrier U α x :=
-  partialBarrier_mono (rightTrim_subset U ε) (hU.rightTrim hε0 hεW).nonempty
-    hU.isCompact hα0 hαL x
-
-theorem partialBarrier_leftTrim_le {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U)
-    {α : ℝ} (hα0 : 0 < α) (hαL : α ≤ Real.pi / 2) (x : ℝ) :
-    partialBarrier (leftTrim U ε) α x ≤ partialBarrier U α x :=
-  partialBarrier_mono (leftTrim_subset U ε) (hU.leftTrim hε0 hεW).nonempty
-    hU.isCompact hα0 hαL x
-
-theorem sweptNiche_rightTrim_le {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U)
-    {α : ℝ} (hα0 : 0 < α) (hαL : α ≤ Real.pi / 2) (x : ℝ) :
-    sweptNiche (rightTrim U ε) α x ≤ sweptNiche U α x :=
-  sweptNiche_mono (rightTrim_subset U ε) (hU.rightTrim hε0 hεW).nonempty
-    hU.isCompact hα0 hαL x
-
-theorem sweptNiche_leftTrim_le {U : Set Plane} (hU : IsDownwardCap U)
-    {ε : ℝ} (hε0 : 0 ≤ ε) (hεW : ε ≤ capWidth U)
-    {α : ℝ} (hα0 : 0 < α) (hαL : α ≤ Real.pi / 2) (x : ℝ) :
-    sweptNiche (leftTrim U ε) α x ≤ sweptNiche U α x :=
-  sweptNiche_mono (leftTrim_subset U ε) (hU.leftTrim hε0 hεW).nonempty
-    hU.isCompact hα0 hαL x
 
 end AmbidextrousSofa

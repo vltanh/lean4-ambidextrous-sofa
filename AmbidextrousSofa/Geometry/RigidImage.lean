@@ -54,12 +54,4 @@ theorem IsAmbidextrous.rigidImage {S : Set Plane} (hS : IsAmbidextrous S)
     lower.rebase θ v, upper.rebase θ v, horient.rebase θ v,
     hlower.rebase θ v, hupper.rebase θ v⟩
 
-theorem isAmbidextrous_rigidImage_iff (S : Set Plane) (θ : ℝ) (v : Plane) :
-    IsAmbidextrous (rigidMap θ v '' S) ↔ IsAmbidextrous S := by
-  constructor
-  · intro h
-    simpa only [image_inverse_rigidMap_image] using h.rigidImage (-θ) (-rotate (-θ) v)
-  · intro h
-    exact h.rigidImage θ v
-
 end AmbidextrousSofa

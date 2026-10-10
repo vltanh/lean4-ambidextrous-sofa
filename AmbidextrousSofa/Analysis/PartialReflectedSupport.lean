@@ -115,24 +115,6 @@ theorem IsJointCapMaximizer.properUsed_momenta_ae_derivatives_of_tail_regime
     dsimp only [properUsedP, supportP]
     ring
 
-theorem IsJointCapMaximizer.properUsed_momenta_ae_derivatives
-    {U : Set Plane} {α m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
-    ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) α),
-      HasDerivAt (properUsedP U m ρ) (ρ t - 1 - properUsedQ U m ρ t) t ∧
-      HasDerivAt (properUsedQ U m ρ)
-        (leftCompanionWingDensity m ρ (t + Real.pi / 2) - 1 + properUsedP U m ρ t) t := by
-  exact IsJointCapMaximizer.properUsed_momenta_ae_derivatives_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine hρ hρ0
-    hρK heq
-
 theorem IsJointCapMaximizer.properReflected_momenta_absolutelyContinuous
     {U : Set Plane} {α m K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
     (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K) :
@@ -176,25 +158,6 @@ theorem IsJointCapMaximizer.properReflected_momenta_ae_derivatives_of_tail_regim
     dsimp only [properReflectedSecondDensity, properReflectedP]
     ring
 
-theorem IsJointCapMaximizer.properReflected_momenta_ae_derivatives
-    {U : Set Plane} {α m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
-    ∀ᵐ r ∂volume.restrict (Ioo (Real.pi / 2 - α) (Real.pi / 2)),
-      HasDerivAt (properReflectedP U m ρ)
-        (properReflectedFirstDensity m ρ r - 1 - properReflectedQ U m ρ r) r ∧
-      HasDerivAt (properReflectedQ U m ρ)
-        (properReflectedSecondDensity ρ r - 1 + properReflectedP U m ρ r) r := by
-  exact IsJointCapMaximizer.properReflected_momenta_ae_derivatives_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine hρ hρ0
-    hρK heq
-
 theorem IsJointCapMaximizer.properUsed_momenta_eq_actual_after_affine_of_tail_regime
     {U : Set Plane} {α m c K t : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
     (hregime : ProperTailRegime U α m)
@@ -233,23 +196,6 @@ theorem IsJointCapMaximizer.properUsed_momenta_eq_actual_after_affine_of_tail_re
     simp only [angleSupport_eq_imported_supp]
     dsimp only [supportTangent, firstCornerVelocity]
     ring
-
-theorem IsJointCapMaximizer.properUsed_momenta_eq_actual_after_affine
-    {U : Set Plane} {α m c K t : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t)))
-    (ht : t ∈ Ico (0 : ℝ) α) (hmt : Real.arctan m ≤ t) :
-    properUsedP U m ρ t = -secondCornerVelocity U t ∧
-      properUsedQ U m ρ t = firstCornerVelocity U t := by
-  exact IsJointCapMaximizer.properUsed_momenta_eq_actual_after_affine_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine hρ hρ0
-    hρK heq ht hmt
 
 /-- Both initial reflected values are computed at actual supporting
 endpoints. The second value contains the whole terminal atom. -/
@@ -316,25 +262,6 @@ theorem IsJointCapMaximizer.properReflected_terminal_values_of_tail_regime
     dsimp only [terminalReflectedHeight, terminalReflectedSpan]
     ring
 
-theorem IsJointCapMaximizer.properReflected_terminal_values
-    {U : Set Plane} {α m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
-    properReflectedP U m ρ (Real.pi / 2 - α) =
-        1 + (terminalReflectedHeight U α - 1) * Real.sin α - terminalReflectedSpan U α * Real.cos α ∧
-      properReflectedQ U m ρ (Real.pi / 2 - α) + 1 =
-        terminalReflectedSpan U α * Real.sin α +
-          (terminalReflectedHeight U α - 1) * Real.cos α + MovingSofaOptimality.sigmaAt U α := by
-  exact IsJointCapMaximizer.properReflected_terminal_values_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine hρ hρ0
-    hρK heq
-
 theorem IsJointCapMaximizer.properReflected_terminal_impulse_of_tail_regime
     {U : Set Plane} {α m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
     (hregime : ProperTailRegime U α m)
@@ -355,25 +282,5 @@ theorem IsJointCapMaximizer.properReflected_terminal_impulse_of_tail_regime
   simp only [Analysis.initialFloorCircleP, Analysis.initialFloorCircleQ,
     Real.cos_pi_div_two_sub, Real.sin_pi_div_two_sub]
   exact ⟨h.1, by linarith only [h.2]⟩
-
-theorem IsJointCapMaximizer.properReflected_terminal_impulse
-    {U : Set Plane} {α m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
-    properReflectedP U m ρ (Real.pi / 2 - α) =
-        Analysis.initialFloorCircleP (terminalReflectedSpan U α)
-          (terminalReflectedHeight U α - 1) (Real.pi / 2 - α) ∧
-      properReflectedQ U m ρ (Real.pi / 2 - α) =
-        Analysis.initialFloorCircleQ (terminalReflectedSpan U α)
-          (terminalReflectedHeight U α - 1) (Real.pi / 2 - α) + MovingSofaOptimality.sigmaAt U α := by
-  exact IsJointCapMaximizer.properReflected_terminal_impulse_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine hρ hρ0
-    hρK heq
 
 end AmbidextrousSofa

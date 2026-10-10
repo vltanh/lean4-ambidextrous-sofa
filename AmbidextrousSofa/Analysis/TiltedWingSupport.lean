@@ -119,26 +119,6 @@ theorem IsDownwardCap.companionSupport_and_tangent_leftCut_after_affine
     rw [← MovingSofaOptimality.dot_vplus_uvec, ← MovingSofaOptimality.dot_vplus_uvec, hv]
   · simp only [supportTangent, hv]
 
-theorem IsDownwardCap.companionTangent_leftCut_before_affine
-    {U : Set Plane} (hU : IsDownwardCap U) {a b m c t : ℝ}
-    (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
-    (hab : a < b) (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c)
-    (ht0 : 0 ≤ t) (htm : t < Real.arctan m) :
-    supportTangent (AmbidextrousSofa.leftCompanionCap U a) (t + Real.pi / 2) =
-      -a * Real.cos t - capRoof U a * Real.sin t := by
-  have hθ0 : 0 < t + Real.pi / 2 := by linarith only [ht0, Real.pi_pos]
-  have hθm : t + Real.pi / 2 < affineNormalAngle m := by
-    unfold affineNormalAngle
-    linarith only [htm]
-  have hv := hU.vplus_leftCompanionCap_eq_rightRoof_of_positive_coefficient
-    ha hb hab haffine
-    (Real.sin_pos_of_pos_of_lt_pi hθ0 (hθm.trans (affineNormalAngle_mem m).2))
-    (affineNormal_coefficient_pos_before hθ0.le hθm)
-  rw [supportTangent, hv]
-  dsimp only [MovingSofaOptimality.dot, MovingSofaOptimality.vvec]
-  rw [Real.sin_add_pi_div_two, Real.cos_add_pi_div_two]
-  ring
-
 /-- The canonical rectangle and tilt bounds imply the strict margin
 which puts the initial original corner below the floor. -/
 theorem canonical_width_add_slope_lt_one {C h : ℝ}

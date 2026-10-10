@@ -56,27 +56,6 @@ theorem IsDownwardCap.volumeReal_oneTurnSurvivor_eq_intervalIntegral {U : Set Pl
   rw [hU.volumeReal_oneTurnSurvivor_eq_integral hfit, integral_Icc_eq_integral_Ioc,
     intervalIntegral.integral_of_le (horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact)]
 
-theorem IsDownwardCap.volumeReal_oneTurnSurvivor_eq_score_middle_exterior
-    {U : Set Plane} (hU : IsDownwardCap U)
-    (hfit : ∀ x ∈ horizontalProjection U, sweptNiche U (Real.pi / 2) x ≤ capRoof U x) :
-    volume.real (oneTurnSurvivor U) = capScore U (Real.pi / 2) +
-      (∫ x in middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x) -
-      ∫ x in Icc (horizontalLeft U) (horizontalRight U) \
-        middleHalfInterval (horizontalLeft U) (horizontalRight U), sweptNiche U (Real.pi / 2) x := by
-  have hroof := hU.integrableOn_capRoof_Icc (horizontalLeft U) (horizontalRight U)
-  have hniche : IntegrableOn (sweptNiche U (Real.pi / 2))
-      (Icc (horizontalLeft U) (horizontalRight U)) :=
-    hU.continuous_sweptNiche_pi_div_two.integrableOn_Icc
-  have hJI := middleHalfInterval_subset
-    (horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact)
-  have hsplitRoof := setIntegral_sdiff
-    (measurableSet_middleHalfInterval (horizontalLeft U) (horizontalRight U)) hroof hJI
-  have hsplitNiche := setIntegral_sdiff
-    (measurableSet_middleHalfInterval (horizontalLeft U) (horizontalRight U)) hniche hJI
-  rw [hU.volumeReal_oneTurnSurvivor_eq_integral hfit,
-    integral_sub hroof hniche, hU.capScore_pi_div_two]
-  linarith
-
 theorem IsDownwardCap.volumeReal_oneTurnSurvivor_eq_centered_integrals
     {U : Set Plane} (hU : IsDownwardCap U) {C : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
@@ -202,40 +181,5 @@ theorem IsDownwardCap.volumeReal_oneTurnSurvivor_ge_score_of_affine
   have hwing := hU.wing_niche_integrals_le hC hl hr hconvL hconvR
   rw [hU.middle_roof_integral_of_affine hC hleft hright haffine] at harea
   linarith
-
-/-- The weaker CG inequality is now a statement about an actual full cap
-maximizer and its actual endpoint heights. Only the remaining central
-source-height inequality is exposed; the survivor and ordinary area
-comparison are constructed in this proof. -/
-theorem IsFullCapMaximizer.ordinary_area_necessary_of_middle_height_bound
-    {U : Set Plane} (hU : IsFullCapMaximizer U) {C h : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hleft : capRoof U (-C) = 1 - h) (hright : capRoof U C = 1)
-    (hC0 : 1 / 2 ≤ C) (hC1 : C ≤ 37 / 50) (hh0 : 0 ≤ h) (hh1 : h ≤ 17 / 50)
-    (hheight : capHeight U = 1)
-    (haffine : ∃ m c : ℝ, ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hmid : ∀ x ∈ Icc (-C) C, sweptNiche U (Real.pi / 2) x ≤
-      (capRoof U (horizontalRight U) + capRoof U (horizontalLeft U)) / 2) :
-    M / 2 + C * (3 - (capRoof U (horizontalRight U) +
-      capRoof U (horizontalLeft U)) - 3 * h / 2) ≤ (22199 : ℝ) / 10000 := by
-  have hC : 0 < C := by linarith
-  have hminus : horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4 = -C := by
-    rw [hl, hr]; ring
-  have hplus : horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 = C := by
-    rw [hl, hr]; ring
-  have haffine' : ∃ m c : ℝ, ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c := by
-    simpa only [middleHalfInterval, hminus, hplus] using haffine
-  have hfit := hU.sweptNiche_le_roof_of_middle_height_bound
-    hl hr hleft hright hC0 hC1 hh0 hh1 hheight haffine hmid
-  have hconv := hU.isCap.convexOn_sweptNiche_wings_of_roof_endpoints
-    hl hr hleft hright hC0 hC1 hh1
-  have harea := hU.isCap.volumeReal_oneTurnSurvivor_ge_score_of_affine
-    hC hl hr hleft hright haffine' hconv.1 hconv.2 hfit
-  have hordinary := hU.isCap.volumeReal_oneTurnSurvivor_le hfit
-  have hsum := hU.endpoint_height_sum_of_affine hheight haffine
-  rw [hminus, hplus, hleft, hright] at hsum
-  have hsumC := congrArg (fun t : ℝ => C * t) hsum
-  nlinarith [hU.reference_le]
 
 end AmbidextrousSofa

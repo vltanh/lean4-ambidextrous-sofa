@@ -35,22 +35,6 @@ theorem partialTriangle_endpoint_lower_bounds {h eR eL qR qL : ℝ}
   · linarith only [heR, heL, hR, hqL]
   · linarith only [heR, heL, hqR, hqL]
 
-theorem partialTriangle_deficit_bounds {h eR eL qR qL wR wL : ℝ}
-    (hqR : 0 ≤ qR) (hqL : 0 ≤ qL)
-    (heR : eR = 1 / 2 + h / 4 + (3 * qR - qL) / 4)
-    (heL : eL = 1 / 2 - 3 * h / 4 + (3 * qL - qR) / 4)
-    (hR : eR ≤ 1) (hL : eL ≤ 1 - 3 * h / 2)
-    (hsR : eR ≤ 1 - wR) (hsL : eL ≤ 1 - wL) :
-    wR ≤ 2 / 3 - h / 2 ∧ wL ≤ 2 / 3 + 2 * h / 3 ∧
-      wR + wL ≤ 1 + h / 2 := by
-  obtain ⟨heR0, heL0, hesum⟩ :=
-    partialTriangle_endpoint_lower_bounds hqR hqL heR heL hR hL
-  constructor
-  · linarith only [heR0, hsR]
-  constructor
-  · linarith only [heL0, hsL]
-  · linarith only [hesum, hsR, hsL]
-
 /-- A joint positive-floor estimate. If both deficits exceed the threshold,
 their sum pays the two positive parts; otherwise the larger coordinate
 bound suffices. Thus no separate estimate is summed twice. -/

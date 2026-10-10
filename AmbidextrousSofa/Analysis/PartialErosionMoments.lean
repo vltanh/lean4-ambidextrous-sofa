@@ -141,34 +141,6 @@ theorem IsSelectedPolygon.leftMoment_ge_neg_selectionDefect {target U : Set Plan
   rw [hterm]
   nlinarith
 
-theorem rightMoment_limit_nonneg {target : Set Plane} {U : ℕ → Set Plane}
-    {a b : ℝ} {level : ℕ → ℕ} {coefficient : ℕ → ℝ}
-    (hTarget : IsDownwardCap target)
-    (hU : ∀ n, IsSelectedPolygon target α hαL a b (level n) (coefficient n) (U n))
-    (hHausdorff : CapHausdorffTendsto U target)
-    (hc : ∀ n, 0 ≤ coefficient n) (hrate : Tendsto coefficient atTop (𝓝 0))
-    {m : ℝ} (hm : Tendsto (fun n => finiteRightMoment (U n)
-      (normal α (dyadic (level n))) (pairList α (dyadic (level n))) (some (terminalIndex α hαL (dyadic (level n))))) atTop (𝓝 m)) :
-    0 ≤ m := by
-  have herr := (selectionDefect_sum_tendsto (α := α) hTarget (fun n => (hU n).isCap)
-    (level := level) hc hrate hHausdorff).neg
-  simpa only [neg_zero] using le_of_tendsto_of_tendsto herr hm
-    (Eventually.of_forall (fun n => (hU n).rightMoment_ge_neg_selectionDefect (hc n)))
-
-theorem leftMoment_limit_nonneg {target : Set Plane} {U : ℕ → Set Plane}
-    {a b : ℝ} {level : ℕ → ℕ} {coefficient : ℕ → ℝ}
-    (hTarget : IsDownwardCap target)
-    (hU : ∀ n, IsSelectedPolygon target α hαL a b (level n) (coefficient n) (U n))
-    (hHausdorff : CapHausdorffTendsto U target)
-    (hc : ∀ n, 0 ≤ coefficient n) (hrate : Tendsto coefficient atTop (𝓝 0))
-    {m : ℝ} (hm : Tendsto (fun n => finiteLeftMoment (U n)
-      (normal α (dyadic (level n))) (pairList α (dyadic (level n))) (some (terminalIndex α hαL (dyadic (level n))))) atTop (𝓝 m)) :
-    0 ≤ m := by
-  have herr := (selectionDefect_sum_tendsto (α := α) hTarget (fun n => (hU n).isCap)
-    (level := level) hc hrate hHausdorff).neg
-  simpa only [neg_zero] using le_of_tendsto_of_tendsto herr hm
-    (Eventually.of_forall (fun n => (hU n).leftMoment_ge_neg_selectionDefect (hc n)))
-
 theorem rightErosionUpperBound_tendsto {target : Set Plane} {U : ℕ → Set Plane}
     {a b : ℝ} {level : ℕ → ℕ} {coefficient : ℕ → ℝ}
     (hTarget : IsDownwardCap target) (hTargetBox : target ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1)
@@ -208,40 +180,6 @@ theorem leftErosionUpperBound_tendsto {target : Set Plane} {U : ℕ → Set Plan
     (fun n => (hU n).inBox) hpositive
   simpa only [add_zero, positivePart_sub_self] using
     (he.sub hp).add (endpointSelectionError_tendsto a b hrate)
-
-theorem rightMoment_limit_le_neg_pressure {target : Set Plane} {U : ℕ → Set Plane}
-    {a b : ℝ} {level : ℕ → ℕ} {coefficient : ℕ → ℝ}
-    (hTarget : IsDownwardCap target) (hTargetBox : target ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1)
-    (hU : ∀ n, IsSelectedPolygon target α hαL a b (level n) (coefficient n) (U n))
-    (hHausdorff : CapHausdorffTendsto U target) (hlevel : Tendsto level atTop atTop)
-    (hc : ∀ n, 0 ≤ coefficient n) (hrate : Tendsto coefficient atTop (𝓝 0))
-    (hwidth : 1 < capWidth target) (hslack : horizontalRight target < b)
-    {m : ℝ} (hm : Tendsto (fun n => finiteRightMoment (U n)
-      (normal α (dyadic (level n))) (pairList α (dyadic (level n))) (some (terminalIndex α hαL (dyadic (level n))))) atTop (𝓝 m)) :
-    m ≤ max (-partialRightEndpointPressure target α) 0 := by
-  apply le_of_tendsto_of_tendsto hm
-    (rightErosionUpperBound_tendsto hTarget hTargetBox hU hHausdorff hlevel hc hrate hwidth hslack)
-  have hW := (hHausdorff.capWidth_tendsto (fun n => (hU n).isCap) hTarget).eventually
-    (Ioi_mem_nhds hwidth)
-  filter_upwards [hW] with n hn
-  exact (hU n).right_erosion_bound hTarget hTargetBox (hc n) hn.le
-
-theorem leftMoment_limit_le_neg_pressure {target : Set Plane} {U : ℕ → Set Plane}
-    {a b : ℝ} {level : ℕ → ℕ} {coefficient : ℕ → ℝ}
-    (hTarget : IsDownwardCap target) (hTargetBox : target ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1)
-    (hU : ∀ n, IsSelectedPolygon target α hαL a b (level n) (coefficient n) (U n))
-    (hHausdorff : CapHausdorffTendsto U target) (hlevel : Tendsto level atTop atTop)
-    (hc : ∀ n, 0 ≤ coefficient n) (hrate : Tendsto coefficient atTop (𝓝 0))
-    (hwidth : 1 < capWidth target) (hslack : a < horizontalLeft target)
-    {m : ℝ} (hm : Tendsto (fun n => finiteLeftMoment (U n)
-      (normal α (dyadic (level n))) (pairList α (dyadic (level n))) (some (terminalIndex α hαL (dyadic (level n))))) atTop (𝓝 m)) :
-    m ≤ max (-partialLeftEndpointPressure target α) 0 := by
-  apply le_of_tendsto_of_tendsto hm
-    (leftErosionUpperBound_tendsto hTarget hTargetBox hU hHausdorff hlevel hc hrate hwidth hslack)
-  have hW := (hHausdorff.capWidth_tendsto (fun n => (hU n).isCap) hTarget).eventually
-    (Ioi_mem_nhds hwidth)
-  filter_upwards [hW] with n hn
-  exact (hU n).left_erosion_bound hTarget hTargetBox (hc n) hn.le
 
 /-- At a nonnegative pressure, the actual right erosion moment tends to
 zero. Its lower estimate is supplied by the literal selected sources. -/
@@ -376,7 +314,6 @@ theorem erosionMoments_tendsto
     convert hRlim using 1
     funext n
     ring
-
 
 end PartialGrid
 end AmbidextrousSofa

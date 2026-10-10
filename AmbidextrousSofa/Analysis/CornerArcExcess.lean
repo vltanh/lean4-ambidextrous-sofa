@@ -115,25 +115,6 @@ theorem ae_linear_excess_of_quadratic_deadline
       ((show A + ell - t ≤ T + ell - t by linarith only [hAT]).trans
         (le_max_left _ _)) hfactor)
 
-theorem ae_unit_after_quadratic_deadline
-    (D : CornerArcDynamics p q u v a b) {d e T ell : ℝ}
-    (hfirst : ∀ t ∈ Icc a b, p t ≤ 1)
-    (hpa : 0 < p a → p a ≤ e - d * a + a ^ 2 / 2)
-    (hqa : 0 < p a → d - 1 - a ≤ q a)
-    (hT : a ≤ T) (hcross : e ≤ d * T - T ^ 2 / 2)
-    (hell0 : 0 ≤ ell) (hell1 : ell < 1)
-    (henergy : clippedCornerEnergy p q a ≤
-      1 / 4 + (2 + ell / 2 + ell ^ 2 / 4) ^ 2) :
-    ∀ᵐ t ∂volume.restrict (Ioo (T + ell) b), u t ≤ 1 := by
-  have hsub : Ioo (T + ell) b ⊆ Ioo a b :=
-    Ioo_subset_Ioo (by linarith only [hT, hell0]) le_rfl
-  have h := ae_restrict_of_ae_restrict_of_subset hsub
-    (D.ae_linear_excess_of_quadratic_deadline hfirst hpa hqa hT hcross hell0 hell1 henergy)
-  filter_upwards [ae_restrict_mem measurableSet_Ioo, h] with t ht hbound
-  rw [max_eq_right (show T + ell - t ≤ 0 by linarith only [ht.1]), mul_zero] at hbound
-  have hu := (le_max_left (u t - 1) 0).trans hbound
-  linarith only [hu]
-
 end CornerArcDynamics
 
 end AmbidextrousSofa

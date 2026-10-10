@@ -152,38 +152,9 @@ def denseAngles : ℕ → QuarterAngle := by
   letI : Nonempty QuarterAngle := ⟨zeroAngle⟩
   exact denseSeq QuarterAngle
 
-theorem denseRange_denseAngles : DenseRange denseAngles := by
-  letI : Nonempty QuarterAngle := ⟨zeroAngle⟩
-  exact denseRange_denseSeq QuarterAngle
-
 def exhaustion (n : ℕ) : Finset QuarterAngle := by
   classical
   exact (Finset.range n).image denseAngles
-
-theorem exhaustion_mono : Monotone exhaustion := by
-  classical
-  intro n m hnm
-  exact Finset.image_subset_image (Finset.range_mono hnm)
-
-theorem dense_iUnion_exhaustion : Dense (⋃ n, (exhaustion n : Set QuarterAngle)) := by
-  classical
-  have heq : (⋃ n, (exhaustion n : Set QuarterAngle)) = range denseAngles := by
-    ext t
-    simp only [mem_iUnion, exhaustion, Finset.mem_coe, Finset.mem_image, Finset.mem_range,
-      mem_range]
-    constructor
-    · rintro ⟨n, k, _, rfl⟩
-      exact ⟨k, rfl⟩
-    · rintro ⟨k, rfl⟩
-      exact ⟨k + 1, k, Nat.lt_succ_self k, rfl⟩
-  rw [heq]
-  exact denseRange_denseAngles
-
-theorem tendstoUniformlyOn_exhaustion_box {B : Set Plane} (hB : IsCompact B) (l r : ℝ) :
-    TendstoUniformlyOn (fun n (p : CompactCap × ℝ) => niche p.1 (exhaustion n) p.2)
-      (fun p => sweptNiche p.1.carrier (Real.pi / 2) p.2)
-      atTop (boxedCaps B ×ˢ Icc l r) :=
-  tendstoUniformlyOn_niche_box exhaustion exhaustion_mono dense_iUnion_exhaustion hB l r
 
 end AngularGrid
 

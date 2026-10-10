@@ -306,38 +306,6 @@ theorem finiteBarrier_eq_affineEnvelope_update [DecidableEq ι]
       ring
     · simp [wallSlope, barrierIntercept, outwardVelocity, Function.update_of_ne hij, hij]
 
-/-- Actual finite barriers lie below the whole-angle barrier whenever every
-sample is an actual visited corner and the terminal source is the true
-terminal first wall. -/
-theorem finiteBarrier_le_partialBarrier {U : Set Plane} (hU : IsCompact U)
-    (normal : ι → Plane) (corners : List (ι × ι)) (terminal : Option ι)
-    {α : ℝ} (hα : α ≤ Real.pi / 2)
-    (hcorners : ∀ ij ∈ corners, ∃ θ ∈ Ioo 0 α,
-      normal ij.1 = unitNormal θ ∧ normal ij.2 = companionNormal θ)
-    (hterminal : ∀ j, terminal = some j → normal j = unitNormal α) (x : ℝ) :
-    finiteBarrier U normal corners terminal x ≤ partialBarrier U α x := by
-  have hniche_all : ∀ is : List (ι × ι),
-      (∀ ij ∈ is, ∃ θ ∈ Ioo 0 α,
-        normal ij.1 = unitNormal θ ∧ normal ij.2 = companionNormal θ) →
-      finiteNiche U normal is x ≤ sweptNiche U α x := by
-    intro is
-    induction is with
-    | nil => exact fun _ => sweptNiche_nonneg U α x
-    | cons ij rest ih =>
-      intro hlist
-      obtain ⟨θ, hθ, hfirst, hsecond⟩ := hlist ij (by simp)
-      apply max_le
-      · rw [hfirst, hsecond, supportWall_unitNormal, supportWall_companionNormal]
-        exact cornerWall_le_sweptNiche (sweptWallValues_bddAbove hU hα x) hθ
-      · exact ih (fun ij hij => hlist ij (List.mem_cons_of_mem _ hij))
-  have hniche := hniche_all corners hcorners
-  cases terminal with
-  | none => exact hniche.trans (le_max_left _ _)
-  | some j =>
-    apply max_le (hniche.trans (le_max_left _ _))
-    rw [hterminal j rfl, supportWall_unitNormal]
-    exact le_max_right _ _
-
 theorem horizontalLeft_upperPolygon {l r : ℝ} (normal : ι → Plane) (height : ι → ℝ)
     (hlr : l ≤ r)
     (hbaseline : ∀ x ∈ Icc l r, ∀ i, coordDot (x, 0) (normal i) ≤ height i) :

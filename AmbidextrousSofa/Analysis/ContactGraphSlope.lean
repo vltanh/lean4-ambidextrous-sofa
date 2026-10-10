@@ -100,46 +100,6 @@ theorem graph_derivative_mul_eq_of_contact
     exact sub_nonneg.mpr hs
   exact sub_eq_zero.mp (hmin.hasDerivAt_eq_zero ((hn.comp t hX).sub hY))
 
-theorem IsDownwardCap.attachedCorner_le_sweptNiche
-    {U : Set Plane} (hU : IsDownwardCap U) {t : ℝ}
-    (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) :
-    (attachedCorner U t).2 ≤ sweptNiche U (Real.pi / 2) (attachedCorner U t).1 := by
-  have hs : Real.sin t ≠ 0 := (Real.sin_pos_of_pos_of_lt_pi ht.1
-    (by linarith only [ht.2, Real.pi_pos])).ne'
-  have hc : Real.cos t ≠ 0 := (Real.cos_pos_of_mem_Ioo
-    ⟨by linarith only [ht.1, Real.pi_pos], ht.2⟩).ne'
-  have hwall := cornerWall_le_sweptNiche
-    (sweptWallValues_bddAbove hU.isCompact le_rfl (attachedCorner U t).1) ht
-  simpa only [cornerWall, firstWall_attachedCorner U hs,
-    secondWall_attachedCorner U hc, min_self] using hwall
-
-theorem IsDownwardCap.niche_derivative_at_attachedCorner
-    {U : Set Plane} (hU : IsDownwardCap U) {t g Xd Yd : ℝ}
-    (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2))
-    (hX : HasDerivAt (fun s => (attachedCorner U s).1) Xd t)
-    (hY : HasDerivAt (fun s => (attachedCorner U s).2) Yd t)
-    (hderiv : HasDerivAt (sweptNiche U (Real.pi / 2)) g (attachedCorner U t).1)
-    (hcontact : sweptNiche U (Real.pi / 2) (attachedCorner U t).1 =
-      (attachedCorner U t).2) : g * Xd = Yd := by
-  apply graph_derivative_mul_eq_of_contact hX hY hderiv hcontact
-  filter_upwards [Ioo_mem_nhds ht.1 ht.2] with s hs
-  exact hU.attachedCorner_le_sweptNiche hs
-
-/-- The original regular corner velocities come from the actual
-curvature density; its graph identity has no occupation-law premise. -/
-theorem IsDownwardCap.niche_derivative_corner_velocity
-    {U : Set Plane} (hU : IsDownwardCap U) {m K t g : ℝ} {ρ : ℝ → ℝ}
-    (hρ : Measurable ρ) (hρ0 : ∀ s, 0 ≤ ρ s) (hρK : ∀ s, ρ s ≤ K)
-    (heq : (upperCurvature U).restrict (regularCurvatureDomain m) =
-      (volume.restrict (regularCurvatureDomain m)).withDensity (fun s => ENNReal.ofReal (ρ s)))
-    (ht : t ∈ regularCornerDomain m)
-    (hderiv : HasDerivAt (sweptNiche U (Real.pi / 2)) g (attachedCorner U t).1)
-    (hcontact : sweptNiche U (Real.pi / 2) (attachedCorner U t).1 =
-      (attachedCorner U t).2) :
-    g * cornerVelocityX U t = cornerVelocityY U t := by
-  obtain ⟨hX, hY⟩ := hU.hasDerivAt_corner_coordinates_on_regularCornerDomain hρ hρ0 hρK heq ht
-  exact hU.niche_derivative_at_attachedCorner ht.1 hX hY hderiv hcontact
-
 section ActualPair
 
 variable {U : Set Plane} (hU : IsFullCapMaximizer U)

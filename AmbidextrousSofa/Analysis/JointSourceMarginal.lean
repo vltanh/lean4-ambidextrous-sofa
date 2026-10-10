@@ -188,11 +188,6 @@ theorem angularMeasure_apply {E : Set ℝ} (hE : MeasurableSet E) :
     J.angularMeasure E = (J.measure : Measure Plane) (E ×ˢ univ) := by
   rw [angularMeasure, Measure.map_apply measurable_fst hE, prod_univ]
 
-instance angularMeasure_nullSingletonClass : NullSingletonClass J.angularMeasure where
-  measure_singleton θ := by
-    rw [J.angularMeasure_apply (measurableSet_singleton θ)]
-    exact J.angular_fiber_eq_zero θ
-
 theorem angularMeasure_restrict_Ioc_eq_curvature
     (hTarget : IsFullCapMaximizer target) (hheight : capHeight target = 1)
     {m c s t : ℝ}

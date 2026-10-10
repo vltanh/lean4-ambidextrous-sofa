@@ -51,15 +51,6 @@ theorem one_lt_two_mul_A_mul_cosBeta : 1 < 2 * A * cosBeta := by
     linarith [Y_lt_three_tenths]
   linarith
 
-theorem momentP_zero : momentP 0 = 1 / 2 := by
-  rw [momentP_phases, if_pos beta_pos.le]
-  simp
-
-theorem momentQ_pi_div_two : momentQ (Real.pi / 2) = -(1 / 2) := by
-  rw [momentQ_phases, if_neg (not_le.mpr beta_lt_pi_div_two),
-    if_neg (not_le.mpr lateSwitch_lt_pi_div_two)]
-  simp
-
 theorem momentP_beta : momentP beta = 0 := by
   rw [momentP_phases, if_pos le_rfl]
   change 1 / 2 - 2 * A * sinBeta = 0

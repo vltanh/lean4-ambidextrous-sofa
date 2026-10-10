@@ -37,9 +37,6 @@ theorem isClosed_referenceSofa : IsClosed referenceSofa := by
 theorem isCompact_referenceSofa : IsCompact referenceSofa :=
   isCompact_referenceHull.of_isClosed_subset isClosed_referenceSofa referenceSofa_subset_referenceHull
 
-theorem measurableSet_referenceSofa : MeasurableSet referenceSofa :=
-  isClosed_referenceSofa.measurableSet
-
 theorem reflect_mem_referenceSofa (p : Plane) : reflect p ∈ referenceSofa ↔ p ∈ referenceSofa := by
   constructor
   · rintro ⟨hp, hlo, hhi⟩
@@ -79,12 +76,6 @@ theorem center_mem_referenceSofa : center ∈ referenceSofa := by
   exact midline_mem_referenceSofa ⟨center, center_mem_referenceHull, rfl⟩
 
 theorem referenceSofa_nonempty : referenceSofa.Nonempty := ⟨center, center_mem_referenceSofa⟩
-
-theorem horizontalProjection_referenceSofa :
-    horizontalProjection referenceSofa = horizontalProjection referenceHull := by
-  apply Subset.antisymm (image_mono referenceSofa_subset_referenceHull)
-  intro x hx
-  exact ⟨(x, 1 / 2), midline_mem_referenceSofa hx, rfl⟩
 
 theorem fBoundary_mem_referenceSofa {t : ℝ}
     (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) : fBoundary t ∈ referenceSofa := by

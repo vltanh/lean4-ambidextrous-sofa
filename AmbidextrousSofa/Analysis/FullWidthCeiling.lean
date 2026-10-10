@@ -96,25 +96,6 @@ theorem IsFullCapMaximizer.centered_half_projection_width_lt_of_affine
     exact hV.centered_half_projection_width_lt_of_affine_nonneg hVl hVr hVheight
       (by linarith only [le_of_not_ge hm]) hVaffine
 
-theorem IsFullCapMaximizer.width_lt_sixteen_fifths
-    {U : Set Plane} (hU : IsFullCapMaximizer U) : capWidth U < (16 / 5 : ℝ) := by
-  have hcenter : IsFullCapMaximizer (AmbidextrousSofa.centeredCap U) :=
-    hU.of_score_le hU.isCap.centeredCap
-      (by rw [capScore_centeredCap hU.isCap])
-  obtain ⟨V, hV, hproj, hheight, _, m, c, haffine⟩ := hcenter.exists_heightOne_affine_middle
-  let a := capWidth U / 2
-  have hl : horizontalLeft V = -a := by
-    calc
-      _ = horizontalLeft (AmbidextrousSofa.centeredCap U) := by unfold horizontalLeft; rw [hproj]
-      _ = _ := by rw [horizontalLeft_centeredCap hU.isCap]; dsimp [a]; ring
-  have hr : horizontalRight V = a := by
-    calc
-      _ = horizontalRight (AmbidextrousSofa.centeredCap U) := by unfold horizontalRight; rw [hproj]
-      _ = _ := horizontalRight_centeredCap hU.isCap
-  have hgap := hV.centered_half_projection_width_lt_of_affine hl hr hheight haffine
-  dsimp [a] at hgap
-  linarith only [hgap]
-
 /-- The coupled intermediate width and tilt estimate now has all its
 width premises supplied by the actual full maximizer. -/
 theorem IsFullCapMaximizer.centered_intermediate_width_tilt

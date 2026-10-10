@@ -46,11 +46,6 @@ theorem horizontalLeft_referenceHull : horizontalLeft referenceHull = 1 - 8 / 3 
   rw [support_horizontal_left isCompact_referenceHull referenceHull_nonempty] at h
   linarith
 
-theorem horizontalProjection_referenceHull :
-    horizontalProjection referenceHull = Icc (1 - 8 / 3 * A) 1 := by
-  rw [horizontalProjection_eq_Icc referenceHull_nonempty isCompact_referenceHull
-    convex_referenceHull, horizontalLeft_referenceHull, horizontalRight_referenceHull]
-
 theorem horizontalLeft_referenceCap : horizontalLeft referenceCap = 1 - 8 / 3 * A := by
   unfold horizontalLeft
   rw [horizontalProjection_referenceCap]

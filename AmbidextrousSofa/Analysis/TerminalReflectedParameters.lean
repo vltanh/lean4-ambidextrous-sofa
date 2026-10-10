@@ -122,18 +122,6 @@ theorem IsJointCapMaximizer.centered_terminalReflectedSpan_of_tail_regime
   rw [hl, hr]
   ring
 
-theorem IsJointCapMaximizer.centered_terminalReflectedSpan
-    {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    terminalReflectedSpan U α = 3 * C + topOverhangRight U := by
-  exact IsJointCapMaximizer.centered_terminalReflectedSpan_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
-
 theorem IsJointCapMaximizer.terminalReflectedHeight_nonneg_of_tail_regime
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hregime : ProperTailRegime U α m)
@@ -186,19 +174,6 @@ theorem IsJointCapMaximizer.centered_terminalReflectedHeight_le_barrier_of_tail_
   unfold terminalReflectedHeight
   linarith only [hEP, hH, hlow, hq]
 
-theorem IsJointCapMaximizer.centered_terminalReflectedHeight_le_barrier
-    {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    terminalReflectedHeight U α ≤ 1 / 2 +
-      5 / 4 * (1 - (terminalTailPoint U α).2) + 3 / 4 * partialBarrier U α (-C) := by
-  exact IsJointCapMaximizer.centered_terminalReflectedHeight_le_barrier_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
-
 theorem IsJointCapMaximizer.centered_firstWall_le_terminalSlope_of_tail_regime
     {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hregime : ProperTailRegime U α m)
@@ -219,18 +194,6 @@ theorem IsJointCapMaximizer.centered_firstWall_le_terminalSlope_of_tail_regime
   rw [firstWall_eq_terminalTail U hs.ne' hc.ne']
   change terminalSlope α * (terminalTailZero U α - -C) < 2 * C * terminalSlope α
   nlinarith only [mul_pos (terminalSlope_pos hU.angle_pos hproper) (sub_pos.mpr hzero)]
-
-theorem IsJointCapMaximizer.centered_firstWall_le_terminalSlope
-    {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    firstWall U α (-C) < 2 * C * terminalSlope α := by
-  exact IsJointCapMaximizer.centered_firstWall_le_terminalSlope_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
 
 theorem IsJointCapMaximizer.centered_firstWall_le_terminalSlope_of_nonneg_of_tail_regime
     {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
@@ -258,19 +221,6 @@ theorem IsJointCapMaximizer.centered_firstWall_le_terminalSlope_of_nonneg_of_tai
   change terminalSlope α * (C + topOverhangRight U - terminalInset α - -C) ≤ _
   exact mul_le_mul_of_nonneg_left (by linarith only [hTR])
     (terminalSlope_pos hU.angle_pos hproper).le
-
-theorem IsJointCapMaximizer.centered_firstWall_le_terminalSlope_of_nonneg
-    {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1) (hm : 0 ≤ m)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    firstWall U α (-C) ≤ terminalSlope α * (2 * C - terminalInset α / 2) := by
-  exact IsJointCapMaximizer.centered_firstWall_le_terminalSlope_of_nonneg_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight hm
-    haffine
 
 theorem terminalSlope_outgoing_nonneg_bound {α C : ℝ}
     (hα0 : 0 < α) (hαL : α < Real.pi / 2)
@@ -338,20 +288,6 @@ theorem IsJointCapMaximizer.centered_terminal_reflected_near_full_parameters_of_
     by linarith only [hd, hC.2, hTR],
     hU.terminalReflectedHeight_nonneg_of_tail_regime hregime hproper hheight haffine, he1⟩
 
-theorem IsJointCapMaximizer.centered_terminal_reflected_near_full_parameters
-    {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) (hκ : terminalSlope α ≤ 1 / 8) :
-    3 / 2 < terminalReflectedSpan U α ∧ terminalReflectedSpan U α < 563 / 250 ∧
-      0 ≤ terminalReflectedHeight U α ∧ terminalReflectedHeight U α < 19 / 25 := by
-  exact IsJointCapMaximizer.centered_terminal_reflected_near_full_parameters_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
-    hκ
-
 theorem IsJointCapMaximizer.centered_terminal_reflected_parameters_of_tail_regime
     {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hregime : ProperTailRegime U α m)
@@ -409,20 +345,5 @@ theorem IsJointCapMaximizer.centered_terminal_reflected_parameters_of_tail_regim
     exact Or.inr ⟨le_of_not_gt hm,
       by linarith only [hd, hC.2, hTP, hk, topOverhangLeft_nonneg U],
       by linarith only [he, hq, hH]⟩
-
-theorem IsJointCapMaximizer.centered_terminal_reflected_parameters
-    {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    3 / 2 < terminalReflectedSpan U α ∧ 0 ≤ terminalReflectedHeight U α ∧
-      ((m < 0 ∧ terminalReflectedSpan U α < 111 / 50 ∧ terminalReflectedHeight U α < 1) ∨
-       (0 ≤ m ∧ terminalReflectedSpan U α < 2311 / 1000 ∧
-         terminalReflectedHeight U α < 179 / 200)) := by
-  exact IsJointCapMaximizer.centered_terminal_reflected_parameters_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
 
 end AmbidextrousSofa

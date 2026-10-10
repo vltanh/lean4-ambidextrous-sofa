@@ -93,18 +93,6 @@ theorem IsDownwardCap.capScore_le_threeAngleComparisonScore {U : Set Plane}
   unfold threeAngleComparisonScore intervalSpatialScore
   linarith only [hmono]
 
-theorem IsDownwardCap.threeAngleComparisonScore_le_diagonalComparisonScore {U : Set Plane}
-    (hU : IsDownwardCap U) : threeAngleComparisonScore U ≤ diagonalComparisonScore U := by
-  have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
-  have hmono := intervalIntegral.integral_mono_on
-    (show horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4 ≤
-      horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 by linarith only [hlr])
-    ((continuous_diagonalBarrier U).intervalIntegrable (μ := volume) _ _)
-    ((continuous_threeAngleBarrier U).intervalIntegrable (μ := volume) _ _)
-    (fun x _ => diagonalBarrier_le_threeAngleBarrier U x)
-  unfold threeAngleComparisonScore diagonalComparisonScore intervalSpatialScore
-  linarith only [hmono]
-
 theorem threeAngleBarrier_horizontalMirror (U : Set Plane) (x : ℝ) :
     threeAngleBarrier (horizontalMirror U) x = threeAngleBarrier U (-x) := by
   simp only [threeAngleBarrier, diagonalBarrier_horizontalMirror, cornerWall_horizontalMirror,

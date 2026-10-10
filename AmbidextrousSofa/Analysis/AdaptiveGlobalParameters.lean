@@ -51,12 +51,6 @@ theorem sin_family_phase_pos {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) 
   Real.sin_pos_of_pos_of_lt_pi (family_phase_bounds hb).1
     (by linarith [(family_phase_bounds hb).2, Real.pi_pos])
 
-theorem cos_family_phase_pos {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
-    0 < Real.cos (tailPhase b) :=
-  Real.cos_pos_of_mem_Ioo
-    ⟨by linarith [(family_phase_bounds hb).1, Real.pi_pos],
-      by linarith [(family_phase_bounds hb).2, Real.pi_pos]⟩
-
 theorem sin_le_cos_on_first_eighth {t : ℝ} (ht : t ∈ Icc (0 : ℝ) (Real.pi / 4)) :
     Real.sin t ≤ Real.cos t := by
   rw [← Real.sin_pi_div_two_sub]
@@ -143,10 +137,6 @@ theorem hasDerivAt_familyCot {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) 
   unfold familyCot
   field_simp [ne_of_gt (sin_family_phase_pos hb)]
   <;> ring
-
-theorem continuousOn_familyCot :
-    ContinuousOn familyCot (Icc (0 : ℝ) (Real.pi / 4)) :=
-  fun _ hb => (hasDerivAt_familyCot hb).continuousAt.continuousWithinAt
 
 theorem hasDerivAt_familyWidth {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
     HasDerivAt familyWidth

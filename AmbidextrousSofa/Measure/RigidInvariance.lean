@@ -20,14 +20,6 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-theorem measurePreserving_rotate (θ : ℝ) :
-    MeasurePreserving (rotate θ) (volume : Measure Plane) volume := by
-  refine ⟨(continuous_rotate θ).measurable, ?_⟩
-  have h := Measure.map_linearMap_addHaar_eq_smul_addHaar
-    (volume : Measure Plane) (f := rotationLinearMap θ) (by simp)
-  simpa only [coe_rotationLinearMap, det_rotationLinearMap, inv_one, abs_one,
-    ENNReal.ofReal_one, one_smul] using h
-
 theorem volume_image_rotate (θ : ℝ) (S : Set Plane) :
     volume (rotate θ '' S) = volume S := by
   have h := Measure.addHaar_image_linearMap (volume : Measure Plane)
@@ -38,10 +30,6 @@ theorem volume_image_rotate (θ : ℝ) (S : Set Plane) :
 theorem volume_image_translate (v : Plane) (S : Set Plane) :
     volume ((fun p => p + v) '' S) = volume S := by
   rw [image_add_right, measure_preimage_add_right]
-
-theorem measurePreserving_rigidMap (θ : ℝ) (v : Plane) :
-    MeasurePreserving (rigidMap θ v) (volume : Measure Plane) volume :=
-  (measurePreserving_add_right volume v).comp (measurePreserving_rotate θ)
 
 theorem volume_image_rigidMap (θ : ℝ) (v : Plane) (S : Set Plane) :
     volume (rigidMap θ v '' S) = volume S := by

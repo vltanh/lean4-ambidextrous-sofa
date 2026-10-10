@@ -76,22 +76,6 @@ def integratedPartitionDefect (I J : Set ℝ) (dU dV nU nV : ℝ → ℝ) : ℝ 
   (∫ x in J, middlePartitionDefect (dU x) (dV x) (nU x) (nV x)) +
     ∫ x in I \ J, exteriorPartitionDefect (dU x) (dV x) (nU x) (nV x)
 
-theorem integrableOn_middlePartitionDefect
-    {I : Set ℝ} {dU dV nU nV : ℝ → ℝ}
-    (hdU : IntegrableOn dU I) (hdV : IntegrableOn dV I)
-    (hnU : IntegrableOn nU I) (hnV : IntegrableOn nV I) :
-    IntegrableOn (fun x => middlePartitionDefect (dU x) (dV x) (nU x) (nV x)) I :=
-  Integrable.add (Integrable.pos_part (Integrable.sub hdV hnU))
-    (Integrable.pos_part (Integrable.sub hdU hnV))
-
-theorem integrableOn_exteriorPartitionDefect
-    {I : Set ℝ} {dU dV nU nV : ℝ → ℝ}
-    (hdU : IntegrableOn dU I) (hdV : IntegrableOn dV I)
-    (hnU : IntegrableOn nU I) (hnV : IntegrableOn nV I) :
-    IntegrableOn (fun x => exteriorPartitionDefect (dU x) (dV x) (nU x) (nV x)) I :=
-  Integrable.add (Integrable.pos_part (Integrable.sub hnU hdV))
-    (Integrable.pos_part (Integrable.sub hnV hdU))
-
 theorem integral_middlePartitionDefect_nonneg
     (I : Set ℝ) (dU dV nU nV : ℝ → ℝ) :
     0 ≤ ∫ x in I, middlePartitionDefect (dU x) (dV x) (nU x) (nV x) :=
@@ -181,20 +165,6 @@ theorem integrated_partition_defect_identity
   simp only [setIntegral_const, smul_eq_mul, mul_one]
   linarith
 
-/-- The intended middle-half specialization discharges the measure-balance
-and finite-measure conditions explicitly. -/
-theorem integrated_partition_defect_identity_middleHalf
-    {l r : ℝ} {dU dV nU nV : ℝ → ℝ} (hlr : l ≤ r)
-    (hdU : IntegrableOn dU (Icc l r)) (hdV : IntegrableOn dV (Icc l r))
-    (hnU : IntegrableOn nU (Icc l r)) (hnV : IntegrableOn nV (Icc l r)) :
-    spatialScore (Icc l r) (middleHalfInterval l r) dU nU +
-        spatialScore (Icc l r) (middleHalfInterval l r) dV nV -
-        (∫ x in Icc l r, signedFiberLength (dU x) (dV x) (nU x) (nV x)) =
-      integratedPartitionDefect (Icc l r) (middleHalfInterval l r) dU dV nU nV := by
-  exact integrated_partition_defect_identity (measurableSet_middleHalfInterval l r)
-    (middleHalfInterval_subset hlr) (by rw [Real.volume_Icc]; exact ENNReal.ofReal_ne_top)
-    (middleHalfInterval_measure_balance hlr) hdU hdV hnU hnV
-
 theorem signedIntegral_le_spatialScore_sum
     {I J : Set ℝ} {dU dV nU nV : ℝ → ℝ}
     (hJ : MeasurableSet J) (hJI : J ⊆ I) (hFinite : volume I ≠ ⊤)
@@ -208,88 +178,6 @@ theorem signedIntegral_le_spatialScore_sum
   linarith
 
 /-! ## Exact almost-everywhere equality conditions -/
-
-theorem integral_middlePartitionDefect_eq_zero_iff
-    {I : Set ℝ} {dU dV nU nV : ℝ → ℝ}
-    (hIntegrable : IntegrableOn
-      (fun x => middlePartitionDefect (dU x) (dV x) (nU x) (nV x)) I) :
-    (∫ x in I, middlePartitionDefect (dU x) (dV x) (nU x) (nV x)) = 0 ↔
-      ∀ᵐ x ∂volume.restrict I, dV x ≤ nU x ∧ dU x ≤ nV x := by
-  rw [integral_eq_zero_iff_of_nonneg_ae
-    (Filter.Eventually.of_forall (fun x =>
-      middlePartitionDefect_nonneg (dU x) (dV x) (nU x) (nV x))) hIntegrable]
-  constructor
-  · intro hZero
-    filter_upwards [hZero] with x hx
-    exact (middlePartitionDefect_eq_zero_iff (dU x) (dV x) (nU x) (nV x)).mp hx
-  · intro hOrder
-    filter_upwards [hOrder] with x hx
-    exact (middlePartitionDefect_eq_zero_iff (dU x) (dV x) (nU x) (nV x)).mpr hx
-
-theorem integral_exteriorPartitionDefect_eq_zero_iff
-    {I : Set ℝ} {dU dV nU nV : ℝ → ℝ}
-    (hIntegrable : IntegrableOn
-      (fun x => exteriorPartitionDefect (dU x) (dV x) (nU x) (nV x)) I) :
-    (∫ x in I, exteriorPartitionDefect (dU x) (dV x) (nU x) (nV x)) = 0 ↔
-      ∀ᵐ x ∂volume.restrict I, nU x ≤ dV x ∧ nV x ≤ dU x := by
-  rw [integral_eq_zero_iff_of_nonneg_ae
-    (Filter.Eventually.of_forall (fun x =>
-      exteriorPartitionDefect_nonneg (dU x) (dV x) (nU x) (nV x))) hIntegrable]
-  constructor
-  · intro hZero
-    filter_upwards [hZero] with x hx
-    exact (exteriorPartitionDefect_eq_zero_iff (dU x) (dV x) (nU x) (nV x)).mp hx
-  · intro hOrder
-    filter_upwards [hOrder] with x hx
-    exact (exteriorPartitionDefect_eq_zero_iff (dU x) (dV x) (nU x) (nV x)).mpr hx
-
-/-- ED.6: vanishing integrated relaxation is exactly the two a.e. wall orders.
-Integrability is explicit, so the zero value of an undefined Bochner integral
-cannot be mistaken for a vanishing nonnegative defect. -/
-theorem integratedPartitionDefect_eq_zero_iff
-    {I J : Set ℝ} {dU dV nU nV : ℝ → ℝ}
-    (hMiddle : IntegrableOn
-      (fun x => middlePartitionDefect (dU x) (dV x) (nU x) (nV x)) J)
-    (hExterior : IntegrableOn
-      (fun x => exteriorPartitionDefect (dU x) (dV x) (nU x) (nV x)) (I \ J)) :
-    integratedPartitionDefect I J dU dV nU nV = 0 ↔
-      (∀ᵐ x ∂volume.restrict J, dV x ≤ nU x ∧ dU x ≤ nV x) ∧
-        (∀ᵐ x ∂volume.restrict (I \ J), nU x ≤ dV x ∧ nV x ≤ dU x) := by
-  have hMiddleNonneg := integral_middlePartitionDefect_nonneg J dU dV nU nV
-  have hExteriorNonneg := integral_exteriorPartitionDefect_nonneg (I \ J) dU dV nU nV
-  constructor
-  · intro hZero
-    unfold integratedPartitionDefect at hZero
-    have hm : (∫ x in J, middlePartitionDefect (dU x) (dV x) (nU x) (nV x)) = 0 := by
-      linarith
-    have he : (∫ x in I \ J, exteriorPartitionDefect (dU x) (dV x) (nU x) (nV x)) = 0 := by
-      linarith
-    exact ⟨(integral_middlePartitionDefect_eq_zero_iff hMiddle).mp hm,
-      (integral_exteriorPartitionDefect_eq_zero_iff hExterior).mp he⟩
-  · rintro ⟨hMiddleOrder, hExteriorOrder⟩
-    unfold integratedPartitionDefect
-    rw [(integral_middlePartitionDefect_eq_zero_iff hMiddle).mpr hMiddleOrder,
-      (integral_exteriorPartitionDefect_eq_zero_iff hExterior).mpr hExteriorOrder,
-      zero_add]
-
-/-- Equality in the integrated signed partition has exactly the a.e. wall-order
-conditions. This is independent of any sharp one-cap score inequality. -/
-theorem spatialScore_sum_eq_signedIntegral_iff
-    {I J : Set ℝ} {dU dV nU nV : ℝ → ℝ}
-    (hJ : MeasurableSet J) (hJI : J ⊆ I) (hFinite : volume I ≠ ⊤)
-    (hBalance : volume.real J = volume.real (I \ J))
-    (hdU : IntegrableOn dU I) (hdV : IntegrableOn dV I)
-    (hnU : IntegrableOn nU I) (hnV : IntegrableOn nV I) :
-    spatialScore I J dU nU + spatialScore I J dV nV =
-        (∫ x in I, signedFiberLength (dU x) (dV x) (nU x) (nV x)) ↔
-      (∀ᵐ x ∂volume.restrict J, dV x ≤ nU x ∧ dU x ≤ nV x) ∧
-        (∀ᵐ x ∂volume.restrict (I \ J), nU x ≤ dV x ∧ nV x ≤ dU x) := by
-  have hIdentity := integrated_partition_defect_identity hJ hJI hFinite hBalance hdU hdV hnU hnV
-  have hMiddle := (integrableOn_middlePartitionDefect hdU hdV hnU hnV).mono_set hJI
-  have hExterior := (integrableOn_exteriorPartitionDefect hdU hdV hnU hnV).mono_set
-    (sdiff_subset : I \ J ⊆ I)
-  rw [← integratedPartitionDefect_eq_zero_iff hMiddle hExterior]
-  constructor <;> intro h <;> linarith
 
 /-! ## Ordinary-area enclosure, with physical fibers -/
 

@@ -156,31 +156,4 @@ theorem IsJointCapMaximizer.leftCompanion_density_of_regular_companion
       rw [hind, withDensity_indicator measurableSet_Ioi,
         Measure.restrict_restrict measurableSet_Ioi, hinter]
 
-/-- An actual proper maximizer supplies a globally bounded measurable
-density for its literal left companion cut on the full open companion
-arc. The initial zero region is retained pointwise in the representative. -/
-theorem IsJointCapMaximizer.leftCompanion_curvature_density
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hproper : α < Real.pi / 2)
-    (haffine : ∀ z ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U z = m * z + c) :
-    ∃ ρ : ℝ → ℝ, Measurable ρ ∧
-      (∀ t, 0 ≤ ρ t ∧ ρ t ≤ 8 * (|horizontalLeft U| + |horizontalRight U| + 1) + 24) ∧
-      (∀ t ≤ max (Real.pi / 2) (affineNormalAngle m), ρ t = 0) ∧
-      (upperCurvature (leftCompanionCap U (horizontalLeft U + capWidth U / 4))).restrict
-          (Ioo (Real.pi / 2) Real.pi) =
-        (volume.restrict (Ioo (Real.pi / 2) Real.pi)).withDensity
-          (fun t => ENNReal.ofReal (ρ t)) := by
-  obtain ⟨ρ, hρ, hbounds, heq⟩ :=
-    hU.curvature_density_on_regular_companion_domain hproper haffine
-  refine ⟨leftCompanionWingDensity m ρ, measurable_leftCompanionWingDensity hρ m,
-    ?_, (fun t ht => leftCompanionWingDensity_eq_zero ht),
-    hU.leftCompanion_density_of_regular_companion haffine heq⟩
-  intro t
-  by_cases ht : max (Real.pi / 2) (affineNormalAngle m) < t
-  · rw [leftCompanionWingDensity_eq ht]
-    exact hbounds t
-  · rw [leftCompanionWingDensity_eq_zero (le_of_not_gt ht)]
-    exact ⟨le_rfl, by positivity⟩
-
 end AmbidextrousSofa

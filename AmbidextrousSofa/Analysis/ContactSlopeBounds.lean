@@ -146,28 +146,6 @@ theorem false_of_corner_graph_residual_balance_of_same_sign {p q g t : ℝ}
   simp only [hF, hG, zero_mul, sub_self] at hprojection
   exact zero_ne_one hprojection
 
-/-- In the original cap convention the two support momenta are
-`-secondCornerVelocity` and `firstCornerVelocity`. A differentiable
-core contact cannot belong to either of their equal-sign phases. -/
-theorem IsDownwardCap.not_same_sign_momenta_at_attachedCorner_contact
-    {U : Set Plane} (hU : IsDownwardCap U) {m K t g : ℝ} {ρ : ℝ → ℝ}
-    (hρ : Measurable ρ) (hρ0 : ∀ s, 0 ≤ ρ s) (hρK : ∀ s, ρ s ≤ K)
-    (heq : (upperCurvature U).restrict (regularCurvatureDomain m) =
-      (volume.restrict (regularCurvatureDomain m)).withDensity (fun s => ENNReal.ofReal (ρ s)))
-    (ht : t ∈ regularCornerDomain m)
-    (hderiv : HasDerivAt (sweptNiche U (Real.pi / 2)) g (attachedCorner U t).1)
-    (hcontact : sweptNiche U (Real.pi / 2) (attachedCorner U t).1 =
-      (attachedCorner U t).2) :
-    ¬ ((0 < -secondCornerVelocity U t ∧ 0 < firstCornerVelocity U t) ∨
-      (-secondCornerVelocity U t < 0 ∧ firstCornerVelocity U t < 0)) := by
-  have hsigns := hU.niche_residual_signs_at_attachedCorner ht.1 hderiv hcontact
-  have hchain := hU.niche_derivative_corner_velocity hρ hρ0 hρK heq ht hderiv hcontact
-  change g * ((-secondCornerVelocity U t) * Real.cos t -
-      firstCornerVelocity U t * Real.sin t) =
-    (-secondCornerVelocity U t) * Real.sin t + firstCornerVelocity U t * Real.cos t at hchain
-  exact false_of_corner_graph_residual_balance_of_same_sign hsigns.1 hsigns.2
-    (corner_graph_residual_balance hchain)
-
 section ActualPair
 
 variable {U : Set Plane} (hU : IsFullCapMaximizer U)

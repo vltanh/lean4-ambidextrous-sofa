@@ -135,41 +135,6 @@ theorem absolutelyContinuousOnInterval_const_real (c a b : ℝ) :
     AbsolutelyContinuousOnInterval (fun _ : ℝ => c) a b :=
   (LipschitzWith.lipschitzOnWith (LipschitzWith.const c)).absolutelyContinuousOnInterval
 
-theorem absolutelyContinuousOnInterval_initialFloorEnergy
-    {p q : ℝ → ℝ} {a b : ℝ}
-    (hp : AbsolutelyContinuousOnInterval p a b)
-    (hq : AbsolutelyContinuousOnInterval q a b) :
-    AbsolutelyContinuousOnInterval (fun t => initialFloorEnergy (p t) (q t)) a b := by
-  have hp' := hp.fun_sub (absolutelyContinuousOnInterval_const_real (1 / 2) a b)
-  have hq' := hq.fun_add (absolutelyContinuousOnInterval_const_real 1 a b)
-  simpa only [initialFloorEnergy, pow_two, Pi.add_apply, Pi.sub_apply, Pi.mul_apply] using
-    (hp'.fun_mul hp').fun_add (hq'.fun_mul hq')
-
-/-- The same-sign energy is nonincreasing for AC momenta obeying the
-actual source equations with `u=0` and `v≤1/2`, almost everywhere. -/
-theorem initialFloorEnergy_le_of_sourceODE {p q v : ℝ → ℝ} {a b : ℝ}
-    (hab : a ≤ b)
-    (hp : AbsolutelyContinuousOnInterval p a b)
-    (hq : AbsolutelyContinuousOnInterval q a b)
-    (hode : ∀ᵐ t ∂volume.restrict (Icc a b),
-      HasDerivAt p (-1 - q t) t ∧ HasDerivAt q (v t - 1 + p t) t)
-    (hqpos : ∀ᵐ t ∂volume.restrict (Icc a b), -1 ≤ q t)
-    (hv : ∀ᵐ t ∂volume.restrict (Icc a b), v t ≤ 1 / 2) :
-    initialFloorEnergy (p b) (q b) ≤ initialFloorEnergy (p a) (q a) := by
-  have hE := absolutelyContinuousOnInterval_initialFloorEnergy hp hq
-  have hD : (fun t => deriv (fun x => initialFloorEnergy (p x) (q x)) t) ≤ᵐ[
-      volume.restrict (Icc a b)] (fun _ => 0) := by
-    filter_upwards [hode, hqpos, hv] with t ht hqt hvt
-    have hd := ((ht.1.sub_const (1 / 2)).fun_pow 2).fun_add ((ht.2.add_const 1).fun_pow 2)
-    change deriv (fun x => (p x - 1 / 2) ^ 2 + (q x + 1) ^ 2) t ≤ 0
-    rw [hd.deriv]
-    nlinarith [mul_nonpos_of_nonneg_of_nonpos
-      (show 0 ≤ q t + 1 by linarith) (show v t - 1 / 2 ≤ 0 by linarith)]
-  have hint := intervalIntegral.integral_mono_ae_restrict hab
-    hE.intervalIntegrable_deriv intervalIntegrable_const hD
-  rw [hE.integral_deriv_eq_sub] at hint
-  simpa only [intervalIntegral.integral_zero, sub_nonpos] using hint
-
 /-- Uniqueness of the zero-density circle follows from the actual AC
 momentum equations and zero initial difference energy. -/
 theorem eqOn_initialFloorCircle_of_zero_source {p q : ℝ → ℝ} {d B τ : ℝ}
@@ -210,35 +175,5 @@ theorem eqOn_initialFloorCircle_of_zero_source {p q : ℝ → ℝ} {d B τ : ℝ
     constructor <;> apply sq_eq_zero_iff.mp <;> nlinarith [sq_nonneg (x t), sq_nonneg (y t)]
   exact ⟨fun t ht => sub_eq_zero.mp (hpoint t ht).1,
     fun t ht => sub_eq_zero.mp (hpoint t ht).2⟩
-
-theorem firstMomentum_zero_companion_le_one {p q : ℝ}
-    (hp : p = 0) (hE : initialFloorEnergy p q ≤ 17 / 4) : q ≤ 1 := by
-  unfold initialFloorEnergy at hE
-  rw [hp] at hE
-  by_contra h
-  have hgt : 1 < q := lt_of_not_ge h
-  have hprod := mul_pos (sub_pos.mpr hgt) (show 0 < q + 3 by linarith)
-  nlinarith
-
-/-- IE's analytic first-crossing conclusion, with the stopped initial
-circle and the subsequent same-sign evolution joined explicitly. -/
-theorem initialFloor_first_crossing_le_one
-    {p q v : ℝ → ℝ} {d B h τ α : ℝ}
-    (h0 : 0 ≤ h) (h2 : h ≤ 2) (hτα : τ ≤ α)
-    (hcond : InitialFloorEnergyConditions d B h)
-    (hp : AbsolutelyContinuousOnInterval p τ α)
-    (hq : AbsolutelyContinuousOnInterval q τ α)
-    (hode : ∀ᵐ t ∂volume.restrict (Icc τ α),
-      HasDerivAt p (-1 - q t) t ∧ HasDerivAt q (v t - 1 + p t) t)
-    (hqpos : ∀ᵐ t ∂volume.restrict (Icc τ α), -1 ≤ q t)
-    (hv : ∀ᵐ t ∂volume.restrict (Icc τ α), v t ≤ 1 / 2)
-    (hpτ : p τ = initialFloorCircleP d B τ)
-    (hqτ : q τ = initialFloorCircleQ d B τ)
-    (hstop : initialFloorCircleP d B τ = 0 ∨ τ = initialFloorAngle h)
-    (hpα : p α = 0) : q α ≤ 1 := by
-  have hstart := initialFloor_stopped_energy_le h0 h2 hcond hstop
-  have hdecrease := initialFloorEnergy_le_of_sourceODE hτα hp hq hode hqpos hv
-  rw [hpτ, hqτ] at hdecrease
-  exact firstMomentum_zero_companion_le_one hpα (hdecrease.trans hstart)
 
 end AmbidextrousSofa.Analysis

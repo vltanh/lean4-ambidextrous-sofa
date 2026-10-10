@@ -44,20 +44,6 @@ theorem QuarterPair.continuous_fluxG (u : QuarterPair) :
   unfold QuarterPair.fluxG QuarterPair.q
   fun_prop
 
-theorem QuarterPair.continuous_forceF (u : QuarterPair) :
-    ContinuousOn u.forceF (Icc 0 (Real.pi / 2)) := by
-  have hf := u.continuous_f
-  have hgD := u.continuous_gD
-  unfold QuarterPair.forceF QuarterPair.q
-  fun_prop
-
-theorem QuarterPair.continuous_forceG (u : QuarterPair) :
-    ContinuousOn u.forceG (Icc 0 (Real.pi / 2)) := by
-  have hg := u.continuous_g
-  have hfD := u.continuous_fD
-  unfold QuarterPair.forceG QuarterPair.p
-  fun_prop
-
 theorem adaptiveLinearDensity_eq_flux (u v : QuarterPair) (t : ℝ) :
     adaptiveLinearDensity u v t =
       u.forceF t * v.f t + u.fluxF t * v.fD t +

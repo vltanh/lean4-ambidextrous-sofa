@@ -31,13 +31,6 @@ theorem measurable_realRnDensity (μ ν : Measure ℝ) : Measurable (realRnDensi
 theorem realRnDensity_nonneg (μ ν : Measure ℝ) (x : ℝ) : 0 ≤ realRnDensity μ ν x :=
   ENNReal.toReal_nonneg
 
-theorem integrable_realRnDensity (μ ν : Measure ℝ) [IsFiniteMeasure μ] :
-    Integrable (realRnDensity μ ν) ν := by
-  have hi := Measure.integrableOn_toReal_rnDeriv
-    (μ := μ) (ν := ν) (s := univ) (measure_ne_top _ _)
-  simp only [IntegrableOn, Measure.restrict_univ] at hi
-  exact hi
-
 theorem withDensity_realRnDensity (μ ν : Measure ℝ)
     [IsFiniteMeasure μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     ν.withDensity (fun x => ENNReal.ofReal (realRnDensity μ ν x)) = μ := by

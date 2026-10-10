@@ -119,10 +119,6 @@ theorem IsDownwardCap.sigmaFun_zero {U : Set Plane} (hU : IsDownwardCap U) :
     MovingSofaOptimality.sigmaFun U 0 = capRoof U (horizontalRight U) := by
   simp [MovingSofaOptimality.sigmaFun, hU.axis_vplus_zero, MovingSofaOptimality.dot, MovingSofaOptimality.vvec]
 
-theorem IsDownwardCap.sigmaFun_pi {U : Set Plane} (hU : IsDownwardCap U) :
-    MovingSofaOptimality.sigmaFun U Real.pi = ∫ t in (0 : ℝ)..Real.pi, MovingSofaOptimality.supp U t := by
-  simp [MovingSofaOptimality.sigmaFun, hU.axis_vplus_pi, MovingSofaOptimality.dot, MovingSofaOptimality.vvec]
-
 theorem IsDownwardCap.sigmaFun_leftLim_pi {U : Set Plane} (hU : IsDownwardCap U) :
     Function.leftLim (MovingSofaOptimality.sigmaFun U) Real.pi =
       (∫ t in (0 : ℝ)..Real.pi, MovingSofaOptimality.supp U t) - capRoof U (horizontalLeft U) := by

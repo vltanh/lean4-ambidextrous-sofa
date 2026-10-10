@@ -127,21 +127,4 @@ theorem IsFullCapMaximizer.curvature_density_nonpositive_corner_control
     exact ⟨by norm_num, by norm_num⟩
   · exact (hfloor ht).2
 
-theorem IsFullCapMaximizer.horizontal_curvature_density_nonpositive_corner_control
-    {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1) {c : ℝ}
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = c) :
-    ∃ ρ : ℝ → ℝ, Measurable ρ ∧
-      (∀ t, 0 ≤ ρ t ∧ ρ t ≤ sourceKappa (upperCornerVelocity U t)) ∧
-      (∀ t, ρ t ≤ 4 * (|horizontalLeft U| + |horizontalRight U| + 1) + 10) ∧
-      (upperCurvature U).restrict (regularCurvatureDomain 0) =
-        (volume.restrict (regularCurvatureDomain 0)).withDensity (fun t => ENNReal.ofReal (ρ t)) ∧
-      (∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)),
-        ((attachedCorner U t).2 < 0 → ρ t = 0 ∧ ρ (t + Real.pi / 2) = 0) ∧
-        ((attachedCorner U t).2 = 0 →
-          0 < cornerVelocityX U t ∧ ρ t < 1 ∧ ρ (t + Real.pi / 2) < 1) ∧
-        ((attachedCorner U t).2 ≤ 0 → ρ t < 1 ∧ ρ (t + Real.pi / 2) < 1)) := by
-  have h := hU.curvature_density_nonpositive_corner_control hheight
-    (m := 0) (c := c) (by simpa only [zero_mul, zero_add] using haffine)
-  simpa only [regularCornerDomain_zero] using h
-
 end AmbidextrousSofa

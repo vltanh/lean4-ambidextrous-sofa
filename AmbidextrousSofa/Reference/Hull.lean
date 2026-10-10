@@ -138,12 +138,6 @@ theorem isCompact_referenceBox : IsCompact referenceBox := isCompact_Icc.prod is
 theorem isCompact_referenceHull : IsCompact referenceHull :=
   isCompact_referenceBox.of_isClosed_subset isClosed_referenceHull referenceHull_subset_box
 
-theorem isConnected_referenceHull : IsConnected referenceHull :=
-  convex_referenceHull.isConnected referenceHull_nonempty
-
-theorem measurableSet_referenceHull : MeasurableSet referenceHull :=
-  isClosed_referenceHull.measurableSet
-
 /-- Reflection exchanges the two retained members of each half-plane family. -/
 theorem reflect_mem_referenceHull (p : Plane) :
     reflect p ∈ referenceHull ↔ p ∈ referenceHull := by
@@ -164,11 +158,6 @@ theorem preimage_reflect_referenceHull : reflect ⁻¹' referenceHull = referenc
 theorem image_reflect_referenceHull : reflect '' referenceHull = referenceHull := by
   rw [image_reflect_eq_preimage, preimage_reflect_referenceHull]
 
-theorem actualHull_referenceHull : actualHull referenceHull = referenceHull := by
-  apply Set.Subset.antisymm
-  · exact convexHull_min (Set.Subset.refl _) convex_referenceHull
-  · exact subset_actualHull referenceHull
-
 /-- The actual upper cap meets the broad intrinsic cap definition. -/
 theorem isDownwardCap_referenceCap : IsDownwardCap referenceCap :=
   isDownwardCap_upperCap referenceHull_nonempty isCompact_referenceHull
@@ -180,14 +169,6 @@ theorem referenceHull_subset_referenceCap : referenceHull ⊆ referenceCap :=
 theorem horizontalProjection_referenceCap :
     horizontalProjection referenceCap = horizontalProjection referenceHull :=
   horizontalProjection_upperCap (fun p hp => (referenceHull_subset_unitStrip hp).1)
-
-theorem upperHullCap_referenceHull : upperHullCap referenceHull = referenceCap := by
-  unfold upperHullCap referenceCap
-  rw [actualHull_referenceHull]
-
-theorem reflectedHullCap_referenceHull : reflectedHullCap referenceHull = referenceCap := by
-  unfold reflectedHullCap referenceCap
-  rw [actualHull_referenceHull, image_reflect_referenceHull]
 
 /-- Symmetry and convexity recover this hull from its actual downward cap. -/
 theorem referenceHull_eq_inter_caps : referenceHull = referenceCap ∩ reflect '' referenceCap := by
@@ -209,13 +190,6 @@ theorem angleSupport_referenceHull_le_g {t : ℝ}
   apply support_le_of_forall referenceHull_nonempty
   intro p hp
   exact ((mem_referenceHull_iff p).mp hp t ht).1.2
-
-/-- The actual hull support has the precise reflected vertical correction. -/
-theorem angleSupport_referenceHull_neg (t : ℝ) :
-    angleSupport referenceHull (-t) = angleSupport referenceHull t - Real.sin t := by
-  have h := angleSupport_reflect isCompact_referenceHull referenceHull_nonempty t
-  rw [image_reflect_referenceHull] at h
-  linarith
 
 /-- Downward filling preserves actual upward support of the constructed hull. -/
 theorem angleSupport_referenceCap {t : ℝ} (ht : 0 ≤ Real.sin t) :

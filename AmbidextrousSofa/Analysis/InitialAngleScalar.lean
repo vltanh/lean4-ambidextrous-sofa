@@ -151,13 +151,6 @@ theorem initialAngle_rational_lt_half_M : (5259 / 6400 : ℝ) < M / 2 := by
   exact (by norm_num : (5259 / 6400 : ℝ) < 411 / 500).trans
     four_hundred_eleven_five_hundredths_lt_half_M
 
-theorem initialAngle_stationary_lt_half_M {C k d s : ℝ}
-    (hk0 : 3 / 8 ≤ k) (hk1 : k ≤ 4 / 5) (hs0 : 0 ≤ s)
-    (hs2 : s ^ 2 = 1 + k ^ 2) (hkd : k * d = s - 1) :
-    initialAngleStationaryValue (Real.sqrt 2 - 1) C k d < M / 2 :=
-  (initialAngle_stationary_lt_rational hk0 hk1 hs0 hs2 hkd).trans
-    initialAngle_rational_lt_half_M
-
 /-- The diagonal stationary value is below `41/50` for the entire small-width range. -/
 theorem initialAngle_diagonal_small_width {C : ℝ} (hC : C ≤ 49 / 100) :
     2 * C - 2 * (C - (Real.sqrt 2 - 1) / 2) ^ 2 < (41 / 50 : ℝ) := by
@@ -182,46 +175,6 @@ theorem initialAngle_complement_bound {K C h : ℝ}
   have hgapSq := mul_pos (sub_pos.mpr hgap)
     (show 0 < h - C + 9 / 20 by linarith)
   nlinarith [sq_nonneg (2 * C - 1 - K)]
-
-/-- The outgoing-only expression has a uniform small-width bound on the
-upper cotangent subinterval. -/
-theorem initialAngle_outgoing_small_width {C k s : ℝ}
-    (hC0 : 0 ≤ C) (hC1 : C ≤ 1 / 2)
-    (hk0 : 3 / 5 ≤ k) (hk1 : k ≤ 4 / 5)
-    (hs0 : 0 ≤ s) (hs2 : s ^ 2 = 1 + k ^ 2) :
-    (1 + s) * C - 2 * k * C ^ 2 ≤ (2 + Real.sqrt 34) / 10 := by
-  have hs1 : 1 ≤ s := by
-    apply (sq_le_sq₀ (by norm_num : (0 : ℝ) ≤ 1) hs0).mp
-    nlinarith [sq_nonneg k]
-  have hkC : k * C ≤ k / 2 := by
-    have h := mul_le_mul_of_nonneg_left hC1 (show 0 ≤ k by linarith)
-    linarith
-  have hwidth := mul_nonneg (show 0 ≤ 1 / 2 - C by linarith)
-    (show 0 ≤ 1 + s - k - 2 * k * C by linarith)
-  have hr0 : (3 : ℝ) ≤ Real.sqrt 34 :=
-    (Real.le_sqrt (by norm_num) (by norm_num)).2 (by norm_num)
-  have hr2 := Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 34)
-  have hroot : s ≤ k + (Real.sqrt 34 - 3) / 5 := by
-    have hprod := mul_nonneg (show 0 ≤ k - 3 / 5 by linarith)
-      (show 0 ≤ Real.sqrt 34 - 3 by linarith)
-    apply (sq_le_sq₀ hs0 (by linarith : 0 ≤ k + (Real.sqrt 34 - 3) / 5)).mp
-    nlinarith only [hr2, hs2, hprod]
-  nlinarith only [hwidth, hroot]
-
-theorem initialAngle_outgoing_small_width_endpoint :
-    (2 + Real.sqrt 34) / 10 < (4 / 5 : ℝ) := by
-  have hr : Real.sqrt (34 : ℝ) < 6 :=
-    (Real.sqrt_lt (by norm_num) (by norm_num)).2 (by norm_num)
-  linarith
-
-/-- The outgoing floor crossing pays the missing diagonal-floor quadratic. -/
-theorem initialAngle_outgoing_variation_budget {k ξ ζ : ℝ}
-    (hk0 : 0 ≤ k) (hk1 : k < 1) :
-    ξ ^ 2 ≤ (ξ - k * ζ) ^ 2 / (1 - k) + k * ζ ^ 2 := by
-  have h : ξ ^ 2 - k * ζ ^ 2 ≤ (ξ - k * ζ) ^ 2 / (1 - k) := by
-    apply (le_div_iff₀ (show 0 < 1 - k by linarith)).2
-    nlinarith [mul_nonneg hk0 (sq_nonneg (ξ - ζ))]
-  linarith
 
 /-- The two wall crossings jointly pay the negative tent-apex quadratic. -/
 theorem initialAngle_apex_variation_budget {k ξ η ζ : ℝ}

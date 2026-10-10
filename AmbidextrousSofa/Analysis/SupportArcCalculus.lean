@@ -108,33 +108,4 @@ theorem IsDownwardCap.hasDerivAt_angleSupport_of_open_arc
     constructor <;> linarith only [ht.1, ht.2, hs.1, hs.2]
   · constructor <;> linarith only [ht.1, ht.2]
 
-theorem IsDownwardCap.angleSupport_eq_closed_primitive_on_arc
-    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {K b t : ℝ}
-    (hρ : Measurable ρ) (hρ0 : ∀ s, 0 ≤ ρ s) (hρK : ∀ s, ρ s ≤ K)
-    (heq : (upperCurvature U).restrict S =
-      (volume.restrict S).withDensity (fun s => ENNReal.ofReal (ρ s)))
-    (hsub : Ioo (0 : ℝ) b ⊆ S) (ht : t ∈ Icc (0 : ℝ) b) :
-    angleSupport U t = angleSupport U 0 + ∫ s in (0 : ℝ)..t, closedSupportDerivative U ρ 0 s := by
-  have hid := hU.angleSupport_sub_eq_integral 0 t
-  have hi : (∫ s in (0 : ℝ)..t, supportTangent U s) =
-      ∫ s in (0 : ℝ)..t, closedSupportDerivative U ρ 0 s := by
-    apply intervalIntegral.integral_congr_Ioo_of_le ht.1
-    intro s hs
-    exact (hU.closedSupportDerivative_eq_supportTangent_on_arc hρ hρ0 hρK heq hsub
-      hs.1.le (hs.2.trans_le ht.2)).symm
-  rw [hi] at hid
-  linarith only [hid]
-
-theorem IsDownwardCap.hasDerivWithinAt_angleSupport_closed_arc
-    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {K b t : ℝ}
-    (hρ : Measurable ρ) (hρ0 : ∀ s, 0 ≤ ρ s) (hρK : ∀ s, ρ s ≤ K)
-    (heq : (upperCurvature U).restrict S =
-      (volume.restrict S).withDensity (fun s => ENNReal.ofReal (ρ s)))
-    (hsub : Ioo (0 : ℝ) b ⊆ S) (ht : t ∈ Icc (0 : ℝ) b) :
-    HasDerivWithinAt (angleSupport U) (closedSupportDerivative U ρ 0 t) (Icc 0 b) t := by
-  have hd := ((hU.continuous_closedSupportDerivative hρ hρ0 hρK 0).integral_hasStrictDerivAt
-    0 t).hasDerivAt.const_add (angleSupport U 0)
-  exact hd.hasDerivWithinAt.congr_of_mem
-    (fun s hs => hU.angleSupport_eq_closed_primitive_on_arc hρ hρ0 hρK heq hsub hs) ht
-
 end AmbidextrousSofa

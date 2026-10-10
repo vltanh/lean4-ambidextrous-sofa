@@ -105,38 +105,6 @@ theorem fullTiltedSupportQuarterPair_core_strictAntiOn_open {α η : ℝ}
   intro s hs t ht hst
   exact hclosed (Ioo_subset_Icc_self hs) (Ioo_subset_Icc_self ht) hst
 
-theorem fullTiltedSupportQuarterPair_attachedCorner_strictAntiOn_after_affine {α η : ℝ}
-    (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η)
-    (hafter : Real.arctan m ≤ α) :
-    StrictAntiOn (fun t => (attachedCorner U t).1) (Ioo α η) := by
-  have hmatch (t : ℝ) (ht : t ∈ Ioo α η) : Z t = attachedCorner U t :=
-    (fullTiltedSupportQuarterPair_other_points_after_affine
-      hU hm haffine hρ hρ0 hρK heq
-      ⟨hphase.first_mem.1.le.trans ht.1.le, ht.2.trans hphase.second_mem.2⟩
-      (hafter.trans ht.1.le)).2
-  have hanti := fullTiltedSupportQuarterPair_core_strictAntiOn_open
-    hU hm haffine hρ hρ0 hρK heq hphase
-  intro s hs t ht hst
-  simpa only [hmatch s hs, hmatch t ht] using hanti hs ht hst
-
-/-- The actual first-unit phase supplies the after-affine condition;
-strict decrease is for the original attached corner itself. -/
-theorem fullTiltedSupportQuarterPair_attachedCorner_strictAntiOn_first_unit
-    {C α η : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1) (hmpos : 0 < m)
-    (hκ : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
-    (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1)
-    (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η) :
-    StrictAntiOn (fun t => (attachedCorner U t).1) (Ioo α η) := by
-  obtain ⟨hC0, hC1, hh0, hh1, hsmall, hlow, hhigh⟩ :=
-    hU.centered_positive_tilt_parameters hl hr hheight hmpos haffine
-  have hafter := fullTiltedSupportQuarterPair_first_phase_after_affine
-    hU hm haffine hρ hρ0 hρK heq hl hr hC0 hC1.le hh0 hh1 hmpos hsmall hheight
-      hlow hhigh hκ hunit hphase
-  exact fullTiltedSupportQuarterPair_attachedCorner_strictAntiOn_after_affine
-    hU hm haffine hρ hρ0 hρK heq hphase hafter.le
-
 end ActualPair
 
 end AmbidextrousSofa

@@ -25,16 +25,6 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-theorem imported_rot_eq_rotate (θ : ℝ) (p : Plane) : MovingSofaOptimality.rot θ p = rotate θ p := rfl
-
-theorem imported_area_eq_volumeReal (S : Set Plane) : MovingSofaOptimality.area S = volume.real S := rfl
-
-theorem imported_horizSide_eq_incomingArm : MovingSofaOptimality.horizSide = incomingArm := rfl
-
-theorem imported_vertSide_eq_lowerOutgoingArm : MovingSofaOptimality.vertSide = lowerOutgoingArm := rfl
-
-theorem imported_hallway_eq_lowerHall : MovingSofaOptimality.hallway = lowerHall := rfl
-
 /-- Both existential Gerver parameter conditions are discharged by their
 proved source existence theorem. The resulting bound quantifies over the
 entire imported ordinary moving-sofa domain. -/
@@ -93,10 +83,5 @@ theorem volumeReal_le_ordinaryBound_of_lowerPassage {S : Set Plane}
   have hbound := imported_movingSofa_area_le hT
   have harea : volume.real T = volume.real S := volumeReal_image_rigidMap _ _ S
   rwa [harea] at hbound
-
-theorem IsAmbidextrous.volumeReal_le_ordinaryBound {S : Set Plane}
-    (hS : IsAmbidextrous S) : volume.real S ≤ (22199 : ℝ) / 10000 := by
-  obtain ⟨lower, upper, horient, hlower, hupper⟩ := hS.passages
-  exact volumeReal_le_ordinaryBound_of_lowerPassage hS.isCompact hS.isConnected hlower
 
 end AmbidextrousSofa

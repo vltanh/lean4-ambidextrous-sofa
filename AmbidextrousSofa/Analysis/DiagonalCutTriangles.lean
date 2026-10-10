@@ -27,9 +27,6 @@ theorem continuous_affineCutTriangle (k δ p : ℝ) : Continuous (affineCutTrian
   unfold affineCutTriangle
   fun_prop
 
-theorem affineCutTriangle_nonneg (k δ p x : ℝ) : 0 ≤ affineCutTriangle k δ p x :=
-  le_max_right _ _
-
 theorem integral_affineCutTriangle_full {k δ p A B : ℝ}
     (hk : 0 < k) (hk1 : k < 1) (hδ : 0 ≤ δ)
     (hleft : δ ≤ k * (p - A)) (hright : δ ≤ (1 - k) * (B - p)) :

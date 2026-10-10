@@ -199,12 +199,6 @@ theorem measurable_sweptNiche {K : Set Plane} (hK : IsCompact K)
     Measurable (sweptNiche K α) :=
   (lowerSemicontinuous_sweptNiche hK hα0 hα).measurable
 
-theorem lowerSemicontinuous_partialBarrier {K : Set Plane} (hK : IsCompact K)
-    {α : ℝ} (hα0 : 0 < α) (hα : α ≤ Real.pi / 2) :
-    LowerSemicontinuous (partialBarrier K α) :=
-  (lowerSemicontinuous_sweptNiche hK hα0 hα).sup
-    (continuous_firstWall K α).lowerSemicontinuous
-
 theorem measurable_partialBarrier {K : Set Plane} (hK : IsCompact K)
     {α : ℝ} (hα0 : 0 < α) (hα : α ≤ Real.pi / 2) :
     Measurable (partialBarrier K α) :=

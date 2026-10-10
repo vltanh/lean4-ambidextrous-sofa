@@ -29,15 +29,8 @@ def sourceKappa (q : ℝ) : ℝ := max |q| ((|q| + 1) / 2)
 theorem sourceKappa_nonneg (q : ℝ) : 0 ≤ sourceKappa q :=
   (abs_nonneg q).trans (le_max_left _ _)
 
-theorem sourceKappa_le_abs_add_one (q : ℝ) : sourceKappa q ≤ |q| + 1 := by
-  unfold sourceKappa
-  apply max_le <;> linarith [abs_nonneg q]
-
 theorem sourceKappa_neg (q : ℝ) : sourceKappa (-q) = sourceKappa q := by
   simp only [sourceKappa, abs_neg]
-
-theorem sourceKappa_eq_imported (q : ℝ) : sourceKappa q = MovingSofaOptimality.k0 (q + 1) := by
-  simp only [sourceKappa, MovingSofaOptimality.k0, add_sub_cancel_right]
 
 theorem continuous_sourceKappa : Continuous sourceKappa := by
   unfold sourceKappa

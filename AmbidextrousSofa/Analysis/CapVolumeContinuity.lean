@@ -112,30 +112,4 @@ theorem CapHausdorffTendsto.indicator_tendsto_ae
     filter_upwards [h.eventually_notMem_of_notMem hU hK hpK] with n hn
     simp only [indicator_of_notMem hn]
 
-theorem CapHausdorffTendsto.volumeReal_tendsto
-    {U : ℕ → Set Plane} {K : Set Plane} (h : CapHausdorffTendsto U K)
-    (hU : ∀ n, IsDownwardCap (U n)) (hK : IsDownwardCap K)
-    {B : Set Plane} (hB : IsCompact B) (hsub : ∀ n, U n ⊆ B) :
-    Tendsto (fun n => volume.real (U n)) atTop (𝓝 (volume.real K)) := by
-  have hmeas : ∀ n, AEStronglyMeasurable ((U n).indicator (fun _ => (1 : ℝ))) volume := by
-    intro n
-    exact (measurable_const.indicator (hU n).isCompact.measurableSet).aestronglyMeasurable
-  have hbound : Integrable (B.indicator (fun _ => (1 : ℝ))) volume :=
-    (integrable_indicator_iff hB.measurableSet).mpr (integrableOn_const hB.measure_ne_top)
-  have hdom : ∀ n, ∀ᵐ p : Plane ∂volume,
-      ‖(U n).indicator (fun _ => (1 : ℝ)) p‖ ≤ B.indicator (fun _ => (1 : ℝ)) p := by
-    intro n
-    apply Eventually.of_forall
-    intro p
-    by_cases hp : p ∈ U n
-    · simp only [indicator_of_mem hp, indicator_of_mem (hsub n hp), norm_one, le_refl]
-    · by_cases hpB : p ∈ B <;> simp [hp, hpB]
-  have hlim := tendsto_integral_of_dominated_convergence (B.indicator (fun _ => (1 : ℝ)))
-    hmeas hbound hdom (h.indicator_tendsto_ae hU hK)
-  have hArea (n : ℕ) := integral_indicator_const (μ := (volume : Measure Plane)) (1 : ℝ)
-    (hU n).isCompact.measurableSet
-  simpa only [hArea,
-    integral_indicator_const (μ := (volume : Measure Plane)) (1 : ℝ)
-      hK.isCompact.measurableSet, smul_eq_mul, mul_one] using hlim
-
 end AmbidextrousSofa

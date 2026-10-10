@@ -47,27 +47,6 @@ theorem IsDownwardCap.measurable_roofDeficit {U : Set Plane} (hU : IsDownwardCap
     Measurable (roofDeficit U) :=
   measurable_const.sub hU.measurable_capRoof
 
-theorem IsDownwardCap.roofDeficit_nonneg {U : Set Plane} (hU : IsDownwardCap U) (x : ℝ) :
-    0 ≤ roofDeficit U x :=
-  sub_nonneg.mpr (capRoof_le_one hU.isCompact hU.inStrip x)
-
-theorem IsDownwardCap.roofDeficit_le_one {U : Set Plane} (hU : IsDownwardCap U) (x : ℝ) :
-    roofDeficit U x ≤ 1 := by
-  have hRoof := capRoof_nonneg hU.isCompact (fun p hp => (hU.inStrip hp).1) x
-  unfold roofDeficit
-  linarith
-
-/-- The existing arbitrary-interval integrability theorem applies directly
-to the newly named roof deficit on its own projection interval. -/
-theorem IsDownwardCap.integrableOn_roofDeficit {U : Set Plane} (hU : IsDownwardCap U) :
-    IntegrableOn (roofDeficit U) (Icc (horizontalLeft U) (horizontalRight U)) :=
-  hU.integrableOn_roofDeficit_Icc (horizontalLeft U) (horizontalRight U)
-
-theorem IsDownwardCap.integrableOn_scoreBarrier {U : Set Plane} (hU : IsDownwardCap U)
-    {α : ℝ} (hα0 : 0 < α) (hα : α ≤ Real.pi / 2) :
-    IntegrableOn (partialBarrier U α) (Icc (horizontalLeft U) (horizontalRight U)) :=
-  integrableOn_partialBarrier_Icc hU.isCompact hα0 hα (horizontalLeft U) (horizontalRight U)
-
 theorem IsDownwardCap.capWidth_nonneg {U : Set Plane} (hU : IsDownwardCap U) :
     0 ≤ capWidth U :=
   sub_nonneg.mpr (horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact)
@@ -121,41 +100,11 @@ theorem IsDownwardCap.capScore_le_half_width {U : Set Plane}
   change (∫ x in I \ J, capRoof U x) - (∫ x in J, partialBarrier U α x) ≤ capWidth U / 2
   linarith
 
-/-- Width at most the reference area constant is a closed scalar branch. -/
-theorem IsDownwardCap.capScore_le_half_M_of_width_le {U : Set Plane}
-    (hU : IsDownwardCap U) {α : ℝ} (hWidth : capWidth U ≤ M) :
-    capScore U α ≤ M / 2 := by
-  have hScore := hU.capScore_le_half_width α
-  linarith
-
-/-- Width strictly below the reference constant gives a strict score gap. -/
-theorem IsDownwardCap.capScore_lt_half_M_of_width_lt {U : Set Plane}
-    (hU : IsDownwardCap U) {α : ℝ} (hWidth : capWidth U < M) :
-    capScore U α < M / 2 := by
-  have hScore := hU.capScore_le_half_width α
-  linarith
-
 /-- A scalar competitor at the reference value must survive the width cutoff. -/
 theorem IsDownwardCap.width_ge_M_of_capScore_ge_half_M {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hScore : M / 2 ≤ capScore U α) :
     M ≤ capWidth U := by
   have hBound := hU.capScore_le_half_width α
   linarith
-
-/-- Zero projection width gives two null integration sets, hence score zero.
-No integrability hypothesis on the barrier is needed for a null set. -/
-theorem capScore_eq_zero_of_width_eq_zero {U : Set Plane}
-    (hWidth : capWidth U = 0) (α : ℝ) : capScore U α = 0 := by
-  change horizontalRight U - horizontalLeft U = 0 at hWidth
-  have hlr : horizontalLeft U ≤ horizontalRight U := by linarith
-  have hI : volume (Icc (horizontalLeft U) (horizontalRight U)) = 0 := by
-    rw [Real.volume_Icc, hWidth, ENNReal.ofReal_zero]
-  have hJ : volume (middleHalfInterval (horizontalLeft U) (horizontalRight U)) = 0 :=
-    measure_mono_null (middleHalfInterval_subset hlr) hI
-  have hExterior : volume (Icc (horizontalLeft U) (horizontalRight U) \
-      middleHalfInterval (horizontalLeft U) (horizontalRight U)) = 0 :=
-    measure_mono_null sdiff_subset hI
-  rw [capScore_eq_integrals, setIntegral_measure_zero (capRoof U) hExterior,
-    setIntegral_measure_zero (partialBarrier U α) hJ, sub_self]
 
 end AmbidextrousSofa

@@ -96,10 +96,6 @@ theorem isCompact_actualHull {S : Set Plane} (hS : IsCompact S) :
   intro n
   exact isCompact_range (continuous_hullSimplexMap S n.1)
 
-theorem isClosed_actualHull {S : Set Plane} (hS : IsCompact S) :
-    IsClosed (actualHull S) :=
-  (isCompact_actualHull hS).isClosed
-
 /-- A compact physical set in the unit strip has a genuine intrinsic upper hull cap. -/
 theorem isDownwardCap_upper_actualHull {S : Set Plane} (hne : S.Nonempty)
     (hS : IsCompact S) (hstrip : S ⊆ unitStrip) :

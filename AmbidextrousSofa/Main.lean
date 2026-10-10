@@ -36,9 +36,6 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa.Main
 
-/-- The Challenge's rotation is the library's. -/
-theorem rotate_eq : Ambidextrous.rotate = rotate := rfl
-
 /-- The Challenge's rigid motions are the library's. -/
 theorem image_rotate_add (θ : ℝ) (v : Plane) (S : Set Plane) :
     (fun p => Ambidextrous.rotate θ p + v) '' S = rigidMap θ v '' S := rfl
@@ -145,17 +142,8 @@ theorem value_eq_romik {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) :
     (eq_Y ⟨hpos, hcubic⟩).trans (eq_Y hY).symm
   rw [← hsq, h]
 
-/-- The Challenge's support coordinates are the library's `referenceF` and `referenceG`. -/
-theorem supportF_eq (t : ℝ) : Ambidextrous.supportF Y t = Reference.referenceF t := rfl
-
-theorem supportG_eq (t : ℝ) : Ambidextrous.supportG Y t = Reference.referenceG t := rfl
-
 /-- The Challenge's hull of Romik's ambidextrous sofa is the library's `referenceHull`. -/
 theorem referenceHull_eq : Ambidextrous.referenceHull Y = Reference.referenceHull := rfl
-
-/-- The Challenge's niche is the library's swept niche of the full quarter turn. -/
-theorem niche_eq (K : Set Plane) (x : ℝ) :
-    Ambidextrous.niche K x = sweptNiche K (Real.pi / 2) x := rfl
 
 /-- The Challenge's Romik ambidextrous sofa is the library's `referenceSofa`. -/
 theorem referenceSofa_eq {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) :

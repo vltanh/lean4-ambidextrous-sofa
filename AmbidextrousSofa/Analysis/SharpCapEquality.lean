@@ -45,15 +45,6 @@ theorem IsJointCapMaximizer.capScore_eq_half_M
   rw [hU.angle_eq_pi_div_two]
   exact hU.isFullCapMaximizer.capScore_eq_half_M
 
-theorem IsDownwardCap.capScore_lt_half_M_of_proper
-    {U : Set Plane} (hU : IsDownwardCap U) {α : ℝ}
-    (hα : α ∈ Icc (Real.pi / 4) (Real.pi / 2)) (hproper : α < Real.pi / 2) :
-    capScore U α < M / 2 := by
-  obtain ⟨V, hV, _⟩ := exists_fullCapMaximizer
-  have hlt := hU.capScore_lt_full_maximum_of_proper_of_full_affine_rigidity hV hα hproper
-    (fun _ _ _ hW hheight haffine => hW.affine_middle_slope_eq_zero hheight haffine)
-  rwa [hV.capScore_eq_half_M] at hlt
-
 theorem IsDownwardCap.capScore_eq_half_M_iff
     {U : Set Plane} (hU : IsDownwardCap U) {α : ℝ}
     (hα : α ∈ Icc (Real.pi / 4) (Real.pi / 2)) :

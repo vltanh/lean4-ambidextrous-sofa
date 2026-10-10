@@ -67,11 +67,4 @@ theorem Passage.mono {S T hall incoming outgoing : Set Plane} {path : RigidMotio
   · rintro _ ⟨p, hp, rfl⟩
     exact h.finish ⟨p, hST hp, rfl⟩
 
-/-- A nonempty compact connected subset inherits the same two passages. -/
-theorem IsAmbidextrous.of_subset {S T : Set Plane} (hT : IsAmbidextrous T)
-    (hST : S ⊆ T) (hne : S.Nonempty) (hc : IsCompact S) (hconn : IsConnected S) :
-    IsAmbidextrous S := by
-  obtain ⟨lower, upper, horient, hlower, hupper⟩ := hT.passages
-  exact ⟨hne, hc, hconn, lower, upper, horient, hlower.mono hST, hupper.mono hST⟩
-
 end AmbidextrousSofa

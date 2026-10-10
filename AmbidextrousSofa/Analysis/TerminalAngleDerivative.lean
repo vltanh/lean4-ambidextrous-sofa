@@ -73,11 +73,6 @@ theorem sweptNiche_mono_terminalAngle {U : Set Plane} (hU : IsCompact U)
   exact cornerWall_le_sweptNiche (sweptWallValues_bddAbove hU hb x)
     ⟨ht.1, ht.2.trans_le hab⟩
 
-theorem old_history_and_first_le_partialBarrier {U : Set Plane} (hU : IsCompact U)
-    {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) (hb : b ≤ Real.pi / 2) (x : ℝ) :
-    max (sweptNiche U a x) (firstWall U b x) ≤ partialBarrier U b x :=
-  max_le_max (sweptNiche_mono_terminalAngle hU ha hab hb x) le_rfl
-
 /-- All old angles are controlled by the old history, and every new
 corner is controlled by its first wall. This is an inequality for the
 entire visited family, including its endpoint limit. -/

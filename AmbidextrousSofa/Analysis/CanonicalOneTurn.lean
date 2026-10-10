@@ -43,19 +43,4 @@ theorem IsFullCapMaximizer.sweptNiche_le_roof_of_canonical_range
   simpa only [middleHalfInterval_eq_centered hl hr] using
     hU.sweptNiche_le_half_endpoint_height_sum_of_affine hheight haffine
 
-theorem IsFullCapMaximizer.ordinary_area_necessary_of_canonical_range
-    {U : Set Plane} (hU : IsFullCapMaximizer U) {C h : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hleft : capRoof U (-C) = 1 - h) (hright : capRoof U C = 1)
-    (hC0 : 1 / 2 ≤ C) (hC1 : C ≤ 37 / 50) (hh0 : 0 ≤ h) (hh1 : h ≤ 17 / 50)
-    (hheight : capHeight U = 1)
-    (haffine : ∃ m c : ℝ, ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    M / 2 + C * (3 - (capRoof U (horizontalRight U) +
-      capRoof U (horizontalLeft U)) - 3 * h / 2) ≤ (22199 : ℝ) / 10000 := by
-  apply hU.ordinary_area_necessary_of_middle_height_bound
-    hl hr hleft hright hC0 hC1 hh0 hh1 hheight haffine
-  simpa only [middleHalfInterval_eq_centered hl hr] using
-    hU.sweptNiche_le_half_endpoint_height_sum_of_affine hheight haffine
-
 end AmbidextrousSofa

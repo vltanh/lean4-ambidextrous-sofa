@@ -111,28 +111,6 @@ theorem fullTiltedSupportQuarterPair_ae_first_density_ge_charged_on_prefix {C h 
     hl hr hC0 hC1 hh hmpos hheight hlow hunit hα hτ hpα hphase hcompanion hβ hβx
     ⟨hαs, hst.trans htτ⟩ ⟨hαs.trans hst, htτ⟩ hst htβ
 
-/-- The measured lower law extends the unit bound to both actual
-endpoints of a nondegenerate core prefix by continuity. -/
-theorem fullTiltedSupportQuarterPair_core_prefix_q_le_one {C h α τ : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC0 : 1 / 2 < C) (hC1 : C ≤ 37 / 50) (hh : h ≤ 17 / 50)
-    (hmpos : 0 < m) (hheight : capHeight U = 1)
-    (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1)
-    (hunit : ∀ᵐ r ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ r ≤ 1)
-    (hα : 0 ≤ α) (hτ : τ ∈ Icc 0 (Real.pi / 2)) (hατ : α < τ) (hpα : p α = 0)
-    (hphase : ∀ r ∈ Ioo α τ, p r < 0 ∧ 0 < q r)
-    (hcompanion : ∀ᵐ r ∂volume.restrict (Ioo 0 τ), v r ≤ 1) :
-    ∀ t ∈ Icc α τ, q t ≤ 1 := by
-  have hlower := fullTiltedSupportQuarterPair_ae_first_density_ge_core_on_prefix
-    hU hm haffine hρ hρ0 hρK heq hl hr hC0 hC1 hh hmpos hheight hlow hhigh
-      hunit hα hτ hpα hphase hcompanion
-  have hupper := ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hα hτ.2) hunit
-  have hcont : ContinuousOn q (Icc α τ) :=
-    (((F).continuous_gD.add (F).continuous_f).sub continuousOn_const).mono (Icc_subset_Icc hα hτ.2)
-  apply ContinuousOn.le_on_Icc_of_ae_le_on_Ioo hcont hατ
-  filter_upwards [hlower, hupper] with t ht hu
-  exact ht.trans hu
-
 end ActualPair
 
 end AmbidextrousSofa

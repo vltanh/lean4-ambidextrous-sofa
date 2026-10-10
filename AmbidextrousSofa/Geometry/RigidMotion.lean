@@ -31,16 +31,6 @@ theorem rotate_sub_vector (θ : ℝ) (p q : Plane) :
     rotate θ (p - q) = rotate θ p - rotate θ q := by
   apply Prod.ext <;> simp only [rotate, Prod.fst_sub, Prod.snd_sub] <;> ring
 
-@[simp]
-theorem rotate_neg_rotate (θ : ℝ) (p : Plane) :
-    rotate (-θ) (rotate θ p) = p := by
-  rw [rotate_rotate, neg_add_cancel, rotate_zero]
-
-@[simp]
-theorem rotate_rotate_neg (θ : ℝ) (p : Plane) :
-    rotate θ (rotate (-θ) p) = p := by
-  rw [rotate_rotate, add_neg_cancel, rotate_zero]
-
 theorem continuous_rotate (θ : ℝ) : Continuous (rotate θ) := by
   unfold rotate
   fun_prop
@@ -68,32 +58,6 @@ theorem coe_rotationLinearMap (θ : ℝ) :
 theorem det_rotationLinearMap (θ : ℝ) : LinearMap.det (rotationLinearMap θ) = 1 := by
   simp only [rotationLinearMap, LinearMap.det_toLin, Matrix.det_fin_two_of]
   nlinarith [Real.sin_sq_add_cos_sq θ]
-
-def rotationHomeomorph (θ : ℝ) : Plane ≃ₜ Plane where
-  toFun := rotate θ
-  invFun := rotate (-θ)
-  left_inv := rotate_neg_rotate θ
-  right_inv := rotate_rotate_neg θ
-  continuous_toFun := continuous_rotate θ
-  continuous_invFun := continuous_rotate (-θ)
-
-def rigidHomeomorph (θ : ℝ) (v : Plane) : Plane ≃ₜ Plane where
-  toFun := rigidMap θ v
-  invFun := fun p => rotate (-θ) (p - v)
-  left_inv := by
-    intro p
-    simp only [rigidMap, add_sub_cancel_right, rotate_neg_rotate]
-  right_inv := by
-    intro p
-    simp only [rigidMap, rotate_rotate_neg, sub_add_cancel]
-  continuous_toFun := continuous_rigidMap θ v
-  continuous_invFun := (continuous_rotate (-θ)).comp (continuous_id.sub continuous_const)
-
-theorem rigidMap_injective (θ : ℝ) (v : Plane) : Function.Injective (rigidMap θ v) :=
-  (rigidHomeomorph θ v).injective
-
-theorem rigidMap_surjective (θ : ℝ) (v : Plane) : Function.Surjective (rigidMap θ v) :=
-  (rigidHomeomorph θ v).surjective
 
 theorem rigidMap_eq_of_rotate_eq {θ φ : ℝ} (h : rotate θ = rotate φ) (v : Plane) :
     rigidMap θ v = rigidMap φ v := by

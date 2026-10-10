@@ -70,24 +70,6 @@ theorem sourceKappa_le_one_of_bounds {q : ℝ} (hql : -1 ≤ q) (hqr : q ≤ 1) 
   unfold sourceKappa
   exact max_le habs (by linarith)
 
-/-- The right sides of the support equations have a fixed negative
-drift in the two mixed sign half-planes. -/
-theorem corner_velocity_drift {p q u v : ℝ}
-    (hu : u ≤ sourceKappa q) (hv : v ≤ sourceKappa p) :
-    (0 < q → u - 1 - q ≤ -1 / 2) ∧
-      (p < 0 → v - 1 + p ≤ -1 / 2) := by
-  constructor
-  · intro hq
-    have hbound : sourceKappa q ≤ q + 1 / 2 := by
-      rw [sourceKappa, abs_of_pos hq]
-      apply max_le <;> linarith
-    linarith
-  · intro hp
-    have hbound : sourceKappa p ≤ -p + 1 / 2 := by
-      rw [sourceKappa, abs_of_neg hp]
-      apply max_le <;> linarith
-    linarith
-
 /-- Above `17/4` the energy derivative is nonpositive. The bound
 `p ≤ 1`, `q ≥ -1` comes from nonnegative actual support arms. -/
 theorem clippedCornerEnergy_derivative_nonpos_above
@@ -249,26 +231,5 @@ theorem IsFullCapMaximizer.ae_density_le_one_of_cornerEnergy_on_interval
     intro hp hq
     exact ht.1 ⟨hq, by linarith⟩
   exact ae_curvature_le_one_of_cornerEnergy hac.2.neg hac.1 hab hstart hode hb hk hs
-
-/-- The density and its source laws are produced by the actual
-maximizer; only the starting scalar energy and the regular interval
-remain as explicit geometric inputs. -/
-theorem IsFullCapMaximizer.curvature_density_unit_on_interval_of_cornerEnergy
-    {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1)
-    {m c a b : ℝ}
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hab : a ≤ b) (hsub : Icc a b ⊆ regularCornerDomain m)
-    (hstart : actualCornerEnergy U a ≤ 17 / 4) :
-    ∃ ρ : ℝ → ℝ, Measurable ρ ∧
-      (∀ t, 0 ≤ ρ t ∧ ρ t ≤ sourceKappa (upperCornerVelocity U t)) ∧
-      (∀ t, ρ t ≤ 4 * (|horizontalLeft U| + |horizontalRight U| + 1) + 10) ∧
-      (upperCurvature U).restrict (regularCurvatureDomain m) =
-        (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)) ∧
-      (∀ᵐ t : ℝ ∂volume.restrict (Ioo a b), ρ t ≤ 1) := by
-  obtain ⟨ρ, hρ, hb, hC, heq, _⟩ := hU.curvature_density_corner_controls hheight haffine
-  exact ⟨ρ, hρ, hb, hC, heq,
-    hU.ae_density_le_one_of_cornerEnergy_on_interval haffine hρ
-      (fun t => (hb t).1) hC (fun t => (hb t).2) heq hab hsub hstart⟩
 
 end AmbidextrousSofa

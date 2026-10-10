@@ -74,11 +74,6 @@ theorem IsJointCapMaximizer.score_eq {U V : Set Plane} {α β : ℝ}
     capScore U α = capScore V β :=
   le_antisymm (hV.score_le hU.isCap hU.angle_mem) (hU.score_le hV.isCap hV.angle_mem)
 
-theorem IsJointCapMaximizer.isFull_of_angle_eq {U : Set Plane} {α : ℝ}
-    (hU : IsJointCapMaximizer U α) (hα : α = Real.pi / 2) : IsFullCapMaximizer U := by
-  subst α
-  exact ⟨hU.isCap, fun V hV => hU.score_le_same_angle hV⟩
-
 /-- Extreme-value selection in the original boxed cap-and-angle domain. -/
 theorem exists_boxed_jointCapScore_max {B : Set Plane} (hB : IsCompact B)
     {V : Set Plane} (hV : IsDownwardCap V) (hVB : V ⊆ B) :
@@ -175,17 +170,5 @@ theorem IsJointCapMaximizer.exists_heightOne_affine_middle
   refine ⟨V, hU.of_score_le hV hU.angle_mem hscore, hproj, hheight,
     le_antisymm (hU.score_le_same_angle hV) hscore, m, c, ?_⟩
   simpa only [hleft, hright] using haffine
-
-/-- The actual joint maximum can be chosen canonical while retaining the
-largest-angle property needed for one-sided terminal variations. -/
-theorem exists_canonical_jointCapMaximizer_largest_angle :
-    ∃ U : Set Plane, ∃ α : ℝ, IsJointCapMaximizer U α ∧ capHeight U = 1 ∧
-      M ≤ capWidth U ∧ capWidth U < 6 ∧
-      (∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α) ∧
-      ∃ m c : ℝ, ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-        capRoof U x = m * x + c := by
-  obtain ⟨U, α, hU, _, hmax⟩ := exists_jointCapMaximizer_largest_angle
-  obtain ⟨V, hV, _, hheight, _, haffine⟩ := hU.exists_heightOne_affine_middle
-  exact ⟨V, α, hV, hheight, hV.width_bounds.1, hV.width_bounds.2, hmax, haffine⟩
 
 end AmbidextrousSofa

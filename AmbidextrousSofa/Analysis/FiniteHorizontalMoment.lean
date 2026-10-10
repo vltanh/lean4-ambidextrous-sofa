@@ -71,14 +71,6 @@ theorem integral_horizontalSourceDensity [Fintype ι] [DecidableEq ι]
   simp only [Fintype.sum_option, mul_zero, zero_add]
   simp
 
-theorem horizontalSourceDensity_univ [Fintype ι] [DecidableEq ι]
-    (e : WallExpr (Option ι)) (a b : Option ι → ℝ) :
-    e.horizontalSourceDensity a b Finset.univ =
-      e.sourceDensity a b horizontalSourceWeight := by
-  funext x
-  unfold horizontalSourceDensity sourceDensity
-  cases e.source (fun i => a i * x + b i) <;> simp [horizontalSourceWeight]
-
 /-- The floor is the only affine leaf that can vanish on a set of
 positive measure. No pointwise convention at the finitely many ties is
 needed for the physical length identity. -/

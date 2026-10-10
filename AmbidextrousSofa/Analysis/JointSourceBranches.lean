@@ -142,10 +142,6 @@ theorem measurable_sourceBranchDensity (S : Set Plane) (d : ℝ) :
 theorem sourceBranchDensity_nonneg (S : Set Plane) (d t : ℝ) :
     0 ≤ J.sourceBranchDensity S d t := realRnDensity_nonneg _ _ _
 
-theorem integrable_sourceBranchDensity (S : Set Plane) (d : ℝ) :
-    Integrable (J.sourceBranchDensity S d) volume :=
-  integrable_realRnDensity _ _
-
 theorem first_source_partition (hTarget : IsDownwardCap target)
     (hpositive : ∀ᵐ z ∂(J.measure : Measure Plane),
       0 < sweptNiche target (Real.pi / 2) z.2) :

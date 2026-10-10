@@ -43,14 +43,6 @@ theorem subset_actualHull (S : Set Plane) : S ⊆ actualHull S :=
 theorem convex_actualHull (S : Set Plane) : Convex ℝ (actualHull S) :=
   convex_convexHull ℝ S
 
-theorem actualHull_mono {S T : Set Plane} (hST : S ⊆ T) :
-    actualHull S ⊆ actualHull T :=
-  convexHull_mono hST
-
-theorem upperCap_mono {K L : Set Plane} (hKL : K ⊆ L) : upperCap K ⊆ upperCap L := by
-  rintro p ⟨hp0, y, hpy, hy⟩
-  exact ⟨hp0, y, hpy, hKL hy⟩
-
 /-- Every upper cap is closed downward within the nonnegative half-plane. -/
 theorem upperCap_downward {K : Set Plane} {p : Plane} (hp : p ∈ upperCap K)
     {y : ℝ} (hy0 : 0 ≤ y) (hyp : y ≤ p.2) : (p.1, y) ∈ upperCap K := by
@@ -72,15 +64,6 @@ theorem horizontalProjection_upperCap {K : Set Plane} (hK : ∀ p ∈ K, 0 ≤ p
     exact ⟨(p.1, y), hy, hpx⟩
   · rintro x ⟨p, hp, hpx⟩
     exact ⟨p, subset_upperCap hK hp, hpx⟩
-
-/-- An intrinsic downward cap is already fixed by downward filling. -/
-theorem IsDownwardCap.upperCap_eq {U : Set Plane} (hU : IsDownwardCap U) :
-    upperCap U = U := by
-  apply Set.Subset.antisymm
-  · rintro p ⟨hp0, y, hpy, hy⟩
-    have hp : (p.1, p.2) ∈ U := hU.downward (p.1, y) hy p.2 hp0 hpy
-    simpa only [Prod.mk.eta] using hp
-  · exact subset_upperCap (fun p hp => (hU.inStrip hp).1)
 
 /-- The baseline point under any cap point remains in the cap. -/
 theorem IsDownwardCap.baseline_mem {U : Set Plane} (hU : IsDownwardCap U)

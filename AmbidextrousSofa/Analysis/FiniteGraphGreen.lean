@@ -58,15 +58,6 @@ theorem integral_sourceIntercept [Fintype ι] (e : WallExpr ι) (a b : ι → �
       ((e.intervalIntegrable_sourceDensity a b a l r).continuousOn_mul continuous_id.continuousOn)
   linarith
 
-theorem two_mul_integral_affineGraph [Fintype ι] (e : WallExpr ι) (a b : ι → ℝ)
-    (ha : Function.Injective a) {l r : ℝ} (hlr : l ≤ r) :
-    2 * (∫ x in l..r, e.affineGraph a b x) =
-      (∑ i, e.sourceMass a b l r i * b i) +
-        r * e.affineGraph a b r - l * e.affineGraph a b l := by
-  have h := e.integral_sourceIntercept a b ha l r
-  rw [e.integral_sourceDensity_eq_sum a b b hlr] at h
-  linarith
-
 end WallExpr
 
 theorem finiteSourceVariation_intercepts {ι κ : Type*} [Fintype ι] [Fintype κ]

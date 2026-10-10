@@ -35,11 +35,6 @@ variable {target : Set Plane} {a b : ℝ} (J : SelectedJointSourceLimit target a
 def sourceGraphResidual (z : Plane) : ℝ :=
   J.nicheDerivative z.2 * Real.sin z.1 + Real.cos z.1
 
-theorem measurable_sourceGraphResidual : Measurable J.sourceGraphResidual :=
-  ((J.measurable_nicheDerivative.comp measurable_snd).mul
-    (Real.measurable_sin.comp measurable_fst)).add
-      (Real.measurable_cos.comp measurable_fst)
-
 theorem integrable_sourceGraphResidual :
     Integrable J.sourceGraphResidual (J.measure : Measure Plane) :=
   (J.integrable_spatial_sine J.integrable_nicheDerivative).add

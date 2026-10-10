@@ -84,12 +84,6 @@ theorem IsDownwardCap.support_usedSupportSaturation_second {U : Set Plane}
     support (usedSupportSaturation U α) (companionNormal t) = support U (companionNormal t) :=
   FinitePolygon.support_circumscription hU (usedNormal α) (Sum.inr ⟨t, ht⟩)
 
-theorem IsDownwardCap.capHeight_usedSupportSaturation {U : Set Plane}
-    (hU : IsDownwardCap U) {α : ℝ} (hα : 0 ≤ α) :
-    capHeight (usedSupportSaturation U α) = capHeight U := by
-  have h := hU.support_usedSupportSaturation_second (show (0 : ℝ) ∈ Icc 0 α from ⟨le_rfl, hα⟩)
-  simpa only [companionNormal, Real.sin_zero, Real.cos_zero, neg_zero, capHeight] using h
-
 theorem IsDownwardCap.firstWall_usedSupportSaturation {U : Set Plane}
     (hU : IsDownwardCap U) {α t : ℝ} (ht : t ∈ Icc 0 α) (x : ℝ) :
     firstWall (usedSupportSaturation U α) t x = firstWall U t x := by
@@ -153,10 +147,6 @@ theorem IsJointCapMaximizer.usedSupportSaturation {U : Set Plane} {α : ℝ}
     (hU : IsJointCapMaximizer U α) : IsJointCapMaximizer (AmbidextrousSofa.usedSupportSaturation U α) α :=
   hU.of_score_le (hU.isCap.isDownwardCap_usedSupportSaturation hU.angle_mem.2) hU.angle_mem
     (hU.isCap.capScore_le_usedSupportSaturation hU.angle_pos hU.angle_mem.2)
-
-theorem IsJointCapMaximizer.capScore_usedSupportSaturation {U : Set Plane} {α : ℝ}
-    (hU : IsJointCapMaximizer U α) : capScore (AmbidextrousSofa.usedSupportSaturation U α) α = capScore U α :=
-  hU.usedSupportSaturation.score_eq hU
 
 /-- A strict increase even at a wing endpoint would give a positive
 interval integral by roof continuity. Maximality therefore pins all these

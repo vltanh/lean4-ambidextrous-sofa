@@ -23,12 +23,6 @@ open scoped Topology
 
 namespace AmbidextrousSofa
 
-theorem coordDot_eq_imported_dot (p v : Plane) :
-    coordDot p v = MovingSofaOptimality.dot p v := rfl
-
-theorem unitNormal_eq_imported_uvec (t : ℝ) :
-    unitNormal t = MovingSofaOptimality.uvec t := rfl
-
 theorem angleSupport_eq_imported_supp (U : Set Plane) (t : ℝ) :
     angleSupport U t = MovingSofaOptimality.supp U t := rfl
 

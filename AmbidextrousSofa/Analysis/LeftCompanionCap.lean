@@ -157,24 +157,6 @@ theorem IsDownwardCap.top_leftCompanionCap_of_positive_affine
     linarith only [hceiling p hp, hpy, hline]
   exact Prod.ext (le_antisymm hp.2.2 hax) hpy
 
-theorem IsDownwardCap.leftCompanion_initial_data_of_positive_affine
-    {U : Set Plane} (hU : IsDownwardCap U) {a b m c : ℝ}
-    (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
-    (hab : a < b) (hm : 0 < m)
-    (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c) :
-    companionInitialOffset (AmbidextrousSofa.leftCompanionCap U a) = a - horizontalLeft U ∧
-      companionInitialDeficit (AmbidextrousSofa.leftCompanionCap U a) = 1 - capRoof U a ∧
-      HasDerivWithinAt (fun t => angleSupport (AmbidextrousSofa.leftCompanionCap U a) (t + Real.pi / 2))
-        (-a) (Ici 0) 0 := by
-  obtain ⟨hheight, htop⟩ := hU.top_leftCompanionCap_of_positive_affine ha hb hab hm haffine
-  have hderiv := (hU.leftCompanionCap ha).hasDerivWithinAt_companionSupport_zero
-  rw [htop] at hderiv
-  refine ⟨?_, ?_, hderiv⟩
-  · unfold companionInitialOffset
-    rw [htop, horizontalLeft_leftCompanionCap hU ha]
-  · unfold companionInitialDeficit
-    rw [hheight]
-
 /-- The actual left-wing density controls the visited niche of the
 original cap. This includes the positive-tilt case with its true low
 endpoint height deficit and right derivative. -/

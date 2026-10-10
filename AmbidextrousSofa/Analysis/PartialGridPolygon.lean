@@ -117,17 +117,6 @@ theorem scaleAngle_of_top (α : TerminalAngle) {t : AngularGrid.QuarterAngle}
   simp only [scaleAngle, unitParameter, ht,
     div_self (by linarith [Real.pi_pos] : Real.pi / 2 ≠ 0), mul_one]
 
-/-- Every actual physical corner is sampled strictly before the retained
-terminal angle. There is no reflected outgoing family. -/
-theorem pairList_visited (α : TerminalAngle) (grid : Finset AngularGrid.QuarterAngle)
-    {ij : SourceIndex α grid × SourceIndex α grid} (hij : ij ∈ pairList α grid) :
-    ∃ θ ∈ Ioo (0 : ℝ) (α : ℝ), normal α grid ij.1 = unitNormal θ ∧
-      normal α grid ij.2 = companionNormal θ := by
-  classical
-  obtain ⟨t, _, rfl⟩ := List.mem_map.mp hij
-  exact ⟨scaleAngle α t.val, scaleAngle_mem_open α (AngularGrid.interiorPoint_mem grid t),
-    rfl, rfl⟩
-
 theorem finiteBarrier_eq_barrier (U : Set Plane) (α : TerminalAngle)
     (hαL : (α : ℝ) < Real.pi / 2) (grid : Finset AngularGrid.QuarterAngle) (x : ℝ) :
     finiteBarrier U (normal α grid) (pairList α grid)

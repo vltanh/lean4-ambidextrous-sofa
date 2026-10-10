@@ -474,48 +474,6 @@ theorem finiteLeftMoment_eq_sum [Fintype ι] (U : Set Plane) (normal : ι → Pl
   unfold finiteExposureDefect
   ring
 
-theorem finiteRightMoment_nonneg_of_exposure [Fintype ι] (U : Set Plane)
-    (normal : ι → Plane) (hnormal : ∀ i, 0 ≤ (normal i).2)
-    (corners : List (ι × ι)) (terminal : Option ι)
-    (hexposure : ∀ i, 0 ≤ finiteExposureDefect U normal corners terminal i) :
-    0 ≤ finiteRightMoment U normal corners terminal := by
-  rw [finiteRightMoment_eq_sum]
-  exact Finset.sum_nonneg (fun i _ => mul_nonneg (hexposure i)
-    (div_nonneg (le_max_right _ _) (hnormal i)))
-
-theorem finiteLeftMoment_nonneg_of_exposure [Fintype ι] (U : Set Plane)
-    (normal : ι → Plane) (hnormal : ∀ i, 0 ≤ (normal i).2)
-    (corners : List (ι × ι)) (terminal : Option ι)
-    (hexposure : ∀ i, 0 ≤ finiteExposureDefect U normal corners terminal i) :
-    0 ≤ finiteLeftMoment U normal corners terminal := by
-  rw [finiteLeftMoment_eq_sum]
-  exact Finset.sum_nonneg (fun i _ => mul_nonneg (hexposure i)
-    (div_nonneg (le_max_right _ _) (hnormal i)))
-
-theorem finiteRightMoment_ge_of_exposure_error [Fintype ι] (U : Set Plane)
-    (normal : ι → Plane) (hnormal : ∀ i, 0 ≤ (normal i).2)
-    (corners : List (ι × ι)) (terminal : Option ι) (error : ι → ℝ)
-    (hexposure : ∀ i, -error i ≤ finiteExposureDefect U normal corners terminal i) :
-    -(∑ i, error i * (max (normal i).1 0 / (normal i).2)) ≤
-      finiteRightMoment U normal corners terminal := by
-  rw [finiteRightMoment_eq_sum, ← Finset.sum_neg_distrib]
-  apply Finset.sum_le_sum
-  intro i _
-  simpa only [neg_mul] using mul_le_mul_of_nonneg_right (hexposure i)
-    (div_nonneg (le_max_right _ _) (hnormal i))
-
-theorem finiteLeftMoment_ge_of_exposure_error [Fintype ι] (U : Set Plane)
-    (normal : ι → Plane) (hnormal : ∀ i, 0 ≤ (normal i).2)
-    (corners : List (ι × ι)) (terminal : Option ι) (error : ι → ℝ)
-    (hexposure : ∀ i, -error i ≤ finiteExposureDefect U normal corners terminal i) :
-    -(∑ i, error i * (max (-(normal i).1) 0 / (normal i).2)) ≤
-      finiteLeftMoment U normal corners terminal := by
-  rw [finiteLeftMoment_eq_sum, ← Finset.sum_neg_distrib]
-  apply Finset.sum_le_sum
-  intro i _
-  simpa only [neg_mul] using mul_le_mul_of_nonneg_right (hexposure i)
-    (div_nonneg (le_max_right _ _) (hnormal i))
-
 /-- Translation is the difference of the two erosion velocities. Its
 zero total score derivative identifies the signed moment balance with
 actual endpoint heights and actual finite-barrier pressures. -/

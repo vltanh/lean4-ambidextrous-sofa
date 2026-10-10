@@ -1,7 +1,8 @@
 module
 
 public import AmbidextrousSofa.Analysis.ProperExcessEnvelope
-public import AmbidextrousSofa.Analysis.TerminalProperComparison
+public import AmbidextrousSofa.Analysis.TerminalActualComparison
+public import AmbidextrousSofa.Analysis.PartialWidthBounds
 
 @[expose] public section
 
@@ -76,20 +77,6 @@ theorem IsJointCapMaximizer.proper_companion_prefix_bounds_of_tail_regime
       (hU.proper_terminalSlope_lt_three_eighths hproper)
   exact ⟨hCT, hCT1, by linarith only [hcut, hgap], by linarith only [hcut]⟩
 
-theorem IsJointCapMaximizer.proper_companion_prefix_bounds
-    {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    0 < C - topOverhangLeft U ∧ C - topOverhangLeft U ≤ 37 / 50 ∧
-      Real.arcsin (C - topOverhangLeft U) < α ∧
-      Real.arcsin (C - topOverhangLeft U) < Real.pi / 2 - 73 / 100 := by
-  exact IsJointCapMaximizer.proper_companion_prefix_bounds_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
-
 /-- The early weighted excess of the actual companion is strictly below
 the already proved terminal margin, in both terminal-slope ranges. -/
 theorem IsJointCapMaximizer.proper_leftCompanion_weighted_excess_lt_of_tail_regime
@@ -135,25 +122,6 @@ theorem IsJointCapMaximizer.proper_leftCompanion_weighted_excess_lt_of_tail_regi
         (fun t => (leftCompanionWingDensity_bounds hρ0 hρK _).2) _ _
     exact terminalWeightedExcess_lt_allowance_of_late_tail hCT.le hCT1 hU.angle_pos hproper
       (le_of_not_ge hκ) (terminalWeightedExcess_intervalIntegrable hint) hbound
-
-theorem IsJointCapMaximizer.proper_leftCompanion_weighted_excess_lt
-    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (hsharp : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
-    terminalWeightedExcess (fun t => leftCompanionWingDensity m ρ (t + Real.pi / 2))
-      (Real.arcsin (C - topOverhangLeft U)) < (39 / 4400 : ℝ) * Real.cos α := by
-  exact IsJointCapMaximizer.proper_leftCompanion_weighted_excess_lt_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
-    hρ hρ0 hρK hsharp heq
 
 /-- Every density and endpoint input in the contradiction is produced
 from the same actual maximizing cap. -/

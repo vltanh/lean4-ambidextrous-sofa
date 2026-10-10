@@ -198,18 +198,6 @@ theorem hasDerivAt_gLateD (t : ℝ) :
     ((Real.hasDerivAt_sin t).const_mul (1 / 2))).congr_deriv
   ring
 
-theorem curvature_fEarly (t : ℝ) : deriv (deriv fEarly) t + fEarly t = 0 := by
-  rw [show deriv fEarly = fEarlyD from funext fun x => (hasDerivAt_fEarly x).deriv,
-    (hasDerivAt_fEarlyD t).deriv]
-  unfold fEarly
-  ring
-
-theorem curvature_gEarly (t : ℝ) : deriv (deriv gEarly) t + gEarly t = 1 / 2 := by
-  rw [show deriv gEarly = gEarlyD from funext fun x => (hasDerivAt_gEarly x).deriv,
-    (hasDerivAt_gEarlyD t).deriv]
-  unfold gEarly
-  ring
-
 theorem curvature_fMiddle (t : ℝ) :
     deriv (deriv fMiddle) t + fMiddle t =
       3 / 4 * R * Real.cos (t / 2 + Real.pi / 8) := by
@@ -224,18 +212,6 @@ theorem curvature_gMiddle (t : ℝ) :
   rw [show deriv gMiddle = gMiddleD from funext fun x => (hasDerivAt_gMiddle x).deriv,
     (hasDerivAt_gMiddleD t).deriv]
   unfold gMiddle
-  ring
-
-theorem curvature_fLate (t : ℝ) : deriv (deriv fLate) t + fLate t = 1 / 2 := by
-  rw [show deriv fLate = fLateD from funext fun x => (hasDerivAt_fLate x).deriv,
-    (hasDerivAt_fLateD t).deriv]
-  unfold fLate
-  ring
-
-theorem curvature_gLate (t : ℝ) : deriv (deriv gLate) t + gLate t = 0 := by
-  rw [show deriv gLate = gLateD from funext fun x => (hasDerivAt_gLate x).deriv,
-    (hasDerivAt_gLateD t).deriv]
-  unfold gLate
   ring
 
 theorem f_matching_first : fMiddle beta = fEarly beta := by
@@ -391,12 +367,6 @@ theorem hasDerivAt_referenceG (t : ℝ) : HasDerivAt referenceG (referenceGD t) 
   · rw [if_pos (le_of_lt beta_lt_lateSwitch)]
     exact gD_matching_first.symm
 
-theorem deriv_referenceF (t : ℝ) : deriv referenceF t = referenceFD t :=
-  (hasDerivAt_referenceF t).deriv
-
-theorem deriv_referenceG (t : ℝ) : deriv referenceG t = referenceGD t :=
-  (hasDerivAt_referenceG t).deriv
-
 theorem continuous_referenceFD : Continuous referenceFD := by
   have hearly : Continuous fEarlyD := by unfold fEarlyD; fun_prop
   have hmiddle : Continuous fMiddleD := by unfold fMiddleD; fun_prop
@@ -433,16 +403,6 @@ theorem continuous_referenceGD : Continuous referenceGD := by
   rw [if_pos (le_of_lt beta_lt_lateSwitch)]
   exact gD_matching_first.symm
 
-/-- The first displayed coordinate is genuinely continuously differentiable across both joins. -/
-theorem contDiff_referenceF : ContDiff ℝ 1 referenceF := by
-  rw [contDiff_one_iff_deriv, funext deriv_referenceF]
-  exact ⟨fun t => (hasDerivAt_referenceF t).differentiableAt, continuous_referenceFD⟩
-
-/-- The same global first-order regularity holds for the companion coordinate. -/
-theorem contDiff_referenceG : ContDiff ℝ 1 referenceG := by
-  rw [contDiff_one_iff_deriv, funext deriv_referenceG]
-  exact ⟨fun t => (hasDerivAt_referenceG t).differentiableAt, continuous_referenceGD⟩
-
 theorem referenceF_zero : referenceF 0 = 1 := by
   norm_num [referenceF, fEarly, le_of_lt beta_pos]
 
@@ -465,40 +425,6 @@ theorem fLateD_pi_div_two : fLateD (Real.pi / 2) = 2 / 3 * A - 1 := by
   simp [fLateD] <;> ring
 
 theorem gEarlyD_zero : gEarlyD 0 = 2 * A - 1 := by simp [gEarlyD]
-
-/-- The first contact velocity vanishes at the first switch. -/
-theorem early_contact_switch : fEarlyD beta - gEarly beta + 1 = 0 := by
-  unfold fEarlyD gEarly
-  change -sinBeta + 1 / 2 * cosBeta -
-    ((2 * A - 1) * sinBeta + 1 / 2 * cosBeta + 1 / 2) + 1 = 0
-  nlinarith [four_mul_A_mul_sinBeta]
-
-/-- The companion contact velocity vanishes at the second switch. -/
-theorem late_contact_switch : gLateD lateSwitch + fLate lateSwitch - 1 = 0 := by
-  unfold gLateD fLate lateSwitch
-  rw [Real.cos_pi_div_two_sub, Real.sin_pi_div_two_sub]
-  change (8 / 3 * A - 1) * sinBeta - 1 / 2 * cosBeta +
-    ((1 - 2 / 3 * A) * sinBeta + 1 / 2 * cosBeta + 1 / 2) - 1 = 0
-  nlinarith [four_mul_A_mul_sinBeta]
-
-/-- Strictly positive cosine curvature throughout the closed middle phase. -/
-theorem curvature_fMiddle_pos {t : ℝ} (ht : t ∈ Set.Icc beta lateSwitch) :
-    0 < deriv (deriv fMiddle) t + fMiddle t := by
-  rw [curvature_fMiddle]
-  apply mul_pos (mul_pos (by norm_num) R_pos)
-  apply Real.cos_pos_of_mem_Ioo
-  constructor
-  · linarith [ht.1, beta_pos, Real.pi_pos]
-  · linarith [ht.2, lateSwitch_lt_pi_div_two, Real.pi_pos]
-
-/-- Strictly positive sine curvature throughout the closed middle phase. -/
-theorem curvature_gMiddle_pos {t : ℝ} (ht : t ∈ Set.Icc beta lateSwitch) :
-    0 < deriv (deriv gMiddle) t + gMiddle t := by
-  rw [curvature_gMiddle]
-  apply mul_pos (mul_pos (by norm_num) R_pos)
-  exact Real.sin_pos_of_pos_of_lt_pi
-    (by linarith [ht.1, beta_pos, Real.pi_pos])
-    (by linarith [ht.2, lateSwitch_lt_pi_div_two, Real.pi_pos])
 
 /-- The exact upper margin in MS.13 for the cosine curvature. -/
 theorem curvature_fMiddle_lt_seven_eighths {t : ℝ}

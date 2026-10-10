@@ -103,18 +103,6 @@ theorem innerSourceMassOn_add_le (U : Set Plane) (grid : Finset QuarterAngle)
   dsimp only [innerSourceMassOn] at hgap0 hwhole ⊢
   linarith
 
-theorem innerAngularMassOn_nonneg (U : Set Plane) (grid : Finset QuarterAngle)
-    (E : Set ℝ) {l r : ℝ} (hlr : l ≤ r) :
-    0 ≤ innerAngularMassOn U grid E l r := by
-  classical
-  exact Finset.sum_nonneg (fun j _ => innerSourceMassOn_nonneg U grid hlr j)
-
-theorem innerAngularMassOn_le (U : Set Plane) (grid : Finset QuarterAngle)
-    (E : Set ℝ) {l r L R : ℝ} (hLl : L ≤ l) (hlr : l ≤ r) (hrR : r ≤ R) :
-    innerAngularMassOn U grid E l r ≤ innerAngularMassOn U grid E L R := by
-  classical
-  exact Finset.sum_le_sum (fun j _ => innerSourceMassOn_le U grid hLl hlr hrR j)
-
 theorem innerAngularMassOn_add_le (U : Set Plane) (grid : Finset QuarterAngle)
     (E : Set ℝ) {L l₁ r₁ l₂ r₂ R : ℝ} (hL : L ≤ l₁) (h₁ : l₁ ≤ r₁)
     (hgap : r₁ ≤ l₂) (h₂ : l₂ ≤ r₂) (hR : r₂ ≤ R) :

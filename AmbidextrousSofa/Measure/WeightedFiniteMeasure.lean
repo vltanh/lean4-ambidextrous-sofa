@@ -47,12 +47,6 @@ theorem weightedFiniteMeasure_real_apply [OpensMeasurableSpace Ω]
   rw [Measure.real, weightedFiniteMeasure_apply μ w hE]
   exact w.toReal_lintegral_coe_eq_integral ((μ : Measure Ω).restrict E)
 
-theorem weightedFiniteMeasure_restrict (μ : FiniteMeasure Ω) (w : Ω →ᵇ ℝ≥0)
-    {E : Set Ω} (hE : MeasurableSet E) :
-    (weightedFiniteMeasure μ w).restrict E = weightedFiniteMeasure (μ.restrict E) w := by
-  apply FiniteMeasure.toMeasure_injective
-  exact restrict_withDensity hE _
-
 theorem weightedFiniteMeasure_tendsto [OpensMeasurableSpace Ω]
     {ι : Type*} {L : Filter ι} {μ : FiniteMeasure Ω} {ν : ι → FiniteMeasure Ω}
     (hlim : Tendsto ν L (𝓝 μ)) (w : Ω →ᵇ ℝ≥0) :

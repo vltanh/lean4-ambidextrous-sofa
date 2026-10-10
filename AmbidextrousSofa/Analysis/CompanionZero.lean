@@ -123,20 +123,6 @@ theorem IsDownwardCap.secondWall_neg_of_lt_companionZero
   exact companionPointWall_neg_of_lt_rightCircleAbscissa (hU.inStrip hp)
     (hx.trans_le (hU.companionZero_le_point hp)) hs hc
 
-theorem IsDownwardCap.left_lt_companionZero_of_height_lt_one
-    {U : Set Plane} (hU : IsDownwardCap U) (hheight : capHeight U < 1) :
-    horizontalLeft U < companionZero U := by
-  obtain ⟨p, hp, hpzero⟩ := hU.exists_companionZero_point
-  have hpy0 := (hU.inStrip hp).1
-  have hpy1 := (hU.snd_le_capHeight hp).trans_lt hheight
-  have hs : 0 < circleHeight p.2 := by
-    apply Real.sqrt_pos.mpr
-    nlinarith only [mul_pos (sub_pos.mpr hpy1)
-      (show 0 < 1 + p.2 by linarith only [hpy0])]
-  have hpx := (hU.fst_mem_Icc hp).1
-  rw [← hpzero, rightCircleAbscissa]
-  linarith only [hs, hpx]
-
 theorem IsDownwardCap.companionZero_lt_left_add_one
     {U : Set Plane} (hU : IsDownwardCap U) (hheight : capHeight U < 1)
     (hleft : 0 < capRoof U (horizontalLeft U)) :
@@ -214,16 +200,5 @@ theorem IsDownwardCap.exists_secondWall_pos_of_companionZero_lt
     rw [hdiff, hpwall, zero_add]
     exact div_pos (mul_pos (sub_pos.mpr hx) hs) hc
   exact ⟨t, ht, hpoint.trans_le (companionPointWall_le_secondWall hU hp hc)⟩
-
-theorem IsDownwardCap.companionZero_lt_iff_exists_secondWall_pos
-    {U : Set Plane} (hU : IsDownwardCap U) (hheight : capHeight U < 1)
-    (hleft : 0 < capRoof U (horizontalLeft U)) (x : ℝ) :
-    companionZero U < x ↔
-      ∃ t ∈ Ioo (0 : ℝ) (Real.pi / 2), 0 < secondWall U t x := by
-  constructor
-  · exact hU.exists_secondWall_pos_of_companionZero_lt hheight hleft
-  · rintro ⟨t, ht, hpos⟩
-    by_contra hnot
-    exact not_lt_of_ge (hU.secondWall_nonpos_of_le_companionZero (le_of_not_gt hnot) ht) hpos
 
 end AmbidextrousSofa

@@ -29,17 +29,6 @@ theorem continuous_reflect : Continuous reflect := by
   unfold reflect
   fun_prop
 
-theorem measurable_reflect : Measurable reflect := continuous_reflect.measurable
-
-/-- Reflection is a homeomorphism of the actual coordinate plane. -/
-def reflectHomeomorph : Plane ≃ₜ Plane where
-  toFun := reflect
-  invFun := reflect
-  left_inv := reflect_reflect
-  right_inv := reflect_reflect
-  continuous_toFun := continuous_reflect
-  continuous_invFun := continuous_reflect
-
 @[simp]
 theorem mem_image_reflect (K : Set Plane) (p : Plane) :
     p ∈ reflect '' K ↔ reflect p ∈ K := by
@@ -54,23 +43,9 @@ theorem image_reflect_eq_preimage (K : Set Plane) :
   ext p
   exact mem_image_reflect K p
 
-@[simp]
-theorem image_reflect_reflect (K : Set Plane) : reflect '' (reflect '' K) = K := by
-  ext p
-  simp only [mem_image_reflect, reflect_reflect]
-
 theorem isCompact_image_reflect {K : Set Plane} (hK : IsCompact K) :
     IsCompact (reflect '' K) :=
   hK.image continuous_reflect
-
-theorem isClosed_image_reflect {K : Set Plane} (hK : IsClosed K) :
-    IsClosed (reflect '' K) := by
-  rw [image_reflect_eq_preimage]
-  exact hK.preimage continuous_reflect
-
-theorem isConnected_image_reflect {K : Set Plane} (hK : IsConnected K) :
-    IsConnected (reflect '' K) :=
-  hK.image reflect continuous_reflect.continuousOn
 
 /-- Reflection preserves affine combinations whose weights sum to one. -/
 theorem reflect_combo (p q : Plane) (a b : ℝ) (hab : a + b = 1) :
@@ -96,11 +71,6 @@ theorem image_reflect_subset_unitStrip {K : Set Plane} (hK : K ⊆ unitStrip) :
     reflect '' K ⊆ unitStrip := by
   rintro p ⟨q, hq, rfl⟩
   exact (reflect_mem_unitStrip q).mpr (hK hq)
-
-@[simp]
-theorem image_reflect_unitStrip : reflect '' unitStrip = unitStrip := by
-  ext p
-  rw [mem_image_reflect, reflect_mem_unitStrip]
 
 /-- Affine reflection commutes with the actual convex hull. -/
 theorem actualHull_reflect (S : Set Plane) :
@@ -155,27 +125,6 @@ theorem IsAmbidextrous.horizontalProjection_actualHull {S : Set Plane}
 
 /-! ## Exact reflected fibers and support values -/
 
-theorem verticalFiber_reflect (K : Set Plane) (x : ℝ) :
-    verticalFiber (reflect '' K) x = (fun y : ℝ => 1 - y) '' verticalFiber K x := by
-  apply Set.Subset.antisymm
-  · intro y hy
-    have href : (x, 1 - y) ∈ K := (mem_image_reflect K (x, y)).mp hy
-    refine ⟨1 - y, href, ?_⟩
-    ring
-  · rintro y ⟨z, hz, rfl⟩
-    exact ⟨(x, z), hz, rfl⟩
-
-/-- Reflection exchanges and reverses both closed fiber endpoints. -/
-theorem verticalFiber_reflect_eq_Icc {K : Set Plane} {x lower upper : ℝ}
-    (hfiber : verticalFiber K x = Icc lower upper) :
-    verticalFiber (reflect '' K) x = Icc (1 - upper) (1 - lower) := by
-  ext y
-  change (x, y) ∈ reflect '' K ↔ 1 - upper ≤ y ∧ y ≤ 1 - lower
-  rw [mem_image_reflect]
-  change 1 - y ∈ verticalFiber K x ↔ 1 - upper ≤ y ∧ y ≤ 1 - lower
-  rw [hfiber]
-  constructor <;> rintro ⟨hlo, hhi⟩ <;> constructor <;> linarith
-
 theorem convex_verticalFiber {K : Set Plane} (hK : Convex ℝ K) (x : ℝ) :
     Convex ℝ (verticalFiber K x) := by
   intro y hy z hz a b ha hb hab
@@ -183,32 +132,6 @@ theorem convex_verticalFiber {K : Set Plane} (hK : Convex ℝ K) (x : ℝ) :
   have hx : a * x + b * x = x := by rw [← add_mul, hab, one_mul]
   change (x, a * y + b * z) ∈ K
   simpa [smul_eq_mul, hx] using hcomb
-
-theorem verticalFiber_eq_Icc_of_compact_convex {K : Set Plane} (hK : IsCompact K)
-    (hconvex : Convex ℝ K) {x : ℝ} (hx : x ∈ horizontalProjection K) :
-    verticalFiber K x = Icc (sInf (verticalFiber K x)) (capRoof K x) := by
-  have hnonempty := verticalFiber_nonempty_iff.mpr hx
-  have hinterval := eq_Icc_of_connected_compact
-    ((convex_verticalFiber hconvex x).isConnected hnonempty) (isCompact_verticalFiber hK x)
-  simpa only [capRoof, if_pos hx] using hinterval
-
-/-- The reflected roof is one minus the actual fiber minimum. -/
-theorem capRoof_reflect {K : Set Plane} (hK : IsCompact K) {x : ℝ}
-    (hx : x ∈ horizontalProjection K) :
-    capRoof (reflect '' K) x = 1 - sInf (verticalFiber K x) := by
-  have hreflection := isCompact_image_reflect hK
-  have hxReflection : x ∈ horizontalProjection (reflect '' K) := by
-    rwa [horizontalProjection_reflect]
-  have hmin : (x, sInf (verticalFiber K x)) ∈ K :=
-    (isCompact_verticalFiber hK x).sInf_mem (verticalFiber_nonempty_iff.mpr hx)
-  apply le_antisymm
-  · have hroof := capRoof_mem hreflection hxReflection
-    have hpoint : (x, 1 - capRoof (reflect '' K) x) ∈ K :=
-      (mem_image_reflect K (x, capRoof (reflect '' K) x)).mp hroof
-    have hle : sInf (verticalFiber K x) ≤ 1 - capRoof (reflect '' K) x :=
-      csInf_le (isCompact_verticalFiber hK x).bddBelow hpoint
-    linarith
-  · exact le_capRoof hreflection ⟨(x, sInf (verticalFiber K x)), hmin, rfl⟩
 
 theorem coordDot_reflect (p v : Plane) :
     coordDot (reflect p) v = coordDot p (v.1, -v.2) + v.2 := by
@@ -229,13 +152,6 @@ theorem support_reflect {K : Set Plane} (hK : IsCompact K) (hne : K.Nonempty)
         rw [coordDot_reflect, hpmax]
       _ ≤ support (reflect '' K) v :=
         coordDot_le_support hreflection (mem_image_of_mem reflect hp) v
-
-theorem angleSupport_reflect {K : Set Plane} (hK : IsCompact K) (hne : K.Nonempty)
-    (θ : ℝ) :
-    angleSupport (reflect '' K) θ = angleSupport K (-θ) + Real.sin θ := by
-  unfold angleSupport
-  rw [support_reflect hK hne]
-  simp only [unitNormal, Real.cos_neg, Real.sin_neg]
 
 /-! ## The two caps retain the original hull and projection -/
 

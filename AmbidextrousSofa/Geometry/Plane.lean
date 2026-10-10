@@ -30,9 +30,6 @@ def rotate (θ : ℝ) (p : Plane) : Plane :=
 /-- A proper rigid placement: rotate, then translate. -/
 def rigidMap (θ : ℝ) (v p : Plane) : Plane := rotate θ p + v
 
-/-- Euclidean squared length, independent of the product norm instance. -/
-def squaredLength (p : Plane) : ℝ := p.1 ^ 2 + p.2 ^ 2
-
 @[simp]
 theorem rotate_zero (p : Plane) : rotate 0 p = p := by
   simp [rotate]
@@ -40,17 +37,6 @@ theorem rotate_zero (p : Plane) : rotate 0 p = p := by
 @[simp]
 theorem rigidMap_zero_zero (p : Plane) : rigidMap 0 0 p = p := by
   simp [rigidMap]
-
-/-- The coordinate rotation preserves Euclidean squared length. -/
-theorem squaredLength_rotate (θ : ℝ) (p : Plane) :
-    squaredLength (rotate θ p) = squaredLength p := by
-  calc
-    squaredLength (rotate θ p) =
-        (Real.cos θ ^ 2 + Real.sin θ ^ 2) * (p.1 ^ 2 + p.2 ^ 2) := by
-      unfold squaredLength rotate
-      ring
-    _ = squaredLength p := by
-      simp only [Real.cos_sq_add_sin_sq, one_mul, squaredLength]
 
 /-- Reflection in the center line of the incoming strip. -/
 def reflect (p : Plane) : Plane := (p.1, 1 - p.2)
@@ -108,9 +94,5 @@ theorem reflect_mem_lowerHall (p : Plane) :
   change (reflect p ∈ incomingArm ∨ reflect p ∈ lowerOutgoingArm) ↔
     (p ∈ incomingArm ∨ p ∈ upperOutgoingArm)
   rw [reflect_mem_incomingArm, reflect_mem_lowerOutgoingArm]
-
-theorem upperHall_eq_preimage_lowerHall : upperHall = reflect ⁻¹' lowerHall := by
-  ext p
-  exact (reflect_mem_lowerHall p).symm
 
 end AmbidextrousSofa

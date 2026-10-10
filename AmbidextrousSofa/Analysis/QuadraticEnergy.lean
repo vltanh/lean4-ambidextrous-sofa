@@ -138,15 +138,4 @@ theorem eqOn_zero_of_quadraticEnergy_eq_zero {p : QuarterPair}
     constructor <;> apply sq_eq_zero_iff.mp <;> nlinarith
   exact ⟨fun t ht => (hpoint t ht).1, fun t ht => (hpoint t ht).2⟩
 
-theorem quadraticEnergy_pos_of_ne_zero {p : QuarterPair} (htrace : p.ZeroTraces)
-    (hne : ∃ t ∈ Icc 0 (Real.pi / 2), p.f t ≠ 0 ∨ p.g t ≠ 0) :
-    0 < quadraticEnergy p := by
-  have hnonneg := quadraticEnergy_nonneg htrace
-  have hnezero : quadraticEnergy p ≠ 0 := by
-    intro hzero
-    obtain ⟨hf, hg⟩ := eqOn_zero_of_quadraticEnergy_eq_zero htrace hzero
-    obtain ⟨t, ht, hne⟩ := hne
-    exact hne.elim (fun h => h (hf ht)) (fun h => h (hg ht))
-  exact lt_of_le_of_ne hnonneg hnezero.symm
-
 end AmbidextrousSofa.Analysis

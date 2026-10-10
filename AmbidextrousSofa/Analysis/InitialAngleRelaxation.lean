@@ -68,13 +68,6 @@ theorem initialAngleRampLoss_eq_square {C z : ℝ}
     max_eq_left (sub_nonneg.mpr hz1), max_eq_right (sub_nonpos.mpr hz0)]
   ring
 
-theorem initialAngleRampLoss_eq_zero {C z : ℝ}
-    (hC : 0 ≤ C) (hz : 2 * C ≤ z) : initialAngleRampLoss C z = 0 := by
-  rw [initialAngleRampLoss_eq_positive_squares,
-    max_eq_right (show 2 * C - z ≤ 0 by linarith),
-    max_eq_right (show C - z ≤ 0 by linarith)]
-  norm_num
-
 theorem initialAngleRampLoss_nonneg {C : ℝ} (hC : 0 ≤ C) (z : ℝ) :
     0 ≤ initialAngleRampLoss C z := by
   exact intervalIntegral.integral_nonneg_of_forall (by linarith)

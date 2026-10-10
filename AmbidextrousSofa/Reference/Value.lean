@@ -25,20 +25,12 @@ open AmbidextrousSofa.Analysis
 
 namespace AmbidextrousSofa.Reference
 
-theorem referenceFD_zero : referenceFD 0 = 1 / 2 := by
-  simp only [referenceFD, if_pos beta_pos.le, fEarlyD_zero]
-
 theorem referenceGD_zero : referenceGD 0 = 2 * A - 1 := by
   simp only [referenceGD, if_pos beta_pos.le, gEarlyD_zero]
 
 theorem referenceFD_pi_div_two : referenceFD (Real.pi / 2) = 2 / 3 * A - 1 := by
   simp only [referenceFD, if_neg (not_le.mpr beta_lt_pi_div_two),
     if_neg (not_le.mpr lateSwitch_lt_pi_div_two), fLateD_pi_div_two]
-
-theorem referenceGD_pi_div_two : referenceGD (Real.pi / 2) = -1 / 2 := by
-  simp only [referenceGD, if_neg (not_le.mpr beta_lt_pi_div_two),
-    if_neg (not_le.mpr lateSwitch_lt_pi_div_two), gLateD_pi_div_two]
-  ring
 
 theorem referenceF_beta : referenceF beta = cosBeta + 1 / 2 * sinBeta := by
   simp only [referenceF, if_pos le_rfl, fEarly, sinBeta, cosBeta]

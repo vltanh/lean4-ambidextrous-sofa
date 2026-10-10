@@ -56,11 +56,6 @@ theorem heightPenalty_aggregate [Fintype ι] [Fintype κ] [DecidableEq ι]
   intro s _
   simp [ite_mul]
 
-theorem sampledPenalty_nonneg [Fintype ι] (U : Set Plane)
-    (normal : ι → Plane) (weight target : ι → ℝ) (hw : ∀ i, 0 ≤ weight i) :
-    0 ≤ sampledPenalty U normal weight target := by
-  exact Finset.sum_nonneg (fun i _ => mul_nonneg (hw i) (sq_nonneg _))
-
 theorem sampledPenalty_mul [Fintype ι] (U : Set Plane)
     (normal : ι → Plane) (weight target : ι → ℝ) (c : ℝ) :
     sampledPenalty U normal (fun i => c * weight i) target =
@@ -154,10 +149,6 @@ theorem sum_stageWeight_le_one (n : ℕ) :
 def stagePenalty (n : ℕ) (target U : Set Plane) : ℝ :=
   sampledPenalty U (normal (dyadic n)) (stageWeight n)
     (fun i => support target (normal (dyadic n) i))
-
-theorem stagePenalty_nonneg (n : ℕ) (target U : Set Plane) :
-    0 ≤ stagePenalty n target U :=
-  sampledPenalty_nonneg _ _ _ _ (stageWeight_nonneg n)
 
 theorem stagePenalty_eq_sum (n : ℕ) (target U : Set Plane) :
     stagePenalty n target U = ∑ s : SampleIndex n,

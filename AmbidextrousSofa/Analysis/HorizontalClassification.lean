@@ -70,10 +70,4 @@ theorem IsFullCapMaximizer.horizontal_classification
       have h := eq_horizontalTranslate_of_horizontalTranslate_eq hshape
       exact ⟨_, Or.inr h⟩
 
-theorem IsFullCapMaximizer.capScore_eq_half_M_of_horizontal
-    {U : Set Plane} (hU : IsFullCapMaximizer U)
-    (hheight : capHeight U = 1)
-    (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1) :
-    capScore U (Real.pi / 2) = M / 2 := (hU.horizontal_classification hheight hmiddle).1
-
 end AmbidextrousSofa

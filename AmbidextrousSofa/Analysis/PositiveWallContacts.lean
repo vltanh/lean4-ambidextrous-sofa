@@ -143,46 +143,6 @@ theorem IsDownwardCap.second_strict_contact_eq_tangency {t x : ℝ}
     _ = secondWall U t (secondTangency U t).1 := by rw [hx]
     _ = (secondTangency U t).2 := secondWall_secondTangency U hc
 
-include hρ hρ0 hρK heq in
-/-- Strict tangent and equal-wall corner alternatives are disjoint.
-This is the first-family classification of the literal source support. -/
-theorem IsDownwardCap.first_source_contact_cases {t x : ℝ}
-    (ht : t ∈ regularCornerDomain m)
-    (hy : 0 < sweptNiche U (Real.pi / 2) x)
-    (hmax : fullWallClip hU.toCompactCap x t = sweptNiche U (Real.pi / 2) x)
-    (hfirst : firstWall U t x = sweptNiche U (Real.pi / 2) x) :
-    (firstWall U t x < secondWall U t x ∧
-      (x, sweptNiche U (Real.pi / 2) x) = firstTangency U t) ∨
-      (firstWall U t x = secondWall U t x ∧
-        (x, sweptNiche U (Real.pi / 2) x) = attachedCorner U t) := by
-  have hcorner : cornerWall U t x = sweptNiche U (Real.pi / 2) x :=
-    positive_fullWallClip_eq_cornerWall (U := hU.toCompactCap) hy hmax
-  have hle : firstWall U t x ≤ secondWall U t x := by
-    rw [hfirst, ← hcorner]
-    exact min_le_right _ _
-  rcases hle.eq_or_lt with he | hs
-  · exact Or.inr ⟨he, wall_tie_eq_attachedCorner ht.1 hfirst (he.symm.trans hfirst)⟩
-  · exact Or.inl ⟨hs, hU.first_strict_contact_eq_tangency hρ hρ0 hρK heq ht hfirst hs⟩
-
-include hρ hρ0 hρK heq in
-theorem IsDownwardCap.second_source_contact_cases {t x : ℝ}
-    (ht : t ∈ regularCornerDomain m)
-    (hy : 0 < sweptNiche U (Real.pi / 2) x)
-    (hmax : fullWallClip hU.toCompactCap x t = sweptNiche U (Real.pi / 2) x)
-    (hsecond : secondWall U t x = sweptNiche U (Real.pi / 2) x) :
-    (secondWall U t x < firstWall U t x ∧
-      (x, sweptNiche U (Real.pi / 2) x) = secondTangency U t) ∨
-      (firstWall U t x = secondWall U t x ∧
-        (x, sweptNiche U (Real.pi / 2) x) = attachedCorner U t) := by
-  have hcorner : cornerWall U t x = sweptNiche U (Real.pi / 2) x :=
-    positive_fullWallClip_eq_cornerWall (U := hU.toCompactCap) hy hmax
-  have hle : secondWall U t x ≤ firstWall U t x := by
-    rw [hsecond, ← hcorner]
-    exact min_le_left _ _
-  rcases hle.eq_or_lt with he | hs
-  · exact Or.inr ⟨he.symm, wall_tie_eq_attachedCorner ht.1 (he.symm.trans hsecond) hsecond⟩
-  · exact Or.inl ⟨hs, hU.second_strict_contact_eq_tangency hρ hρ0 hρK heq ht hsecond hs⟩
-
 include hU hρ hρ0 hρK heq in
 /-- At a strict second-wall maximum, a negative derivative of its
 tangent abscissa would make the angular wall have positive second

@@ -162,40 +162,6 @@ theorem regularCompanionDomain_subset_regularCurvatureDomain (m : ℝ) :
   exact ht.2 (mem_singleton_iff.mpr
     ((cos_add_mul_sin_eq_zero_iff ⟨ht0, ht.1.2⟩).mp hz))
 
-/-- This cut density is constructed from the full maximum itself. Its
-bound is evaluated at the original corner velocity only on the retained
-wing; the initial cut density is literally zero. -/
-theorem IsFullCapMaximizer.leftCompanion_curvature_density_sharp
-    {U : Set Plane} {m c : ℝ} (hU : IsFullCapMaximizer U)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    ∃ ρ : ℝ → ℝ, Measurable ρ ∧
-      (∀ t, 0 ≤ ρ t ∧ ρ t ≤ sourceKappa (upperCornerVelocity U t)) ∧
-      (∀ t, ρ t ≤ 4 * (|horizontalLeft U| + |horizontalRight U| + 1) + 10) ∧
-      (∀ t ≤ max (Real.pi / 2) (affineNormalAngle m), ρ t = 0) ∧
-      (upperCurvature (leftCompanionCap U (horizontalLeft U + capWidth U / 4))).restrict
-          (Ioo (Real.pi / 2) Real.pi) =
-        (volume.restrict (Ioo (Real.pi / 2) Real.pi)).withDensity
-          (fun t => ENNReal.ofReal (ρ t)) := by
-  obtain ⟨ρ, hρ, hsharp, hcoarse, heq⟩ := hU.curvature_density_on_regular_domain haffine
-  have hcomp := restrict_withDensity_of_subset heq (measurableSet_regularCompanionDomain m)
-    (regularCompanionDomain_subset_regularCurvatureDomain m)
-  refine ⟨leftCompanionWingDensity m ρ, measurable_leftCompanionWingDensity hρ m,
-    ?_, ?_, (fun t ht => leftCompanionWingDensity_eq_zero ht),
-    hU.leftCompanion_density_of_regular_companion haffine hcomp⟩
-  · intro t
-    by_cases ht : max (Real.pi / 2) (affineNormalAngle m) < t
-    · rw [leftCompanionWingDensity_eq ht]
-      exact hsharp t
-    · rw [leftCompanionWingDensity_eq_zero (le_of_not_gt ht)]
-      exact ⟨le_rfl, sourceKappa_nonneg _⟩
-  · intro t
-    by_cases ht : max (Real.pi / 2) (affineNormalAngle m) < t
-    · rw [leftCompanionWingDensity_eq ht]
-      exact hcoarse t
-    · rw [leftCompanionWingDensity_eq_zero (le_of_not_gt ht)]
-      positivity
-
 theorem firstQuarter_subset_regularCurvatureDomain_of_nonneg {m : ℝ} (hm : 0 ≤ m) :
     Ioo (0 : ℝ) (Real.pi / 2) ⊆ regularCurvatureDomain m := by
   intro t ht
@@ -206,32 +172,5 @@ theorem firstQuarter_subset_regularCurvatureDomain_of_nonneg {m : ℝ} (hm : 0 �
   apply mem_regularCurvatureDomain_iff.mpr
   refine ⟨ht.1, by linarith only [ht.2, Real.pi_pos], ht.2.ne, ?_⟩
   exact (add_pos_of_pos_of_nonneg hc (mul_nonneg hm hs.le)).ne'
-
-/-- Both actual support arcs have a bounded density. The companion is
-the literal low-wing cut, so its removed middle-face atom is not hidden
-in the regularity hypothesis. The two representatives come from the
-same selected original density. -/
-theorem IsFullCapMaximizer.exists_full_tilted_wing_densities
-    {U : Set Plane} {m c : ℝ} (hU : IsFullCapMaximizer U) (hm : 0 ≤ m)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    ∃ ρ : ℝ → ℝ, Measurable ρ ∧
-      (∀ t, 0 ≤ ρ t ∧ ρ t ≤ sourceKappa (upperCornerVelocity U t)) ∧
-      (∀ t, ρ t ≤ 4 * (|horizontalLeft U| + |horizontalRight U| + 1) + 10) ∧
-      (upperCurvature U).restrict (regularCurvatureDomain m) =
-        (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)) ∧
-      (upperCurvature U).restrict (Ioo (0 : ℝ) (Real.pi / 2)) =
-        (volume.restrict (Ioo (0 : ℝ) (Real.pi / 2))).withDensity (fun t => ENNReal.ofReal (ρ t)) ∧
-      (upperCurvature (leftCompanionCap U (horizontalLeft U + capWidth U / 4))).restrict
-          (Ioo (Real.pi / 2) Real.pi) =
-        (volume.restrict (Ioo (Real.pi / 2) Real.pi)).withDensity
-          (fun t => ENNReal.ofReal (leftCompanionWingDensity m ρ t)) := by
-  obtain ⟨ρ, hρ, hsharp, hcoarse, heq⟩ := hU.curvature_density_on_regular_domain haffine
-  have hcomp := restrict_withDensity_of_subset heq (measurableSet_regularCompanionDomain m)
-    (regularCompanionDomain_subset_regularCurvatureDomain m)
-  exact ⟨ρ, hρ, hsharp, hcoarse, heq,
-    restrict_withDensity_of_subset heq measurableSet_Ioo
-      (firstQuarter_subset_regularCurvatureDomain_of_nonneg hm),
-    hU.leftCompanion_density_of_regular_companion haffine hcomp⟩
 
 end AmbidextrousSofa

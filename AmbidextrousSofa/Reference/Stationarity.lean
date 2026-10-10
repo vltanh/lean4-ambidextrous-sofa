@@ -243,20 +243,4 @@ theorem referencePair_eulerG {t : ℝ} (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) 
     exact referencePair_fluxG_eq ⟨hs.1.le, hs.2.le⟩
   · exact referencePair_fluxG_eq ⟨ht.1.le, ht.2.le⟩
 
-theorem referencePair_stationary : referencePair.Stationary :=
-  referencePair.stationary_of_euler (fun _ ht => referencePair_eulerF ht)
-    (fun _ ht => referencePair_eulerG ht)
-
-theorem adaptiveFunctional_le_reference_of_sameTraces {u : QuarterPair}
-    (htrace : u.SameTraces referencePair) :
-    adaptiveFunctional u ≤ adaptiveFunctional referencePair :=
-  adaptiveFunctional_le_of_stationary referencePair_stationary htrace
-
-theorem eqOn_reference_of_sameTraces_of_ge {u : QuarterPair}
-    (htrace : u.SameTraces referencePair)
-    (hvalue : adaptiveFunctional referencePair ≤ adaptiveFunctional u) :
-    EqOn u.f referenceF (Icc 0 (Real.pi / 2)) ∧
-      EqOn u.g referenceG (Icc 0 (Real.pi / 2)) :=
-  eqOn_of_stationary_of_sameTraces_of_ge referencePair_stationary htrace hvalue
-
 end AmbidextrousSofa.Reference

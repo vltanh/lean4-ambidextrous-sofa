@@ -40,84 +40,6 @@ def diskPair : QuarterPair where
   hasDeriv_f := fun t _ => (((Real.hasDerivAt_sin t).div_const 2).const_add (1 / 2)).hasDerivWithinAt
   hasDeriv_g := fun t _ => (((Real.hasDerivAt_cos t).div_const 2).const_add (1 / 2)).hasDerivWithinAt
 
-theorem diskPair_widthTraces : diskPair.WidthTraces (1 / 2) := by
-  norm_num [QuarterPair.WidthTraces, diskPair]
-
-theorem diskPair_p (t : ℝ) : diskPair.p t = 1 / 2 := by
-  unfold QuarterPair.p diskPair
-  ring
-
-theorem diskPair_q (t : ℝ) : diskPair.q t = -1 / 2 := by
-  unfold QuarterPair.q diskPair
-  ring
-
-theorem diskPair_fluxF (t : ℝ) : diskPair.fluxF t = 1 / 4 - 3 / 4 * Real.cos t := by
-  rw [QuarterPair.fluxF, diskPair_p]
-  norm_num [diskPair] <;> ring
-
-theorem diskPair_fluxG (t : ℝ) : diskPair.fluxG t = 3 / 4 * Real.sin t - 1 / 4 := by
-  rw [QuarterPair.fluxG, diskPair_q]
-  norm_num [diskPair] <;> ring
-
-theorem diskPair_forceF (t : ℝ) : diskPair.forceF t = 3 / 4 * Real.sin t := by
-  rw [QuarterPair.forceF, diskPair_q]
-  norm_num [diskPair] <;> ring
-
-theorem diskPair_forceG (t : ℝ) : diskPair.forceG t = 3 / 4 * Real.cos t := by
-  rw [QuarterPair.forceG, diskPair_p]
-  norm_num [diskPair] <;> ring
-
-theorem diskPair_eulerF (t : ℝ) :
-    HasDerivWithinAt diskPair.fluxF (diskPair.forceF t) (Ioi t) t := by
-  have h : HasDerivAt (fun s => 1 / 4 - 3 / 4 * Real.cos s) (diskPair.forceF t) t := by
-    apply (((Real.hasDerivAt_cos t).const_mul (3 / 4)).const_sub (1 / 4)).congr_deriv
-    rw [diskPair_forceF]
-    ring
-  exact h.hasDerivWithinAt.congr (fun s _ => diskPair_fluxF s) (diskPair_fluxF t)
-
-theorem diskPair_eulerG (t : ℝ) :
-    HasDerivWithinAt diskPair.fluxG (diskPair.forceG t) (Ioi t) t := by
-  have h : HasDerivAt (fun s => 3 / 4 * Real.sin s - 1 / 4) (diskPair.forceG t) t := by
-    apply (((Real.hasDerivAt_sin t).const_mul (3 / 4)).sub_const (1 / 4)).congr_deriv
-    rw [diskPair_forceG]
-  exact h.hasDerivWithinAt.congr (fun s _ => diskPair_fluxG s) (diskPair_fluxG t)
-
-theorem diskPair_stationary : diskPair.Stationary :=
-  diskPair.stationary_of_euler (fun t _ => diskPair_eulerF t) (fun t _ => diskPair_eulerG t)
-
-theorem adaptiveDensity_diskPair (t : ℝ) :
-    adaptiveDensity diskPair t = 1 / 2 + (Real.sin t + Real.cos t) / 8 := by
-  unfold adaptiveDensity
-  rw [diskPair_p, diskPair_q]
-  norm_num [diskPair] <;> ring
-
-theorem adaptiveFunctional_diskPair : adaptiveFunctional diskPair = Real.pi / 4 + 1 / 4 := by
-  let P : ℝ → ℝ := fun t => t / 2 + (-Real.cos t + Real.sin t) / 8
-  have hL : (0 : ℝ) ≤ Real.pi / 2 := by linarith [Real.pi_pos]
-  have hftc : (∫ t in (0 : ℝ)..(Real.pi / 2), adaptiveDensity diskPair t) =
-      P (Real.pi / 2) - P 0 := by
-    apply intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le hL (by dsimp [P]; fun_prop)
-    · intro t _
-      rw [adaptiveDensity_diskPair]
-      apply (((hasDerivAt_id t).div_const 2).add
-        (((Real.hasDerivAt_cos t).neg.add (Real.hasDerivAt_sin t)).div_const 8)).congr_deriv
-      ring
-    · exact ContinuousOn.intervalIntegrable_of_Icc hL (continuousOn_adaptiveDensity diskPair)
-  change (∫ t in (0 : ℝ)..(Real.pi / 2), adaptiveDensity diskPair t) = _
-  rw [hftc]
-  dsimp [P]
-  simp only [Real.sin_zero, Real.cos_zero, Real.sin_pi_div_two, Real.cos_pi_div_two]
-  ring
-
-/-- The width boundary is strictly suboptimal even among unrestricted C1
-profiles with those traces. This is an actual fixed-width comparison. -/
-theorem adaptiveFunctional_sub_width_lt_half_M_at_half {u : QuarterPair}
-    (hu : u.WidthTraces (1 / 2)) : adaptiveFunctional u - 1 / 2 < M / 2 := by
-  have h := adaptiveFunctional_le_of_stationary diskPair_stationary
-    (QuarterPair.sameTraces_of_widthTraces hu diskPair_widthTraces)
-  rw [adaptiveFunctional_diskPair] at h
-  linarith [Real.pi_lt_four, eight_fifths_lt_M]
-
 def tailAngle0 : ℝ := Real.pi / 8
 
 def tailPhase (t : ℝ) : ℝ := t / 2 + tailAngle0
@@ -381,20 +303,5 @@ theorem adaptiveFunctional_sub_width_lt_half_M_of_tail
   have h := adaptiveFunctional_le_of_stationary (tailPair_stationary hr)
     (QuarterPair.sameTraces_of_widthTraces hu (tailPair_widthTraces r))
   linarith [tailPair_score_lt_two_thirds hr, eight_fifths_lt_M]
-
-/-- Half-width at least two lies wholly in the explicit, strictly
-suboptimal tail. Thus only a compact interval of widths can compete. -/
-theorem adaptiveFunctional_sub_width_lt_half_M_of_two_le
-    {u : QuarterPair} {a : ℝ} (hu : u.WidthTraces a) (ha : 2 ≤ a) :
-    adaptiveFunctional u - a < M / 2 := by
-  let r := a / Real.cos tailAngle0
-  have hrpos : 0 < r := div_pos (by linarith) cos_tailAngle0_pos
-  have hrc : r * Real.cos tailAngle0 = a :=
-    div_mul_cancel₀ a (ne_of_gt cos_tailAngle0_pos)
-  have hmul := mul_lt_mul_of_pos_left two_cos_tailAngle0_lt_five_sin hrpos
-  have hr : 2 / 3 ≤ r * Real.sin tailAngle0 := by nlinarith [hrc]
-  have htrace : u.WidthTraces (r * Real.cos tailAngle0) := by rwa [hrc]
-  have h := adaptiveFunctional_sub_width_lt_half_M_of_tail hr htrace
-  rwa [hrc] at h
 
 end AmbidextrousSofa.Analysis

@@ -34,22 +34,6 @@ theorem IsFullCapMaximizer.tilted_endpoint_momentum_eq
   unfold Analysis.tiltedEndpointMomentum
   linarith only [hEP]
 
-theorem IsFullCapMaximizer.initial_floor_conditions_of_small_width
-    {U : Set Plane} (hU : IsFullCapMaximizer U) {C h m c : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC0 : 2 / 3 ≤ C) (hC1 : C ≤ 18 / 25)
-    (hh0 : 3 / 100 ≤ h) (hh1 : h ≤ 17 / 50) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c)
-    (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1) :
-    Analysis.InitialFloorEnergyConditions (3 * C)
-      (capRoof U (horizontalRight U) - 1 + h) h := by
-  rw [hU.tilted_endpoint_momentum_eq hl hr hheight haffine hlow hhigh]
-  have hn := hU.isCap.middle_niche_le_box_height_of_endpoints hl hr
-    (by linarith only [hC0]) (by linarith only [hC1])
-  exact Analysis.initialFloorEnergyConditions_small_width_of_endpoint_box hC0 hC1 hh0 hh1
-    (sweptNiche_nonneg U (Real.pi / 2) C) hn.2
-    (sweptNiche_nonneg U (Real.pi / 2) (-C)) hn.1
-
 theorem IsFullCapMaximizer.initial_floor_conditions_of_high_tilt
     {U : Set Plane} (hU : IsFullCapMaximizer U) {C h m c : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)

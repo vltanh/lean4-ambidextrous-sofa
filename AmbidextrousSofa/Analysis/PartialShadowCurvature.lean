@@ -186,26 +186,4 @@ theorem IsJointCapMaximizer.ae_proper_curvature_same_sign_quadrants
       simpa [sameSignCoefficient, hnot] using hnComp (hshift.symm ▸ hm)
     exact ⟨le_antisymm hsecond (hρ0 _), hfirst⟩
 
-theorem IsJointCapMaximizer.proper_curvature_density_same_sign_controls
-    {K : Set Plane} {α m c : ℝ} (hK : IsJointCapMaximizer K α)
-    (hproper : α < Real.pi / 2)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft K) (horizontalRight K),
-      capRoof K x = m * x + c) :
-    ∃ ρ : ℝ → ℝ, Measurable ρ ∧
-      (∀ t, 0 ≤ ρ t ∧ ρ t ≤ sourceKappa (upperCornerVelocity K t)) ∧
-      (∀ t, ρ t ≤ 8 * (|horizontalLeft K| + |horizontalRight K| + 1) + 24) ∧
-      (upperCurvature K).restrict (regularProperCurvatureDomain α m) =
-        (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-          (fun t => ENNReal.ofReal (ρ t)) ∧
-      (∀ᵐ t ∂volume.restrict (regularProperCornerDomain α m),
-        (0 < firstCornerVelocity K t ∧ secondCornerVelocity K t < 0 →
-          ρ t = 0 ∧ ρ (t + Real.pi / 2) ≤ 1 / 2) ∧
-        (firstCornerVelocity K t < 0 ∧ 0 < secondCornerVelocity K t →
-          ρ (t + Real.pi / 2) = 0 ∧ ρ t ≤ 1 / 2)) := by
-  obtain ⟨ρ, hρ, hρbounds, hρC, heq⟩ :=
-    hK.curvature_density_on_regular_proper_domain hproper haffine
-  exact ⟨ρ, hρ, hρbounds, hρC, heq,
-    hK.ae_proper_curvature_same_sign_quadrants hproper haffine hρ
-      (fun t => (hρbounds t).1) hρC heq⟩
-
 end AmbidextrousSofa

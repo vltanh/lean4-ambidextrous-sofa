@@ -175,12 +175,4 @@ theorem Passage.terminal_support_lower {S : Set Plane} {path : RigidMotionPath}
   simp only [coordDot, unitNormal, Real.cos_neg, Real.sin_neg]
   constructor <;> nlinarith [hfinish.1, hfinish.2.1]
 
-/-- Support-tightened placements vary continuously with the frame angle. -/
-theorem continuous_canonicalPlacement {K : Set Plane} (hK : IsCompact K) (p : Plane) :
-    Continuous (fun θ => canonicalPlacement K θ p) := by
-  have hu := (continuous_support hK).comp continuous_unitNormal
-  have hv := (continuous_support hK).comp continuous_companionNormal
-  unfold canonicalPlacement coordDot unitNormal companionNormal
-  fun_prop
-
 end AmbidextrousSofa

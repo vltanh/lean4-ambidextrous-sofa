@@ -25,13 +25,6 @@ theorem IsDownwardCap.measurable_firstTangency_fst
   exact (((continuous_angleSupport hU.isCompact).measurable.sub_const 1).mul
     Real.measurable_cos).sub (hU.measurable_supportTangent.mul Real.measurable_sin)
 
-theorem IsDownwardCap.measurable_firstTangency_snd
-    {U : Set Plane} (hU : IsDownwardCap U) :
-    Measurable (fun t => (firstTangency U t).2) := by
-  rw [funext (firstTangency_snd_eq_support U)]
-  exact (((continuous_angleSupport hU.isCompact).measurable.sub_const 1).mul
-    Real.measurable_sin).add (hU.measurable_supportTangent.mul Real.measurable_cos)
-
 theorem IsDownwardCap.measurable_secondTangency_fst
     {U : Set Plane} (hU : IsDownwardCap U) :
     Measurable (fun t => (secondTangency U t).1) := by

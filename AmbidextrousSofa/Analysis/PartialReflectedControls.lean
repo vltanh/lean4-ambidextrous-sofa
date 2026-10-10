@@ -56,17 +56,6 @@ theorem IsJointCapMaximizer.mem_regularProperCornerDomain_after_affine_of_tail_r
   unfold affineNormalAngle at heq
   linarith only [heq, hmt]
 
-theorem IsJointCapMaximizer.mem_regularProperCornerDomain_after_affine
-    {U : Set Plane} {α m c t : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (ht : t ∈ Ioo (0 : ℝ) α) (hmt : Real.arctan m < t) :
-    t ∈ regularProperCornerDomain α m := by
-  exact IsJointCapMaximizer.mem_regularProperCornerDomain_after_affine_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine ht hmt
-
 theorem IsJointCapMaximizer.proper_wing_densities_zero_before_affine
     {U : Set Plane} {α C m c : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
     (hproper : α < Real.pi / 2)
@@ -165,22 +154,6 @@ theorem IsJointCapMaximizer.properReflected_arm_bounds_of_tail_regime
     le_on_closure (fun s hs => (hinside s hs).2)
       continuousOn_const hcont.2.continuousOn hrcl⟩
 
-theorem IsJointCapMaximizer.properReflected_arm_bounds
-    {U : Set Plane} {α m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
-    ∀ r ∈ Icc (Real.pi / 2 - α) (properReflectedActiveEnd m),
-      properReflectedP U m ρ r ≤ 1 ∧ -1 ≤ properReflectedQ U m ρ r := by
-  exact IsJointCapMaximizer.properReflected_arm_bounds_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine hρ hρ0
-    hρK heq
-
 theorem IsJointCapMaximizer.properUsed_source_controls_of_tail_regime
     {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
     (hregime : ProperTailRegime U α m)
@@ -244,30 +217,6 @@ theorem IsJointCapMaximizer.properUsed_source_controls_of_tail_regime
       have h := hsource.2 ⟨hq, by linarith only [hp]⟩
       exact ⟨by rw [hveq]; exact h.1, h.2⟩
 
-theorem IsJointCapMaximizer.properUsed_source_controls
-    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (hκ : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
-    ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) α),
-      ρ t ≤ sourceKappa (properUsedQ U m ρ t) ∧
-      leftCompanionWingDensity m ρ (t + Real.pi / 2) ≤ sourceKappa (properUsedP U m ρ t) ∧
-      (0 < properUsedP U m ρ t → 0 < properUsedQ U m ρ t →
-        ρ t = 0 ∧ leftCompanionWingDensity m ρ (t + Real.pi / 2) ≤ 1 / 2) ∧
-      (properUsedP U m ρ t < 0 → properUsedQ U m ρ t < 0 →
-        leftCompanionWingDensity m ρ (t + Real.pi / 2) = 0 ∧ ρ t ≤ 1 / 2) := by
-  exact IsJointCapMaximizer.properUsed_source_controls_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
-    hρ hρ0 hρK hκ heq
-
 theorem IsJointCapMaximizer.properReflected_source_controls_of_tail_regime
     {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
     (hregime : ProperTailRegime U α m)
@@ -306,32 +255,6 @@ theorem IsJointCapMaximizer.properReflected_source_controls_of_tail_regime
   · intro hp hq
     dsimp only [properReflectedP, properReflectedQ] at hp hq
     exact hpp (by linarith only [hq]) (by linarith only [hp])
-
-theorem IsJointCapMaximizer.properReflected_source_controls
-    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (hκ : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
-    ∀ᵐ r ∂volume.restrict (Ioo (Real.pi / 2 - α) (Real.pi / 2)),
-      0 ≤ properReflectedFirstDensity m ρ r ∧
-      0 ≤ properReflectedSecondDensity ρ r ∧
-      properReflectedFirstDensity m ρ r ≤ sourceKappa (properReflectedQ U m ρ r) ∧
-      properReflectedSecondDensity ρ r ≤ sourceKappa (properReflectedP U m ρ r) ∧
-      (0 < properReflectedP U m ρ r → 0 < properReflectedQ U m ρ r →
-        properReflectedFirstDensity m ρ r = 0 ∧ properReflectedSecondDensity ρ r ≤ 1 / 2) ∧
-      (properReflectedP U m ρ r < 0 → properReflectedQ U m ρ r < 0 →
-        properReflectedSecondDensity ρ r = 0 ∧ properReflectedFirstDensity m ρ r ≤ 1 / 2) := by
-  exact IsJointCapMaximizer.properReflected_source_controls_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hl hr hheight haffine
-    hρ hρ0 hρK hκ heq
 
 theorem IsJointCapMaximizer.properReflected_densities_zero_after_active
     {U : Set Plane} {α C m c : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)

@@ -36,15 +36,6 @@ theorem IsJointCapMaximizer.proper_terminal_lt_affineNormal_of_tail_regime
     unfold affineNormalAngle
     linarith only [hm0, hproper]
 
-theorem IsJointCapMaximizer.proper_terminal_lt_affineNormal
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) : α < affineNormalAngle m := by
-  exact IsJointCapMaximizer.proper_terminal_lt_affineNormal_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine
-
 theorem IsJointCapMaximizer.proper_first_arc_subset_regular_of_tail_regime
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hregime : ProperTailRegime U α m)
@@ -58,16 +49,6 @@ theorem IsJointCapMaximizer.proper_first_arc_subset_regular_of_tail_regime
   · linarith only [ht.2, hproper, Real.pi_pos]
   · exact (ht.2.trans hproper).ne
   · exact (affineNormal_coefficient_pos_before ht.1.le (ht.2.trans hαm)).ne'
-
-theorem IsJointCapMaximizer.proper_first_arc_subset_regular
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    Ioo (0 : ℝ) α ⊆ regularProperCurvatureDomain α m := by
-  exact IsJointCapMaximizer.proper_first_arc_subset_regular_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine
 
 theorem regularCompanionDomain_subset_regularProperCurvatureDomain
     {α m : ℝ} (hproper : α < Real.pi / 2) :
@@ -90,20 +71,6 @@ theorem IsJointCapMaximizer.proper_first_density_of_regular_of_tail_regime
   restrict_withDensity_of_subset heq measurableSet_Ioo
     (hU.proper_first_arc_subset_regular_of_tail_regime hregime hproper hheight haffine)
 
-theorem IsJointCapMaximizer.proper_first_density_of_regular
-    {U : Set Plane} {α m c : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
-    (upperCurvature U).restrict (Ioo (0 : ℝ) α) =
-      (volume.restrict (Ioo (0 : ℝ) α)).withDensity (fun t => ENNReal.ofReal (ρ t)) := by
-  exact IsJointCapMaximizer.proper_first_density_of_regular_of_tail_regime hU
-    (hU.properTailRegime_of_largest hLargest hproper hheight haffine) hproper hheight haffine heq
-
 theorem IsJointCapMaximizer.proper_leftCompanion_density_of_regular
     {U : Set Plane} {α m c : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
     (hproper : α < Real.pi / 2)
@@ -119,18 +86,6 @@ theorem IsJointCapMaximizer.proper_leftCompanion_density_of_regular
   hU.leftCompanion_density_of_regular_companion haffine
     (restrict_withDensity_of_subset heq (measurableSet_regularCompanionDomain m)
       (regularCompanionDomain_subset_regularProperCurvatureDomain hproper))
-
-/-- The possible terminal companion atom is zero in the actual cap,
-by the proper density away from the affine middle normal. -/
-theorem IsJointCapMaximizer.proper_terminal_companion_atom_eq_zero
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hproper : α < Real.pi / 2)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) : MovingSofaOptimality.sigmaAt U (α + Real.pi / 2) = 0 := by
-  apply hU.sigmaAt_eq_zero_on_regular_proper_domain hproper haffine
-  apply regularCompanionDomain_subset_regularProperCurvatureDomain hproper
-  refine ⟨⟨by linarith only [hU.angle_pos], by linarith only [hproper]⟩, ?_⟩
-  exact (hU.middle_normal_lt_terminal_companion haffine).ne'
 
 theorem IsJointCapMaximizer.proper_first_wing_curvature_zero_before_affine
     {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
