@@ -4,8 +4,8 @@ import AmbidextrousSofa
 # Prepared axiom queries — not executed
 
 Regenerate with `python scripts/check_source_policy.py --write-axiom-audit`.
-The source-only inventory lists 7524 explicitly named declarations
-across 496 implementation modules, respecting their namespace scopes.
+The source-only inventory lists 7605 explicitly named declarations
+across 510 implementation modules, respecting their namespace scopes.
 Generated constructors, projections, recursors, and local proof terms are not
 separately enumerated by this lexical inventory.
 
@@ -720,6 +720,36 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.horizontalSupportQuarterPair_velocities
 #print axioms AmbidextrousSofa.IsFullCapMaximizer.horizontalSupportQuarterPair_traces
 #print axioms AmbidextrousSofa.horizontalSupportQuarterPair_corner_calculus
+
+-- AmbidextrousSofa/Analysis/CommonSourceCoefficients.lean
+#print axioms AmbidextrousSofa.Analysis.sourceFraction
+#print axioms AmbidextrousSofa.Analysis.sourceFraction_bounds
+#print axioms AmbidextrousSofa.Analysis.measurable_sourceFraction
+#print axioms AmbidextrousSofa.Analysis.sourceFraction_zero
+#print axioms AmbidextrousSofa.Analysis.sourceFraction_eq_zero_of_nonpositive
+#print axioms AmbidextrousSofa.Analysis.sourceFraction_eq_div
+#print axioms AmbidextrousSofa.Analysis.sourceFraction_self
+#print axioms AmbidextrousSofa.Analysis.sourceFraction_reconstruct
+#print axioms AmbidextrousSofa.Analysis.firstSourceCoefficient
+#print axioms AmbidextrousSofa.Analysis.companionSourceCoefficient
+#print axioms AmbidextrousSofa.Analysis.cornerSourceCoefficient
+#print axioms AmbidextrousSofa.Analysis.measurable_firstSourceCoefficient
+#print axioms AmbidextrousSofa.Analysis.measurable_companionSourceCoefficient
+#print axioms AmbidextrousSofa.Analysis.measurable_cornerSourceCoefficient
+#print axioms AmbidextrousSofa.Analysis.firstSourceCoefficient_bounds
+#print axioms AmbidextrousSofa.Analysis.companionSourceCoefficient_bounds
+#print axioms AmbidextrousSofa.Analysis.cornerSourceCoefficient_bounds
+#print axioms AmbidextrousSofa.Analysis.firstSourceCoefficient_eq_one_of_mem
+#print axioms AmbidextrousSofa.Analysis.firstSourceCoefficient_eq_zero_of_not_mem
+#print axioms AmbidextrousSofa.Analysis.companionSourceCoefficient_eq_zero_of_mass_zero
+#print axioms AmbidextrousSofa.Analysis.companionSourceCoefficient_eq_zero_of_one_le
+#print axioms AmbidextrousSofa.Analysis.cornerSourceCoefficient_eq_zero_of_mass_zero
+#print axioms AmbidextrousSofa.Analysis.cornerSourceCoefficient_eq_one_of_mass_eq
+#print axioms AmbidextrousSofa.Analysis.firstSourceCoefficient_reconstruct
+#print axioms AmbidextrousSofa.Analysis.companionSourceCoefficient_reconstruct
+#print axioms AmbidextrousSofa.Analysis.corner_first_mass_le_of_weighted_projection
+#print axioms AmbidextrousSofa.Analysis.cornerSourceCoefficient_reconstruct
+#print axioms AmbidextrousSofa.Analysis.commonSourceCoefficients_balance
 
 -- AmbidextrousSofa/Analysis/CompanionBaseline.lean
 #print axioms AmbidextrousSofa.companionBaseline
@@ -1543,6 +1573,12 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.IsFullCapMaximizer.first_source_flux_of_core_piece
 #print axioms AmbidextrousSofa.IsFullCapMaximizer.first_source_flux_of_charged_pieces
 
+-- AmbidextrousSofa/Analysis/FirstTangentExclusivity.lean
+#print axioms AmbidextrousSofa.strictMonoOn_firstWallSlope
+#print axioms AmbidextrousSofa.fullTiltedSupportQuarterPair_first_wall_strict_at_first_tangency
+#print axioms AmbidextrousSofa.fullTiltedSupportQuarterPair_niche_derivative_first_tangency
+#print axioms AmbidextrousSofa.fullTiltedSupportQuarterPair_strict_first_contact_unique
+
 -- AmbidextrousSofa/Analysis/FirstUnitBadEntry.lean
 #print axioms AmbidextrousSofa.fullTiltedSupportQuarterPair_first_bad_after_middle
 
@@ -2154,6 +2190,9 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.IsJointCapMaximizer.exists_heightOne_affine_middle
 #print axioms AmbidextrousSofa.exists_canonical_jointCapMaximizer_largest_angle
 
+-- AmbidextrousSofa/Analysis/JointCommonOccupation.lean
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.exists_common_source_occupation_of_phases
+
 -- AmbidextrousSofa/Analysis/JointCompanionTangentDensity.lean
 #print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_second_tangent_source_graph
 #print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_second_tangent_density_eq_zero_of_original_excess
@@ -2165,11 +2204,59 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_companion_tangent_density_eq_zero_of_negative
 #print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_companion_tangent_density_controls
 
+-- AmbidextrousSofa/Analysis/JointCoreFlux.lean
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_corner_density_zero_off_core
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_core_residual_density_sum_eq_zero
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_corner_density_balance
+
+-- AmbidextrousSofa/Analysis/JointCoreProjection.lean
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.sourceBranches_sine_spatial_add_le
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.sourceBranches_sine_graph_add_le
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.sourceBranch_density_sine_eq
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.sourceBranches_density_sine_graph_add_le
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_sourceBranchDensities_mul_sin_add_le_abs_deriv_on
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_corner_source_weighted_sum_le_core_speed
+
+-- AmbidextrousSofa/Analysis/JointCoreProjectionEquality.lean
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.coreSourceProjection
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.source_sine_spatial_eq_horizontalProjection
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.coreSourceProjection_restrict_eq_of_source_support
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.coreSourceProjection_eq_density_graph
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_sources_over_unique_core_image
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.coreSourceProjection_restrict_unique_image
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.horizontalProjection_restrict_firstUnitPositiveInterval_eq_volume
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.coreSourceProjection_restrict_unique_positive_image_eq_volume
+
+-- AmbidextrousSofa/Analysis/JointCoreSourceGeometry.lean
+#print axioms AmbidextrousSofa.fullTiltedSupportQuarterPair_core_continuous_global
+#print axioms AmbidextrousSofa.fullTiltedSupportQuarterPair_momenta_continuous
+#print axioms AmbidextrousSofa.fullTiltedSupportQuarterPair_joint_corner_cofactors
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_first_corner_core_geometry
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_second_corner_core_geometry
+
+-- AmbidextrousSofa/Analysis/JointCoreVisibility.lean
+#print axioms AmbidextrousSofa.StrictCornerSignPhases.mem_core_of_first_neg_second_pos
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_corner_densities_eq_momenta_of_unique_contact
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_first_corner_density_eq_q_of_unique_contact
+
 -- AmbidextrousSofa/Analysis/JointFirstTangentDensity.lean
 #print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_first_tangent_source_graph
 #print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_first_tangent_density_le_one_sub
 #print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_first_tangent_density_eq_zero_outside_middle
 #print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_first_tangent_density_eq_zero_after_middle
+
+-- AmbidextrousSofa/Analysis/JointFirstTangentExclusivity.lean
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_exclusive_first_source_on_positive_tangent
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_exclusive_first_source_on_image
+
+-- AmbidextrousSofa/Analysis/JointFirstTangentSaturation.lean
+#print axioms AmbidextrousSofa.firstTangentChargedSet
+#print axioms AmbidextrousSofa.measurableSet_firstTangentChargedSet
+#print axioms AmbidextrousSofa.fullTiltedSupportQuarterPair_first_tangent_continuous_global
+#print axioms AmbidextrousSofa.fullTiltedSupportQuarterPair_measurableSet_firstTangentChargedSet
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.first_branch_sine_mass_eq_horizontalProjection
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.lintegral_first_tangent_density_mul_sin_eq_volume_image
+#print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.ae_first_tangent_density_eq_one_sub_on_charged
 
 -- AmbidextrousSofa/Analysis/JointNicheDerivative.lean
 #print axioms AmbidextrousSofa.AngularGrid.SelectedJointSourceLimit.weightedSpatialProjection
@@ -4219,6 +4306,10 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.IsDownwardCap.threeAngle_width_bounds_of_endpoint_bounds
 #print axioms AmbidextrousSofa.IsDownwardCap.threeAngle_width_bounds_of_endpoint_laws
 
+-- AmbidextrousSofa/Analysis/TiltedCapExclusion.lean
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.false_of_positive_tilt_first_unit
+#print axioms AmbidextrousSofa.IsFullCapMaximizer.false_of_positive_tilt
+
 -- AmbidextrousSofa/Analysis/TiltedCrossingExcess.lean
 #print axioms AmbidextrousSofa.fullTiltedSupportQuarterPair_first_zero_excess_stops_early
 
@@ -4535,6 +4626,15 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.IsDownwardCap.partialBarrier_inserted_top
 #print axioms AmbidextrousSofa.IsDownwardCap.capScore_lt_inserted_middle_right
 #print axioms AmbidextrousSofa.IsFullCapMaximizer.middle_right_eq_one_of_top_right
+
+-- AmbidextrousSofa/Analysis/UniqueWallContact.lean
+#print axioms AmbidextrousSofa.separatedWallContactSet
+#print axioms AmbidextrousSofa.uniqueWallContactSet
+#print axioms AmbidextrousSofa.isClosed_separatedWallContactSet
+#print axioms AmbidextrousSofa.uniqueWallContactSet_eq_iInter_compl
+#print axioms AmbidextrousSofa.measurableSet_uniqueWallContactSet
+#print axioms AmbidextrousSofa.measurableSet_unique_fullWallClip_contact
+#print axioms AmbidextrousSofa.IsDownwardCap.measurableSet_unique_fullWallClip_contact
 
 -- AmbidextrousSofa/Analysis/UnusedCurvature.lean
 #print axioms AmbidextrousSofa.usedNormalAngle
@@ -7911,6 +8011,12 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.ae_density_le_abs_deriv_of_map_le_volume
 #print axioms AmbidextrousSofa.ae_weight_le_abs_hasDerivAt_of_map_le_volume
 
+-- AmbidextrousSofa/Measure/GraphDensitySaturation.lean
+#print axioms AmbidextrousSofa.map_abs_deriv_density_eq_volume_image
+#print axioms AmbidextrousSofa.measure_eq_of_map_eq_of_continuousOn_injOn
+#print axioms AmbidextrousSofa.restrict_graph_map_eq_map_restrict_of_injOn
+#print axioms AmbidextrousSofa.ae_weight_eq_abs_deriv_of_graph_saturated_on
+
 -- AmbidextrousSofa/Measure/GraphIntegral.lean
 #print axioms AmbidextrousSofa.coordDet
 #print axioms AmbidextrousSofa.integral_graph_parametrization
@@ -7931,6 +8037,9 @@ outside the main library entry point.
 #print axioms AmbidextrousSofa.ae_real_density_eq_of_map_eq_of_injOn
 #print axioms AmbidextrousSofa.ae_add_eq_zero_of_graph_setIntegral_eq_zero
 #print axioms AmbidextrousSofa.ae_add_eq_zero_on_of_graph_setIntegral_eq_zero
+
+-- AmbidextrousSofa/Measure/MonotoneGraphSaturation.lean
+#print axioms AmbidextrousSofa.ae_weight_eq_deriv_of_monotone_image_mass
 
 -- AmbidextrousSofa/Measure/Partition.lean
 #print axioms AmbidextrousSofa.middleHalfInterval

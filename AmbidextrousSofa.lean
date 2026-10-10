@@ -37,6 +37,7 @@ import AmbidextrousSofa.Analysis.CircleAverage
 import AmbidextrousSofa.Analysis.Circumscription
 import AmbidextrousSofa.Analysis.ClippedTailIntegral
 import AmbidextrousSofa.Analysis.ClosedSupportPair
+import AmbidextrousSofa.Analysis.CommonSourceCoefficients
 import AmbidextrousSofa.Analysis.CompanionBaseline
 import AmbidextrousSofa.Analysis.CompanionEndpointEnergy
 import AmbidextrousSofa.Analysis.CompanionEndpointKernel
@@ -102,6 +103,7 @@ import AmbidextrousSofa.Analysis.FirstFloorTrapping
 import AmbidextrousSofa.Analysis.FirstFloorVisibility
 import AmbidextrousSofa.Analysis.FirstSourceDensity
 import AmbidextrousSofa.Analysis.FirstSourceFlux
+import AmbidextrousSofa.Analysis.FirstTangentExclusivity
 import AmbidextrousSofa.Analysis.FirstUnitBadEntry
 import AmbidextrousSofa.Analysis.FirstUnitCrossings
 import AmbidextrousSofa.Analysis.FirstUnitEventSelection
@@ -168,8 +170,16 @@ import AmbidextrousSofa.Analysis.JointBranchDensity
 import AmbidextrousSofa.Analysis.JointBranchIntegrals
 import AmbidextrousSofa.Analysis.JointBranchProjection
 import AmbidextrousSofa.Analysis.JointCapMaximum
+import AmbidextrousSofa.Analysis.JointCommonOccupation
 import AmbidextrousSofa.Analysis.JointCompanionTangentDensity
+import AmbidextrousSofa.Analysis.JointCoreFlux
+import AmbidextrousSofa.Analysis.JointCoreProjection
+import AmbidextrousSofa.Analysis.JointCoreProjectionEquality
+import AmbidextrousSofa.Analysis.JointCoreSourceGeometry
+import AmbidextrousSofa.Analysis.JointCoreVisibility
 import AmbidextrousSofa.Analysis.JointFirstTangentDensity
+import AmbidextrousSofa.Analysis.JointFirstTangentExclusivity
+import AmbidextrousSofa.Analysis.JointFirstTangentSaturation
 import AmbidextrousSofa.Analysis.JointNicheDerivative
 import AmbidextrousSofa.Analysis.JointSourceAffine
 import AmbidextrousSofa.Analysis.JointSourceBranches
@@ -346,6 +356,7 @@ import AmbidextrousSofa.Analysis.ThreeAngleShortWidth
 import AmbidextrousSofa.Analysis.ThreeAngleTriangleWidth
 import AmbidextrousSofa.Analysis.ThreeAngleWideWidth
 import AmbidextrousSofa.Analysis.ThreeAngleWidth
+import AmbidextrousSofa.Analysis.TiltedCapExclusion
 import AmbidextrousSofa.Analysis.TiltedCrossingExcess
 import AmbidextrousSofa.Analysis.TiltedDiagonalRoof
 import AmbidextrousSofa.Analysis.TiltedEndpointBounds
@@ -377,6 +388,7 @@ import AmbidextrousSofa.Analysis.TiltedWingSupport
 import AmbidextrousSofa.Analysis.TiltedZeroGeometry
 import AmbidextrousSofa.Analysis.TopFacetEndpoints
 import AmbidextrousSofa.Analysis.TopInsertion
+import AmbidextrousSofa.Analysis.UniqueWallContact
 import AmbidextrousSofa.Analysis.UnusedCurvature
 import AmbidextrousSofa.Analysis.UsedSupportSaturation
 import AmbidextrousSofa.Analysis.VisibleFluxDensity
@@ -466,8 +478,10 @@ import AmbidextrousSofa.Measure.ContactVariation
 import AmbidextrousSofa.Measure.Fibers
 import AmbidextrousSofa.Measure.FiniteMeasurePortmanteau
 import AmbidextrousSofa.Measure.GraphDensityDomination
+import AmbidextrousSofa.Measure.GraphDensitySaturation
 import AmbidextrousSofa.Measure.GraphIntegral
 import AmbidextrousSofa.Measure.GraphMeasureTransfer
+import AmbidextrousSofa.Measure.MonotoneGraphSaturation
 import AmbidextrousSofa.Measure.Partition
 import AmbidextrousSofa.Measure.RealRadonNikodym
 import AmbidextrousSofa.Measure.ReferenceOrbit
