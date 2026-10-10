@@ -56,10 +56,16 @@ refereeing and Lean kernel verification are separate from those records.
 | Proper circle comparison | Exact circle-slope averages and endpoint margins retain the terminal height, both top overhangs and the whole reserve interval in MP.24 | [TerminalCircleMargin](AmbidextrousSofa/Analysis/TerminalCircleMargin.lean) |
 | Actual full-width restriction | The literal wide, intermediate-tilt and full three-triangle inequalities give quarter-width `C < 37/50` for every actual full maximum; floor corrections retain all clipped cases | [FullWidthCeiling](AmbidextrousSofa/Analysis/FullWidthCeiling.lean), [FullTriangleWidth](AmbidextrousSofa/Analysis/FullTriangleWidth.lean) |
 | Actual horizontal positive-corner flux | Two visible graph projections, actual tangency endpoint limits and a.e. differentiation give the companion flux law; genuine first crossings prove that one unit companion quarter forces a unit first quarter | [VisibleFluxDensity](AmbidextrousSofa/Analysis/VisibleFluxDensity.lean), [CornerPropagation](AmbidextrousSofa/Analysis/CornerPropagation.lean), [CornerEndpointEnergy](AmbidextrousSofa/Analysis/CornerEndpointEnergy.lean) |
-| Horizontal leakage arithmetic | Seven explicit rational interval rows, exact envelope moments and an actual ordinary-area obstruction; the actual leakage-envelope application remains in progress | [HorizontalLeakageScalar](AmbidextrousSofa/Analysis/HorizontalLeakageScalar.lean), [HorizontalOrdinaryArea](AmbidextrousSofa/Analysis/HorizontalOrdinaryArea.lean) |
+| Horizontal leakage arithmetic | Seven explicit rational interval rows, exact envelope moments and an actual ordinary-area obstruction; the complete actual leakage application now yields global horizontal unit curvature | [HorizontalLeakageScalar](AmbidextrousSofa/Analysis/HorizontalLeakageScalar.lean), [HorizontalOrdinaryArea](AmbidextrousSofa/Analysis/HorizontalOrdinaryArea.lean) |
 | Actual proper source selection and density | Rescaled visited families retain the whole terminal wall and all old support penalties; selected limits give bounded and sharp actual companion curvature densities, including the literal cut-cap splice | [PartialSelectedSequence](AmbidextrousSofa/Analysis/PartialSelectedSequence.lean), [PartialSharpCurvatureDensity](AmbidextrousSofa/Analysis/PartialSharpCurvatureDensity.lean) |
 | Actual proper moments and top projection | Both selected endpoint/erosion moments, low-height exclusion and vanishing source balance yield `TL + 2 TR ≤ terminal inset` for the actual top overhangs, with outgoing zero strictly inside the actual middle | [PartialEndpointPositivity](AmbidextrousSofa/Analysis/PartialEndpointPositivity.lean), [TerminalTopProjection](AmbidextrousSofa/Analysis/TerminalTopProjection.lean) |
-| Actual proper circle comparison | The actual cut density and top projection discharge every initial-coordinate and overhang input; proper width and the early weighted-excess estimate remain to be supplied | [TerminalActualComparison](AmbidextrousSofa/Analysis/TerminalActualComparison.lean) |
+| Actual proper circle comparison | The actual cut density and top projection discharge every initial-coordinate and overhang input; the actual proper width restriction is proved; the early weighted-excess application remains | [TerminalActualComparison](AmbidextrousSofa/Analysis/TerminalActualComparison.lean) |
+| Horizontal full-cap rigidity | Actual global unit density, signed niche/support area calibration, analytic equality and literal reference translation | [HorizontalClassification](AmbidextrousSofa/Analysis/HorizontalClassification.lean), [HorizontalRigidity](AmbidextrousSofa/Analysis/HorizontalRigidity.lean) |
+| Actual tilted initial and late controls | The stopped initial circle, whole-quarter energy barrier, actual parameter regions and internally selected sharp density give first-unit criteria and late curvature at most one after `11/15`, with excess moment below `1/40` | [TiltedInitialUnitRegions](AmbidextrousSofa/Analysis/TiltedInitialUnitRegions.lean), [TiltedLateExcess](AmbidextrousSofa/Analysis/TiltedLateExcess.lean) |
+| Actual tilted projection | An attained low-wing circle minimum, strict dry-source localization, selected floor/top balance and literal top localization prove the exact top-overhang identity | [CompanionZero](AmbidextrousSofa/Analysis/CompanionZero.lean), [TiltedTopProjection](AmbidextrousSofa/Analysis/TiltedTopProjection.lean) |
+| Actual small-tilt area test | Three literal wing chords and the outside-niche excess triangle derive both initial-energy tests from ordinary area, with exact rational strict margins | [SplitWingChord](AmbidextrousSofa/Analysis/SplitWingChord.lean), [SmallTiltArea](AmbidextrousSofa/Analysis/SmallTiltArea.lean) |
+| Actual proper width and reflected controls | Full retained terminal geometry, three-angle width transfer, actual source laws and literal reflected active-arc dynamics; terminal atom energy is paid explicitly | [PartialWidthBounds](AmbidextrousSofa/Analysis/PartialWidthBounds.lean), [PartialReflectedDynamics](AmbidextrousSofa/Analysis/PartialReflectedDynamics.lean), [TerminalImpulseEnergy](AmbidextrousSofa/Analysis/TerminalImpulseEnergy.lean) |
+| Actual equality recovery | Concrete canonicalization and its inverse, alignment of the two actual caps, literal hull/body containment and regular-closed equal-area recovery | [FullCapRecovery](AmbidextrousSofa/Analysis/FullCapRecovery.lean), [ActualReferenceRecovery](AmbidextrousSofa/Measure/ActualReferenceRecovery.lean) |
 | Geometric equality infrastructure | Exact four-term physical deficit, a.e. partition equality, actual hull recovery and finite-measure regular-closed set recovery | [CapAssembly](AmbidextrousSofa/Measure/CapAssembly.lean), [RegularClosed](AmbidextrousSofa/Topology/RegularClosed.lean) |
 
 All statements in this table refer to source proof bodies, not successful
@@ -142,7 +148,7 @@ entire initial proper-angle range. At a canonical largest-angle maximum,
 `terminal_strict_exposure_measure_le_reserve` derive the terminal geometric
 bounds from actual extension and inward-cut competitors. The actual
 top-projection moment and sharp cut-curvature density are now written.
-The remaining width and early-excess bounds are still required.
+The actual axis faces and proper width are now identified. The early-excess bound remains.
 
 `IsFullCapMaximizer.quarter_width_lt_thirty_seven_fiftieths` now proves
 `capWidth U / 4 < 37/50` for every actual full maximum, including arbitrary
@@ -155,8 +161,9 @@ the other quarter's unit density from an actual good companion quarter.
 Its positive-corner flux, tangency containment and genuine first level
 crossings are proved internally. `CornerEndpointEnergy` treats the actual
 axis limit and the threshold equality case. The rational horizontal
-leakage rows and actual one-turn area contradiction are ready; the full
-actual leakage application is still being assembled.
+leakage rows and actual one-turn area contradiction now give global unit
+curvature. The actual signed niche graph and support-area identity then
+calibrate the analytic functional and classify every horizontal full maximum.
 
 `IsJointCapMaximizer.terminal_top_projection_bound` uses the literal top
 endpoints and the actual proper source limit. It proves the weighted
@@ -165,11 +172,30 @@ overhang budget and places the outgoing zero strictly inside the middle.
 actual left cut on its complete open companion arc. The middle joining
 atom and the initial top atom are treated explicitly. The resulting
 `exists_actual_leftCompanion_density_excess_gt` reduces the proper
-contradiction to the remaining actual width and weighted-excess bounds.
+contradiction to the remaining weighted-excess bound; the actual proper
+width now satisfies `1001/2000 < C < 37/50`.
 
-These results do not yet assemble an upper bound `M` for every ambidextrous
-body. The remaining global unit-curvature and tilted geometric applications,
-proper sharp bound, and equality classifications are substantive obligations.
+`IsFullCapMaximizer.eq_reference_translate_of_horizontal` now identifies
+the literal horizontal maximizing cap with a translated reference cap.
+`FullCapRecovery` implements the concrete height/chord canonicalization
+and its inverse. `Measure/ActualReferenceRecovery` recovers the original
+compact body once both actual cap classifications and zero deficits are
+known. These are completed source interfaces; the remaining tilted and
+proper classifications are still needed for a universal application.
+
+`IsFullCapMaximizer.tilted_top_projection_eq` proves
+`b - C = max (C + companionZero (leftCompanionCap U (-C))) 0` from
+actual selected polygons. `exists_tilted_first_density_with_late_controls`
+selects its own density, proves that its late first wing is unit, and
+bounds the first excess moment by `1/40`. `SmallTiltArea` connects the
+small-height initial-floor tests to actual chord and ordinary-area bounds.
+
+F7 source closure remains open. The remaining work is the reflected full
+overhang application, the actual fractional occupation/phase/first-floor
+assembly for the folded first-unit contradiction, the proper reflected
+weighted-excess exclusion, and the unconditional original-domain theorem.
+The current first-tangency crossing is written in `FirstUnitTangency`.
+The [roadmap](docs/FORMALIZATION-ROADMAP.md) records these dependencies.
 
 ## Source policy and dependencies
 
