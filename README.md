@@ -48,9 +48,12 @@ refereeing and Lean kernel verification are separate from those records.
 | Analytic comparison | Two-endpoint Dirichlet coercivity, exact clipped-functional expansion, fixed-trace strictness, Euler boundary formula, reference stationarity, global sharp value `M/2` for arbitrary support pairs of competitive width, and exact equality up to horizontal translation | [AdaptiveFunctional](AmbidextrousSofa/Analysis/AdaptiveFunctional.lean), [AdaptiveGlobalComparison](AmbidextrousSofa/Analysis/AdaptiveGlobalComparison.lean) |
 | Ordinary one-turn input | Complete retained source dependency, actual continuous-passage bridge, and the rational area bound `22199/10000` | [OrdinarySofaBound](AmbidextrousSofa/Analysis/OrdinarySofaBound.lean), [Imported source map](AmbidextrousSofa/Imported/README.md) |
 | Actual tilted survivor | Exact corner confinement, convex wing niches, actual cap containment, a compact connected survivor with a genuine passage, and its ordinary-area necessary inequality | [CanonicalOneTurn](AmbidextrousSofa/Analysis/CanonicalOneTurn.lean), [OneTurnArea](AmbidextrousSofa/Analysis/OneTurnArea.lean) |
-| Proper-angle maximizer structure | Joint angle/cap continuity, a largest-angle maximum, actual top insertion, used-support saturation, unused curvature gaps, terminal three-support bounds and exclusion of angles through `arctan(5/4)` | [JointCapMaximum](AmbidextrousSofa/Analysis/JointCapMaximum.lean), [UnusedCurvature](AmbidextrousSofa/Analysis/UnusedCurvature.lean), [TerminalThreeSupports](AmbidextrousSofa/Analysis/TerminalThreeSupports.lean), [TerminalScalar](AmbidextrousSofa/Analysis/TerminalScalar.lean) |
+| Proper-angle maximizer structure | Joint angle/cap continuity, a largest-angle maximum, actual top insertion, used-support saturation, unused curvature gaps, terminal three-support bounds and exclusion of angles through `arctan(8/3)` | [JointCapMaximum](AmbidextrousSofa/Analysis/JointCapMaximum.lean), [UnusedCurvature](AmbidextrousSofa/Analysis/UnusedCurvature.lean), [TerminalThreeSupports](AmbidextrousSofa/Analysis/TerminalThreeSupports.lean), [TerminalScalar](AmbidextrousSofa/Analysis/TerminalScalar.lean) |
 | Actual terminal variation and completion | Integrated one-sided angle derivative with the full historical tie term; genuine partial facet pinning; actual missing-support tails; same-cap completion of the specified negative-tilt branches | [TerminalAngleIntegral](AmbidextrousSofa/Analysis/TerminalAngleIntegral.lean), [PartialFacetPinning](AmbidextrousSofa/Analysis/PartialFacetPinning.lean), [TerminalSupportTails](AmbidextrousSofa/Analysis/TerminalSupportTails.lean), [NegativeCompletion](AmbidextrousSofa/Analysis/NegativeCompletion.lean) |
 | Exact finite-angle comparisons in progress | Actual tilted diagonal relaxation and global supporting-plane bounds; exact critical clipping and value of the initial-angle relaxation | [DiagonalRelaxation](AmbidextrousSofa/Analysis/DiagonalRelaxation.lean), [DiagonalScalar](AmbidextrousSofa/Analysis/DiagonalScalar.lean), [InitialAngleCritical](AmbidextrousSofa/Analysis/InitialAngleCritical.lean) |
+| Actual short-width exclusion | Literal near-diagonal supports, two exterior cuts and two disjoint additional niche tails, including both clipped outer tips; actual score is strictly below `41/50` for `a ≤ 1001/1000` in canonical tilted form | [ShortWidthExclusion](AmbidextrousSofa/Analysis/ShortWidthExclusion.lean), [NearDiagonalTail](AmbidextrousSofa/Analysis/NearDiagonalTail.lean) |
+| Actual proper terminal facet and exposure | Largest-angle same-cap extension bounds the whole terminal facet; a genuine inward support cut and dominated convergence bound strict terminal exposure by that facet | [TerminalCorner](AmbidextrousSofa/Analysis/TerminalCorner.lean), [TerminalExposure](AmbidextrousSofa/Analysis/TerminalExposure.lean) |
+| Proper circle comparison | Exact circle-slope averages and endpoint margins retain the terminal height, both top overhangs and the whole reserve interval in MP.24 | [TerminalCircleMargin](AmbidextrousSofa/Analysis/TerminalCircleMargin.lean) |
 | Geometric equality infrastructure | Exact four-term physical deficit, a.e. partition equality, actual hull recovery and finite-measure regular-closed set recovery | [CapAssembly](AmbidextrousSofa/Measure/CapAssembly.lean), [RegularClosed](AmbidextrousSofa/Topology/RegularClosed.lean) |
 
 All statements in this table refer to source proof bodies, not successful
@@ -121,8 +124,21 @@ height-one affine-middle maximum over both caps and terminal angles.
 from its actual support. The remaining sharp terminal comparison is still
 required.
 
+`IsDownwardCap.capScore_lt_forty_one_fiftieths_of_short_width` now
+proves the actual score is below `41/50` in the centered height-one canonical
+form with half-projection width at most `1001/1000`. It allows every
+nonnegative tilt and terminal angles at least `π/2 - arctan(√2-1)`. The proof
+derives all support deficits and triangle payments from the cap itself.
+
+`IsJointCapMaximizer.terminal_angle_gt_arctan_eight_thirds` excludes the
+entire initial proper-angle range. At a canonical largest-angle maximum,
+`terminalFaceWidth_le_reserve` and
+`terminal_strict_exposure_measure_le_reserve` derive the terminal geometric
+bounds from actual extension and inward-cut competitors. The top-projection
+moment and the remaining sharp terminal applications are still required.
+
 These results do not yet assemble an upper bound `M` for every ambidextrous
-body. The remaining floor/positive-corner source laws, full and partial
+body. The remaining fractional positive-corner occupation, full and partial
 sharp bounds, and equality classifications are substantive obligations.
 
 ## Source policy and dependencies

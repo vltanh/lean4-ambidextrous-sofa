@@ -163,6 +163,7 @@ theorem IsDownwardCap.diagonalRight_companion_support_ge {U : Set Plane}
   rw [hu] at hpd
   have hpx : u ≤ p.1 := by linarith [(hU.inStrip hp).2]
   have hprod := mul_nonneg (sub_nonneg.mpr hk1) (sub_nonneg.mpr hpx)
+  have hscaled := congrArg (fun z : ℝ => k * z) hpd
   have hs := coordDot_le_support hU.isCompact hp (1, k)
   simp only [coordDot, mul_one] at hs
   nlinarith
@@ -178,6 +179,7 @@ theorem IsDownwardCap.diagonalLeft_companion_support_ge {U : Set Plane}
   obtain ⟨p, hp, _, hpd, hpx⟩ :=
     hU.exists_diagonalLeft_attainer_on_left_wing ha hh hha hl hr hleft hright haffine hv
   have hprod := mul_nonneg (sub_nonneg.mpr hk1) (sub_nonneg.mpr hpx)
+  have hscaled := congrArg (fun z : ℝ => k * z) hpd
   have hs := coordDot_le_support hU.isCompact hp (-1, k)
   simp only [coordDot, mul_neg_one] at hs
   nlinarith

@@ -30,8 +30,8 @@ closures and research-session reviews are distinct from formal verification.
 | F1 | Actual compact hull/caps, attained roofs/supports, complete barriers, measurability and actual area integration | Implemented |
 | F2 | Original two-motion normalization, area invariance, angular reach, genuine terminal constraints and actual-cap score reduction | Implemented for the unchanged `IsAmbidextrous` predicate with continuous real-angle rigid paths |
 | F3 | Actual reference support/hull/body, both feasible passages, regular closedness and exact area `M` | Implemented, including exact reference cap score `M/2` |
-| F4 | Universal full-angle cap score at most `M/2`, including nonsmooth, asymmetric and subunit caps | Actual regular-domain density/ODE, inner-source interval occupation, negative-corner nullity, endpoint laws, central height, Green/chord limit and one-turn survivor implemented; strict floor-contact unit density implemented; positive-corner, global unit-wing and tilted sharpness steps remain |
-| F5 | Universal proper-angle cap bound retaining the whole outgoing wall, independently for the two motions | Actual joint/largest-angle maximum, top insertion, used-support saturation, unused curvature gaps, low-angle exclusion and genuine three-support relaxation implemented; final terminal comparison remains |
+| F4 | Universal full-angle cap score at most `M/2`, including nonsmooth, asymmetric and subunit caps | Actual regular-domain density/ODE, inner-source interval occupation, negative-corner nullity, endpoint laws, central height, Green/chord limit and one-turn survivor implemented; floor and same-sign corner laws and actual short-width exclusion implemented; fractional positive-corner occupation, global unit-wing and remaining tilted sharpness steps remain |
+| F5 | Universal proper-angle cap bound retaining the whole outgoing wall, independently for the two motions | Actual joint/largest-angle maximum, top insertion, used-support saturation, unused curvature gaps, initial-angle exclusion through arctan(8/3), actual terminal facet/exposure bounds and circle margin implemented; top-projection/source moment and final terminal comparison remain |
 | F6 | Every equality cap, inverse canonicalization, strict proper-angle inequality and literal original compact-body recovery | Exact deficit, reference regularity and actual inverse canonicalization implemented; sharp cap classification and original-body assembly remain |
 | F7 source closure | Unconditional original-domain area bound and exact uniqueness, with no missing mathematical input | In progress; depends on F4–F6 |
 | F7 kernel check | Elaboration and actual standard-axiom output | Not performed; compilation and CI prohibited for this task |
@@ -162,8 +162,9 @@ proved in `AdaptiveGlobalValue` and `AdaptiveGlobalScalar`.
    `FiniteGraphGreen`, `FiniteSourceBalance`, `SupportHeightControl` and
    `SelectedGreenLimit` give the exact stationary finite Green limit.
    `FiniteGraphLength` and `CanonicalWingChord` derive actual wing chord
-   inequalities. Complete the remaining floor-level and positive-corner
-   source laws, fractional occupation and geometric calibration.
+   inequalities. `NonpositiveCornerCurvature` combines negative and floor
+   laws; `ShadowCurvature` gives the actual same-sign density bounds. Complete
+   fractional positive-corner occupation and geometric calibration.
 3. Complete strict corner laws, horizontal unit curvature and geometric
    comparison to the analytic functional. Complete all tilted-width/height
    exclusions from the written full-cap proof. `TiltedInitialEnergy` and
@@ -174,8 +175,10 @@ proved in `AdaptiveGlobalValue` and `AdaptiveGlobalScalar`.
    cap geometry. The late-excess and remaining tilted exclusions are open.
    `DiagonalRelaxation` now gives the literal tilted diagonal integral with
    both clipped tails. `DiagonalScalar` proves its global supporting-plane
-   bounds and exact short-width stability; the additional actual triangle
-   payments and the later width/height exclusions remain.
+   bounds and exact short-width stability. `ShortWidthExclusion` now
+   combines actual exterior support cuts with both extra niche tails and
+   their exact clipped areas, proving the exclusion through a=1001/1000.
+   The wider tilted and intermediate width/height exclusions remain.
 4. Apply the completed analytic global comparison and strict equality
    classification to the actual geometric domain after these reductions.
 
@@ -219,8 +222,13 @@ fixed-angle facet pinning. `TerminalSupportTails` derives the actual missing
 support tails; `NegativeCompletion` completes the specified negative-tilt
 branches on the same cap and excludes them for a largest-angle maximum.
 
-Complete the actual relaxation's global comparison, the remaining
-terminal-facet/reflected-impulse and occupation laws, weighted companion
+`InitialAngleExclusion` discharges the actual relaxation assumptions and
+proves α>arctan(8/3); `InitialAngleWidth` gives width>49/25.
+`TerminalCorner` derives the actual terminal facet reserve from same-cap
+extension, and `TerminalExposure` derives strict terminal occupation by an
+inward supporting-line cut. `TerminalCircleMargin` proves the exact scalar
+MP.24 comparison with actual-parameter inputs. Complete the top-projection
+horizontal source moment, remaining reflected impulse, weighted companion
 bounds and final terminal comparison. The entire first
 terminal wall remains in the objective. The two original motion angles must
 stay independent, all angular endpoints must be covered, and `π/2` must be
