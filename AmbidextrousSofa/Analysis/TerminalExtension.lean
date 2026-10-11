@@ -28,25 +28,6 @@ open scoped Topology
 
 namespace AmbidextrousSofa
 
-/-- The used-support representation itself supplies a short fixed-vertex
-first-support tail, for every sign of the middle slope. -/
-theorem IsJointCapMaximizer.exists_fixed_terminal_support_interval
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hαL : α < Real.pi / 2)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    ∃ β ∈ Ioo α (Real.pi / 2), ∀ t ∈ Icc α β,
-      angleSupport U t = coordDot (terminalTailPoint U α) (unitNormal t) := by
-  obtain ⟨β, hβ, hgap⟩ : ∃ β ∈ Ioo α (Real.pi / 2), affineNormalAngle m ∉ Ioo α β := by
-    by_cases h : α < affineNormalAngle m
-    · obtain ⟨β, hαβ, hβ⟩ := exists_between (lt_min hαL h)
-      exact ⟨β, ⟨hαβ, hβ.trans_le (min_le_left _ _)⟩,
-        fun hm => lt_asymm (hβ.trans_le (min_le_right _ _)) hm.2⟩
-    · obtain ⟨β, hβ⟩ := exists_between hαL
-      exact ⟨β, hβ, fun hm => h hm.1⟩
-  have h := hU.support_vertices_first_unused_gap haffine le_rfl hβ.2.le hβ.1 hgap
-  exact ⟨β, hβ, fun t ht => by rw [terminalTailPoint, h.1]; exact h.2.1 t ht⟩
-
 /-- The actual new first walls are dominated by the actual old history
 on a whole nonempty angular interval. The compact historical-gap interval
 is allowed to extend outside the prescribed spatial window. -/
@@ -64,8 +45,7 @@ theorem IsDownwardCap.exists_right_wall_interval_of_overlong_facet
   let b := (terminalTailPoint U α).1
   let H := (terminalTailPoint U α).2
   have hα0 : 0 < α := by linarith only [hα.1, Real.pi_pos]
-  have hs := Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith only [hαL, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith only [hα0, Real.pi_pos], hαL⟩
+  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
   have hB : terminalFirstRightAbscissa U α = b - Real.cos α := rfl
   have hR : terminalTailReserve U α = Real.cos α - terminalTailInset U α := rfl
   have hL := terminalFirstLeftAbscissa_eq_right_add_width U α
@@ -74,9 +54,8 @@ theorem IsDownwardCap.exists_right_wall_interval_of_overlong_facet
       linarith only [hB, hR, hL, hfacet])
   have hfixed {t : ℝ} (ht : t ∈ Icc α β₀) (x : ℝ) :
       firstWall U t x = H + ((b - x) * Real.cos t - 1) / Real.sin t :=
-    firstWall_eq_fixedPoint_of_support (Real.sin_pos_of_pos_of_lt_pi (hα0.trans_le ht.1)
-      (by linarith only [ht.2, hβ₀.2, Real.pi_pos])).ne'
-      (by simpa only [coordDot, unitNormal] using hsupport t ht) x
+    firstWall_eq_fixedPoint_of_support (terminal_sin_cos_pos (hα0.trans_le ht.1)
+      (ht.2.trans_lt hβ₀.2)).1.ne' (by simpa only [coordDot, unitNormal] using hsupport t ht) x
   have hjoint (x : ℝ) : ContinuousAt (fun p : ℝ × ℝ => firstWall U p.1 p.2) (α, x) :=
     ((((continuous_angleSupport hU.isCompact).comp continuous_fst).sub continuous_const).sub
       (continuous_snd.mul (Real.continuous_cos.comp continuous_fst))).continuousAt.div
@@ -96,9 +75,7 @@ theorem IsDownwardCap.exists_right_wall_interval_of_overlong_facet
     (inter_mem (Ico_mem_nhdsGE hβ₀.1) (nhdsWithin_le_nhds (hgap.and hzero)))
   refine ⟨β, ⟨hαβ, (hβ ⟨hαβ.le, le_rfl⟩).1.2.trans hβ₀.2⟩, fun t ht x hx => ?_⟩
   obtain ⟨⟨htα, htβ₀⟩, hgapt, hzerot⟩ := hβ ht
-  have hst := Real.sin_pos_of_pos_of_lt_pi (hα0.trans_le htα)
-    (by linarith only [htβ₀, hβ₀.2, Real.pi_pos])
-  have hct := Real.cos_pos_of_mem_Ioo ⟨by linarith only [hα0, htα, Real.pi_pos], htβ₀.trans hβ₀.2⟩
+  obtain ⟨hst, hct⟩ := terminal_sin_cos_pos (hα0.trans_le htα) (htβ₀.trans hβ₀.2)
   rcases le_or_gt x (terminalFirstRightAbscissa U α) with hxB | hxB
   · rw [hfixed ⟨htα, htβ₀.le⟩]
     exact (fixedPoint_firstWall_le_initial hα0 htα (by linarith only [htβ₀, hβ₀.2])
@@ -113,23 +90,28 @@ theorem IsDownwardCap.exists_right_wall_interval_of_overlong_facet
   rw [hfixed ⟨htα, htβ₀.le⟩]
   linarith only [this, sweptNiche_nonneg U α x]
 
--- The height bound `hH` is not needed by the construction.
-set_option linter.unusedVariables false in
 /-- An overlong terminal facet gives a single, literal same-cap angle
 increase at a canonical joint maximizer. This statement itself has no
-largest-angle premise, so it also supports the later equality argument. -/
+largest-angle premise. -/
 theorem IsJointCapMaximizer.exists_same_cap_angle_extension_of_overlong_facet
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hαL : α < Real.pi / 2)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c)
-    (hH : Real.sin α < (terminalTailPoint U α).2)
     (hcorner : (attachedCorner U α).1 < terminalFirstRightAbscissa U α)
     (hfacet : terminalTailReserve U α < terminalFaceWidth U α) :
-    ∃ β ∈ Ioo α (Real.pi / 2), IsJointCapMaximizer U β ∧
-      EqOn (partialBarrier U β) (partialBarrier U α)
-        (middleHalfInterval (horizontalLeft U) (horizontalRight U)) := by
-  obtain ⟨β₀, hβ₀, hsupport⟩ := hU.exists_fixed_terminal_support_interval hαL haffine
+    ∃ β ∈ Ioo α (Real.pi / 2), IsJointCapMaximizer U β := by
+  -- The used-support representation supplies a short first-support tail at the tail point.
+  obtain ⟨β₀, hβ₀, hgap⟩ : ∃ β ∈ Ioo α (Real.pi / 2), affineNormalAngle m ∉ Ioo α β := by
+    by_cases h : α < affineNormalAngle m
+    · obtain ⟨β, hαβ, hβ⟩ := exists_between (lt_min hαL h)
+      exact ⟨β, ⟨hαβ, hβ.trans_le (min_le_left _ _)⟩,
+        fun hm => lt_asymm (hβ.trans_le (min_le_right _ _)) hm.2⟩
+    · obtain ⟨β, hβ⟩ := exists_between hαL
+      exact ⟨β, hβ, fun hm => h hm.1⟩
+  obtain ⟨hvert, hsupport⟩ :=
+    hU.support_vertices_first_unused_gap haffine le_rfl hβ₀.2.le hβ₀.1 hgap
+  rw [← hvert] at hsupport
   obtain ⟨β, hβ, hNew⟩ := hU.isCap.exists_right_wall_interval_of_overlong_facet
     hU.angle_mem hαL hβ₀ hsupport hcorner hfacet
     (fun x hx => hU.firstWall_le_history_of_overlong_facet hαL hcorner hfacet hx)
@@ -144,6 +126,6 @@ theorem IsJointCapMaximizer.exists_same_cap_angle_extension_of_overlong_facet
   have hscore : capScore U β = capScore U α := by
     rw [capScore_eq_integrals, capScore_eq_integrals,
       setIntegral_congr_fun (measurableSet_middleHalfInterval _ _) heq]
-  exact ⟨β, hβ, hU.of_score_le hU.isCap ⟨hU.angle_mem.1.trans hβ.1.le, hβ.2.le⟩ hscore.ge, heq⟩
+  exact ⟨β, hβ, hU.of_score_le hU.isCap ⟨hU.angle_mem.1.trans hβ.1.le, hβ.2.le⟩ hscore.ge⟩
 
 end AmbidextrousSofa

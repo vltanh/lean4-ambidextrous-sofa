@@ -15,8 +15,7 @@ partial barrier. The latter retains the whole outgoing first wall.
 The terminal position is obtained from the support maximum of the cap.
 Its compatibility with the diagonal position is proved at actual support
 points. The top-endpoint alternatives likewise come from actual points of
-a height-one affine-middle joint maximum. No realizability assumptions
-are imposed on independent scalar parameters.
+a height-one affine-middle joint maximum.
 -/
 
 noncomputable section
@@ -31,11 +30,6 @@ def terminalSupportPosition (U : Set Plane) (α : ℝ) : ℝ :=
   (support U (unitNormal α) - Real.sin α) / Real.cos α
 
 def terminalInset (α : ℝ) : ℝ := (1 - Real.sin α) / Real.cos α
-
-private theorem terminal_sin_cos_pos {α : ℝ} (hα0 : 0 < α) (hαL : α < Real.pi / 2) :
-    0 < Real.sin α ∧ 0 < Real.cos α :=
-  ⟨Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [Real.pi_pos]),
-    Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hαL⟩⟩
 
 theorem terminalSlope_pos {α : ℝ} (hα0 : 0 < α) (hαL : α < Real.pi / 2) :
     0 < terminalSlope α :=

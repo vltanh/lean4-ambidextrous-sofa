@@ -9,16 +9,17 @@ public import Mathlib.Analysis.Calculus.Deriv.Slope
 /-!
 # The actual right terminal-angle derivative, with historical ties
 
-The right support derivative is the tangent coordinate of the actual
-upper endpoint of the terminal supporting face. It determines the right
-derivative of the whole first wall. Adding newly visited angles changes
-the swept family, so a historical tie must keep the positive part of that
-derivative. The proof bounds every newly visited two-wall corner by its
-first wall and retains all older angles in the supremum.
+A one-sided derivative of the support at a point of the supporting line
+gives the one-sided angle derivative of the first wall. The right support
+derivative is the tangent coordinate of the actual upper endpoint of the
+terminal supporting face, so it determines the right derivative of the
+whole first wall. Adding newly visited angles changes the swept family,
+so a historical tie must keep the positive part of that derivative. The
+proof bounds every newly visited two-wall corner by its first wall and
+retains all older angles in the supremum.
 
-This file proves the pointwise derivative for every abscissa. Integration
-and the corresponding necessary inequality at a joint maximum are separate
-steps; no contact chart or terminal occupation measure is presumed here.
+This file proves the pointwise derivative for every abscissa; the next
+file integrates it.
 -/
 
 noncomputable section
@@ -33,19 +34,29 @@ after translating that point inward by its unit normal. -/
 def terminalFirstRightAbscissa (U : Set Plane) (α : ℝ) : ℝ :=
   (MovingSofaOptimality.vplus U α).1 - Real.cos α
 
-theorem IsDownwardCap.firstWall_right_deriv {U : Set Plane}
-    (hU : IsDownwardCap U) {α : ℝ} (hs : Real.sin α ≠ 0) (x : ℝ) :
+/-- A one-sided angle derivative of the first wall, from a one-sided derivative of the support
+equal to the tangent coordinate of a point `p` on the supporting line. -/
+theorem firstWall_hasDerivWithinAt {U : Set Plane} {α x : ℝ} {s : Set ℝ} {p : Plane}
+    (hs : Real.sin α ≠ 0) (hp : coordDot p (unitNormal α) = angleSupport U α)
+    (hd : HasDerivWithinAt (angleSupport U) (coordDot p (MovingSofaOptimality.vvec α)) s α) :
     HasDerivWithinAt (fun t => firstWall U t x)
-      ((x - terminalFirstRightAbscissa U α) / Real.sin α ^ 2) (Ici α) α := by
-  have h := congrArg Prod.fst (MovingSofaOptimality.vplus_eq_frame U α)
-  change (MovingSofaOptimality.vplus U α).1 = angleSupport U α * Real.cos α +
-    coordDot (MovingSofaOptimality.vplus U α) (MovingSofaOptimality.vvec α) * (-Real.sin α) at h
-  refine ((((hU.angleSupport_right_deriv α).sub_const 1).sub
-    ((Real.hasDerivAt_cos α).const_mul x).hasDerivWithinAt).div
-      (Real.hasDerivAt_sin α).hasDerivWithinAt hs).congr_deriv ?_
-  simp only [Pi.sub_apply, terminalFirstRightAbscissa]
+      ((x - (p.1 - Real.cos α)) / Real.sin α ^ 2) s α := by
+  have h := congrArg Prod.fst (MovingSofaOptimality.eq_dot_uvec_smul_add p α)
+  change p.1 = coordDot p (unitNormal α) * Real.cos α +
+    coordDot p (MovingSofaOptimality.vvec α) * (-Real.sin α) at h
+  refine (((hd.sub_const 1).sub ((Real.hasDerivAt_cos α).const_mul x).hasDerivWithinAt).div
+    (Real.hasDerivAt_sin α).hasDerivWithinAt hs).congr_deriv ?_
+  simp only [Pi.sub_apply]
   congr 1
-  linear_combination x * Real.sin_sq_add_cos_sq α + h
+  linear_combination x * Real.sin_sq_add_cos_sq α + h + Real.cos α * hp
+
+theorem IsDownwardCap.firstWall_right_deriv {U : Set Plane} (hU : IsDownwardCap U) {a : ℝ}
+    (ha0 : Real.pi / 4 ≤ a) (haL : a < Real.pi / 2) (x : ℝ) :
+    HasDerivWithinAt (fun t => firstWall U t x)
+      ((x - terminalFirstRightAbscissa U a) / Real.sin a ^ 2) (Ici a) a :=
+  firstWall_hasDerivWithinAt (Real.sin_pos_of_pos_of_lt_pi (by linarith [Real.pi_pos])
+    (by linarith [Real.pi_pos])).ne' (MovingSofaOptimality.dot_vplus_uvec U a)
+    (hU.angleSupport_right_deriv a)
 
 theorem hasDerivWithinAt_right_iff_tendsto_quotient {f : ℝ → ℝ} {d a : ℝ} :
     HasDerivWithinAt f d (Ioi a) a ↔
@@ -79,8 +90,7 @@ theorem IsDownwardCap.partialBarrier_right_deriv_of_terminal_strict
     (hstrict : sweptNiche U a x < firstWall U a x) :
     HasDerivWithinAt (fun b => partialBarrier U b x)
       ((x - terminalFirstRightAbscissa U a) / Real.sin a ^ 2) (Ioi a) a := by
-  have hderiv := (hU.firstWall_right_deriv (α := a) (Real.sin_pos_of_pos_of_lt_pi
-    (by linarith [Real.pi_pos]) (by linarith [Real.pi_pos])).ne' x).Ioi_of_Ici
+  have hderiv := (hU.firstWall_right_deriv ha0 haL x).Ioi_of_Ici
   have hcont : Continuous (fun b : TerminalAngle => sweptNiche U b x) := by
     simpa only [Function.comp_def, IsDownwardCap.toCompactCap_carrier] using
       continuous_partialCapSweptNiche.comp
@@ -101,8 +111,7 @@ theorem IsDownwardCap.partialBarrier_right_deriv_of_history_strict
     HasDerivWithinAt (fun b => partialBarrier U b x) 0 (Ioi a) a := by
   have ha : 0 < a := by linarith [Real.pi_pos]
   obtain ⟨c, hc, hlocal⟩ := mem_nhdsGE_iff_exists_Ico_subset.mp
-    ((hU.firstWall_right_deriv (Real.sin_pos_of_pos_of_lt_pi ha (by linarith)).ne'
-      x).continuousWithinAt.tendsto.eventually_lt_const hstrict)
+    ((hU.firstWall_right_deriv ha0 haL x).continuousWithinAt.tendsto.eventually_lt_const hstrict)
   refine (hasDerivWithinAt_const a (Ioi a) (sweptNiche U a x)).congr_of_eventuallyEq ?_
     (max_eq_left hstrict.le)
   filter_upwards [Ioo_mem_nhdsGT (lt_min hc haL)] with b hb
@@ -123,7 +132,7 @@ theorem IsDownwardCap.partialBarrier_right_deriv_of_tie
   set D := (x - terminalFirstRightAbscissa U a) / Real.sin a ^ 2
   have ha : 0 < a := by linarith [Real.pi_pos]
   have hratio := hasDerivWithinAt_right_iff_tendsto_quotient.mp
-    (hU.firstWall_right_deriv (Real.sin_pos_of_pos_of_lt_pi ha (by linarith)).ne' x).Ioi_of_Ici
+    (hU.firstWall_right_deriv ha0 haL x).Ioi_of_Ici
   have hbase : partialBarrier U a x = firstWall U a x := by rw [partialBarrier, ← htie, max_self]
   refine hasDerivWithinAt_right_iff_tendsto_quotient.mpr
     (tendsto_order.mpr ⟨fun r hr => ?_, fun r hr => ?_⟩)

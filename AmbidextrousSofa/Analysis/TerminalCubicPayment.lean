@@ -14,9 +14,8 @@ envelope therefore pays a cubic amount, with all clipping retained.
 
 The numerical allowance is proved by exact rational inequalities. The
 cosine cut at `147/200` follows from the elementary quadratic cosine
-bound and two double-angle identities. The result does not assert the
-late-tail envelope for an actual maximizer; that source-dynamics
-obligation remains separate from this analytic payment.
+bound and two double-angle identities. The late-tail envelope is a
+hypothesis of the payment.
 -/
 
 noncomputable section
@@ -117,36 +116,9 @@ theorem terminal_cos_rational_cut : (37 / 50 : ℝ) < Real.cos (147 / 200) := by
   norm_num at h1 h2 h3
   nlinarith [mul_nonneg (sub_nonneg.2 h1) (sub_nonneg.2 h1)]
 
-theorem terminal_arcsin_prefix_cos_and_length {C T : ℝ}
-    (hCT : 0 ≤ C - T) (hCT1 : C - T ≤ 37 / 50) :
-    (2 / 3 : ℝ) < Real.cos (Real.arcsin (C - T)) ∧
-      max (Real.arcsin (C - T) - (Real.pi / 2 - 91 / 100)) 0 < (7 / 40 : ℝ) := by
-  refine ⟨?_, max_lt ?_ (by norm_num)⟩
-  · rw [Real.cos_arcsin, Real.lt_sqrt (by norm_num)]
-    nlinarith
-  · have := (Real.arcsin_lt_iff_lt_sin' (x := C - T) (y := Real.pi / 2 - 147 / 200)
-      ⟨by linarith [Real.pi_gt_three], by linarith⟩).2
-      (by rw [Real.sin_pi_div_two_sub]; linarith [terminal_cos_rational_cut])
-    linarith
-
-theorem proper_terminal_cos_gt_three_twenty_fifths {α : ℝ}
-    (hα0 : 0 < α) (hαL : α < Real.pi / 2)
-    (hk : (1 / 8 : ℝ) ≤ terminalSlope α) : (3 / 25 : ℝ) < Real.cos α := by
-  have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [Real.pi_pos])
-  have hc : 0 < Real.cos α := Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hαL⟩
-  rw [terminalSlope, le_div_iff₀ hs] at hk
-  nlinarith [Real.sin_sq_add_cos_sq α]
-
-theorem terminal_cubic_rational_allowance {q ℓ c : ℝ}
-    (hq : (2 / 3 : ℝ) < q) (hℓ0 : 0 ≤ ℓ) (hℓ1 : ℓ < 7 / 40)
-    (hc : (3 / 25 : ℝ) < c) :
-    (19 / 25 : ℝ) * ℓ ^ 3 / (6 * q) < (39 / 4400 : ℝ) * c := by
-  have hpow : ℓ ^ 3 < (7 / 40) ^ 3 := pow_lt_pow_left₀ hℓ1 hℓ0 (by norm_num)
-  rw [div_lt_iff₀ (by positivity)]
-  nlinarith [mul_pos (sub_pos.2 hc) (sub_pos.2 hq)]
-
-/-- The exact allowance from the late-tail envelope, for the
-complementary cotangent range. -/
+/-- The exact allowance from the late-tail envelope, for the complementary cotangent range. The
+excess prefix is shorter than `7/40`, and the cosines of the prefix end and of `α` exceed `2/3`
+and `3/25`. -/
 theorem terminalWeightedExcess_lt_allowance_of_late_tail
     {v : ℝ → ℝ} {C T α : ℝ}
     (hCT : 0 ≤ C - T) (hCT1 : C - T ≤ 37 / 50)
@@ -160,11 +132,25 @@ theorem terminalWeightedExcess_lt_allowance_of_late_tail
         max (t - (Real.pi / 2 - 91 / 100)) 0) :
     terminalWeightedExcess v (Real.arcsin (C - T)) <
       (39 / 4400 : ℝ) * Real.cos α := by
-  obtain ⟨hcos, hlength⟩ := terminal_arcsin_prefix_cos_and_length hCT hCT1
-  exact (terminalWeightedExcess_le_cubic (t₀ := Real.pi / 2 - 91 / 100) (K := (19 / 25 : ℝ))
+  have hq : (2 / 3 : ℝ) < Real.cos (Real.arcsin (C - T)) := by
+    rw [Real.cos_arcsin, Real.lt_sqrt (by norm_num)]
+    nlinarith only [hCT, hCT1]
+  -- The excess starts at `π/2 - 91/100`, so the prefix has length less than `7/40`.
+  have hℓ : max (Real.arcsin (C - T) - (Real.pi / 2 - 91 / 100)) 0 < 7 / 40 := by
+    refine max_lt ?_ (by norm_num)
+    have := (Real.arcsin_lt_iff_lt_sin' (x := C - T) (y := Real.pi / 2 - 147 / 200)
+      ⟨by linarith [Real.pi_gt_three], by linarith⟩).2
+      (by rw [Real.sin_pi_div_two_sub]; linarith [terminal_cos_rational_cut])
+    linarith
+  have hc : (3 / 25 : ℝ) < Real.cos α := by
+    obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
+    rw [terminalSlope, le_div_iff₀ hs] at hk
+    nlinarith only [hk, hs, hc, Real.sin_sq_add_cos_sq α]
+  refine (terminalWeightedExcess_le_cubic (t₀ := Real.pi / 2 - 91 / 100) (K := (19 / 25 : ℝ))
     (Real.arcsin_nonneg.mpr hCT) (Real.arcsin_lt_pi_div_two.mpr (by linarith))
-    (by linarith [Real.pi_gt_three]) (by norm_num) hint hbound).trans_lt
-      (terminal_cubic_rational_allowance hcos (le_max_right _ _) hlength
-        (proper_terminal_cos_gt_three_twenty_fifths hα0 hαL hk))
+    (by linarith [Real.pi_gt_three]) (by norm_num) hint hbound).trans_lt ?_
+  have hpow := pow_lt_pow_left₀ hℓ (le_max_right _ _) (by norm_num : 3 ≠ 0)
+  rw [div_lt_iff₀ (by positivity)]
+  linarith only [hpow, hc, hq, mul_pos (sub_pos.2 hc) (sub_pos.2 hq)]
 
 end AmbidextrousSofa

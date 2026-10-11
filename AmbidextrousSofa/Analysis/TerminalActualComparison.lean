@@ -14,10 +14,8 @@ left middle endpoint. Thus its horizontal moment starts at the literal
 quarter-width minus the actual left top overhang. The height and right
 support derivative also retain the original low middle endpoint.
 
-The terminal tail position and weighted top budget come from the actual
-source-moment projection theorem. The cosine cut follows from the proved
-initial-angle exclusion. Only the width range and the early weighted
-curvature estimate remain analytic obligations in the final comparison.
+The cosine cut `73 cos² α ≤ 9` follows from the proved initial-angle
+exclusion.
 -/
 
 noncomputable section
@@ -49,7 +47,8 @@ theorem IsJointCapMaximizer.leftCompanion_actual_initial_data
         horizontalLeft U + capWidth U / 4 - topOverhangLeft U := by
     unfold topOverhangLeft
     rcases le_or_gt m 0 with hm | hm
-    · have htop := (hU.isCap.leftCompanion_initial_data_of_nonpos_affine ha hb hab hm haffine).1
+    · have htop := hU.isCap.vplus_leftCompanionCap_eq_of_affine (t := Real.pi / 2) ha hb hab
+        haffine (by simp) (by simpa using hm)
       have hxa := (MovingSofaOptimality.vplus_mem_edge hV.imported_isConvexBody
         (Real.pi / 2)).1.2.2
       rw [htop] at hxa ⊢
@@ -76,15 +75,7 @@ theorem IsJointCapMaximizer.leftCompanion_actual_initial_data
 
 theorem IsJointCapMaximizer.terminal_cosine_square_cut
     {U : Set Plane} {α : ℝ} (hU : IsJointCapMaximizer U α)
-    (hproper : α < Real.pi / 2) : 73 * Real.cos α ^ 2 ≤ 9 := by
-  have hα := hU.terminal_angle_gt_arctan_eight_thirds
-  have hα0 : 0 < α := (Real.arctan_pos.2 (by norm_num)).trans hα
-  have hc : 0 < Real.cos α := Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hproper⟩
-  have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [Real.pi_pos])
-  have htan : 8 / 3 < Real.tan α := by
-    simpa using Real.strictMonoOn_tan (Real.arctan_mem_Ioo _)
-      ⟨by linarith [Real.pi_pos], hproper⟩ hα
-  rw [Real.tan_eq_sin_div_cos, lt_div_iff₀ hc] at htan
-  nlinarith [Real.sin_sq_add_cos_sq α]
+    (hproper : α < Real.pi / 2) : 73 * Real.cos α ^ 2 ≤ 9 :=
+  terminal_cos_sq_le_of_initialAngle hU.terminal_angle_gt_arctan_eight_thirds.le hproper
 
 end AmbidextrousSofa

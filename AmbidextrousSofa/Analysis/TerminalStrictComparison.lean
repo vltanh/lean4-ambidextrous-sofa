@@ -7,17 +7,13 @@ public import AmbidextrousSofa.Analysis.CanonicalOneTurn
 @[expose] public section
 
 /-!
-# Strict terminal exposure from the actual companion moments
+# Two steps of the strict terminal comparison
 
-The weighted companion estimate is compared with the literal outgoing
-wall. Its strict circle margin covers the complete actual terminal
-reserve interval. Continuity then extends strict exposure beyond the
-reserve endpoint, contradicting the actual inward-cut exposure bound
-at a largest-angle maximizer.
-
-Curvature regularity and the early weighted-excess estimate remain
-explicit analytic inputs. In particular this file does not assert the
-proper charged-wing density theorem or discard its exceptional atoms.
+Under the cosine cut, every companion abscissa of the terminal reserve
+interval stays below the terminal sine, so the circle comparison applies
+there. A continuous strict gap on a closed initial interval persists past
+its right endpoint, so the measure of the strict region exceeds the length
+of that interval.
 -/
 
 noncomputable section

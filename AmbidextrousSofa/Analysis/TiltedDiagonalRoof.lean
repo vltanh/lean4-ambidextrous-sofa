@@ -2,6 +2,7 @@ module
 
 public import AmbidextrousSofa.Analysis.FullWidthGap
 public import AmbidextrousSofa.Analysis.FacetPinning
+public import AmbidextrousSofa.Analysis.TerminalWallBound
 
 @[expose] public section
 
@@ -44,7 +45,7 @@ theorem IsDownwardCap.capRoof_le_tiltedAffineCeiling
   linarith
 
 /-- The lower diagonal support has the sharper bound supplied by the
-actual tilted affine ceiling, not by a raised auxiliary cap. -/
+actual tilted affine ceiling. -/
 theorem IsDownwardCap.tilted_diagonalLeft_le
     {U : Set Plane} (hU : IsDownwardCap U) {a h : ℝ} (ha : 0 < a) (hha : h ≤ a)
     (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
@@ -68,15 +69,6 @@ theorem tilted_diagonal_intersection_mem {a h v : ℝ} (ha : 0 < a) (hha : h < a
     div_le_iff₀ (sub_pos.2 ((div_lt_one ha).2 hha))]
   constructor <;> linarith
 
-theorem integral_tiltedAffineCeiling_left {a : ℝ} (ha : 0 < a) (h : ℝ) :
-    (∫ x in (-a)..(-a / 2), tiltedAffineCeiling a h x) = a / 2 - 5 * a * h / 8 := by
-  unfold tiltedAffineCeiling
-  rw [intervalIntegral.integral_add intervalIntegrable_const
-      ((show Continuous (fun x : ℝ => h / a * x) by fun_prop).intervalIntegrable _ _),
-    intervalIntegral.integral_const, intervalIntegral.integral_const_mul, integral_id, smul_eq_mul]
-  field_simp
-  ring
-
 theorem integral_tilted_diagonal_left_roof {a h v : ℝ} (ha : 0 < a) (hha : h < a)
     (hv0 : a / 2 ≤ v) (hv1 : v ≤ a - h / 2) :
     (∫ x in (-a)..(-a / 2), min (tiltedAffineCeiling a h x) (1 - h + v + x)) =
@@ -88,18 +80,17 @@ theorem integral_tilted_diagonal_left_roof {a h v : ℝ} (ha : 0 < a) (hha : h <
   have hqd : q * d = v - h / 2 := div_mul_cancel₀ _ hd.ne'
   have hza : h / a * a = h := div_mul_cancel₀ h ha.ne'
   have hfun (x : ℝ) : min (tiltedAffineCeiling a h x) (1 - h + v + x) =
-      tiltedAffineCeiling a h x - d * max (-q - x) 0 := by
+      (1 - h / 2) - -(h / a) * x - d * max (-q - x) 0 := by
     rw [min_eq_left_sub_positive, mul_max_of_nonneg _ _ hd.le, mul_zero]
-    congr 2
     dsimp only [tiltedAffineCeiling, d] at hqd ⊢
-    linarith
+    congr 2 <;> linarith
   have hwidth : -q - -a = (a - v - h / 2) / d := by
     rw [eq_div_iff hd.ne']
     dsimp only [d] at hqd ⊢
     linarith
   simp_rw [hfun]
-  rw [intervalIntegral.integral_sub ((continuous_tiltedAffineCeiling a h).intervalIntegrable _ _)
-      (Continuous.intervalIntegrable (by fun_prop) _ _), integral_tiltedAffineCeiling_left ha,
+  rw [intervalIntegral.integral_sub (Continuous.intervalIntegrable (by fun_prop) _ _)
+      (Continuous.intervalIntegrable (by fun_prop) _ _), intervalIntegral_const_sub_mul,
     intervalIntegral.integral_const_mul, integral_positive_ramp_sub,
     max_eq_left (by linarith : 0 ≤ -q - -a), max_eq_right (by linarith : -q - (-a / 2) ≤ 0), hwidth]
   field_simp

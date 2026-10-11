@@ -10,6 +10,9 @@ public import AmbidextrousSofa.Analysis.TerminalScalar
 /-!
 # Literal support vertices on the unvisited terminal tails
 
+The upward support is the cap height, and every cap point at that height
+lies on the top face.
+
 The actual used-support representation has no defining normal in an
 unvisited gap, apart from the affine middle normal. The halfplane corner
 theorem therefore identifies one actual vertex supporting every angle in
@@ -19,6 +22,8 @@ insertion variation. No terminal atom is removed by these identities.
 The elementary width and height bounds also place the middle normal
 strictly before the terminal companion normal. Hence the entire missing
 companion tail is supported at the actual upper left projection endpoint.
+With a negative middle slope, the right endpoint of the top face is the
+left middle endpoint.
 -/
 
 noncomputable section
@@ -27,28 +32,38 @@ open Set
 
 namespace AmbidextrousSofa
 
+/-- The support in the upward direction is the cap height. -/
+theorem supp_pi_div_two_eq_capHeight (U : Set Plane) :
+    MovingSofaOptimality.supp U (Real.pi / 2) = capHeight U := by
+  simp [← angleSupport_eq_imported_supp, angleSupport, unitNormal, capHeight]
+
+/-- A cap point at the cap height lies on the top face, between its two endpoints. -/
+theorem IsDownwardCap.fst_mem_top_face {U : Set Plane} (hU : IsDownwardCap U) {p : Plane}
+    (hp : p ∈ U) (hpy : p.2 = capHeight U) :
+    p.1 ∈ Icc (MovingSofaOptimality.vplus U (Real.pi / 2)).1
+      (MovingSofaOptimality.vminus U (Real.pi / 2)).1 := by
+  rw [← hU.horizontalProjection_edge (by simp)]
+  exact ⟨p, MovingSofaOptimality.mem_edge_iff.2 ⟨hp, by
+    rw [MovingSofaOptimality.dot_uvec_pi_div_two, hpy, supp_pi_div_two_eq_capHeight]⟩, rfl⟩
+
 theorem support_vertices_of_halfplane_gap {K : Set Plane}
     (hK : MovingSofaOptimality.IsConvexBody K) {ι : Type*} (angle height : ι → ℝ)
     (hpoly : K = ⋂ i, MovingSofaOptimality.halfMinus (angle i) (height i))
     (hangle : ∀ i, angle i ∈ Icc 0 (2 * Real.pi))
     {a b : ℝ} (ha : 0 ≤ a) (hb : b ≤ Real.pi) (hab : a < b) (hspan : b - a < Real.pi)
     (hgap : ∀ i, angle i ∉ Ioo a b) :
-    MovingSofaOptimality.vplus K a = MovingSofaOptimality.vminus K b ∧
-      (∀ t ∈ Icc a b, angleSupport K t = coordDot (MovingSofaOptimality.vminus K b) (unitNormal t)) ∧
-      (∀ t ∈ Ioo a b, MovingSofaOptimality.vplus K t = MovingSofaOptimality.vminus K b ∧
-        MovingSofaOptimality.vminus K t = MovingSofaOptimality.vminus K b) := by
+    MovingSofaOptimality.vplus K a = MovingSofaOptimality.vminus K b ∧ ∀ t ∈ Icc a b,
+      angleSupport K t = coordDot (MovingSofaOptimality.vminus K b) (unitNormal t) := by
   have hsin : 0 < Real.sin (b - a) := Real.sin_pos_of_pos_of_lt_pi (sub_pos.mpr hab) hspan
   obtain ⟨q, hq, hqa, hqb⟩ := MovingSofaOptimality.mpc_corner hK hpoly hsin fun i => by
     refine MovingSofaOptimality.mpc_not_gap hab ?_
     rcases le_or_gt (angle i) a with hia | hia
     · exact .inr ⟨by linarith [(hangle i).1, Real.pi_pos], hia⟩
     · exact .inl ⟨not_lt.1 fun hib => hgap i ⟨hia, hib⟩, by linarith [(hangle i).2]⟩
-  obtain ⟨hqa, rfl, hsupport, hinterior⟩ := MovingSofaOptimality.mpc_corner_props hK hq hsin hqa hqb
-  refine ⟨hqa, fun t ht => (hsupport t ?_ ?_).symm, fun t ht => hinterior t ?_ ?_⟩
-  · exact Real.sin_nonneg_of_nonneg_of_le_pi (by linarith [ht.1]) (by linarith [ht.2])
-  · exact Real.sin_nonneg_of_nonneg_of_le_pi (by linarith [ht.2]) (by linarith [ht.1])
-  · exact Real.sin_pos_of_pos_of_lt_pi (by linarith [ht.1]) (by linarith [ht.2])
-  · exact Real.sin_pos_of_pos_of_lt_pi (by linarith [ht.2]) (by linarith [ht.1])
+  obtain ⟨hqa, rfl, hsupport, -⟩ := MovingSofaOptimality.mpc_corner_props hK hq hsin hqa hqb
+  exact ⟨hqa, fun t ht => (hsupport t (Real.sin_nonneg_of_nonneg_of_le_pi (by linarith [ht.1])
+    (by linarith [ht.2])) (Real.sin_nonneg_of_nonneg_of_le_pi (by linarith [ht.2])
+    (by linarith [ht.1]))).symm⟩
 
 /-- A gap of normal angles inside the unused intervals that misses the affine middle normal is
 supported at one actual vertex. -/
@@ -60,9 +75,7 @@ theorem IsJointCapMaximizer.support_vertices_unused_gap
     (hunused : Ioo a b ⊆ Ioo α (Real.pi / 2) ∪ Ioo (α + Real.pi / 2) Real.pi)
     (hgap : affineNormalAngle m ∉ Ioo a b) :
     MovingSofaOptimality.vplus U a = MovingSofaOptimality.vminus U b ∧
-      (∀ t ∈ Icc a b, angleSupport U t = coordDot (MovingSofaOptimality.vminus U b) (unitNormal t)) ∧
-      (∀ t ∈ Ioo a b, MovingSofaOptimality.vplus U t = MovingSofaOptimality.vminus U b ∧
-        MovingSofaOptimality.vminus U t = MovingSofaOptimality.vminus U b) :=
+      ∀ t ∈ Icc a b, angleSupport U t = coordDot (MovingSofaOptimality.vminus U b) (unitNormal t) :=
   support_vertices_of_halfplane_gap hU.isCap.imported_isConvexBody _ _
     ((hU.eq_usedSupportSaturation_capCut haffine).trans
       (capCut_usedSupportSaturation_eq_halfplanes U α m c))
@@ -78,9 +91,7 @@ theorem IsJointCapMaximizer.support_vertices_first_unused_gap
     (ha : α ≤ a) (hb : b ≤ Real.pi / 2) (hab : a < b)
     (hgap : affineNormalAngle m ∉ Ioo a b) :
     MovingSofaOptimality.vplus U a = MovingSofaOptimality.vminus U b ∧
-      (∀ t ∈ Icc a b, angleSupport U t = coordDot (MovingSofaOptimality.vminus U b) (unitNormal t)) ∧
-      (∀ t ∈ Ioo a b, MovingSofaOptimality.vplus U t = MovingSofaOptimality.vminus U b ∧
-        MovingSofaOptimality.vminus U t = MovingSofaOptimality.vminus U b) :=
+      ∀ t ∈ Icc a b, angleSupport U t = coordDot (MovingSofaOptimality.vminus U b) (unitNormal t) :=
   hU.support_vertices_unused_gap haffine ha (by linarith [Real.pi_pos]) hab
     ((Ioo_subset_Ioo ha hb).trans subset_union_left) hgap
 
@@ -123,8 +134,7 @@ theorem IsJointCapMaximizer.middle_support_vertices
       hU.isCap.capRoof_eq_of_mem_upper_edge hs (MovingSofaOptimality.vminus_mem_edge hK _))⟩
 
 /-- The actual affine middle normal is strictly below the companion
-terminal normal. This follows from the width bound and the already proved
-outgoing-wall angle exclusion, without a source-density assumption. -/
+terminal normal, by the width bound and the outgoing-wall angle exclusion. -/
 theorem IsJointCapMaximizer.middle_normal_lt_terminal_companion
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
@@ -153,8 +163,7 @@ theorem IsJointCapMaximizer.terminal_companion_vplus
     hU.isCap.axis_vminus_pi
 
 /-- Every missing second support, including the terminal support value,
-is attained at the actual upper left endpoint of the projection. The
-possible face on the terminal normal itself is not collapsed here. -/
+is attained at the actual upper left endpoint of the projection. -/
 theorem IsJointCapMaximizer.companion_tail_support
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hαL : α < Real.pi / 2)
@@ -164,7 +173,7 @@ theorem IsJointCapMaximizer.companion_tail_support
       -horizontalLeft U * Real.sin t + capRoof U (horizontalLeft U) * Real.cos t := by
   have h := (hU.support_vertices_unused_gap haffine (by linarith [Real.pi_pos]) le_rfl
     (by linarith) subset_union_right fun h =>
-      lt_asymm h.1 (hU.middle_normal_lt_terminal_companion haffine)).2.1 (t + Real.pi / 2)
+      lt_asymm h.1 (hU.middle_normal_lt_terminal_companion haffine)).2 (t + Real.pi / 2)
     ⟨by linarith [ht.1], by linarith [ht.2]⟩
   rw [hU.isCap.axis_vminus_pi] at h
   rw [companionNormal_eq_unitNormal]
@@ -180,31 +189,11 @@ theorem IsJointCapMaximizer.first_tail_support_before_middle
     angleSupport U t = (horizontalRight U - capWidth U / 4) * Real.cos t +
       capRoof U (horizontalRight U - capWidth U / 4) * Real.sin t := by
   have h := (hU.support_vertices_first_unused_gap haffine le_rfl
-    (by simpa [affineNormalAngle] using hm.le) hαm (by simp)).2.1 t ht
+    (by simpa [affineNormalAngle] using hm.le) hαm (by simp)).2 t ht
   rwa [(hU.middle_support_vertices hm.ne haffine).2] at h
 
-theorem IsDownwardCap.top_vminus_of_negative_affine_segment
-    {U : Set Plane} (hU : IsDownwardCap U) {a b m c : ℝ}
-    (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
-    (hab : a < b) (hm : m < 0)
-    (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c)
-    (hfa : capRoof U a = 1) : MovingSofaOptimality.vminus U (Real.pi / 2) = (a, 1) := by
-  have htop : (a, (1 : ℝ)) ∈ U := hfa ▸ capRoof_mem hU.isCompact ha
-  have hH : MovingSofaOptimality.supp U (Real.pi / 2) = 1 :=
-    MovingSofaOptimality.supp_eq_of_mem hU.isCompact
-      (fun p hp => (MovingSofaOptimality.dot_uvec_pi_div_two p).trans_le (hU.inStrip hp).2) htop
-      (MovingSofaOptimality.dot_uvec_pi_div_two _)
-  have hedge {p : Plane} : p ∈ MovingSofaOptimality.edge U (Real.pi / 2) ↔ p ∈ U ∧ p.2 = 1 := by
-    rw [MovingSofaOptimality.mem_edge_iff, MovingSofaOptimality.dot_uvec_pi_div_two, hH]
-  have hv := MovingSofaOptimality.vminus_mem_edge hU.imported_isConvexBody (Real.pi / 2)
-  obtain ⟨hp, hpy⟩ := hedge.1 hv
-  have hle := MovingSofaOptimality.dot_vminus_le_dot hU.isCompact (hedge.2 ⟨htop, rfl⟩)
-  simp [MovingSofaOptimality.dot, MovingSofaOptimality.vvec] at hle
-  have := hU.capRoof_le_affine_of_affine_segment ha hb hab haffine _ ⟨_, hp, rfl⟩
-  have := hU.capRoof_eq_of_mem_upper_edge (by simp) hv
-  have := haffine a ⟨le_rfl, hab.le⟩
-  exact Prod.ext (le_antisymm (by nlinarith) hle) hpy
-
+/-- With a negative middle slope, the right endpoint of the top face is the left middle
+endpoint. -/
 theorem IsJointCapMaximizer.top_vminus_of_negative_affine_middle
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hheight : capHeight U = 1) (hm : m < 0)
@@ -213,8 +202,19 @@ theorem IsJointCapMaximizer.top_vminus_of_negative_affine_middle
     MovingSofaOptimality.vminus U (Real.pi / 2) = (horizontalLeft U + capWidth U / 4, 1) := by
   obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints
     (show 0 < capWidth U by linarith [hU.width_bounds.1, one_lt_M])
-  exact hU.isCap.top_vminus_of_negative_affine_segment ha hb hab hm haffine
-    (hU.middle_left_eq_one_of_affine_nonpos hheight hm.le haffine)
+  have hfa := hU.middle_left_eq_one_of_affine_nonpos hheight hm.le haffine
+  have htop : (horizontalLeft U + capWidth U / 4, (1 : ℝ)) ∈ U :=
+    hfa ▸ capRoof_mem hU.isCap.isCompact ha
+  have hv := MovingSofaOptimality.vminus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)
+  have hle : horizontalLeft U + capWidth U / 4 ≤ _ :=
+    (hU.isCap.fst_mem_top_face htop hheight.symm).2
+  have := hU.isCap.capRoof_le_affine_of_affine_segment ha hb hab haffine _ ⟨_, hv.1, rfl⟩
+  have := hU.isCap.capRoof_eq_of_mem_upper_edge (by simp) hv
+  have := haffine (horizontalLeft U + capWidth U / 4) ⟨le_rfl, hab.le⟩
+  have : (MovingSofaOptimality.vminus U (Real.pi / 2)).2 = 1 := by
+    rw [← MovingSofaOptimality.dot_uvec_pi_div_two, MovingSofaOptimality.dot_vminus_uvec,
+      supp_pi_div_two_eq_capHeight, hheight]
+  exact Prod.ext (le_antisymm (by nlinarith) hle) this
 
 /-- The actual negative-tilt missing first supports have exactly two
 constant support vertices, meeting at the actual affine middle normal. -/
@@ -232,17 +232,8 @@ theorem IsJointCapMaximizer.first_tail_support_negative
   · exact hU.first_tail_support_before_middle hm haffine (ht.1.trans_lt htm) ⟨ht.1, htm.le⟩
   have h := (hU.support_vertices_first_unused_gap haffine (le_max_left _ _) le_rfl
     (max_lt hαL (by simpa [affineNormalAngle] using hm)) fun hs =>
-      (le_max_right α _).not_gt hs.1).2.1 t ⟨max_le ht.1 (not_lt.1 htm), ht.2⟩
+      (le_max_right α _).not_gt hs.1).2 t ⟨max_le ht.1 (not_lt.1 htm), ht.2⟩
   rw [hU.top_vminus_of_negative_affine_middle hheight hm haffine] at h
   simpa [coordDot, unitNormal] using h
-
-theorem IsJointCapMaximizer.first_terminal_vplus_of_middle_nonneg
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hαL : α < Real.pi / 2) (hm : 0 ≤ m)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    MovingSofaOptimality.vplus U α = MovingSofaOptimality.vminus U (Real.pi / 2) :=
-  (hU.support_vertices_first_unused_gap haffine le_rfl le_rfl hαL fun h => by
-    unfold affineNormalAngle at h; linarith [h.2, Real.arctan_nonneg.mpr hm]).1
 
 end AmbidextrousSofa

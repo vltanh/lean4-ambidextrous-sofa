@@ -9,16 +9,16 @@ public import AmbidextrousSofa.Analysis.InitialAngleWidth
 /-!
 # Actual terminal corner separation and the terminal face bound
 
-The initial-angle and preliminary-width exclusions are inequalities for
-the literal partial cap score. Their exact rational consequences already
-separate the actual terminal corner from the shifted upper face endpoint;
-no later source-moment width cut is needed.
+Above the initial angle `arctan (8/3)` the terminal cosine satisfies
+`73 cos² α ≤ 9`. The initial-angle and preliminary-width exclusions are
+inequalities for the literal partial cap score. Their exact rational
+consequences already separate the actual terminal corner from the shifted
+upper face endpoint; no later source-moment width cut is needed.
 
 Combining that separation with the literal fixed-cap angle extension
-bounds the complete terminal curvature atom in the proper tail regime,
+bounds the terminal face width by the reserve in the proper tail regime,
 which every largest-angle canonical joint maximizer satisfies. The proof
-preserves the original orientation and works for all signs of the affine
-middle roof.
+works for all signs of the affine middle roof.
 -/
 
 noncomputable section
@@ -27,16 +27,22 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-theorem terminal_sin_cos_bounds_after_initialAngle {α : ℝ}
-    (hα0 : Real.arctan (8 / 3) ≤ α) (hαL : α < Real.pi / 2) :
-    (187 / 200 : ℝ) < Real.sin α ∧ Real.cos α < (9 / 25 : ℝ) := by
+/-- Above the initial angle the tangent is at least `8/3`, so `73 cos² α ≤ 9`. -/
+theorem terminal_cos_sq_le_of_initialAngle {α : ℝ}
+    (hα0 : Real.arctan (8 / 3) ≤ α) (hαL : α < Real.pi / 2) : 73 * Real.cos α ^ 2 ≤ 9 := by
   have hαpos : 0 < α := (Real.arctan_pos.2 (by norm_num)).trans_le hα0
-  have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi hαpos (by linarith [Real.pi_pos])
-  have hc : 0 < Real.cos α := Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hαL⟩
+  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hαpos hαL
   have htan : 8 / 3 ≤ Real.tan α := by
     simpa using Real.strictMonoOn_tan.monotoneOn (Real.arctan_mem_Ioo _)
       ⟨by linarith [Real.pi_pos], hαL⟩ hα0
   rw [Real.tan_eq_sin_div_cos, le_div_iff₀ hc] at htan
+  nlinarith [Real.sin_sq_add_cos_sq α]
+
+theorem terminal_sin_cos_bounds_after_initialAngle {α : ℝ}
+    (hα0 : Real.arctan (8 / 3) ≤ α) (hαL : α < Real.pi / 2) :
+    (187 / 200 : ℝ) < Real.sin α ∧ Real.cos α < (9 / 25 : ℝ) := by
+  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos ((Real.arctan_pos.2 (by norm_num)).trans_le hα0) hαL
+  have := terminal_cos_sq_le_of_initialAngle hα0 hαL
   constructor <;> nlinarith [Real.sin_sq_add_cos_sq α]
 
 /-- The preliminary width `49/25` and the initial angle `arctan (8/3)`, both supplied by actual
@@ -51,9 +57,7 @@ theorem IsJointCapMaximizer.terminal_corner_lt_rightAbscissa_of_tail_regime
     (attachedCorner U α).1 < terminalFirstRightAbscissa U α := by
   set P := terminalTailPoint U α
   have htail := hU.terminalTailPoint_bounds_of_tail_regime hregime hαL hheight haffine
-  have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi hU.angle_pos (by linarith [Real.pi_pos])
-  have hc : 0 < Real.cos α :=
-    Real.cos_pos_of_mem_Ioo ⟨by linarith [hU.angle_pos, Real.pi_pos], hαL⟩
+  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hU.angle_pos hαL
   have htrig := terminal_sin_cos_bounds_after_initialAngle
     hU.terminal_angle_gt_arctan_eight_thirds.le hαL
   have hwidth := hU.width_gt_forty_nine_twenty_fifths hαL
@@ -79,8 +83,8 @@ theorem IsJointCapMaximizer.terminal_corner_lt_rightAbscissa_of_tail_regime
         hc.le]
   linarith [mul_neg_of_pos_of_neg hs hgap]
 
-/-- The complete horizontal width of the actual first terminal facet is
-bounded at the canonical maximizer selected with largest terminal angle. -/
+/-- In the proper tail regime the horizontal width of the terminal face is at most the
+reserve. -/
 theorem IsJointCapMaximizer.terminalFaceWidth_le_reserve_of_tail_regime
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hregime : ProperTailRegime U α m)
@@ -90,16 +94,5 @@ theorem IsJointCapMaximizer.terminalFaceWidth_le_reserve_of_tail_regime
     terminalFaceWidth U α ≤ terminalTailReserve U α :=
   hU.terminalFaceWidth_le_reserve_of_corner_lt_of_tail_regime hregime hαL hheight haffine
     (hU.terminal_corner_lt_rightAbscissa_of_tail_regime hregime hαL hheight haffine)
-
-theorem IsJointCapMaximizer.terminal_curvature_atom_le_reserve_div_sin_of_tail_regime
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hregime : ProperTailRegime U α m)
-    (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    (upperCurvature U {α}).toReal ≤ terminalTailReserve U α / Real.sin α := by
-  rw [le_div_iff₀ (Real.sin_pos_of_pos_of_lt_pi hU.angle_pos (by linarith [Real.pi_pos])),
-    ← hU.isCap.terminalFaceWidth_eq_curvature_atom α]
-  exact hU.terminalFaceWidth_le_reserve_of_tail_regime hregime hαL hheight haffine
 
 end AmbidextrousSofa

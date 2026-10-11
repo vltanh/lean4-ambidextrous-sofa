@@ -15,8 +15,7 @@ whole companion support family, even when that support is nonsmooth.
 
 At an interior maximum, a fixed attaining support point itself has a
 local maximum. Its elementary derivative proves both contact-coordinate
-identities. No curvature density or derivative of the support function
-is required for this geometric step.
+identities.
 -/
 
 noncomputable section
@@ -58,7 +57,7 @@ theorem hasDerivAt_companionPointWall {p : Plane} {x t : ℝ}
   linear_combination (x - p.1) * Real.sin_sq_add_cos_sq t
 
 /-- The actual support wall is strictly lower at every angle after
-the projection-controlled prefix. This does not assume smooth support. -/
+the projection-controlled prefix. -/
 theorem IsDownwardCap.secondWall_lt_of_late_angle {U : Set Plane}
     (hU : IsDownwardCap U) {x β t : ℝ}
     (hβ0 : 0 ≤ β) (hβt : β < t) (htL : t < Real.pi / 2)
@@ -96,8 +95,7 @@ theorem IsDownwardCap.exists_positive_localized_secondWall_max {U : Set Plane}
     (hB0 : 0 ≤ B) (hBα : B < Real.sin α)
     (hx : x - horizontalLeft U ≤ B)
     (hpositive : ∃ r ∈ Icc 0 α, 0 < secondWall U r x) :
-    ∃ t ∈ Ioo 0 α, t ≤ Real.arcsin B ∧ 0 < secondWall U t x ∧
-      IsMaxOn (fun r => secondWall U r x) (Icc 0 α) t ∧
+    ∃ t ∈ Ioo 0 α, t ≤ Real.arcsin B ∧ IsMaxOn (fun r => secondWall U r x) (Icc 0 α) t ∧
       (MovingSofaOptimality.vplus U (t + Real.pi / 2)).1 + Real.sin t = x ∧
       secondWall U t x = (MovingSofaOptimality.vplus U (t + Real.pi / 2)).2 - Real.cos t := by
   have hcos (r : ℝ) (hr : r ∈ Icc 0 α) : 0 < Real.cos r :=
@@ -129,7 +127,7 @@ theorem IsDownwardCap.exists_positive_localized_secondWall_max {U : Set Plane}
   have hstation := (div_eq_iff (pow_ne_zero 2 hct.ne')).mp
     ((hpmax.isLocalMax (Icc_mem_nhds ht0 htα)).hasDerivAt_eq_zero
       (hasDerivAt_companionPointWall hct.ne'))
-  refine ⟨t, ⟨ht0, htα⟩, htB, htpos, hmax, by linarith, ?_⟩
+  refine ⟨t, ⟨ht0, htα⟩, htB, hmax, by linarith, ?_⟩
   rw [← hpeq, companionPointWall, show x - p.1 = Real.sin t by linarith]
   field_simp
   linear_combination Real.sin_sq_add_cos_sq t

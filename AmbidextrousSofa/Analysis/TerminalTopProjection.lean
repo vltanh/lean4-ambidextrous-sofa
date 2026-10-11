@@ -13,7 +13,8 @@ endpoints at the horizontal top. The proper horizontal source inequality
 bounds positive-barrier length by the charged exterior length remaining
 after these top pieces are removed. The actual outgoing wall is positive
 to the left of its actual zero, which yields the terminal projection
-inequality with both physical overhangs retained.
+inequality with both physical overhangs retained. A negative middle slope
+has no right top overhang.
 -/
 
 noncomputable section
@@ -71,12 +72,7 @@ theorem IsJointCapMaximizer.positive_partial_middle_measure_le_width_sub_topOver
     rw [← hheight, ← top_vminus_snd_eq_capHeight]
     exact (MovingSofaOptimality.vminus_mem_edge hK _).1
   obtain ⟨z, hz, hzTop⟩ := hU.top_meets_middle hheight
-  have hzst : z ∈ Icc (MovingSofaOptimality.vplus U (Real.pi / 2)).1
-      (MovingSofaOptimality.vminus U (Real.pi / 2)).1 := by
-    rw [← hU.isCap.horizontalProjection_edge (by simp)]
-    refine ⟨(z, 1), MovingSofaOptimality.mem_edge_iff.2 ⟨hzTop, ?_⟩, rfl⟩
-    rw [MovingSofaOptimality.dot_uvec_pi_div_two, ← MovingSofaOptimality.dot_vplus_uvec,
-      MovingSofaOptimality.dot_uvec_pi_div_two, top_vplus_snd_eq_capHeight, hheight]
+  have hzst := hU.isCap.fst_mem_top_face hzTop hheight.symm
   have hW := hU.isCap.capWidth_nonneg
   have hs : horizontalLeft U ≤ (MovingSofaOptimality.vplus U (Real.pi / 2)).1 :=
     csInf_le (isCompact_horizontalProjection hU.isCap.isCompact).bddBelow ⟨_, hsTop, rfl⟩
@@ -95,6 +91,16 @@ theorem IsJointCapMaximizer.positive_partial_middle_measure_le_width_sub_topOver
   rw [topOverhangLeft, topOverhangRight, h1, h2, capWidth]
   ring
 
+theorem IsJointCapMaximizer.topOverhangRight_eq_zero_of_negative
+    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hheight : capHeight U = 1) (hm : m < 0)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c) : topOverhangRight U = 0 := by
+  simp only [topOverhangRight, hU.top_vminus_of_negative_affine_middle hheight hm haffine,
+    max_eq_right_iff]
+  linarith [hU.isCap.capWidth_nonneg,
+    show capWidth U = horizontalRight U - horizontalLeft U from rfl]
+
 /-- The terminal tail abscissa is the right middle endpoint plus its
 actual top overhang. A negative middle has no right top overhang and the
 tail is its pinned middle endpoint. -/
@@ -105,35 +111,23 @@ theorem IsJointCapMaximizer.terminalTailPoint_fst_eq_middle_add_topOverhangRight
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
     (terminalTailPoint U α).1 = horizontalRight U - capWidth U / 4 + topOverhangRight U := by
-  have hbound := (hU.terminalTailPoint_bounds_of_tail_regime hregime hproper hheight haffine).1
-  unfold terminalTailPoint topOverhangRight at *
   rcases lt_or_ge m 0 with hm | hm
-  · have hneg : horizontalLeft U + capWidth U / 4 - (horizontalRight U - capWidth U / 4) ≤ 0 := by
-      rw [capWidth]
-      linarith [horizontalLeft_le_horizontalRight hU.isCap.nonempty hU.isCap.isCompact]
-    rw [(hU.support_vertices_first_unused_gap haffine le_rfl
-      (by simpa [affineNormalAngle] using hm.le)
-      (hU.negative_remaining_tail_geometry_of_tail_regime hregime hproper hheight hm haffine).1
-      (by simp)).1, (hU.middle_support_vertices hm.ne haffine).2,
-      hU.top_vminus_of_negative_affine_middle hheight hm haffine]
-    simp only [max_eq_right hneg, add_zero]
-  · rw [hU.first_terminal_vplus_of_middle_nonneg hproper hm haffine] at hbound ⊢
-    rw [max_eq_left (sub_nonneg.2 hbound)]
-    ring
+  · rw [hU.terminalTailPoint_eq_of_negative hregime hm haffine,
+      hU.topOverhangRight_eq_zero_of_negative hheight hm haffine, add_zero]
+  have hbound := (hU.terminalTailPoint_bounds_of_tail_regime hregime hproper hheight haffine).1
+  rw [hU.terminalTailPoint_eq_of_nonneg hproper hheight hm haffine] at hbound ⊢
+  rw [topOverhangRight, max_eq_left (sub_nonneg.2 hbound)]
+  ring
 
-/-- TP's projection inequality is derived from the actual source limit.
-The outgoing zero lies strictly inside the middle interval, and both top
-overhangs satisfy the displayed weighted bound. -/
-theorem IsJointCapMaximizer.terminal_top_projection_bound_of_tail_regime
+/-- The projection inequality from the actual source limit: the outgoing wall is positive left of
+its zero, so the top overhangs fit in the terminal inset. -/
+theorem IsJointCapMaximizer.topOverhangLeft_add_twice_right_le_terminalInset_of_tail_regime
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hregime : ProperTailRegime U α m)
     (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    topOverhangLeft U + 2 * topOverhangRight U ≤ terminalTailInset U α ∧
-      topOverhangRight U < terminalTailInset U α ∧
-      horizontalLeft U + capWidth U / 4 < terminalTailZero U α ∧
-      terminalTailZero U α < horizontalRight U - capWidth U / 4 := by
+    topOverhangLeft U + 2 * topOverhangRight U ≤ terminalTailInset U α := by
   have hW : capWidth U = horizontalRight U - horizontalLeft U := rfl
   have htail := hU.terminalTailPoint_bounds_of_tail_regime hregime hproper hheight haffine
   obtain ⟨hd, hdcos, -⟩ := hU.isCap.terminalTailInset_bounds hU.angle_pos hproper htail.2.1
@@ -144,37 +138,19 @@ theorem IsJointCapMaximizer.terminal_top_projection_bound_of_tail_regime
     hU.terminal_angle_gt_arctan_eight_thirds.le hproper).2
   have hTL := topOverhangLeft_nonneg U
   have hTR := topOverhangRight_nonneg U
-  rw [terminalTailZero]
-  have haz : horizontalLeft U + capWidth U / 4 <
-      (terminalTailPoint U α).1 - terminalTailInset U α := by
-    linarith [htail.1]
-  have hmin := le_min (show horizontalLeft U + capWidth U / 4 ≤ horizontalRight U - capWidth U / 4
-    by linarith) haz.le
+  -- The window between the left middle endpoint and the outgoing zero has positive barrier.
   have hlength : min (horizontalRight U - capWidth U / 4)
       ((terminalTailPoint U α).1 - terminalTailInset U α) - (horizontalLeft U + capWidth U / 4) ≤
       capWidth U / 2 - topOverhangLeft U - topOverhangRight U := by
-    rw [← Real.volume_real_Ioo_of_le hmin]
+    rw [← Real.volume_real_Ioo_of_le (le_min (by linarith) (by linarith [htail.1]))]
     refine (measureReal_mono (fun x hx => ?_) (measure_ne_top_of_subset inter_subset_left
       measure_Icc_lt_top.ne)).trans (hU.positive_partial_middle_measure_le_width_sub_topOverhangs
         hproper hheight ⟨m, c, haffine⟩)
     exact ⟨⟨hx.1.le, hx.2.le.trans (min_le_left _ _)⟩,
       partialBarrier_pos_of_lt_terminalTailZero U hU.angle_pos hproper
         (hx.2.trans_le (min_le_right _ _))⟩
-  have hzb : (terminalTailPoint U α).1 - terminalTailInset U α <
-      horizontalRight U - capWidth U / 4 := by
-    by_contra h
-    rw [min_eq_left (not_lt.1 h)] at hlength
-    linarith
-  rw [min_eq_right hzb.le] at hlength
-  exact ⟨by linarith, by linarith, haz, hzb⟩
-
-theorem IsJointCapMaximizer.topOverhangLeft_add_twice_right_le_terminalInset_of_tail_regime
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hregime : ProperTailRegime U α m)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    topOverhangLeft U + 2 * topOverhangRight U ≤ terminalTailInset U α :=
-  (hU.terminal_top_projection_bound_of_tail_regime hregime hproper hheight haffine).1
+  rcases min_cases (horizontalRight U - capWidth U / 4)
+    ((terminalTailPoint U α).1 - terminalTailInset U α) with ⟨h, -⟩ | ⟨h, -⟩ <;>
+    rw [h] at hlength <;> linarith
 
 end AmbidextrousSofa

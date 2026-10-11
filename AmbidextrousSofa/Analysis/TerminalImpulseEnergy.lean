@@ -24,20 +24,18 @@ namespace AmbidextrousSofa
 
 theorem terminalInset_mul_cos {α : ℝ} (hα0 : 0 < α) (hαL : α < Real.pi / 2) :
     terminalInset α * Real.cos α = 1 - Real.sin α :=
-  div_mul_cancel₀ _ (Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hαL⟩).ne'
+  div_mul_cancel₀ _ (terminal_sin_cos_pos hα0 hαL).2.ne'
 
 theorem terminalInset_mul_one_add_sin {α : ℝ}
     (hα0 : 0 < α) (hαL : α < Real.pi / 2) :
     terminalInset α * (1 + Real.sin α) = Real.cos α := by
-  rw [terminalInset, div_mul_eq_mul_div,
-    div_eq_iff (Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hαL⟩).ne']
+  rw [terminalInset, div_mul_eq_mul_div, div_eq_iff (terminal_sin_cos_pos hα0 hαL).2.ne']
   linear_combination -Real.sin_sq_add_cos_sq α
 
 theorem terminalSlope_mul_one_sub_inset_sq {α : ℝ}
     (hα0 : 0 < α) (hαL : α < Real.pi / 2) :
     terminalSlope α * (1 - terminalInset α ^ 2) = 2 * terminalInset α := by
-  have hs := Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hαL⟩
+  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
   unfold terminalSlope terminalInset
   field_simp
   linear_combination Real.sin_sq_add_cos_sq α
@@ -48,7 +46,7 @@ theorem terminalInset_lt_two_elevenths_of_slope_le {α : ℝ}
   have hk0 := terminalInset_pos hα0 hαL
   have hk1 : terminalInset α < 1 := by
     nlinarith [terminalInset_mul_one_add_sin hα0 hαL, Real.cos_le_one α,
-      Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [Real.pi_pos])]
+      (terminal_sin_cos_pos hα0 hαL).1]
   have hmul := mul_le_mul_of_nonneg_right hκ (by nlinarith : (0 : ℝ) ≤ 1 - terminalInset α ^ 2)
   rw [terminalSlope_mul_one_sub_inset_sq hα0 hαL] at hmul
   nlinarith
@@ -63,10 +61,8 @@ theorem terminal_near_full_bounds {α : ℝ}
     (hα0 : 0 < α) (hαL : α < Real.pi / 2) (hκ : terminalSlope α ≤ 1 / 8) :
     124 / 125 < Real.sin α ∧ Real.cos α < 1 / 8 ∧
       Real.pi / 2 - α < 1 / 8 ∧ terminalInset α < 1 / 16 := by
-  have hs := Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hαL⟩
-  have hs1 : Real.sin α < 1 := (Real.sin_lt_sin_of_lt_of_le_pi_div_two
-    (by linarith [Real.pi_pos]) le_rfl hαL).trans_eq Real.sin_pi_div_two
+  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
+  have hs1 : Real.sin α < 1 := by nlinarith [Real.sin_sq_add_cos_sq α]
   have hcs : Real.cos α ≤ Real.sin α / 8 := by
     rw [terminalSlope, div_le_iff₀ hs] at hκ
     linarith
@@ -92,13 +88,14 @@ theorem IsJointCapMaximizer.terminal_curvature_atom_le_inset_of_tail_regime
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
     0 ≤ MovingSofaOptimality.sigmaAt U α ∧ MovingSofaOptimality.sigmaAt U α ≤ terminalInset α := by
-  have hs := Real.sin_pos_of_pos_of_lt_pi hU.angle_pos (by linarith [Real.pi_pos])
+  have hs := (terminal_sin_cos_pos hU.angle_pos hproper).1
   have hH := (hU.terminalTailPoint_bounds_of_tail_regime hregime hproper hheight haffine).2.1
   have hreserve := (hU.isCap.terminalTailInset_bounds hU.angle_pos hproper hH).2.2.2.1
-  refine ⟨ENNReal.toReal_nonneg, (hU.terminal_curvature_atom_le_reserve_div_sin_of_tail_regime
-    hregime hproper hheight haffine).trans ?_⟩
-  rw [div_le_iff₀ hs]
-  exact hreserve.trans_eq (by rw [← terminalInset_mul_one_add_sin hU.angle_pos hproper]; field_simp)
+  have hwidth := hU.terminalFaceWidth_le_reserve_of_tail_regime hregime hproper hheight haffine
+  rw [hU.isCap.terminalFaceWidth_eq_curvature_atom] at hwidth
+  refine ⟨ENNReal.toReal_nonneg, le_of_mul_le_mul_right ((hwidth.trans hreserve).trans_eq ?_) hs⟩
+  rw [← terminalInset_mul_one_add_sin hU.angle_pos hproper]
+  field_simp
 
 namespace Analysis
 
@@ -134,7 +131,7 @@ theorem terminalImpulseEnergyChange_lt_one_four_hundred_eightieth {d e α j : �
     (hQ : 0 ≤ d * Real.sin α - (1 - e) * Real.cos α) :
     terminalImpulseEnergyChange d e α j < 1 / 480 := by
   obtain ⟨hs, -, -, hk⟩ := terminal_near_full_bounds hα0 hαL hκ
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hαL⟩
+  have hc := (terminal_sin_cos_pos hα0 hαL).2
   have hbracket : e - (1 - e) * Real.sin α - d * Real.cos α ≤ 53 / 100 := by
     nlinarith [mul_nonneg (sub_nonneg.mpr he) (show 0 ≤ 1 + Real.sin α by linarith),
       mul_nonneg hd hc.le]
@@ -147,8 +144,7 @@ theorem terminalImpulseEnergyChange_lt_one_thirtieth {d e α j : ℝ}
     (hj0 : 0 ≤ j) (hjk : j ≤ terminalInset α)
     (hQ : 0 ≤ d * Real.sin α - (1 - e) * Real.cos α) :
     terminalImpulseEnergyChange d e α j < 1 / 30 := by
-  have hs := Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hαL⟩
+  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
   have hbracket : e - (1 - e) * Real.sin α - d * Real.cos α ≤ 1 := by
     nlinarith [mul_nonneg (sub_nonneg.mpr he) hs.le, mul_nonneg hd hc.le]
   nlinarith [terminalImpulseEnergyChange_le_inset hα0 hαL hj0 hjk hQ,

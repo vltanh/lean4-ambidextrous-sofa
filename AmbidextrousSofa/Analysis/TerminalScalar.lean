@@ -17,7 +17,7 @@ search is used.
 
 A rational cut below the actual defining cubic root gives `41/50 < M/2`.
 Consequently every actual joint cap maximizer has terminal angle strictly
-above `arctan (5/4)`. The remaining terminal angles are not settled here.
+above `arctan (5/4)`.
 -/
 
 noncomputable section
@@ -40,17 +40,15 @@ theorem terminal_cotangent_scalar_bound {a s : ℝ}
   rw [div_le_iff₀ (by positivity)]
   nlinarith [mul_nonneg (show 0 ≤ 5 * a - 4 by linarith) (show 0 ≤ 5 - 2 * a by linarith)]
 
-/-- PD's exact angle bound is proved from the real sine and cosine
-values, rather than assumed through an auxiliary parameter. -/
+/-- The exact bound on the terminal-wall estimate for `π/4 ≤ α ≤ arctan (5/4)`, from the sine and
+cosine of `α`. -/
 theorem terminal_bound_le_arctan_five_fourths {α : ℝ}
     (hα0 : Real.pi / 4 ≤ α) (hα1 : α ≤ Real.arctan (5 / 4)) :
     (1 + 1 / Real.sin α) ^ 2 / (8 * (Real.cos α / Real.sin α)) ≤
       (33 + 5 * Real.sqrt 41) / 80 := by
   have hαL : α < Real.pi / 2 := hα1.trans_lt (Real.arctan_lt_pi_div_two (5 / 4))
   have hαmem : α ∈ Ioo (-(Real.pi / 2)) (Real.pi / 2) := ⟨by linarith [Real.pi_pos], hαL⟩
-  have hs : 0 < Real.sin α :=
-    Real.sin_pos_of_pos_of_lt_pi (by linarith [Real.pi_pos]) (by linarith [Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo hαmem
+  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos (by linarith [Real.pi_pos]) hαL
   have htan0 : 1 ≤ Real.tan α := by
     simpa only [Real.tan_pi_div_four] using Real.strictMonoOn_tan.monotoneOn
       ⟨by linarith [Real.pi_pos], by linarith [Real.pi_pos]⟩ hαmem hα0

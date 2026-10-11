@@ -8,16 +8,13 @@ public import AmbidextrousSofa.Analysis.TerminalStrictComparison
 /-!
 # Terminal comparison for the actual left charged wing
 
-The left cut controls the positive visited niche of the original cap.
-Its density is constructed from the proper selected polygons, and its
-literal supporting endpoints satisfy both coordinate moments. The
-circle estimate therefore applies in every sign of the middle slope,
-including the positive slope with its low initial endpoint.
-
-The final theorem states the remaining analytic obligation precisely:
-the actual early weighted excess must exceed the exact terminal margin
-at any maximum with the displayed terminal and top geometry. Density
-regularity is a conclusion of the construction, not an extra premise.
+The left cut controls the positive visited niche of the original cap, so
+the circle estimate applies in every sign of the middle slope, including
+the positive slope with its low initial endpoint. With the exact circle
+margin it makes the outgoing wall strictly exposed beyond the reserve,
+which the exposure bound forbids. Hence the early weighted excess of the
+cut density must exceed the exact terminal margin at any maximum with the
+displayed terminal and top geometry.
 -/
 
 noncomputable section
@@ -25,25 +22,6 @@ noncomputable section
 open Set Filter MeasureTheory
 
 namespace AmbidextrousSofa
-
-/-- In nonpositive tilt the left cut retains the original top endpoint
-and hence both original companion initial coordinates. -/
-theorem IsDownwardCap.leftCompanion_initial_data_of_nonpos_affine
-    {U : Set Plane} (hU : IsDownwardCap U) {a b m c : ℝ}
-    (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
-    (hab : a < b) (hm : m ≤ 0)
-    (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c) :
-    MovingSofaOptimality.vplus (AmbidextrousSofa.leftCompanionCap U a) (Real.pi / 2) =
-        MovingSofaOptimality.vplus U (Real.pi / 2) ∧
-      companionInitialOffset (AmbidextrousSofa.leftCompanionCap U a) = companionInitialOffset U ∧
-      companionInitialDeficit (AmbidextrousSofa.leftCompanionCap U a) = companionInitialDeficit U := by
-  have htop := hU.vplus_leftCompanionCap_eq_of_affine (t := Real.pi / 2) ha hb hab haffine
-    (by simp) (by simpa using hm)
-  refine ⟨htop, ?_, ?_⟩
-  · unfold companionInitialOffset
-    rw [htop, horizontalLeft_leftCompanionCap hU ha]
-  · unfold companionInitialDeficit
-    rw [← top_vplus_snd_eq_capHeight, htop, top_vplus_snd_eq_capHeight]
 
 /-- The exact circle margin controls the original outgoing wall using
 the actual cut density, on the whole initial reserve interval. This
@@ -68,8 +46,7 @@ theorem IsJointCapMaximizer.false_of_leftCompanion_weighted_excess_of_tail_regim
         (fun t => ENNReal.ofReal (ρ t)))
     (hexcess : terminalWeightedExcess (fun t => ρ (t + Real.pi / 2))
       (Real.arcsin (C - T_L)) ≤ (39 / 4400 : ℝ) * Real.cos α) : False := by
-  have hs := Real.sin_pos_of_pos_of_lt_pi hU.angle_pos (by linarith only [hαL, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith only [hU.angle_pos, Real.pi_pos], hαL⟩
+  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hU.angle_pos hαL
   have hH := (hU.terminalTailPoint_bounds_of_tail_regime hregime hαL hheight haffine).2.1
   have hH1 := (hU.isCap.inStrip (hU.isCap.terminalTailPoint_mem α)).2
   obtain ⟨-, hdc, hw0, -, hwhalf⟩ := hU.isCap.terminalTailInset_bounds hU.angle_pos hαL hH

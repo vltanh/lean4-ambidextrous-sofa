@@ -13,8 +13,7 @@ vertical displacement and decreases every historical wall. On the strict
 terminal exposure this produces a first-order barrier gain. The entire
 roof-area loss converges to the horizontal measure of the actual terminal
 face. Same-angle maximality therefore bounds strict exposure by that face
-width, without a weak source occupation measure or a rule on historical
-ties.
+width.
 -/
 
 noncomputable section
@@ -23,23 +22,6 @@ open Set Filter MeasureTheory
 open scoped Topology
 
 namespace AmbidextrousSofa
-
-theorem IsDownwardCap.normalTrim_barrier_gain {U : Set Plane} (hU : IsDownwardCap U)
-    {α ε : ℝ} (hα0 : 0 < α) (hαL : α ≤ Real.pi / 2) (hε : 0 ≤ ε)
-    (hbase : horizontalRight U * Real.cos α ≤ support U (unitNormal α) - ε * Real.sin α)
-    (x : ℝ) :
-    min ε (max (firstWall U α x - sweptNiche U α x) 0) ≤
-      partialBarrier U α x - partialBarrier (AmbidextrousSofa.normalTrim U α ε) α x := by
-  have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [Real.pi_pos])
-  have hc : 0 ≤ Real.cos α := Real.cos_nonneg_of_mem_Icc ⟨by linarith [Real.pi_pos], hαL⟩
-  have hN := sweptNiche_mono (normalTrim_subset U α ε) (hU.normalTrim hc hs.le hbase).nonempty
-    hU.isCompact hα0 hαL x
-  have hW : firstWall (AmbidextrousSofa.normalTrim U α ε) α x = firstWall U α x - ε := by
-    simp only [firstWall, support_normalTrim_eq_of_baseline hU hc hs hε hbase]
-    field_simp
-    ring
-  simp only [partialBarrier, hW, min_def, max_def]
-  split_ifs <;> linarith
 
 theorem IsDownwardCap.tendsto_integral_terminal_contactRamp
     {U : Set Plane} (hU : IsDownwardCap U) {α : ℝ} (hs : 0 < Real.sin α) :
@@ -102,8 +84,17 @@ theorem IsJointCapMaximizer.integral_strictGapRamp_le_contactRamp
   have hgain : (∫ x in J, min ε (max (firstWall U α x - sweptNiche U α x) 0)) ≤
       (∫ x in J, partialBarrier U α x) - ∫ x in J, partialBarrier V α x := by
     rw [← integral_sub hNU hNV]
-    exact integral_mono_of_nonneg (.of_forall fun x => le_min hε (le_max_right _ _)) (hNU.sub hNV)
-      (.of_forall (hU.isCap.normalTrim_barrier_gain hU.angle_pos hU.angle_mem.2 hε hbase))
+    refine integral_mono_of_nonneg (.of_forall fun x => le_min hε (le_max_right _ _)) (hNU.sub hNV)
+      (.of_forall fun x => ?_)
+    -- The cut lowers the terminal wall by `ε` and does not raise the historical walls.
+    have hN : sweptNiche V α x ≤ sweptNiche U α x := sweptNiche_mono (normalTrim_subset U α ε)
+      hV.nonempty hU.isCap.isCompact hU.angle_pos hU.angle_mem.2 x
+    have hW : firstWall V α x = firstWall U α x - ε := by
+      simp only [V, firstWall, support_normalTrim_eq_of_baseline hU.isCap hc hs hε hbase]
+      field_simp
+      ring
+    simp only [partialBarrier, hW, min_def, max_def]
+    split_ifs <;> linarith
   have hloss : (∫ x in I \ J, capRoof U x) - (∫ x in I \ J, capRoof V x) ≤
       ∫ x in I, max (ε - (outerSupportingRoof U α x - capRoof U x)) 0 := by
     rw [← integral_sub (hAI.mono_set sdiff_subset) (hAVI.mono_set sdiff_subset),
@@ -114,8 +105,8 @@ theorem IsJointCapMaximizer.integral_strictGapRamp_le_contactRamp
       (hV.capRoof_mono hU.isCap (normalTrim_subset U α ε) x)) (.of_forall fun x hx => hx.1)
   linarith only [hgain, hloss, hscore]
 
-/-- This is an actual cap-variation consequence at the selected canonical
-maximizer. Historical ties remain unrestricted. -/
+/-- In the proper tail regime, strict terminal exposure on the middle window is at most the
+reserve. -/
 theorem IsJointCapMaximizer.terminal_strict_exposure_measure_le_reserve_of_tail_regime
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hregime : ProperTailRegime U α m)
@@ -124,7 +115,7 @@ theorem IsJointCapMaximizer.terminal_strict_exposure_measure_le_reserve_of_tail_
       capRoof U x = m * x + c) :
     volume.real (middleHalfInterval (horizontalLeft U) (horizontalRight U) ∩
       terminalStrictRegion U α) ≤ terminalTailReserve U α := by
-  have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi hU.angle_pos (by linarith [Real.pi_pos])
+  have hs := (terminal_sin_cos_pos hU.angle_pos hαL).1
   have hbase := hU.isCap.support_right_baseline_strict hs
     (hs.trans_le (hU.terminal_vminus_height_ge_sin_of_tail_regime hregime hαL hheight haffine))
   refine (le_of_tendsto_of_tendsto

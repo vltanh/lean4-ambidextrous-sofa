@@ -24,15 +24,6 @@ open Set
 
 namespace AmbidextrousSofa
 
-theorem IsJointCapMaximizer.terminalTailPoint_snd_eq_one_of_nonneg
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1) (hm : 0 ≤ m)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    (terminalTailPoint U α).2 = 1 := by
-  rw [terminalTailPoint, hU.first_terminal_vplus_of_middle_nonneg hproper hm haffine,
-    top_vminus_snd_eq_capHeight, hheight]
-
 theorem IsJointCapMaximizer.terminalTailInset_eq_universal_of_nonneg
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hproper : α < Real.pi / 2) (hheight : capHeight U = 1) (hm : 0 ≤ m)
@@ -40,17 +31,7 @@ theorem IsJointCapMaximizer.terminalTailInset_eq_universal_of_nonneg
       capRoof U x = m * x + c) :
     terminalTailInset U α = terminalInset α := by
   rw [terminalTailInset, terminalInset,
-    hU.terminalTailPoint_snd_eq_one_of_nonneg hproper hheight hm haffine, one_mul]
-
-theorem IsJointCapMaximizer.topOverhangRight_eq_zero_of_negative
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hheight : capHeight U = 1) (hm : m < 0)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) : topOverhangRight U = 0 := by
-  simp only [topOverhangRight, hU.top_vminus_of_negative_affine_middle hheight hm haffine,
-    max_eq_right_iff]
-  linarith [hU.isCap.capWidth_nonneg,
-    show capWidth U = horizontalRight U - horizontalLeft U from rfl]
+    hU.terminalTailPoint_eq_of_nonneg hproper hheight hm haffine, one_mul]
 
 /-- The data shared by both parameter bounds. The endpoint pressure is the
 original proper pressure, so the height bound contains the outgoing whole
@@ -72,8 +53,7 @@ theorem IsJointCapMaximizer.centered_terminal_reflected_data_of_tail_regime
       firstWall U α (-C) = terminalSlope α * (2 * C + topOverhangRight U - terminalTailInset U α) ∧
       topOverhangLeft U + 2 * topOverhangRight U ≤ terminalTailInset U α ∧
       topOverhangRight U < terminalTailInset U α := by
-  have hs := Real.sin_pos_of_pos_of_lt_pi hU.angle_pos (by linarith only [hproper, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith only [hU.angle_pos, Real.pi_pos], hproper⟩
+  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hU.angle_pos hproper
   have hw : capWidth U / 4 = C := by rw [capWidth, hl, hr]; ring
   have hRC : horizontalRight U - capWidth U / 4 = C := by rw [hw, hr]; ring
   have hC := hU.proper_quarter_width_bounds hproper
@@ -85,11 +65,8 @@ theorem IsJointCapMaximizer.centered_terminal_reflected_data_of_tail_regime
   have hHC : (terminalTailPoint U α).2 = capRoof U C := by
     rw [← hRC]
     rcases lt_or_ge m 0 with hm | hm
-    · have hmL : affineNormalAngle m < Real.pi / 2 := by
-        rw [affineNormalAngle]; linarith only [Real.arctan_lt_zero.mpr hm]
-      rw [terminalTailPoint, (hU.support_vertices_first_unused_gap haffine le_rfl hmL.le
-        (hregime.negative hm).1 (by simp)).1.trans (hU.middle_support_vertices hm.ne haffine).2]
-    · rw [hU.terminalTailPoint_snd_eq_one_of_nonneg hproper hheight hm haffine,
+    · rw [hU.terminalTailPoint_eq_of_negative hregime hm haffine]
+    · rw [hU.terminalTailPoint_eq_of_nonneg hproper hheight hm haffine,
         hU.middle_right_eq_one_of_affine_nonneg hheight hm haffine]
   have hEP := (hU.partial_endpoint_heights_eq_pressures_of_affine hproper hheight
     ⟨m, c, haffine⟩).2
@@ -104,10 +81,12 @@ theorem IsJointCapMaximizer.centered_terminal_reflected_data_of_tail_regime
       (Analysis.tiltedBoxHeight_lt_thirty_three_hundredths (by linarith only [hC.1]) hC.2.le)
   have hroof := capRoof_nonneg hU.isCap.isCompact (fun p hp => (hU.isCap.inStrip hp).1)
     (horizontalLeft U)
-  obtain ⟨hTP, hTR, -, -⟩ := hU.terminal_top_projection_bound_of_tail_regime hregime hproper
+  have hTP := hU.topOverhangLeft_add_twice_right_le_terminalInset_of_tail_regime hregime hproper
     hheight haffine
   refine ⟨hC.1, hC.2, by rw [terminalReflectedSpan, hfst, hl]; ring,
-    by rw [terminalReflectedHeight]; linarith only [hroof, hH1], ?_, hH, ?_, hTP, hTR⟩
+    by rw [terminalReflectedHeight]; linarith only [hroof, hH1], ?_, hH, ?_, hTP,
+    by linarith only [hTP, topOverhangLeft_nonneg U, topOverhangRight_nonneg U,
+      (hU.isCap.terminalTailInset_bounds hU.angle_pos hproper hH).1]⟩
   · rw [terminalReflectedHeight]
     linarith only [hEP, hHC, capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip (-C),
       partialBarrier_nonneg U α C,
@@ -186,7 +165,7 @@ theorem IsJointCapMaximizer.centered_terminal_reflected_parameters_of_tail_regim
       hU.topOverhangRight_eq_zero_of_negative hheight hm haffine],
       by linarith only [he, hq, hH, hs]⟩
   · rw [hU.terminalTailInset_eq_universal_of_nonneg hproper hheight hm haffine] at hwall hTP
-    have hH1 := hU.terminalTailPoint_snd_eq_one_of_nonneg hproper hheight hm haffine
+    have hH1 := congrArg Prod.snd (hU.terminalTailPoint_eq_of_nonneg hproper hheight hm haffine)
     have hq : max (33 / 100) (firstWall U α (-C)) < 419 / 800 := max_lt (by norm_num) (by
       linarith only [hwall, terminalSlope_outgoing_nonneg_bound hU.angle_pos hproper hκ.le hs.le
         hC1.le, mul_le_mul_of_nonneg_left (show topOverhangRight U ≤ terminalInset α / 2 by

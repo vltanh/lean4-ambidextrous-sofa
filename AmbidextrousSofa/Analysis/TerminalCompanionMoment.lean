@@ -14,9 +14,9 @@ displacement. Only curvature excess before the shorter angle
 `arcsin (C - T_L)` is charged: after that angle the comparison kernel is
 nonnegative, so nonnegative curvature gives the required upper bound.
 
-These are analytic integral theorems. The actual companion support must
-still supply its density, both moment identities, and the localization
-of a positive wall maximum. No score inequality is assumed here.
+These are analytic integral theorems; the curvature density, both moment
+identities and the localization of the maximum come from the companion
+support.
 -/
 
 noncomputable section
@@ -82,11 +82,9 @@ theorem terminal_weighted_companion_moment_trig
   have hkc : Continuous k := by fun_prop
   have hk0 {r : ℝ} (h1 : θ ≤ r) (h2 : r ≤ β) : 0 ≤ k r := by
     have hc : 0 < Real.cos θ := Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hθL⟩
-    have hs := Real.sin_nonneg_of_nonneg_of_le_pi (sub_nonneg.2 h1) (by linarith [Real.pi_pos])
-    rw [Real.sin_sub] at hs
-    simp only [k, Real.tan_eq_sin_div_cos]
-    rw [div_mul_eq_mul_div, sub_nonneg, div_le_iff₀ hc]
-    linarith
+    have := div_nonpos_of_nonpos_of_nonneg (Real.sin_nonpos_of_nonpos_of_neg_pi_le
+      (sub_nonpos.2 h1) (by linarith [Real.pi_pos])) hc.le
+    linarith [show k r = _ from rfl, terminal_weight_kernel_eq (t := r) hc.ne']
   have hsub {a b : ℝ} (ha : 0 ≤ a) (hab : a ≤ b) (hb : b ≤ β) : uIcc a b ⊆ uIcc 0 β := by
     rw [uIcc_of_le hab, uIcc_of_le (hθ0.trans hθβ)]
     exact Icc_subset_Icc ha hb

@@ -38,22 +38,6 @@ theorem terminalFirstLeftAbscissa_eq_right_add_width (U : Set Plane) (α : ℝ) 
   unfold terminalFirstLeftAbscissa terminalFirstRightAbscissa terminalFaceWidth
   ring
 
-theorem IsDownwardCap.firstWall_left_deriv {U : Set Plane}
-    (hU : IsDownwardCap U) {α : ℝ} (hs : Real.sin α ≠ 0) (x : ℝ) :
-    HasDerivWithinAt (fun t => firstWall U t x)
-      ((x - terminalFirstLeftAbscissa U α) / Real.sin α ^ 2) (Iic α) α := by
-  have h := congrArg Prod.fst
-    (MovingSofaOptimality.eq_dot_uvec_smul_add (MovingSofaOptimality.vminus U α) α)
-  rw [MovingSofaOptimality.dot_vminus_uvec] at h
-  change (MovingSofaOptimality.vminus U α).1 = angleSupport U α * Real.cos α +
-    coordDot (MovingSofaOptimality.vminus U α) (MovingSofaOptimality.vvec α) * (-Real.sin α) at h
-  refine ((((hU.angleSupport_left_deriv α).sub_const 1).sub
-    ((Real.hasDerivAt_cos α).const_mul x).hasDerivWithinAt).div
-      (Real.hasDerivAt_sin α).hasDerivWithinAt hs).congr_deriv ?_
-  simp only [Pi.sub_apply, terminalFirstLeftAbscissa]
-  congr 1
-  linear_combination x * Real.sin_sq_add_cos_sq α + h
-
 theorem IsDownwardCap.secondWall_continuousAt_angle {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hc : Real.cos α ≠ 0) (x : ℝ) :
     ContinuousAt (fun t => secondWall U t x) α :=
@@ -62,18 +46,18 @@ theorem IsDownwardCap.secondWall_continuousAt_angle {U : Set Plane}
     Real.continuous_cos.continuousAt hc
 
 /-- A strict terminal companion gap and the negative left derivative
-produce a genuine earlier two-wall competitor. Support continuity alone
-suffices for the companion wall; no terminal-atom hypothesis is used. -/
+produce a genuine earlier two-wall competitor. -/
 theorem IsDownwardCap.firstWall_lt_history_between_corner_and_left_endpoint
     {U : Set Plane} (hU : IsDownwardCap U) {α x : ℝ}
     (hα0 : 0 < α) (hαL : α < Real.pi / 2)
     (hx0 : (attachedCorner U α).1 < x)
     (hx1 : x < terminalFirstLeftAbscissa U α) :
     firstWall U α x < sweptNiche U α x := by
-  have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [Real.pi_pos])
-  have hc : 0 < Real.cos α := Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hαL⟩
+  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
+  -- The left derivative of the first wall is negative at `x`.
   have hslope := (hasDerivWithinAt_iff_tendsto_slope' (by simp)).mp
-    (hU.firstWall_left_deriv hs.ne' x).Iio_of_Iic
+    (firstWall_hasDerivWithinAt (x := x) hs.ne' (MovingSofaOptimality.dot_vminus_uvec U α)
+      (hU.angleSupport_left_deriv α)).Iio_of_Iic
   have hfirst : ∀ᶠ t in 𝓝[<] α, firstWall U α x < firstWall U t x := by
     filter_upwards [hslope.eventually_lt_const (div_neg_of_neg_of_pos (sub_neg.mpr hx1)
       (by positivity)), Ioo_mem_nhdsLT hα0] with t ht hta
@@ -88,30 +72,6 @@ theorem IsDownwardCap.firstWall_lt_history_between_corner_and_left_endpoint
   exact (lt_min hft hst).trans_le
     (cornerWall_le_sweptNiche (sweptWallValues_bddAbove hU.isCompact hαL.le x) ht)
 
-/-- Every terminal contact of an overlong face is confined before the
-actual terminal corner. This includes the entire historical tie set. -/
-theorem IsDownwardCap.terminal_contact_le_corner_of_overlong_facet
-    {U : Set Plane} (hU : IsDownwardCap U) {α x : ℝ}
-    (hα0 : 0 < α) (hαL : α < Real.pi / 2)
-    (hfacet : terminalTailReserve U α < terminalFaceWidth U α)
-    (hx : sweptNiche U α x ≤ firstWall U α x) :
-    x ≤ (attachedCorner U α).1 := by
-  have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [Real.pi_pos])
-  have hc : 0 < Real.cos α := Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hαL⟩
-  by_contra h
-  rcases lt_or_ge x (terminalFirstLeftAbscissa U α) with hleft | hleft
-  · exact (hU.firstWall_lt_history_between_corner_and_left_endpoint hα0 hαL (not_le.mp h)
-      hleft).not_ge hx
-  have hzero : terminalTailZero U α < x := by
-    rw [terminalFirstLeftAbscissa_eq_right_add_width] at hleft
-    unfold terminalTailReserve at hfacet
-    unfold terminalTailZero terminalFirstRightAbscissa terminalTailPoint at *
-    linarith
-  have hneg : firstWall U α x < 0 := by
-    rw [firstWall_eq_terminalTail U hs.ne' hc.ne']
-    exact mul_neg_of_pos_of_neg (div_pos hc hs) (sub_neg.mpr hzero)
-  linarith [sweptNiche_nonneg U α x]
-
 theorem IsDownwardCap.terminalBarrier_derivative_sign_of_overlong_facet
     {U : Set Plane} (hU : IsDownwardCap U) {α : ℝ}
     (hα0 : 0 < α) (hαL : α < Real.pi / 2)
@@ -119,11 +79,25 @@ theorem IsDownwardCap.terminalBarrier_derivative_sign_of_overlong_facet
     (hfacet : terminalTailReserve U α < terminalFaceWidth U α) (x : ℝ) :
     terminalBarrierRightDerivative U α x ≤ 0 ∧
       (sweptNiche U α x < firstWall U α x → terminalBarrierRightDerivative U α x < 0) := by
-  have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [Real.pi_pos])
+  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
+  -- Every terminal contact, ties included, lies before the corner: beyond it the history is
+  -- strictly higher up to the shifted left endpoint, and the outgoing wall is negative after it.
   have hcontact (hx : sweptNiche U α x ≤ firstWall U α x) :
-      (x - terminalFirstRightAbscissa U α) / Real.sin α ^ 2 < 0 :=
-    div_neg_of_neg_of_pos (sub_neg.mpr ((hU.terminal_contact_le_corner_of_overlong_facet
-      hα0 hαL hfacet hx).trans_lt hcorner)) (by positivity)
+      (x - terminalFirstRightAbscissa U α) / Real.sin α ^ 2 < 0 := by
+    refine div_neg_of_neg_of_pos (sub_neg.mpr (lt_of_le_of_lt ?_ hcorner)) (by positivity)
+    by_contra h
+    rcases lt_or_ge x (terminalFirstLeftAbscissa U α) with hleft | hleft
+    · exact (hU.firstWall_lt_history_between_corner_and_left_endpoint hα0 hαL (not_le.mp h)
+        hleft).not_ge hx
+    have hzero : terminalTailZero U α < x := by
+      rw [terminalFirstLeftAbscissa_eq_right_add_width] at hleft
+      unfold terminalTailReserve at hfacet
+      unfold terminalTailZero terminalFirstRightAbscissa terminalTailPoint at *
+      linarith
+    have hneg : firstWall U α x < 0 := by
+      rw [firstWall_eq_terminalTail U hs.ne' hc.ne']
+      exact mul_neg_of_pos_of_neg (div_pos hc hs) (sub_neg.mpr hzero)
+    linarith [sweptNiche_nonneg U α x]
   unfold terminalBarrierRightDerivative
   split_ifs with hstrict htie
   · exact ⟨(hcontact hstrict.le).le, fun _ => hcontact hstrict.le⟩

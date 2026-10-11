@@ -15,9 +15,8 @@ lower bound for the actual barrier. Their support-height terms cancel
 after integration. The other middle half contributes nonnegative cost.
 
 This gives a quadratic bound in the actual quarter-width. Completing its
-square yields a bound depending only on the proper terminal angle. The
-argument includes zero-width caps and makes no smoothness, maximality,
-symmetry or nonempty-survivor assumption.
+square yields a bound depending only on the proper terminal angle, for
+every downward cap.
 -/
 
 noncomputable section
@@ -25,6 +24,11 @@ noncomputable section
 open Set MeasureTheory
 
 namespace AmbidextrousSofa
+
+theorem terminal_sin_cos_pos {α : ℝ} (hα0 : 0 < α) (hαL : α < Real.pi / 2) :
+    0 < Real.sin α ∧ 0 < Real.cos α :=
+  ⟨Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [Real.pi_pos]),
+    Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hαL⟩⟩
 
 theorem intervalIntegral_const_sub_mul (H k a b : ℝ) :
     (∫ x in a..b, H - k * x) = (b - a) * H - k * (b ^ 2 - a ^ 2) / 2 := by
@@ -51,7 +55,7 @@ theorem IsDownwardCap.capScore_le_terminal_quadratic_centered {U : Set Plane}
     (hα0 : 0 < α) (hαL : α < Real.pi / 2) :
     capScore U α ≤ (1 + 1 / Real.sin α) * C -
       2 * (Real.cos α / Real.sin α) * C ^ 2 := by
-  have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [Real.pi_pos])
+  have hs := (terminal_sin_cos_pos hα0 hαL).1
   have hB := hU.intervalIntegrable_partialBarrier hα0 hαL.le
   have hproj : horizontalProjection U = Icc (-2 * C) (2 * C) := by
     rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hleft, hright]
@@ -77,9 +81,8 @@ theorem IsDownwardCap.capScore_le_terminal_bound {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hα0 : 0 < α) (hαL : α < Real.pi / 2) :
     capScore U α ≤ (1 + 1 / Real.sin α) ^ 2 /
       (8 * (Real.cos α / Real.sin α)) := by
-  have hk : 0 < Real.cos α / Real.sin α :=
-    div_pos (Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hαL⟩)
-      (Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [Real.pi_pos]))
+  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
+  have hk := div_pos hc hs
   have h := hU.centeredCap.capScore_le_terminal_quadratic_centered (C := capWidth U / 4)
     (by linarith [hU.capWidth_nonneg]) (by rw [horizontalLeft_centeredCap hU]; ring)
     (by rw [horizontalRight_centeredCap hU]; ring) hα0 hαL

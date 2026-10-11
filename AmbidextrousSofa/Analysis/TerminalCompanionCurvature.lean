@@ -12,8 +12,8 @@ public import AmbidextrousSofa.Analysis.SupportDensityCalculus
 The boundary Stieltjes integral gives the difference of the actual
 supporting endpoints. Substituting a literal density on the half-open
 angle interval proves both companion-coordinate moments directly. The
-top atom is outside this interval; no smoothness of the support or
-absolute-continuity certificate is assumed.
+top atom is outside this interval. The arc starts at the left endpoint
+of the top face, at the cap height.
 -/
 
 noncomputable section
@@ -40,21 +40,11 @@ def shiftedCompanionX (U : Set Plane) (t : ℝ) : ℝ :=
 def shiftedCompanionY (U : Set Plane) (t : ℝ) : ℝ :=
   (MovingSofaOptimality.vplus U (t + Real.pi / 2)).2 - Real.cos t
 
-@[simp] theorem shiftedCompanionX_zero (U : Set Plane) :
-    shiftedCompanionX U 0 = (MovingSofaOptimality.vplus U (Real.pi / 2)).1 := by
-  simp [shiftedCompanionX]
-
-@[simp] theorem shiftedCompanionY_zero (U : Set Plane) :
-    shiftedCompanionY U 0 = (MovingSofaOptimality.vplus U (Real.pi / 2)).2 - 1 := by
-  simp [shiftedCompanionY]
-
-/-- The right-continuous boundary representative leaves the top face
-at its literal left endpoint. Its height is the cap height. -/
+/-- The left endpoint of the top face, where the companion arc starts, is at the cap height. -/
 theorem top_vplus_snd_eq_capHeight (U : Set Plane) :
     (MovingSofaOptimality.vplus U (Real.pi / 2)).2 = capHeight U := by
-  have h : coordDot (MovingSofaOptimality.vplus U (Real.pi / 2)) (unitNormal (Real.pi / 2)) =
-      angleSupport U (Real.pi / 2) := MovingSofaOptimality.dot_vplus_uvec U (Real.pi / 2)
-  simpa [coordDot, unitNormal, angleSupport, capHeight] using h
+  rw [← MovingSofaOptimality.dot_uvec_pi_div_two, MovingSofaOptimality.dot_vplus_uvec,
+    supp_pi_div_two_eq_capHeight]
 
 /-- Distance of the actual left top endpoint from the left projection
 endpoint. In the centered proper-terminal notation this is `C - T_L`. -/
@@ -121,25 +111,6 @@ theorem IsDownwardCap.shiftedCompanion_sub_eq_integral_of_density
     intervalIntegral.integral_sub (Real.continuous_sin.intervalIntegrable a b)
       (hρi.mul_continuousOn Real.continuous_sin.continuousOn), integral_sin]
   unfold shiftedCompanionX shiftedCompanionY
-  constructor <;> linarith
-
-/-- The two moments start from the actual top endpoint. In particular,
-the initial height deficit is derived from the cap itself. The initial
-top atom does not occur in either integral. -/
-theorem IsDownwardCap.shiftedCompanion_eq_initial_add_integral_of_density
-    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {C t : ℝ}
-    (hρ : Measurable ρ) (hρ0 : ∀ r, 0 ≤ ρ r) (hρC : ∀ r, ρ r ≤ C)
-    (heq : (upperCurvature U).restrict S =
-      (volume.restrict S).withDensity (fun r => ENNReal.ofReal (ρ r)))
-    (ht : 0 ≤ t) (hsub : Ioc (Real.pi / 2) (t + Real.pi / 2) ⊆ S) :
-    shiftedCompanionX U t - (horizontalLeft U + companionInitialOffset U) =
-        (∫ r in 0..t, (1 - ρ (r + Real.pi / 2)) * Real.cos r) ∧
-      shiftedCompanionY U t + companionInitialDeficit U =
-        ∫ r in 0..t, (1 - ρ (r + Real.pi / 2)) * Real.sin r := by
-  obtain ⟨h1, h2⟩ := hU.shiftedCompanion_sub_eq_integral_of_density hρ hρ0 hρC heq ht
-    (by simpa only [zero_add] using hsub)
-  simp only [shiftedCompanionX_zero, shiftedCompanionY_zero, top_vplus_snd_eq_capHeight] at h1 h2
-  simp only [companionInitialOffset, companionInitialDeficit]
   constructor <;> linarith
 
 end AmbidextrousSofa

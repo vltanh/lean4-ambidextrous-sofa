@@ -10,8 +10,7 @@ public import AmbidextrousSofa.Analysis.TerminalCircleEndpoints
 The two exact circle-average comparisons cover every remaining cosine.
 Their strict margin is retained after restoring the actual terminal
 height, both top overhangs, and every point of the terminal reserve
-interval. The hypotheses concern
-the displayed geometric parameters, not a bound on the cap score.
+interval.
 -/
 
 noncomputable section
