@@ -1,7 +1,7 @@
 module
 
 public import AmbidextrousSofa.Analysis.HorizontalLeakageDynamics
-public import AmbidextrousSofa.Analysis.TiltedEnergyBarrier
+public import AmbidextrousSofa.Analysis.TiltedInitialCircle
 
 @[expose] public section
 

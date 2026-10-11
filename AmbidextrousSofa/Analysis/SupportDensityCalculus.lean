@@ -57,15 +57,20 @@ theorem absolutelyContinuousOnInterval_comp_const_sub
       right_mem_uIcc)).integral_deriv_eq_sub]
   ring
 
+theorem ae_restrict_Ioo_comp_const_sub {P : ℝ → Prop} {a b c : ℝ}
+    (h : ∀ᵐ t ∂volume.restrict (Ioo a b), P t) :
+    ∀ᵐ t ∂volume.restrict (Ioo (c - b) (c - a)), P (c - t) := by
+  have hshift := (volume.measurePreserving_sub_left c).quasiMeasurePreserving.ae
+    ((ae_restrict_iff' measurableSet_Ioo).mp h)
+  filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hshift] with t ht hd
+  exact hd ⟨by linarith [ht.2], by linarith [ht.1]⟩
+
 theorem ae_hasDerivAt_comp_const_sub
     {f fD : ℝ → ℝ} {a b c : ℝ}
     (hderiv : ∀ᵐ t ∂volume.restrict (Ioo a b), HasDerivAt f (fD t) t) :
     ∀ᵐ t ∂volume.restrict (Ioo (c - b) (c - a)),
-      HasDerivAt (fun s => f (c - s)) (-fD (c - t)) t := by
-  have hshift := (volume.measurePreserving_sub_left c).quasiMeasurePreserving.ae
-    ((ae_restrict_iff' measurableSet_Ioo).mp hderiv)
-  filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hshift] with t ht hd
-  exact (hd ⟨by linarith [ht.2], by linarith [ht.1]⟩).comp_const_sub c t
+      HasDerivAt (fun s => f (c - s)) (-fD (c - t)) t :=
+  (ae_restrict_Ioo_comp_const_sub hderiv).mono fun t h => h.comp_const_sub c t
 
 theorem IsDownwardCap.angleSupport_shift_sub_eq_integral {U : Set Plane}
     (hU : IsDownwardCap U) (a b d : ℝ) :

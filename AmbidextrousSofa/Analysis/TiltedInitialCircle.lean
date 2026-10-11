@@ -17,7 +17,8 @@ circle up to the first sign or floor exit. The exit is constructed from
 the first zero of a continuous minimum. Its companion momentum remains
 positive, so the circle stops at the first momentum zero or the explicit
 floor angle. No contact chart or supplied initial phase is used in the
-final theorem.
+final theorem. The clipped energy is at most the initial-floor energy, so
+the stopped circle bounds it.
 -/
 
 noncomputable section
@@ -219,5 +220,15 @@ theorem fullTiltedSupportQuarterPair_exists_initial_stopping_circle {C h : ℝ}
   rw [Analysis.initialFloorAngle, ← hcos, Real.arccos_cos hτ.1.le (by linarith [Real.pi_pos])]
 
 end ActualPair
+
+/-- The clipped energy is at most the initial-floor energy, so the stopped initial circle
+bounds it. -/
+theorem clippedCornerEnergy_le_initialFloorEnergy (p q : ℝ → ℝ) (t : ℝ) :
+    clippedCornerEnergy p q t ≤ Analysis.initialFloorEnergy (p t) (q t) := by
+  unfold clippedCornerEnergy Analysis.initialFloorEnergy
+  rcases le_total 0 (p t) with hp | hp
+  · rw [max_eq_left hp]
+  · rw [max_eq_right hp]
+    nlinarith
 
 end AmbidextrousSofa

@@ -8,10 +8,9 @@ public import AmbidextrousSofa.Analysis.CornerEndpointEnergy
 # The actual companion-quarter endpoint energy
 
 The companion energy uses the original cap and its literal density.
-Its derivative has the terminal-time sign, so the left axis limit
+Its derivative has the terminal-time sign; reversing time turns the
+initial energy bound into a terminal one, so the left axis limit
 controls it without transporting curvature through a reflected body.
-The same-sign law includes the clipping level through the established
-almost-everywhere derivative formula.
 -/
 
 noncomputable section
@@ -21,28 +20,9 @@ open scoped Topology
 
 namespace AmbidextrousSofa
 
-/-- An absolutely continuous function whose derivative is nonnegative almost everywhere
-above a height stays below that height before a terminal time at which it is below it. -/
-theorem absolutelyContinuousOnInterval_le_of_ae_deriv_nonneg_above
-    {f : ℝ → ℝ} {a b H : ℝ} (hf : AbsolutelyContinuousOnInterval f a b)
-    (hab : a ≤ b) (hterminal : f b ≤ H)
-    (hd : ∀ᵐ t ∂volume.restrict (Ioo a b), H < f t → 0 ≤ deriv f t)
-    {x : ℝ} (hx : x ∈ Icc a b) : f x ≤ H := by
-  have hg := (absolutelyContinuousOnInterval_max_const hf H).mono (by
-    rw [uIcc_of_le hx.2, uIcc_of_le hab]
-    exact Icc_subset_Icc hx.1 le_rfl)
-  have hgd : ∀ᵐ t ∂volume.restrict (Icc x b), 0 ≤ deriv (fun s => max (f s) H) t := by
-    rw [← restrict_Ioo_eq_restrict_Icc]
-    filter_upwards [ae_restrict_mem measurableSet_Ioo,
-      ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo_left hx.1) hd,
-      ae_restrict_of_ae (ae_hasDerivAt_max_const hf H)] with t ht hdt hmt
-    rw [(hmt (by rw [uIcc_of_le hab]; exact ⟨hx.1.trans ht.1.le, ht.2.le⟩)).deriv]
-    split_ifs with hpos
-    exacts [hdt hpos, le_rfl]
-  have h := intervalIntegral.integral_nonneg_of_ae_restrict hx.2 hgd
-  rw [hg.integral_deriv_eq_sub, max_eq_right hterminal] at h
-  linarith [le_max_left (f x) H]
-
+/-- The time reversal `t ↦ a + b - t` of
+`clippedCornerEnergy_le_max_of_zero_source_alternative`: for the terminal-time system the
+clipped energy stays below the larger of `17/4` and its terminal value. -/
 theorem clippedCornerEnergy_le_max_terminal
     {p q u v : ℝ → ℝ} {a b : ℝ}
     (hp : AbsolutelyContinuousOnInterval p a b)
@@ -55,17 +35,22 @@ theorem clippedCornerEnergy_le_max_terminal
       0 < p t → 0 < q t → u t = 0 ∧ v t ≤ 1 / 2)
     {t : ℝ} (ht : t ∈ Icc a b) :
     clippedCornerEnergy p q t ≤ max (17 / 4) (clippedCornerEnergy p q b) := by
-  refine absolutelyContinuousOnInterval_le_of_ae_deriv_nonneg_above
-    (absolutelyContinuousOnInterval_clippedCornerEnergy hp hq) hab (le_max_right _ _) ?_ ht
-  -- The reversed system is the forward one with `2 + 2 q - u` and `2 - 2 p - v`.
-  filter_upwards [ae_hasDerivAt_clippedCornerEnergy (u := fun t => 2 + 2 * q t - u t)
-      (v := fun t => 2 - 2 * p t - v t) hp hab
-      (hode.mono fun t h => ⟨h.1.congr_deriv (by ring), h.2.congr_deriv (by ring)⟩),
-    hbound, hκ, hshadow] with x hd hb hk hs hE
-  have h := clippedCornerEnergy_derivative_nonpos_above hb.1 hb.2 hk hs
-    ((le_max_left _ _).trans_lt hE)
-  rw [hd.deriv]
-  split_ifs at h ⊢ <;> linarith
+  have hrev {P : ℝ → Prop} (h : ∀ᵐ t ∂volume.restrict (Ioo a b), P t) :
+      ∀ᵐ s ∂volume.restrict (Ioo a b), P (a + b - s) := by
+    simpa only [add_sub_cancel_right, add_sub_cancel_left] using
+      ae_restrict_Ioo_comp_const_sub (c := a + b) h
+  have hac {f : ℝ → ℝ} (hf : AbsolutelyContinuousOnInterval f a b) :
+      AbsolutelyContinuousOnInterval (fun s => f (a + b - s)) a b := by
+    simpa only [add_sub_cancel_right, add_sub_cancel_left] using
+      absolutelyContinuousOnInterval_comp_const_sub hf hab (a + b)
+  have h := clippedCornerEnergy_le_max_of_zero_source_alternative (u := fun s => u (a + b - s))
+    (v := fun s => v (a + b - s)) (hac hp) (hac hq) hab
+    ((hrev hode).mono fun s h => ⟨(h.1.comp_const_sub (a + b) s).congr_deriv (by ring),
+      (h.2.comp_const_sub (a + b) s).congr_deriv (by ring)⟩)
+    ((hrev hbound).mono fun _ h => h.2) (hrev hκ) (hrev hshadow)
+    ((hrev hbound).mono fun _ h => .inl h.1) (t := a + b - t)
+    ⟨by linarith [ht.2], by linarith [ht.1]⟩
+  simpa only [clippedCornerEnergy, add_sub_cancel_left, sub_sub_cancel] using h
 
 def actualCompanionEnergy (U : Set Plane) : ℝ → ℝ :=
   clippedCornerEnergy (fun t => -firstCornerVelocity U t) (secondCornerVelocity U)

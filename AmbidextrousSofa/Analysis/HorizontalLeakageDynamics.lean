@@ -103,10 +103,11 @@ theorem energy_le_max_endpoint (D : HorizontalCornerDynamics p q u v L)
   filter_upwards [Ioo_mem_nhdsGT ht.1] with a ha
   have hI : Ioo a t ⊆ Ioo (0 : ℝ) L := Ioo_subset_Ioo ha.1.le ht.2.le
   have hac := D.ac ha.1 ha.2.le ht.2
-  exact clippedCornerEnergy_le_max_initial hac.1 hac.2 ha.2.le
-    (ae_restrict_of_ae_restrict_of_subset hI D.ode) (Eventually.of_forall D.arms)
+  exact clippedCornerEnergy_le_max_of_zero_source_alternative hac.1 hac.2 ha.2.le
+    (ae_restrict_of_ae_restrict_of_subset hI D.ode) (Eventually.of_forall fun s => (D.arms s).2)
     ((ae_restrict_of_ae_restrict_of_subset hI D.source).mono (fun _ h => h.2))
-    (ae_restrict_of_ae_restrict_of_subset hI D.shadow) ⟨ha.2.le, le_rfl⟩
+    (ae_restrict_of_ae_restrict_of_subset hI D.shadow)
+    (Eventually.of_forall fun s => .inl (D.arms s).1) ⟨ha.2.le, le_rfl⟩
 
 theorem crossing_first_bound (D : HorizontalCornerDynamics p q u v L)
     {C e ε A : ℝ} (he : 0 ≤ e) (hε : 0 ≤ ε)

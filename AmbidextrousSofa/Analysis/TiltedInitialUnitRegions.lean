@@ -1,6 +1,6 @@
 module
 
-public import AmbidextrousSofa.Analysis.TiltedEnergyBarrier
+public import AmbidextrousSofa.Analysis.TiltedInitialCircle
 public import AmbidextrousSofa.Analysis.TiltedEndpointBounds
 
 @[expose] public section

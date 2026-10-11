@@ -369,7 +369,6 @@ import all AmbidextrousSofa.Analysis.TiltedCrossingExcess
 import all AmbidextrousSofa.Analysis.TiltedDiagonalRoof
 import all AmbidextrousSofa.Analysis.TiltedEndpointBounds
 import all AmbidextrousSofa.Analysis.TiltedEndpointLeakage
-import all AmbidextrousSofa.Analysis.TiltedEnergyBarrier
 import all AmbidextrousSofa.Analysis.TiltedFirstUnitClosure
 import all AmbidextrousSofa.Analysis.TiltedFirstUnitEnergy
 import all AmbidextrousSofa.Analysis.TiltedFirstUnitMoments
