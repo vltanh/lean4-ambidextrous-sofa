@@ -91,9 +91,10 @@ theorem FirstUnitSetting.top_overhang {C h : ℝ} (P : FirstUnitSetting U m ρ C
       linarith only [le_max_right (C + z) 0, hprojection, not_lt.mp hnot]
     obtain ⟨-, -, t, ht, -, -, -, hwall⟩ :=
       hV.exists_companionZero_contact (by rw [hVh]; linarith only [P.hh0]) hVL
-    have hcut := hU.leftCompanion_density_of_regular_companion haffine
-      (restrict_withDensity_of_subset heq (measurableSet_regularCompanionDomain m)
-        (regularCompanionDomain_subset_regularCurvatureDomain m))
+    have hcut := hU.isCap.leftCompanion_density_of_regular_companion
+      (zero_lt_two.trans hU.two_lt_width) haffine
+      (fun hm => hU.horizontalProjection_middle_supportFace hm haffine) heq
+      (regularCompanionDomain_subset_regularCurvatureDomain m)
     rw [P.left_quarter] at hcut
     have hkernel := hV.secondWall_le_height_sub_one_of_unit_prefix
       (measurable_leftCompanionWingDensity hρ m)

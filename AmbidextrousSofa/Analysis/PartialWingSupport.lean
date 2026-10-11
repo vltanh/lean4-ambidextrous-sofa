@@ -57,9 +57,10 @@ theorem IsJointCapMaximizer.proper_leftCompanion_density_of_regular
         (Ioo (Real.pi / 2) Real.pi) =
       (volume.restrict (Ioo (Real.pi / 2) Real.pi)).withDensity
         (fun t => ENNReal.ofReal (leftCompanionWingDensity m ρ t)) :=
-  hU.leftCompanion_density_of_regular_companion haffine
-    (restrict_withDensity_of_subset heq (measurableSet_regularCompanionDomain m)
-      (regularCompanionDomain_subset_regularProperCurvatureDomain hproper))
+  hU.isCap.leftCompanion_density_of_regular_companion
+    (by linarith only [hU.width_bounds.1, one_lt_M]) haffine
+    (fun hm => hU.horizontalProjection_middle_supportFace hm haffine) heq
+    (regularCompanionDomain_subset_regularProperCurvatureDomain hproper)
 
 theorem IsJointCapMaximizer.proper_first_wing_initial_curvature_zero
     {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)

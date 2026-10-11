@@ -130,7 +130,6 @@ import all AmbidextrousSofa.Analysis.FirstUnitTopOverhang
 import all AmbidextrousSofa.Analysis.FloorContactCurvature
 import all AmbidextrousSofa.Analysis.FullCapRecovery
 import all AmbidextrousSofa.Analysis.FullCapRigidity
-import all AmbidextrousSofa.Analysis.FullCompanionDensity
 import all AmbidextrousSofa.Analysis.FullTriangleArea
 import all AmbidextrousSofa.Analysis.FullTriangleFloor
 import all AmbidextrousSofa.Analysis.FullTriangleParameters

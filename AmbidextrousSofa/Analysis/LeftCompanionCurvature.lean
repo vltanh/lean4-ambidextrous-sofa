@@ -114,26 +114,26 @@ theorem IsDownwardCap.vplus_leftCompanionCap_eq_rightRoof_of_positive_coefficien
 
 /-- Positive tilt has no initial curvature through the middle normal,
 including the joining atom. Pinning supplies its exact right endpoint. -/
-theorem IsJointCapMaximizer.leftCompanion_initial_curvature_zero
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α) (hm : 0 < m)
+theorem IsDownwardCap.leftCompanion_initial_curvature_zero
+    {U : Set Plane} {m c : ℝ} (hU : IsDownwardCap U) (hW : 0 < capWidth U) (hm : 0 < m)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    upperCurvature (leftCompanionCap U (horizontalLeft U + capWidth U / 4))
+      capRoof U x = m * x + c)
+    (hface : horizontalProjection (supportFace U (-m, 1)) =
+      middleHalfInterval (horizontalLeft U) (horizontalRight U)) :
+    upperCurvature (AmbidextrousSofa.leftCompanionCap U (horizontalLeft U + capWidth U / 4))
       (Ioc (Real.pi / 2) (affineNormalAngle m)) = 0 := by
-  obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints
-    (by linarith only [hU.width_bounds.1, one_lt_M])
-  refine sigma_Ioc_eq_zero_of_vplus_const
-    (hU.isCap.leftCompanionCap ha).imported_isConvexBody
+  obtain ⟨ha, hb, hab⟩ := hU.middleChord_endpoints hW
+  refine sigma_Ioc_eq_zero_of_vplus_const (hU.leftCompanionCap ha).imported_isConvexBody
     (le_add_of_nonneg_left (Real.arctan_pos.mpr hm).le)
     (p := (horizontalLeft U + capWidth U / 4, capRoof U (horizontalLeft U + capWidth U / 4)))
     fun t ht => ?_
   have hs : 0 < Real.sin t := Real.sin_pos_of_pos_of_lt_pi
     (by linarith only [ht.1, Real.pi_pos]) (ht.2.trans_lt (affineNormalAngle_mem m).2)
   rcases ht.2.eq_or_lt with rfl | htm
-  · exact (hU.isCap.vplus_leftCompanionCap_eq_of_affine ha hb hab haffine hs
+  · exact (hU.vplus_leftCompanionCap_eq_of_affine ha hb hab haffine hs
       (affineNormal_coefficient_nonpos_after le_rfl (affineNormalAngle_mem m).2.le)).trans
-      (hU.middle_support_vertices hm.ne' haffine).1
-  · exact hU.isCap.vplus_leftCompanionCap_eq_rightRoof_of_positive_coefficient
+      (hU.middle_support_vertices hface).1
+  · exact hU.vplus_leftCompanionCap_eq_rightRoof_of_positive_coefficient
       ha hb hab haffine hs (affineNormal_coefficient_pos_before
         (by linarith only [ht.1, Real.pi_pos]) htm)
 

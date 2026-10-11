@@ -85,7 +85,8 @@ theorem IsJointCapMaximizer.terminalTailPoint_eq_of_negative {U : Set Plane} {α
     terminalTailPoint U α =
       (horizontalRight U - capWidth U / 4, capRoof U (horizontalRight U - capWidth U / 4)) :=
   (hU.support_vertices_first_unused_gap haffine le_rfl (by simpa [affineNormalAngle] using hm.le)
-    (hregime.negative hm).1 (by simp)).1.trans (hU.middle_support_vertices hm.ne haffine).2
+    (hregime.negative hm).1 (by simp)).1.trans (hU.isCap.middle_support_vertices
+      (hU.horizontalProjection_middle_supportFace hm.ne haffine)).2
 
 /-- With a nonnegative middle slope, the terminal tail point is the right endpoint of the top
 face. -/

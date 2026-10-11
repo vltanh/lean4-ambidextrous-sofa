@@ -47,9 +47,9 @@ def fullTiltedSupportQuarterPair {U : Set Plane} (hU : IsFullCapMaximizer U)
     (fun t => (leftCompanionWingDensity_bounds hρ0 hρK t).2)
     (restrict_withDensity_of_subset heq measurableSet_Ioo
       (firstQuarter_subset_regularCurvatureDomain_of_nonneg hm))
-    (hU.leftCompanion_density_of_regular_companion haffine
-      (restrict_withDensity_of_subset heq (measurableSet_regularCompanionDomain m)
-        (regularCompanionDomain_subset_regularCurvatureDomain m)))
+    (hU.isCap.leftCompanion_density_of_regular_companion (zero_lt_two.trans hU.two_lt_width)
+      haffine (fun hm => hU.horizontalProjection_middle_supportFace hm haffine) heq
+      (regularCompanionDomain_subset_regularCurvatureDomain m))
 
 section ActualPair
 
@@ -148,9 +148,9 @@ theorem fullTiltedSupportQuarterPair_after_affine {t : ℝ}
     (measurable_leftCompanionWingDensity hρ m)
     (fun s => (leftCompanionWingDensity_bounds hρ0 hρK s).1)
     (fun s => (leftCompanionWingDensity_bounds hρ0 hρK s).2)
-    (hU.leftCompanion_density_of_regular_companion haffine
-      (restrict_withDensity_of_subset heq (measurableSet_regularCompanionDomain m)
-        (regularCompanionDomain_subset_regularCurvatureDomain m)))
+    (hU.isCap.leftCompanion_density_of_regular_companion (zero_lt_two.trans hU.two_lt_width)
+      haffine (fun hm => hU.horizontalProjection_middle_supportFace hm haffine) heq
+      (regularCompanionDomain_subset_regularCurvatureDomain m))
     (d := Real.pi / 2) (fun s hs => ⟨hs.1, by linarith [hs.2]⟩) ht.1 ht.2
   have hg : (F).g t = angleSupport U (t + Real.pi / 2) := hmatch.1
   have hgD : (F).gD t = supportTangent U (t + Real.pi / 2) := hgd.trans hmatch.2

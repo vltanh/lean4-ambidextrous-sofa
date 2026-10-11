@@ -64,9 +64,10 @@ theorem IsFullCapMaximizer.tilted_top_overhang_pos
     rw [Real.cos_pi_div_two_sub] at hmono
     linarith only [hmono, hzero, hpx, hz, hC1,
       Analysis.cos_eleven_fifteenths_gt_thirty_seven_fiftieths]
-  have hcut := hU.leftCompanion_density_of_regular_companion haff
-    (restrict_withDensity_of_subset heq (measurableSet_regularCompanionDomain m)
-      (regularCompanionDomain_subset_regularCurvatureDomain m))
+  have hcut := hU.isCap.leftCompanion_density_of_regular_companion
+    (zero_lt_two.trans hU.two_lt_width) haff
+    (fun hm => hU.horizontalProjection_middle_supportFace hm haff) heq
+    (regularCompanionDomain_subset_regularCurvatureDomain m)
   rw [show horizontalLeft U + capWidth U / 4 = -C from (centered_quarter_points hl hr).1] at hcut
   have hkernel := hV.secondWall_le_height_sub_one_of_unit_prefix
     (measurable_leftCompanionWingDensity hρ m)

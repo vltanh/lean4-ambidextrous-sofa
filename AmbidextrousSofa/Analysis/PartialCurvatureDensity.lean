@@ -12,7 +12,8 @@ public import AmbidextrousSofa.Analysis.RegularCurvatureDomain
 The literal selected source interval bounds imply domination by a finite
 multiple of Lebesgue measure on every open wing away from the top, middle
 and terminal normals. On the companion semicircle the terminal normal is
-absent automatically.
+absent automatically; this regular companion domain lies in the regular
+curvature domain of the full quarter turn.
 -/
 
 noncomputable section
@@ -47,5 +48,18 @@ def regularCompanionDomain (m : ℝ) : Set ℝ :=
 
 theorem measurableSet_regularCompanionDomain (m : ℝ) : MeasurableSet (regularCompanionDomain m) :=
   measurableSet_Ioo.diff (measurableSet_singleton _)
+
+theorem regularCompanionDomain_subset_regularCurvatureDomain (m : ℝ) :
+    regularCompanionDomain m ⊆ regularCurvatureDomain m :=
+  fun t ht => ⟨⟨by linarith [ht.1.1, Real.pi_pos], ht.1.2⟩, by
+    rintro (h | h)
+    exacts [ht.1.1.ne' h, ht.2 h]⟩
+
+theorem firstQuarter_subset_regularCurvatureDomain_of_nonneg {m : ℝ} (hm : 0 ≤ m) :
+    Ioo (0 : ℝ) (Real.pi / 2) ⊆ regularCurvatureDomain m := by
+  intro t ht
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
+  exact mem_regularCurvatureDomain_iff.mpr ⟨ht.1, by linarith [ht.2, Real.pi_pos], ht.2.ne,
+    (add_pos_of_pos_of_nonneg hc (mul_nonneg hm hs.le)).ne'⟩
 
 end AmbidextrousSofa

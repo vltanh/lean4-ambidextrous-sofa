@@ -104,12 +104,11 @@ theorem IsDownwardCap.edge_affineNormalAngle_eq_supportFace {U : Set Plane}
     mul_right_inj' hc.ne']
   rfl
 
-/-- Both endpoints belong to the actual middle face and are exactly its
-left and right roof endpoints; the nonzero slope can have either sign. -/
-theorem IsJointCapMaximizer.middle_support_vertices
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α) (hm : m ≠ 0)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
+/-- When the supporting face of slope `m` projects onto the middle half (it is pinned there for
+the maximizers), its two endpoints are the middle roof endpoints. -/
+theorem IsDownwardCap.middle_support_vertices {U : Set Plane} (hU : IsDownwardCap U) {m : ℝ}
+    (hface : horizontalProjection (supportFace U (-m, 1)) =
+      middleHalfInterval (horizontalLeft U) (horizontalRight U)) :
     MovingSofaOptimality.vplus U (affineNormalAngle m) =
       (horizontalLeft U + capWidth U / 4, capRoof U (horizontalLeft U + capWidth U / 4)) ∧
     MovingSofaOptimality.vminus U (affineNormalAngle m) =
@@ -119,14 +118,13 @@ theorem IsJointCapMaximizer.middle_support_vertices
   have hproj : Icc (MovingSofaOptimality.vplus U (affineNormalAngle m)).1
       (MovingSofaOptimality.vminus U (affineNormalAngle m)).1 =
       middleHalfInterval (horizontalLeft U) (horizontalRight U) := by
-    rw [← hU.isCap.horizontalProjection_edge hs.le, hU.isCap.edge_affineNormalAngle_eq_supportFace]
-    exact hU.horizontalProjection_middle_supportFace hm haffine
-  have hends := (Icc_eq_Icc_iff (hU.isCap.face_fst_order hs.le)).mp hproj
-  have hK := hU.isCap.imported_isConvexBody
+    rw [← hU.horizontalProjection_edge hs.le, hU.edge_affineNormalAngle_eq_supportFace, hface]
+  have hends := (Icc_eq_Icc_iff (hU.face_fst_order hs.le)).mp hproj
+  have hK := hU.imported_isConvexBody
   exact ⟨Prod.ext hends.1 (by simpa only [hends.1, capWidth] using
-      hU.isCap.capRoof_eq_of_mem_upper_edge hs (MovingSofaOptimality.vplus_mem_edge hK _)),
+      hU.capRoof_eq_of_mem_upper_edge hs (MovingSofaOptimality.vplus_mem_edge hK _)),
     Prod.ext hends.2 (by simpa only [hends.2, capWidth] using
-      hU.isCap.capRoof_eq_of_mem_upper_edge hs (MovingSofaOptimality.vminus_mem_edge hK _))⟩
+      hU.capRoof_eq_of_mem_upper_edge hs (MovingSofaOptimality.vminus_mem_edge hK _))⟩
 
 /-- The actual affine middle normal is strictly below the companion
 terminal normal, by the width bound and the outgoing-wall angle exclusion. -/
@@ -185,7 +183,8 @@ theorem IsJointCapMaximizer.first_tail_support_before_middle
       capRoof U (horizontalRight U - capWidth U / 4) * Real.sin t := by
   have h := (hU.support_vertices_first_unused_gap haffine le_rfl
     (by simpa [affineNormalAngle] using hm.le) hαm (by simp)).2 t ht
-  rwa [(hU.middle_support_vertices hm.ne haffine).2] at h
+  rwa [(hU.isCap.middle_support_vertices
+    (hU.horizontalProjection_middle_supportFace hm.ne haffine)).2] at h
 
 /-- With a negative middle slope, the right endpoint of the top face is the left middle
 endpoint. -/

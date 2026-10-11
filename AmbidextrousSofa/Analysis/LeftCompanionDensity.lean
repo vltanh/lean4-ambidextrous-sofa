@@ -16,8 +16,8 @@ splice the density onto the entire open companion arc.
 
 The top atom remains outside the open arc. The original affine-face
 atom is never transferred to the cut: the cut's joining atom is proved
-zero by actual middle-facet pinning. The construction works in every
-sign of the middle slope.
+zero by actual middle-facet pinning, which both kinds of maximizer supply.
+The construction works in every sign of the middle slope.
 -/
 
 noncomputable section
@@ -73,39 +73,39 @@ theorem leftCompanionWingDensity_eq {m t : ℝ} {ρ : ℝ → ℝ}
 
 /-- The regular original density gives the literal cut density without
 including the original affine-face atom. -/
-theorem IsJointCapMaximizer.leftCompanion_density_of_regular_companion
-    {U : Set Plane} {α m c : ℝ} {ρ : ℝ → ℝ}
-    (hU : IsJointCapMaximizer U α)
+theorem IsDownwardCap.leftCompanion_density_of_regular_companion
+    {U : Set Plane} {m c : ℝ} {ρ : ℝ → ℝ} {S : Set ℝ} (hU : IsDownwardCap U) (hW : 0 < capWidth U)
     (haffine : ∀ z ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U z = m * z + c)
-    (heq : (upperCurvature U).restrict (regularCompanionDomain m) =
-      (volume.restrict (regularCompanionDomain m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
-    (upperCurvature (leftCompanionCap U (horizontalLeft U + capWidth U / 4))).restrict
-        (Ioo (Real.pi / 2) Real.pi) =
+    (hface : m ≠ 0 → horizontalProjection (supportFace U (-m, 1)) =
+      middleHalfInterval (horizontalLeft U) (horizontalRight U))
+    (heq : (upperCurvature U).restrict S =
+      (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
+    (hS : regularCompanionDomain m ⊆ S) :
+    (upperCurvature (AmbidextrousSofa.leftCompanionCap U
+        (horizontalLeft U + capWidth U / 4))).restrict (Ioo (Real.pi / 2) Real.pi) =
       (volume.restrict (Ioo (Real.pi / 2) Real.pi)).withDensity
         (fun t => ENNReal.ofReal (leftCompanionWingDensity m ρ t)) := by
   let b := max (Real.pi / 2) (affineNormalAngle m)
   have hLb : Real.pi / 2 ≤ b := le_max_left _ _
   have hθb : affineNormalAngle m ≤ b := le_max_right _ _
   have hbπ : b < Real.pi := max_lt (by linarith only [Real.pi_pos]) (affineNormalAngle_mem m).2
-  obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints
-    (by linarith only [hU.width_bounds.1, one_lt_M])
-  have hzero : upperCurvature (leftCompanionCap U (horizontalLeft U + capWidth U / 4))
-      (Ioc (Real.pi / 2) b) = 0 := by
+  obtain ⟨ha, hb, hab⟩ := hU.middleChord_endpoints hW
+  have hzero : upperCurvature (AmbidextrousSofa.leftCompanionCap U
+      (horizontalLeft U + capWidth U / 4)) (Ioc (Real.pi / 2) b) = 0 := by
     rcases le_or_gt (affineNormalAngle m) (Real.pi / 2) with hθ | hθ
     · rw [show b = Real.pi / 2 from max_eq_left hθ, Ioc_self, measure_empty]
-    · rw [show b = affineNormalAngle m from max_eq_right hθ.le]
-      exact hU.leftCompanion_initial_curvature_zero
-        (Real.arctan_pos.mp ((lt_add_iff_pos_left _).mp hθ)) haffine
+    · have hm := Real.arctan_pos.mp ((lt_add_iff_pos_left _).mp hθ)
+      rw [show b = affineNormalAngle m from max_eq_right hθ.le]
+      exact hU.leftCompanion_initial_curvature_zero hW hm haffine (hface hm.ne')
   have hind : (fun t => ENNReal.ofReal (leftCompanionWingDensity m ρ t)) =
       (Ioi b).indicator (fun t => ENNReal.ofReal (ρ t)) :=
     (indicator_comp_of_zero (g := ENNReal.ofReal) ENNReal.ofReal_zero).symm
   -- On `Ioo b π` the claimed density is the original one, so the cut curvature matches it.
   rw [hind, withDensity_indicator measurableSet_Ioi, Measure.restrict_restrict measurableSet_Ioi,
     Ioi_inter_Ioo, max_eq_left hLb, ← restrict_withDensity_of_subset heq measurableSet_Ioo
-      fun t ht => ⟨⟨hLb.trans_lt ht.1, ht.2⟩, (hθb.trans_lt ht.1).ne'⟩,
-    ← hU.isCap.leftCompanion_curvature_restrict_open_after_affine ha hb hab haffine hθb]
+      fun t ht => hS ⟨⟨hLb.trans_lt ht.1, ht.2⟩, (hθb.trans_lt ht.1).ne'⟩,
+    ← hU.leftCompanion_curvature_restrict_open_after_affine ha hb hab haffine hθb]
   -- On `Ioc (π / 2) b` the cut has no curvature.
   rw [← Ioc_union_Ioo_eq_Ioo hLb hbπ, Measure.restrict_union
     (Ioc_disjoint_Ioi_same.mono_right Ioo_subset_Ioi_self) measurableSet_Ioo,

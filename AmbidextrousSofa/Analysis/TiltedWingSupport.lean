@@ -1,6 +1,7 @@
 module
 
-public import AmbidextrousSofa.Analysis.FullCompanionDensity
+public import AmbidextrousSofa.Analysis.LeftCompanionDensity
+public import AmbidextrousSofa.Analysis.ShadowCurvature
 public import AmbidextrousSofa.Analysis.NegativeCornerCurvature
 public import AmbidextrousSofa.Analysis.SupportDensityCalculus
 
