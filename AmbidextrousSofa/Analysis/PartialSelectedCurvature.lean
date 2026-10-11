@@ -41,10 +41,6 @@ def innerDensity (U : Set Plane) (α : TerminalAngle)
     (barrierIntercept (normal α grid) (fun i => support U (normal α grid i)))
     (outwardVelocity (normal α grid) j)
 
-theorem outerDensity_nonneg (U : Set Plane) (α : TerminalAngle) (grid : Finset QuarterAngle)
-    (j : SourceIndex α grid) (x : ℝ) : 0 ≤ outerDensity U α grid j x :=
-  outward_sourceDensity_nonneg _ _ _ _ (normal_snd_pos α grid j).le x
-
 theorem innerDensity_nonneg (U : Set Plane) (α : TerminalAngle)
     (hαL : (α : ℝ) < Real.pi / 2) (grid : Finset QuarterAngle)
     (j : SourceIndex α grid) (x : ℝ) : 0 ≤ innerDensity U α hαL grid j x :=

@@ -27,10 +27,6 @@ open FinitePolygon AngularGrid
 
 variable {α : TerminalAngle} {hαL : (α : ℝ) < Real.pi / 2}
 
-theorem fullAngle_mem (α : TerminalAngle) (grid : Finset QuarterAngle)
-    (j : SourceIndex α grid) : fullAngle α grid j ∈ Ioo (0 : ℝ) Real.pi :=
-  AngularGrid.fullAngle_mem (outerGrid α grid) j
-
 theorem normal_snd_mul_innerSourceMass {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (j : SourceIndex α grid) :
     (normal α grid j).2 * innerSourceMass U α hαL grid j =

@@ -92,14 +92,6 @@ theorem normal_snd_pos (α : TerminalAngle) (grid : Finset AngularGrid.QuarterAn
     (i : SourceIndex α grid) : 0 < (normal α grid i).2 :=
   AngularGrid.normal_snd_pos (outerGrid α grid) i
 
-theorem normal_fst_ne_zero (α : TerminalAngle) (grid : Finset AngularGrid.QuarterAngle)
-    (i : SourceIndex α grid) : (normal α grid i).1 ≠ 0 :=
-  AngularGrid.normal_fst_ne_zero (outerGrid α grid) i
-
-theorem normal_unit (α : TerminalAngle) (grid : Finset AngularGrid.QuarterAngle)
-    (i : SourceIndex α grid) : coordDot (normal α grid i) (normal α grid i) = 1 :=
-  AngularGrid.normal_unit (outerGrid α grid) i
-
 theorem wallSlopes_injective (α : TerminalAngle) (grid : Finset AngularGrid.QuarterAngle) :
     Function.Injective (wallSlope (normal α grid)) :=
   AngularGrid.wallSlopes_injective (outerGrid α grid)

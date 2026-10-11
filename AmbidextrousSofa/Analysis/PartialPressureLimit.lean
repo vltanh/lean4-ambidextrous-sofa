@@ -34,18 +34,6 @@ open FinitePolygon AngularGrid
 
 variable {α : TerminalAngle} {hαL : (α : ℝ) < Real.pi / 2}
 
-def rightPressure (U : Set Plane) (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2)
-    (grid : Finset QuarterAngle) : ℝ :=
-  rightEndpointPressure (capRoof U)
-    (finiteBarrier U (normal α grid) (pairList α grid) (some (terminalIndex α hαL grid)))
-    (horizontalLeft U) (horizontalRight U)
-
-def leftPressure (U : Set Plane) (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2)
-    (grid : Finset QuarterAngle) : ℝ :=
-  leftEndpointPressure (capRoof U)
-    (finiteBarrier U (normal α grid) (pairList α grid) (some (terminalIndex α hαL grid)))
-    (horizontalLeft U) (horizontalRight U)
-
 section
 
 variable {U : ℕ → Set Plane} {K : Set Plane} (hHausdorff : CapHausdorffTendsto U K)
@@ -71,18 +59,6 @@ theorem finiteBarrier_dyadic_tendsto {t : ℕ → ℝ} {x : ℝ} (htmem : ∀ n,
       (tendsto_nhdsWithin_iff.mpr
         ⟨((IsDownwardCap.tendsto_toCompactCap hU hK hHausdorff).prodMk_nhds
           tendsto_const_nhds).prodMk_nhds ht, .of_forall fun n => ⟨⟨hbox n, mem_univ α⟩, htmem n⟩⟩)
-
-theorem rightPressure_tendsto (hwidth : horizontalLeft K < horizontalRight K) :
-    Tendsto (fun n => rightPressure (U n) α hαL (dyadic (level n))) atTop
-      (𝓝 (partialRightEndpointPressure K α)) :=
-  (hHausdorff.endpointPressures_tendsto hU hK hbox
-    (finiteBarrier_dyadic_tendsto (hαL := hαL) hHausdorff hU hK hlevel hbox) hwidth).1
-
-theorem leftPressure_tendsto (hwidth : horizontalLeft K < horizontalRight K) :
-    Tendsto (fun n => leftPressure (U n) α hαL (dyadic (level n))) atTop
-      (𝓝 (partialLeftEndpointPressure K α)) :=
-  (hHausdorff.endpointPressures_tendsto hU hK hbox
-    (finiteBarrier_dyadic_tendsto (hαL := hαL) hHausdorff hU hK hlevel hbox) hwidth).2
 
 end
 

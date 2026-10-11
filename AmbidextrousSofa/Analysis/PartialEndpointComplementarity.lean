@@ -31,25 +31,4 @@ theorem IsJointCapMaximizer.partial_endpoint_heights_eq_pressures_of_affine
   simpa only [max_eq_left h1.le, max_eq_left h2.le] using
     hU.partial_endpoint_complementarity hproper
 
-/-- These are the actual proper endpoint laws, with the complete
-terminal first wall included in both values of `partialBarrier`. -/
-theorem IsJointCapMaximizer.centered_partial_endpoint_laws {U : Set Plane} {α : ℝ}
-    (hU : IsJointCapMaximizer U α) {a h : ℝ}
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
-    (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1)
-    (haffine : ∃ m c : ℝ, ∀ x ∈ Icc (-a / 2) (a / 2), capRoof U x = m * x + c) :
-    capRoof U a = 1 / 2 + h / 4 +
-      (3 * partialBarrier U α (a / 2) - partialBarrier U α (-a / 2)) / 4 ∧
-    capRoof U (-a) = 1 / 2 - 3 * h / 4 +
-      (3 * partialBarrier U α (-a / 2) - partialBarrier U α (a / 2)) / 4 := by
-  obtain ⟨m, c, hmc⟩ := haffine
-  obtain ⟨hR, hL⟩ := hU.partial_endpoint_heights_eq_pressures_of_affine hproper hheight
-    ⟨m, c, fun x hx => hmc x (by
-      rw [hl, hr, middleHalfInterval] at hx; constructor <;> linarith only [hx.1, hx.2])⟩
-  simp only [partialRightEndpointPressure, rightEndpointPressure, partialLeftEndpointPressure,
-    leftEndpointPressure, hl, hr, show a - (a - -a) / 4 = a / 2 by ring,
-    show -a + (a - -a) / 4 = -a / 2 by ring, hleft, hright] at hR hL
-  constructor <;> linarith only [hR, hL]
-
 end AmbidextrousSofa
