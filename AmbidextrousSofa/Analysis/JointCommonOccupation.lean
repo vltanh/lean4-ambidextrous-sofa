@@ -82,28 +82,12 @@ theorem exists_common_source_occupation_of_phases {α η : ℝ}
       (∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)),
         ((D t).2 < 0 → δ t = 0) ∧ (1 < v t → δ t = 0)) := by
   let charged : Set ℝ := firstTangentChargedSet target C p B
-  have hpositive := J.ae_niche_pos_of_first_unit hU hl hr hC hm hheight haffine
-    hlow hhigh hh hρ hρ0 hρK heq hunit
-  have hfirstSum := J.ae_first_source_density_sum hU hheight haffine hTargetBox
-    hleft hright hρ hρ0 heq hpositive
-  have hsecondSum := J.ae_second_source_density_sum hU hheight haffine hTargetBox
-    hleft hright hρ hρ0 heq hpositive
-  have hcut := J.ae_original_companion_density_eq_cut hU hl hr hC hm hheight haffine
-    hlow hhigh hh hρ hρ0 hρK heq hunit hTargetBox hleft hright
-  have hBbound := J.ae_first_tangent_density_le_one_sub hU hheight haffine
-    hTargetBox hleft hright hρ hρ0 hρK heq hunit
-  have hDcontrols := J.ae_companion_tangent_density_controls hU hheight haffine
-    hTargetBox hleft hright hρ hρ0 hρK heq hl hr hC hm hlow hhigh hh hunit
-  have hBsaturated := J.ae_first_tangent_density_eq_one_sub_on_charged
-    hU hl hr hC hm hheight haffine hlow hhigh hh hρ hρ0 hρK heq hunit
-    hTargetBox hleft hright hphase
-  have hcornerZero := J.ae_corner_density_zero_off_core hU hl hr hC hm hheight haffine
-    hlow hhigh hh hρ hρ0 hρK heq hunit hTargetBox hleft hright hphase
-  have hcornerBalance := J.ae_corner_density_balance hU hl hr hC hm hheight haffine
-    hlow hhigh hh hρ hρ0 hρK heq hunit hTargetBox hleft hright hphase
+  have H : IsTiltedFirstUnitTarget target a b C h m c ρ K := ⟨hU, hl, hr, hC, hm, hheight,
+    haffine, hlow, hhigh, hh, hρ, hρ0, hρK, heq, hunit, hTargetBox, hleft, hright⟩
+  have hDcontrols := J.ae_companion_tangent_density_controls H
+  have hcornerZero := J.ae_corner_density_zero_off_core H hphase
   have hcornerProjection := (ae_restrict_iff' measurableSet_Ioo).mp
-    (J.ae_corner_source_weighted_sum_le_core_speed hU hl hr hC hm hheight haffine
-      hlow hhigh hh hρ hρ0 hρK heq hunit hTargetBox hleft hright hphase)
+    (J.ae_corner_source_weighted_sum_le_core_speed H hphase)
   refine ⟨Analysis.firstSourceCoefficient charged aB ρ, Analysis.companionSourceCoefficient aD v,
     Analysis.cornerSourceCoefficient aZ q, Analysis.measurable_companionSourceCoefficient
       (J.measurable_sourceBranchDensity _ _)
@@ -112,9 +96,11 @@ theorem exists_common_source_occupation_of_phases {α η : ℝ}
       (Analysis.companionSourceCoefficient_bounds aD v t).1,
       (Analysis.companionSourceCoefficient_bounds aD v t).2,
       Analysis.cornerSourceCoefficient_bounds aZ q t⟩, ?_, ?_, ?_, ?_⟩
-  · filter_upwards [ae_restrict_mem measurableSet_Ioo, hfirstSum, hsecondSum, hcut,
-      hBbound, hDcontrols, hBsaturated, ae_restrict_of_ae hcornerZero,
-      hcornerBalance, ae_restrict_of_ae hcornerProjection]
+  · filter_upwards [ae_restrict_mem measurableSet_Ioo, J.ae_first_source_density_sum H,
+      J.ae_second_source_density_sum H, J.ae_original_companion_density_eq_cut H,
+      J.ae_first_tangent_density_le_one_sub H, hDcontrols,
+      J.ae_first_tangent_density_eq_one_sub_on_charged H hphase, ae_restrict_of_ae hcornerZero,
+      J.ae_corner_density_balance H hphase, ae_restrict_of_ae hcornerProjection]
       with t ht hfirst hsecond hcutEq hB hD hchargedEq hzero hbalance hprojection
     apply Analysis.commonSourceCoefficients_balance ht (J.sourceBranchDensity_nonneg _ _ _)
       (J.sourceBranchDensity_nonneg _ _ _) (J.sourceBranchDensity_nonneg _ _ _) hfirst.symm
@@ -122,16 +108,14 @@ theorem exists_common_source_occupation_of_phases {α η : ℝ}
       (fun hnot => hzero fun hc => hnot (hphase.core_signs t hc)) hbalance fun hp hq =>
         hprojection (hphase.mem_core_of_first_neg_second_pos (Ioo_subset_Icc_self ht) hp hq)
   · filter_upwards [ae_restrict_mem measurableSet_Ioo,
-      ae_restrict_of_ae (J.ae_first_tangent_density_eq_zero_after_middle
-        hU hheight haffine hTargetBox hleft hright hρ hρ0 hρK heq hl hr)] with t ht hzero
+      ae_restrict_of_ae (J.ae_first_tangent_density_eq_zero_after_middle H)] with t ht hzero
     refine ⟨fun hp hx hy hcontact => Analysis.firstSourceCoefficient_eq_one_of_mem
       (show t ∈ charged from ⟨hp, hx, hy, hcontact⟩), fun hx => ?_⟩
     have hmatch := fullTiltedSupportQuarterPair_first_tangency
       hU hm.le haffine hρ hρ0 hρK heq ⟨ht.1.le, ht.2⟩
     exact Analysis.firstSourceCoefficient_eq_zero_of_not_mem (fun hc => (not_lt_of_ge hx) hc.2.1.2)
       (hzero (by simpa only [hmatch] using hx))
-  · filter_upwards [J.ae_first_corner_density_eq_q_of_unique_contact hU hl hr hC hm hheight
-      haffine hlow hhigh hh hρ hρ0 hρK heq hunit hTargetBox hleft hright hphase]
+  · filter_upwards [J.ae_first_corner_density_eq_q_of_unique_contact H hphase]
       with t hmass hp hq hx hy hcontact hunique using
       Analysis.cornerSourceCoefficient_eq_one_of_mass_eq hq (hmass hp hq hx hy hcontact hunique)
   · filter_upwards [hDcontrols] with t ht

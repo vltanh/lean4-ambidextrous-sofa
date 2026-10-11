@@ -76,8 +76,7 @@ theorem innerSource_wall_defects_zero (U : Set Plane) (grid : Finset QuarterAngl
   cases j with
   | inl t =>
     rw [fullAngle]
-    have ht := interiorPoint_mem grid t
-    have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], ht.2⟩
+    have hc := (sin_cos_pos_of_mem_quarter (interiorPoint_mem grid t)).2
     have hother := first_source_le_companion U grid t hx
     rw [supportWall_companionNormal] at hother
     have h := (le_div_iff₀ hc).mp (hy.trans_le hother)
@@ -88,8 +87,7 @@ theorem innerSource_wall_defects_zero (U : Set Plane) (grid : Finset QuarterAngl
       by rw [sourceBackwardDefect, max_eq_right (neg_nonpos.mpr hc.le), zero_mul]⟩
   | inr t =>
     rw [fullAngle]
-    have ht := interiorPoint_mem grid t
-    have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [Real.pi_pos])
+    have hs := (sin_cos_pos_of_mem_quarter (interiorPoint_mem grid t)).1
     have hother := second_source_le_first U grid t hx
     rw [supportWall_unitNormal] at hother
     have h := (le_div_iff₀ hs).mp (hy.trans_le hother)
@@ -153,8 +151,7 @@ theorem ae_first_wall_contact (hTarget : IsDownwardCap target) :
       firstWall target z.1 z.2 = sweptNiche target (Real.pi / 2) z.2 ∧
         fullWallClip hTarget.toCompactCap z.2 z.1 = sweptNiche target (Real.pi / 2) z.2 := by
   filter_upwards [J.ae_wall_residuals hTarget] with z ⟨hR, hF, _⟩ ht
-  have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   rw [sourceForwardDefect, max_eq_left hc.le, mul_eq_zero, max_eq_right_iff, neg_nonpos,
     sourceWallResidual_add_half_pi] at hF
   have hfirst : firstWall target z.1 z.2 = sweptNiche target (Real.pi / 2) z.2 := by
@@ -176,9 +173,7 @@ theorem ae_second_wall_contact (hTarget : IsDownwardCap target) :
   filter_upwards [J.ae_wall_residuals hTarget] with z ⟨hR, _, hB⟩ ht
   set t := z.1 - Real.pi / 2
   have hθ : z.1 = t + Real.pi / 2 := (sub_add_cancel _ _).symm
-  have hs := Real.sin_pos_of_pos_of_lt_pi (x := t) (by linarith [ht.1])
-    (by linarith [ht.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo (x := t) ⟨by linarith [ht.1, Real.pi_pos], by linarith [ht.2]⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter (t := t) ⟨by linarith [ht.1], by linarith [ht.2]⟩
   rw [hθ, sourceWallResidual_add_half_pi] at hR
   rw [sourceBackwardDefect, hθ, add_sub_cancel_right, Real.cos_add_pi_div_two, neg_neg,
     max_eq_left hs.le, mul_eq_zero, max_eq_right_iff, neg_nonpos] at hB

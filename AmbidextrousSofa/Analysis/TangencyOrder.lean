@@ -48,19 +48,22 @@ theorem IsDownwardCap.secondTangency_snd_pos_of_fst_gt
         (Real.sin_nonneg_of_nonneg_of_le_pi (by linarith [ht.1]) ?_)⟩
     linarith [(hquarter (Ioo_subset_Icc_self ht)).2, Real.pi_pos]
   have := hm (left_mem_Icc.mpr hab) (right_mem_Icc.mpr hab) hab
-  have hs := Real.sin_pos_of_pos_of_lt_pi ha0 (by linarith [Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], ha1⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨ha0, ha1⟩
   by_contra hnot
   linarith [mul_nonpos_of_nonneg_of_nonpos hc.le (le_of_not_gt hnot), mul_nonneg hc.le hfloor,
     mul_pos hs (sub_pos.mpr hmove)]
 
+section FullMaximum
+
+variable {U : Set Plane} (hU : IsFullCapMaximizer U) {ρ : ℝ → ℝ} {C b₀ t : ℝ}
+  (hheight : capHeight U = 1)
+  (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1)
+  (hρ : Measurable ρ) (hρ0 : ∀ x, 0 ≤ ρ x) (hρC : ∀ x, ρ x ≤ C)
+  (heq : (upperCurvature U).restrict (regularCurvatureDomain 0) =
+    (volume.restrict (regularCurvatureDomain 0)).withDensity (fun x => ENNReal.ofReal (ρ x)))
+include hU hheight hmiddle hρ hρ0 hρC heq
+
 theorem IsFullCapMaximizer.secondTangency_from_top_endpoint
-    {U : Set Plane} (hU : IsFullCapMaximizer U) {ρ : ℝ → ℝ} {C t : ℝ}
-    (hheight : capHeight U = 1)
-    (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1)
-    (hρ : Measurable ρ) (hρ0 : ∀ x, 0 ≤ ρ x) (hρC : ∀ x, ρ x ≤ C)
-    (heq : (upperCurvature U).restrict (regularCurvatureDomain 0) =
-      (volume.restrict (regularCurvatureDomain 0)).withDensity (fun x => ENNReal.ofReal (ρ x)))
     (hcompanion : ∀ᵐ u ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ (u + Real.pi / 2) ≤ 1)
     (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) :
     horizontalLeft U + capWidth U / 4 ≤ (secondTangency U t).1 ∧ 0 ≤ (secondTangency U t).2 := by
@@ -72,12 +75,6 @@ theorem IsFullCapMaximizer.secondTangency_from_top_endpoint
   exacts [hm.1 ⟨hu.1, hu.2.trans ht.2⟩ ht hu.2.le, hm.2 ⟨hu.1, hu.2.trans ht.2⟩ ht hu.2.le]
 
 theorem IsFullCapMaximizer.firstTangency_before_top_endpoint
-    {U : Set Plane} (hU : IsFullCapMaximizer U) {ρ : ℝ → ℝ} {C b₀ t : ℝ}
-    (hheight : capHeight U = 1)
-    (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1)
-    (hρ : Measurable ρ) (hρ0 : ∀ x, 0 ≤ ρ x) (hρC : ∀ x, ρ x ≤ C)
-    (heq : (upperCurvature U).restrict (regularCurvatureDomain 0) =
-      (volume.restrict (regularCurvatureDomain 0)).withDensity (fun x => ENNReal.ofReal (ρ x)))
     (hb₀ : 0 ≤ b₀)
     (hfuture : ∀ᵐ u ∂volume.restrict (Ioo b₀ (Real.pi / 2)), ρ u ≤ 1)
     (ht : t ∈ Ioo b₀ (Real.pi / 2)) :
@@ -90,12 +87,6 @@ theorem IsFullCapMaximizer.firstTangency_before_top_endpoint
   exacts [hm.1 ht ⟨ht.1.trans hu.1, hu.2⟩ hu.1.le, hm.2 ht ⟨ht.1.trans hu.1, hu.2⟩ hu.1.le]
 
 theorem IsFullCapMaximizer.visible_corner_middle_and_height
-    {U : Set Plane} (hU : IsFullCapMaximizer U) {ρ : ℝ → ℝ} {C b₀ t : ℝ}
-    (hheight : capHeight U = 1)
-    (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1)
-    (hρ : Measurable ρ) (hρ0 : ∀ x, 0 ≤ ρ x) (hρC : ∀ x, ρ x ≤ C)
-    (heq : (upperCurvature U).restrict (regularCurvatureDomain 0) =
-      (volume.restrict (regularCurvatureDomain 0)).withDensity (fun x => ENNReal.ofReal (ρ x)))
     (hb₀ : 0 ≤ b₀)
     (hcompanion : ∀ᵐ u ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ (u + Real.pi / 2) ≤ 1)
     (hfuture : ∀ᵐ u ∂volume.restrict (Ioo b₀ (Real.pi / 2)), ρ u ≤ 1)
@@ -107,8 +98,10 @@ theorem IsFullCapMaximizer.visible_corner_middle_and_height
   have htq : t ∈ Ioo (0 : ℝ) (Real.pi / 2) := ⟨hb₀.trans_lt ht.1, ht.2⟩
   have hD := hU.secondTangency_from_top_endpoint hheight hmiddle hρ hρ0 hρC heq hcompanion htq
   have hB := hU.firstTangency_before_top_endpoint hheight hmiddle hρ hρ0 hρC heq hb₀ hfuture ht
-  have hs := Real.sin_pos_of_pos_of_lt_pi htq.1 (by linarith [htq.2, Real.pi_pos])
+  have hs := (sin_cos_pos_of_mem_quarter htq).1
   simp only [firstTangency, secondTangency] at hB hD
   exact ⟨hD.1, by linarith [mul_pos hr hs], by linarith [mul_pos hq hs]⟩
+
+end FullMaximum
 
 end AmbidextrousSofa

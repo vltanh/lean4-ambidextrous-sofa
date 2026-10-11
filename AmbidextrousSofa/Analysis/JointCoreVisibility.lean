@@ -33,87 +33,65 @@ theorem StrictCornerSignPhases.mem_core_of_first_neg_second_pos
 
 namespace AngularGrid.SelectedJointSourceLimit
 
-variable {target : Set Plane} {a b : ℝ} (J : SelectedJointSourceLimit target a b)
-  (hU : IsFullCapMaximizer target) {C h m c : ℝ}
-  (hl : horizontalLeft target = -2 * C) (hr : horizontalRight target = 2 * C)
-  (hC : 1 / 2 < C) (hm : 0 < m) (hheight : capHeight target = 1)
-  (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft target) (horizontalRight target),
-    capRoof target x = m * x + c)
-  (hlow : capRoof target (-C) = 1 - h) (hhigh : capRoof target C = 1) (hh : 0 < h)
-  {ρ : ℝ → ℝ} {K : ℝ} (hρ : Measurable ρ)
-  (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-  (heq : (upperCurvature target).restrict (regularCurvatureDomain m) =
-    (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
-  (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1)
-  (hTargetBox : target ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1)
-  (hleft : a < horizontalLeft target) (hright : horizontalRight target < b)
+variable {target : Set Plane} {a b C h m c K : ℝ} {ρ : ℝ → ℝ}
+  (J : SelectedJointSourceLimit target a b) (H : IsTiltedFirstUnitTarget target a b C h m c ρ K)
 
-local notation "F" => fullTiltedSupportQuarterPair hU hm.le haffine hρ hρ0 hρK heq
-set_option quotPrecheck false in
+set_option quotPrecheck false
+local notation "F" => fullTiltedSupportQuarterPair H.hU H.hm.le H.haffine H.hρ H.hρ0 H.hρK H.heq
 local notation "Z" => innerCornerPoint (F).f (F).g
-set_option quotPrecheck false in
 local notation "p" => supportP (F).fD (F).g
-set_option quotPrecheck false in
 local notation "q" => supportQ (F).gD (F).f
-set_option quotPrecheck false in
 local notation "X" => (fun t => (Z t).1)
-set_option quotPrecheck false in
 local notation "Y" => (fun t => (Z t).2)
 local notation "XD" => (fun t => p t * Real.cos t - q t * Real.sin t)
 local notation "aZ" => J.sourceBranchDensity (firstCornerSource target) 0
 local notation "aW" => J.sourceBranchDensity (secondCornerSource target) (Real.pi / 2)
 local notation "w" => (fun t => aZ t * Real.sin t + aW t * Real.cos t)
 
-include hl hr hC hheight hlow hhigh hh hunit hTargetBox hleft hright in
 theorem ae_first_corner_density_eq_q_of_unique_contact {α η : ℝ}
     (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η) :
     ∀ᵐ t ∂volume.restrict (regularCornerDomain m),
       p t < 0 → 0 < q t → X t ∈ Ioo (-C) C → 0 < Y t →
       sweptNiche target (Real.pi / 2) (X t) = Y t →
       (∀ s ∈ Icc (0 : ℝ) (Real.pi / 2),
-        fullWallClip hU.isCap.toCompactCap (X t) s =
+        fullWallClip H.hU.isCap.toCompactCap (X t) s =
           sweptNiche target (Real.pi / 2) (X t) → s = t) → aZ t = q t := by
   -- The core parameters with a uniquely exposed positive contact.
   let T : Set ℝ := {t | t ∈ Ioo α η ∧ X t ∈ Ioo (-C) C ∧ 0 < Y t ∧
     sweptNiche target (Real.pi / 2) (X t) = Y t ∧
     ∀ s ∈ Icc (0 : ℝ) (Real.pi / 2),
-      fullWallClip hU.isCap.toCompactCap (X t) s =
+      fullWallClip H.hU.isCap.toCompactCap (X t) s =
         sweptNiche target (Real.pi / 2) (X t) → s = t}
-  obtain ⟨hX, hY⟩ := fullTiltedSupportQuarterPair_core_continuous_global
-    hU hm.le haffine hρ hρ0 hρK heq
+  obtain ⟨hX, hY⟩ := H.core_continuous
   have hN : Continuous fun t => sweptNiche target (Real.pi / 2) (X t) := by
     simpa only [Function.comp_def, IsDownwardCap.toCompactCap_carrier] using
-      continuous_capSweptNiche.comp ((continuous_const (y := hU.isCap.toCompactCap)).prodMk hX)
+      continuous_capSweptNiche.comp ((continuous_const (y := H.hU.isCap.toCompactCap)).prodMk hX)
   have hT : MeasurableSet T :=
     measurableSet_Ioo.inter ((measurableSet_Ioo.preimage hX.measurable).inter
       ((isOpen_lt continuous_const hY).measurableSet.inter
         ((isClosed_eq hN hY).measurableSet.inter
-          (hU.isCap.measurableSet_unique_fullWallClip_contact hX))))
+          (H.hU.isCap.measurableSet_unique_fullWallClip_contact hX))))
   have hTS : T ⊆ Ioo α η := fun _ ht => ht.1
   have hinj : InjOn X (Ioo α η) :=
     (fullTiltedSupportQuarterPair_core_strictAntiOn_open
-      hU hm.le haffine hρ hρ0 hρK heq hphase).injOn
+      H.hU H.hm.le H.haffine H.hρ H.hρ0 H.hρK H.heq hphase).injOn
   -- Above `X '' T` the core projection is Lebesgue measure, so the weight saturates the speed.
   have hsaturated :
       (((volume.restrict (Ioo α η)).withDensity (fun t => ENNReal.ofReal (w t))).map X).restrict
           (X '' T) = volume.restrict (X '' T) := by
-    rw [← J.coreSourceProjection_eq_density_graph hU hl hr hC hm hheight haffine hlow
-      hhigh hh hρ hρ0 hρK heq hunit hTargetBox hleft hright hphase]
-    exact J.coreSourceProjection_restrict_unique_positive_image_eq_volume
-      hU hl hr hC hm hheight haffine hlow hhigh hh hρ hρ0 hρK heq hunit hleft hright
+    rw [← J.coreSourceProjection_eq_density_graph H hphase]
+    exact J.coreSourceProjection_restrict_unique_positive_image_eq_volume H
       (hT.image_of_continuousOn_injOn hX.continuousOn (hinj.mono hTS))
       (fun t ht => ⟨ht.2.1, ht.2.2.2.1 ▸ ht.2.2.1⟩) fun _ ht => ht.2.2.2.2
   have hw0 : ∀ᵐ t ∂volume.restrict T, 0 ≤ w t := by
     filter_upwards [ae_restrict_mem hT] with t ht
-    have htq : t ∈ Ioo (0 : ℝ) (Real.pi / 2) :=
+    obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter
       ⟨hphase.first_mem.1.trans ht.1.1, ht.1.2.trans hphase.second_mem.2⟩
-    exact add_nonneg (mul_nonneg (J.sourceBranchDensity_nonneg _ _ _)
-        (Real.sin_pos_of_pos_of_lt_pi htq.1 (by linarith only [htq.2, Real.pi_pos])).le)
-      (mul_nonneg (J.sourceBranchDensity_nonneg _ _ _)
-        (Real.cos_pos_of_mem_Ioo ⟨by linarith only [htq.1, Real.pi_pos], htq.2⟩).le)
+    exact add_nonneg (mul_nonneg (J.sourceBranchDensity_nonneg _ _ _) hs.le)
+      (mul_nonneg (J.sourceBranchDensity_nonneg _ _ _) hc.le)
   have hweight := ae_weight_eq_abs_deriv_of_graph_saturated_on measurableSet_Ioo hT hTS
-    (fun t ht => (fullTiltedSupportQuarterPair_core_hasDerivAt hU hm.le haffine hρ hρ0 hρK heq
-      ⟨hphase.first_mem.1.trans ht.1, ht.2.trans hphase.second_mem.2⟩).1) hinj
+    (fun t ht => (fullTiltedSupportQuarterPair_core_hasDerivAt H.hU H.hm.le H.haffine H.hρ H.hρ0
+      H.hρK H.heq ⟨hphase.first_mem.1.trans ht.1, ht.2.trans hphase.second_mem.2⟩).1) hinj
     (((J.measurable_sourceBranchDensity _ _).fun_mul Real.measurable_sin).fun_add
       ((J.measurable_sourceBranchDensity _ _).fun_mul Real.measurable_cos)).aemeasurable
     hw0 hsaturated
@@ -121,13 +99,9 @@ theorem ae_first_corner_density_eq_q_of_unique_contact {α η : ℝ}
   filter_upwards [ae_restrict_mem (isOpen_regularCornerDomain m).measurableSet,
     ae_restrict_of_ae ((ae_restrict_iff' hT).mp hweight),
     ae_restrict_of_ae ((ae_restrict_iff' measurableSet_Ioo).mp
-      (J.ae_corner_density_balance hU hl hr hC hm hheight haffine hlow hhigh hh
-        hρ hρ0 hρK heq hunit hTargetBox hleft hright hphase))]
+      (J.ae_corner_density_balance H hphase))]
     with t ht hwgt hb hp hq hx hy hcontact hunique
-  have hs : 0 < Real.sin t := Real.sin_pos_of_pos_of_lt_pi ht.1.1
-    (by linarith only [ht.1.2, Real.pi_pos])
-  have hc : 0 < Real.cos t := Real.cos_pos_of_mem_Ioo
-    ⟨by linarith only [ht.1.1, Real.pi_pos], ht.1.2⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht.1
   have hneg : XD t < 0 := sub_neg.mpr ((mul_neg_of_neg_of_pos hp hc).trans (mul_pos hq hs))
   have hfull : aZ t * Real.sin t + aW t * Real.cos t = q t * Real.sin t - p t * Real.cos t := by
     simpa only [abs_of_neg hneg, neg_sub] using hwgt

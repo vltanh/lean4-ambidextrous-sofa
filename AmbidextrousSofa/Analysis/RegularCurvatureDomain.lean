@@ -12,7 +12,9 @@ The central affine segment has one upward normal. Together with the top
 normal this divides the open upper semicircle into at most three wings.
 The open-wing estimates therefore yield one bounded measurable density
 on the entire complement of those two normals. The remaining measure is
-the restriction of the actual face measure to those actual normals.
+the restriction of the actual face measure to those actual normals. The
+file also records that sine and cosine are positive on the open first
+quarter.
 -/
 
 noncomputable section
@@ -21,6 +23,11 @@ open Set Filter MeasureTheory
 open scoped Topology
 
 namespace AmbidextrousSofa
+
+theorem sin_cos_pos_of_mem_quarter {t : ℝ} (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) :
+    0 < Real.sin t ∧ 0 < Real.cos t :=
+  ⟨Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos]),
+    Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩⟩
 
 theorem affineNormalAngle_zero (m : ℝ) :
     Real.cos (affineNormalAngle m) + m * Real.sin (affineNormalAngle m) = 0 := by

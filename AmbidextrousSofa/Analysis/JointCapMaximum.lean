@@ -33,38 +33,36 @@ def IsJointCapMaximizer (U : Set Plane) (α : ℝ) : Prop :=
     ∀ V : Set Plane, ∀ β : ℝ, IsDownwardCap V →
       β ∈ Icc (Real.pi / 4) (Real.pi / 2) → capScore V β ≤ capScore U α
 
-theorem IsJointCapMaximizer.isCap {U : Set Plane} {α : ℝ}
-    (hU : IsJointCapMaximizer U α) : IsDownwardCap U := hU.1
+namespace IsJointCapMaximizer
 
-theorem IsJointCapMaximizer.angle_mem {U : Set Plane} {α : ℝ}
-    (hU : IsJointCapMaximizer U α) : α ∈ Icc (Real.pi / 4) (Real.pi / 2) := hU.2.1
+variable {U V : Set Plane} {α β : ℝ} (hU : IsJointCapMaximizer U α)
+include hU
 
-theorem IsJointCapMaximizer.angle_pos {U : Set Plane} {α : ℝ}
-    (hU : IsJointCapMaximizer U α) : 0 < α := hU.angle_mem.1.trans_lt' (by positivity)
+theorem isCap : IsDownwardCap U := hU.1
 
-theorem IsJointCapMaximizer.score_le {U V : Set Plane} {α β : ℝ}
-    (hU : IsJointCapMaximizer U α) (hV : IsDownwardCap V)
-    (hβ : β ∈ Icc (Real.pi / 4) (Real.pi / 2)) : capScore V β ≤ capScore U α :=
+theorem angle_mem : α ∈ Icc (Real.pi / 4) (Real.pi / 2) := hU.2.1
+
+theorem angle_pos : 0 < α := hU.angle_mem.1.trans_lt' (by positivity)
+
+theorem score_le (hV : IsDownwardCap V) (hβ : β ∈ Icc (Real.pi / 4) (Real.pi / 2)) :
+    capScore V β ≤ capScore U α :=
   hU.2.2 V β hV hβ
 
-theorem IsJointCapMaximizer.score_le_same_angle {U V : Set Plane} {α : ℝ}
-    (hU : IsJointCapMaximizer U α) (hV : IsDownwardCap V) :
-    capScore V α ≤ capScore U α := hU.score_le hV hU.angle_mem
+theorem score_le_same_angle (hV : IsDownwardCap V) : capScore V α ≤ capScore U α :=
+  hU.score_le hV hU.angle_mem
 
-theorem IsJointCapMaximizer.reference_le {U : Set Plane} {α : ℝ}
-    (hU : IsJointCapMaximizer U α) : M / 2 ≤ capScore U α :=
+theorem reference_le : M / 2 ≤ capScore U α :=
   Reference.capScore_referenceCap.ge.trans
     (hU.score_le Reference.isDownwardCap_referenceCap ⟨by linarith [Real.pi_pos], le_rfl⟩)
 
-theorem IsJointCapMaximizer.width_bounds {U : Set Plane} {α : ℝ}
-    (hU : IsJointCapMaximizer U α) : M ≤ capWidth U ∧ capWidth U < 6 :=
+theorem width_bounds : M ≤ capWidth U ∧ capWidth U < 6 :=
   hU.isCap.competitive_width_bounds hU.angle_mem.1 hU.angle_mem.2 hU.reference_le
 
-theorem IsJointCapMaximizer.of_score_le {U V : Set Plane} {α β : ℝ}
-    (hU : IsJointCapMaximizer U α) (hV : IsDownwardCap V)
-    (hβ : β ∈ Icc (Real.pi / 4) (Real.pi / 2))
+theorem of_score_le (hV : IsDownwardCap V) (hβ : β ∈ Icc (Real.pi / 4) (Real.pi / 2))
     (hscore : capScore U α ≤ capScore V β) : IsJointCapMaximizer V β :=
   ⟨hV, hβ, fun _ _ hW hγ => (hU.score_le hW hγ).trans hscore⟩
+
+end IsJointCapMaximizer
 
 /-- Extreme-value selection in the boxed cap-and-angle domain. The reference cap and the
 actual wide-cap estimate remove the artificial box from the extreme-value conclusion. -/

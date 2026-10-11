@@ -24,24 +24,12 @@ open scoped Topology
 namespace AmbidextrousSofa
 
 def sourceSineFunction : Plane →ᵇ ℝ :=
-  BoundedContinuousFunction.mkOfBound
-    ⟨fun z => Real.sin z.1, Real.continuous_sin.comp continuous_fst⟩ 2 (by
-      intro z w
-      show dist (Real.sin z.1) (Real.sin w.1) ≤ 2
-      rw [Real.dist_eq]
-      apply abs_le.mpr
-      constructor <;> linarith only [Real.neg_one_le_sin z.1, Real.sin_le_one z.1,
-        Real.neg_one_le_sin w.1, Real.sin_le_one w.1])
+  .ofNormedAddCommGroup (fun z => Real.sin z.1) (by fun_prop) 1 fun z =>
+    (Real.norm_eq_abs _).trans_le (Real.abs_sin_le_one _)
 
 def sourceCosineFunction : Plane →ᵇ ℝ :=
-  BoundedContinuousFunction.mkOfBound
-    ⟨fun z => Real.cos z.1, Real.continuous_cos.comp continuous_fst⟩ 2 (by
-      intro z w
-      show dist (Real.cos z.1) (Real.cos w.1) ≤ 2
-      rw [Real.dist_eq]
-      apply abs_le.mpr
-      constructor <;> linarith only [Real.neg_one_le_cos z.1, Real.cos_le_one z.1,
-        Real.neg_one_le_cos w.1, Real.cos_le_one w.1])
+  .ofNormedAddCommGroup (fun z => Real.cos z.1) (by fun_prop) 1 fun z =>
+    (Real.norm_eq_abs _).trans_le (Real.abs_cos_le_one _)
 
 def sourceHorizontalProjection (μ : FiniteMeasure Plane) : FiniteMeasure ℝ :=
   (weightedFiniteMeasure μ sourceSineFunction.nnrealPart).map Prod.snd
@@ -64,18 +52,6 @@ namespace AngularGrid
 
 open FinitePolygon
 
-theorem innerJointMeasure_restrict_spatial_inter
-    (U : Set Plane) (grid : Finset QuarterAngle) (L R l r : ℝ) :
-    (innerJointMeasure U grid L R).restrict (univ ×ˢ Ioc l r) =
-      innerJointMeasure U grid (max L l) (min R r) := by
-  ext E hE
-  rw [Measure.restrict_apply hE, innerJointMeasure_apply U grid L R
-    (hE.inter (MeasurableSet.univ.prod measurableSet_Ioc)), innerJointMeasure_apply U grid _ _ hE]
-  refine Finset.sum_congr rfl fun j _ => congrArg _ (congrArg _ (ext fun x => ?_))
-  simp only [mem_inter_iff, mem_preimage, mem_prod, mem_univ, true_and, mem_Ioc, max_lt_iff,
-    le_min_iff]
-  tauto
-
 theorem innerJointMeasure_sinePart_ae
     (U : Set Plane) (grid : Finset QuarterAngle) (l r : ℝ) :
     (fun z : Plane => (sourceSineFunction.nnrealPart z : ℝ)) =ᵐ[innerJointMeasure U grid l r]
@@ -94,7 +70,7 @@ theorem finite_horizontalProjection_Ioc_real_le
   change (∫ z in univ ×ˢ Ioc l r, (sourceSineFunction.nnrealPart z : ℝ)
     ∂innerJointMeasure U grid L R) ≤ _
   rw [integral_congr_ae (ae_restrict_of_ae (innerJointMeasure_sinePart_ae U grid L R)),
-    innerJointMeasure_restrict_spatial_inter]
+    innerJointMeasure_restrict_spatial]
   rcases le_or_gt (max L l) (min R r) with hspan | hspan
   · rw [integral_innerJointMeasure_sin U grid hspan, finitePositiveLength,
       ← Real.volume_real_Ioc_of_le hlr]

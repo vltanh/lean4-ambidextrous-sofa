@@ -44,34 +44,6 @@ private theorem mem_edge_pi_div_two {U : Set Plane} (hheight : capHeight U = 1) 
     p ∈ edge U (Real.pi / 2) ↔ p ∈ U ∧ p.2 = 1 := by
   simp [edge, suppLine, line, dot, imported_supp_pi_div_two, hheight]
 
-theorem IsFullCapMaximizer.top_vplus_pi_div_two
-    {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1)
-    (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1) :
-    MovingSofaOptimality.vplus U (Real.pi / 2) = (horizontalLeft U + capWidth U / 4, 1) := by
-  obtain ⟨hp, hy⟩ :=
-    (mem_edge_pi_div_two hheight).1 (vplus_mem_edge hU.isCap.imported_isConvexBody _)
-  obtain ⟨hl, -, hlr⟩ := hU.isCap.middleChord_endpoints (by linarith [hU.two_lt_width])
-  have h := dot_le_dot_vplus hU.isCap.isCompact ((mem_edge_pi_div_two hheight).2
-    ⟨hmiddle _ ⟨le_rfl, hlr.le⟩ ▸ capRoof_mem hU.isCap.isCompact hl, rfl⟩)
-  have hJ : horizontalLeft U + capWidth U / 4 ≤ _ ∧ _ :=
-    hU.top_abscissa_mem_middle hheight hmiddle hp hy
-  simp [dot, vvec] at h
-  exact Prod.ext (by linarith [hJ.1]) hy
-
-theorem IsFullCapMaximizer.top_vminus_pi_div_two
-    {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1)
-    (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1) :
-    MovingSofaOptimality.vminus U (Real.pi / 2) = (horizontalRight U - capWidth U / 4, 1) := by
-  obtain ⟨hp, hy⟩ :=
-    (mem_edge_pi_div_two hheight).1 (vminus_mem_edge hU.isCap.imported_isConvexBody _)
-  obtain ⟨-, hr, hlr⟩ := hU.isCap.middleChord_endpoints (by linarith [hU.two_lt_width])
-  have h := dot_vminus_le_dot hU.isCap.isCompact ((mem_edge_pi_div_two hheight).2
-    ⟨hmiddle _ ⟨hlr.le, le_rfl⟩ ▸ capRoof_mem hU.isCap.isCompact hr, rfl⟩)
-  have hJ : _ ∧ _ ≤ horizontalRight U - capWidth U / 4 :=
-    hU.top_abscissa_mem_middle hheight hmiddle hp hy
-  simp [dot, vvec] at h
-  exact Prod.ext (by linarith [hJ.2]) hy
-
 theorem tendsto_add_const_nhdsLT (a b : ℝ) :
     Tendsto (fun t : ℝ => t + b) (𝓝[<] a) (𝓝[<] (a + b)) :=
   map_add_right_nhdsLT.le
@@ -82,27 +54,6 @@ theorem IsDownwardCap.firstTangency_tendsto_zero_right
       (𝓝 (horizontalRight U - 1, capRoof U (horizontalRight U))) := by
   simpa [funext (firstTangency_eq_vplus_sub_unitNormal U), hU.axis_vplus_zero, unitNormal] using
     (tendsto_vplus_right hU.imported_isConvexBody 0).sub
-      continuous_unitNormal.continuousWithinAt.tendsto
-
-theorem IsFullCapMaximizer.secondTangency_tendsto_zero_right
-    {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1)
-    (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1) :
-    Tendsto (secondTangency U) (𝓝[>] (0 : ℝ))
-      (𝓝 (horizontalLeft U + capWidth U / 4, 0)) := by
-  have hp := (tendsto_vplus_right hU.isCap.imported_isConvexBody (0 + Real.pi / 2)).comp
-    map_add_right_nhdsGT.le
-  simpa [funext (secondTangency_eq_vplus_sub_companionNormal U),
-    hU.top_vplus_pi_div_two hheight hmiddle, companionNormal] using
-    hp.sub continuous_companionNormal.continuousWithinAt.tendsto
-
-theorem IsFullCapMaximizer.firstTangency_tendsto_pi_div_two_left
-    {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1)
-    (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1) :
-    Tendsto (firstTangency U) (𝓝[<] (Real.pi / 2))
-      (𝓝 (horizontalRight U - capWidth U / 4, 0)) := by
-  simpa [funext (firstTangency_eq_vplus_sub_unitNormal U),
-    hU.top_vminus_pi_div_two hheight hmiddle, unitNormal] using
-    (tendsto_vplus_left hU.isCap.imported_isConvexBody (Real.pi / 2)).sub
       continuous_unitNormal.continuousWithinAt.tendsto
 
 theorem IsDownwardCap.secondTangency_tendsto_pi_div_two_left
@@ -130,9 +81,52 @@ private theorem tendsto_cornerVelocities {U : Set Plane} (hU : IsCompact U) {l :
     fun_prop
   exact ((hc.tendsto (a, P, Q)).comp ((tendsto_id.mono_left hl).prodMk_nhds (hP.prodMk_nhds hQ)) :)
 
-theorem IsFullCapMaximizer.cornerVelocities_tendsto_zero_right
-    {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1)
-    (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1) :
+section FullMaximum
+
+variable {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1)
+  (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1)
+include hU hheight hmiddle
+
+theorem IsFullCapMaximizer.top_vplus_pi_div_two :
+    MovingSofaOptimality.vplus U (Real.pi / 2) = (horizontalLeft U + capWidth U / 4, 1) := by
+  obtain ⟨hp, hy⟩ :=
+    (mem_edge_pi_div_two hheight).1 (vplus_mem_edge hU.isCap.imported_isConvexBody _)
+  obtain ⟨hl, -, hlr⟩ := hU.isCap.middleChord_endpoints (by linarith [hU.two_lt_width])
+  have h := dot_le_dot_vplus hU.isCap.isCompact ((mem_edge_pi_div_two hheight).2
+    ⟨hmiddle _ ⟨le_rfl, hlr.le⟩ ▸ capRoof_mem hU.isCap.isCompact hl, rfl⟩)
+  have hJ : horizontalLeft U + capWidth U / 4 ≤ _ ∧ _ :=
+    hU.top_abscissa_mem_middle hheight hmiddle hp hy
+  simp [dot, vvec] at h
+  exact Prod.ext (by linarith [hJ.1]) hy
+
+theorem IsFullCapMaximizer.top_vminus_pi_div_two :
+    MovingSofaOptimality.vminus U (Real.pi / 2) = (horizontalRight U - capWidth U / 4, 1) := by
+  obtain ⟨hp, hy⟩ :=
+    (mem_edge_pi_div_two hheight).1 (vminus_mem_edge hU.isCap.imported_isConvexBody _)
+  obtain ⟨-, hr, hlr⟩ := hU.isCap.middleChord_endpoints (by linarith [hU.two_lt_width])
+  have h := dot_vminus_le_dot hU.isCap.isCompact ((mem_edge_pi_div_two hheight).2
+    ⟨hmiddle _ ⟨hlr.le, le_rfl⟩ ▸ capRoof_mem hU.isCap.isCompact hr, rfl⟩)
+  have hJ : _ ∧ _ ≤ horizontalRight U - capWidth U / 4 :=
+    hU.top_abscissa_mem_middle hheight hmiddle hp hy
+  simp [dot, vvec] at h
+  exact Prod.ext (by linarith [hJ.2]) hy
+
+theorem IsFullCapMaximizer.secondTangency_tendsto_zero_right :
+    Tendsto (secondTangency U) (𝓝[>] (0 : ℝ)) (𝓝 (horizontalLeft U + capWidth U / 4, 0)) := by
+  have hp := (tendsto_vplus_right hU.isCap.imported_isConvexBody (0 + Real.pi / 2)).comp
+    map_add_right_nhdsGT.le
+  simpa [funext (secondTangency_eq_vplus_sub_companionNormal U),
+    hU.top_vplus_pi_div_two hheight hmiddle, companionNormal] using
+    hp.sub continuous_companionNormal.continuousWithinAt.tendsto
+
+theorem IsFullCapMaximizer.firstTangency_tendsto_pi_div_two_left :
+    Tendsto (firstTangency U) (𝓝[<] (Real.pi / 2)) (𝓝 (horizontalRight U - capWidth U / 4, 0)) := by
+  simpa [funext (firstTangency_eq_vplus_sub_unitNormal U),
+    hU.top_vminus_pi_div_two hheight hmiddle, unitNormal] using
+    (tendsto_vplus_left hU.isCap.imported_isConvexBody (Real.pi / 2)).sub
+      continuous_unitNormal.continuousWithinAt.tendsto
+
+theorem IsFullCapMaximizer.cornerVelocities_tendsto_zero_right :
     Tendsto (fun t => (firstCornerVelocity U t, secondCornerVelocity U t)) (𝓝[>] (0 : ℝ))
       (𝓝 (horizontalRight U - 1 - (horizontalLeft U + capWidth U / 4),
         -capRoof U (horizontalRight U))) := by
@@ -145,9 +139,7 @@ theorem IsFullCapMaximizer.cornerVelocities_tendsto_zero_right
   convert h using 3 <;> simp [dot, vvec]
   ring
 
-theorem IsFullCapMaximizer.cornerVelocities_tendsto_pi_div_two_left
-    {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1)
-    (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1) :
+theorem IsFullCapMaximizer.cornerVelocities_tendsto_pi_div_two_left :
     Tendsto (fun t => (firstCornerVelocity U t, secondCornerVelocity U t)) (𝓝[<] (Real.pi / 2))
       (𝓝 (-capRoof U (horizontalLeft U),
         horizontalRight U - capWidth U / 4 - horizontalLeft U - 1)) := by
@@ -159,5 +151,7 @@ theorem IsFullCapMaximizer.cornerVelocities_tendsto_pi_div_two_left
     hU.isCap.imported_supp_pi, imported_supp_pi_div_two, hheight] at h
   convert h using 3 <;> simp [dot, vvec]
   ring
+
+end FullMaximum
 
 end AmbidextrousSofa

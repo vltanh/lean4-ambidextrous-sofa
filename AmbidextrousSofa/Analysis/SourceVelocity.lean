@@ -35,13 +35,13 @@ theorem sourceKappa_neg (q : ℝ) : sourceKappa (-q) = sourceKappa q := by
 theorem continuous_sourceKappa : Continuous sourceKappa := by
   unfold sourceKappa; fun_prop
 
+open MovingSofaOptimality in
 def firstCornerVelocity (U : Set Plane) (t : ℝ) : ℝ :=
-  MovingSofaOptimality.supp U t +
-    MovingSofaOptimality.dot (MovingSofaOptimality.vplus U (t + Real.pi / 2)) (MovingSofaOptimality.vvec (t + Real.pi / 2)) - 1
+  supp U t + dot (vplus U (t + Real.pi / 2)) (vvec (t + Real.pi / 2)) - 1
 
+open MovingSofaOptimality in
 def secondCornerVelocity (U : Set Plane) (t : ℝ) : ℝ :=
-  MovingSofaOptimality.supp U (t + Real.pi / 2) -
-    MovingSofaOptimality.dot (MovingSofaOptimality.vplus U t) (MovingSofaOptimality.vvec t) - 1
+  supp U (t + Real.pi / 2) - dot (vplus U t) (vvec t) - 1
 
 theorem firstCornerVelocity_eq_gPlus (U : Set Plane) (t : ℝ) :
     firstCornerVelocity U t = MovingSofaOptimality.gPlus U t - 1 := by
@@ -51,11 +51,11 @@ theorem secondCornerVelocity_eq_fPlus (U : Set Plane) (t : ℝ) :
     secondCornerVelocity U t = MovingSofaOptimality.fPlus U t - 1 := by
   rw [MovingSofaOptimality.inj_fPlus_eq]; rfl
 
+open MovingSofaOptimality in
 theorem IsDownwardCap.measurable_supportTangent {U : Set Plane} (hU : IsDownwardCap U) :
-    Measurable (fun t => MovingSofaOptimality.dot (MovingSofaOptimality.vplus U t) (MovingSofaOptimality.vvec t)) :=
-  MovingSofaOptimality.continuous_dot_pair.measurable.comp
-    ((AmbidextrousSofa.measurable_vplus hU.imported_isConvexBody).prodMk
-      MovingSofaOptimality.continuous_vvec.measurable)
+    Measurable (fun t => dot (vplus U t) (vvec t)) :=
+  continuous_dot_pair.measurable.comp
+    ((AmbidextrousSofa.measurable_vplus hU.imported_isConvexBody).prodMk continuous_vvec.measurable)
 
 /-- The source paired with an upper normal lies a quarter-turn away. -/
 def companionSourceAngle (t : ℝ) : ℝ :=
@@ -106,10 +106,14 @@ theorem finiteCurvatureDensity_div_tendsto {q δ : ℕ → ℝ} {v : ℝ}
 
 end AngularGrid
 
+section Secants
+
+variable {U : ℕ → Set Plane} {K B : Set Plane} (h : CapHausdorffTendsto U K)
+  (hU : ∀ n, IsDownwardCap (U n)) (hK : IsDownwardCap K)
+  (hB : IsCompact B) (hbox : ∀ n, U n ⊆ B)
+include h hU hK hB hbox
+
 theorem CapHausdorffTendsto.firstCornerSecant_tendsto
-    {U : ℕ → Set Plane} {K B : Set Plane} (h : CapHausdorffTendsto U K)
-    (hU : ∀ n, IsDownwardCap (U n)) (hK : IsDownwardCap K)
-    (hB : IsCompact B) (hbox : ∀ n, U n ⊆ B)
     {angle δ : ℕ → ℝ} {t : ℝ} (hangle : Tendsto angle atTop (𝓝 t))
     (hδ : Tendsto δ atTop (𝓝 0))
     (hsin : ∀ n, 0 < Real.sin (δ n)) (hcos : ∀ n, 0 ≤ Real.cos (δ n))
@@ -124,9 +128,6 @@ theorem CapHausdorffTendsto.firstCornerSecant_tendsto
   rfl
 
 theorem CapHausdorffTendsto.secondCornerSecant_tendsto
-    {U : ℕ → Set Plane} {K B : Set Plane} (h : CapHausdorffTendsto U K)
-    (hU : ∀ n, IsDownwardCap (U n)) (hK : IsDownwardCap K)
-    (hB : IsCompact B) (hbox : ∀ n, U n ⊆ B)
     {angle δ : ℕ → ℝ} {t : ℝ} (hangle : Tendsto angle atTop (𝓝 t))
     (hδ : Tendsto δ atTop (𝓝 0))
     (hsin : ∀ n, 0 < Real.sin (δ n)) (hcos : ∀ n, 0 ≤ Real.cos (δ n))
@@ -141,14 +142,9 @@ theorem CapHausdorffTendsto.secondCornerSecant_tendsto
     Function.comp_apply, ← angleSupport.eq_1, angleSupport_eq_imported_supp]
   ring
 
-namespace AngularGrid
-
 /-- The sampled source may change at every stage. Its moving full normal
 is the only angular convergence hypothesis. -/
-theorem cornerSecant_tendsto
-    {U : ℕ → Set Plane} {K B : Set Plane} (h : CapHausdorffTendsto U K)
-    (hU : ∀ n, IsDownwardCap (U n)) (hK : IsDownwardCap K)
-    (hB : IsCompact B) (hbox : ∀ n, U n ⊆ B)
+theorem AngularGrid.cornerSecant_tendsto
     {level : ℕ → ℕ} (hlevel : Tendsto level atTop atTop)
     (j : ∀ n, SourceIndex (dyadic (level n))) {t : ℝ}
     (hangle : Tendsto (fun n => fullAngle (dyadic (level n)) (j n)) atTop (𝓝 t))
@@ -177,10 +173,7 @@ theorem cornerSecant_tendsto
       linarith [(interiorPoint_mem (dyadic (level n)) s).2]
     · simp [cornerSecant, fullAngle]
 
-theorem sampledCurvatureDensity_tendsto
-    {U : ℕ → Set Plane} {K B : Set Plane} (h : CapHausdorffTendsto U K)
-    (hU : ∀ n, IsDownwardCap (U n)) (hK : IsDownwardCap K)
-    (hB : IsCompact B) (hbox : ∀ n, U n ⊆ B)
+theorem AngularGrid.sampledCurvatureDensity_tendsto
     {level : ℕ → ℕ} (hlevel : Tendsto level atTop atTop)
     (j : ∀ n, SourceIndex (dyadic (level n))) {t : ℝ}
     (hangle : Tendsto (fun n => fullAngle (dyadic (level n)) (j n)) atTop (𝓝 t))
@@ -192,6 +185,6 @@ theorem sampledCurvatureDensity_tendsto
     (cornerSecant_tendsto h hU hK hB hbox hlevel j hangle htop ht)
     (mesh_tendsto.comp hlevel) (fun n => mesh_pos (level n))
 
-end AngularGrid
+end Secants
 
 end AmbidextrousSofa

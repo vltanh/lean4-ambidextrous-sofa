@@ -15,8 +15,9 @@ of the unit normal. Thus its total mass is precisely the previously
 defined source length.
 
 The joint measure has the prescribed angular marginal, commutes with
-restriction to a smaller horizontal interval, and satisfies both exact
-graph flux identities. No limiting graph occupation or contact phase is
+restriction to a horizontal interval, and its sine and negative cosine
+fluxes are the horizontal positive length and the vertical increment
+of the finite graph. No limiting graph occupation or contact phase is
 assumed in this construction.
 -/
 
@@ -95,16 +96,16 @@ theorem innerJointMeasure_angular_mass (U : Set Plane) (grid : Finset QuarterAng
 /-- Spatial localization is literal restriction of the same joint
 measure; it does not select a new angular or spatial subsequence. -/
 theorem innerJointMeasure_restrict_spatial (U : Set Plane) (grid : Finset QuarterAngle)
-    {L l r R : ℝ} (hLl : L ≤ l) (hrR : r ≤ R) :
+    (L R l r : ℝ) :
     (innerJointMeasure U grid L R).restrict (univ ×ˢ Ioc l r) =
-      innerJointMeasure U grid l r := by
+      innerJointMeasure U grid (max L l) (min R r) := by
   ext E hE
   rw [Measure.restrict_apply hE, innerJointMeasure_apply U grid L R
-    (hE.inter (MeasurableSet.univ.prod measurableSet_Ioc)), innerJointMeasure_apply U grid l r hE]
+    (hE.inter (MeasurableSet.univ.prod measurableSet_Ioc)), innerJointMeasure_apply U grid _ _ hE]
   refine Finset.sum_congr rfl fun j _ => congrArg _ (congrArg _ (ext fun x => ?_))
-  simp only [mem_inter_iff, mem_preimage, mem_prod, mem_univ, true_and]
-  exact ⟨fun ⟨⟨h1, h2⟩, _, h3⟩ => ⟨h1, h2, h3⟩,
-    fun ⟨h1, h2, h3⟩ => ⟨⟨h1, h2⟩, ⟨hLl.trans_lt h2.1, h2.2.trans hrR⟩, h3⟩⟩
+  simp only [mem_inter_iff, mem_preimage, mem_prod, mem_univ, true_and, mem_Ioc, max_lt_iff,
+    le_min_iff]
+  tauto
 
 /-- Any measurable property enjoyed by every literal finite source
 holds almost everywhere for the joint measure. -/
@@ -151,43 +152,34 @@ theorem integral_innerJointMeasure_sin (U : Set Plane) (grid : Finset QuarterAng
     (congrArg Prod.snd (normal_eq_unitNormal grid j)).symm]
   exact mul_div_cancel₀ _ (normal_snd_pos grid j).ne'
 
-/-- Both oriented graph increments use the same joint source measure.
-The floor contribution is retained explicitly. -/
-theorem finiteBarrier_projection_eq_joint_integral
-    (U : Set Plane) (grid : Finset QuarterAngle) {l r : ℝ} (hlr : l ≤ r) (t : ℝ) :
-    Real.cos t * (r - l) + Real.sin t *
-        (finiteBarrier U (normal grid) (pairList grid) none r -
-          finiteBarrier U (normal grid) (pairList grid) none l) =
-      Real.cos t *
-        (barrierExpr (pairList grid) none).sourceMass (wallSlope (normal grid))
-          (barrierIntercept (normal grid) (fun i => support U (normal grid i))) l r none +
-      ∫ z : Plane, Real.sin (z.1 - t) ∂innerJointMeasure U grid l r := by
-  rw [integral_innerJointMeasure_angle U grid hlr (w := fun θ => Real.sin (θ - t)) (by fun_prop)]
-  exact finiteBarrier_projection_eq_sources U grid hlr t
+/-- The vertical graph increment is the negative cosine flux of the joint source measure. -/
+theorem finiteBarrier_sub_eq_joint_cosine_integral
+    (U : Set Plane) (grid : Finset QuarterAngle) {l r : ℝ} (hlr : l ≤ r) :
+    finiteBarrier U (normal grid) (pairList grid) none r -
+        finiteBarrier U (normal grid) (pairList grid) none l =
+      ∫ z : Plane, -Real.cos z.1 ∂innerJointMeasure U grid l r := by
+  have h := finiteBarrier_projection_eq_sources U grid hlr (Real.pi / 2)
+  simp only [Real.cos_pi_div_two, Real.sin_pi_div_two, Real.sin_sub_pi_div_two, zero_mul, one_mul,
+    zero_add] at h
+  rw [h, integral_innerJointMeasure_angle U grid hlr (w := fun θ => -Real.cos θ) (by fun_prop)]
 
-theorem innerJointMeasure_middle_mass_dyadic_le
+/-- On the middle window of a cap in `[-R, R] × [0, 1]`, the dyadic joint source measure has
+mass at most `(4R + 12)π` and lives in `[0, π] × [-R, R]`. -/
+theorem innerJointMeasure_middle_bounds
     {U : Set Plane} (hU : IsDownwardCap U) {R : ℝ} (hR : 0 ≤ R)
     (hbox : U ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1) (level : ℕ) :
-    (innerJointMeasure U (dyadic level)
-      (horizontalLeft U + capWidth U / 4)
-      (horizontalRight U - capWidth U / 4)).real univ ≤ (4 * R + 12) * Real.pi := by
-  have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
-  rw [← univ_prod_univ, innerJointMeasure_angular_mass U _ (by unfold capWidth; linarith) .univ]
-  simp only [innerAngularMassOn, mem_univ, Finset.filter_true]
-  exact sum_innerSourceMass_dyadic_le hU hR hbox level
-
-theorem innerJointMeasure_middle_compl_box_eq_zero
-    {U : Set Plane} (hU : IsDownwardCap U) {R : ℝ}
-    (hbox : U ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1) (grid : Finset QuarterAngle) :
-    innerJointMeasure U grid
-      (horizontalLeft U + capWidth U / 4)
-      (horizontalRight U - capWidth U / 4)
-      (Icc (0 : ℝ) Real.pi ×ˢ Icc (-R) R)ᶜ = 0 := by
+    (innerJointMeasure U (dyadic level) (horizontalLeft U + capWidth U / 4)
+      (horizontalRight U - capWidth U / 4)).real univ ≤ (4 * R + 12) * Real.pi ∧
+    innerJointMeasure U (dyadic level) (horizontalLeft U + capWidth U / 4)
+      (horizontalRight U - capWidth U / 4) (Icc (0 : ℝ) Real.pi ×ˢ Icc (-R) R)ᶜ = 0 := by
   obtain ⟨p, hp, hpl⟩ := horizontalLeft_mem hU.nonempty hU.isCompact
   obtain ⟨q, hq, hqr⟩ := horizontalRight_mem hU.nonempty hU.isCompact
-  have := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
-  apply innerJointMeasure_compl_rectangle_eq_zero U grid <;> unfold capWidth <;>
-    linarith [(hbox hp).1.1, (hbox hq).1.2]
+  have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
+  refine ⟨?_, innerJointMeasure_compl_rectangle_eq_zero U _ ?_ ?_⟩
+  · rw [← univ_prod_univ, innerJointMeasure_angular_mass U _ (by unfold capWidth; linarith) .univ]
+    simp only [innerAngularMassOn, mem_univ, Finset.filter_true]
+    exact sum_innerSourceMass_dyadic_le hU hR hbox level
+  all_goals unfold capWidth; linarith [(hbox hp).1.1, (hbox hq).1.2]
 
 end AngularGrid
 end AmbidextrousSofa

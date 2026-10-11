@@ -18,28 +18,13 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-theorem IsDownwardCap.measurable_firstTangency_fst
-    {U : Set Plane} (hU : IsDownwardCap U) :
-    Measurable (fun t => (firstTangency U t).1) := by
+theorem IsDownwardCap.measurable_tangency_coordinates {U : Set Plane} (hU : IsDownwardCap U) :
+    Measurable (fun t => (firstTangency U t).1) ∧ Measurable (fun t => (secondTangency U t).1) ∧
+      Measurable (fun t => (secondTangency U t).2) := by
   have : Measurable (supportTangent U) := hU.measurable_supportTangent
   have := (continuous_angleSupport hU.isCompact).measurable
-  simp only [firstTangency_fst_eq_support]
-  fun_prop
-
-theorem IsDownwardCap.measurable_secondTangency_fst
-    {U : Set Plane} (hU : IsDownwardCap U) :
-    Measurable (fun t => (secondTangency U t).1) := by
-  have : Measurable (supportTangent U) := hU.measurable_supportTangent
-  have := (continuous_angleSupport hU.isCompact).measurable
-  simp only [secondTangency_fst_eq_support]
-  fun_prop
-
-theorem IsDownwardCap.measurable_secondTangency_snd
-    {U : Set Plane} (hU : IsDownwardCap U) :
-    Measurable (fun t => (secondTangency U t).2) := by
-  have : Measurable (supportTangent U) := hU.measurable_supportTangent
-  have := (continuous_angleSupport hU.isCompact).measurable
-  simp only [secondTangency_snd_eq_support]
-  fun_prop
+  simp only [firstTangency_fst_eq_support, secondTangency_fst_eq_support,
+    secondTangency_snd_eq_support]
+  refine ⟨?_, ?_, ?_⟩ <;> fun_prop
 
 end AmbidextrousSofa

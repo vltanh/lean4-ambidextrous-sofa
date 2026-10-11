@@ -1,6 +1,6 @@
 module
 
-public import AmbidextrousSofa.Analysis.JointSourceContactLimit
+public import AmbidextrousSofa.Analysis.JointSourceDensity
 public import AmbidextrousSofa.Analysis.FirstUnitProjection
 public import AmbidextrousSofa.Analysis.DrySourceProjection
 
@@ -9,14 +9,16 @@ public import AmbidextrousSofa.Analysis.DrySourceProjection
 /-!
 # No floor-only mass in the actual common source limit
 
-On a compact strictly dry interval the finite positive horizontal length
-tends to zero. The sine projection of the same joint limit therefore
-vanishes there. Exhausting the open dry interval and removing its single
-zero endpoint leaves only positive niche contacts. Positivity of the
-sine weight transfers this conclusion to the unweighted joint measure.
-The final theorem derives its dry interval from the actual low wing and
-the already proved first-unit bound; no support or occupation premise is
-added to the tilted cap problem.
+In the middle window of the tilted target, the niche is positive exactly
+above the zero of the low wing. On a compact strictly dry interval the
+finite positive horizontal length tends to zero. The sine projection of
+the same joint limit therefore vanishes there. Exhausting the open dry
+interval and removing its single zero endpoint leaves only positive
+niche contacts. Positivity of the sine weight transfers this conclusion
+to the unweighted joint measure. The final theorem derives its dry
+interval from the actual low wing and the already proved first-unit
+bound; no support or occupation premise is added to the tilted cap
+problem.
 -/
 
 noncomputable section
@@ -25,25 +27,24 @@ open Set Filter MeasureTheory
 open scoped Topology
 
 namespace AmbidextrousSofa
+
+variable {target : Set Plane} {a b C h m c K : ℝ} {ρ : ℝ → ℝ}
+
+/-- The open interval of the middle window of the tilted target above the zero of its low
+wing. -/
+def firstUnitPositiveInterval (U : Set Plane) (C : ℝ) : Set ℝ :=
+  Ioo (max (-C) (companionZero (leftCompanionCap U (-C)))) C
+
+/-- In the middle window, the niche is positive exactly above the zero of the low wing. -/
+theorem IsTiltedFirstUnitTarget.positive_middle_eq
+    (H : IsTiltedFirstUnitTarget target a b C h m c ρ K) :
+    Ioo (-C) C ∩ {x | 0 < sweptNiche target (Real.pi / 2) x} = firstUnitPositiveInterval target C :=
+  fullTiltedSupportQuarterPair_positive_middle_eq H.hU H.hm.le H.haffine H.hρ H.hρ0 H.hρK H.heq
+    H.hl H.hr H.hC H.hm H.hheight H.hlow H.hhigh H.hh H.hunit
+
 namespace AngularGrid.SelectedJointSourceLimit
 
-variable {target : Set Plane} {a b : ℝ} (J : SelectedJointSourceLimit target a b)
-
-theorem horizontalProjection_Ioc_eq_zero_of_dry
-    (hTarget : IsDownwardCap target) {l r : ℝ} (hlr : l ≤ r)
-    (hL : horizontalLeft target + capWidth target / 4 < l)
-    (hR : r < horizontalRight target - capWidth target / 4)
-    (hnegative : ∀ x ∈ Icc l r, ∀ t ∈ Ioc (0 : ℝ) (Real.pi / 2),
-      secondWallNumerator target t x < 0) :
-    (J.horizontalProjection : Measure ℝ) (Ioc l r) = 0 := by
-  have hzero := finitePositiveLength_tendsto_zero_on_dry_interval
-    J.hausdorff J.isCap hTarget J.level_tendsto (show 0 ≤ |a| + |b| + 1 by positivity)
-    (fun n => subset_symmetricBox_of_horizontalBox (J.selected n).inBox) hlr hL hR hnegative
-  simp only [← integral_innerJointMeasure_sin _ _ hlr] at hzero
-  rw [← measureReal_eq_zero_iff (measure_ne_top _ _),
-    J.horizontalProjection_real_eq_sine_integral measurableSet_Ioc]
-  exact tendsto_nhds_unique (J.local_test_integral_tendsto hTarget sourceSineFunction hL hR)
-    (hzero.mono_left sourceLimitFilter_le_atTop)
+variable (J : SelectedJointSourceLimit target a b)
 
 theorem spatial_Ioo_eq_zero_of_dry
     (hTarget : IsDownwardCap target) {l r : ℝ}
@@ -56,13 +57,20 @@ theorem spatial_Ioo_eq_zero_of_dry
     J.sinePart_ne_zero_ae ?_
   rw [← sourceHorizontalProjection_apply _ measurableSet_Ioo, ← Measure.restrict_eq_zero,
     ← Measure.restrict_zero (Ioo l r)]
-  refine measure_restrict_Ioo_eq_of_closed_subintervals fun x y hxy => ?_
-  rw [Measure.restrict_zero, Measure.restrict_eq_zero]
-  rcases le_or_gt x y with hxy' | hxy'
-  · exact J.horizontalProjection_Ioc_eq_zero_of_dry hTarget hxy'
-      (hmiddle (hxy (left_mem_Icc.2 hxy'))).1 (hmiddle (hxy (right_mem_Icc.2 hxy'))).2
-      fun z hz => hnegative z (hxy hz)
-  · simp [Ioc_eq_empty_of_le hxy'.le]
+  -- On a compact dry interval the finite positive horizontal length tends to zero.
+  refine measure_restrict_Ioo_eq_of_Ioc fun x y hxy hsub => ?_
+  have hL := (hmiddle (hsub (left_mem_Icc.2 hxy))).1
+  have hR := (hmiddle (hsub (right_mem_Icc.2 hxy))).2
+  have hzero := finitePositiveLength_tendsto_zero_on_dry_interval
+    J.hausdorff J.isCap hTarget J.level_tendsto (show 0 ≤ |a| + |b| + 1 by positivity)
+    (fun n => subset_symmetricBox_of_horizontalBox (J.selected n).inBox) hxy hL hR
+    fun z hz => hnegative z (hsub hz)
+  simp only [← integral_innerJointMeasure_sin _ _ hxy] at hzero
+  change (J.horizontalProjection : Measure ℝ) (Ioc x y) = 0
+  rw [← measureReal_eq_zero_iff (measure_ne_top _ _),
+    J.horizontalProjection_real_eq_sine_integral measurableSet_Ioc]
+  exact tendsto_nhds_unique (J.local_test_integral_tendsto hTarget sourceSineFunction hL hR)
+    (hzero.mono_left sourceLimitFilter_le_atTop)
 
 /-- Every actual source abscissa is strictly inside the middle window:
 the limiting endpoints are two null spatial fibers. -/
@@ -78,45 +86,28 @@ theorem ae_spatial_mem_open_middle (hTarget : IsDownwardCap target) :
 
 /-- The floor and the zero endpoint carry no actual joint source mass.
 Only natural cap data and the proved first density bound are used. -/
-theorem ae_niche_pos_of_first_unit
-    (hU : IsFullCapMaximizer target) {C h m c : ℝ}
-    (hl : horizontalLeft target = -2 * C) (hr : horizontalRight target = 2 * C)
-    (hC : 1 / 2 < C) (hm : 0 < m) (hheight : capHeight target = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft target) (horizontalRight target),
-      capRoof target x = m * x + c)
-    (hlow : capRoof target (-C) = 1 - h) (hhigh : capRoof target C = 1) (hh : 0 < h)
-    {ρ : ℝ → ℝ} {K : ℝ} (hρ : Measurable ρ)
-    (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (heq : (upperCurvature target).restrict (regularCurvatureDomain m) =
-      (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
-    (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1) :
+theorem ae_niche_pos (H : IsTiltedFirstUnitTarget target a b C h m c ρ K) :
     ∀ᵐ z ∂(J.measure : Measure Plane), 0 < sweptNiche target (Real.pi / 2) z.2 := by
-  have haff : ∀ x ∈ Icc (-C) C, capRoof target x = m * x + c := fun x hx => haffine x (by
-    rw [middleHalfInterval, hl, hr]; constructor <;> linarith only [hx.1, hx.2])
-  obtain ⟨ha, hb⟩ : -C ∈ AmbidextrousSofa.horizontalProjection target ∧
-      C ∈ AmbidextrousSofa.horizontalProjection target := by
-    rw [horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact hU.isCap.convex, hl, hr]
-    exact ⟨⟨by linarith, by linarith⟩, by linarith, by linarith⟩
-  have hab : -C < C := by linarith only [hC]
-  have hzaxis := (hU.isCap.leftCompanionCap ha).companionZero_lt_left_add_one
-    (by rw [(hU.isCap.top_leftCompanionCap_of_positive_affine ha hb hab hm haff).1, hlow]
-        linarith only [hh])
-    (by rw [horizontalLeft_leftCompanionCap hU.isCap ha,
-          hU.isCap.capRoof_leftCompanionCap ha ⟨le_rfl, by rw [hl]; linarith only [hC]⟩]
-        exact (hU.endpoint_heights_pos_of_affine hheight ⟨m, c, haffine⟩).2)
-  rw [horizontalLeft_leftCompanionCap hU.isCap ha] at hzaxis
-  have hzC : companionZero (leftCompanionCap target (-C)) < C := by linarith only [hzaxis, hl, hC]
-  have hJ : Ioo (horizontalLeft target + capWidth target / 4)
-      (horizontalRight target - capWidth target / 4) = Ioo (-C) C := by
-    unfold capWidth; rw [hl, hr]; congr 1 <;> ring
-  filter_upwards [hJ ▸ J.ae_spatial_mem_open_middle hU.isCap, measure_eq_zero_iff_ae_notMem.mp
-      (J.spatial_Ioo_eq_zero_of_dry hU.isCap (l := -C) (hJ ▸ Ioo_subset_Ioo le_rfl hzC.le)
-      fun x hx t ht => hU.isCap.secondWallNumerator_neg_of_lt_low_wing_zero
-        ha hb hab haff hhigh (hx.2.trans hzC) hx.2 (hx.2.trans hzaxis) ht),
+  have haff : ∀ x ∈ Icc (-C) C, capRoof target x = m * x + c := H.middleHalfInterval_eq ▸ H.haffine
+  obtain ⟨ha, hb⟩ := H.mem_horizontalProjection
+  have hab : -C < C := by linarith only [H.hC]
+  have hzaxis := (H.hU.isCap.leftCompanionCap ha).companionZero_lt_left_add_one
+    (by rw [(H.hU.isCap.top_leftCompanionCap_of_positive_affine ha hb hab H.hm haff).1, H.hlow]
+        linarith only [H.hh])
+    (by rw [horizontalLeft_leftCompanionCap H.hU.isCap ha,
+          H.hU.isCap.capRoof_leftCompanionCap ha ⟨le_rfl, by rw [H.hl]; linarith only [H.hC]⟩]
+        exact (H.hU.endpoint_heights_pos_of_affine H.hheight ⟨m, c, H.haffine⟩).2)
+  rw [horizontalLeft_leftCompanionCap H.hU.isCap ha] at hzaxis
+  have hzC : companionZero (leftCompanionCap target (-C)) < C := by
+    linarith only [hzaxis, H.hl, H.hC]
+  filter_upwards [H.middle_eq ▸ J.ae_spatial_mem_open_middle H.hU.isCap,
+    measure_eq_zero_iff_ae_notMem.mp (J.spatial_Ioo_eq_zero_of_dry H.hU.isCap (l := -C)
+      (H.middle_eq ▸ Ioo_subset_Ioo le_rfl hzC.le) fun x hx t ht =>
+        H.hU.isCap.secondWallNumerator_neg_of_lt_low_wing_zero ha hb hab haff H.hhigh
+          (hx.2.trans hzC) hx.2 (hx.2.trans hzaxis) ht),
     measure_eq_zero_iff_ae_notMem.mp (J.spatial_fiber_eq_zero _)] with z hz hn hz₀
-  exact (fullTiltedSupportQuarterPair_positive_middle_iff hU hm.le haffine hρ hρ0 hρK heq hl hr hC
-    hm hheight hlow hhigh hh hunit hz).2 ((not_lt.1 fun h => hn ⟨mem_univ _, hz.1, h⟩).lt_of_ne
-      fun h => hz₀ ⟨mem_univ _, h.symm⟩)
+  refine (H.positive_middle_eq.ge ⟨max_lt hz.1 ?_, hz.2⟩).2
+  exact (not_lt.1 fun h => hn ⟨mem_univ _, hz.1, h⟩).lt_of_ne fun h => hz₀ ⟨mem_univ _, h.symm⟩
 
 end AngularGrid.SelectedJointSourceLimit
 end AmbidextrousSofa

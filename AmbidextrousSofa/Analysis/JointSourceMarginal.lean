@@ -10,10 +10,9 @@ public import AmbidextrousSofa.Measure.FiniteMeasurePortmanteau
 
 The finite neighboring-wall bound passes to open angular strips. It
 forces every angular fiber of the common weak limit to have zero mass,
-including the axis, top, and affine normals. Thus interval masses converge
-along the same filter that already identifies the selected source masses
-with the actual curvature. This identifies the angular marginal on every
-regular interval.
+including the axis, top, and affine normals. The angular marginal is the
+image of the limit under the angle coordinate. Two measures that agree on
+compactly contained intervals agree on the open interval.
 -/
 
 noncomputable section
@@ -24,21 +23,27 @@ open scoped Topology
 namespace AmbidextrousSofa
 namespace AngularGrid
 
-/-- Equality on every compactly contained angular interval determines
-the restrictions to the open interval. The cover is a literal sequence
-of inset intervals, so no boundary atom is added. -/
-theorem measure_restrict_Ioo_eq_of_closed_subintervals
-    {μ ν : Measure ℝ} {s t : ℝ}
-    (hinterval : ∀ x y : ℝ, Icc x y ⊆ Ioo s t →
-      μ.restrict (Ioc x y) = ν.restrict (Ioc x y)) :
+/-- Two measures that agree on every interval `Ioc x y` with `Icc x y ⊆ Ioo s t` agree on
+`Ioo s t`. The open interval is exhausted by compactly contained ones, so no endpoint atom is
+added. -/
+theorem measure_restrict_Ioo_eq_of_Ioc {μ ν : Measure ℝ} [IsLocallyFiniteMeasure μ] {s t : ℝ}
+    (h : ∀ x y, x ≤ y → Icc x y ⊆ Ioo s t → μ (Ioc x y) = ν (Ioc x y)) :
     μ.restrict (Ioo s t) = ν.restrict (Ioo s t) := by
-  have h (x y : ℝ) (hx : s < x) (_ : x ≤ y) (hy : y < t) :
+  have h' (x y : ℝ) (hx : s < x) (_ : x ≤ y) (hy : y < t) :
       μ.restrict (Ioo x y) = ν.restrict (Ioo x y) := by
     rw [← Measure.restrict_restrict_of_subset Ioo_subset_Ioc_self,
-      hinterval x y (Icc_subset_Ioo hx hy), Measure.restrict_restrict_of_subset Ioo_subset_Ioc_self]
+      ← Measure.restrict_restrict_of_subset (μ := ν) Ioo_subset_Ioc_self]
+    congr 1
+    refine Measure.ext_of_Ioc _ _ fun u v _ => ?_
+    rw [Measure.restrict_apply measurableSet_Ioc, Measure.restrict_apply measurableSet_Ioc,
+      Ioc_inter_Ioc]
+    rcases le_or_gt (u ⊔ x) (v ⊓ y) with huv | huv
+    · exact h _ _ huv fun z hz =>
+        ⟨hx.trans_le (le_sup_right.trans hz.1), (hz.2.trans inf_le_right).trans_lt hy⟩
+    · simp [Ioc_eq_empty_of_le huv.le]
   exact le_antisymm
-    (measure_restrict_Ioo_le_of_compactly_contained fun x y h₁ h₂ h₃ => (h x y h₁ h₂ h₃).le)
-    (measure_restrict_Ioo_le_of_compactly_contained fun x y h₁ h₂ h₃ => (h x y h₁ h₂ h₃).ge)
+    (measure_restrict_Ioo_le_of_compactly_contained fun x y h₁ h₂ h₃ => (h' x y h₁ h₂ h₃).le)
+    (measure_restrict_Ioo_le_of_compactly_contained fun x y h₁ h₂ h₃ => (h' x y h₁ h₂ h₃).ge)
 
 /-- The finite neighboring-wall estimate on a closed angular interval, with one boundary mesh
 cell: the bound `innerSourceMass_sum_interval_le` of `HorizontalCutoff` (not imported here),
@@ -66,14 +71,10 @@ theorem angular_open_mass_le {s t : ℝ} (hst : s ≤ t) :
   rw [add_zero] at hB
   refine finiteMeasure_real_open_le_of_tendsto_bound J.converges (isOpen_Ioo.prod isOpen_univ)
     (mul_nonneg (by positivity) (sub_nonneg.2 hst)) hB (.of_forall fun n => ?_)
-  have hlr := horizontalLeft_le_horizontalRight (J.isCap n).nonempty (J.isCap n).isCompact
   calc _ ≤ (J.finiteMeasure n : Measure Plane).real (Icc s t ×ˢ univ) :=
         measureReal_mono (prod_mono Ioo_subset_Icc_self Subset.rfl)
     _ = innerAngularMass (J.caps n) (dyadic (J.level n)) (Icc s t) :=
-        innerJointMeasure_angular_mass (J.caps n) (dyadic (J.level n))
-          (show horizontalLeft (J.caps n) + capWidth (J.caps n) / 4 ≤
-            horizontalRight (J.caps n) - capWidth (J.caps n) / 4 by unfold capWidth; linarith)
-          measurableSet_Icc
+        J.finiteMeasure_real_prod_univ n measurableSet_Icc
     _ ≤ _ := innerAngularMass_Icc_le (J.isCap n) (by positivity)
         (subset_symmetricBox_of_horizontalBox (J.selected n).inBox) _ hst
 
@@ -91,59 +92,11 @@ theorem angular_fiber_eq_zero (θ : ℝ) :
     _ ≤ _ := J.angular_open_mass_le (by linarith)
     _ = (4 * (|a| + |b| + 1) + 12) * (2 * selectionRate n) := by ring
 
-theorem angular_Ioc_eq_curvature
-    (hTarget : IsFullCapMaximizer target) (hheight : capHeight target = 1)
-    {m c s t : ℝ}
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft target) (horizontalRight target),
-      capRoof target x = m * x + c)
-    (hTargetBox : target ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1)
-    (hleft : a < horizontalLeft target) (hright : horizontalRight target < b)
-    (hst : s ≤ t) (hregular : Icc s t ⊆ regularCurvatureDomain m) :
-    (J.measure : Measure Plane) (Ioc s t ×ˢ univ) = upperCurvature target (Ioc s t) := by
-  have hfrontier : (J.measure : Measure Plane) (frontier (Ioc s t ×ˢ (univ : Set ℝ))) = 0 := by
-    rcases hst.lt_or_eq with hst | rfl
-    · rw [frontier_prod_univ_eq, frontier_Ioc hst, insert_eq, union_prod]
-      exact measure_union_null (J.angular_fiber_eq_zero s) (J.angular_fiber_eq_zero t)
-    · simp
-  exact (measureReal_eq_measureReal_iff (measure_ne_top _ _) measure_Ioc_lt_top.ne).1
-    (tendsto_nhds_unique (finiteMeasure_tendsto_real_apply_of_null_frontier J.converges hfrontier)
-      (J.angular_mass_tendsto hTarget hheight haffine hTargetBox hleft hright hst hregular))
-
 /-- The marginal retains the literal full upper-normal coordinate. -/
 def angularMeasure : Measure ℝ := (J.measure : Measure Plane).map Prod.fst
 
 instance angularMeasure_isFinite : IsFiniteMeasure J.angularMeasure :=
   (J.measure : Measure Plane).isFiniteMeasure_map Prod.fst
-
-/-- The marginal equality holds on the entire literal regular domain,
-with its actual top and affine normals removed. -/
-theorem angularMeasure_restrict_regular_eq_density
-    (hTarget : IsFullCapMaximizer target) (hheight : capHeight target = 1)
-    {m c : ℝ} {ρ : ℝ → ℝ}
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft target) (horizontalRight target),
-      capRoof target x = m * x + c)
-    (hTargetBox : target ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1)
-    (hleft : a < horizontalLeft target) (hright : horizontalRight target < b)
-    (heq : (upperCurvature target).restrict (regularCurvatureDomain m) =
-      (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t))) :
-    J.angularMeasure.restrict (regularCurvatureDomain m) =
-      (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)) := by
-  have hsub := (regularCurvatureDomain_eq_three m).ge
-  have h {u v : ℝ} (huv : Ioo u v ⊆ regularCurvatureDomain m) :
-      J.angularMeasure.restrict (Ioo u v) = (upperCurvature target).restrict (Ioo u v) := by
-    refine measure_restrict_Ioo_eq_of_closed_subintervals fun s t hst =>
-      Measure.ext_of_Ioc _ _ fun x y _ => ?_
-    rw [Measure.restrict_apply measurableSet_Ioc, Measure.restrict_apply measurableSet_Ioc,
-      Ioc_inter_Ioc]
-    by_cases hspan : max x s ≤ min y t
-    · rw [angularMeasure, Measure.map_apply measurable_fst measurableSet_Ioc, ← prod_univ]
-      exact J.angular_Ioc_eq_curvature hTarget hheight haffine hTargetBox hleft hright hspan
-        fun z hz => huv (hst ⟨(le_max_right _ _).trans hz.1, hz.2.trans (min_le_right _ _)⟩)
-    · simp only [Ioc_eq_empty_of_le (le_of_not_ge hspan), measure_empty]
-  rw [← heq, regularCurvatureDomain_eq_three, Measure.restrict_union_congr,
-    Measure.restrict_union_congr]
-  exact ⟨⟨h fun x hx => hsub (.inl (.inl hx)), h fun x hx => hsub (.inl (.inr hx))⟩,
-    h fun x hx => hsub (.inr hx)⟩
 
 end SelectedJointSourceLimit
 end AngularGrid

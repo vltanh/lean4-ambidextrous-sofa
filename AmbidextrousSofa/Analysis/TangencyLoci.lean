@@ -59,11 +59,29 @@ theorem secondTangency_snd_eq_support (U : Set Plane) (t : ℝ) :
     angleSupport_eq_imported_supp]
   ring
 
+theorem absolutelyContinuousOnInterval_monotoneOn_of_ae_hasDerivAt_nonneg
+    {f d : ℝ → ℝ} {a b : ℝ} (hf : AbsolutelyContinuousOnInterval f a b)
+    (hab : a ≤ b)
+    (hd : ∀ᵐ t ∂volume.restrict (Ioo a b), HasDerivAt f (d t) t ∧ 0 ≤ d t) :
+    MonotoneOn f (Icc a b) := by
+  intro x hx y hy hxy
+  have h := absolutelyContinuousOnInterval_le_initial_of_ae_deriv_nonpos (f := fun t => -f t)
+    (hf.neg.mono (by rw [uIcc_of_le hab, uIcc_of_le hxy]; exact Icc_subset_Icc hx.1 hy.2)) hxy
+    (by
+      filter_upwards [ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hx.1 hy.2) hd]
+        with t ht
+      simpa [ht.1.deriv] using ht.2) (right_mem_Icc.mpr hxy)
+  linarith
+
+section Density
+
+variable {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {C a b t : ℝ}
+  (hρ : Measurable ρ) (hρ0 : ∀ x, 0 ≤ ρ x) (hρC : ∀ x, ρ x ≤ C)
+  (heq : (upperCurvature U).restrict S =
+    (volume.restrict S).withDensity (fun x => ENNReal.ofReal (ρ x)))
+include hU hρ hρ0 hρC heq
+
 theorem IsDownwardCap.absolutelyContinuousOnInterval_tangency_coordinates_of_density
-    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {C a b : ℝ}
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρC : ∀ t, ρ t ≤ C)
-    (heq : (upperCurvature U).restrict S =
-      (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
     (hab : a ≤ b) (hbase : Icc a b ⊆ S)
     (hshift : Icc (a + Real.pi / 2) (b + Real.pi / 2) ⊆ S) :
     AbsolutelyContinuousOnInterval (fun t => (firstTangency U t).1) a b ∧
@@ -85,10 +103,6 @@ theorem IsDownwardCap.absolutelyContinuousOnInterval_tangency_coordinates_of_den
     (hgt.neg.mul hc).sub (hg.mul hs), (hgt.neg.mul hs).add (hg.mul hc)⟩
 
 theorem IsDownwardCap.ae_hasDerivAt_tangency_coordinates_of_density
-    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {C a b : ℝ}
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρC : ∀ t, ρ t ≤ C)
-    (heq : (upperCurvature U).restrict S =
-      (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
     (hab : a ≤ b) (hbase : Icc a b ⊆ S)
     (hshift : Icc (a + Real.pi / 2) (b + Real.pi / 2) ⊆ S) :
     ∀ᵐ t ∂volume.restrict (Ioo a b),
@@ -109,78 +123,38 @@ theorem IsDownwardCap.ae_hasDerivAt_tangency_coordinates_of_density
     (hcy.sub (hv.1.mul (Real.hasDerivAt_sin t))).congr_deriv ?_⟩ <;>
   simp only [cornerVelocityX, cornerVelocityY] <;> ring
 
-theorem absolutelyContinuousOnInterval_monotoneOn_of_ae_hasDerivAt_nonneg
-    {f d : ℝ → ℝ} {a b : ℝ} (hf : AbsolutelyContinuousOnInterval f a b)
-    (hab : a ≤ b)
-    (hd : ∀ᵐ t ∂volume.restrict (Ioo a b), HasDerivAt f (d t) t ∧ 0 ≤ d t) :
-    MonotoneOn f (Icc a b) := by
-  intro x hx y hy hxy
-  have h := absolutelyContinuousOnInterval_le_initial_of_ae_deriv_nonpos (f := fun t => -f t)
-    (hf.neg.mono (by rw [uIcc_of_le hab, uIcc_of_le hxy]; exact Icc_subset_Icc hx.1 hy.2)) hxy
-    (by
-      filter_upwards [ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hx.1 hy.2) hd]
-        with t ht
-      simpa [ht.1.deriv] using ht.2) (right_mem_Icc.mpr hxy)
-  linarith
-
-private theorem sin_cos_nonneg_of_quarter {a b t : ℝ}
-    (hquarter : Icc a b ⊆ Ioo (0 : ℝ) (Real.pi / 2)) (ht : t ∈ Ioo a b) :
-    0 ≤ Real.sin t ∧ 0 ≤ Real.cos t := by
-  obtain ⟨h0, h1⟩ := hquarter (Ioo_subset_Icc_self ht)
-  exact ⟨Real.sin_nonneg_of_nonneg_of_le_pi h0.le (by linarith [Real.pi_pos]),
-    Real.cos_nonneg_of_mem_Icc ⟨by linarith [Real.pi_pos], h1.le⟩⟩
-
-theorem IsDownwardCap.firstTangency_monotone_of_unit_density
-    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {C a b : ℝ}
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρC : ∀ t, ρ t ≤ C)
-    (heq : (upperCurvature U).restrict S =
-      (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
+/-- On a closed interval of the first quarter with regular directions, unit first density
+makes the first tangency move right and down, and unit companion density makes the second
+tangency move right and up. -/
+theorem IsDownwardCap.tangency_monotone_of_unit_density
     (hab : a ≤ b) (hquarter : Icc a b ⊆ Ioo (0 : ℝ) (Real.pi / 2))
-    (hbase : Icc a b ⊆ S) (hshift : Icc (a + Real.pi / 2) (b + Real.pi / 2) ⊆ S)
-    (hunit : ∀ᵐ t ∂volume.restrict (Ioo a b), ρ t ≤ 1) :
-    MonotoneOn (fun t => (firstTangency U t).1) (Icc a b) ∧
-      AntitoneOn (fun t => (firstTangency U t).2) (Icc a b) := by
+    (hbase : Icc a b ⊆ S) (hshift : Icc (a + Real.pi / 2) (b + Real.pi / 2) ⊆ S) :
+    ((∀ᵐ t ∂volume.restrict (Ioo a b), ρ t ≤ 1) →
+      MonotoneOn (fun t => (firstTangency U t).1) (Icc a b) ∧
+        AntitoneOn (fun t => (firstTangency U t).2) (Icc a b)) ∧
+    ((∀ᵐ t ∂volume.restrict (Ioo a b), ρ (t + Real.pi / 2) ≤ 1) →
+      MonotoneOn (fun t => (secondTangency U t).1) (Icc a b) ∧
+        MonotoneOn (fun t => (secondTangency U t).2) (Icc a b)) := by
   have hac := hU.absolutelyContinuousOnInterval_tangency_coordinates_of_density
     hρ hρ0 hρC heq hab hbase hshift
-  have hd := hU.ae_hasDerivAt_tangency_coordinates_of_density
-    hρ hρ0 hρC heq hab hbase hshift
-  constructor
-  · apply absolutelyContinuousOnInterval_monotoneOn_of_ae_hasDerivAt_nonneg hac.1 hab
-    filter_upwards [ae_restrict_mem measurableSet_Ioo, hd, hunit] with t ht hd hu
-    exact ⟨hd.1, mul_nonneg (sub_nonneg.mpr hu) (sin_cos_nonneg_of_quarter hquarter ht).1⟩
-  · have hmono : MonotoneOn (fun t => -(firstTangency U t).2) (Icc a b) := by
-      apply absolutelyContinuousOnInterval_monotoneOn_of_ae_hasDerivAt_nonneg hac.2.1.neg hab
-      filter_upwards [ae_restrict_mem measurableSet_Ioo, hd, hunit] with t ht hd hu
-      exact ⟨hd.2.1.neg, by nlinarith [(sin_cos_nonneg_of_quarter hquarter ht).2]⟩
-    simpa using hmono.neg
-
-theorem IsDownwardCap.secondTangency_monotone_of_unit_density
-    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {C a b : ℝ}
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρC : ∀ t, ρ t ≤ C)
-    (heq : (upperCurvature U).restrict S =
-      (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
-    (hab : a ≤ b) (hquarter : Icc a b ⊆ Ioo (0 : ℝ) (Real.pi / 2))
-    (hbase : Icc a b ⊆ S) (hshift : Icc (a + Real.pi / 2) (b + Real.pi / 2) ⊆ S)
-    (hunit : ∀ᵐ t ∂volume.restrict (Ioo a b), ρ (t + Real.pi / 2) ≤ 1) :
-    MonotoneOn (fun t => (secondTangency U t).1) (Icc a b) ∧
-      MonotoneOn (fun t => (secondTangency U t).2) (Icc a b) := by
-  have hac := hU.absolutelyContinuousOnInterval_tangency_coordinates_of_density
-    hρ hρ0 hρC heq hab hbase hshift
-  have hd := hU.ae_hasDerivAt_tangency_coordinates_of_density
-    hρ hρ0 hρC heq hab hbase hshift
-  constructor
-  · apply absolutelyContinuousOnInterval_monotoneOn_of_ae_hasDerivAt_nonneg hac.2.2.1 hab
-    filter_upwards [ae_restrict_mem measurableSet_Ioo, hd, hunit] with t ht hd hu
-    exact ⟨hd.2.2.1, mul_nonneg (sub_nonneg.mpr hu) (sin_cos_nonneg_of_quarter hquarter ht).2⟩
-  · apply absolutelyContinuousOnInterval_monotoneOn_of_ae_hasDerivAt_nonneg hac.2.2.2 hab
-    filter_upwards [ae_restrict_mem measurableSet_Ioo, hd, hunit] with t ht hd hu
-    exact ⟨hd.2.2.2, mul_nonneg (sub_nonneg.mpr hu) (sin_cos_nonneg_of_quarter hquarter ht).1⟩
+  have hd := hU.ae_hasDerivAt_tangency_coordinates_of_density hρ hρ0 hρC heq hab hbase hshift
+  have hsc : ∀ᵐ t ∂volume.restrict (Ioo a b), 0 ≤ Real.sin t ∧ 0 ≤ Real.cos t := by
+    filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ht
+    exact (sin_cos_pos_of_mem_quarter (hquarter (Ioo_subset_Icc_self ht))).imp le_of_lt le_of_lt
+  have hmono {f d : ℝ → ℝ} (hf : AbsolutelyContinuousOnInterval f a b)
+      (hfd : ∀ᵐ t ∂volume.restrict (Ioo a b), HasDerivAt f (d t) t ∧ 0 ≤ d t) :=
+    absolutelyContinuousOnInterval_monotoneOn_of_ae_hasDerivAt_nonneg hf hab hfd
+  constructor <;> intro hunit
+  · exact ⟨hmono hac.1 (by filter_upwards [hd, hunit, hsc] with t hd hu hsc
+      using ⟨hd.1, mul_nonneg (sub_nonneg.mpr hu) hsc.1⟩),
+      by simpa using (hmono hac.2.1.neg (by filter_upwards [hd, hunit, hsc] with t hd hu hsc
+        using ⟨hd.2.1.neg, by nlinarith⟩)).neg⟩
+  · exact ⟨hmono hac.2.2.1 (by filter_upwards [hd, hunit, hsc] with t hd hu hsc
+      using ⟨hd.2.2.1, mul_nonneg (sub_nonneg.mpr hu) hsc.2⟩),
+      hmono hac.2.2.2 (by filter_upwards [hd, hunit, hsc] with t hd hu hsc
+        using ⟨hd.2.2.2, mul_nonneg (sub_nonneg.mpr hu) hsc.1⟩)⟩
 
 theorem IsDownwardCap.hasDerivAt_firstWall_angle_of_density
-    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {C a b t : ℝ}
-    (hρ : Measurable ρ) (hρ0 : ∀ x, 0 ≤ ρ x) (hρC : ∀ x, ρ x ≤ C)
-    (heq : (upperCurvature U).restrict S =
-      (volume.restrict S).withDensity (fun x => ENNReal.ofReal (ρ x)))
     (hbase : Icc a b ⊆ S) (ht : t ∈ Ioo a b) (hs : Real.sin t ≠ 0) (x : ℝ) :
     HasDerivAt (fun s => firstWall U s x)
       ((x - (firstTangency U t).1) / Real.sin t ^ 2) t := by
@@ -191,10 +165,6 @@ theorem IsDownwardCap.hasDerivAt_firstWall_angle_of_density
   linear_combination x * Real.sin_sq_add_cos_sq t
 
 theorem IsDownwardCap.hasDerivAt_secondWall_angle_of_density
-    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {C a b t : ℝ}
-    (hρ : Measurable ρ) (hρ0 : ∀ x, 0 ≤ ρ x) (hρC : ∀ x, ρ x ≤ C)
-    (heq : (upperCurvature U).restrict S =
-      (volume.restrict S).withDensity (fun x => ENNReal.ofReal (ρ x)))
     (hshift : Icc (a + Real.pi / 2) (b + Real.pi / 2) ⊆ S)
     (ht : t ∈ Ioo a b) (hc : Real.cos t ≠ 0) (x : ℝ) :
     HasDerivAt (fun s => secondWall U s x)
@@ -205,5 +175,7 @@ theorem IsDownwardCap.hasDerivAt_secondWall_angle_of_density
   simp only [Pi.add_apply, secondTangency_fst_eq_support]
   congr 1
   linear_combination x * Real.sin_sq_add_cos_sq t
+
+end Density
 
 end AmbidextrousSofa

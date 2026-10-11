@@ -25,55 +25,45 @@ open Set Filter MeasureTheory
 namespace AmbidextrousSofa
 namespace AngularGrid.SelectedJointSourceLimit
 
-variable {target : Set Plane} {a b : ℝ} (J : SelectedJointSourceLimit target a b)
-  (hTarget : IsFullCapMaximizer target) (hheight : capHeight target = 1)
-  {m c K : ℝ} {ρ : ℝ → ℝ}
-  (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft target) (horizontalRight target),
-    capRoof target x = m * x + c)
-  (hTargetBox : target ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1)
-  (hleft : a < horizontalLeft target) (hright : horizontalRight target < b)
-  (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-  (heq : (upperCurvature target).restrict (regularCurvatureDomain m) =
-    (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
-  {C h : ℝ}
-  (hl : horizontalLeft target = -2 * C) (hr : horizontalRight target = 2 * C)
-  (hC : 1 / 2 < C) (hm : 0 < m)
-  (hlow : capRoof target (-C) = 1 - h) (hhigh : capRoof target C = 1) (hh : 0 < h)
-  (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1)
+variable {target : Set Plane} {a b C h m c K : ℝ} {ρ : ℝ → ℝ}
+  (J : SelectedJointSourceLimit target a b) (H : IsTiltedFirstUnitTarget target a b C h m c ρ K)
 
 local notation "aD" => J.sourceBranchDensity (secondTangentSource target) (Real.pi / 2)
-local notation "F" => fullTiltedSupportQuarterPair hTarget hm.le haffine hρ hρ0 hρK heq
+local notation "F" => fullTiltedSupportQuarterPair H.hU H.hm.le H.haffine H.hρ H.hρ0 H.hρK H.heq
 set_option quotPrecheck false in
 local notation "D" => secondTangentPoint (F).g (F).gD
 local notation "v" => fun t => leftCompanionWingDensity m ρ (t + Real.pi / 2)
 
-include hheight hTargetBox hleft hright hl hr hC hlow hhigh hh hunit in
 theorem ae_companion_tangent_density_controls :
     ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)),
       aD t ≤ max (1 - v t) 0 ∧ (1 < v t → aD t = 0) ∧
         ((D t).2 < 0 → aD t = 0) := by
-  have hcontact := J.ae_second_tangent_source_contact hTarget hheight haffine hTargetBox
-    hleft hright hρ hρ0 hρK heq
+  have hac := J.angularMeasure_absolutelyContinuous H
+  have hcontact := J.ae_second_tangent_source_contact H
   have hzero {E : Set ℝ} (hE : MeasurableSet E)
       (hz : ∀ᵐ z ∂J.sourceBranchMeasure (secondTangentSource target), z.1 - Real.pi / 2 ∉ E) :
       ∀ᵐ t ∂volume, t ∈ E → aD t = 0 :=
-    J.ae_sourceBranchDensity_eq_zero_on hTarget hheight haffine hTargetBox hleft hright heq hE hz
+    J.ae_sourceBranchDensity_eq_zero_on hac hE hz
   -- Strict contact excludes original companion curvature above one.
   have hexcess := hzero (measurableSet_lt measurable_const
-    (hρ.comp (measurable_id.add_const (Real.pi / 2)))) (by
-      filter_upwards [J.ae_second_tangent_source_density_le_one hTarget hheight haffine
-        hTargetBox hleft hright hρ hρ0 hρK heq] with z hz
-      simpa using hz)
+    (H.hρ.comp (measurable_id.add_const (Real.pi / 2)))) (by
+      have hbound := ae_of_ae_map (measurable_fst.sub_const (Real.pi / 2)).aemeasurable
+        ((J.shifted_angle_absolutelyContinuous hac (Real.pi / 2)).ae_le
+          ((ae_restrict_iff' (isOpen_regularCornerDomain m).measurableSet).mp
+            (H.hU.isCap.ae_companion_density_le_one_at_strict_contact H.hρ H.hρ0 H.hρK H.heq)))
+      filter_upwards [ae_restrict_mem (measurableSet_secondTangentSource H.hU.isCap.isCompact),
+        hcontact, ae_restrict_of_ae (J.ae_second_wall_contact H.hU.isCap),
+        ae_restrict_of_ae hbound] with z hz hr hc hb
+      simpa using hb hr.1 z.2 (hc hz.1).1 hz.2)
   -- The companion tangent stays on the nonnegative niche.
-  have hnegative := hzero (measurableSet_lt hTarget.isCap.measurable_secondTangency_snd
+  have hnegative := hzero (measurableSet_lt H.hU.isCap.measurable_tangency_coordinates.2.2
     measurable_const) (by
       filter_upwards [hcontact] with z hz
       simpa [← hz.2] using sweptNiche_nonneg target (Real.pi / 2) z.2)
   -- Every source angle lies beyond the affine normal.
   have hbefore := hzero measurableSet_Iic (by
-    filter_upwards [ae_restrict_mem (measurableSet_secondTangentSource hTarget.isCap.isCompact),
-      ae_restrict_of_ae (J.ae_sourceQuarterAngle_gt_affine hTarget hl hr hC hm hheight
-        haffine hlow hhigh hh hρ hρ0 hρK heq hunit)] with z hz hp
+    filter_upwards [ae_restrict_mem (measurableSet_secondTangentSource H.hU.isCap.isCompact),
+      ae_restrict_of_ae (J.ae_sourceQuarterAngle_gt_affine H)] with z hz hp
     rw [sourceQuarterAngle, ite_eq_right (not_lt_of_ge hz.1.1.le)] at hp
     exact not_le_of_gt hp)
   have hD : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)),
@@ -82,20 +72,18 @@ theorem ae_companion_tangent_density_controls :
     filter_upwards [ae_restrict_mem measurableSet_Ioo,
       ae_restrict_of_ae (ae_regularCornerDomain_of_mem_quarter m),
       ae_restrict_of_ae ((ae_restrict_iff' (isOpen_regularCornerDomain m).measurableSet).mp
-        (hTarget.isCap.ae_hasDerivAt_tangency_coordinates_on_regularCornerDomain
-          hρ hρ0 hρK heq))] with t ht hr hd using (hd (hr ht)).2.2.1
-  have hbound := J.ae_sourceBranchDensity_mul_sin_le_abs_deriv_on hTarget hheight haffine
-    hTargetBox hleft hright heq (measurableSet_secondTangentSource hTarget.isCap.isCompact)
-    (Real.pi / 2) hTarget.isCap.measurable_secondTangency_fst
+        (H.hU.isCap.ae_hasDerivAt_tangency_coordinates_on_regularCornerDomain
+          H.hρ H.hρ0 H.hρK H.heq))] with t ht hr hd using (hd (hr ht)).2.2.1
+  have hbound := J.ae_sourceBranchDensity_mul_sin_le_abs_deriv_on hac
+    (measurableSet_secondTangentSource H.hU.isCap.isCompact) (Real.pi / 2)
+    H.hU.isCap.measurable_tangency_coordinates.2.1
     (by filter_upwards [hcontact] with z hz using congrArg Prod.fst hz.2) measurableSet_Ioo hD
   filter_upwards [ae_restrict_mem measurableSet_Ioo, hbound, ae_restrict_of_ae hexcess,
     ae_restrict_of_ae hnegative, ae_restrict_of_ae hbefore,
-    J.ae_original_companion_density_eq_cut hTarget hl hr hC hm hheight haffine hlow hhigh hh
-      hρ hρ0 hρK heq hunit hTargetBox hleft hright] with t ht hb hex hneg hpre hcut
+    J.ae_original_companion_density_eq_cut H] with t ht hb hex hneg hpre hcut
   have hle : aD t ≤ max (1 - ρ (t + Real.pi / 2)) 0 := by
     by_cases hle : ρ (t + Real.pi / 2) ≤ 1
-    · have hc : 0 < Real.cos t := Real.cos_pos_of_mem_Ioo
-        ⟨by linarith only [ht.1, Real.pi_pos], ht.2⟩
+    · have hc := (sin_cos_pos_of_mem_quarter ht).2
       rw [Real.sin_add_pi_div_two,
         abs_of_nonneg (mul_nonneg (sub_nonneg.mpr hle) hc.le)] at hb
       exact (le_of_mul_le_mul_right hb hc).trans (le_max_left _ _)
@@ -106,7 +94,8 @@ theorem ae_companion_tangent_density_controls :
   by_cases hpre' : t ≤ Real.arctan m
   · exact hpre hpre'
   · exact hneg (by simpa only [(fullTiltedSupportQuarterPair_other_points_after_affine
-      hTarget hm.le haffine hρ hρ0 hρK heq ⟨ht.1.le, ht.2⟩ (lt_of_not_ge hpre').le).1] using hy)
+      H.hU H.hm.le H.haffine H.hρ H.hρ0 H.hρK H.heq ⟨ht.1.le, ht.2⟩ (lt_of_not_ge hpre').le).1]
+        using hy)
 
 end AngularGrid.SelectedJointSourceLimit
 end AmbidextrousSofa

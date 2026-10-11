@@ -85,15 +85,11 @@ theorem ae_spatial_mem_middle (hTarget : IsDownwardCap target) :
   set R := horizontalRight target - capWidth target / 4
   have hzero := J.ae_zero_of_source_limits (f := fun z => max (max (L - z.2) (z.2 - R)) 0)
     (by fun_prop) (fun _ => le_max_right _ _) fun seq hseq point hpoint z hz => by
-      have hl := (J.hausdorff.horizontalLeft_tendsto (fun n => (J.isCap n).isCompact)
-        (fun n => (J.isCap n).nonempty) hTarget.isCompact hTarget.nonempty).comp hseq
-      have hr := (J.hausdorff.horizontalRight_tendsto (fun n => (J.isCap n).isCompact)
-        (fun n => (J.isCap n).nonempty) hTarget.isCompact hTarget.nonempty).comp hseq
-      have hw := ((J.hausdorff.capWidth_tendsto J.isCap hTarget).div_const 4).comp hseq
+      have h := J.middle_tendsto hTarget
       refine max_eq_right (max_le (sub_nonpos.2 ?_) (sub_nonpos.2 ?_))
-      · exact le_of_tendsto_of_tendsto (hl.add hw) hz.snd_nhds
+      · exact le_of_tendsto_of_tendsto (h.1.comp hseq) hz.snd_nhds
           (.of_forall fun n => (hpoint n).1.1.le)
-      · exact le_of_tendsto_of_tendsto hz.snd_nhds (hr.sub hw)
+      · exact le_of_tendsto_of_tendsto hz.snd_nhds (h.2.comp hseq)
           (.of_forall fun n => (hpoint n).1.2)
   filter_upwards [hzero] with z hz
   have h := max_le_iff.1 (max_eq_right_iff.1 hz)

@@ -26,57 +26,36 @@ open Set Filter MeasureTheory
 namespace AmbidextrousSofa
 namespace AngularGrid.SelectedJointSourceLimit
 
-variable {target : Set Plane} {a b : ℝ} (J : SelectedJointSourceLimit target a b)
+variable {target : Set Plane} {a b C h m c K : ℝ} {ρ : ℝ → ℝ}
+  (J : SelectedJointSourceLimit target a b) (H : IsTiltedFirstUnitTarget target a b C h m c ρ K)
+include H
 
-section ActualDensity
-
-variable (hTarget : IsFullCapMaximizer target) (hheight : capHeight target = 1)
-  {m c K : ℝ} {ρ : ℝ → ℝ}
-  (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft target) (horizontalRight target),
-    capRoof target x = m * x + c)
-  (hTargetBox : target ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1)
-  (hleft : a < horizontalLeft target) (hright : horizontalRight target < b)
-  (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-  (heq : (upperCurvature target).restrict (regularCurvatureDomain m) =
-    (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
-
-include hTarget hheight haffine hTargetBox hleft hright hρ hρ0 hρK heq in
-theorem ae_first_tangent_source_graph :
-    ∀ᵐ z ∂J.sourceBranchMeasure (firstTangentSource target),
-      z.2 = (firstTangency target z.1).1 :=
-  (J.ae_first_tangent_source_contact hTarget hheight haffine hTargetBox hleft hright hρ hρ0 hρK
-    heq).mono fun _ hz => congrArg Prod.fst hz.2
-
-include hTarget hheight m haffine hTargetBox hleft hright hρ hρ0 hρK heq in
-theorem ae_first_tangent_density_le_one_sub
-    (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1) :
+theorem ae_first_tangent_density_le_one_sub :
     ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)),
       J.sourceBranchDensity (firstTangentSource target) 0 t ≤ 1 - ρ t := by
-  have hD := ((hTarget.isCap.ae_hasDerivAt_tangency_coordinates_on_regularCornerDomain hρ hρ0 hρK
-    heq).filter_mono (ae_mono (Measure.restrict_mono_ae
+  have hD := ((H.hU.isCap.ae_hasDerivAt_tangency_coordinates_on_regularCornerDomain H.hρ H.hρ0
+    H.hρK H.heq).filter_mono (ae_mono (Measure.restrict_mono_ae
       (ae_regularCornerDomain_of_mem_quarter m)))).mono fun t h => h.1
-  filter_upwards [J.ae_sourceBranchDensity_mul_sin_le_abs_deriv_on hTarget hheight haffine
-    hTargetBox hleft hright heq (measurableSet_firstTangentSource hTarget.isCap.isCompact) 0
-    hTarget.isCap.measurable_firstTangency_fst
-    (by simpa only [sub_zero] using J.ae_first_tangent_source_graph hTarget hheight haffine
-          hTargetBox hleft hright hρ hρ0 hρK heq) measurableSet_Ioo hD, hunit,
-    ae_restrict_mem measurableSet_Ioo] with t hb hu ht
-  have hs : 0 < Real.sin t := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
+  filter_upwards [J.ae_sourceBranchDensity_mul_sin_le_abs_deriv_on
+    (J.angularMeasure_absolutelyContinuous H)
+    (measurableSet_firstTangentSource H.hU.isCap.isCompact) 0
+    H.hU.isCap.measurable_tangency_coordinates.1
+    (by simpa only [sub_zero] using J.ae_first_tangent_source_graph H) measurableSet_Ioo hD,
+    H.hunit, ae_restrict_mem measurableSet_Ioo] with t hb hu ht
+  have hs := (sin_cos_pos_of_mem_quarter ht).1
   rw [add_zero, abs_of_nonneg (mul_nonneg (sub_nonneg.mpr hu) hs.le)] at hb
   exact (mul_le_mul_iff_left₀ hs).mp hb
 
-include hTarget hheight haffine hTargetBox hleft hright hρ hρ0 hρK heq in
-theorem ae_first_tangent_density_eq_zero_after_middle {C : ℝ}
-    (hl : horizontalLeft target = -2 * C) (hr : horizontalRight target = 2 * C) :
+theorem ae_first_tangent_density_eq_zero_after_middle :
     ∀ᵐ t ∂volume, C ≤ (firstTangency target t).1 →
       J.sourceBranchDensity (firstTangentSource target) 0 t = 0 := by
-  refine J.ae_sourceBranchDensity_eq_zero_on (E := _ ⁻¹' Ici C) hTarget hheight haffine hTargetBox
-    hleft hright heq (measurableSet_Ici.preimage hTarget.isCap.measurable_firstTangency_fst) ?_
-  filter_upwards [J.ae_first_tangent_source_graph hTarget hheight haffine hTargetBox hleft hright
-    hρ hρ0 hρK heq, ae_restrict_of_ae (J.ae_spatial_mem_open_middle hTarget.isCap)] with z hg hm
+  refine J.ae_sourceBranchDensity_eq_zero_on (E := _ ⁻¹' Ici C)
+    (J.angularMeasure_absolutelyContinuous H)
+    (measurableSet_Ici.preimage H.hU.isCap.measurable_tangency_coordinates.1) ?_
+  filter_upwards [J.ae_first_tangent_source_graph H,
+    ae_restrict_of_ae (J.ae_spatial_mem_open_middle H.hU.isCap)] with z hg hm
   rw [mem_preimage, mem_Ici, sub_zero, ← hg, not_le]
-  linarith [hm.2, show capWidth target = 4 * C by unfold capWidth; linarith]
+  exact (H.middle_eq ▸ hm).2
 
-end ActualDensity
 end AngularGrid.SelectedJointSourceLimit
 end AmbidextrousSofa
