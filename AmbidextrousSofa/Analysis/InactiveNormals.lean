@@ -1,6 +1,6 @@
 module
 
-public import AmbidextrousSofa.Analysis.RoofGain
+public import AmbidextrousSofa.Analysis.TopInsertion
 
 @[expose] public section
 

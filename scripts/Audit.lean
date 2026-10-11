@@ -297,7 +297,6 @@ import all AmbidextrousSofa.Analysis.RegularCorner
 import all AmbidextrousSofa.Analysis.RegularCurvatureDomain
 import all AmbidextrousSofa.Analysis.RegularTangency
 import all AmbidextrousSofa.Analysis.RoofContinuity
-import all AmbidextrousSofa.Analysis.RoofGain
 import all AmbidextrousSofa.Analysis.SelectedCurvature
 import all AmbidextrousSofa.Analysis.SelectedEndpointMoments
 import all AmbidextrousSofa.Analysis.SelectedErosionMoments

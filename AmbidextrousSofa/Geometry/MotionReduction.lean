@@ -29,16 +29,6 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-/-- The outgoing endpoint really supplies a whole-body unit strip. -/
-theorem Passage.terminal_frameStrip {S : Set Plane} {path : RigidMotionPath}
-    (h : Passage S lowerHall incomingArm lowerOutgoingArm path) :
-    ∀ p ∈ S, -(path.shift 1).1 ≤ coordDot p (unitNormal (-path.angle 1)) ∧
-      coordDot p (unitNormal (-path.angle 1)) ≤ -(path.shift 1).1 + 1 := fun p hp => by
-  obtain ⟨h0, h1, -⟩ := h.finish (mem_image_of_mem _ hp)
-  simp only [RigidMotionPath.placement, rigidMap, rotate, Prod.fst_add, coordDot, unitNormal,
-    Real.cos_neg, Real.sin_neg] at h0 h1 ⊢
-  constructor <;> linarith
-
 /-- A large sofa cannot even pass below the forbidden angle: continuity would
 force it to visit that angle first. -/
 theorem Passage.frameAngle_gt_neg_pi_div_four
@@ -48,17 +38,13 @@ theorem Passage.frameAngle_gt_neg_pi_div_four
     (harea : Real.sqrt 2 < volume.real S) {t : ℝ} (ht : t ∈ motionInterval) :
     -(Real.pi / 4) < -path.angle t := by
   by_contra! hle
-  have hsub : Icc (0 : ℝ) t ⊆ motionInterval := Icc_subset_Icc_right ht.2
-  obtain ⟨s, hs, hsangle⟩ := intermediate_value_Icc' ht.1 (path.continuous_angle.neg.mono hsub)
-    (show -(Real.pi / 4) ∈ Icc (-path.angle t) (-path.angle 0) by
-      rw [hstart, neg_zero]; exact ⟨hle, by linarith [Real.pi_pos]⟩)
-  -- pull the placement at time `s` back to the translated frame hallway
+  obtain ⟨s, hs, hsangle⟩ := RigidMotionPath.exists_frameAngle_of_reaches hstart ht rfl
+    (θ := -(Real.pi / 4)) (Icc_subset_uIcc' ⟨hle, by linarith [Real.pi_pos]⟩)
+  -- the placement at time `s` confines the body to the translated wrong-way frame hallway
   refine harea.not_ge (volumeReal_le_sqrt_two_of_wrongWay_frameHall hstrip
     (a := -(path.shift s).1) (b := -(path.shift s).2) fun p hp => ?_)
   rw [← hsangle]
-  exact (rigidMap_mem_lowerHall_iff _ (path.shift s) p).mp <| by
-    simpa only [Pi.neg_apply, neg_neg, RigidMotionPath.placement] using
-      h.inside s (hsub hs) (mem_image_of_mem _ hp)
+  exact h.subset_frameHall_at hs hp
 
 /-- Every large normalized lower passage supplies either a visited quarter
 turn or its genuine proper terminal angle, together with all intervening

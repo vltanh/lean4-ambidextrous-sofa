@@ -52,22 +52,24 @@ theorem AngularConstraints.upperCap {S K : Set Plane} {α : ℝ}
       support_upperCap (v := companionNormal θ) hK hne hK0 hc] using h.inside θ hθ hp
   · rw [support_upperCap hK hne hK0 (hsin h.angle_pos le_rfl)]; exact h.terminal p hp
 
-/-- A visited quarter turn supplies all earlier frames, even when the motion later reverses. -/
+/-- A continuous lifted angle visits every value between `0` and any value it reaches, in
+either direction, even when the motion later reverses. -/
 theorem RigidMotionPath.exists_frameAngle_of_reaches {path : RigidMotionPath}
     (hstart : path.angle 0 = 0) {τ α θ : ℝ} (hτ : τ ∈ motionInterval)
-    (hreach : -path.angle τ = α) (hθ : θ ∈ Icc 0 α) :
+    (hreach : -path.angle τ = α) (hθ : θ ∈ uIcc 0 α) :
     ∃ t ∈ motionInterval, -path.angle t = θ := by
   have hsub : Icc (0 : ℝ) τ ⊆ motionInterval := Icc_subset_Icc_right hτ.2
-  obtain ⟨t, ht, heq⟩ := intermediate_value_Icc hτ.1 (path.continuous_angle.neg.mono hsub)
-    (show θ ∈ Icc (-path.angle 0) (-path.angle τ) by simpa only [hstart, neg_zero, hreach] using hθ)
-  exact ⟨t, hsub ht, heq⟩
+  obtain ⟨t, ht, heq⟩ := intermediate_value_uIcc (a := 0) (b := τ) (f := fun t => -path.angle t)
+    (by rw [uIcc_of_le hτ.1]; exact path.continuous_angle.neg.mono hsub)
+    (by simpa only [hstart, neg_zero, hreach] using hθ)
+  exact ⟨t, hsub (by rwa [uIcc_of_le hτ.1] at ht), heq⟩
 
 /-- A continuous lifted angle visits every value between its initial and terminal values. -/
 theorem RigidMotionPath.exists_frameAngle_of_terminal {path : RigidMotionPath}
     (hstart : path.angle 0 = 0) {α θ : ℝ} (hend : -path.angle 1 = α)
     (hθ : θ ∈ Icc 0 α) :
     ∃ t ∈ motionInterval, -path.angle t = θ :=
-  exists_frameAngle_of_reaches hstart ⟨zero_le_one, le_rfl⟩ hend hθ
+  exists_frameAngle_of_reaches hstart ⟨zero_le_one, le_rfl⟩ hend (Icc_subset_uIcc hθ)
 
 /-- A normalized genuine proper-terminal passage supplies every angular constraint.
 Backtracking of the original angle is unrestricted. -/
@@ -91,7 +93,7 @@ theorem Passage.angularConstraints_of_reaches_pi_div_two
     AngularConstraints S (actualHull S) (Real.pi / 2) := by
   refine ⟨by positivity, le_rfl, fun θ hθ => ?_, fun p hp => ?_⟩
   · obtain ⟨t, ht, hangle⟩ := RigidMotionPath.exists_frameAngle_of_reaches
-      hstart hτ hreach ⟨hθ.1.le, hθ.2.le⟩
+      hstart hτ hreach (Icc_subset_uIcc ⟨hθ.1.le, hθ.2.le⟩)
     simpa only [hangle] using h.subset_canonicalHall_at hS hne ht
   · -- at a full turn the top-support wall follows from the actual incoming strip
     have htop : support S (0, 1) ≤ 1 :=

@@ -98,16 +98,34 @@ theorem canonicalPlacement_mem_lowerHall_iff (K : Set Plane) (θ : ℝ) (p : Pla
       p ∈ canonicalHall K (unitNormal θ) (companionNormal θ) := by
   rw [canonicalPlacement_eq_rigidMap, rigidMap_mem_lowerHall_iff, canonicalHall, neg_sub, neg_sub]
 
+/-- Each frame visited by the original motion confines the body to the translated frame
+hallway. -/
+theorem Passage.subset_frameHall_at {S : Set Plane} {path : RigidMotionPath}
+    (h : Passage S lowerHall incomingArm lowerOutgoingArm path) {t : ℝ}
+    (ht : t ∈ motionInterval) :
+    S ⊆ frameHall (unitNormal (-path.angle t)) (companionNormal (-path.angle t))
+      (-(path.shift t).1) (-(path.shift t).2) := fun p hp =>
+  (rigidMap_mem_lowerHall_iff _ (path.shift t) p).mp <| by
+    simpa only [neg_neg, RigidMotionPath.placement] using
+      h.inside t ht (Set.mem_image_of_mem (path.placement t) hp)
+
 /-- Each frame visited by the original motion supplies the corresponding hull constraint. -/
 theorem Passage.subset_canonicalHall_at {S : Set Plane} {path : RigidMotionPath}
     (h : Passage S lowerHall incomingArm lowerOutgoingArm path)
     (hS : IsCompact S) (hne : S.Nonempty) {t : ℝ} (ht : t ∈ motionInterval) :
     S ⊆ canonicalHall (actualHull S) (unitNormal (-path.angle t))
       (companionNormal (-path.angle t)) :=
-  subset_hullCanonicalHall_of_subset_frameHall hS hne fun p hp =>
-    (rigidMap_mem_lowerHall_iff _ (path.shift t) p).mp <| by
-      simpa only [neg_neg, RigidMotionPath.placement] using
-        h.inside t ht (Set.mem_image_of_mem (path.placement t) hp)
+  subset_hullCanonicalHall_of_subset_frameHall hS hne (h.subset_frameHall_at ht)
+
+/-- The outgoing endpoint really supplies a whole-body unit strip. -/
+theorem Passage.terminal_frameStrip {S : Set Plane} {path : RigidMotionPath}
+    (h : Passage S lowerHall incomingArm lowerOutgoingArm path) :
+    ∀ p ∈ S, -(path.shift 1).1 ≤ coordDot p (unitNormal (-path.angle 1)) ∧
+      coordDot p (unitNormal (-path.angle 1)) ≤ -(path.shift 1).1 + 1 := fun p hp => by
+  obtain ⟨h0, h1, -⟩ := h.finish (Set.mem_image_of_mem _ hp)
+  simp only [RigidMotionPath.placement, rigidMap, rotate, Prod.fst_add, coordDot, unitNormal,
+    Real.cos_neg, Real.sin_neg] at h0 h1 ⊢
+  constructor <;> linarith
 
 /-- The real outgoing arm yields its own whole-body support strip. -/
 theorem Passage.terminal_support_lower {S : Set Plane} {path : RigidMotionPath}
@@ -115,12 +133,7 @@ theorem Passage.terminal_support_lower {S : Set Plane} {path : RigidMotionPath}
     (hne : S.Nonempty) {p : Plane} (hp : p ∈ S) :
     support S (unitNormal (-path.angle 1)) - 1 ≤
       coordDot p (unitNormal (-path.angle 1)) := by
-  have key : ∀ q ∈ S, -(path.shift 1).1 ≤ coordDot q (unitNormal (-path.angle 1)) ∧
-      coordDot q (unitNormal (-path.angle 1)) ≤ -(path.shift 1).1 + 1 := fun q hq => by
-    obtain ⟨h0, h1, -⟩ := h.finish (Set.mem_image_of_mem (path.placement 1) hq)
-    simp only [RigidMotionPath.placement, rigidMap, rotate, Prod.fst_add, coordDot, unitNormal,
-      Real.cos_neg, Real.sin_neg] at h0 h1 ⊢
-    constructor <;> linarith
+  have key := h.terminal_frameStrip
   linarith [support_le_of_forall hne (fun q hq => (key q hq).2), (key p hp).1]
 
 end AmbidextrousSofa
