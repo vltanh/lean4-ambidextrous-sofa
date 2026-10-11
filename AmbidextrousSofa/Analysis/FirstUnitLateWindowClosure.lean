@@ -124,7 +124,7 @@ theorem firstUnit_unit_companion_raw_data_impossible
     (hT : (∫ t in β..(Real.pi / 2), (1 - u t) * Real.sin t) = T)
     (hz : (∫ t in β..(Real.pi / 2), (1 - u t) * Real.cos t) = z)
     (hC : 1 / 2 < C) (hTpos : 0 < T) (hST : T ≤ S) (hSone : S ≤ 1) (hTC : T ≤ C)
-    (hhz : h + z ≤ 2) (hβsin : 3 / 5 ≤ Real.sin β) : False := by
+    (hhz : h + z ≤ 2) (hh0 : 0 ≤ h) (hz0 : 0 ≤ z) (hβsin : 3 / 5 ≤ Real.sin β) : False := by
   have hβ0 : 0 ≤ β := h0α.trans hαβ
   have hγL : γ ≤ Real.pi / 2 := hγη.trans hηL
   have hsub {a b : ℝ} (ha : 0 ≤ a) (hab : a ≤ b) (hb : b ≤ Real.pi / 2) :
@@ -169,14 +169,6 @@ theorem firstUnit_unit_companion_raw_data_impossible
   have hzT := (firstUnit_right_window_moment_bounds hβ0 hβL hβsin hrB hrB0).2.2
   rw [hT] at hRB
   rw [hz, hT] at hzT
-  have hh0 : 0 ≤ h := hh ▸ intervalIntegral.integral_nonneg_of_ae_restrict hγ0 (by
-    filter_upwards [hrD0, ae_restrict_mem measurableSet_Icc] with t hrt ht
-    exact mul_nonneg hrt (Real.sin_nonneg_of_nonneg_of_le_pi ht.1
-      (by linarith only [ht.2, hγL, Real.pi_pos])))
-  have hz0 : 0 ≤ z := hz ▸ intervalIntegral.integral_nonneg_of_ae_restrict hβL (by
-    filter_upwards [hrB0, ae_restrict_mem measurableSet_Icc] with t hrt ht
-    exact mul_nonneg hrt (Real.cos_nonneg_of_neg_pi_div_two_le_of_le
-      (by linarith only [ht.1, hβ0, Real.pi_pos]) ht.2))
   exact firstUnit_terminal_contradiction hC hTpos hST hSone hTC hh0 hz0 hhz hzT hRB
     (firstUnitLeftRemainder_nonneg hγ0 hγL hrD0
       (ae_restrict_Icc_subinterval le_rfl hγL (hunit.mono fun _ ht => ht.1)))

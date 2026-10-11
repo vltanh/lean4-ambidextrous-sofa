@@ -41,6 +41,12 @@ theorem StrictCornerSignPhases.first_lt_of_first_neg
   · linarith [(hphase.initial_signs t ⟨ht.1, hlt⟩).1]
   · linarith [hphase.first_zero]
 
+theorem StrictCornerSignPhases.first_neg {p q : ℝ → ℝ} {L α η t : ℝ}
+    (hphase : StrictCornerSignPhases p q L α η) (ht : t ∈ Ioc α L) : p t < 0 := by
+  obtain hlt | rfl | hgt := lt_trichotomy t η
+  exacts [(hphase.core_signs t ⟨ht.1, hlt⟩).1, hphase.first_at_second,
+    (hphase.final_signs t ⟨hgt, ht.2⟩).1]
+
 namespace CornerArcDynamics
 
 variable {p q u v : ℝ → ℝ} {a b : ℝ}
@@ -218,8 +224,7 @@ theorem first_bad_crossing_or_unit {L α η : ℝ}
     (hshadow : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) L),
       p t < 0 → q t < 0 → v t = 0 ∧ u t ≤ 1 / 2) :
     (∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) L), v t ≤ 1) ∨
-      ∃ τ ∈ Ioo α η, p τ = -1 ∧ 0 < q τ ∧
-        (∀ t ∈ Ico α τ, -1 < p t) ∧
+      ∃ τ ∈ Ioo α η, p τ = -1 ∧ (∀ t ∈ Ico α τ, -1 < p t) ∧
         (∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) τ), v t ≤ 1) := by
   by_cases hbad : ∃ t ∈ Ioo (0 : ℝ) L, p t < -1 ∧ 0 < q t
   swap
@@ -236,7 +241,7 @@ theorem first_bad_crossing_or_unit {L α η : ℝ}
     (by linarith [hphase.first_zero]) hpbad.le
   have hτη : τ < η := hτ.2.trans_lt htη
   have hτL : τ ≤ L := hτη.le.trans hphase.second_mem.2.le
-  refine .inr ⟨τ, ⟨hτ.1, hτη⟩, hpτ, (hphase.core_signs τ ⟨hτ.1, hτη⟩).2, hpfirst,
+  refine .inr ⟨τ, ⟨hτ.1, hτη⟩, hpτ, hpfirst,
     (D.restrict le_rfl (hphase.first_mem.1.trans hτ.1).le hτL).ae_companion_le_one_of_no_bad
       (ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo le_rfl hτL) hshadow)
       fun s hs h => ?_⟩

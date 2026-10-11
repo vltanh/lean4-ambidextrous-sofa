@@ -34,21 +34,7 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
   (heq : (upperCurvature U).restrict (regularCurvatureDomain m) =
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
-local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-set_option quotPrecheck false in
-local notation "D" => secondTangentPoint (F).g (F).gD
-set_option quotPrecheck false in
-local notation "Z" => innerCornerPoint (F).f (F).g
-set_option quotPrecheck false in
-local notation "p" => supportP (F).fD (F).g
-set_option quotPrecheck false in
-local notation "q" => supportQ (F).gD (F).f
-local notation "V" => leftCompanionCap U (horizontalLeft U + capWidth U / 4)
-
-theorem fullTiltedSupportQuarterPair_cut_wall_eq_scalar (t x : ℝ) :
-    secondWall V t x = ((F).g t - 1 + x * Real.sin t) / Real.cos t := by
-  simp only [secondWall, companionNormal_eq_unitNormal]
-  rfl
+open scoped ActualPair
 
 theorem fullTiltedSupportQuarterPair_cut_wall_lt_core_of_initial_floor_nonpos {t : ℝ}
     (ht : t ∈ Ioo 0 (Real.pi / 2)) (hy : 0 < (Z t).2)
@@ -59,20 +45,6 @@ theorem fullTiltedSupportQuarterPair_cut_wall_lt_core_of_initial_floor_nonpos {t
   simp only [fullTiltedSupportQuarterPair_cut_wall_eq_scalar hU hm haffine hρ hρ0 hρK heq] at hy ⊢
   exact companion_wall_lt_later_of_initial_tangent_nonpos ht hr (fun s hs =>
     (fullTiltedSupportQuarterPair_support_derivatives hU hm haffine hρ hρ0 hρK heq hs).2) hfloor hy
-
-theorem fullTiltedSupportQuarterPair_core_contact_of_initial_floor_nonpos {t : ℝ}
-    (hunit : ∀ᵐ s ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ s ≤ 1)
-    (ht : t ∈ Ioo 0 (Real.pi / 2)) (hp : p t < 0)
-    (hy : 0 < (Z t).2) (hx : (Z t).1 ≤ horizontalRight U - capWidth U / 4)
-    (hfloor : ∀ s ∈ Ioc (0 : ℝ) t, (D s).2 ≤ 0) :
-    sweptNiche U (Real.pi / 2) (Z t).1 = (Z t).2 ∧
-      (∀ s ∈ Icc (0 : ℝ) (Real.pi / 2),
-        fullWallClip hU.isCap.toCompactCap (Z t).1 s =
-          sweptNiche U (Real.pi / 2) (Z t).1 → s = t) :=
-  fullTiltedSupportQuarterPair_core_contact_of_earlier_cut_walls
-    hU hm haffine hρ hρ0 hρK heq hunit ht hp hy hx
-    (fullTiltedSupportQuarterPair_cut_wall_lt_core_of_initial_floor_nonpos
-      hU hm haffine hρ hρ0 hρK heq ht hy hfloor)
 
 /-- Strict earlier wall gaps persist for all nearby moving corners.
 The companion tangent need not remain below the floor in that
@@ -91,9 +63,8 @@ theorem fullTiltedSupportQuarterPair_earlier_cut_walls_eventually {t : ℝ}
       |>.continuousOn.mono Icc_subset_uIcc).continuousAt (Icc_mem_nhds ht.1 ht.2)
   -- The corner lies strictly right of the second tangent point, also nearby.
   obtain ⟨A, hA0, hA1⟩ := exists_between (show (D t).1 < (Z t).1 by
-    rw [innerCorner_fst_eq_secondTangent (F).f (F).g (F).gD]
-    exact lt_add_of_pos_right _ (mul_pos hq (Real.cos_pos_of_mem_Ioo
-      ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩)))
+    linarith [innerCorner_fst_eq_secondTangent (F).f (F).g (F).gD t,
+      mul_pos hq (quarter_sin_cos_pos ht).2])
   have hevent : ∀ᶠ s in 𝓝 t, s ∈ Ioo (0 : ℝ) (Real.pi / 2) ∧ (D s).1 < A ∧ A < (Z s).1 := by
     filter_upwards [Ioo_mem_nhds ht.1 ht.2, hDcont.eventually (gt_mem_nhds hA0),
       hX.continuousAt.eventually (lt_mem_nhds hA1)] with s hs hD hZ
@@ -126,8 +97,8 @@ theorem fullTiltedSupportQuarterPair_earlier_cut_walls_eventually {t : ℝ}
     fullTiltedSupportQuarterPair_cut_wall_derivative hU hm haffine hρ hρ0 hρK heq
       (hlocal ⟨hla.trans (har.trans_le hw.1), hw.2.trans_lt hsu.2⟩).1 (Z s).1) fun w hw => ?_
   have hwlocal := hlocal ⟨hla.trans (har.trans hw.1), hw.2.trans hsu.2⟩
-  exact div_pos (sub_pos.mpr (hwlocal.2.1.trans hslocal.2.2)) (pow_pos (Real.cos_pos_of_mem_Ioo
-    ⟨by linarith [hwlocal.1.1, Real.pi_pos], hwlocal.1.2⟩) 2)
+  exact div_pos (sub_pos.mpr (hwlocal.2.1.trans hslocal.2.2))
+    (pow_pos (quarter_sin_cos_pos hwlocal.1).2 2)
 
 /-- This is the concrete neighborhood needed when the first floor zero
 coincides with the bad-entry angle. It follows from the actual strict
@@ -137,11 +108,7 @@ theorem fullTiltedSupportQuarterPair_core_contact_eventually_of_initial_floor_no
     (ht : t ∈ Ioo 0 (Real.pi / 2)) (hp : p t < 0) (hq : 0 < q t)
     (hy : 0 < (Z t).2) (hx : (Z t).1 < horizontalRight U - capWidth U / 4)
     (hfloor : ∀ s ∈ Ioc (0 : ℝ) t, (D s).2 ≤ 0) :
-    ∀ᶠ s in 𝓝 t, s ∈ Ioo (0 : ℝ) (Real.pi / 2) ∧
-      sweptNiche U (Real.pi / 2) (Z s).1 = (Z s).2 ∧
-      (∀ r ∈ Icc (0 : ℝ) (Real.pi / 2),
-        fullWallClip hU.isCap.toCompactCap (Z s).1 r =
-          sweptNiche U (Real.pi / 2) (Z s).1 → r = s) := by
+    ∀ᶠ s in 𝓝 t, s ∈ Ioo (0 : ℝ) (Real.pi / 2) ∧ UniqueNicheContact hU.isCap (Z s) s := by
   have hcore := fullTiltedSupportQuarterPair_core_continuous hU hm haffine hρ hρ0 hρK heq
   have hP : ContinuousAt p t :=
     (((F).continuous_fD.sub (F).continuous_g).add continuousOn_const).continuousAt

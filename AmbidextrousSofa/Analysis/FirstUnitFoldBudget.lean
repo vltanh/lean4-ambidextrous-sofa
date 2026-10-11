@@ -51,9 +51,8 @@ theorem first_bad_fold_budget {L α η τ : ℝ} {δ χ : ℝ → ℝ}
       u t = q t * χ t ∧ v t = (1 - v t) * δ t - p t * χ t)
     (hrange : ∀ᵐ t ∂volume.restrict (Ioo τ η),
       0 ≤ δ t ∧ δ t ≤ 1 ∧ χ t ≤ 1) :
-    (∀ t ∈ Icc τ η, q t - p t ≤ 5 / 4 ∧ p t + q t ≤ -3 / 4) ∧
-      (∀ᵐ t ∂volume.restrict (Icc (0 : ℝ) L),
-        v t ≤ 5 / 4 ∧ max (v t - 1) 0 ≤ (1 - u t) / 4) := by
+    (∀ t ∈ Icc τ η, p t + q t ≤ -3 / 4) ∧
+      ∀ᵐ t ∂volume.restrict (Icc (0 : ℝ) L), max (v t - 1) 0 ≤ (1 - u t) / 4 := by
   have Dtail := D.restrict (hphase.first_mem.1.trans hτ.1).le hτ.2.le hphase.second_mem.2.le
   have hsigns (t : ℝ) (ht : t ∈ Icc τ η) : p t ≤ -1 ∧ 0 ≤ q t ∧ q t ≤ 1 / 4 := by
     have hf := D.first_bad_future_bounds hphase hτ hpτ t ht
@@ -74,10 +73,9 @@ theorem first_bad_fold_budget {L α η τ : ℝ} {δ χ : ℝ → ℝ}
           mul_nonpos_of_nonneg_of_nonpos hr.1 (show p s + 1 ≤ 0 by linarith), hsrc.2, hr.1]) ht
     simp only [Pi.sub_apply, hpτ] at h
     linarith
-  refine ⟨fun t ht => ⟨hw t ht, by linarith [hsigns t ht]⟩, ?_⟩
+  refine ⟨fun t ht => by linarith [hsigns t ht], ?_⟩
   -- It bounds the companion density by `5/4 - q` on the remaining core.
-  have htail : ∀ᵐ t ∂volume.restrict (Icc τ η),
-      v t ≤ 5 / 4 ∧ max (v t - 1) 0 ≤ (1 - u t) / 4 := by
+  have htail : ∀ᵐ t ∂volume.restrict (Icc τ η), max (v t - 1) 0 ≤ (1 - u t) / 4 := by
     rw [← restrict_Ioo_eq_restrict_Icc]
     filter_upwards [ae_restrict_mem measurableSet_Ioo, hsource, hrange] with t ht hs hr
     obtain ⟨hp, hq0, hq1⟩ := hsigns t (Ioo_subset_Icc_self ht)
@@ -87,7 +85,7 @@ theorem first_bad_fold_budget {L α η τ : ℝ} {δ χ : ℝ → ℝ}
         hr.1]
     have huq : u t ≤ q t := hs.1 ▸ mul_le_of_le_one_right hq0 hr.2.2
     have := hw t (Ioo_subset_Icc_self ht)
-    exact ⟨by linarith, max_le (by linarith) (by linarith)⟩
+    exact max_le (by linarith) (by linarith)
   rw [← restrict_Ioo_eq_restrict_Icc]
   filter_upwards [ae_restrict_mem measurableSet_Ioo, hunit, hshadow,
     ae_restrict_of_ae ((ae_restrict_iff' measurableSet_Icc).mp htail),
@@ -101,7 +99,7 @@ theorem first_bad_fold_budget {L α η τ : ℝ} {δ χ : ℝ → ℝ}
     · exact hpref ⟨ht.1, htτ⟩
     · have hsign := hphase.final_signs t ⟨lt_of_not_ge fun h => hin ⟨htτ, h⟩, ht.2.le⟩
       exact (hs hsign.1 hsign.2).trans_le zero_le_one
-  exact ⟨by linarith, max_le (by linarith) (by linarith)⟩
+  exact max_le (by linarith) (by linarith)
 
 end CornerArcDynamics
 

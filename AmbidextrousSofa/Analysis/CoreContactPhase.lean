@@ -38,10 +38,7 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
   (heq : (upperCurvature U).restrict (regularCurvatureDomain m) =
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
-set_option quotPrecheck false
-local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-local notation "p" => supportP (F).fD (F).g
-local notation "q" => supportQ (F).gD (F).f
+open scoped ActualPair
 
 theorem fullTiltedSupportQuarterPair_contact_mem_core_phase_of_after_affine
     {α η t g : ℝ}
@@ -70,11 +67,9 @@ theorem fullTiltedSupportQuarterPair_positive_attachedCorner_contact_mem_closed_
       (attachedCorner U t).2) : Real.arctan m ≤ t ∧ t ∈ Icc α η := by
   obtain ⟨hC0, -, -, -, hsmall, -, hhigh⟩ :=
     hU.centered_positive_tilt_parameters hl hr hheight hmpos haffine
-  have hmid : middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
-    rw [middleHalfInterval, hl, hr]; congr 1 <;> ring
   have hmt : Real.arctan m ≤ t := le_of_not_gt fun h => hy.not_gt
     (hU.isCap.attachedCorner_neg_before_positive_affine hl hr (by linarith) hsmall
-      (hmid ▸ haffine) hhigh ⟨ht.1, h⟩)
+      ((centered_quarter_points hl hr).2.2 ▸ haffine) hhigh ⟨ht.1, h⟩)
   exact ⟨hmt, mem_Icc_of_not_same_sign hphase ht
     (fullTiltedSupportQuarterPair_not_same_sign_at_attachedCorner_contact_after_affine
       hU hm haffine hρ hρ0 hρK heq ht hmt hderiv hcontact)⟩

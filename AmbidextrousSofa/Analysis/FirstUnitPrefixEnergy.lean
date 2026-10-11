@@ -84,10 +84,9 @@ theorem first_bad_after_window_and_height_bound {L α β η τ : ℝ}
     (hαβ : α < β) (hτ : τ ∈ Ioo α η) (hpτ : p τ = -1)
     (hpfirst : ∀ t ∈ Ico α τ, -1 < p t)
     (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) L), u t ≤ 1)
-    (hcharged : ∀ᵐ t ∂volume.restrict (Ioo α τ), t < β → 1 + q t ≤ 2 * u t)
+    (hcharged : ∀ᵐ t ∂volume.restrict (Ioo α (min β τ)), 1 + q t ≤ 2 * u t)
     (huncharged : ∀ᵐ t ∂volume.restrict (Ioo β τ), q t ≤ u t) :
-    β < τ ∧ q τ ≤ 1 / 4 ∧
-      (∀ t ∈ Icc α β, (p t - 1) ^ 2 + (q t + 1) ^ 2 ≤ 5) := by
+    β < τ ∧ q τ ≤ 1 / 4 := by
   have h0α := hphase.first_mem.1.le
   have hτL := hτ.2.le.trans hphase.second_mem.2.le
   have hp (t : ℝ) (ht : t ∈ Icc α τ) : -1 ≤ p t ∧ p t ≤ 0 :=
@@ -102,10 +101,7 @@ theorem first_bad_after_window_and_height_bound {L α β η τ : ℝ}
   have henergy := (D.restrict h0α (le_min hαβ.le hτ.1.le) (hmτ.trans hτL))
     |>.charged_prefix_energy_le_five (lt_min hαβ hτ.1) hphase.first_zero
       (fun t ht => hp t ⟨ht.1, ht.2.trans hmτ⟩) (fun t ht => hq t ⟨ht.1, ht.2.trans hmτ⟩)
-      (ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo h0α (hmτ.trans hτL)) hunit)
-      (by filter_upwards [ae_restrict_mem measurableSet_Ioo,
-            ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo le_rfl hmτ) hcharged]
-            with t ht hc using hc (ht.2.trans_le (min_le_left β τ)))
+      (ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo h0α (hmτ.trans hτL)) hunit) hcharged
   have hβτ : β < τ := by
     by_contra hnot
     have h := henergy τ ⟨hτ.1.le, (min_eq_right (not_lt.mp hnot)).ge⟩
@@ -116,7 +112,7 @@ theorem first_bad_after_window_and_height_bound {L α β η τ : ℝ}
     |>.uncharged_prefix_quantity_le_initial (fun t ht => hp t ⟨hαβ.le.trans ht.1, ht.2⟩)
       huncharged τ (right_mem_Icc.mpr hβτ.le)
   rw [hpτ] at hquantity
-  refine ⟨hβτ, ?_, henergy⟩
+  refine ⟨hβτ, ?_⟩
   nlinarith only [hquantity, henergy β (right_mem_Icc.mpr hαβ.le), sq_nonneg (q β - 1)]
 
 end CornerArcDynamics

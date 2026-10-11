@@ -6,20 +6,19 @@ public import AmbidextrousSofa.Analysis.CompanionZero
 @[expose] public section
 
 /-!
-# Actual first-unit niche contact and first companion floor crossing
+# Actual first-unit niche contact
 
 The full first-wall envelope is obtained from the monotone actual first
-tangent. A nonpositive first momentum supplies companion slack using the
-literal left cut, whose wall is below the original wall. The first zero
-of the companion tangent height is constructed independently of any
-contact-phase decomposition. Its abscissa is above the actual low-wing
-circle minimum and at most one unit from the left middle endpoint.
+tangent. At every interior angle the first wall passes through the first
+tangent point, and the original companion wall lies above it by at least
+the negative first momentum; the literal left cut, whose wall is below
+the original wall, supplies this slack. Thus a nonpositive first momentum
+makes the first tangent point a niche contact.
 -/
 
 noncomputable section
 
 open Set Filter MeasureTheory
-open scoped Topology
 
 namespace AmbidextrousSofa
 
@@ -33,29 +32,29 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
   (heq : (upperCurvature U).restrict (regularCurvatureDomain m) =
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
-local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-set_option quotPrecheck false
-local notation "B" => firstTangentPoint (F).f (F).fD
-local notation "D" => secondTangentPoint (F).g (F).gD
-local notation "p" => supportP (F).fD (F).g
-local notation "V" => leftCompanionCap U (horizontalLeft U + capWidth U / 4)
+open scoped ActualPair
 
-theorem fullTiltedSupportQuarterPair_companion_wall_first_tangency_gap {t : ℝ}
-    (hc : Real.cos t ≠ 0) :
-    (secondWall V t (B t).1 - (B t).2) * Real.cos t = -p t := by
-  have hg : support V (companionNormal t) = (F).g t := by
-    rw [companionNormal_eq_unitNormal]; rfl
-  rw [sub_mul, secondWall, div_mul_cancel₀ _ hc, hg]
-  dsimp only [firstTangentPoint, Reference.supportPoint, supportP]
-  linear_combination (-(F).fD t) * Real.sin_sq_add_cos_sq t
+theorem fullTiltedSupportQuarterPair_cut_wall_eq_scalar (t x : ℝ) :
+    secondWall V t x = ((F).g t - 1 + x * Real.sin t) / Real.cos t := by
+  simp only [secondWall, companionNormal_eq_unitNormal]
+  rfl
 
-theorem fullTiltedSupportQuarterPair_companion_wall_second_tangency {t : ℝ}
-    (hc : Real.cos t ≠ 0) : secondWall V t (D t).1 = (D t).2 := by
-  have hg : support V (companionNormal t) = (F).g t := by
-    rw [companionNormal_eq_unitNormal]; rfl
-  rw [secondWall, div_eq_iff hc, hg, secondTangentPoint, companionSupportPoint_coordinates]
-  dsimp only
-  linear_combination (1 - (F).g t) * Real.sin_sq_add_cos_sq t
+/-- At an interior angle the first wall passes through the first tangent point, and the
+original companion wall over it is higher by at least `-p / cos`. -/
+theorem fullTiltedSupportQuarterPair_first_wall_tangency {t : ℝ}
+    (ht : t ∈ Ioo 0 (Real.pi / 2)) :
+    firstWall U t (B t).1 = (B t).2 ∧
+      -p t ≤ (secondWall U t (B t).1 - (B t).2) * Real.cos t := by
+  obtain ⟨hs, hc⟩ := quarter_sin_cos_pos ht
+  refine ⟨fullTiltedSupportQuarterPair_first_tangency hU hm haffine hρ hρ0 hρK heq
+    ⟨ht.1.le, ht.2⟩ ▸ firstWall_firstTangency U hs.ne', ?_⟩
+  have hgap : (secondWall V t (B t).1 - (B t).2) * Real.cos t = -p t := by
+    rw [fullTiltedSupportQuarterPair_cut_wall_eq_scalar hU hm haffine hρ hρ0 hρK heq, sub_mul,
+      div_mul_cancel₀ _ hc.ne']
+    dsimp only [firstTangentPoint, Reference.supportPoint, supportP]
+    linear_combination (-(F).fD t) * Real.sin_sq_add_cos_sq t
+  linarith [mul_le_mul_of_nonneg_right (secondWall_mono (leftCompanionCap_subset _ _)
+    hU.isCap_fullLeftCompanion.nonempty hU.isCap.isCompact hc (B t).1) hc.le]
 
 theorem fullTiltedSupportQuarterPair_first_wall_envelope
     (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1)
@@ -79,65 +78,17 @@ theorem fullTiltedSupportQuarterPair_niche_first_tangency
     {t : ℝ} (ht : t ∈ Ioo 0 (Real.pi / 2))
     (hp : p t ≤ 0) (hy : 0 ≤ (B t).2) :
     sweptNiche U (Real.pi / 2) (B t).1 = (B t).2 := by
-  have hc : 0 < Real.cos t := Real.cos_pos_of_mem_Ioo
-    ⟨by linarith only [ht.1, Real.pi_pos], ht.2⟩
+  obtain ⟨hfirst, hgap⟩ := fullTiltedSupportQuarterPair_first_wall_tangency
+    hU hm haffine hρ hρ0 hρK heq ht
   -- The companion wall lies above the first tangency, so the first wall is the corner wall.
-  have hcut := sub_nonneg.mp ((mul_nonneg_iff_of_pos_right hc).mp
-    ((fullTiltedSupportQuarterPair_companion_wall_first_tangency_gap
-      hU hm haffine hρ hρ0 hρK heq hc.ne').symm ▸ neg_nonneg.mpr hp))
-  have hfirst : firstWall U t (B t).1 = (B t).2 :=
-    fullTiltedSupportQuarterPair_first_tangency hU hm haffine hρ hρ0 hρK heq
-      ⟨ht.1.le, ht.2⟩ ▸ firstWall_firstTangency U (Real.sin_pos_of_pos_of_lt_pi ht.1
-        (by linarith only [ht.2, Real.pi_pos])).ne'
   have hcorner : cornerWall U t (B t).1 = (B t).2 := by
-    rw [cornerWall, hfirst, min_eq_left (hcut.trans (secondWall_mono
-      (leftCompanionCap_subset _ _) hU.isCap_fullLeftCompanion.nonempty hU.isCap.isCompact hc _))]
+    rw [cornerWall, hfirst, min_eq_left (sub_nonneg.mp ((mul_nonneg_iff_of_pos_right
+      (quarter_sin_cos_pos ht).2).mp ((neg_nonneg.mpr hp).trans hgap)))]
   refine le_antisymm (sweptNiche_le_of_forall (by positivity) hy fun s hs =>
     (min_le_left _ _).trans (fullTiltedSupportQuarterPair_first_wall_envelope
       hU hm haffine hρ hρ0 hρK heq hunit ht s hs)) ?_
   rw [← hcorner]
   exact cornerWall_le_sweptNiche (sweptWallValues_bddAbove hU.isCap.isCompact le_rfl _) ht
-
-/-- The abscissa bound uses only membership of the actual low-wing
-support point in the cut cap, and therefore remains true through folds. -/
-theorem fullTiltedSupportQuarterPair_second_tangency_abscissa_le {C t : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (ht : t ∈ Icc 0 (Real.pi / 2)) : C + (D t).1 ≤ 1 := by
-  have hx : (Reference.companionSupportPoint (F).g (F).gD t).1 ≤
-      horizontalLeft U + capWidth U / 4 :=
-    ((fullTiltedSupportQuarterPair_points_mem hU hm haffine hρ hρ0 hρK heq).2 t ht).2.2
-  rw [show horizontalLeft U + capWidth U / 4 = -C by rw [capWidth, hl, hr]; ring,
-    companionSupportPoint_coordinates] at hx
-  rw [secondTangentPoint, companionSupportPoint_coordinates]
-  dsimp only at hx ⊢
-  linarith [Real.sin_le_one t]
-
-theorem fullTiltedSupportQuarterPair_first_floor_crossing {C h : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hmpos : 0 < m) (hheight : capHeight U = 1)
-    (hh : 0 < h) (hlow : capRoof U (-C) = 1 - h) :
-    ∃ γ ∈ Ioo 0 (Real.pi / 2),
-      (D γ).2 = 0 ∧ (∀ t ∈ Ico 0 γ, (D t).2 < 0) ∧
-      companionZero V ≤ (D γ).1 ∧ C + (D γ).1 ≤ 1 := by
-  have hL : (0 : ℝ) < Real.pi / 2 := by positivity
-  obtain ⟨-, -, hD0, hDL, -⟩ := fullTiltedSupportQuarterPair_tangent_traces
-    hU hm haffine hρ hρ0 hρK heq hl hr hmpos hheight hlow
-  have heL := (hU.endpoint_heights_pos_of_affine hheight ⟨m, c, haffine⟩).2
-  obtain ⟨γ, hγ, hγy, hbefore⟩ := exists_first_level_crossing hL
-    (uIcc_of_le hL.le ▸ (fullTiltedSupportQuarterPair_tangent_calculus
-      hU hm haffine hρ hρ0 hρK heq).2.2.2.1.continuousOn.neg)
-    (show (0 : ℝ) < -(D 0).2 by simpa only [hD0, neg_neg] using hh)
-    (show -(D (Real.pi / 2)).2 ≤ 0 by simpa only [hDL] using neg_nonpos.mpr heL.le)
-  replace hγy : (D γ).2 = 0 := neg_eq_zero.mp hγy
-  have hγq : γ ∈ Ioo 0 (Real.pi / 2) :=
-    ⟨hγ.1, hγ.2.lt_of_ne fun heq => by rw [heq, hDL] at hγy; exact heL.ne' hγy⟩
-  have hwall := fullTiltedSupportQuarterPair_companion_wall_second_tangency
-    hU hm haffine hρ hρ0 hρK heq (Real.cos_pos_of_mem_Ioo
-      ⟨by linarith only [hγq.1, Real.pi_pos], hγq.2⟩).ne'
-  refine ⟨γ, hγq, hγy, fun t ht => neg_pos.mp (hbefore t ht), not_lt.mp fun h => ?_,
-    fullTiltedSupportQuarterPair_second_tangency_abscissa_le
-      hU hm haffine hρ hρ0 hρK heq hl hr (Ioo_subset_Icc_self hγq)⟩
-  linarith [hU.isCap_fullLeftCompanion.secondWall_neg_of_lt_companionZero h hγq]
 
 end ActualPair
 

@@ -21,7 +21,6 @@ the selected joint measure gives each of them zero mass.
 noncomputable section
 
 open Set Filter MeasureTheory
-open scoped Topology
 
 namespace AmbidextrousSofa
 
@@ -31,8 +30,7 @@ theorem strictMonoOn_firstWallSlope :
   intro s hs t ht hst
   have hdiff := Real.sin_pos_of_pos_of_lt_pi (sub_pos.mpr hst) (by linarith [ht.2, hs.1])
   rw [Real.sin_sub] at hdiff
-  apply (div_lt_div_iff₀ (Real.sin_pos_of_pos_of_lt_pi hs.1 (by linarith [hs.2, Real.pi_pos]))
-    (Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos]))).mpr
+  apply (div_lt_div_iff₀ (quarter_sin_cos_pos hs).1 (quarter_sin_cos_pos ht).1).mpr
   linarith
 
 section ActualPair
@@ -45,11 +43,7 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
   (heq : (upperCurvature U).restrict (regularCurvatureDomain m) =
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
-local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-set_option quotPrecheck false
-local notation "B" => firstTangentPoint (F).f (F).fD
-local notation "p" => supportP (F).fD (F).g
-local notation "q" => supportQ (F).gD (F).f
+open scoped ActualPair
 
 theorem fullTiltedSupportQuarterPair_strict_first_contact_unique
     {C α η t g s : ℝ}
@@ -63,24 +57,16 @@ theorem fullTiltedSupportQuarterPair_strict_first_contact_unique
     (hmax : fullWallClip hU.isCap.toCompactCap (B t).1 s =
       sweptNiche U (Real.pi / 2) (B t).1) :
     s = t ∧ firstWall U s (B t).1 < secondWall U s (B t).1 := by
-  have hsin {r : ℝ} (hr : r ∈ Ioo (0 : ℝ) (Real.pi / 2)) : 0 < Real.sin r :=
-    Real.sin_pos_of_pos_of_lt_pi hr.1 (by linarith [hr.2, Real.pi_pos])
-  have hcos {r : ℝ} (hr : r ∈ Ioo (0 : ℝ) (Real.pi / 2)) : 0 < Real.cos r :=
-    Real.cos_pos_of_mem_Ioo ⟨by linarith [hr.1, Real.pi_pos], hr.2⟩
+  obtain ⟨hsins, hcoss⟩ := quarter_sin_cos_pos hs
+  obtain ⟨hsint, hcost⟩ := quarter_sin_cos_pos ht
   have hniche := fullTiltedSupportQuarterPair_niche_first_tangency
     hU hm haffine hρ hρ0 hρK heq hunit ht hp.le hy.le
   -- At `t` the first wall is a strict contact: the companion wall lies strictly above.
-  have hfirst : firstWall U t (B t).1 = (B t).2 := by
-    rw [fullTiltedSupportQuarterPair_first_tangency hU hm haffine hρ hρ0 hρK heq
-      ⟨ht.1.le, ht.2⟩]
-    exact firstWall_firstTangency U (hsin ht).ne'
-  have hcut := sub_pos.mp ((mul_pos_iff_of_pos_right (hcos ht)).mp
-    ((fullTiltedSupportQuarterPair_companion_wall_first_tangency_gap
-      hU hm haffine hρ hρ0 hρK heq (hcos ht).ne').symm ▸ neg_pos.mpr hp))
+  obtain ⟨hfirst, hgap⟩ :=
+    fullTiltedSupportQuarterPair_first_wall_tangency hU hm haffine hρ hρ0 hρK heq ht
   have hgt := hU.isCap.niche_derivative_at_strict_first_contact ht hderiv
-    (hfirst.trans hniche.symm) (hfirst ▸ hcut.trans_le (secondWall_mono
-      (leftCompanionCap_subset _ _) hU.isCap_fullLeftCompanion.nonempty hU.isCap.isCompact
-      (hcos ht) _))
+    (hfirst.trans hniche.symm) (hfirst ▸ sub_pos.mp ((mul_pos_iff_of_pos_right hcost).mp
+      ((neg_pos.mpr hp).trans_le hgap)))
   have hcorner : cornerWall U s (B t).1 = sweptNiche U (Real.pi / 2) (B t).1 :=
     positive_fullWallClip_eq_cornerWall (U := hU.isCap.toCompactCap) (hniche ▸ hy) hmax
   rcases le_or_gt (firstWall U s (B t).1) (secondWall U s (B t).1) with hle | hsecond
@@ -107,7 +93,7 @@ theorem fullTiltedSupportQuarterPair_strict_first_contact_unique
     rw [(fullTiltedSupportQuarterPair_other_points_after_affine
       hU hm haffine hρ hρ0 hρK heq ⟨hs.1.le, hs.2⟩ hafter).2] at hfst
     have hprod := mul_neg_of_neg_of_pos (hphase.core_signs s
-      ⟨lt_of_le_of_ne hclosed.1 hsα.symm, lt_of_le_of_ne hclosed.2 hsη⟩).1 (hsin hs)
+      ⟨lt_of_le_of_ne hclosed.1 hsα.symm, lt_of_le_of_ne hclosed.2 hsη⟩).1 hsins
     have hle := (fullTiltedSupportQuarterPair_first_tangent_order
       hU hm haffine hρ hρ0 hρK heq hunit).1 (Ioo_subset_Icc_self hs) (Ioo_subset_Icc_self ht) hst
     linarith only [hprod, hle, hfst, hx]
@@ -115,9 +101,7 @@ theorem fullTiltedSupportQuarterPair_strict_first_contact_unique
   have hcontact : secondWall U s (B t).1 = sweptNiche U (Real.pi / 2) (B t).1 := by
     rwa [cornerWall, min_eq_right hsecond.le] at hcorner
   have hgs := hU.isCap.niche_derivative_at_strict_second_contact hs hderiv hcontact hsecond
-  have h₁ := div_pos (hsin hs) (hcos hs)
-  have h₂ := div_neg_of_neg_of_pos (neg_neg_of_pos (hcos ht)) (hsin ht)
-  linarith only [hgs, hgt, h₁, h₂]
+  linarith only [hgs, hgt, div_pos hsins hcoss, div_neg_of_neg_of_pos (neg_neg_of_pos hcost) hsint]
 
 end ActualPair
 
