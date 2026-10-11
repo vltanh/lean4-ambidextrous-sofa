@@ -31,16 +31,6 @@ theorem fullAngle_mem (α : TerminalAngle) (grid : Finset QuarterAngle)
     (j : SourceIndex α grid) : fullAngle α grid j ∈ Ioo (0 : ℝ) Real.pi :=
   AngularGrid.fullAngle_mem (outerGrid α grid) j
 
-open Classical in
-theorem sum_abs_defect_on_set_le_cos_sum
-    (U : Set Plane) (grid : Finset QuarterAngle) {E : Set ℝ} {δ : ℝ}
-    (hδ : 0 < δ) (hE : ∀ t ∈ E, δ ≤ |Real.cos t|) :
-    (∑ j ∈ Finset.univ.filter (fun j : SourceIndex α grid => fullAngle α grid j ∈ E),
-      |normalizedExposureDefect U α hαL grid j|) ≤
-      (∑ j : SourceIndex α grid,
-        |(normal α grid j).1| * |normalizedExposureDefect U α hαL grid j|) / δ :=
-  AngularGrid.sum_abs_on_set_le_cos_sum (outerGrid α grid) _ hδ hE
-
 theorem normal_snd_mul_innerSourceMass {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (j : SourceIndex α grid) :
     (normal α grid j).2 * innerSourceMass U α hαL grid j =

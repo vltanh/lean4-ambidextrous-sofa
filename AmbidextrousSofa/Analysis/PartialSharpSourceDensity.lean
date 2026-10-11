@@ -113,24 +113,12 @@ theorem curvature_Ioc_le_of_eventual_sampled_density
       fullAngle α (dyadic (level n)) (scaledSource α (dyadic (level n)) k) ∈ Icc a b →
         finiteCurvatureDensity (cornerSecant (U n) α (level n) k) (mesh α (level n)) ≤
           C * mesh α (level n)) :
-    (upperCurvature target).real (Ioc a b) ≤ C * (b - a) := by
-  have hcap : ∀ n, IsDownwardCap (U n) := fun n => (hU n).isCap
-  have hcb : ∀ n, MovingSofaOptimality.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
-  have hlim := hHausdorff.imported_hausdorffTendsto hcap hTarget
-  have hmass : Tendsto (fun n => (upperCurvature (U n)).real (Ioc a b)) atTop
-      (𝓝 ((upperCurvature target).real (Ioc a b))) := by
-    have hK := hTarget.imported_isConvexBody
-    simpa only [fun n => (hcap n).upperCurvature_real_Ioc hab, hTarget.upperCurvature_real_Ioc hab]
-      using (MovingSofaOptimality.ang_tendsto_sigmaFun hcb hK hlim hb).sub
-        (MovingSofaOptimality.ang_tendsto_sigmaFun hcb hK hlim ha)
-  refine le_of_tendsto_of_tendsto hmass ?_ (hdensity.mono fun n hn =>
-    (hU n).curvature_Ioc_le_of_sampled_density (hc n) hC hab hupper htop hterminal hn)
-  have hmiddle := AngularGrid.middleOuterMass_sum_tendsto_of_compact hHausdorff hcap hTarget
-    (grid := fun n => outerGrid α (dyadic (level n)))
-    (fun n => (hU n).polygon_eq) hbox hwidth haffine isCompact_Icc hupper hperp
-  convert (((tendsto_const_nhds.add ((mesh_tendsto α).comp hlevel)).const_mul C).add
-    hmiddle).add (selectionDefect_sum_tendsto (α := α) hTarget hcap hc hrate hHausdorff) using 6 <;>
-    first | rfl | simp
+    (upperCurvature target).real (Ioc a b) ≤ C * (b - a) :=
+  curvature_Ioc_le_of_eventually_le hTarget (fun n => (hU n).isCap) (fun n => (hU n).polygon_eq)
+    hHausdorff hbox hwidth haffine hab hupper hperp ha hb ((mesh_tendsto α).comp hlevel)
+    (selectionDefect_sum_tendsto (α := α) hTarget (fun n => (hU n).isCap) hc hrate hHausdorff)
+    (hdensity.mono fun n hn =>
+      (hU n).curvature_Ioc_le_of_sampled_density (hc n) hC hab hupper htop hterminal hn)
 
 /-- The source coefficient bounds every sufficiently small interval
 about a regular wing normal. It is not assumed continuous. -/

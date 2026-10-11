@@ -120,6 +120,30 @@ theorem IsDownwardCap.partialBarrier_verticalExtrusion_le {U : Set Plane}
     (Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [hα, Real.pi_pos]))]
   exact add_le_add_left (le_max_right _ _) ε
 
+/-- The charged exterior roof gains exactly the extrusion height, so the score gains half the
+width times the height, less the gain of the middle barrier. -/
+theorem IsDownwardCap.capScore_verticalExtrusion {U : Set Plane} (hU : IsDownwardCap U) {ε : ℝ}
+    (hε : 0 ≤ ε) (α : ℝ) :
+    capScore (verticalExtrusion U ε) α = capScore U α + capWidth U / 2 * ε -
+      ((∫ x in middleHalfInterval (horizontalLeft U) (horizontalRight U),
+          partialBarrier (verticalExtrusion U ε) α x) -
+        ∫ x in middleHalfInterval (horizontalLeft U) (horizontalRight U),
+          partialBarrier U α x) := by
+  have hprojection := hU.horizontalProjection_verticalExtrusion hε
+  rw [capScore_eq_integrals, capScore_eq_integrals, show horizontalLeft (verticalExtrusion U ε) =
+    horizontalLeft U from congrArg sInf hprojection, show horizontalRight (verticalExtrusion U ε) =
+    horizontalRight U from congrArg sSup hprojection]
+  have hproj := hU.horizontalProjection_eq_Icc
+  have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
+  have hconst : IntegrableOn (fun _ : ℝ => ε) (Icc (horizontalLeft U) (horizontalRight U)) :=
+    integrableOn_const measure_Icc_lt_top.ne
+  rw [setIntegral_congr_fun (measurableSet_Icc.diff (measurableSet_middleHalfInterval _ _))
+    fun x hx => hU.capRoof_verticalExtrusion hε (hproj ▸ hx.1),
+    integral_add ((hU.integrableOn_capRoof_Icc _ _).mono_set sdiff_subset)
+      (hconst.mono_set sdiff_subset), setIntegral_const, smul_eq_mul,
+    volumeReal_exterior_middleHalfInterval hlr, capWidth]
+  ring
+
 /-- Equal window lengths pay for the entire barrier increase, even when a
 previously zero portion of the niche becomes positive. -/
 theorem IsDownwardCap.capScore_le_verticalExtrusion {U : Set Plane}
@@ -127,28 +151,19 @@ theorem IsDownwardCap.capScore_le_verticalExtrusion {U : Set Plane}
     (hheight : ∀ p ∈ U, p.2 + ε ≤ 1)
     (hα0 : 0 < α) (hα : α ≤ Real.pi / 2) :
     capScore U α ≤ capScore (verticalExtrusion U ε) α := by
-  have hprojection := hU.horizontalProjection_verticalExtrusion hε
-  rw [capScore_eq_integrals, capScore_eq_integrals, show horizontalLeft (verticalExtrusion U ε) =
-    horizontalLeft U from congrArg sInf hprojection, show horizontalRight (verticalExtrusion U ε) =
-    horizontalRight U from congrArg sSup hprojection]
-  have hproj := hU.horizontalProjection_eq_Icc
-  set l := horizontalLeft U
-  set r := horizontalRight U
-  have hlr : l ≤ r := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
+  have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
   have hJ := middleHalfInterval_subset hlr
-  have hconst : IntegrableOn (fun _ : ℝ => ε) (Icc l r) := integrableOn_const measure_Icc_lt_top.ne
-  have hbarrier := (integrableOn_partialBarrier_Icc hU.isCompact hα0 hα l r).mono_set hJ
+  have hconst : IntegrableOn (fun _ : ℝ => ε)
+      (middleHalfInterval (horizontalLeft U) (horizontalRight U)) :=
+    integrableOn_const ((measure_mono hJ).trans_lt measure_Icc_lt_top).ne
+  have hbarrier := (integrableOn_partialBarrier_Icc hU.isCompact hα0 hα _ _).mono_set hJ
   have hmiddle := integral_mono ((integrableOn_partialBarrier_Icc
-    (hU.isDownwardCap_verticalExtrusion hε hheight).isCompact hα0 hα l r).mono_set hJ)
-    (hbarrier.add (hconst.mono_set hJ)) fun x => hU.partialBarrier_verticalExtrusion_le hε hα0 hα x
+    (hU.isDownwardCap_verticalExtrusion hε hheight).isCompact hα0 hα _ _).mono_set hJ)
+    (hbarrier.add hconst) fun x => hU.partialBarrier_verticalExtrusion_le hε hα0 hα x
   simp only [Pi.add_apply] at hmiddle
-  rw [integral_add hbarrier (hconst.mono_set hJ), setIntegral_const, smul_eq_mul,
+  rw [integral_add hbarrier hconst, setIntegral_const, smul_eq_mul,
     volumeReal_middleHalfInterval hlr] at hmiddle
-  rw [setIntegral_congr_fun (measurableSet_Icc.diff (measurableSet_middleHalfInterval l r))
-    fun x hx => hU.capRoof_verticalExtrusion hε (hproj ▸ hx.1),
-    integral_add ((hU.integrableOn_capRoof_Icc l r).mono_set sdiff_subset)
-      (hconst.mono_set sdiff_subset), setIntegral_const, smul_eq_mul,
-    volumeReal_exterior_middleHalfInterval hlr]
+  rw [hU.capScore_verticalExtrusion hε, capWidth]
   linarith
 
 /-- Height is the actual attained upward support. -/

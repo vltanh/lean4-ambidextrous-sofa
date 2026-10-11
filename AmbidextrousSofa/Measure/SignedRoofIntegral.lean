@@ -74,20 +74,16 @@ theorem secondTangent_density_identity (f g fD gD gDD : ℝ → ℝ) (t : ℝ) :
   unfold cornerDensity secondMomentumDerivative supportP supportQ
   ring
 
-/-- Integration of a density identity `L = c - P ^ 2 + M` whose correction `M` has an
-explicit primitive. -/
-theorem integral_density_of_identity {a b : ℝ} {L c P M Mp : ℝ → ℝ} (hab : a ≤ b)
+/-- Integration of a density identity `L = c - P ^ 2 + M` whose correction `M` integrates
+to `m`. -/
+theorem integral_density_of_identity {a b m : ℝ} {L c P M : ℝ → ℝ}
     (hid : ∀ t, L t = c t - P t ^ 2 + M t) (hc : Continuous c) (hP : Continuous P)
-    (hMp : Continuous Mp) (hM : ∀ t ∈ Ioo a b, HasDerivWithinAt Mp (M t) (Ioi t) t)
-    (hMi : IntervalIntegrable M volume a b) :
-    (∫ t in a..b, L t) = (∫ t in a..b, c t) - (∫ t in a..b, P t ^ 2) + Mp b - Mp a := by
+    (hMi : IntervalIntegrable M volume a b) (hftc : ∫ t in a..b, M t = m) :
+    (∫ t in a..b, L t) = (∫ t in a..b, c t) - (∫ t in a..b, P t ^ 2) + m := by
   have hc' := hc.intervalIntegrable (μ := volume) a b
   have hP' : IntervalIntegrable (fun t => P t ^ 2) volume a b := (hP.pow 2).intervalIntegrable a b
-  have hcP : IntervalIntegrable (fun t => c t - P t ^ 2) volume a b := hc'.sub hP'
-  rw [intervalIntegral.integral_congr fun t _ => hid t, intervalIntegral.integral_add hcP hMi,
-    intervalIntegral.integral_sub hc' hP',
-    intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le hab hMp.continuousOn hM hMi]
-  ring
+  rw [intervalIntegral.integral_congr fun t _ => hid t,
+    intervalIntegral.integral_add (hc'.sub hP') hMi, intervalIntegral.integral_sub hc' hP', hftc]
 
 /-- Signed roof integration with actual graph identities on the three arcs.
 The endpoint momentum equations join the arcs; the top support values give
@@ -171,20 +167,22 @@ theorem signedRoof_integral_of_graphs
   have hjoin := intervalIntegral.integral_add_adjacent_intervals
     (hN.intervalIntegrable (μ := volume) (-gD 0) (innerCornerPoint f g b).1)
     (hN.intervalIntegrable (innerCornerPoint f g b).1 (-fD (Real.pi / 2)))
-  have hB := integral_density_of_identity hbL (firstTangent_density_identity f g fD gD fDD) hc hp
-    (Mp := firstMomentumPrimitive f g fD) ((hf.sub continuous_const).mul hp)
-    (fun t _ => ((hderivF t).sub_const 1).mul (((hsecondF t).sub (hderivG t)).add_const 1))
-    (((hfD.mul hp).intervalIntegrable _ _).add
-      ((hfDD.sub (hgD.intervalIntegrable _ _)).continuousOn_mul
-        (hf.sub continuous_const).continuousOn))
-  have hD := integral_density_of_identity h0d (secondTangent_density_identity f g fD gD gDD) hc hq
-    (Mp := secondMomentumPrimitive f g gD) ((hg.sub continuous_const).mul hq)
-    (fun t _ => ((hderivG t).sub_const 1).mul (((hsecondG t).add (hderivF t)).sub_const 1))
-    (((hgD.mul hq).intervalIntegrable _ _).add
-      ((hgDD.add (hfD.intervalIntegrable _ _)).continuousOn_mul
-        (hg.sub continuous_const).continuousOn))
+  have hBi' : IntervalIntegrable (firstMomentumDerivative f g fD gD fDD) volume b (Real.pi / 2) :=
+    ((hfD.mul hp).intervalIntegrable _ _).add ((hfDD.sub
+      (hgD.intervalIntegrable _ _)).continuousOn_mul (hf.sub continuous_const).continuousOn)
+  have hB := integral_density_of_identity (firstTangent_density_identity f g fD gD fDD) hc hp hBi'
+    (intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le hbL
+      (f := firstMomentumPrimitive f g fD) ((hf.sub continuous_const).mul hp).continuousOn
+      (fun t _ => ((hderivF t).sub_const 1).mul (((hsecondF t).sub (hderivG t)).add_const 1)) hBi')
+  have hDi' : IntervalIntegrable (secondMomentumDerivative f g fD gD gDD) volume 0 d :=
+    ((hgD.mul hq).intervalIntegrable _ _).add ((hgDD.add
+      (hfD.intervalIntegrable _ _)).continuousOn_mul (hg.sub continuous_const).continuousOn)
+  have hD := integral_density_of_identity (secondTangent_density_identity f g fD gD gDD) hc hq hDi'
+    (intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le h0d
+      (f := secondMomentumPrimitive f g gD) ((hg.sub continuous_const).mul hq).continuousOn
+      (fun t _ => ((hderivG t).sub_const 1).mul (((hsecondG t).add (hderivF t)).sub_const 1)) hDi')
   simp only [firstMomentumPrimitive, secondMomentumPrimitive, hFtop, hGtop, hpzero, hqzero,
-    sub_self, zero_mul, mul_zero, sub_zero] at hB hD
+    sub_self, zero_mul, mul_zero, add_zero] at hB hD
   have hsplit0 := intervalIntegral.integral_add_adjacent_intervals
     (hc.intervalIntegrable (μ := volume) 0 d) (hc.intervalIntegrable d (Real.pi / 2))
   have hsplitb := intervalIntegral.integral_add_adjacent_intervals

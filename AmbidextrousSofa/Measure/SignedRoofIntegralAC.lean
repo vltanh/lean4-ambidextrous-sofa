@@ -20,18 +20,6 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-/-- Integration of a density identity `L = c - P ^ 2 + M` whose correction `M` integrates
-to `m`. -/
-theorem integral_density_of_identity_ac {a b m : ℝ} {L c P M : ℝ → ℝ}
-    (hid : ∀ t, L t = c t - P t ^ 2 + M t) (hc : Continuous c) (hP : Continuous P)
-    (hMi : IntervalIntegrable M volume a b) (hftc : ∫ t in a..b, M t = m) :
-    (∫ t in a..b, L t) = (∫ t in a..b, c t) - (∫ t in a..b, P t ^ 2) + m := by
-  have hc' := hc.intervalIntegrable (μ := volume) a b
-  have hP' : IntervalIntegrable (fun t => P t ^ 2) volume a b := (hP.pow 2).intervalIntegrable a b
-  have hcP : IntervalIntegrable (fun t => c t - P t ^ 2) volume a b := hc'.sub hP'
-  rw [intervalIntegral.integral_congr fun t _ => hid t, intervalIntegral.integral_add hcP hMi,
-    intervalIntegral.integral_sub hc' hP', hftc]
-
 /-- Signed integration for the actual three graph arcs with measurable
 curvature. All derivative assertions are almost everywhere on the open
 quarter; the closed endpoint values remain the genuine continuous traces. -/
@@ -142,14 +130,14 @@ theorem signedRoof_integral_of_graphs_ac
   have hjoin := intervalIntegral.integral_add_adjacent_intervals
     (hN.intervalIntegrable (μ := volume) (-gD 0) (innerCornerPoint f g b).1)
     (hN.intervalIntegrable (innerCornerPoint f g b).1 (-fD (Real.pi / 2)))
-  have hB := integral_density_of_identity_ac (firstTangent_density_identity f g fD gD fDD) hc hp
+  have hB := integral_density_of_identity (firstTangent_density_identity f g fD gD fDD) hc hp
     (((hfD.mul hp).intervalIntegrable _ _).add
       ((hfDD'.sub (hgD.intervalIntegrable _ _)).continuousOn_mul
         (hf.sub continuous_const).continuousOn))
     (integral_eq_sub_of_ac_of_ae_hasDerivAt hbL (E := firstMomentumPrimitive f g fD)
       (((hfAC.sub hconst).mul ((hfDAC.sub hgAC).add hconst)).mono hsubB)
       (hderivB.mono fun t ht => (ht.1.sub_const 1).mul ((ht.2.2.1.sub ht.2.1).add_const 1)))
-  have hD := integral_density_of_identity_ac (secondTangent_density_identity f g fD gD gDD) hc hq
+  have hD := integral_density_of_identity (secondTangent_density_identity f g fD gD gDD) hc hq
     (((hgD.mul hq).intervalIntegrable _ _).add
       ((hgDD'.add (hfD.intervalIntegrable _ _)).continuousOn_mul
         (hg.sub continuous_const).continuousOn))

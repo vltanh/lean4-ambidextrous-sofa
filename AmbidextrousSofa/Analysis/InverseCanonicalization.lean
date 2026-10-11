@@ -48,19 +48,9 @@ theorem IsDownwardCap.capScore_lt_verticalExtrusion_of_middle_barrier_lt
     (hsmall : partialBarrier (verticalExtrusion U ε) (Real.pi / 2) x₀ < ε) :
     capScore U (Real.pi / 2) < capScore (verticalExtrusion U ε) (Real.pi / 2) := by
   have hV := hU.isDownwardCap_verticalExtrusion hε hheight
-  have hproj := hU.horizontalProjection_verticalExtrusion hε
-  have hIcc := hU.horizontalProjection_eq_Icc
-  have hcU := hU.continuousOn_capRoof_Icc
   set l := horizontalLeft U
   set r := horizontalRight U
   have hlr : l < r := sub_pos.mp hwidth
-  have houter (s t : ℝ) (hs : l ≤ s) (hst : s ≤ t) (ht : t ≤ r) :
-      (∫ x in s..t, capRoof (verticalExtrusion U ε) x) =
-        (∫ x in s..t, capRoof U x) + (t - s) * ε := by
-    rw [intervalIntegral.integral_congr (g := fun x => capRoof U x + ε) fun x hx =>
-        hU.capRoof_verticalExtrusion hε (hIcc ▸ Icc_subset_Icc hs ht (uIcc_of_le hst ▸ hx)),
-      intervalIntegral.integral_add ((hcU.mono (Icc_subset_Icc hs ht)).intervalIntegrable_of_Icc
-        hst) intervalIntegrable_const, intervalIntegral.integral_const, smul_eq_mul]
   have hbU := hU.continuous_partialBarrier_pi_div_two
   have hstrict : (∫ x in (l + (r - l) / 4)..(r - (r - l) / 4),
       partialBarrier (verticalExtrusion U ε) (Real.pi / 2) x) <
@@ -71,11 +61,9 @@ theorem IsDownwardCap.capScore_lt_verticalExtrusion_of_middle_barrier_lt
     ⟨x₀, hx₀, hsmall.trans_le (le_add_of_nonneg_left (partialBarrier_nonneg U _ x₀))⟩
   rw [intervalIntegral.integral_add (hbU.intervalIntegrable _ _) intervalIntegrable_const,
     intervalIntegral.integral_const, smul_eq_mul] at hstrict
-  rw [hU.capScore_eq_intervalSpatialScore, hV.capScore_eq_intervalSpatialScore,
-    show horizontalLeft (verticalExtrusion U ε) = l from congrArg sInf hproj,
-    show horizontalRight (verticalExtrusion U ε) = r from congrArg sSup hproj,
-    intervalSpatialScore, intervalSpatialScore, houter l _ le_rfl (by linarith) (by linarith),
-    houter _ r (by linarith) (by linarith) le_rfl]
+  rw [hU.capScore_verticalExtrusion hε, middleHalfInterval, integral_Icc_eq_integral_Ioc,
+    integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le (by linarith),
+    ← intervalIntegral.integral_of_le (by linarith), capWidth]
   linarith
 
 /-- If the middle chord has roof one on the entire middle window, clipping

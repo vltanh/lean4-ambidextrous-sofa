@@ -117,19 +117,12 @@ theorem curvature_Ioc_le_of_eventual_sampled_density
       fullAngle (dyadic (level n)) j ∈ Icc a b →
         finiteCurvatureDensity (cornerSecant (U n) (level n) j) (mesh (level n)) ≤
           C * mesh (level n)) :
-    (upperCurvature target).real (Ioc a b) ≤ C * (b - a) := by
-  have hcap : ∀ n, IsDownwardCap (U n) := fun n => (hU n).isCap
-  have hcb : ∀ n, MovingSofaOptimality.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
-  have hlim := hHausdorff.imported_hausdorffTendsto hcap hTarget
-  refine le_of_tendsto_of_tendsto ?_ ?_ (hdensity.mono fun n hn =>
-    (hU n).curvature_Ioc_le_of_sampled_density (hc n) hC hab hupper htop hn)
-  · simpa only [(hcap _).upperCurvature_real_Ioc hab, hTarget.upperCurvature_real_Ioc hab] using
-      (MovingSofaOptimality.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim hb).sub
-        (MovingSofaOptimality.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim ha)
-  · have hmiddle := middleOuterMass_sum_tendsto_of_compact hHausdorff hcap hTarget
-      (fun n => (hU n).polygon_eq) hbox hwidth haffine isCompact_Icc hupper hperp
-    convert ((((tendsto_const_nhds (x := b - a)).add (mesh_tendsto.comp hlevel)).const_mul C).add
-      hmiddle).add (selectionDefect_sum_tendsto hTarget hcap hc hrate hHausdorff) using 6 <;> simp
+    (upperCurvature target).real (Ioc a b) ≤ C * (b - a) :=
+  curvature_Ioc_le_of_eventually_le hTarget (fun n => (hU n).isCap) (fun n => (hU n).polygon_eq)
+    hHausdorff hbox hwidth haffine hab hupper hperp ha hb (mesh_tendsto.comp hlevel)
+    (selectionDefect_sum_tendsto hTarget (fun n => (hU n).isCap) hc hrate hHausdorff)
+    (hdensity.mono fun n hn =>
+      (hU n).curvature_Ioc_le_of_sampled_density (hc n) hC hab hupper htop hn)
 
 /-- At every wing normal whose companion face is a singleton, arbitrarily
 small intervals have curvature at most the local sharp coefficient times

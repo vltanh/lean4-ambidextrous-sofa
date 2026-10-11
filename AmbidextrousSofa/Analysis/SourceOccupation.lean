@@ -84,16 +84,16 @@ theorem sum_cos_abs_normalizedExposureDefect_tendsto_zero_of_canonical_maximum
     (level := level) hTarget.isCap (fun n => (hU n).isCap) hc hrate hHausdorff).const_mul 2)
 
 open Classical in
-theorem sum_abs_defect_on_set_le_cos_sum
-    (U : Set Plane) (grid : Finset QuarterAngle) {E : Set ℝ} {δ : ℝ}
-    (hδ : 0 < δ) (hE : ∀ t ∈ E, δ ≤ |Real.cos t|) :
-    (∑ j ∈ Finset.univ.filter (fun j : SourceIndex grid => fullAngle grid j ∈ E),
-      |normalizedExposureDefect U grid j|) ≤
-      (∑ j : SourceIndex grid, |(normal grid j).1| * |normalizedExposureDefect U grid j|) / δ := by
+/-- On a set of normals whose horizontal components are at least `δ`, absolute values are
+bounded by their sum weighted by the horizontal components, divided by `δ`. -/
+theorem sum_abs_on_set_le_cos_sum (grid : Finset QuarterAngle) (f : SourceIndex grid → ℝ)
+    {E : Set ℝ} {δ : ℝ} (hδ : 0 < δ) (hE : ∀ t ∈ E, δ ≤ |Real.cos t|) :
+    (∑ j ∈ Finset.univ.filter (fun j => fullAngle grid j ∈ E), |f j|) ≤
+      (∑ j, |(normal grid j).1| * |f j|) / δ := by
   rw [le_div_iff₀ hδ, Finset.sum_mul]
   refine (Finset.sum_le_sum fun j hj => ?_).trans (Finset.sum_le_sum_of_subset_of_nonneg
     (Finset.filter_subset _ _) fun j _ _ => by positivity)
-  rw [normal_eq_unitNormal, mul_comm]
+  rw [mul_comm, normal_eq_unitNormal]
   exact mul_le_mul_of_nonneg_right (hE _ (Finset.mem_filter.mp hj).2) (abs_nonneg _)
 
 open Classical in
@@ -124,7 +124,7 @@ theorem innerAngularMass_sub_curvature_tendsto_of_canonical_maximum
     (Ioo_subset_Icc_self (hupper hr)) ⟨by positivity, by linarith [Real.pi_pos]⟩
     fun h => htop (h ▸ hr)
   have habs := squeeze_zero (fun n => Finset.sum_nonneg fun j _ => abs_nonneg _)
-    (fun n => sum_abs_defect_on_set_le_cos_sum (U n) _ hδ fun x hx => hmin (hEF hx))
+    (fun n => sum_abs_on_set_le_cos_sum _ _ hδ fun x hx => hmin (hEF hx))
     (by simpa only [zero_div] using (sum_cos_abs_normalizedExposureDefect_tendsto_zero_of_canonical_maximum
       hTarget hheight ⟨m, c, haffine⟩ hTargetBox hU hHausdorff hlevel hc hrate hleft
       hright).div_const |Real.cos r|)

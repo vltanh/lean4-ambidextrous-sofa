@@ -122,19 +122,6 @@ theorem innerSourceMass_sum_interval_le {U : Set Plane} (hU : IsDownwardCap U)
     exact mul_le_mul_of_nonneg_left (sum_mesh_interval_sources_le level hst) (by linarith))
 
 open Classical in
-/-- On a set of normals whose horizontal components are at least `δ`, absolute values are
-bounded by their sum weighted by the horizontal components, divided by `δ`. -/
-theorem sum_abs_on_set_le_cos_sum (grid : Finset QuarterAngle) (f : SourceIndex grid → ℝ)
-    {E : Set ℝ} {δ : ℝ} (hδ : 0 < δ) (hE : ∀ t ∈ E, δ ≤ |Real.cos t|) :
-    (∑ j ∈ Finset.univ.filter (fun j => fullAngle grid j ∈ E), |f j|) ≤
-      (∑ j, |(normal grid j).1| * |f j|) / δ := by
-  rw [le_div_iff₀ hδ, Finset.sum_mul]
-  refine (Finset.sum_le_sum fun j hj => ?_).trans (Finset.sum_le_sum_of_subset_of_nonneg
-    (Finset.filter_subset _ _) fun j _ _ => by positivity)
-  rw [mul_comm, normal_eq_unitNormal]
-  exact mul_le_mul_of_nonneg_right (hE _ (Finset.mem_filter.mp hj).2) (abs_nonneg _)
-
-open Classical in
 /-- Inner source masses weighted by the vertical normal components, each the charged outer mass
 plus a defect, are bounded through a set `E` of normals with horizontal components at least `δ`:
 by the charged outer mass on `E`, the cosine-weighted defects divided by `δ`, and the inner
