@@ -12,6 +12,4 @@ has a larger area than Gerver's sofa), the bound `MovingSofaOptimality.gerverSof
 Gerver's sofa, and its library of convex bodies (support functions, surface area measures).
 
 It is copied into this repository so that the repository can follow Mathlib on its own schedule. The copy is
-adapted to Mathlib `v4.35.0-rc4` by one line: `Basic/Plane.lean` imports `Mathlib.Analysis.Calculus.Deriv.Pow`,
-which newer Mathlib no longer brings in through the derivatives of the trigonometric functions. Nothing else
-differs.
+identical to the original.

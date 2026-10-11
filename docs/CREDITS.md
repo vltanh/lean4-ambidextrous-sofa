@@ -115,3 +115,27 @@ Figures, from 17:43 to 18:02:
 - tool calls: 103 by the main session;
 - tokens: 0.12 million output, 0.20 million input, 26 million cache reads;
 - model calls: 94, all to `claude-opus-5-5`.
+
+## Back to Mathlib v4.35.0-rc3, and Palomar's preflight (10 October 2026)
+
+The owner submitted `a22fcc4` to Palomar. Its mechanical verification passed, but the rendering of the
+Challenge failed twice. A local reproduction showed why: on `v4.35.0-rc4`, Verso's `verso-literate` loads the
+Challenge's imports at the private level, while Lake hands it only their public data, so it stops with "missing
+data file for module Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan". Given the private data, it renders
+the Challenge. Palomar's issue [#161](https://github.com/PalomarRegistry/PalomarSubmission/issues/161) reports the
+same failure for every `v4.35.0-rc4` submission. The owner asked to go back to `v4.35.0-rc3` and to add Palomar's
+preflight.
+
+- Lean and Mathlib went back to `v4.35.0-rc3`, with the manifest of `cb4b3ed` less lean4-moving-sofa. The copy of
+  `MovingSofaOptimality` is again identical to lean4-moving-sofa's, and the change to `Value.lean` was undone.
+  The build, the audit and Comparator passed, and the Challenge rendered locally with Verso's `v4.35.0-rc3`.
+- [`.github/workflows/palomar_preflight.yml`](../.github/workflows/palomar_preflight.yml) runs Palomar's complete
+  mechanical verification on demand, pinned to PalomarSubmission commit `d4e41c1`.
+
+Figures, from 18:50 to 20:13:
+
+- elapsed time: 1 hour 23 minutes, much of it waiting for builds;
+- sub-agents: none;
+- tool calls: 67 by the main session;
+- tokens: 0.06 million output, 0.11 million input, 35 million cache reads;
+- model calls: 75, all to `claude-opus-5-5`.

@@ -200,12 +200,12 @@ python3 scripts/sync_challenge_defs.py --check
 lake env lake comparator --config=comparator.json
 ```
 
-Lean and Mathlib are pinned at `v4.35.0-rc4`. The build's only `sorry`s are the eight statements of the
+Lean and Mathlib are pinned at `v4.35.0-rc3`. The build's only `sorry`s are the eight statements of the
 Challenge. The audit checks that the 7,474 declarations of the library and the 4,235 of the copied
 `MovingSofaOptimality` use only the axioms `propext`, `Classical.choice` and `Quot.sound`, and lists the results
 from the literature that the main results use (Baek's theorem, through `MovingSofaOptimality.gm_area_le`).
 Comparator accepts the Solution, with Lean's kernel and with NanoDa. GitHub Actions runs all of these except
-Comparator on every push.
+Comparator on every push, and runs Palomar's own verification on demand.
 
 ## License
 

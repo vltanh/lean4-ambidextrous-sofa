@@ -112,9 +112,9 @@ related_formalizations:
     note: >-
       The formalization of Baek's optimality theorem for the ordinary problem, by the same
       maintainer, registered in Palomar as PALOMAR-2026-10-02-000008. Its library
-      MovingSofaOptimality, at commit 1174c5c25c1c66b807e368446d6682e8d0276759, is copied into this
-      repository and adapted to Mathlib v4.35.0-rc4, for Baek's theorem and the area of Gerver's
-      sofa; the Challenge does not use it. No earlier formalization of the ambidextrous problem is
+      MovingSofaOptimality, at commit 1174c5c25c1c66b807e368446d6682e8d0276759, is copied unchanged
+      into this repository, for Baek's theorem and the area of Gerver's sofa; the Challenge does not
+      use it. No earlier formalization of the ambidextrous problem is
       known: the other Lean formalizations of the moving sofa problem (deancureton/MovingSofa,
       RuifengCao/sofa-formal, and Google DeepMind's formal-conjectures) treat the ordinary problem.
 
@@ -149,15 +149,18 @@ automation:
         with variable hypotheses got back the hypotheses that Lean had left out of their statements.
         One sub-agent reviewed the statements of record, and another described the modules. The
         main session wrote the Challenge, the Solution, the axiom audit, the documentation and the
-        figures, and then moved the project to Mathlib v4.35.0-rc4, copying lean4-moving-sofa's
-        library MovingSofaOptimality into the repository and adapting it.
+        figures, and then copied lean4-moving-sofa's library MovingSofaOptimality into the
+        repository, so that the project can follow Mathlib on its own. A move to Mathlib
+        v4.35.0-rc4 was undone, because Palomar cannot yet render a Challenge on that version.
       cost:
         wall_time: >-
           Making the draft compile, with the Challenge and the Solution: 1 hour 41 minutes
           (2026-10-10 15:27 to 17:08, US Central Time), with about 10.0 hours of sub-agent working
           time. The documentation and this metadata: about 35 minutes (2026-10-10 17:08 to 17:43).
           The move to Mathlib v4.35.0-rc4 and the rewrite of the documentation: about 19 minutes
-          (2026-10-10 17:43 to 18:02). docs/CREDITS.md gives the figures.
+          (2026-10-10 17:43 to 18:02). The diagnosis of Palomar's render failure on that version, the
+          return to v4.35.0-rc3 and Palomar's preflight: 1 hour 23 minutes (2026-10-10 18:50 to
+          20:13). docs/CREDITS.md gives the figures.
         spend_usd: "not tracked"
         hardware: "a local machine with 20 cores for the Lean builds"
     - method: agent
