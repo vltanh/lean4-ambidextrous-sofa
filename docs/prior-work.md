@@ -139,6 +139,10 @@ and issue trackers, the Palomar registry, and press and blog coverage.
     leaves its proof as `sorry`, and states the equality as open ("Even its local optimality is open").
   - It proves that the ambidextrous constant is at most the ordinary one. Its author writes: "AI was used to draft
     this proof, but we hand-edited it."
+  - This is an earlier formalization of the conjecture and supporting facts. Its optimality statement remains
+    unproved in the [source at commit b5289b1](https://github.com/frvnkliu/formal-conjectures/blob/b5289b1114c76b2c8a99407580d0ebb3adbb9ea4/FormalConjectures/Wikipedia/MovingSofa.lean).
+    The present repository supplies the proofs of optimality and uniqueness; it does not give the first formal
+    statement of the ambidextrous problem.
 - Three repositories give upper bounds or partial results for the ambidextrous problem; none reports a peer review.
   - Devin O'Keefe's [ambidextrous-sofa-bounds](https://github.com/devinokeefe/ambidextrous-sofa-bounds), which
     contains a paper, states: "We prove with computer assistance that every ambidextrous sofa has area at most

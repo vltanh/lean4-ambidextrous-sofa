@@ -118,9 +118,24 @@ related_formalizations:
       maintainer, registered in Palomar as PALOMAR-2026-10-02-000008. Its library
       MovingSofaOptimality, at commit 1174c5c25c1c66b807e368446d6682e8d0276759, is copied unchanged
       into this repository, for Baek's theorem and the area of Gerver's sofa; the Challenge does not
-      use it. No earlier formalization of the ambidextrous problem is
-      known: the other Lean formalizations of the moving sofa problem (deancureton/MovingSofa,
-      RuifengCao/sofa-formal, and Google DeepMind's formal-conjectures) treat the ordinary problem.
+      use it. Dean Cureton's MovingSofa and Ruifeng Cao's sofa-formal also formalize the ordinary
+      problem; docs/prior-work.md compares them. The earlier formal statement of the ambidextrous
+      conjecture is listed separately below.
+  - id: "https://github.com/google-deepmind/formal-conjectures/pull/6424"
+    relationship: independent
+    note: >-
+      An earlier Lean formalization of the ambidextrous sofa conjecture, proposed by frvnkliu
+      on 19 September 2026 in FormalConjectures/Wikipedia/MovingSofa.lean. At commit
+      b5289b1114c76b2c8a99407580d0ebb3adbb9ea4, it defines ambidextrous sofas, their area supremum
+      and Romik's exact area, and states ambidextrousSofaConstant_eq_romiksSofa_area as an open
+      conjecture with a sorry proof. The lower-bound statement also has a sorry proof; supporting
+      facts, including the unit-square example, cubic-root uniqueness and the comparison with
+      the ordinary sofa constant, are proved. This is an earlier formal statement and partial
+      development, not a proof of global optimality or uniqueness. The present repository
+      supplies proofs of optimality and uniqueness and constructs the maximizing shape. The
+      earlier statement was consulted for the prior-work comparison in docs/prior-work.md;
+      its declarations are not imported by this project. The source is pinned at
+      https://github.com/frvnkliu/formal-conjectures/blob/b5289b1114c76b2c8a99407580d0ebb3adbb9ea4/FormalConjectures/Wikipedia/MovingSofa.lean.
 
 status:
   scope: >-
