@@ -88,6 +88,11 @@ translation. `convexHull_referenceSofa`: the convex hull of Romik's sofa is `ref
 
 `volume_eq_iff` (**uniqueness**): an ambidextrous sofa has area `1 + 4Y² + arctan Y` if and only if
 it is the image of Romik's sofa by a rotation about the origin followed by a translation.
+
+`quarter_turns`: in an ambidextrous sofa of area `1 + 4Y² + arctan Y`, each of the two motions that
+witness it, whichever they are, turns the body through a full quarter turn at some time: the angle
+`θ₁` of the motion through the hallway that turns downward reaches `θ₁ 0 - π/2`, and the angle `θ₂`
+of the motion through the one that turns upward reaches `θ₂ 0 + π/2`.
 -/
 
 @[expose] public section
@@ -245,6 +250,21 @@ theorem volume_eq_iff (Y : ℝ) (hY : 0 < Y ∧ 4 * Y ^ 3 + 3 * Y = 1) (S : Set 
     (hS : IsAmbidextrous S) :
     volume.real S = 1 + 4 * Y ^ 2 + Real.arctan Y ↔
       ∃ (θ : ℝ) (v : ℝ × ℝ), S = (fun p => rotate θ p + v) '' referenceSofa Y := by
+  sorry
+
+/-- In an ambidextrous sofa of area `1 + 4Y² + arctan Y`, each of the two motions that witness it
+turns the body through a full quarter turn at some time: clockwise in the hallway that turns
+downward, to the right, and counterclockwise in the one that turns upward, to the left. The
+hypotheses are those of `IsAmbidextrous S` with the two motions made explicit, so this holds for
+every pair of motions that witness the sofa. -/
+theorem quarter_turns (Y : ℝ) (hY : 0 < Y ∧ 4 * Y ^ 3 + 3 * Y = 1) (S : Set (ℝ × ℝ))
+    (hS : IsCompact S) (hconn : IsConnected S) (θ₁ θ₂ : ℝ → ℝ) (c₁ c₂ : ℝ → ℝ × ℝ)
+    (horient : rotate (θ₁ 0) = rotate (θ₂ 0))
+    (h₁ : MovesThrough S (incomingArm ∪ lowerOutgoingArm) incomingArm lowerOutgoingArm θ₁ c₁)
+    (h₂ : MovesThrough S (incomingArm ∪ upperOutgoingArm) incomingArm upperOutgoingArm θ₂ c₂)
+    (harea : volume.real S = 1 + 4 * Y ^ 2 + Real.arctan Y) :
+    (∃ t ∈ Icc (0 : ℝ) 1, θ₁ t = θ₁ 0 - Real.pi / 2) ∧
+      (∃ t ∈ Icc (0 : ℝ) 1, θ₂ t = θ₂ 0 + Real.pi / 2) := by
   sorry
 
 end Ambidextrous

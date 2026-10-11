@@ -3,7 +3,7 @@ module
 public import AmbidextrousSofa.Main
 
 /-!
-# The solution: the eight theorems of `Challenge.lean`
+# The solution: the nine theorems of `Challenge.lean`
 
 This module is the solution that Comparator checks against `Challenge.lean` (`comparator.json`).
 It restates each theorem of the Challenge under its name, and proves it by the theorem of the same
@@ -62,5 +62,20 @@ theorem volume_eq_iff (Y : ℝ) (hY : 0 < Y ∧ 4 * Y ^ 3 + 3 * Y = 1) (S : Set 
     volume.real S = 1 + 4 * Y ^ 2 + Real.arctan Y ↔
       ∃ (θ : ℝ) (v : ℝ × ℝ), S = (fun p => rotate θ p + v) '' referenceSofa Y :=
   AmbidextrousSofa.Main.volume_eq_iff hY S hS
+
+/-- In an ambidextrous sofa of area `1 + 4Y² + arctan Y`, each of the two motions that witness it
+turns the body through a full quarter turn at some time: clockwise in the hallway that turns
+downward, to the right, and counterclockwise in the one that turns upward, to the left. The
+hypotheses are those of `IsAmbidextrous S` with the two motions made explicit, so this holds for
+every pair of motions that witness the sofa. -/
+theorem quarter_turns (Y : ℝ) (hY : 0 < Y ∧ 4 * Y ^ 3 + 3 * Y = 1) (S : Set (ℝ × ℝ))
+    (hS : IsCompact S) (hconn : IsConnected S) (θ₁ θ₂ : ℝ → ℝ) (c₁ c₂ : ℝ → ℝ × ℝ)
+    (horient : rotate (θ₁ 0) = rotate (θ₂ 0))
+    (h₁ : MovesThrough S (incomingArm ∪ lowerOutgoingArm) incomingArm lowerOutgoingArm θ₁ c₁)
+    (h₂ : MovesThrough S (incomingArm ∪ upperOutgoingArm) incomingArm upperOutgoingArm θ₂ c₂)
+    (harea : volume.real S = 1 + 4 * Y ^ 2 + Real.arctan Y) :
+    (∃ t ∈ Icc (0 : ℝ) 1, θ₁ t = θ₁ 0 - Real.pi / 2) ∧
+      (∃ t ∈ Icc (0 : ℝ) 1, θ₂ t = θ₂ 0 + Real.pi / 2) :=
+  AmbidextrousSofa.Main.quarter_turns hY S hS hconn θ₁ θ₂ c₁ c₂ horient h₁ h₂ harea
 
 end Ambidextrous

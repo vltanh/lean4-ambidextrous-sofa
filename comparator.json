@@ -9,7 +9,8 @@
     "Ambidextrous.volume_referenceSofa",
     "Ambidextrous.isAmbidextrous_image_referenceSofa",
     "Ambidextrous.convexHull_referenceSofa",
-    "Ambidextrous.volume_eq_iff"
+    "Ambidextrous.volume_eq_iff",
+    "Ambidextrous.quarter_turns"
   ],
   "definition_names": [],
   "permitted_axioms": [

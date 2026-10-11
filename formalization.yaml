@@ -122,14 +122,13 @@ status:
   scope: >-
     Formalized: the optimality of Romik's ambidextrous sofa, that every ambidextrous sofa has area
     at most M = 1 + 4Y^2 + arctan Y, and its uniqueness, that an ambidextrous sofa has area M if and
-    only if it is the image of Romik's sofa by a rotation and a translation; that Romik's sofa and
-    its images by rotations and translations are ambidextrous sofas, of area M; that its convex hull
-    is the convex body given by its support function; that 4Y^3 + 3Y = 1 has exactly one positive
-    root; and that M is Romik's closed form. The formalization is unconditional: two steps use
-    Baek's theorem and a bound on the area of Gerver's sofa, proved in the copy of lean4-moving-sofa's
-    library that the repository includes. Not stated as a theorem of record: that both motions of a
-    sofa of area M turn it through exactly a quarter turn, which the proof of uniqueness
-    establishes.
+    only if it is the image of Romik's sofa by a rotation and a translation; that each of the two
+    motions of an ambidextrous sofa of area M turns it through a full quarter turn at some time;
+    that Romik's sofa and its images by rotations and translations are ambidextrous sofas, of area
+    M; that its convex hull is the convex body given by its support function; that 4Y^3 + 3Y = 1
+    has exactly one positive root; and that M is Romik's closed form. The formalization is
+    unconditional: two steps use Baek's theorem and a bound on the area of Gerver's sofa, proved in
+    the copy of lean4-moving-sofa's library that the repository includes.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
@@ -236,6 +235,16 @@ alignment:
         about the origin followed by a translation. With volume_le and isAmbidextrous_referenceSofa,
         Romik's sofa is, up to rotations and translations, the only ambidextrous sofa of largest
         area.
+    - source: "Both motions of an optimal sofa make a quarter turn (part of the equality case)"
+      lean: "Ambidextrous.quarter_turns"
+      module: "Challenge"
+      status: "proved"
+      note: >-
+        In an ambidextrous sofa of area M, each of the two motions that witness it turns the body
+        through a full quarter turn at some time: clockwise in the hallway that turns right,
+        counterclockwise in the one that turns left. The hypotheses are those of IsAmbidextrous with
+        the two motions made explicit, so this holds for every pair of motions that witness the
+        sofa.
     - source: "Romik's sofa is an ambidextrous sofa (Romik 2018, Section 5)"
       lean: "Ambidextrous.isAmbidextrous_referenceSofa"
       module: "Challenge"

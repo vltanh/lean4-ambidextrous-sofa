@@ -23,7 +23,10 @@ definition, and derives the main theorems in that vocabulary:
   translation (`isAmbidextrous_image_referenceSofa`);
 * `convexHull_referenceSofa`: its convex hull is the hull of the Challenge;
 * `volume_eq_iff`: an ambidextrous sofa has area `M` if and only if a rotation followed by a
-  translation maps Romik's ambidextrous sofa onto it.
+  translation maps Romik's ambidextrous sofa onto it;
+* `quarter_turns`: each of the two motions that witness an ambidextrous sofa of area `M` turns it
+  through a full quarter turn at some time, clockwise in the hallway that turns right and
+  counterclockwise in the one that turns left.
 
 `Solution.lean` restates them under the names of `Challenge.lean`.
 -/
@@ -165,5 +168,23 @@ theorem volume_eq_iff {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) (S : 
         S = (fun p => Ambidextrous.rotate θ p + v) '' Ambidextrous.referenceSofa Y' := by
   simpa only [value_eq hY, referenceSofa_eq hY, image_rotate_add] using
     ((isAmbidextrous_iff S).mp hS).volumeReal_eq_M_iff
+
+/-- In an ambidextrous sofa of area `1 + 4Y² + arctan Y`, each of the two motions that witness it
+turns the body through a full quarter turn at some time: clockwise in the hallway that turns right,
+counterclockwise in the one that turns left. The hypotheses are those of `IsAmbidextrous S` with
+the two motions made explicit, so this holds for every pair of motions that witness the sofa. -/
+theorem quarter_turns {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) (S : Set (ℝ × ℝ))
+    (hS : IsCompact S) (hconn : IsConnected S) (θ₁ θ₂ : ℝ → ℝ) (c₁ c₂ : ℝ → ℝ × ℝ)
+    (horient : Ambidextrous.rotate (θ₁ 0) = Ambidextrous.rotate (θ₂ 0))
+    (h₁ : Ambidextrous.MovesThrough S (Ambidextrous.incomingArm ∪ Ambidextrous.lowerOutgoingArm)
+      Ambidextrous.incomingArm Ambidextrous.lowerOutgoingArm θ₁ c₁)
+    (h₂ : Ambidextrous.MovesThrough S (Ambidextrous.incomingArm ∪ Ambidextrous.upperOutgoingArm)
+      Ambidextrous.incomingArm Ambidextrous.upperOutgoingArm θ₂ c₂)
+    (harea : volume.real S = 1 + 4 * Y' ^ 2 + Real.arctan Y') :
+    (∃ t ∈ Icc (0 : ℝ) 1, θ₁ t = θ₁ 0 - Real.pi / 2) ∧
+      ∃ t ∈ Icc (0 : ℝ) 1, θ₂ t = θ₂ 0 + Real.pi / 2 := by
+  obtain ⟨lower, rfl, rfl, hl⟩ := movesThrough_iff.mp h₁
+  obtain ⟨upper, rfl, rfl, hu⟩ := movesThrough_iff.mp h₂
+  exact quarter_turns_of_volumeReal_eq_M hS hconn horient hl hu (harea.trans (value_eq hY))
 
 end AmbidextrousSofa.Main

@@ -565,6 +565,7 @@ meta def externalResults : List (String × Name) :=
 meta def paperResults : List (String × Name) :=
   [("Optimality: the area is at most M", ``AmbidextrousSofa.IsAmbidextrous.volumeReal_le_M),
    ("Uniqueness: the sofas of area M", ``AmbidextrousSofa.IsAmbidextrous.eq_rigidImage_referenceSofa_of_volumeReal_eq),
+   ("The quarter turns at area M", ``AmbidextrousSofa.quarter_turns_of_volumeReal_eq_M),
    ("M is the greatest area", ``AmbidextrousSofa.isGreatest_ambidextrous_areas),
    ("The score of a cap is at most M/2", ``AmbidextrousSofa.IsDownwardCap.capScore_le_half_M),
    ("The caps of score M/2", ``AmbidextrousSofa.IsDownwardCap.capScore_eq_half_M_iff),
@@ -578,7 +579,7 @@ meta def solutionResults : List Name :=
   [``Ambidextrous.existsUnique_root, ``Ambidextrous.value_eq_romik, ``Ambidextrous.volume_le,
    ``Ambidextrous.isAmbidextrous_referenceSofa, ``Ambidextrous.volume_referenceSofa,
    ``Ambidextrous.isAmbidextrous_image_referenceSofa, ``Ambidextrous.convexHull_referenceSofa,
-   ``Ambidextrous.volume_eq_iff]
+   ``Ambidextrous.volume_eq_iff, ``Ambidextrous.quarter_turns]
 
 /-- Lean's standard axioms. -/
 meta def standardAxioms : List Name := [``propext, ``Classical.choice, ``Quot.sound]

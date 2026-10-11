@@ -18,7 +18,9 @@ does not replace a proper terminal wall by an artificial quarter-turn wall.
 The two passages are treated independently. Reflection converts the upper
 passage to a lower one, while preserving the area of the actual body. Combined
 with a common incoming rigid normalization, this supplies the actual two-cap
-area bound from `IsAmbidextrous` itself.
+area bound from `IsAmbidextrous` itself. For two given passages,
+`exists_normalized_angularConstraints_of_passages` also says which of the two
+cases each angle is in, in terms of the original angles of the passages.
 -/
 
 noncomputable section
@@ -90,7 +92,10 @@ theorem Passage.exists_effectiveAngle
 
 /-- Both actual cap constraints are obtained from independent original paths.
 The two selected endpoint angles may differ, and each selected proper angle
-retains the outgoing wall of its own passage. -/
+retains the outgoing wall of its own passage. Each angle is either the quarter
+turn, which its passage reaches at some time, or the final angle of its passage,
+below `π/2`: the lower passage turns clockwise, and the upper one, whose
+reflection is a lower passage, counterclockwise. -/
 theorem hullCap_constraints_of_large_passages {S : Set Plane}
     (hS : IsCompact S) (hne : S.Nonempty) (hstrip : S ⊆ unitStrip)
     {lower upper : RigidMotionPath}
@@ -100,18 +105,23 @@ theorem hullCap_constraints_of_large_passages {S : Set Plane}
     (harea : Real.sqrt 2 < volume.real S) :
     ∃ α γ : ℝ, Real.pi / 4 < α ∧ Real.pi / 4 < γ ∧
       AngularConstraints S (upperHullCap S) α ∧
-      AngularConstraints (reflect '' S) (reflectedHullCap S) γ := by
-  obtain ⟨α, hα, -, hU, -⟩ := hlower.exists_effectiveAngle hS hne hstrip hlower0 harea
+      AngularConstraints (reflect '' S) (reflectedHullCap S) γ ∧
+      ((α = Real.pi / 2 ∧ ∃ t ∈ motionInterval, -lower.angle t = Real.pi / 2) ∨
+        (α = -lower.angle 1 ∧ α < Real.pi / 2)) ∧
+      ((γ = Real.pi / 2 ∧ ∃ t ∈ motionInterval, upper.angle t = Real.pi / 2) ∨
+        (γ = upper.angle 1 ∧ γ < Real.pi / 2)) := by
+  obtain ⟨α, hα, -, hU, hαr⟩ := hlower.exists_effectiveAngle hS hne hstrip hlower0 harea
   have hSh := isCompact_image_reflect hS
   have hSn := hne.image reflect
   have hSstrip := image_reflect_subset_unitStrip hstrip
-  obtain ⟨γ, hγ, -, hV, -⟩ := hupper.reflected.exists_effectiveAngle hSh hSn hSstrip
+  obtain ⟨γ, hγ, -, hV, hγr⟩ := hupper.reflected.exists_effectiveAngle hSh hSn hSstrip
     (by simp [RigidMotionPath.reflected, hupper0]) (by rwa [volumeReal_image_reflect])
   refine ⟨α, γ, hα, hγ, hU.upperCap (isCompact_actualHull hS) (actualHull_nonempty hne)
-    (fun _ hp => (actualHull_subset_unitStrip hstrip hp).1), ?_⟩
-  simpa only [reflectedHullCap, actualHull_reflect] using
-    hV.upperCap (isCompact_actualHull hSh) (actualHull_nonempty hSn)
-      (fun _ hp => (actualHull_subset_unitStrip hSstrip hp).1)
+    (fun _ hp => (actualHull_subset_unitStrip hstrip hp).1), ?_, hαr, ?_⟩
+  · simpa only [reflectedHullCap, actualHull_reflect] using
+      hV.upperCap (isCompact_actualHull hSh) (actualHull_nonempty hSn)
+        (fun _ hp => (actualHull_subset_unitStrip hSstrip hp).1)
+  · simpa only [RigidMotionPath.reflected, neg_neg] using hγr
 
 /-- The large-area original domain admits an area-preserving incoming
 normalization and the complete two-cap angular data. These are conclusions,
@@ -125,9 +135,56 @@ theorem IsAmbidextrous.exists_normalized_angularConstraints
         AngularConstraints T (upperHullCap T) α ∧
         AngularConstraints (reflect '' T) (reflectedHullCap T) γ := by
   obtain ⟨θ, v, lower, upper, hT, hstrip, hareaEq, hl0, hu0, hl, hu⟩ := hS.exists_normalized
-  obtain ⟨α, γ, hα, hγ, hU, hV⟩ := hullCap_constraints_of_large_passages
+  obtain ⟨α, γ, hα, hγ, hU, hV, -, -⟩ := hullCap_constraints_of_large_passages
     hT.isCompact hT.nonempty hstrip hl hu hl0 hu0 (hareaEq ▸ harea)
   exact ⟨θ, v, α, γ, hT, hstrip, hareaEq, hα, hγ, hU, hV⟩
+
+/-- The two-cap angular data of `IsAmbidextrous.exists_normalized_angularConstraints`, for two
+given passages that start with the same orientation, together with what each angle is. The
+normalization undoes the starting placement of the lower passage. Each angle is either the full
+quarter turn, which its passage reaches at some time, or the angle through which its passage has
+turned at the end, less than `π/2`. The angles are measured from the common starting orientation,
+clockwise for the passage through the lower hallway and counterclockwise for the upper one. -/
+theorem exists_normalized_angularConstraints_of_passages
+    {S : Set Plane} (hS : IsCompact S) (hconn : IsConnected S)
+    {lower upper : RigidMotionPath} (horient : SameInitialOrientation lower upper)
+    (hlower : Passage S lowerHall incomingArm lowerOutgoingArm lower)
+    (hupper : Passage S upperHall incomingArm upperOutgoingArm upper)
+    (harea : Real.sqrt 2 < volume.real S) :
+    ∃ (θ : ℝ) (v : Plane) (α γ : ℝ),
+      let T := rigidMap θ v '' S
+      IsAmbidextrous T ∧ T ⊆ unitStrip ∧ volume.real T = volume.real S ∧
+        Real.pi / 4 < α ∧ Real.pi / 4 < γ ∧
+        AngularConstraints T (upperHullCap T) α ∧
+        AngularConstraints (reflect '' T) (reflectedHullCap T) γ ∧
+        ((α = Real.pi / 2 ∧ ∃ t ∈ motionInterval, lower.angle t = lower.angle 0 - Real.pi / 2) ∨
+          (α = lower.angle 0 - lower.angle 1 ∧ α < Real.pi / 2)) ∧
+        ((γ = Real.pi / 2 ∧ ∃ t ∈ motionInterval, upper.angle t = upper.angle 0 + Real.pi / 2) ∨
+          (γ = upper.angle 1 - upper.angle 0 ∧ γ < Real.pi / 2)) := by
+  -- rebase both passages at the starting placement of the lower one, as in
+  -- `IsAmbidextrous.exists_normalized_passages`
+  have hrot : rigidMap (lower.angle 0) = rigidMap (upper.angle 0) := by
+    unfold rigidMap; rw [horient]
+  have hl := hlower.rebase (lower.angle 0) (lower.shift 0)
+  have hu := hupper.rebase (upper.angle 0) (lower.shift 0)
+  rw [← hrot] at hu
+  have hstrip : rigidMap (lower.angle 0) (lower.shift 0) '' S ⊆ unitStrip :=
+    fun _ hp => (hlower.start hp).2
+  have hT : IsAmbidextrous (rigidMap (lower.angle 0) (lower.shift 0) '' S) :=
+    ⟨hconn.nonempty.image _, hS.image (continuous_rigidMap _ _),
+      hconn.image _ (continuous_rigidMap _ _).continuousOn, _, _,
+      by simp [SameInitialOrientation], hl, hu⟩
+  have hareaEq := volumeReal_image_rigidMap (lower.angle 0) (lower.shift 0) S
+  obtain ⟨α, γ, hα, hγ, hU, hV, hαr, hγr⟩ := hullCap_constraints_of_large_passages
+    hT.isCompact hT.nonempty hstrip hl hu (lower.rebase_angle_zero _) (upper.rebase_angle_zero _)
+    (hareaEq ▸ harea)
+  -- the rebased angles are measured from the starting angles
+  simp only [RigidMotionPath.rebase] at hαr hγr
+  refine ⟨lower.angle 0, lower.shift 0, α, γ, hT, hstrip, hareaEq, hα, hγ, hU, hV, ?_, ?_⟩
+  · rcases hαr with ⟨hα2, t, ht, hreach⟩ | ⟨hα1, hαlt⟩
+    exacts [Or.inl ⟨hα2, t, ht, by linarith⟩, Or.inr ⟨by linarith, hαlt⟩]
+  · rcases hγr with ⟨hγ2, t, ht, hreach⟩ | ⟨hγ1, hγlt⟩
+    exacts [Or.inl ⟨hγ2, t, ht, by linarith⟩, Or.inr ⟨by linarith, hγlt⟩]
 
 /-- End-to-end original-domain score reduction. Small sofas are already
 bounded by `√2`; every larger sofa is bounded by the sum of the two actual cap

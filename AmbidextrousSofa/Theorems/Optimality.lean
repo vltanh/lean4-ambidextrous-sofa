@@ -18,6 +18,11 @@ individual classifications force full angles and aligned reference
 caps. The original compact set is then recovered from those exact caps,
 and the initial rigid normalization is inverted explicitly. All
 quantified cap bounds and occupation laws are discharged internally.
+
+Each angle is either a quarter turn that its passage reaches, or the final
+angle of its passage, below `π/2`. At equality both angles are full, so each
+of the two passages that witness a sofa of area `M` turns the body through a
+quarter turn (`quarter_turns_of_volumeReal_eq_M`).
 -/
 
 open Set MeasureTheory
@@ -36,6 +41,26 @@ theorem IsAmbidextrous.volumeReal_le_M
     linarith only [hbound, hcapU.capScore_le_half_M ⟨hα.le, hU.angle_le⟩,
       hcapV.capScore_le_half_M ⟨hγ.le, hV.angle_le⟩]
 
+/-- At area `M` both caps of a normalized body attain the score `M/2`, so both
+angles are the full quarter turn and both caps are translates of Romik's cap. -/
+theorem actual_caps_eq_reference_of_volumeReal_eq
+    {T : Set Plane} (hT : IsCompact T) (hconn : IsConnected T) (hstrip : T ⊆ unitStrip)
+    {α γ : ℝ} (hα : Real.pi / 4 < α) (hγ : Real.pi / 4 < γ)
+    (hU : AngularConstraints T (upperHullCap T) α)
+    (hV : AngularConstraints (reflect '' T) (reflectedHullCap T) γ)
+    (harea : volume.real T = M) :
+    (α = Real.pi / 2 ∧ ∃ a : ℝ, upperHullCap T = horizontalTranslate Reference.referenceCap a) ∧
+      γ = Real.pi / 2 ∧
+        ∃ b : ℝ, reflectedHullCap T = horizontalTranslate Reference.referenceCap b := by
+  have hcapU := isDownwardCap_upperHullCap hconn.nonempty hT hstrip
+  have hcapV := isDownwardCap_reflectedHullCap hconn.nonempty hT hstrip
+  have hαmem : α ∈ Icc (Real.pi / 4) (Real.pi / 2) := ⟨hα.le, hU.angle_le⟩
+  have hγmem : γ ∈ Icc (Real.pi / 4) (Real.pi / 2) := ⟨hγ.le, hV.angle_le⟩
+  obtain ⟨hscoreU, hscoreV, -, -⟩ := actual_cap_equality_deficits hT hconn hstrip hU hV
+    (hcapU.capScore_le_half_M hαmem) (hcapV.capScore_le_half_M hγmem) harea
+  exact ⟨(hcapU.capScore_eq_half_M_iff hαmem).mp hscoreU,
+    (hcapV.capScore_eq_half_M_iff hγmem).mp hscoreV⟩
+
 /-- Equal area classifies this same original body, including its
 boundary, as a rotation and translation of the actual reference sofa. -/
 theorem IsAmbidextrous.eq_rigidImage_referenceSofa_of_volumeReal_eq
@@ -44,18 +69,32 @@ theorem IsAmbidextrous.eq_rigidImage_referenceSofa_of_volumeReal_eq
   obtain ⟨θ, v, α, γ, hT, hstrip, hvolume, hα, hγ, hU, hV⟩ :=
     hS.exists_normalized_angularConstraints (harea ▸ sqrt_two_lt_M)
   have hTarea : volume.real (rigidMap θ v '' S) = M := hvolume.trans harea
-  have hcapU := isDownwardCap_upperHullCap hT.nonempty hT.isCompact hstrip
-  have hcapV := isDownwardCap_reflectedHullCap hT.nonempty hT.isCompact hstrip
-  have hαmem : α ∈ Icc (Real.pi / 4) (Real.pi / 2) := ⟨hα.le, hU.angle_le⟩
-  have hγmem : γ ∈ Icc (Real.pi / 4) (Real.pi / 2) := ⟨hγ.le, hV.angle_le⟩
-  obtain ⟨hscoreU, hscoreV, -, -⟩ :=
-    actual_cap_equality_deficits hT.isCompact hT.isConnected hstrip hU hV
-      (hcapU.capScore_le_half_M hαmem) (hcapV.capScore_le_half_M hγmem) hTarea
-  obtain ⟨rfl, hrefU⟩ := (hcapU.capScore_eq_half_M_iff hαmem).mp hscoreU
-  obtain ⟨rfl, hrefV⟩ := (hcapV.capScore_eq_half_M_iff hγmem).mp hscoreV
+  obtain ⟨⟨rfl, hrefU⟩, rfl, hrefV⟩ := actual_caps_eq_reference_of_volumeReal_eq
+    hT.isCompact hT.isConnected hstrip hα hγ hU hV hTarea
   obtain ⟨b, -, hbody⟩ := eq_referenceSofa_translate_of_actual_caps
     hT.isCompact hstrip hU hV hrefU hrefV hTarea
   exact ⟨-θ, rotate (-θ) ((b, 0) - v), eq_rigidImage_of_normalized_horizontalTranslate hbody⟩
+
+/-- In an ambidextrous sofa of area `M`, each of the two passages that witness it
+turns the body through a full quarter turn at some time: clockwise in the lower
+hallway, which turns right, and counterclockwise in the upper hallway, which
+turns left. The hypotheses are those of `IsAmbidextrous` with the two passages
+made explicit, so this holds for every pair of passages that witness the sofa. -/
+theorem quarter_turns_of_volumeReal_eq_M
+    {S : Set Plane} (hS : IsCompact S) (hconn : IsConnected S)
+    {lower upper : RigidMotionPath} (horient : SameInitialOrientation lower upper)
+    (hlower : Passage S lowerHall incomingArm lowerOutgoingArm lower)
+    (hupper : Passage S upperHall incomingArm upperOutgoingArm upper)
+    (harea : volume.real S = M) :
+    (∃ t ∈ motionInterval, lower.angle t = lower.angle 0 - Real.pi / 2) ∧
+      ∃ t ∈ motionInterval, upper.angle t = upper.angle 0 + Real.pi / 2 := by
+  obtain ⟨θ, v, α, γ, hT, hstrip, hvolume, hα, hγ, hU, hV, hαr, hγr⟩ :=
+    exists_normalized_angularConstraints_of_passages hS hconn horient hlower hupper
+      (harea ▸ sqrt_two_lt_M)
+  -- both angles are the quarter turn, so neither passage ends below it
+  obtain ⟨⟨rfl, -⟩, rfl, -⟩ := actual_caps_eq_reference_of_volumeReal_eq
+    hT.isCompact hT.isConnected hstrip hα hγ hU hV (hvolume.trans harea)
+  exact ⟨(hαr.resolve_right fun h => h.2.false).2, (hγr.resolve_right fun h => h.2.false).2⟩
 
 theorem IsAmbidextrous.volumeReal_eq_M_iff
     {S : Set Plane} (hS : IsAmbidextrous S) :
