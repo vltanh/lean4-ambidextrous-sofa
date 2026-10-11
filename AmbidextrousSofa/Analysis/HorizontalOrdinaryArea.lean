@@ -45,9 +45,8 @@ theorem IsFullCapMaximizer.false_of_horizontal_leakage_row
   have hnecessary := hU.ordinary_area_chord_necessary_of_canonical_range (h := 0) hl hr
     (by simpa using hleft) hright hC0 (by linarith) le_rfl (by norm_num) hheight haffine
   have hsum := hU.endpoint_height_sum_of_affine hheight haffine
-  rw [show horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4 = -C by rw [hl, hr]; ring,
-    show horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 = C by rw [hl, hr]; ring,
-    hleft, hright] at hsum
+  rw [(centered_quarter_points hl hr).1, (centered_quarter_points hl hr).2.1, hleft,
+    hright] at hsum
   set E := capRoof U (horizontalRight U) + capRoof U (horizontalLeft U)
   simp only [zero_div, mul_zero, sub_zero] at hnecessary
   have hroot := Real.sqrt_le_sqrt (show C ^ 2 + (1 - R.B) ^ 2 / 4 ≤ C ^ 2 + (1 - E / 2) ^ 2 by

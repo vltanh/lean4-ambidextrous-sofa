@@ -33,21 +33,26 @@ theorem IsFullCapMaximizer.horizontal_classification
     capScore U (Real.pi / 2) = M / 2 ∧ capWidth U = 8 / 3 * Reference.A ∧
       ∃ b : ℝ, U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap b ∨
         AmbidextrousSofa.horizontalMirror U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap b := by
+  have hl : horizontalLeft (AmbidextrousSofa.centeredCap U) = -2 * (capWidth U / 4) := by
+    rw [horizontalLeft_centeredCap hU.isCap]; ring
+  have hr : horizontalRight (AmbidextrousSofa.centeredCap U) = 2 * (capWidth U / 4) := by
+    rw [horizontalRight_centeredCap hU.isCap]; ring
+  have hh : capHeight (AmbidextrousSofa.centeredCap U) = 1 := by
+    rw [capHeight_centeredCap hU.isCap, hheight]
+  have hm := hU.isCap.roof_eq_const_on_middle_horizontalTranslate hmiddle
+    (-(horizontalLeft U + horizontalRight U) / 2)
   obtain ⟨V, hVor, hV, -, -, hVheight, hVwidth, hVscore, hVmiddle, ρ, hρ, hρbound, heq⟩ :=
-    hU.centeredCap.exists_horizontal_oriented_unit_density (C := capWidth U / 4)
-      (by rw [horizontalLeft_centeredCap hU.isCap]; ring)
-      (by rw [horizontalRight_centeredCap hU.isCap]; ring)
-      (by rw [capHeight_centeredCap hU.isCap, hheight])
-      (hU.isCap.roof_eq_const_on_middle_horizontalTranslate hmiddle _)
+    hU.centeredCap.exists_horizontal_oriented_unit_density_of_width_le hl hr
+      (div_nonneg hU.isCap.capWidth_nonneg (by norm_num))
+      (hU.centeredCap.horizontal_quarter_width_le hl hr hh hm) hh hm
   have hρ0 (t : ℝ) := (hρbound t).1
   have hρ1 (t : ℝ) := (hρbound t).2.1
   have hunit : ∀ᵐ t ∂volume.restrict (Ioo 0 (Real.pi / 2)),
       ρ t ≤ 1 ∧ ρ (t + Real.pi / 2) ≤ 1 := .of_forall fun t => ⟨hρ1 t, hρ1 _⟩
-  obtain ⟨hwidth, b, hshape⟩ := hV.eq_reference_translate_of_horizontal_unit_density
+  obtain ⟨hM, hwidth, b, hshape⟩ := hV.eq_reference_translate_of_horizontal_unit_density
     hVheight hVmiddle hρ hρ0 hρ1 heq hunit
-  refine ⟨?_, by rwa [hVwidth, capWidth_centeredCap hU.isCap] at hwidth, ?_⟩
-  · rw [← capScore_centeredCap hU.isCap, ← hVscore]
-    exact hV.capScore_eq_half_M_of_horizontal_unit_density hVheight hVmiddle hρ hρ0 hρ1 heq hunit
+  refine ⟨by rw [← capScore_centeredCap hU.isCap, ← hVscore, hM],
+    by rwa [hVwidth, capWidth_centeredCap hU.isCap] at hwidth, ?_⟩
   rcases hVor with rfl | rfl
   · exact ⟨_, .inl (eq_horizontalTranslate_of_horizontalTranslate_eq hshape)⟩
   · rw [AmbidextrousSofa.centeredCap, horizontalMirror_horizontalTranslate] at hshape

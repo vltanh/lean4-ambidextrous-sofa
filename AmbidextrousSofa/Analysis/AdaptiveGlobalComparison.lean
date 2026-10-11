@@ -3,6 +3,7 @@ module
 public import AmbidextrousSofa.Analysis.AdaptiveGlobalScalar
 public import AmbidextrousSofa.Analysis.AdaptiveGlobalValue
 public import AmbidextrousSofa.Analysis.AdaptiveTranslation
+public import AmbidextrousSofa.Reference.Value
 
 @[expose] public section
 
@@ -25,15 +26,6 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa.Analysis
 
-theorem adaptiveFunctional_sub_width_lt_half_M_of_familyWidth_zero_le
-    {u : QuarterPair} {a : ℝ} (hu : u.WidthTraces a) (ha : familyWidth 0 ≤ a) :
-    adaptiveFunctional u - a < M / 2 := by
-  have hc := cos_tailAngle0_pos
-  rw [familyWidth_zero, mul_div_assoc', div_le_iff₀ sin_tailAngle0_pos] at ha
-  rw [← div_mul_cancel₀ a hc.ne'] at hu ⊢
-  exact adaptiveFunctional_sub_width_lt_half_M_of_tail
-    (by rw [div_mul_eq_mul_div, le_div_iff₀ hc]; linarith) hu
-
 /-- A genuine global comparison for all C1 profiles at every competitive
 width, with its equality case. There is no optimizer-existence or optimality
 hypothesis. -/
@@ -48,8 +40,8 @@ theorem adaptiveFunctional_sub_width_le_half_M_of_four_fifths_le
     have hscalar := familyScore_le_half_M hb
     refine ⟨by linarith, fun heq => ?_⟩
     rw [(familyScore_eq_half_M_iff hb).1 (by linarith), familyWidth_beta]
-  · have h := adaptiveFunctional_sub_width_lt_half_M_of_familyWidth_zero_le hu
-      (not_le.1 htail).le
+  · rw [familyWidth_zero, mul_div_assoc', le_div_iff₀ sin_tailAngle0_pos] at htail
+    have h := adaptiveFunctional_sub_width_lt_half_M_of_tail (by linarith) hu
     exact ⟨h.le, fun heq => absurd heq h.ne⟩
 
 def centeredReferencePair : QuarterPair :=
@@ -72,28 +64,6 @@ theorem adaptiveFunctional_centeredReferencePair :
     Reference.adaptiveFunctional_reference_eq_M_add_width]
   ring
 
-/-- Equality forces the reference width; fixed-width equality with the family
-member at the scalar maximum then identifies both functions. -/
-theorem eqOn_centeredReference_of_adaptiveFunctional_eq
-    {u : QuarterPair} {a : ℝ} (hu : u.WidthTraces a) (ha : 4 / 5 ≤ a)
-    (heq : adaptiveFunctional u - a = M / 2) :
-    a = 4 / 3 * Reference.A ∧
-      EqOn u.f centeredReferencePair.f (Icc (0 : ℝ) (Real.pi / 2)) ∧
-      EqOn u.g centeredReferencePair.g (Icc (0 : ℝ) (Real.pi / 2)) := by
-  obtain rfl := (adaptiveFunctional_sub_width_le_half_M_of_four_fifths_le hu ha).2 heq
-  have hβ := beta_mem_family_interval
-  have hvalue := familyPair_score hβ
-  rw [familyWidth_beta, familyScore_beta] at hvalue
-  have key {v : QuarterPair} (hv : v.WidthTraces (4 / 3 * Reference.A))
-      (hge : M / 2 + 4 / 3 * Reference.A ≤ adaptiveFunctional v) :=
-    eqOn_of_stationary_of_sameTraces_of_ge (familyPair_stationary hβ)
-      (QuarterPair.sameTraces_of_widthTraces hv (familyWidth_beta ▸ familyPair_widthTraces hβ))
-      (by linarith)
-  obtain ⟨h1, h2⟩ := key hu (by linarith)
-  obtain ⟨h3, h4⟩ := key centeredReferencePair_widthTraces
-    adaptiveFunctional_centeredReferencePair.ge
-  exact ⟨rfl, fun t ht => (h1 ht).trans (h3 ht).symm, fun t ht => (h2 ht).trans (h4 ht).symm⟩
-
 /-- Centering removes the artificial common-endpoint requirement. The
 only width assumption is the explicit, geometrically available `8/5`. -/
 theorem adaptiveFunctional_sub_halfWidth_le_half_M (u : QuarterPair)
@@ -104,9 +74,10 @@ theorem adaptiveFunctional_sub_halfWidth_le_half_M (u : QuarterPair)
     (u.widthTraces_centered hfL hg0) (by linarith)).1
   rwa [adaptiveFunctional_horizontalTranslate_of_topTraces u _ hfL hg0] at h
 
-/-- Equality determines both actual support coordinates up to their one
-horizontal translation mode. The parameter is extracted from the endpoint
-values, rather than postulated as an equality certificate. -/
+/-- Equality forces the reference width. Fixed-width equality with the family member at the
+scalar maximum then determines both actual support coordinates up to their one horizontal
+translation mode. The parameter is extracted from the endpoint values, rather than postulated
+as an equality certificate. -/
 theorem eqOn_reference_translate_of_adaptiveFunctional_eq (u : QuarterPair)
     (hfL : u.f (Real.pi / 2) = 1) (hg0 : u.g 0 = 1)
     (hwidth : 8 / 5 ≤ u.f 0 + u.g (Real.pi / 2))
@@ -117,12 +88,26 @@ theorem eqOn_reference_translate_of_adaptiveFunctional_eq (u : QuarterPair)
           (Icc (0 : ℝ) (Real.pi / 2)) ∧
         EqOn u.g (fun t => Reference.referenceG t - b * Real.sin t)
           (Icc (0 : ℝ) (Real.pi / 2)) := by
-  obtain ⟨h, hf, hg⟩ := eqOn_centeredReference_of_adaptiveFunctional_eq
-    (u.widthTraces_centered hfL hg0) (by linarith)
-    (by rwa [adaptiveFunctional_horizontalTranslate_of_topTraces u _ hfL hg0])
+  have hv := u.widthTraces_centered hfL hg0
+  have hcenter := adaptiveFunctional_horizontalTranslate_of_topTraces u
+    ((u.g (Real.pi / 2) - u.f 0) / 2) hfL hg0
+  have ha := (adaptiveFunctional_sub_width_le_half_M_of_four_fifths_le hv (by linarith)).2
+    (by rwa [hcenter])
+  rw [ha] at hv
+  have hβ := beta_mem_family_interval
+  have hvalue := familyPair_score hβ
+  rw [familyWidth_beta, familyScore_beta] at hvalue
+  have key {v : QuarterPair} (hv : v.WidthTraces (4 / 3 * Reference.A))
+      (hge : M / 2 + 4 / 3 * Reference.A ≤ adaptiveFunctional v) :=
+    eqOn_of_stationary_of_sameTraces_of_ge (familyPair_stationary hβ)
+      (QuarterPair.sameTraces_of_widthTraces hv (familyWidth_beta ▸ familyPair_widthTraces hβ))
+      (by linarith)
+  obtain ⟨h1, h2⟩ := key hv (by linarith)
+  obtain ⟨h3, h4⟩ := key centeredReferencePair_widthTraces
+    adaptiveFunctional_centeredReferencePair.ge
   simp only [EqOn, QuarterPair.horizontalTranslate, centeredReferencePair,
-    Reference.referencePair] at hf hg
+    Reference.referencePair] at h1 h2 h3 h4
   exact ⟨by linarith, -Reference.k - (u.g (Real.pi / 2) - u.f 0) / 2,
-    fun t ht => by linarith [hf ht], fun t ht => by linarith [hg ht]⟩
+    fun t ht => by linarith [h1 ht, h3 ht], fun t ht => by linarith [h2 ht, h4 ht]⟩
 
 end AmbidextrousSofa.Analysis

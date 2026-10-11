@@ -84,10 +84,7 @@ theorem IsFullCapMaximizer.ordinary_area_chord_necessary_of_canonical_range
     hleft hright (middleHalfInterval_eq_centered hl hr ▸ haffine) hconv.1 hconv.2 hfit
   have hordinary := hU.isCap.volumeReal_oneTurnSurvivor_le hfit
   have hw : (horizontalRight U - horizontalLeft U) / 4 = C := by rw [hl, hr]; ring
-  have hminus : horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4 = -C := by
-    rw [hl, hr]; ring
-  have hplus : horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 = C := by
-    rw [hl, hr]; ring
+  obtain ⟨hminus, hplus, -⟩ := centered_quarter_points hl hr
   have hsum := hU.endpoint_height_sum_of_affine hheight haffine
   rw [hminus, hplus, hleft, hright] at hsum
   have hchord := hU.wing_chords_le_twice_score_of_affine hheight haffine

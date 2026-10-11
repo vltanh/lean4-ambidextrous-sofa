@@ -2,6 +2,7 @@ module
 
 public import AmbidextrousSofa.Analysis.FullTriangleWidth
 public import AmbidextrousSofa.Analysis.CapNormalization
+public import AmbidextrousSofa.Analysis.HorizontalEndpointBounds
 
 @[expose] public section
 
@@ -47,13 +48,10 @@ theorem IsFullCapMaximizer.centered_positive_tilt_parameters
   have hw : capWidth U = 4 * C := by rw [capWidth, hl, hr]; ring
   have hC0 : 1 / 2 < C := by linarith only [hU.two_lt_width, hw]
   have hC1 : C < 37 / 50 := by linarith only [hU.quarter_width_lt_thirty_seven_fiftieths, hw]
-  have hmid : middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
-    rw [middleHalfInterval, hl, hr]
-    congr 1 <;> ring
+  obtain ⟨-, hplus, hmid⟩ := centered_quarter_points hl hr
   have haff : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c := hmid ▸ haffine
-  have hhigh : capRoof U C = 1 := by
-    have heq := hU.middle_right_eq_one_of_affine_nonneg hheight hm.le haffine
-    rwa [hl, hr, show 2 * C - (2 * C - -2 * C) / 4 = C by ring] at heq
+  have hhigh : capRoof U C = 1 :=
+    hplus ▸ hU.middle_right_eq_one_of_affine_nonneg hheight hm.le haffine
   have hrel : 1 - capRoof U (-C) = 2 * C * m := by
     linarith only [haff (-C) ⟨le_rfl, by linarith only [hC0]⟩,
       haff C ⟨by linarith only [hC0], le_rfl⟩, hhigh]

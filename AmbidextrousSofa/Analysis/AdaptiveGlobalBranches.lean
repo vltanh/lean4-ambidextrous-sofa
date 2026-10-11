@@ -6,13 +6,19 @@ public import AmbidextrousSofa.Analysis.ExactEstimates
 @[expose] public section
 
 /-!
-# The width boundary and the explicit large-width branch
+# The fully active phase and the explicit large-width branch
 
-The fully active trigonometric family satisfies the actual Euler equations.
-Fixed-trace coercivity therefore bounds every unrestricted C1 competitor at
-its widths. Its value is computed by elementary integration, and the branch
-lies strictly below half the reference value. The disk pair at the width
-boundary is also defined here.
+Where both contacts are active, the value density is the derivative of the
+half difference of the two supports. A symmetric pair whose first support is
+`R cos (t / 2 + π / 8) + S sin t` on `[c, π/2 - c]` has both contacts active
+there once `2/3 ≤ R sin (c / 2 + π / 8)`, and its first flux is an explicit
+trigonometric polynomial whose derivative is the force.
+
+The pairs of this form on the whole quarter make up the large-width branch.
+They satisfy the Euler equations, so fixed-trace coercivity bounds every
+unrestricted C1 competitor at their widths. Their value is computed by
+elementary integration, and the branch lies strictly below half the
+reference value.
 -/
 
 noncomputable section
@@ -21,28 +27,27 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa.Analysis
 
-theorem QuarterPair.sameTraces_of_widthTraces {u v : QuarterPair} {a : ℝ}
-    (hu : u.WidthTraces a) (hv : v.WidthTraces a) : u.SameTraces v :=
-  ⟨hu.1.trans hv.1.symm, hu.2.1.trans hv.2.1.symm, hu.2.2.1.trans hv.2.2.1.symm,
-    hu.2.2.2.trans hv.2.2.2.symm⟩
-
-def diskPair : QuarterPair where
-  f := fun t => 1 / 2 + Real.sin t / 2
-  g := fun t => 1 / 2 + Real.cos t / 2
-  fD := fun t => Real.cos t / 2
-  gD := fun t => -Real.sin t / 2
-  continuous_f := by fun_prop
-  continuous_g := by fun_prop
-  continuous_fD := by fun_prop
-  continuous_gD := by fun_prop
-  hasDeriv_f := fun t _ => (((Real.hasDerivAt_sin t).div_const 2).const_add (1 / 2)).hasDerivWithinAt
-  hasDeriv_g := fun t _ => (((Real.hasDerivAt_cos t).div_const 2).const_add (1 / 2)).hasDerivWithinAt
+/-- With both contacts active, the value density is the derivative of `(g - f) / 2`. -/
+theorem integral_remainder_of_active {u : QuarterPair} {a c : ℝ} (ha : 0 ≤ a) (hac : a ≤ c)
+    (hc : c ≤ Real.pi / 2) (h : ∀ t ∈ Icc a c, u.p t ≤ 0 ∧ 0 ≤ u.q t) :
+    ∫ t in a..c, 2 * adaptiveDensity u t - adaptiveLinearDensity u u t =
+      (u.g c - u.f c) / 2 - (u.g a - u.f a) / 2 := by
+  have hsub : Icc a c ⊆ Icc 0 (Real.pi / 2) := Icc_subset_Icc ha hc
+  rw [intervalIntegral.integral_congr (g := fun t => (u.gD t - u.fD t) / 2) fun t ht => by
+    rw [uIcc_of_le hac] at ht
+    simp only [adaptiveDensity, adaptiveLinearDensity, min_eq_left (h t ht).1,
+      max_eq_left (h t ht).2]
+    unfold QuarterPair.p QuarterPair.q; ring]
+  have hi {t : ℝ} (ht : t ∈ Ioo a c) : t ∈ Ioo 0 (Real.pi / 2) :=
+    ⟨ha.trans_lt ht.1, ht.2.trans_le hc⟩
+  exact intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le hac
+    (((u.continuous_g.mono hsub).sub (u.continuous_f.mono hsub)).div_const 2)
+    (fun t ht => ((u.hasDeriv_g t (hi ht)).sub (u.hasDeriv_f t (hi ht))).div_const 2)
+    ((((u.continuous_gD.sub u.continuous_fD).div_const 2).mono hsub).intervalIntegrable_of_Icc hac)
 
 def tailAngle0 : ℝ := Real.pi / 8
 
 def tailPhase (t : ℝ) : ℝ := t / 2 + tailAngle0
-
-def tailCoefficient (r : ℝ) : ℝ := 1 - r * Real.sin tailAngle0
 
 theorem sin_tailAngle0_pos : 0 < Real.sin tailAngle0 := by
   unfold tailAngle0
@@ -57,6 +62,10 @@ theorem tailPhase_zero : tailPhase 0 = tailAngle0 := by simp [tailPhase]
 theorem tailPhase_pi_div_two : tailPhase (Real.pi / 2) = Real.pi / 2 - tailAngle0 := by
   unfold tailPhase tailAngle0; ring
 
+theorem tailPhase_reflection (t : ℝ) :
+    tailPhase (Real.pi / 2 - t) = Real.pi / 2 - tailPhase t := by
+  unfold tailPhase tailAngle0; ring
+
 theorem hasDerivAt_tailPhase (t : ℝ) : HasDerivAt tailPhase (1 / 2) t :=
   ((hasDerivAt_id t).div_const 2).add_const tailAngle0
 
@@ -69,123 +78,117 @@ theorem two_cos_tailAngle0_lt_five_sin :
   simp only [hangle, Real.cos_pi_div_four, Real.sin_pi_div_four] at hc hs
   nlinarith [sin_tailAngle0_pos, cos_tailAngle0_pos]
 
-def tailPair (r : ℝ) : QuarterPair where
-  f t := r * Real.cos (tailPhase t) + tailCoefficient r * Real.sin t
-  g t := r * Real.sin (tailPhase t) + tailCoefficient r * Real.cos t
-  fD t := -(r / 2) * Real.sin (tailPhase t) + tailCoefficient r * Real.cos t
-  gD t := r / 2 * Real.cos (tailPhase t) - tailCoefficient r * Real.sin t
-  continuous_f := by unfold tailPhase; fun_prop
-  continuous_g := by unfold tailPhase; fun_prop
-  continuous_fD := by unfold tailPhase; fun_prop
-  continuous_gD := by unfold tailPhase; fun_prop
-  hasDeriv_f t _ := ((((hasDerivAt_tailPhase t).cos).const_mul r).add
-    ((Real.hasDerivAt_sin t).const_mul _)).hasDerivWithinAt.congr_deriv (by ring)
-  hasDeriv_g t _ := ((((hasDerivAt_tailPhase t).sin).const_mul r).add
-    ((Real.hasDerivAt_cos t).const_mul _)).hasDerivWithinAt.congr_deriv (by ring)
+/-- The first support of a fully active phase with radius `R`. -/
+def activeF (R S t : ℝ) : ℝ := R * Real.cos (tailPhase t) + S * Real.sin t
 
-theorem tailPair_widthTraces (r : ℝ) :
-    (tailPair r).WidthTraces (r * Real.cos tailAngle0) := by
-  simp only [QuarterPair.WidthTraces, tailPair, tailPhase_zero, tailPhase_pi_div_two,
-    Real.sin_zero, Real.cos_zero, Real.sin_pi_div_two, Real.cos_pi_div_two,
-    Real.sin_pi_div_two_sub, Real.cos_pi_div_two_sub, tailCoefficient]
-  refine ⟨by ring, by ring, by ring, by ring⟩
+def activeFD (R S t : ℝ) : ℝ := -(R / 2) * Real.sin (tailPhase t) + S * Real.cos t
 
-theorem tailPair_momentum_signs {r t : ℝ} (hr : 2 / 3 ≤ r * Real.sin tailAngle0)
-    (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) :
-    (tailPair r).p t ≤ 0 ∧ 0 ≤ (tailPair r).q t := by
-  have hr0 : 0 ≤ r := (pos_of_mul_pos_left (by linarith) sin_tailAngle0_pos.le).le
-  have h : Real.sin tailAngle0 ≤ Real.sin (tailPhase t) ∧
-      Real.sin tailAngle0 ≤ Real.cos (tailPhase t) := by
-    rw [← Real.sin_pi_div_two_sub (tailPhase t)]
+/-- The first flux of a fully active phase, and its derivative, the force. -/
+def activeFlux (R S t : ℝ) : ℝ :=
+  3 / 2 * R * Real.sin (tailPhase t) - 3 / 2 * S * Real.cos t - 1 / 2
+
+def activeForce (R S t : ℝ) : ℝ := 3 / 4 * R * Real.cos (tailPhase t) + 3 / 2 * S * Real.sin t
+
+theorem hasDerivAt_activeF (R S t : ℝ) : HasDerivAt (activeF R S) (activeFD R S t) t :=
+  (((hasDerivAt_tailPhase t).cos.const_mul R).add ((Real.hasDerivAt_sin t).const_mul S)).congr_deriv
+    (by unfold activeFD; ring)
+
+theorem continuous_activeFD (R S : ℝ) : Continuous (activeFD R S) := by
+  unfold activeFD tailPhase; fun_prop
+
+theorem hasDerivAt_activeFlux (R S t : ℝ) : HasDerivAt (activeFlux R S) (activeForce R S t) t :=
+  ((((hasDerivAt_tailPhase t).sin.const_mul _).sub ((Real.hasDerivAt_cos t).const_mul _)).sub_const
+    _).congr_deriv (by unfold activeForce; ring)
+
+/-- A symmetric pair given by a fully active phase on `[c, π/2 - c]` has both contacts active
+there, and its first flux and force are those of the phase. -/
+theorem symmetricPair_active {F FD : ℝ → ℝ} {hF : ∀ t, HasDerivAt F (FD t) t}
+    {hFD : Continuous FD} {R S c s : ℝ} (hc : 0 ≤ c) (hR : 2 / 3 ≤ R * Real.sin (tailPhase c))
+    (hFc : ∀ t ∈ Icc c (Real.pi / 2 - c), F t = activeF R S t ∧ FD t = activeFD R S t)
+    (hs : s ∈ Icc c (Real.pi / 2 - c)) :
+    ((symmetricPair F FD hF hFD).p s ≤ 0 ∧ 0 ≤ (symmetricPair F FD hF hFD).q s) ∧
+      (symmetricPair F FD hF hFD).fluxF s = activeFlux R S s ∧
+      (symmetricPair F FD hF hFD).forceF s = activeForce R S s := by
+  obtain ⟨h1, h2⟩ := hFc s hs
+  obtain ⟨h3, h4⟩ := hFc (Real.pi / 2 - s) ⟨by linarith [hs.2], by linarith [hs.1]⟩
+  have hsin : Real.sin (tailPhase c) ≤ Real.sin (tailPhase s) ∧
+      Real.sin (tailPhase c) ≤ Real.cos (tailPhase s) := by
+    rw [← Real.sin_pi_div_two_sub (tailPhase s)]
     constructor <;> apply Real.sin_le_sin_of_le_of_le_pi_div_two <;>
-      simp only [tailPhase, tailAngle0] <;> linarith [ht.1, ht.2, Real.pi_pos]
-  simp only [QuarterPair.p, QuarterPair.q, tailPair]
-  constructor <;> linarith [mul_le_mul_of_nonneg_left h.1 hr0, mul_le_mul_of_nonneg_left h.2 hr0]
+      simp only [tailPhase, tailAngle0] <;> linarith [hs.1, hs.2, Real.pi_pos]
+  have hR0 : 0 ≤ R := (pos_of_mul_pos_left (by linarith) (Real.sin_nonneg_of_nonneg_of_le_pi
+    (x := tailPhase c) (by unfold tailPhase tailAngle0; positivity)
+    (by unfold tailPhase tailAngle0; linarith [hs.1, hs.2, Real.pi_pos]))).le
+  have hsign : (symmetricPair F FD hF hFD).p s ≤ 0 ∧ 0 ≤ (symmetricPair F FD hF hFD).q s := by
+    simp only [QuarterPair.p, QuarterPair.q, symmetricPair, h1, h2, h3, h4, activeF, activeFD,
+      tailPhase_reflection, Real.cos_pi_div_two_sub, Real.sin_pi_div_two_sub]
+    constructor <;> nlinarith [mul_le_mul_of_nonneg_left hsin.1 hR0,
+      mul_le_mul_of_nonneg_left hsin.2 hR0]
+  refine ⟨hsign, ?_⟩
+  simp only [QuarterPair.fluxF, QuarterPair.forceF, min_eq_left hsign.1, max_eq_left hsign.2]
+  simp only [QuarterPair.p, QuarterPair.q, symmetricPair, h1, h2, h3, h4, activeF, activeFD,
+    activeFlux, activeForce, tailPhase_reflection, Real.cos_pi_div_two_sub, Real.sin_pi_div_two_sub]
+  constructor <;> ring
 
-theorem tailPair_fluxF {r t : ℝ} (hr : 2 / 3 ≤ r * Real.sin tailAngle0)
-    (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) :
-    (tailPair r).fluxF t = 3 / 2 * r * Real.sin (tailPhase t) -
-      3 / 2 * tailCoefficient r * Real.cos t - 1 / 2 := by
-  rw [QuarterPair.fluxF, min_eq_left (tailPair_momentum_signs hr ht).1]
-  simp only [QuarterPair.p, tailPair]; ring
+def tailCoefficient (r : ℝ) : ℝ := 1 - r * Real.sin tailAngle0
 
-theorem tailPair_fluxG {r t : ℝ} (hr : 2 / 3 ≤ r * Real.sin tailAngle0)
-    (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) :
-    (tailPair r).fluxG t = -(3 / 2) * r * Real.cos (tailPhase t) +
-      3 / 2 * tailCoefficient r * Real.sin t + 1 / 2 := by
-  rw [QuarterPair.fluxG, max_eq_left (tailPair_momentum_signs hr ht).2]
-  simp only [QuarterPair.q, tailPair]; ring
+/-- The symmetric pair that is fully active with radius `r` on the whole quarter. -/
+abbrev tailPair (r : ℝ) : QuarterPair :=
+  symmetricPair (activeF r (tailCoefficient r)) (activeFD r (tailCoefficient r))
+    (hasDerivAt_activeF _ _) (continuous_activeFD _ _)
 
-theorem tailPair_eulerF {r t : ℝ} (hr : 2 / 3 ≤ r * Real.sin tailAngle0)
-    (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) :
-    HasDerivWithinAt (tailPair r).fluxF ((tailPair r).forceF t) (Ioi t) t := by
-  have h := (((hasDerivAt_tailPhase t).sin.const_mul (3 / 2 * r)).sub
-    ((Real.hasDerivAt_cos t).const_mul (3 / 2 * tailCoefficient r))).sub_const (1 / 2)
-  refine ((h.congr_of_eventuallyEq <| Filter.eventuallyEq_of_mem (Ioo_mem_nhds ht.1 ht.2)
-    fun s hs => tailPair_fluxF hr (Ioo_subset_Icc_self hs)).congr_deriv ?_).hasDerivWithinAt
-  rw [QuarterPair.forceF, max_eq_left (tailPair_momentum_signs hr (Ioo_subset_Icc_self ht)).2]
-  simp only [QuarterPair.q, tailPair]; ring
+theorem tailPair_widthTraces (r : ℝ) : (tailPair r).WidthTraces (r * Real.cos tailAngle0) :=
+  symmetricPair_widthTraces (by simp [activeF, tailPhase_zero])
+    (by simp [activeF, tailPhase_pi_div_two, tailCoefficient, Real.cos_pi_div_two_sub])
 
-theorem tailPair_eulerG {r t : ℝ} (hr : 2 / 3 ≤ r * Real.sin tailAngle0)
-    (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) :
-    HasDerivWithinAt (tailPair r).fluxG ((tailPair r).forceG t) (Ioi t) t := by
-  have h := (((hasDerivAt_tailPhase t).cos.const_mul (-(3 / 2) * r)).add
-    ((Real.hasDerivAt_sin t).const_mul (3 / 2 * tailCoefficient r))).add_const (1 / 2)
-  refine ((h.congr_of_eventuallyEq <| Filter.eventuallyEq_of_mem (Ioo_mem_nhds ht.1 ht.2)
-    fun s hs => tailPair_fluxG hr (Ioo_subset_Icc_self hs)).congr_deriv ?_).hasDerivWithinAt
-  rw [QuarterPair.forceG, min_eq_left (tailPair_momentum_signs hr (Ioo_subset_Icc_self ht)).1]
-  simp only [QuarterPair.p, tailPair]; ring
+theorem tailPair_active {r s : ℝ} (hr : 2 / 3 ≤ r * Real.sin tailAngle0)
+    (hs : s ∈ Icc 0 (Real.pi / 2)) :
+    ((tailPair r).p s ≤ 0 ∧ 0 ≤ (tailPair r).q s) ∧
+      (tailPair r).fluxF s = activeFlux r (tailCoefficient r) s ∧
+      (tailPair r).forceF s = activeForce r (tailCoefficient r) s :=
+  symmetricPair_active le_rfl (by rwa [tailPhase_zero]) (fun _ _ => ⟨rfl, rfl⟩)
+    (by rwa [sub_zero])
 
-/-- With both contacts active, twice the functional minus the self-variation
-integrates to a boundary term. -/
-theorem two_mul_adaptiveFunctional_sub_of_active {u : QuarterPair}
-    (h : ∀ t ∈ Icc (0 : ℝ) (Real.pi / 2), u.p t ≤ 0 ∧ 0 ≤ u.q t) :
-    2 * adaptiveFunctional u - adaptiveFirstVariation u u =
-      (u.g (Real.pi / 2) - u.f (Real.pi / 2)) / 2 - (u.g 0 - u.f 0) / 2 := by
-  have hL : (0 : ℝ) ≤ Real.pi / 2 := by positivity
-  rw [← intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le
-      (f := fun t => (u.g t - u.f t) / 2) hL ((u.continuous_g.sub u.continuous_f).div_const 2)
-      (fun t ht => ((u.hasDeriv_g t ht).sub (u.hasDeriv_f t ht)).div_const 2)
-      (((u.continuous_gD.sub u.continuous_fD).div_const 2).intervalIntegrable_of_Icc hL),
-    adaptiveFunctional, adaptiveFirstVariation, ← intervalIntegral.integral_const_mul,
-    ← intervalIntegral.integral_sub
-      (((continuousOn_adaptiveDensity u).intervalIntegrable_of_Icc hL).const_mul 2)
-      ((continuousOn_adaptiveLinearDensity u u).intervalIntegrable_of_Icc hL)]
-  refine intervalIntegral.integral_congr fun t ht => ?_
-  rw [uIcc_of_le hL] at ht
-  simp only [adaptiveDensity, adaptiveLinearDensity, min_eq_left (h t ht).1,
-    max_eq_left (h t ht).2]
-  unfold QuarterPair.p QuarterPair.q; ring
+theorem tailPair_euler {r t : ℝ} (hr : 2 / 3 ≤ r * Real.sin tailAngle0)
+    (ht : t ∈ Ioo 0 (Real.pi / 2)) :
+    HasDerivAt (tailPair r).fluxF ((tailPair r).forceF t) t :=
+  ((hasDerivAt_activeFlux _ _ t).congr_of_eventuallyEq (Filter.eventuallyEq_of_mem
+    (Icc_mem_nhds ht.1 ht.2) fun _ hs => (tailPair_active hr hs).2.1)).congr_deriv
+    (tailPair_active hr (Ioo_subset_Icc_self ht)).2.2.symm
 
 /-- The exact value of the actual stationary large-width family. -/
 theorem adaptiveFunctional_tailPair {r : ℝ} (hr : 2 / 3 ≤ r * Real.sin tailAngle0) :
     adaptiveFunctional (tailPair r) = 4 * r * Real.cos tailAngle0 - 1 -
       3 * r ^ 2 * Real.sin tailAngle0 * Real.cos tailAngle0 := by
-  have h0 : (0 : ℝ) ∈ Icc (0 : ℝ) (Real.pi / 2) := ⟨le_rfl, by positivity⟩
-  have hL : Real.pi / 2 ∈ Icc (0 : ℝ) (Real.pi / 2) := ⟨by positivity, le_rfl⟩
-  have h := two_mul_adaptiveFunctional_sub_of_active fun _ => tailPair_momentum_signs hr
+  have h := two_mul_adaptiveFunctional (tailPair r)
   obtain ⟨hf0, hg0, hfL, hgL⟩ := tailPair_widthTraces r
-  rw [adaptiveFirstVariation_eq_boundary _ _ (fun _ => tailPair_eulerF hr)
-    (fun _ => tailPair_eulerG hr), tailPair_fluxF hr hL, tailPair_fluxG hr hL,
-    tailPair_fluxF hr h0, tailPair_fluxG hr h0, hf0, hg0, hfL, hgL] at h
-  simp only [tailPhase_zero, tailPhase_pi_div_two, tailCoefficient, Real.sin_pi_div_two_sub,
-    Real.cos_pi_div_two_sub, Real.sin_zero, Real.cos_zero, Real.sin_pi_div_two,
-    Real.cos_pi_div_two] at h
+  rw [integral_remainder_of_active le_rfl (by positivity) le_rfl fun s hs =>
+      (tailPair_active hr hs).1, symmetricPair_self_variation fun t ht => tailPair_euler hr ht,
+    (tailPair_active hr ⟨le_rfl, by positivity⟩).2.1,
+    (tailPair_active hr ⟨by positivity, le_rfl⟩).2.1, hf0, hg0, hfL, hgL] at h
+  simp only [activeFlux, activeF, tailPhase_zero, tailPhase_pi_div_two, tailCoefficient,
+    Real.sin_pi_div_two_sub, Real.cos_pi_div_two_sub, Real.sin_zero, Real.cos_zero,
+    Real.cos_pi_div_two, Real.sin_pi_div_two] at h
   linear_combination h / 2
 
 /-- A whole large-width branch is excluded by its explicit stationary
 optimizer, without assuming an optimizer exists at other widths. -/
-theorem adaptiveFunctional_sub_width_lt_half_M_of_tail
-    {u : QuarterPair} {r : ℝ} (hr : 2 / 3 ≤ r * Real.sin tailAngle0)
-    (hu : u.WidthTraces (r * Real.cos tailAngle0)) :
-    adaptiveFunctional u - r * Real.cos tailAngle0 < M / 2 := by
+theorem adaptiveFunctional_sub_width_lt_half_M_of_tail {u : QuarterPair} {a : ℝ}
+    (ha : 2 * Real.cos tailAngle0 ≤ 3 * a * Real.sin tailAngle0) (hu : u.WidthTraces a) :
+    adaptiveFunctional u - a < M / 2 := by
+  have hc := cos_tailAngle0_pos
+  set r := a / Real.cos tailAngle0
+  have har : a = r * Real.cos tailAngle0 := (div_mul_cancel₀ a hc.ne').symm
+  have hr : 2 / 3 ≤ r * Real.sin tailAngle0 := by
+    rw [div_mul_eq_mul_div, le_div_iff₀ hc]; linarith
+  rw [har] at hu ⊢
   have h := adaptiveFunctional_le_of_stationary
-    ((tailPair r).stationary_of_euler (fun _ => tailPair_eulerF hr) (fun _ => tailPair_eulerG hr))
+    (symmetricPair_stationary fun t ht => tailPair_euler (r := r) hr ht)
     (QuarterPair.sameTraces_of_widthTraces hu (tailPair_widthTraces r))
   have hx : r * Real.sin tailAngle0 - (r * Real.sin tailAngle0) ^ 2 ≤ 2 / 9 := by nlinarith
   have hscore : 3 * r * Real.cos tailAngle0 - 1 -
       3 * r ^ 2 * Real.sin tailAngle0 * Real.cos tailAngle0 < 2 / 3 := by
-    nlinarith [sin_tailAngle0_pos, mul_le_mul_of_nonneg_left hx cos_tailAngle0_pos.le,
+    nlinarith [sin_tailAngle0_pos, mul_le_mul_of_nonneg_left hx hc.le,
       two_cos_tailAngle0_lt_five_sin]
   linarith [adaptiveFunctional_tailPair hr, eight_fifths_lt_M]
 

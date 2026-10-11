@@ -32,8 +32,7 @@ theorem IsFullCapMaximizer.corner_velocity_pos_or_pos_of_unit_density
       ρ u ≤ 1 ∧ ρ (u + Real.pi / 2) ≤ 1)
     (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) :
     0 < firstCornerVelocity U t ∨ 0 < secondCornerVelocity U t := by
-  have hsub : Ioo (0 : ℝ) (Real.pi / 2) ⊆ regularCornerDomain 0 := by
-    rw [regularCornerDomain_zero]
+  have hsub := regularCornerDomain_zero.ge
   -- the first tangency starts at the right axis, the second one ends at the left axis
   have hB : horizontalRight U - 1 ≤ (firstTangency U t).1 := by
     have hm := (hU.isCap.firstTangency_monotoneOn_open_of_unit_density hρ hρ0 hρC heq hsub

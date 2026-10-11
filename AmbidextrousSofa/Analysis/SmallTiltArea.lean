@@ -25,25 +25,6 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-namespace Analysis
-
-theorem smallTilt_rational_area_lower {C h z T J P V : ℝ}
-    (hC : C ≤ 37 / 50) (hh : 0 ≤ h) (hz : 0 ≤ z) (hT : 0 ≤ T)
-    (hzT : z ≤ (10 / 9) * T) (hJ : J ≤ 1 / 40)
-    (hchord : T + Real.sqrt ((C - T) ^ 2 + (1 / 2 - h / 4 - 3 * z / 4) ^ 2) +
-      Real.sqrt (C ^ 2 + (1 / 2 - h / 4 + z / 4) ^ 2) ≤ 2 * P)
-    (harea : P + C * (2 - h) - (T + J) * z / 2 ≤ V) :
-    smallTiltBaseline + (2 + smallTiltTangent) * (C - smallTiltWidth) -
-      (8871 / 10000) * h - (1839 / 25000) * z - T * z / 2 ≤ V := by
-  have hb := smallTilt_vertical_and_overhang_bounds
-  linarith only [smallTilt_tangent_le_norm (C - T) (1 / 2 - h / 4 - 3 * z / 4),
-    smallTilt_tangent_le_norm C (1 / 2 - h / 4 + z / 4), hchord, harea, hzT,
-    smallTilt_baseline_rewrite C, mul_le_mul_of_nonneg_right hC hh,
-    mul_le_mul_of_nonneg_right hb.2.1.le hh, mul_le_mul_of_nonneg_right hb.2.1.le hz,
-    mul_le_mul_of_nonneg_right hb.2.2.le hT, mul_le_mul_of_nonneg_right hJ hz]
-
-end Analysis
-
 /-- The actual cap, ordinary survivor, source density and support endpoint
 produce both initial-floor inequalities. The remaining projection and
 early-excess inputs are individual geometric facts, not an assumed score
@@ -98,14 +79,12 @@ theorem IsFullCapMaximizer.smallTilt_initialFloorEnergyConditions_of_actual_geom
       1 / 2 - h / 4 - 3 * sweptNiche U (Real.pi / 2) C / 4 by linarith only [hEP.1, hnzero],
     show 1 - h - capRoof U (horizontalLeft U) =
       1 / 2 - h / 4 + sweptNiche U (Real.pi / 2) C / 4 by linarith only [hEP.2, hnzero]] at hchord
-  have hlower := Analysis.smallTilt_rational_area_lower (V := volume.real (oneTurnSurvivor U))
-    hC1 hh0.le (sweptNiche_nonneg _ _ _) hT hzT hJ hchord (by linarith only [harea, hL, hR])
   have hz1 : sweptNiche U (Real.pi / 2) C ≤ 33 / 100 :=
     (hU.isCap.middle_niche_le_box_height_of_endpoints hl hr hC.le (by linarith only [hC1])).2.trans
       (Analysis.tiltedBoxHeight_lt_thirty_three_hundredths hC.le hC1).le
   convert Analysis.smallTilt_initialFloorEnergyConditions_of_area hC0 hC1 hh0 hh1
-    (sweptNiche_nonneg _ _ _) hz1 hTs hzT (hU.isCap.volumeReal_oneTurnSurvivor_le hfit) hlower
-    using 2
+    (sweptNiche_nonneg _ _ _) hz1 hT hTs hzT hJ hchord (by linarith only [harea, hL, hR])
+    (hU.isCap.volumeReal_oneTurnSurvivor_le hfit) using 2
   unfold Analysis.tiltedEndpointMomentum
   linarith only [hEP.1, hnzero]
 

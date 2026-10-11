@@ -2,6 +2,7 @@ module
 
 public import AmbidextrousSofa.Analysis.SelectedNicheHeight
 public import AmbidextrousSofa.Analysis.OneTurnArea
+public import AmbidextrousSofa.Analysis.HorizontalEndpointBounds
 
 @[expose] public section
 
@@ -22,9 +23,8 @@ namespace AmbidextrousSofa
 
 theorem middleHalfInterval_eq_centered {U : Set Plane} {C : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C) :
-    middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
-  rw [middleHalfInterval, hl, hr]
-  congr 1 <;> ring
+    middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C :=
+  (centered_quarter_points hl hr).2.2
 
 theorem IsFullCapMaximizer.sweptNiche_le_roof_of_canonical_range
     {U : Set Plane} (hU : IsFullCapMaximizer U) {C h : ℝ}

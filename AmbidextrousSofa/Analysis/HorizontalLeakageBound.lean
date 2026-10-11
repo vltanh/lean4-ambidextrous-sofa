@@ -43,9 +43,13 @@ theorem IsFullCapMaximizer.right_endpoint_niche_le_horizontalLeakageRow
   have hC0 : 0 ≤ C := by linarith
   have hC1 : C < 1 := hCb.trans_lt R.b_lt_one
   have hwidth : capWidth U = 4 * C := by rw [capWidth, hl, hr]; ring
-  obtain ⟨⟨he0, he1⟩, -⟩ :=
-    hU.horizontal_endpoint_heights_bounds hl hr hC0 hC1.le hheight hmiddle
+  have he := (hU.horizontal_endpoint_laws hl hr hC0 hheight hmiddle).1
+  have hn := hU.isCap.middle_niche_le_box_height_of_endpoints hl hr hC0 hC1.le
   have hH := R.box_height_le hC0 hCb
+  have he0 : 1 / 2 - R.H / 4 ≤ capRoof U (horizontalRight U) := by
+    linarith [hn.1, sweptNiche_nonneg U (Real.pi / 2) C]
+  have he1 : capRoof U (horizontalRight U) ≤ 1 / 2 + 3 * R.H / 4 := by
+    linarith [hn.2, sweptNiche_nonneg U (Real.pi / 2) (-C)]
   obtain ⟨ρ, hρ, hb, hK, heq, -⟩ :=
     hU.curvature_density_corner_controls hheight (m := 0) (c := 1) (by simpa using hmiddle)
   have hρ0 s := (hb s).1
@@ -89,15 +93,10 @@ theorem IsFullCapMaximizer.endpoint_niches_le_horizontalLeakageRow
     (hC : 2 / 3 < C) (haC : R.a ≤ C) (hCb : C ≤ R.b) :
     sweptNiche U (Real.pi / 2) (-C) ≤ R.B ∧
       sweptNiche U (Real.pi / 2) C ≤ R.B := by
-  have hl' := horizontalLeft_horizontalMirror hU.isCap
-  have hr' := horizontalRight_horizontalMirror hU.isCap
-  have hleft := hU.horizontalMirror.right_endpoint_niche_le_horizontalLeakageRow R
-    (by rw [hl', hr]; ring) (by rw [hr', hl]; ring)
-    (by rw [capHeight_horizontalMirror, hheight]) (fun x hx => by
-      rw [capRoof_horizontalMirror]
-      refine hmiddle _ ?_
-      simp only [middleHalfInterval, hl', hr', hl, hr, mem_Icc] at hx ⊢
-      constructor <;> linarith) hC haC hCb
+  obtain ⟨hl', hr', hheight', hmid⟩ :=
+    hU.isCap.horizontalMirror_centered rfl hl hr hheight hmiddle
+  have hleft := hU.horizontalMirror.right_endpoint_niche_le_horizontalLeakageRow R hl' hr'
+    hheight' hmid hC haC hCb
   exact ⟨by simpa only [sweptNiche_horizontalMirror] using hleft,
     hU.right_endpoint_niche_le_horizontalLeakageRow R hl hr hheight hmiddle hC haC hCb⟩
 

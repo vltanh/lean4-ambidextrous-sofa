@@ -84,13 +84,14 @@ theorem IsFullCapMaximizer.twice_middle_niche_eq_signed_support
         rw [(hvel ht).1, (hvel ht).2, neg_lt_zero]
         exact hU.corner_velocity_pos_or_pos_of_unit_density hρ hρ0 hρK heq hunit ht
   -- the three graph identities of the niche
+  have hgraph {t} (ht : t ∈ Ioo 0 (Real.pi / 2)) :=
+    hU.sweptNiche_graphs_of_unit_density hheight hmiddle hρ hρ0 hρK heq hunit ht
   have hgraphD : ∀ t ∈ Ioo 0 d,
       sweptNiche U (Real.pi / 2) (secondTangentPoint F.g F.gD t).1 =
         (secondTangentPoint F.g F.gD t).2 := fun t ht => by
     have htL : t ∈ Ioo 0 (Real.pi / 2) := ⟨ht.1, ht.2.trans hd.2⟩
     rw [(htan htL).2.1]
-    refine hU.sweptNiche_secondTangency_of_unit_density hheight hmiddle hρ hρ0 hρK heq
-      (hunit.mono fun _ h => h.2) htL ?_
+    refine (hgraph htL).2.1 ?_
     rw [← (hvel htL).2]
     exact hqplus t ⟨ht.1.le, ht.2.le⟩
   have hgraphC : ∀ t ∈ Ioo b d,
@@ -102,8 +103,7 @@ theorem IsFullCapMaximizer.twice_middle_niche_eq_signed_support
     rw [(hvel htL).1] at hp
     rw [(hvel htL).2] at hq
     rw [(htan htL).2.2]
-    exact hU.sweptNiche_corner_of_unit_density hheight hmiddle hρ hρ0 hρK heq hunit htL hq
-      (by linarith)
+    exact (hgraph htL).2.2 hq (by linarith)
   have hgraphB : ∀ t ∈ Ioo b (Real.pi / 2),
       sweptNiche U (Real.pi / 2) (firstTangentPoint F.f F.fD t).1 =
         (firstTangentPoint F.f F.fD t).2 := fun t ht => by
@@ -111,8 +111,7 @@ theorem IsFullCapMaximizer.twice_middle_niche_eq_signed_support
     have hp := hpminus t ⟨ht.1.le, ht.2.le⟩
     rw [(hvel htL).1] at hp
     rw [(htan htL).1]
-    exact hU.sweptNiche_firstTangency_of_unit_density hheight hmiddle hρ hρ0 hρK heq
-      (hunit.mono fun _ h => h.1) htL (by linarith)
+    exact (hgraph htL).1 (by linarith)
   have hf : Continuous F.f := hU.isCap.imported_isConvexBody.continuous_supp
   have hg : Continuous F.g := hU.isCap.imported_isConvexBody.continuous_supp.comp
     (continuous_id.add_const (Real.pi / 2))

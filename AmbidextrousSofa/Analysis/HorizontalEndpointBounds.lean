@@ -9,11 +9,13 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 /-!
 # Exact horizontal box-wall and endpoint bounds
 
-The actual two-ray niche is bounded at both middle endpoints by
-`1 - sqrt (1 - C^2)`. Endpoint stationarity then bounds both actual
-axis heights and supplies one endpoint with the stronger quadratic
-energy margin. The same box bounds give the exact initial angle at
-which the first wall can become positive.
+The quarter points of a centered projection `[-2C, 2C]` are `∓C`, and the
+horizontal mirror image of a centered cap with a horizontal middle roof is
+again such a cap. The actual two-ray niche is bounded at both middle
+endpoints by `1 - sqrt (1 - C^2)`. Endpoint stationarity then expresses both
+actual axis heights by these niches and supplies one endpoint with the
+stronger quadratic energy margin. The same box bounds give the exact initial
+angle at which the first wall can become positive.
 -/
 
 noncomputable section
@@ -21,6 +23,30 @@ noncomputable section
 open Set
 
 namespace AmbidextrousSofa
+
+/-- The quarter points and the middle half of a centered projection `[-2C, 2C]`. -/
+theorem centered_quarter_points {U : Set Plane} {C : ℝ} (hl : horizontalLeft U = -2 * C)
+    (hr : horizontalRight U = 2 * C) :
+    horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4 = -C ∧
+      horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 = C ∧
+      middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
+  rw [middleHalfInterval, hl, hr]
+  exact ⟨by ring, by ring, by congr 1 <;> ring⟩
+
+/-- The mirror image of a centered cap with a horizontal middle roof is again centered with a
+horizontal middle roof. -/
+theorem IsDownwardCap.horizontalMirror_centered {U V : Set Plane} (hU : IsDownwardCap U)
+    (hV : V = AmbidextrousSofa.horizontalMirror U) {C : ℝ}
+    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C) (hheight : capHeight U = 1)
+    (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1) :
+    horizontalLeft V = -2 * C ∧ horizontalRight V = 2 * C ∧ capHeight V = 1 ∧
+      ∀ x ∈ middleHalfInterval (horizontalLeft V) (horizontalRight V), capRoof V x = 1 := by
+  subst hV
+  rw [horizontalLeft_horizontalMirror hU, horizontalRight_horizontalMirror hU, hl, hr,
+    capHeight_horizontalMirror]
+  refine ⟨by ring, by ring, hheight, fun x hx => capRoof_horizontalMirror U x ▸ hmiddle _ ?_⟩
+  simp only [middleHalfInterval, hl, hr, mem_Icc] at hx ⊢
+  constructor <;> linarith
 
 theorem horizontal_box_circle_bound {C s c : ℝ}
     (hC0 : 0 ≤ C) (hC1 : C ≤ 1)
@@ -75,37 +101,14 @@ theorem IsFullCapMaximizer.horizontal_endpoint_laws
       (3 * sweptNiche U (Real.pi / 2) C - sweptNiche U (Real.pi / 2) (-C)) / 4 ∧
     capRoof U (horizontalLeft U) = 1 / 2 +
       (3 * sweptNiche U (Real.pi / 2) (-C) - sweptNiche U (Real.pi / 2) C) / 4 := by
-  have hminus : horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4 = -C := by
-    rw [hl, hr]; ring
-  have hplus : horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 = C := by
-    rw [hl, hr]; ring
-  have hleft : capRoof U (-C) = 1 := hmiddle (-C) (by
-    rw [middleHalfInterval, hminus, hplus]
-    exact ⟨le_rfl, by linarith⟩)
-  have hright : capRoof U C = 1 := hmiddle C (by
-    rw [middleHalfInterval, hminus, hplus]
-    exact ⟨by linarith, le_rfl⟩)
+  obtain ⟨hminus, hplus, hmid⟩ := centered_quarter_points hl hr
+  have hleft : capRoof U (-C) = 1 := hmiddle (-C) (hmid ▸ ⟨le_rfl, by linarith⟩)
+  have hright : capRoof U C = 1 := hmiddle C (hmid ▸ ⟨by linarith, le_rfl⟩)
   obtain ⟨hR, hL⟩ := hU.endpoint_heights_eq_pressures_of_affine hheight
     ⟨0, 1, fun x hx => by simpa only [zero_mul, zero_add] using hmiddle x hx⟩
   simp only [capRightEndpointPressure, rightEndpointPressure, capLeftEndpointPressure,
     leftEndpointPressure, hminus, hplus, hleft, hright] at hR hL
   constructor <;> linarith only [hR, hL]
-
-theorem IsFullCapMaximizer.horizontal_endpoint_heights_bounds
-    {U : Set Plane} (hU : IsFullCapMaximizer U) {C : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC0 : 0 ≤ C) (hC1 : C ≤ 1) (hheight : capHeight U = 1)
-    (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = 1) :
-    (1 / 2 - (1 - Real.sqrt (1 - C ^ 2)) / 4 ≤ capRoof U (horizontalRight U) ∧
-      capRoof U (horizontalRight U) ≤ 1 / 2 + 3 * (1 - Real.sqrt (1 - C ^ 2)) / 4) ∧
-    (1 / 2 - (1 - Real.sqrt (1 - C ^ 2)) / 4 ≤ capRoof U (horizontalLeft U) ∧
-      capRoof U (horizontalLeft U) ≤ 1 / 2 + 3 * (1 - Real.sqrt (1 - C ^ 2)) / 4) := by
-  have he := hU.horizontal_endpoint_laws hl hr hC0 hheight hmiddle
-  have hn := hU.isCap.middle_niche_le_box_height_of_endpoints hl hr hC0 hC1
-  have hnL0 := sweptNiche_nonneg U (Real.pi / 2) (-C)
-  have hnR0 := sweptNiche_nonneg U (Real.pi / 2) C
-  constructor <;> constructor <;> linarith [he.1, he.2, hn.1, hn.2]
 
 theorem endpoint_product_one_ge_of_niche_bounds {x y H eR eL : ℝ}
     (hx0 : 0 ≤ x) (hxH : x ≤ H) (hy0 : 0 ≤ y) (hyH : y ≤ H)

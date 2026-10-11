@@ -56,45 +56,9 @@ theorem twice_adaptiveFunctional_eq_support_expression (u : QuarterPair) :
 
 end Analysis
 
-theorem IsFullCapMaximizer.capScore_eq_adaptive_of_horizontal_unit_density
-    {U : Set Plane} (hU : IsFullCapMaximizer U) {ρ : ℝ → ℝ} {K : ℝ}
-    (hheight : capHeight U = 1)
-    (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (heq : (upperCurvature U).restrict (regularCurvatureDomain 0) =
-      (volume.restrict (regularCurvatureDomain 0)).withDensity (fun t => ENNReal.ofReal (ρ t)))
-    (hunit : ∀ᵐ t ∂volume.restrict (Ioo 0 (Real.pi / 2)),
-      ρ t ≤ 1 ∧ ρ (t + Real.pi / 2) ≤ 1) :
-    let F := horizontalSupportQuarterPair hU.isCap hρ hρ0 hρK heq
-    capScore U (Real.pi / 2) = Analysis.adaptiveFunctional F - capWidth U / 2 := by
-  have := Analysis.twice_adaptiveFunctional_eq_support_expression
-    (horizontalSupportQuarterPair hU.isCap hρ hρ0 hρK heq)
-  have := hU.volumeReal_eq_horizontalSupportQuarterPair_energy hρ hρ0 hρK heq hheight hmiddle
-  have := hU.twice_middle_niche_eq_signed_support hheight hmiddle hρ hρ0 hρK heq hunit
-  have := hU.isCap.capScore_eq_volume_sub_middle_niche_of_horizontal hmiddle
-  intro F
-  linarith
-
-theorem IsFullCapMaximizer.capScore_eq_half_M_of_horizontal_unit_density
-    {U : Set Plane} (hU : IsFullCapMaximizer U) {ρ : ℝ → ℝ} {K : ℝ}
-    (hheight : capHeight U = 1)
-    (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (heq : (upperCurvature U).restrict (regularCurvatureDomain 0) =
-      (volume.restrict (regularCurvatureDomain 0)).withDensity (fun t => ENNReal.ofReal (ρ t)))
-    (hunit : ∀ᵐ t ∂volume.restrict (Ioo 0 (Real.pi / 2)),
-      ρ t ≤ 1 ∧ ρ (t + Real.pi / 2) ≤ 1) : capScore U (Real.pi / 2) = M / 2 := by
-  obtain ⟨hf0, hg0, hfL, hgL, -⟩ :=
-    hU.horizontalSupportQuarterPair_traces hρ hρ0 hρK heq hheight hmiddle
-  have hw : capWidth U = horizontalRight U - horizontalLeft U := rfl
-  have hbound := Analysis.adaptiveFunctional_sub_halfWidth_le_half_M _ hfL hg0
-    (by linarith [hU.two_lt_width])
-  have hscore : capScore U (Real.pi / 2) = Analysis.adaptiveFunctional _ - capWidth U / 2 :=
-    hU.capScore_eq_adaptive_of_horizontal_unit_density hheight hmiddle hρ hρ0 hρK heq hunit
-  exact le_antisymm (by linarith) hU.reference_le
-
-/-- Equality of the actual support functions identifies the downward
-cap itself; all horizontal translation freedom is kept explicit. -/
+/-- The actual cap score is half the reference value, and equality of the actual support
+functions identifies the downward cap itself; all horizontal translation freedom is kept
+explicit. -/
 theorem IsFullCapMaximizer.eq_reference_translate_of_horizontal_unit_density
     {U : Set Plane} (hU : IsFullCapMaximizer U) {ρ : ℝ → ℝ} {K : ℝ}
     (hheight : capHeight U = 1)
@@ -104,19 +68,26 @@ theorem IsFullCapMaximizer.eq_reference_translate_of_horizontal_unit_density
       (volume.restrict (regularCurvatureDomain 0)).withDensity (fun t => ENNReal.ofReal (ρ t)))
     (hunit : ∀ᵐ t ∂volume.restrict (Ioo 0 (Real.pi / 2)),
       ρ t ≤ 1 ∧ ρ (t + Real.pi / 2) ≤ 1) :
-    capWidth U = 8 / 3 * Reference.A ∧
+    capScore U (Real.pi / 2) = M / 2 ∧ capWidth U = 8 / 3 * Reference.A ∧
       ∃ b : ℝ, U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap b := by
   obtain ⟨hf0, hg0, hfL, hgL, -⟩ :=
     hU.horizontalSupportQuarterPair_traces hρ hρ0 hρK heq hheight hmiddle
   have hw : capWidth U = horizontalRight U - horizontalLeft U := rfl
-  have hscore : capScore U (Real.pi / 2) = Analysis.adaptiveFunctional _ - capWidth U / 2 :=
-    hU.capScore_eq_adaptive_of_horizontal_unit_density hheight hmiddle hρ hρ0 hρK heq hunit
-  have hM :=
-    hU.capScore_eq_half_M_of_horizontal_unit_density hheight hmiddle hρ hρ0 hρK heq hunit
+  have hscore : capScore U (Real.pi / 2) = Analysis.adaptiveFunctional
+      (horizontalSupportQuarterPair hU.isCap hρ hρ0 hρK heq) - capWidth U / 2 := by
+    have := Analysis.twice_adaptiveFunctional_eq_support_expression
+      (horizontalSupportQuarterPair hU.isCap hρ hρ0 hρK heq)
+    have := hU.volumeReal_eq_horizontalSupportQuarterPair_energy hρ hρ0 hρK heq hheight hmiddle
+    have := hU.twice_middle_niche_eq_signed_support hheight hmiddle hρ hρ0 hρK heq hunit
+    have := hU.isCap.capScore_eq_volume_sub_middle_niche_of_horizontal hmiddle
+    linarith
+  have hbound := Analysis.adaptiveFunctional_sub_halfWidth_le_half_M _ hfL hg0
+    (by linarith [hU.two_lt_width])
+  have hM : capScore U (Real.pi / 2) = M / 2 := le_antisymm (by linarith) hU.reference_le
   obtain ⟨hW, b, hf, hg⟩ := Analysis.eqOn_reference_translate_of_adaptiveFunctional_eq _ hfL hg0
     (by linarith [hU.two_lt_width]) (by linarith)
   have hRef := Reference.isDownwardCap_referenceCap
-  refine ⟨by linarith, b, hU.isCap.eq_of_quarter_support_eq (hRef.horizontalTranslate b)
+  refine ⟨hM, by linarith, b, hU.isCap.eq_of_quarter_support_eq (hRef.horizontalTranslate b)
     (fun t ht => ?_) (fun t ht => ?_)⟩
   all_goals rw [AmbidextrousSofa.horizontalTranslate,
     support_translate hRef.isCompact hRef.nonempty]

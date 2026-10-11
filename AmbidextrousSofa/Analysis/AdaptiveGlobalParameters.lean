@@ -76,9 +76,6 @@ theorem one_le_cos_add_half_sin {t : ℝ} (ht : t ∈ Icc (0 : ℝ) (Real.pi / 4
   nlinarith [Real.sin_sq_add_cos_sq t, mul_nonneg hs (sub_nonneg.2 (Real.sin_le_one t)),
     mul_nonneg hs (sub_nonneg.2 (sin_le_cos_on_first_eighth ht))]
 
-theorem familyRadius_pos {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
-    0 < familyRadius b := div_pos two_pos (mul_pos three_pos (sin_family_phase_pos hb))
-
 theorem familyRadius_mul_sin {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
     familyRadius b * Real.sin (tailPhase b) = 2 / 3 := by
   unfold familyRadius; field_simp [(sin_family_phase_pos hb).ne']
@@ -86,15 +83,6 @@ theorem familyRadius_mul_sin {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) 
 theorem familyRadius_mul_cos {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
     familyRadius b * Real.cos (tailPhase b) = 2 / 3 * familyCot b := by
   unfold familyRadius familyCot; field_simp [(sin_family_phase_pos hb).ne']
-
-theorem family_width_endpoint_rotation (b : ℝ) :
-    3 / 2 * familyWidth b * Real.sin b -
-        (familyEndpoint b - 1 / 2) * Real.cos b = 1 / 2 ∧
-      3 / 2 * familyWidth b * Real.cos b +
-        (familyEndpoint b - 1 / 2) * Real.sin b = familyCot b := by
-  unfold familyWidth familyEndpoint
-  exact ⟨by linear_combination (1 / 2) * Real.sin_sq_add_cos_sq b,
-    by linear_combination familyCot b * Real.sin_sq_add_cos_sq b⟩
 
 theorem family_switch_order {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
     b ≤ familyLateSwitch b := by unfold familyLateSwitch; linarith [hb.2]

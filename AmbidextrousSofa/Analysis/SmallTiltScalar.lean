@@ -7,28 +7,38 @@ public import AmbidextrousSofa.Analysis.SmallTiltConstants
 /-!
 # Small positive tilts satisfy both initial-floor energy inequalities
 
-The two possible failures each contradict the displayed ordinary-area
-lower bound. Every comparison is on a full parameter interval. The
-geometric application supplies this lower bound from the actual cap,
-its three wing chords, and its actual outside niche integral.
+The three wing chords and the ordinary-area comparison give a rational
+lower bound for the ordinary area through the fixed tangent direction.
+The two possible failures each contradict that bound. Every comparison is
+on a full parameter interval. The geometric application supplies the chord
+and area inequalities from the actual cap, its selected polygons, and its
+actual outside niche integral.
 -/
 
 noncomputable section
 
 namespace AmbidextrousSofa.Analysis
 
-/-- Both initial-floor inequalities follow from the ordinary-area
-comparison, actual niche bounds, and actual top overhang bounds. -/
+/-- Both initial-floor inequalities follow from the wing chords, the
+ordinary-area comparison, actual niche bounds, and actual top overhang bounds. -/
 theorem smallTilt_initialFloorEnergyConditions_of_area
-    {C h z T V : ℝ}
+    {C h z T J P V : ℝ}
     (hC0 : 2 / 3 ≤ C) (hC1 : C ≤ 37 / 50)
     (hh0 : 0 < h) (hh1 : h ≤ 509 / 10000)
     (hz0 : 0 ≤ z) (hz1 : z ≤ 33 / 100)
-    (hT : T ≤ initialFloorSine h) (hzT : z ≤ (10 / 9) * T)
-    (hV : V ≤ 22199 / 10000)
-    (hlower : smallTiltBaseline + (2 + smallTiltTangent) * (C - smallTiltWidth) -
-      (8871 / 10000) * h - (1839 / 25000) * z - T * z / 2 ≤ V) :
+    (hT0 : 0 ≤ T) (hT : T ≤ initialFloorSine h) (hzT : z ≤ (10 / 9) * T) (hJ : J ≤ 1 / 40)
+    (hchord : T + Real.sqrt ((C - T) ^ 2 + (1 / 2 - h / 4 - 3 * z / 4) ^ 2) +
+      Real.sqrt (C ^ 2 + (1 / 2 - h / 4 + z / 4) ^ 2) ≤ 2 * P)
+    (harea : P + C * (2 - h) - (T + J) * z / 2 ≤ V) (hV : V ≤ 22199 / 10000) :
     InitialFloorEnergyConditions (3 * C) (tiltedEndpointMomentum h z 0) h := by
+  have hlower : smallTiltBaseline + (2 + smallTiltTangent) * (C - smallTiltWidth) -
+      (8871 / 10000) * h - (1839 / 25000) * z - T * z / 2 ≤ V := by
+    have hb := smallTilt_vertical_and_overhang_bounds
+    linarith only [smallTilt_tangent_le_norm (C - T) (1 / 2 - h / 4 - 3 * z / 4),
+      smallTilt_tangent_le_norm C (1 / 2 - h / 4 + z / 4), hchord, harea, hzT,
+      smallTilt_baseline_rewrite C, mul_le_mul_of_nonneg_right hC1 hh0.le,
+      mul_le_mul_of_nonneg_right hb.2.1.le hh0.le, mul_le_mul_of_nonneg_right hb.2.1.le hz0,
+      mul_le_mul_of_nonneg_right hb.2.2.le hT0, mul_le_mul_of_nonneg_right hJ hz0]
   obtain ⟨hs0, hs1, hhs⟩ := smallTilt_sine_bounds hh0 hh1
   obtain ⟨hS1, hW, hS2⟩ := smallTilt_baseline_bounds
   obtain ⟨ht1, ht2⟩ := smallTilt_tangent_bounds

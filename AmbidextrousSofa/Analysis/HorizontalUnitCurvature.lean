@@ -75,21 +75,13 @@ theorem IsFullCapMaximizer.exists_horizontal_oriented_unit_density_of_width_le
   have hw : capWidth U = 4 * C := by rw [capWidth, hl, hr]; ring
   have hscalar := horizontal_energy_threshold_of_width_le hC0 hC1
   rcases hU.horizontal_endpoint_product_one_ge hl hr hC0 (by linarith) hheight hmiddle with hR | hL
-  · have hl' := horizontalLeft_horizontalMirror hU.isCap
-    have hr' := horizontalRight_horizontalMirror hU.isCap
-    have hheight' : capHeight (AmbidextrousSofa.horizontalMirror U) = 1 := by
-      rw [capHeight_horizontalMirror, hheight]
-    have hmid : ∀ x ∈ middleHalfInterval (horizontalLeft (AmbidextrousSofa.horizontalMirror U))
-        (horizontalRight (AmbidextrousSofa.horizontalMirror U)),
-        capRoof (AmbidextrousSofa.horizontalMirror U) x = 1 := fun x hx => by
-      rw [capRoof_horizontalMirror]
-      refine hmiddle _ ?_
-      simp only [middleHalfInterval, hl', hr', hl, hr, mem_Icc] at hx ⊢
-      constructor <;> linarith
-    refine ⟨_, Or.inr rfl, hU.horizontalMirror, by rw [hl', hr]; ring, by rw [hr', hl]; ring,
-      hheight', capWidth_horizontalMirror hU.isCap, capScore_horizontalMirror hU.isCap, hmid,
+  · obtain ⟨hl', hr', hheight', hmid⟩ :=
+      hU.isCap.horizontalMirror_centered rfl hl hr hheight hmiddle
+    refine ⟨_, Or.inr rfl, hU.horizontalMirror, hl', hr', hheight',
+      capWidth_horizontalMirror hU.isCap, capScore_horizontalMirror hU.isCap, hmid,
       hU.horizontalMirror.exists_unit_density_of_left_endpoint_criterion hheight' hmid ?_⟩
-    rw [capWidth_horizontalMirror hU.isCap, hl', capRoof_horizontalMirror, neg_neg, hw]
+    rw [capWidth_horizontalMirror hU.isCap, horizontalLeft_horizontalMirror hU.isCap,
+      capRoof_horizontalMirror, neg_neg, hw]
     nlinarith only [hscalar, hR]
   · exact ⟨U, Or.inl rfl, hU, hl, hr, hheight, rfl, rfl, hmiddle,
       hU.exists_unit_density_of_left_endpoint_criterion hheight hmiddle

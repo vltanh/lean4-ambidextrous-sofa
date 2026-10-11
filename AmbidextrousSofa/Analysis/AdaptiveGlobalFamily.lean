@@ -7,9 +7,11 @@ public import AmbidextrousSofa.Analysis.AdaptiveGlobalParameters
 /-!
 # Actual three-phase stationary profiles
 
-This file constructs the profiles, verifies both value and derivative
-matching, and packages their genuine derivatives as `QuarterPair` data.
-The parameter inequalities are ordinary switching-angle bounds.
+The first support of each member is joined from an early phase without
+contact, the fully active phase, and a late phase. Values and derivatives
+match at both switching angles, so the support is continuously
+differentiable, and the member is the symmetric pair it generates. The
+parameter inequalities are ordinary switching-angle bounds.
 -/
 
 noncomputable section
@@ -52,189 +54,78 @@ theorem hasDerivAt_joinThree {c d : ℝ} {E N W ED ND WD : ℝ → ℝ} (hcd : c
 
 def familyFEarly (b t : ℝ) : ℝ := familyWidth b * Real.cos t + familyEndpoint b * Real.sin t
 
-def familyGEarly (b t : ℝ) : ℝ := 1 / 2 + Real.cos t / 2 + familyWidth b / 2 * Real.sin t
-
-def familyFMiddle (b t : ℝ) : ℝ :=
-  familyRadius b * Real.cos (tailPhase t) + familySineCoefficient b * Real.sin t
-
-def familyGMiddle (b t : ℝ) : ℝ :=
-  familyRadius b * Real.sin (tailPhase t) + familySineCoefficient b * Real.cos t
+def familyFEarlyD (b t : ℝ) : ℝ := -(familyWidth b) * Real.sin t + familyEndpoint b * Real.cos t
 
 def familyFLate (b t : ℝ) : ℝ := 1 / 2 + Real.sin t / 2 + familyWidth b / 2 * Real.cos t
 
-def familyGLate (b t : ℝ) : ℝ := familyWidth b * Real.sin t + familyEndpoint b * Real.cos t
-
-def familyFEarlyD (b t : ℝ) : ℝ := -(familyWidth b) * Real.sin t + familyEndpoint b * Real.cos t
-
-def familyGEarlyD (b t : ℝ) : ℝ := -(Real.sin t) / 2 + familyWidth b / 2 * Real.cos t
-
-def familyFMiddleD (b t : ℝ) : ℝ :=
-  -(familyRadius b / 2) * Real.sin (tailPhase t) + familySineCoefficient b * Real.cos t
-
-def familyGMiddleD (b t : ℝ) : ℝ :=
-  familyRadius b / 2 * Real.cos (tailPhase t) - familySineCoefficient b * Real.sin t
-
 def familyFLateD (b t : ℝ) : ℝ := Real.cos t / 2 - familyWidth b / 2 * Real.sin t
 
-def familyGLateD (b t : ℝ) : ℝ := familyWidth b * Real.cos t - familyEndpoint b * Real.sin t
-
 def familyF (b : ℝ) : ℝ → ℝ := joinThree b (familyLateSwitch b)
-  (familyFEarly b) (familyFMiddle b) (familyFLate b)
-
-def familyG (b : ℝ) : ℝ → ℝ := joinThree b (familyLateSwitch b)
-  (familyGEarly b) (familyGMiddle b) (familyGLate b)
+  (familyFEarly b) (activeF (familyRadius b) (familySineCoefficient b)) (familyFLate b)
 
 def familyFD (b : ℝ) : ℝ → ℝ := joinThree b (familyLateSwitch b)
-  (familyFEarlyD b) (familyFMiddleD b) (familyFLateD b)
+  (familyFEarlyD b) (activeFD (familyRadius b) (familySineCoefficient b)) (familyFLateD b)
 
-def familyGD (b : ℝ) : ℝ → ℝ := joinThree b (familyLateSwitch b)
-  (familyGEarlyD b) (familyGMiddleD b) (familyGLateD b)
-
-theorem familyF_matching_first {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
-    familyFEarly b b = familyFMiddle b b := by
-  unfold familyFEarly familyFMiddle familyWidth familyEndpoint familySineCoefficient
-  linear_combination 2 / 3 * familyCot b * Real.sin_sq_add_cos_sq b - familyRadius_mul_cos hb
-
-theorem familyG_matching_first {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
-    familyGEarly b b = familyGMiddle b b := by
-  unfold familyGEarly familyGMiddle familyWidth familySineCoefficient
-  linear_combination 1 / 6 * Real.sin_sq_add_cos_sq b - familyRadius_mul_sin hb
-
-theorem familyFD_matching_first {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
-    familyFEarlyD b b = familyFMiddleD b b := by
-  unfold familyFEarlyD familyFMiddleD familyWidth familyEndpoint familySineCoefficient
-  linear_combination -1 / 3 * Real.sin_sq_add_cos_sq b + 1 / 2 * familyRadius_mul_sin hb
-
-theorem familyGD_matching_first {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
-    familyGEarlyD b b = familyGMiddleD b b := by
-  unfold familyGEarlyD familyGMiddleD familyWidth familySineCoefficient
-  linear_combination familyCot b / 3 * Real.sin_sq_add_cos_sq b - 1 / 2 * familyRadius_mul_cos hb
-
-theorem tailPhase_reflection (t : ℝ) :
-    tailPhase (Real.pi / 2 - t) = Real.pi / 2 - tailPhase t := by
-  unfold tailPhase tailAngle0; ring
-
-theorem familyF_matching_last {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
-    familyFMiddle b (familyLateSwitch b) = familyFLate b (familyLateSwitch b) := by
-  simpa only [familyFMiddle, familyFLate, familyGEarly, familyGMiddle, familyLateSwitch,
-    tailPhase_reflection, Real.cos_pi_div_two_sub, Real.sin_pi_div_two_sub]
-    using (familyG_matching_first hb).symm
-
-theorem familyG_matching_last {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
-    familyGMiddle b (familyLateSwitch b) = familyGLate b (familyLateSwitch b) := by
-  simpa only [familyGMiddle, familyGLate, familyFEarly, familyFMiddle, familyLateSwitch,
-    tailPhase_reflection, Real.cos_pi_div_two_sub, Real.sin_pi_div_two_sub]
-    using (familyF_matching_first hb).symm
-
-theorem familyFD_matching_last {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
-    familyFMiddleD b (familyLateSwitch b) = familyFLateD b (familyLateSwitch b) := by
-  simp only [familyFMiddleD, familyFLateD, familyLateSwitch, tailPhase_reflection, familyWidth,
-    familySineCoefficient, Real.cos_pi_div_two_sub, Real.sin_pi_div_two_sub]
-  linear_combination familyCot b / 3 * Real.sin_sq_add_cos_sq b - 1 / 2 * familyRadius_mul_cos hb
-
-theorem familyGD_matching_last {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
-    familyGMiddleD b (familyLateSwitch b) = familyGLateD b (familyLateSwitch b) := by
-  simp only [familyGMiddleD, familyGLateD, familyLateSwitch, tailPhase_reflection, familyWidth,
-    familyEndpoint, familySineCoefficient, Real.cos_pi_div_two_sub, Real.sin_pi_div_two_sub]
-  linear_combination -1 / 3 * Real.sin_sq_add_cos_sq b + 1 / 2 * familyRadius_mul_sin hb
+/-- Values and derivatives match at both switching angles. -/
+theorem familyF_matching {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
+    familyFEarly b b = activeF (familyRadius b) (familySineCoefficient b) b ∧
+      familyFEarlyD b b = activeFD (familyRadius b) (familySineCoefficient b) b ∧
+      activeF (familyRadius b) (familySineCoefficient b) (familyLateSwitch b) =
+        familyFLate b (familyLateSwitch b) ∧
+      activeFD (familyRadius b) (familySineCoefficient b) (familyLateSwitch b) =
+        familyFLateD b (familyLateSwitch b) := by
+  simp only [familyFEarly, familyFEarlyD, familyFLate, familyFLateD, activeF, activeFD,
+    familyLateSwitch, tailPhase_reflection, Real.cos_pi_div_two_sub, Real.sin_pi_div_two_sub,
+    familyWidth, familyEndpoint, familySineCoefficient]
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · linear_combination 2 / 3 * familyCot b * Real.sin_sq_add_cos_sq b - familyRadius_mul_cos hb
+  · linear_combination -1 / 3 * Real.sin_sq_add_cos_sq b + 1 / 2 * familyRadius_mul_sin hb
+  · linear_combination familyRadius_mul_sin hb - 1 / 6 * Real.sin_sq_add_cos_sq b
+  · linear_combination familyCot b / 3 * Real.sin_sq_add_cos_sq b - 1 / 2 * familyRadius_mul_cos hb
 
 theorem hasDerivAt_familyF {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) (t : ℝ) :
     HasDerivAt (familyF b) (familyFD b t) t :=
   hasDerivAt_joinThree (family_switch_order hb)
     (fun t => (((Real.hasDerivAt_cos t).const_mul _).add
       ((Real.hasDerivAt_sin t).const_mul _)).congr_deriv (by unfold familyFEarlyD; ring))
-    (fun t => (((hasDerivAt_tailPhase t).cos.const_mul _).add
-      ((Real.hasDerivAt_sin t).const_mul _)).congr_deriv (by unfold familyFMiddleD; ring))
+    (hasDerivAt_activeF _ _)
     (fun t => ((((Real.hasDerivAt_sin t).div_const 2).const_add _).add
       ((Real.hasDerivAt_cos t).const_mul _)).congr_deriv (by unfold familyFLateD; ring))
-    (familyF_matching_first hb) (familyF_matching_last hb)
-    (familyFD_matching_first hb) (familyFD_matching_last hb) t
-
-theorem hasDerivAt_familyG {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) (t : ℝ) :
-    HasDerivAt (familyG b) (familyGD b t) t :=
-  hasDerivAt_joinThree (family_switch_order hb)
-    (fun t => ((((Real.hasDerivAt_cos t).div_const 2).const_add _).add
-      ((Real.hasDerivAt_sin t).const_mul _)).congr_deriv (by unfold familyGEarlyD; ring))
-    (fun t => (((hasDerivAt_tailPhase t).sin.const_mul _).add
-      ((Real.hasDerivAt_cos t).const_mul _)).congr_deriv (by unfold familyGMiddleD; ring))
-    (fun t => (((Real.hasDerivAt_sin t).const_mul _).add
-      ((Real.hasDerivAt_cos t).const_mul _)).congr_deriv (by unfold familyGLateD; ring))
-    (familyG_matching_first hb) (familyG_matching_last hb)
-    (familyGD_matching_first hb) (familyGD_matching_last hb) t
-
-theorem continuous_familyF {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
-    Continuous (familyF b) :=
-  continuous_iff_continuousAt.2 fun t => (hasDerivAt_familyF hb t).continuousAt
-
-theorem continuous_familyG {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
-    Continuous (familyG b) :=
-  continuous_iff_continuousAt.2 fun t => (hasDerivAt_familyG hb t).continuousAt
+    (familyF_matching hb).1 (familyF_matching hb).2.2.1 (familyF_matching hb).2.1
+    (familyF_matching hb).2.2.2 t
 
 theorem continuous_familyFD {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
     Continuous (familyFD b) :=
   continuous_joinThree (family_switch_order hb) (by unfold familyFEarlyD; fun_prop)
-    (by unfold familyFMiddleD tailPhase; fun_prop) (by unfold familyFLateD; fun_prop)
-    (familyFD_matching_first hb) (familyFD_matching_last hb)
+    (continuous_activeFD _ _) (by unfold familyFLateD; fun_prop)
+    (familyF_matching hb).2.1 (familyF_matching hb).2.2.2
 
-theorem continuous_familyGD {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
-    Continuous (familyGD b) :=
-  continuous_joinThree (family_switch_order hb) (by unfold familyGEarlyD; fun_prop)
-    (by unfold familyGMiddleD tailPhase; fun_prop) (by unfold familyGLateD; fun_prop)
-    (familyGD_matching_first hb) (familyGD_matching_last hb)
-
-def familyPair (b : ℝ) (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) : QuarterPair where
-  f := familyF b
-  g := familyG b
-  fD := familyFD b
-  gD := familyGD b
-  continuous_f := (continuous_familyF hb).continuousOn
-  continuous_g := (continuous_familyG hb).continuousOn
-  continuous_fD := (continuous_familyFD hb).continuousOn
-  continuous_gD := (continuous_familyGD hb).continuousOn
-  hasDeriv_f := fun t _ => (hasDerivAt_familyF hb t).hasDerivWithinAt
-  hasDeriv_g := fun t _ => (hasDerivAt_familyG hb t).hasDerivWithinAt
+abbrev familyPair (b : ℝ) (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) : QuarterPair :=
+  symmetricPair (familyF b) (familyFD b) (hasDerivAt_familyF hb) (continuous_familyFD hb)
 
 theorem familyF_eq_middle {b t : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4))
-    (ht : t ∈ Icc b (familyLateSwitch b)) : familyF b t = familyFMiddle b t :=
-  joinThree_eq_middle (familyF_matching_first hb) ht
-
-theorem familyG_eq_middle {b t : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4))
-    (ht : t ∈ Icc b (familyLateSwitch b)) : familyG b t = familyGMiddle b t :=
-  joinThree_eq_middle (familyG_matching_first hb) ht
-
-theorem familyFD_eq_middle {b t : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4))
-    (ht : t ∈ Icc b (familyLateSwitch b)) : familyFD b t = familyFMiddleD b t :=
-  joinThree_eq_middle (familyFD_matching_first hb) ht
-
-theorem familyGD_eq_middle {b t : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4))
-    (ht : t ∈ Icc b (familyLateSwitch b)) : familyGD b t = familyGMiddleD b t :=
-  joinThree_eq_middle (familyGD_matching_first hb) ht
+    (ht : t ∈ Icc b (familyLateSwitch b)) :
+    familyF b t = activeF (familyRadius b) (familySineCoefficient b) t ∧
+      familyFD b t = activeFD (familyRadius b) (familySineCoefficient b) t :=
+  ⟨joinThree_eq_middle (familyF_matching hb).1 ht,
+    joinThree_eq_middle (familyF_matching hb).2.1 ht⟩
 
 theorem familyF_eq_late {b t : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4))
-    (ht : familyLateSwitch b ≤ t) : familyF b t = familyFLate b t :=
-  joinThree_eq_late (family_switch_order hb)
-    (familyF_matching_first hb) (familyF_matching_last hb) ht
+    (ht : familyLateSwitch b ≤ t) :
+    familyF b t = familyFLate b t ∧ familyFD b t = familyFLateD b t :=
+  ⟨joinThree_eq_late (family_switch_order hb) (familyF_matching hb).1
+      (familyF_matching hb).2.2.1 ht,
+    joinThree_eq_late (family_switch_order hb) (familyF_matching hb).2.1
+      (familyF_matching hb).2.2.2 ht⟩
 
-theorem familyG_eq_late {b t : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4))
-    (ht : familyLateSwitch b ≤ t) : familyG b t = familyGLate b t :=
-  joinThree_eq_late (family_switch_order hb)
-    (familyG_matching_first hb) (familyG_matching_last hb) ht
-
-theorem familyFD_eq_late {b t : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4))
-    (ht : familyLateSwitch b ≤ t) : familyFD b t = familyFLateD b t :=
-  joinThree_eq_late (family_switch_order hb)
-    (familyFD_matching_first hb) (familyFD_matching_last hb) ht
-
-theorem familyGD_eq_late {b t : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4))
-    (ht : familyLateSwitch b ≤ t) : familyGD b t = familyGLateD b t :=
-  joinThree_eq_late (family_switch_order hb)
-    (familyGD_matching_first hb) (familyGD_matching_last hb) ht
+theorem familyF_traces {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
+    familyF b 0 = familyWidth b ∧ familyF b (Real.pi / 2) = 1 :=
+  ⟨by simp [familyF, joinThree, hb.1, familyFEarly],
+    (familyF_eq_late hb (by unfold familyLateSwitch; linarith [hb.1])).1.trans
+      (by norm_num [familyFLate])⟩
 
 theorem familyPair_widthTraces {b : ℝ} (hb : b ∈ Icc (0 : ℝ) (Real.pi / 4)) :
-    (familyPair b hb).WidthTraces (familyWidth b) := by
-  have hL : familyLateSwitch b ≤ Real.pi / 2 := by unfold familyLateSwitch; linarith [hb.1]
-  refine ⟨?_, ?_, (familyF_eq_late hb hL).trans ?_, (familyG_eq_late hb hL).trans ?_⟩ <;>
-    norm_num [familyPair, familyF, familyG, joinThree, hb.1, familyFEarly, familyGEarly,
-      familyFLate, familyGLate]
+    (familyPair b hb).WidthTraces (familyWidth b) :=
+  symmetricPair_widthTraces (familyF_traces hb).1 (familyF_traces hb).2
 
 end AmbidextrousSofa.Analysis

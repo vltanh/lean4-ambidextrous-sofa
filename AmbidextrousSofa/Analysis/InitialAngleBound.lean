@@ -111,9 +111,7 @@ theorem initialAngleRelaxation_left_domain_lt {C k d s u v b : ℝ}
     (hb1 : b ≤ 2 * C) (hcompat : u ≤ 2 * (1 - k) * C + k * b) :
     initialAngleRelaxation (Real.sqrt 2 - 1) C k d u v b < (5259 / 6400 : ℝ) := by
   obtain ⟨hK0, hK1⟩ := initialAngle_offset_bounds
-  have hdpos := initialAngle_inset_pos (by linarith) hs0 hs2 hkd
-  have hdK := initialAngle_inset_lt_offset (by linarith) (by linarith) hdpos
-    (initialAngle_inset_equation (by linarith) hs2 hkd)
+  obtain ⟨hdpos, hdK⟩ := initialAngle_inset_bounds (by linarith) (by linarith) hs0 hs2 hkd
   have hstation := initialAngle_stationary_lt_rational (C := C) hk0 hk1 hs0 hs2 hkd
   rcases le_total (u + v) (2 * (Real.sqrt 2 - 1)) with hsum | hsum
   · linarith [initialAngleRelaxation_le_two_thirds_of_low_apex (by linarith) (by linarith)
@@ -145,9 +143,7 @@ theorem initialAngleRelaxation_all_width_lt {C k d s u v b : ℝ}
   have hKC : Real.sqrt 2 - 1 ≤ C := by linarith [initialAngle_offset_bounds.2]
   rcases le_or_gt C v with hv0 | hv0
   · exact initialAngleRelaxation_left_domain_lt hKC hk0 hk1 hs0 hs2 hkd hbu hu1 hv0 hv1 hb1 hcompat
-  have hdpos := initialAngle_inset_pos (by linarith) hs0 hs2 hkd
-  have hdK := initialAngle_inset_lt_offset (by linarith) (by linarith) hdpos
-    (initialAngle_inset_equation (by linarith) hs2 hkd)
+  obtain ⟨hdpos, hdK⟩ := initialAngle_inset_bounds (by linarith) (by linarith) hs0 hs2 hkd
   exact (initialAngleRelaxation_le_raise_left hC (by linarith) (by linarith)
     (by linarith [mul_nonneg (by linarith : 0 ≤ 1 - k) hdpos.le]) hu1 hv0.le
     (hhigh.resolve_left hv0.not_ge)).trans_lt (initialAngleRelaxation_left_domain_lt hKC hk0 hk1

@@ -27,17 +27,9 @@ attribute [local fun_prop] QuarterPair.continuous_f QuarterPair.continuous_g
 def negativeSquareBregman (x y : ℝ) : ℝ :=
   min y 0 ^ 2 - min x 0 ^ 2 - 2 * min x 0 * (y - x)
 
-def positiveSquareBregman (x y : ℝ) : ℝ :=
-  max y 0 ^ 2 - max x 0 ^ 2 - 2 * max x 0 * (y - x)
-
 theorem negativeSquareBregman_nonneg (x y : ℝ) : 0 ≤ negativeSquareBregman x y := by
   rcases le_total x 0 with hx | hx <;> rcases le_total y 0 with hy | hy <;>
     simp only [negativeSquareBregman, min_eq_left, min_eq_right, hx, hy] <;>
-    nlinarith [sq_nonneg (y - x)]
-
-theorem positiveSquareBregman_nonneg (x y : ℝ) : 0 ≤ positiveSquareBregman x y := by
-  rcases le_total x 0 with hx | hx <;> rcases le_total y 0 with hy | hy <;>
-    simp only [positiveSquareBregman, max_eq_left, max_eq_right, hx, hy] <;>
     nlinarith [sq_nonneg (y - x)]
 
 def QuarterPair.p (u : QuarterPair) (t : ℝ) : ℝ := u.fD t - u.g t + 1
@@ -76,14 +68,17 @@ theorem continuousOn_adaptiveLinearDensity (u v : QuarterPair) :
     ContinuousOn (adaptiveLinearDensity u v) (Icc 0 (Real.pi / 2)) := by
   unfold adaptiveLinearDensity QuarterPair.p QuarterPair.q; fun_prop
 
-/-- Exact pointwise Taylor identity, including both contact remainders.
+/-- Exact pointwise Taylor identity, including both contact remainders; the
+positive-part remainder is the negative-part one of the negated momenta.
 The differences are actual function and derivative differences. -/
 theorem adaptiveDensity_taylor (u v : QuarterPair) (t : ℝ) :
     adaptiveDensity v t = adaptiveDensity u t + adaptiveLinearDensity u (v.sub u) t -
       quadraticDensity (v.sub u) t - (negativeSquareBregman (u.p t) (v.p t) +
-        positiveSquareBregman (u.q t) (v.q t)) / 2 := by
-  unfold adaptiveDensity adaptiveLinearDensity quadraticDensity
-    negativeSquareBregman positiveSquareBregman QuarterPair.p QuarterPair.q QuarterPair.sub
+        negativeSquareBregman (-u.q t) (-v.q t)) / 2 := by
+  have h (a : ℝ) : min (-a) 0 = -max a 0 := by simpa using min_neg_neg a 0
+  unfold adaptiveDensity adaptiveLinearDensity quadraticDensity negativeSquareBregman
+  rw [h, h]
+  unfold QuarterPair.p QuarterPair.q QuarterPair.sub
   ring
 
 theorem adaptiveFunctional_le_tangent_sub_quadratic (u v : QuarterPair) :
@@ -105,7 +100,7 @@ theorem adaptiveFunctional_le_tangent_sub_quadratic (u v : QuarterPair) :
     ((continuousOn_adaptiveDensity v).intervalIntegrable_of_Icc hL) ((hu.add hlin).sub hquad)
     fun t _ => ?_
   linarith [adaptiveDensity_taylor u v t, negativeSquareBregman_nonneg (u.p t) (v.p t),
-    positiveSquareBregman_nonneg (u.q t) (v.q t)]
+    negativeSquareBregman_nonneg (-u.q t) (-v.q t)]
 
 /-- Vanishing first variation is the analytic stationary condition. It is
 not an assumption about the value of the functional or any geometric area. -/
