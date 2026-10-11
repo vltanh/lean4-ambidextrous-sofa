@@ -17,11 +17,11 @@ You need [elan](https://github.com/leanprover/elan), network access for Mathlib,
 dependency: the formalization of Baek's theorem is a copy in
 [`MovingSofaOptimality/`](../MovingSofaOptimality/README.md).
 
-`lake build` must succeed, and its only `sorry` warnings are the eight of [`Challenge.lean`](../Challenge.lean),
+`lake build` must succeed, and its only `sorry` warnings are the nine of [`Challenge.lean`](../Challenge.lean),
 whose theorems are the statements of record.
 
-[`scripts/Audit.lean`](../scripts/Audit.lean) collects the axioms of every declaration of the library (7,474,
-private and auxiliary ones included), of the copied `MovingSofaOptimality` (4,235), and of the eight theorems
+[`scripts/Audit.lean`](../scripts/Audit.lean) collects the axioms of every declaration of the library (5,581,
+private and auxiliary ones included), of the copied `MovingSofaOptimality` (4,235), and of the nine theorems
 that Comparator checks. It fails unless each one uses only
 [`propext`](https://leanprover-community.github.io/mathlib4_docs/Init/Core.html#propext),
 [`Classical.choice`](https://leanprover-community.github.io/mathlib4_docs/Init/Prelude.html#Classical.choice) and
@@ -49,9 +49,9 @@ replays the proofs through Lean's kernel and the NanoDa kernel, and ends with `Y
 
 [`formalization.yaml`](../formalization.yaml) describes the formalization for the
 [Palomar](https://palomar-registry.org) registry: its sources, its scope, how it was made, how it reads the
-problem, and the eight theorems that Comparator checks. The checks of Palomar's verifier
+problem, and the nine theorems that Comparator checks. The checks of Palomar's verifier
 ([PalomarSubmission](https://github.com/PalomarRegistry/PalomarSubmission)), run on a fresh clone, accept the
-metadata and the 520 Lean files. The pins of [`lake-manifest.json`](../lake-manifest.json) agree with Mathlib's
+metadata and the 512 Lean files. The pins of [`lake-manifest.json`](../lake-manifest.json) agree with Mathlib's
 own, as the verifier requires, and with those of Verso, which renders the Challenge.
 
 ## Continuous integration

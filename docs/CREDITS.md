@@ -21,7 +21,8 @@ Claude Opus 5.5 (Anthropic, model `claude-opus-5-5`), in Claude Code 2.1.296, di
 following the [formalize-math-paper](https://github.com/vltanh/formalize-math-paper) skill (its version of
 7 October 2026) for an existing uncompiled draft. It made the draft compile, wrote the Challenge, the Solution
 and the audit script, had the statements reviewed, wrote the documentation and the figures, and moved the
-project to a newer Mathlib.
+project to a newer Mathlib. In a second session, on 10 and 11 October, it simplified the proof, added a ninth
+statement of record, and expanded the review of prior work.
 
 No person has reviewed the proofs or the statements; Lean's kernel checks every proof. An agent separate from
 their writer checked every definition and theorem of the Challenge against the research notes and Romik's paper,
@@ -115,3 +116,44 @@ Figures, from 17:43 to 18:02:
 - tool calls: 103 by the main session;
 - tokens: 0.12 million output, 0.20 million input, 26 million cache reads;
 - model calls: 94, all to `claude-opus-5-5`.
+
+## Simplifying the proof (10 and 11 October 2026)
+
+The owner asked to simplify the Lean proof greatly, and during the work for a deeper review of prior work and
+for the quarter turns of an optimal sofa to be stated.
+
+- Dead code. A Lean script followed the dependencies of the theorems of the Solution: 395 declarations that no
+  main theorem used, and three modules left empty, were removed (commit `4f86267`).
+- File by file. The library was split into 43 groups of about 2,000 lines, and a sub-agent rewrote each group
+  for shorter proofs. A check script elaborated each file against the build and compared every declaration
+  that other modules use with its original form (statement, definition body, `rfl` proof), so the groups could
+  be rewritten at the same time. The run was paused for two hours at the owner's request; afterwards the files
+  of the 16 groups then in progress were checked one by one, and the unfinished ones went to 7 new groups. The
+  library went from 88,974 to 60,904 lines, and its 622 warnings to none (`663cf81`). A second pass removed
+  what the shorter proofs no longer used (`9e47ce9`), and the docstrings lost the labels and status notes of
+  the draft (`308f2cf`).
+- Family by family. Twelve sub-agents then worked in separate git worktrees, each on a family of related
+  modules, with the statements that other families use held fixed. They merged the arguments that the draft
+  proved twice, such as the full-turn and partial-turn versions of the same estimate, in the scalar
+  exclusions, the graph fluxes, the curvature estimates, the selected polygons, the terminal facet, and the
+  tilted, first-unit, joint-source, partial, horizontal, adaptive and reference modules. One of them added
+  the ninth statement of record, `quarter_turns` (`aa12833` to `15ad0ed`). A last sub-agent merged the facts
+  that several families had each proved, replaced wrappers of Mathlib lemmas, and dropped hypotheses that no
+  proof used (`49483da` to `7237edb`); a third pass removed what was left unused (`3aee3df`).
+- Result. The library has 458 modules, 55,015 lines and 5,581 declarations, against 466, 94,375 and 7,474
+  before. The build has no warnings besides the nine `sorry` of the Challenge, the audit finds only the three
+  standard axioms, Comparator accepts the Solution with Lean's kernel and with NanoDa, and Palomar's checks
+  (PalomarSubmission at commit `d4e41c1`, on a fresh clone) accept the metadata and the 512 Lean files.
+- Prior work. Four sub-agents searched the literature on the history of the problem, on computer-assisted
+  bounds, on formalizations and on AI-assisted proofs, and a fifth wrote the new [prior work](prior-work.md)
+  page from their notes (`51af464`).
+
+Figures, from 18:26 on 10 October to 05:30 on 11 October, including a pause of 1 hour 49 minutes:
+
+- elapsed time: 11 hours;
+- sub-agents: 68 (50 rewriting files, 12 rewriting families of files, one merging across families, five on
+  prior work), at most 20 at once, about 63.8 hours of work;
+- tool calls: 9,711 by the sub-agents, 337 by the main session;
+- tokens of the sub-agents: 16.95 million output, 51.20 million input, 3,013 million cache reads; of the main
+  session: 0.33 million output, 1.77 million input, 117 million cache reads;
+- model calls: 9,440 by the sub-agents and 290 by the main session, all to `claude-opus-5-5`.

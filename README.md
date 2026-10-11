@@ -13,10 +13,11 @@ repository proves in Lean 4, with Mathlib, that Romik's sofa is optimal: every a
 most `M`. It is also the only optimal shape, since an ambidextrous sofa of area `M` is a rotated and translated
 copy of Romik's sofa.
 
-ChatGPT Pro 6 found the proof and wrote an uncompiled Lean draft of it, and Claude Opus 5.5 made the draft
-compile. The research notes behind the proof ended with a manuscript, which is [archived](docs/archive/README.md)
-here. No person has checked the proofs; Lean's kernel checks all of them. The proof uses one result from the literature, Jineon Baek's
-theorem that Gerver's sofa is optimal for the ordinary problem. Its Lean formalization comes from
+ChatGPT Pro 6 found the proof and wrote an uncompiled Lean draft of it; Claude Opus 5.5 made the draft
+compile and then simplified it. The research notes behind the proof ended with a manuscript, which is
+[archived](docs/archive/README.md) here. No person has checked the proofs; Lean's kernel checks all of them. The
+proof uses one result from the literature, Jineon Baek's theorem that Gerver's sofa is optimal for the ordinary
+problem. Its Lean formalization comes from
 [lean4-moving-sofa](https://github.com/vltanh/lean4-moving-sofa) and is included here.
 
 ![Romik's ambidextrous sofa sliding along a hallway, turning right at the first corner, sliding down, and turning left at the second corner](docs/figures/ambidextrous-moving.gif)
@@ -67,7 +68,7 @@ inner corner of the left-turning hallway. The theorems take `Y` with its definin
 
 ## Results
 
-[`Challenge.lean`](Challenge.lean) states eight theorems in Mathlib's vocabulary, and
+[`Challenge.lean`](Challenge.lean) states nine theorems in Mathlib's vocabulary, and
 [`Solution.lean`](Solution.lean) proves them; Comparator checks that the second proves exactly the first
 ([`comparator.json`](comparator.json)).
 
@@ -80,6 +81,15 @@ theorem Ambidextrous.volume_eq_iff (Y : ℝ) (hY : 0 < Y ∧ 4 * Y ^ 3 + 3 * Y =
     volume.real S = 1 + 4 * Y ^ 2 + Real.arctan Y ↔
       ∃ (θ : ℝ) (v : ℝ × ℝ), S = (fun p => rotate θ p + v) '' referenceSofa Y
 
+theorem Ambidextrous.quarter_turns (Y : ℝ) (hY : 0 < Y ∧ 4 * Y ^ 3 + 3 * Y = 1) (S : Set (ℝ × ℝ))
+    (hS : IsCompact S) (hconn : IsConnected S) (θ₁ θ₂ : ℝ → ℝ) (c₁ c₂ : ℝ → ℝ × ℝ)
+    (horient : rotate (θ₁ 0) = rotate (θ₂ 0))
+    (h₁ : MovesThrough S (incomingArm ∪ lowerOutgoingArm) incomingArm lowerOutgoingArm θ₁ c₁)
+    (h₂ : MovesThrough S (incomingArm ∪ upperOutgoingArm) incomingArm upperOutgoingArm θ₂ c₂)
+    (harea : volume.real S = 1 + 4 * Y ^ 2 + Real.arctan Y) :
+    (∃ t ∈ Icc (0 : ℝ) 1, θ₁ t = θ₁ 0 - Real.pi / 2) ∧
+      (∃ t ∈ Icc (0 : ℝ) 1, θ₂ t = θ₂ 0 + Real.pi / 2)
+
 theorem Ambidextrous.isAmbidextrous_referenceSofa (Y : ℝ) (hY : 0 < Y ∧ 4 * Y ^ 3 + 3 * Y = 1) :
     IsAmbidextrous (referenceSofa Y)
 
@@ -91,6 +101,7 @@ theorem Ambidextrous.volume_referenceSofa (Y : ℝ) (hY : 0 < Y ∧ 4 * Y ^ 3 + 
 | --- | --- |
 | `volume_le` | every ambidextrous sofa has area at most `M` |
 | `volume_eq_iff` | an ambidextrous sofa has area `M` if and only if it is the image of Romik's sofa by a rotation and a translation |
+| `quarter_turns` | in an ambidextrous sofa of area `M`, each of the two motions turns the body through a full quarter turn at some moment: clockwise in the hallway that turns right, counterclockwise in the one that turns left |
 | `isAmbidextrous_referenceSofa` | Romik's sofa is an ambidextrous sofa |
 | `volume_referenceSofa` | Romik's sofa has area `M` |
 | `isAmbidextrous_image_referenceSofa` | so is every image of Romik's sofa by a rotation and a translation |
@@ -128,10 +139,10 @@ with reflected curvature bounds, makes it strictly smaller. Two of the strict ex
 
 ![Romik's sofa in its own frame, inside the right-turning hallway turned by π/4 about it, with the path of the inner corner](docs/figures/supporting-hallway.svg)
 
-If the body has area `M`, both caps have score `M/2`, so both motions turn by a full quarter and both caps are
-Romik's. An exact deficit identity then recovers the hull, and since Romik's sofa is regular closed, the body
-is Romik's sofa itself. The remaining modules work out Romik's sofa: its support function, hull, niche,
-motions and area.
+If the body has area `M`, both caps have score `M/2`, so each motion turns the body through a full quarter turn
+(`quarter_turns`) and both caps are Romik's. An exact deficit identity then recovers the hull, and since
+Romik's sofa is regular closed, the body is Romik's sofa itself. The remaining modules work out Romik's sofa:
+its support function, hull, niche, motions and area.
 
 ## How it was checked
 
@@ -144,6 +155,14 @@ puts back, and a few names pointed to the wrong declaration.
 An agent separate from the one that wrote the statements of record reviewed them, definition by definition,
 against the informal problem and Romik's paper, and found no error. It also checked that the definitions of
 Romik's sofa reproduce his Table 2.
+
+The proofs were then simplified, with the statements of record unchanged. Declarations that no main theorem
+used were removed. Every module was rewritten for shorter proofs, keeping fixed the statements that other modules
+use. Families of related modules were then rewritten together, so that an argument the draft proved twice, such
+as the full-turn and the partial-turn version of the same estimate, is now proved once, and a last pass merged
+the facts that several families had each proved for themselves. The library went from 94,375 lines and 7,474
+declarations to 55,015 lines and 5,581, and it builds with no warnings. The same round added the ninth
+statement of record, `quarter_turns`, which the proof of uniqueness already contained.
 
 ## Prior work
 
@@ -164,13 +183,9 @@ accepted.
 
 ## What's next
 
-The Lean proofs still need a cleanup: the build has about 700 linter and deprecation warnings, and a few
-lemmas that the draft used without importing their modules are copied privately. The proof should also be
-written up as a paper. Some directions from here are the stability of Romik's sofa, as for
-[Gerver's](https://github.com/vltanh/lean4-moving-sofa/blob/main/docs/stability.md); the sharper equality
-case, in which each motion of an optimal sofa turns it by exactly a quarter turn (the proof shows this, but the
-Challenge does not state it); and the variant that Romik mentions alongside, the largest shape that can turn
-around in a T-junction.
+The proof should be written up as a paper. Some directions from here are the stability of Romik's sofa, as for
+[Gerver's](https://github.com/vltanh/lean4-moving-sofa/blob/main/docs/stability.md), and the variant that Romik
+mentions alongside, the largest shape that can turn around in a T-junction.
 
 ## Layout
 
@@ -180,7 +195,7 @@ More on each module: [docs/layout.md](docs/layout.md).
 Challenge.lean, Solution.lean   the statements of record and their proofs
 comparator.json                 Comparator's configuration
 formalization.yaml              the metadata for the Palomar registry
-AmbidextrousSofa/               the proof (466 modules)
+AmbidextrousSofa/               the proof (458 modules)
   ChallengeDefs.lean            the definitions that Challenge.lean copies
   Main.lean                     the main theorems in the Challenge's vocabulary
   Theorems/Optimality.lean      the main theorems in the library's vocabulary
@@ -205,8 +220,8 @@ python3 scripts/sync_challenge_defs.py --check
 lake env lake comparator --config=comparator.json
 ```
 
-Lean and Mathlib are pinned at `v4.35.0-rc4`. The build's only `sorry`s are the eight statements of the
-Challenge. The audit checks that the 7,474 declarations of the library and the 4,235 of the copied
+Lean and Mathlib are pinned at `v4.35.0-rc4`. The build's only `sorry`s are the nine statements of the
+Challenge. The audit checks that the 5,581 declarations of the library and the 4,235 of the copied
 `MovingSofaOptimality` use only the axioms `propext`, `Classical.choice` and `Quot.sound`, and lists the results
 from the literature that the main results use (Baek's theorem, through `MovingSofaOptimality.gm_area_le`).
 Comparator accepts the Solution, with Lean's kernel and with NanoDa. GitHub Actions runs all of these except
@@ -224,5 +239,6 @@ Apache-2.0 ([`LICENSE`](LICENSE)), as for Mathlib and lean4-moving-sofa.
 - Claude Opus 5.5 (Anthropic), in Claude Code, following the
   [formalize-math-paper](https://github.com/vltanh/formalize-math-paper) skill, made the draft compile with 42
   sub-agents in under two hours, wrote the Challenge and the Solution, had the statements reviewed,
-  wrote these pages and the figures, and moved the project to a newer Mathlib. More:
-  [docs/CREDITS.md](docs/CREDITS.md).
+  wrote these pages and the figures, and moved the project to a newer Mathlib. In a second session, with 68
+  sub-agents, it simplified the proof from 94,375 to 55,015 lines, added the statement `quarter_turns`, and
+  expanded the review of prior work. More: [docs/CREDITS.md](docs/CREDITS.md).
