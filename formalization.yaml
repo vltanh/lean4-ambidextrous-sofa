@@ -51,8 +51,12 @@ sources:
     note: >-
       ChatGPT Pro 6 (OpenAI) found the proof and wrote an uncompiled Lean draft of it, and Claude
       Opus 5.5 (Anthropic) made the draft compile (automation). The research notes behind it end with
-      a manuscript, which the repository archives in docs/archive/. The proof has not been peer
-      reviewed. The README outlines it.
+      a manuscript, which the repository archives in docs/archive/. Codex (OpenAI, GPT-6) wrote
+      the accompanying 107-page proof manuscript in docs/paper/, starting from Claude's LaTeX
+      scaffold, bibliography and figures. Three Codex writers reviewed one another's sections;
+      this manuscript review is separate from the Challenge review. The proof has not been
+      reviewed by a person. The fuller production account is pinned at
+      https://github.com/vltanh/lean4-ambidextrous-sofa/blob/646bdd577807299d786ac2d48176bd6c8d5a6030/docs/CREDITS.md#the-paper-11-october-2026.
   - title: "Differential Equations and Exact Solutions in the Moving Sofa Problem"
     authors:
       - "Dan Romik"
@@ -182,11 +186,37 @@ automation:
         library, about 132,000 lines.
       cost:
         spend_usd: "not tracked"
+    - method: agent
+      models: ["GPT-6 (OpenAI)"]
+      framework: "Codex (OpenAI)"
+      tool_setup: >-
+        On 11 October 2026, wrote the accompanying mathematical account in docs/paper/ from
+        Claude Opus 5.5's LaTeX scaffold, bibliography, six figures, and notation and caption
+        notes. First completed a 27-page outline, then expanded it into the 107-page
+        pen-and-paper proof at the owner's request. Three sub-agents wrote the cap argument,
+        selection and variations, and terminal-angle estimates, and each reviewed sections
+        written by another; at most three ran at once. The coordinating agent wrote the
+        introduction, setting, reduction, reference construction, preliminary estimates and
+        body recovery, and integrated the reviews. This was manuscript writing and mathematical
+        communication of the existing proof, distinct from ChatGPT's proof discovery and
+        Claude's Lean compilation and simplification. The exact manuscript model variant,
+        token totals and sub-agent working times were not recorded. The fuller account is
+        pinned at
+        https://github.com/vltanh/lean4-ambidextrous-sofa/blob/646bdd577807299d786ac2d48176bd6c8d5a6030/docs/CREDITS.md#the-paper-11-october-2026.
+      cost:
+        wall_time: >-
+          Manuscript: the first round's recorded clock readings run from 2026-10-11 08:52 to
+          about 09:07 CDT; the rewrite finished at 09:51 CDT, with its exact starting time
+          unrecorded. Three sub-agents, at most three at once; their working times were not
+          recorded.
+        spend_usd: "not tracked"
   spend_usd: "not tracked"
   notes: >-
     The proof and the first Lean code were written by ChatGPT Pro 6; Claude Opus 5.5 made the code
-    compile and then simplified it, at the request of The-Anh Vu-Le, the author and maintainer of this repository, who chose
-    the problem and the scope and decided the publication. Every result is compiled.
+    compile and then simplified it. Codex (OpenAI, GPT-6) wrote the accompanying 107-page
+    proof manuscript from Claude's scaffold and integrated its agents' cross-reviews, separately
+    from the review of the Challenge. The-Anh Vu-Le, the author and maintainer of this repository,
+    chose the problem and the scope and decided the publication. Every result is compiled.
     scripts/Audit.lean checks that each declaration of the library uses only propext,
     Classical.choice and Quot.sound, and lake comparator checks this Challenge/Solution pair with
     comparator.json.
@@ -217,13 +247,23 @@ fidelity:
 review:
   status: "agent-reviewed"
   reviewers:
-    - "A Claude Opus 5.5 sub-agent, separate from the writing agents: a comparison of every definition and theorem of the Challenge with the informal statement of the problem and with Romik's paper"
+    - "Challenge: a Claude Opus 5.5 sub-agent, separate from the writing agents, compared every definition and theorem of the Challenge with the informal statement of the problem and with Romik's paper"
+    - "Accompanying proof manuscript: three Codex (OpenAI, GPT-6) writers reviewed sections written by one another; this was a cross-review among manuscript contributors, separate from the Challenge review"
   notes: >-
-    No person has reviewed the proofs, the statements or the definitions. The review found no
+    No person has reviewed the proofs, the statements or the definitions. The Challenge review found no
     error; it checked that the definitions of Romik's sofa reproduce his Table 2, and that the
     hypotheses can be met (the unit square with constant motions is an ambidextrous sofa). Its
     corrections of the documentation, and two more theorems (the convex hull of Romik's sofa, and
-    its rotated and translated copies), were made. Lean's kernel checks the proofs, and Comparator
+    its rotated and translated copies), were made. The separate manuscript review checked the
+    motion reduction, selection and variations, full-turn geometry, calibration, proper-angle
+    exclusions, exact estimates, reference construction and equality recovery. It clarified
+    the competitive range of a concavity argument and the reference hull's nonempty interior,
+    and found no unresolved substantive mathematical error. Its fuller record is pinned at
+    https://github.com/vltanh/lean4-ambidextrous-sofa/blob/646bdd577807299d786ac2d48176bd6c8d5a6030/docs/paper/REVIEW.md#mathematical-review;
+    the production account is pinned at
+    https://github.com/vltanh/lean4-ambidextrous-sofa/blob/646bdd577807299d786ac2d48176bd6c8d5a6030/docs/CREDITS.md#the-paper-11-october-2026.
+    These are agent reviews; human mathematical review remains outstanding. Lean's kernel checks
+    the formal proofs, and Comparator
     checks that the Solution proves the Challenge's statements with the standard axioms only, under
     Lean's kernel and an independent one.
 
