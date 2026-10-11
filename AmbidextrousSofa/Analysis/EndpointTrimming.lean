@@ -43,7 +43,7 @@ theorem IsDownwardCap.baseline_mem_of_mem_projection {U : Set Plane}
 theorem IsDownwardCap.baseline_mem_of_mem_Icc {U : Set Plane} (hU : IsDownwardCap U) {x : ℝ}
     (hx : x ∈ Icc (horizontalLeft U) (horizontalRight U)) : (x, 0) ∈ U :=
   hU.baseline_mem_of_mem_projection
-    ((hU.horizontalProjection_eq_Icc).symm ▸ hx)
+    (hU.horizontalProjection_eq_Icc.symm ▸ hx)
 
 theorem IsDownwardCap.inter {U V : Set Plane} (hU : IsDownwardCap U)
     (hV : IsDownwardCap V) (hne : (U ∩ V).Nonempty) :

@@ -122,7 +122,7 @@ theorem IsFullCapMaximizer.tilted_top_projection_eq
     rw [← (top_vminus_snd_eq_capHeight U).trans hheight]
     exact (MovingSofaOptimality.vminus_mem_edge hU.isCap.imported_isConvexBody _).1
   have hbR : b ≤ 2 * C := hr ▸ (hU.isCap.fst_mem_Icc htopPoint).2
-  have hzaxis : z < 1 - 2 * C := by linarith only [hV.companionZero_lt_left_add_one hVH hVL, hlV]
+  have hzaxis : z < 1 - 2 * C := by linarith only [hV.companionZero_lt_left_add_one hVL, hlV]
   have hzC : z < C := by linarith only [hzaxis, hC0]
   have hJL : horizontalLeft U + capWidth U / 4 = -C := (centered_quarter_points hl hr).1
   have hJR : horizontalRight U - capWidth U / 4 = C := (centered_quarter_points hl hr).2.1

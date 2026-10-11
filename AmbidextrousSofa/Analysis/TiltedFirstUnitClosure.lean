@@ -62,7 +62,7 @@ theorem firstUnit_raw_momentum_data_impossible
     (hh : (∫ t in 0..γ, (1 - v t) * Real.sin t) = h)
     (hT : (∫ t in β..(Real.pi / 2), (1 - u t) * Real.sin t) = T)
     (hz : (∫ t in β..(Real.pi / 2), (1 - u t) * Real.cos t) = z)
-    (hC : 1 / 2 < C) (hTpos : 0 < T) (hST : T ≤ S) (hSone : S ≤ 1) (hTC : T ≤ C)
+    (hC : 1 / 2 < C) (hTpos : 0 < T) (hST : T ≤ S) (hSone : S ≤ 1)
     (hhz : h + z ≤ 2) (hβsin : 3 / 5 ≤ Real.sin β) : False := by
   have hβ0 : 0 ≤ β := h0α.trans hαβ
   have h0η : 0 ≤ η := hβ0.trans hβη
@@ -109,7 +109,7 @@ theorem firstUnit_raw_momentum_data_impossible
   have hz0 : 0 ≤ z := hz ▸ intervalIntegral.integral_nonneg_of_ae_restrict hβL (by
     filter_upwards [hrB0, ae_restrict_mem measurableSet_Icc] with t hrt ht
     exact mul_nonneg hrt (Real.cos_nonneg_of_neg_pi_div_two_le_of_le (by linarith [ht.1]) ht.2))
-  exact firstUnit_terminal_contradiction hC hTpos hST hSone hTC hh0 hz0 hhz
+  exact firstUnit_terminal_contradiction hC hTpos hST hSone hh0 hz0 hhz
     hzT hRB hRD (by linarith) hbalance
 
 end AmbidextrousSofa.Analysis

@@ -80,14 +80,6 @@ theorem affineEnvelope_barrier_zero (U : Set Plane) (normal : ι → Plane)
   rw [finiteBarrier_eq_eval normal _ (fun _ => rfl)]
   simp only [WallExpr.affineEnvelope, zero_mul, add_zero]
 
-theorem eqOn_roofEnvelope_of_circumscription [Fintype ι] {U : Set Plane}
-    (hU : IsDownwardCap U) (normal : ι → Plane) (hnormal : ∀ i, 0 < (normal i).2)
-    (hpoly : U = circumscription U normal) :
-    EqOn (roofEnvelope normal (fun i => support U (normal i))) (capRoof U)
-      (Icc (horizontalLeft U) (horizontalRight U)) := fun _ hx =>
-  ((congrArg (capRoof · _) hpoly).trans
-    (capRoof_upperPolygon _ _ normal _ hnormal (circumscription_baseline hU normal) hx)).symm
-
 /-- A non-tight displayed polygon has the same roof as its actual body,
 while its displayed inner walls can only overestimate the true barrier. -/
 theorem displayedSpatialScore_le_actual [Fintype ι] {U : Set Plane}

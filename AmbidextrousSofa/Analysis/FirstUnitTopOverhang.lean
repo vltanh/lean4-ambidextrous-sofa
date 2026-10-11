@@ -50,7 +50,7 @@ theorem FirstUnitSetting.companion_unit_of_collapsed_top {C h : ℝ}
     (by rw [hvalues.2, htop]; linarith only [hC1]))
   have hzero := (ae_restrict_iff' measurableSet_Ioo).mp
     (fullTiltedSupportQuarterPair_reflected_zero_after_active
-      hU hm haffine hρ hρ0 hρK heq P.hl P.hr P.C_pos P.hsmall P.hheight P.hhigh)
+      hU hm haffine hρ hρ0 heq P.hl P.hr P.C_pos P.hsmall P.hheight P.hhigh)
   -- The reflected first density is at most one on the whole quarter.
   have hwhole : ∀ᵐ r, r ∈ Ioo (0 : ℝ) (Real.pi / 2) → reflectedFirstWingDensity m ρ r ≤ 1 := by
     filter_upwards [hactive, hzero, volume.ae_ne (fullReflectedActiveEnd m)]

@@ -99,7 +99,7 @@ theorem IsJointCapMaximizer.integral_strictGapRamp_le_contactRamp
       ∫ x in I, max (ε - (outerSupportingRoof U α x - capRoof U x)) 0 := by
     rw [← integral_sub (hAI.mono_set sdiff_subset) (hAVI.mono_set sdiff_subset),
       ← setIntegral_congr_fun measurableSet_Icc fun x hx => capRoof_sub_normalTrim hU.isCap hc hs
-        hbase ((hU.isCap.horizontalProjection_eq_Icc).symm ▸ hx)]
+        hbase (hU.isCap.horizontalProjection_eq_Icc.symm ▸ hx)]
     exact setIntegral_mono_set (hAI.sub hAVI) (.of_forall fun x => sub_nonneg.mpr
       (hV.capRoof_mono hU.isCap (normalTrim_subset U α ε) x)) (.of_forall fun x hx => hx.1)
   linarith only [hgain, hloss, hscore]

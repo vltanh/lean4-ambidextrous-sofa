@@ -123,7 +123,7 @@ theorem firstUnit_unit_companion_raw_data_impossible
     (hh : (∫ t in 0..γ, (1 - v t) * Real.sin t) = h)
     (hT : (∫ t in β..(Real.pi / 2), (1 - u t) * Real.sin t) = T)
     (hz : (∫ t in β..(Real.pi / 2), (1 - u t) * Real.cos t) = z)
-    (hC : 1 / 2 < C) (hTpos : 0 < T) (hST : T ≤ S) (hSone : S ≤ 1) (hTC : T ≤ C)
+    (hC : 1 / 2 < C) (hTpos : 0 < T) (hST : T ≤ S) (hSone : S ≤ 1)
     (hhz : h + z ≤ 2) (hh0 : 0 ≤ h) (hz0 : 0 ≤ z) (hβsin : 3 / 5 ≤ Real.sin β) : False := by
   have hβ0 : 0 ≤ β := h0α.trans hαβ
   have hγL : γ ≤ Real.pi / 2 := hγη.trans hηL
@@ -169,7 +169,7 @@ theorem firstUnit_unit_companion_raw_data_impossible
   have hzT := (firstUnit_right_window_moment_bounds hβ0 hβL hβsin hrB hrB0).2.2
   rw [hT] at hRB
   rw [hz, hT] at hzT
-  exact firstUnit_terminal_contradiction hC hTpos hST hSone hTC hh0 hz0 hhz hzT hRB
+  exact firstUnit_terminal_contradiction hC hTpos hST hSone hh0 hz0 hhz hzT hRB
     (firstUnitLeftRemainder_nonneg hγ0 hγL hrD0
       (ae_restrict_Icc_subinterval le_rfl hγL (hunit.mono fun _ ht => ht.1)))
     (by linarith only [hTpos]) hbalance

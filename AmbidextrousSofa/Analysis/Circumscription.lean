@@ -33,13 +33,21 @@ theorem circumscription_baseline {U : Set Plane} (hU : IsDownwardCap U)
     (normal : ι → Plane) :
     ∀ x ∈ Icc (horizontalLeft U) (horizontalRight U), ∀ i,
       coordDot (x, 0) (normal i) ≤ support U (normal i) := fun x hx i => by
-  obtain ⟨p, hp, rfl⟩ := (hU.horizontalProjection_eq_Icc).ge hx
+  obtain ⟨p, hp, rfl⟩ := hU.horizontalProjection_eq_Icc.ge hx
   exact coordDot_le_support hU.isCompact (hU.baseline_mem hp) (normal i)
+
+theorem eqOn_roofEnvelope_of_circumscription [Fintype ι] {U : Set Plane}
+    (hU : IsDownwardCap U) (normal : ι → Plane) (hnormal : ∀ i, 0 < (normal i).2)
+    (hpoly : U = circumscription U normal) :
+    EqOn (roofEnvelope normal (fun i => support U (normal i))) (capRoof U)
+      (Icc (horizontalLeft U) (horizontalRight U)) := fun _ hx =>
+  ((congrArg (capRoof · _) hpoly).trans
+    (capRoof_upperPolygon _ _ normal _ hnormal (circumscription_baseline hU normal) hx)).symm
 
 theorem subset_circumscription {U : Set Plane} (hU : IsDownwardCap U)
     (normal : ι → Plane) : U ⊆ circumscription U normal := fun p hp =>
   (mem_upperPolygon_iff _ _ _ _ _).mpr
-    ⟨(hU.horizontalProjection_eq_Icc).le ⟨p, hp, rfl⟩,
+    ⟨hU.horizontalProjection_eq_Icc.le ⟨p, hp, rfl⟩,
       hU.inStrip hp, fun i => coordDot_le_support hU.isCompact hp (normal i)⟩
 
 theorem isDownwardCap_circumscription {U : Set Plane} (hU : IsDownwardCap U)

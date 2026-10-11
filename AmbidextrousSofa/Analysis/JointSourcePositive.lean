@@ -92,8 +92,6 @@ theorem ae_niche_pos (H : IsTiltedFirstUnitTarget target a b C h m c ρ K) :
   obtain ⟨ha, hb⟩ := H.mem_horizontalProjection
   have hab : -C < C := by linarith only [H.hC]
   have hzaxis := (H.hU.isCap.leftCompanionCap ha).companionZero_lt_left_add_one
-    (by rw [(H.hU.isCap.top_leftCompanionCap_of_positive_affine ha hb hab H.hm haff).1, H.hlow]
-        linarith only [H.hh])
     (by rw [horizontalLeft_leftCompanionCap H.hU.isCap ha,
           H.hU.isCap.capRoof_leftCompanionCap ha ⟨le_rfl, by rw [H.hl]; linarith only [H.hC]⟩]
         exact (H.hU.endpoint_heights_pos_of_affine H.hheight ⟨m, c, H.haffine⟩).2)

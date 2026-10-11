@@ -118,9 +118,8 @@ theorem IsJointCapMaximizer.properReflected_ae_excess_bound_of_tail_regime
     haffine hρ hρ0 hρK heq
   -- The clipped energy after the terminal impulse is the free-circle energy plus its change.
   have henergy := (clippedCornerEnergy_le_initialFloorEnergy (properReflectedP U m ρ)
-    (properReflectedQ U m ρ) (Real.pi / 2 - α)).trans_eq
-      (hU.properReflected_initial_energy_of_tail_regime hregime hproper hheight haffine hρ hρ0 hρK
-        heq)
+    (properReflectedQ U ρ) (Real.pi / 2 - α)).trans_eq
+      (hU.properReflected_initial_energy_of_tail_regime hregime hproper haffine hρ hρ0 hρK heq)
   exact (hU.properReflected_cornerArcDynamics_of_tail_regime hregime hproper hl hr hheight haffine
     hρ hρ0 hρK hsharp heq).ae_linear_excess_of_proper_scalar_bounds (fun t ht => (harms t ht).1)
     (fun hp => (hentry hp).1) (fun hp => (hentry hp).2)

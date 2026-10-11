@@ -122,7 +122,7 @@ theorem FirstUnitSetting.top_projection_eq {C h : ℝ} (P : FirstUnitSetting U m
       (MovingSofaOptimality.vminus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)).1
   have hbR : b ≤ 2 * C := P.hr ▸ (hU.isCap.fst_mem_Icc htopPoint).2
   have hzaxis : z < 1 - 2 * C := by
-    have := hV.companionZero_lt_left_add_one (by rw [hVh]; linarith only [P.hh0]) hVL
+    have := hV.companionZero_lt_left_add_one hVL
     rw [horizontalLeft_leftCompanionCap hU.isCap ha, P.hl] at this
     linarith only [this]
   -- The positive middle has length at least `C - max (-C) z`, and the

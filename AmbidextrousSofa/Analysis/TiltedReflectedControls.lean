@@ -125,14 +125,13 @@ theorem fullTiltedSupportQuarterPair_reflected_dynamics {C : ℝ}
     (ae_restrict_mem measurableSet_Ioo).mono fun r hr => .inl (harms r (Ioo_subset_Icc_self hr)).1,
     hs.mono fun _ h => h.2.2⟩
 
-include hU hm haffine hρ hρ0 hρK heq in
+include hU hm haffine hρ hρ0 heq in
 theorem fullTiltedSupportQuarterPair_reflected_zero_after_active {C : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hC : 0 < C) (hsmall : C + m < 1)
     (hheight : capHeight U = 1) (hhigh : capRoof U C = 1) :
     ∀ᵐ r ∂volume.restrict (Ioo (fullReflectedActiveEnd m) (Real.pi / 2)),
       uR r = 0 ∧ vR r = 0 := by
-  have _ := hρK -- not needed by the proof; it stays in the statement for the callers
   have hshift := (volume.measurePreserving_sub_left (Real.pi / 2)).quasiMeasurePreserving.ae
     ((ae_restrict_iff' measurableSet_Ioo).mp (hU.full_tilted_wing_densities_zero_before_affine
       hl hr hC hm hsmall hheight haffine hhigh hρ hρ0 heq))

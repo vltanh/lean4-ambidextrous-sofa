@@ -199,7 +199,7 @@ theorem IsDownwardCap.capScore_le_middleChordCap {U : Set Plane}
     (capCut_subset _ _) hprojection (fun x hx => ?_) hα0 hα
   rw [horizontalLeft, horizontalRight, hprojection] at hx
   exact hU.capRoof_chordCap_outside ha hb hab
-    ((hU.horizontalProjection_eq_Icc).symm ▸ hx.1) hx.2
+    (hU.horizontalProjection_eq_Icc.symm ▸ hx.1) hx.2
 
 /-- Every positive-width cap has a height-one cap with the same projection,
 an affine middle roof, and at least its scalar score. This is a concrete
@@ -222,7 +222,7 @@ theorem IsDownwardCap.exists_heightOne_affine_middle {U : Set Plane}
     (hU.capScore_le_middleChordCap hwidth hα0 hα).trans (hV.capScore_le_heightSaturation hα0 hα),
     m, capRoof U a - m * a + (1 - capHeight (middleChordCap U)), fun x hx => ?_⟩
   have hxU : x ∈ horizontalProjection U :=
-    (hU.horizontalProjection_eq_Icc).symm ▸
+    hU.horizontalProjection_eq_Icc.symm ▸
       middleHalfInterval_subset (horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact) hx
   rw [heightSaturation, hV.capRoof_verticalExtrusion (sub_nonneg.mpr hV.capHeight_le_one)
     (hproj.symm ▸ hxU), show capRoof (middleChordCap U) x = _ from

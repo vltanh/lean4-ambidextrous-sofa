@@ -87,12 +87,11 @@ theorem ConvexOn.integral_le_trapezoid {f : ℝ → ℝ} {a b : ℝ}
   simpa only [smul_eq_mul, show (b - x) / (b - a) * a + (x - a) / (b - a) * b = x by
     field_simp; ring] using h
 
-theorem IsDownwardCap.middle_roof_integral_of_affine
-    {U : Set Plane} (hU : IsDownwardCap U) {C h : ℝ} (hC : 0 < C)
+theorem middle_roof_integral_of_affine
+    {U : Set Plane} {C h : ℝ} (hC : 0 < C)
     (hleft : capRoof U (-C) = 1 - h) (hright : capRoof U C = 1)
     (haffine : ∃ m c : ℝ, ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c) :
     (∫ x in (-C)..C, capRoof U x) = 2 * C - C * h := by
-  have _ := hU -- not needed by the proof; it stays in the statement for the callers
   obtain ⟨m, c, haffine⟩ := haffine
   have hCC : -C < C := by linarith
   rw [intervalIntegral.integral_congr (g := roofChord (capRoof U) (-C) C) fun x hx =>
@@ -121,6 +120,6 @@ theorem IsDownwardCap.volumeReal_oneTurnSurvivor_ge_score_of_affine
   rw [show sweptNiche U (Real.pi / 2) (2 * C) = 0 from
     hr ▸ hU.sweptNiche_eq_zero_of_right_le le_rfl] at hR
   linarith [hU.volumeReal_oneTurnSurvivor_eq_centered_integrals hl hr hfit,
-    hU.middle_roof_integral_of_affine hC hleft hright haffine]
+    middle_roof_integral_of_affine hC hleft hright haffine]
 
 end AmbidextrousSofa

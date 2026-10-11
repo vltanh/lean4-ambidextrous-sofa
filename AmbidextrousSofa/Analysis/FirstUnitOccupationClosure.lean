@@ -153,7 +153,7 @@ theorem fullTiltedSupportQuarterPair_false_of_common_occupation
       hlate hfinal hphase.first_zero hphase.second_zero hunitClosed
       (hIcc hcompanion)
       hfloor hqnonneg hp0 hq0 (by linarith only [hpL]) hqL hR hL hS hh hT' hz
-      hC0 hT hgeometry.1 hgeometry.2.1 hgeometry.2.2 hhz hh0.le (sweptNiche_nonneg _ _ _) hβsin
+      hC0 hT hgeometry.1 hgeometry.2 hhz hh0.le (sweptNiche_nonneg _ _ _) hβsin
     rw [← restrict_Ioo_eq_restrict_Icc] at hcore ⊢
     filter_upwards [hcore, ae_restrict_of_ae_restrict_of_subset
       (Ioo_subset_Ioo (le_min hαβ.le hphase.second_mem.1.le) le_rfl) hvisibleCore]
@@ -196,7 +196,7 @@ theorem fullTiltedSupportQuarterPair_false_of_common_occupation
       (Analysis.ae_restrict_Icc_subinterval le_rfl hτ.1.le hprefixClosed) hqnonneg
       (hIcc (ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo le_rfl hηL.le) hbad))
       hfold hp0 hq0 (by linarith only [hpL]) hqL hR hL hS hh hT' hz
-      hC0 hT hgeometry.1 hgeometry.2.1 hgeometry.2.2 hhz hβsin
+      hC0 hT hgeometry.1 hgeometry.2 hhz hβsin
 
 end ActualPair
 

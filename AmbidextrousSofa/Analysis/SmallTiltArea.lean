@@ -58,7 +58,7 @@ theorem IsFullCapMaximizer.smallTilt_initialFloorEnergyConditions_of_actual_geom
     hh0.le hhmax hheight hAff
   -- The ordinary area: the dry left wing pays nothing and the right wing an excess triangle.
   have harea := hU.isCap.volumeReal_oneTurnSurvivor_eq_centered_integrals hl hr hfit
-  rw [hU.isCap.middle_roof_integral_of_affine hC hlow hhigh ⟨m, c, haffine⟩] at harea
+  rw [middle_roof_integral_of_affine hC hlow hhigh ⟨m, c, haffine⟩] at harea
   have hL := ConvexOn.integral_le_trapezoid (hU.isCap.convexOn_sweptNiche_wings_of_roof_endpoints
     hl hr hlow hhigh hChalf hC1 hhmax).1 (by linarith only [hC] : -2 * C < -C)
     (hU.isCap.continuous_sweptNiche_pi_div_two.intervalIntegrable _ _)

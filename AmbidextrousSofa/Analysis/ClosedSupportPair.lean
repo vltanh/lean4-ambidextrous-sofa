@@ -30,46 +30,34 @@ namespace AmbidextrousSofa
 def closedSupportDerivative (U : Set Plane) (ρ : ℝ → ℝ) (d t : ℝ) : ℝ :=
   supportTangent U d + ∫ s in (0 : ℝ)..t, ρ (s + d) - angleSupport U (s + d)
 
-theorem IsDownwardCap.intervalIntegrable_shifted_density_sub_support
-    {U : Set Plane} (hU : IsDownwardCap U) {ρ : ℝ → ℝ} {K : ℝ}
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (a b d : ℝ) :
-    IntervalIntegrable (fun t => ρ (t + d) - angleSupport U (t + d)) volume a b :=
-  (intervalIntegrable_bounded_real_density
-    (hρ.comp (measurable_id.add_const d)) (fun t => hρ0 (t + d))
-    (fun t => hρK (t + d)) a b).sub
-    ((hU.imported_isConvexBody.continuous_supp.comp
-      (continuous_id.add_const d)).intervalIntegrable a b)
-
 theorem IsDownwardCap.continuous_closedSupportDerivative
     {U : Set Plane} (hU : IsDownwardCap U) {ρ : ℝ → ℝ} {K : ℝ}
     (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K) (d : ℝ) :
     Continuous (closedSupportDerivative U ρ d) :=
   continuous_const.add (intervalIntegral.continuous_primitive
-    (fun a b => hU.intervalIntegrable_shifted_density_sub_support hρ hρ0 hρK a b d) 0)
+    (fun a b => hU.intervalIntegrable_shift_density hρ hρ0 hρK a b d) 0)
 
 theorem IsDownwardCap.absolutelyContinuousOnInterval_closedSupportDerivative
     {U : Set Plane} (hU : IsDownwardCap U) {ρ : ℝ → ℝ} {K : ℝ}
     (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
     (a b d : ℝ) :
     AbsolutelyContinuousOnInterval (closedSupportDerivative U ρ d) a b := by
-  have hi := hU.intervalIntegrable_shifted_density_sub_support hρ hρ0 hρK
+  have hi := hU.intervalIntegrable_shift_density hρ hρ0 hρK
   refine absolutelyContinuousOnInterval_of_integral_sub (hi a b d) fun x _ => ?_
   rw [closedSupportDerivative, closedSupportDerivative, add_sub_add_left_eq_sub,
     intervalIntegral.integral_interval_sub_left (hi 0 x d) (hi 0 a d)]
 
 theorem IsDownwardCap.ae_hasDerivAt_closedSupportDerivative
     {U : Set Plane} (hU : IsDownwardCap U) {ρ : ℝ → ℝ} {K a b : ℝ}
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (hab : a ≤ b) (d : ℝ) :
+    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K) (d : ℝ) :
     ∀ᵐ t ∂volume.restrict (Ioo a b),
       HasDerivAt (closedSupportDerivative U ρ d)
         (ρ (t + d) - angleSupport U (t + d)) t := by
-  have hi := hU.intervalIntegrable_shifted_density_sub_support hρ hρ0 hρK
+  have hi := hU.intervalIntegrable_shift_density hρ hρ0 hρK
     (min 0 a) (max 0 b) d
   filter_upwards [ae_restrict_mem measurableSet_Ioo,
     ae_restrict_of_ae hi.ae_hasDerivAt_integral] with t ht hdt
-  rw [uIcc_of_le ((min_le_right 0 a).trans (hab.trans (le_max_right 0 b)))] at hdt
+  rw [uIcc_of_le ((min_le_left 0 a).trans (le_max_left 0 b))] at hdt
   exact (hdt ⟨(min_le_right _ _).trans ht.1.le, ht.2.le.trans (le_max_right _ _)⟩ 0
     ⟨min_le_left _ _, le_max_left _ _⟩).const_add (supportTangent U d)
 
@@ -118,7 +106,7 @@ theorem IsDownwardCap.closedSupportDerivative_at_end
         (MovingSofaOptimality.vvec (Real.pi / 2 + d)) := by
   have hlim := (MovingSofaOptimality.continuous_dot_pair.tendsto _).comp
     (((MovingSofaOptimality.tendsto_vplus_left hU.imported_isConvexBody (Real.pi / 2 + d)).comp
-      (tendsto_add_const_nhdsLT (Real.pi / 2) d)).prodMk_nhds
+      map_add_right_nhdsLT.le).prodMk_nhds
       (((MovingSofaOptimality.continuous_vvec.comp (continuous_id.add_const d)).tendsto _).mono_left
         nhdsWithin_le_nhds))
   refine tendsto_nhds_unique (((hU.continuous_closedSupportDerivative hρ hρ0 hρK d).tendsto
@@ -288,8 +276,8 @@ theorem supportQuarterPair_ae_derivatives :
       HasDerivAt (F).fD (ρ t - (F).f t) t ∧
       HasDerivAt (F).gD (σ (t + Real.pi / 2) - (F).g t) t := by
   filter_upwards [ae_restrict_mem measurableSet_Ioo,
-    hU.ae_hasDerivAt_closedSupportDerivative hρ hρ0 hρK Real.pi_div_two_pos.le 0,
-    hV.ae_hasDerivAt_closedSupportDerivative hσ hσ0 hσJ Real.pi_div_two_pos.le (Real.pi / 2)]
+    hU.ae_hasDerivAt_closedSupportDerivative hρ hρ0 hρK 0,
+    hV.ae_hasDerivAt_closedSupportDerivative hσ hσ0 hσJ (Real.pi / 2)]
     with t ht hfDD hgDD
   have hdf := hU.hasDerivAt_shiftedSupport_of_open_density hρ hρ0 hρK hfirst (d := 0) (by simp) ht
   simp only [add_zero] at hdf hfDD

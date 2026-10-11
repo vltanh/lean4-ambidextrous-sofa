@@ -157,18 +157,16 @@ theorem upperCurvature_restrict_Ioc_eq_of_vplus_eq
       hpoints _ (hsub ⟨hspan, le_rfl⟩), hi]
   · rw [Ioc_eq_empty_of_le (le_of_not_ge hspan), measure_empty, measure_empty]
 
--- `hxy` is part of the interface; the restriction to an empty arc is trivial.
-set_option linter.unusedVariables false in
 /-- The curvature after the middle normal is exactly the original
 charged-wing curvature, with the original middle atom excluded. -/
 theorem IsDownwardCap.leftCompanion_curvature_restrict_after_affine
     {U : Set Plane} (hU : IsDownwardCap U) {a b m c x y : ℝ}
     (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
     (hab : a < b) (haffine : ∀ z ∈ Icc a b, capRoof U z = m * z + c)
-    (hxy : x ≤ y) (hmx : affineNormalAngle m ≤ x) (hyπ : y < Real.pi) :
+    (hmx : affineNormalAngle m ≤ x) (hyπ : y < Real.pi) :
     (upperCurvature (AmbidextrousSofa.leftCompanionCap U a)).restrict (Ioc x y) =
       (upperCurvature U).restrict (Ioc x y) :=
-  upperCurvature_restrict_Ioc_eq_of_vplus_eq (hU.leftCompanionCap ha) hU fun t ht =>
+  upperCurvature_restrict_Ioc_eq_of_vplus_eq (hU.leftCompanionCap ha) hU fun _ ht =>
     hU.vplus_leftCompanionCap_eq_of_affine ha hb hab haffine (Real.sin_pos_of_pos_of_lt_pi
       ((affineNormalAngle_mem m).1.trans_le (hmx.trans ht.1)) (ht.2.trans_lt hyπ))
       (affineNormal_coefficient_nonpos_after (hmx.trans ht.1) (ht.2.trans hyπ.le))

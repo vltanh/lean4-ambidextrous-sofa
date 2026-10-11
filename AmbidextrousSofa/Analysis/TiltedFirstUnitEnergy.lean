@@ -243,13 +243,12 @@ first-floor displacement bounds and the three independently paid
 moment budgets. The numerical contradiction has a fixed rational gap. -/
 theorem firstUnit_terminal_contradiction
     {C T S h z RB RD P : ℝ}
-    (hC : 1 / 2 < C) (hT : 0 < T) (hST : T ≤ S) (hS : S ≤ 1) (hTC : T ≤ C)
+    (hC : 1 / 2 < C) (hT : 0 < T) (hST : T ≤ S) (hS : S ≤ 1)
     (hh : 0 ≤ h) (hz : 0 ≤ z) (hhz : h + z ≤ 2)
     (hzT : z ≤ 4 / 3 * T) (hRB : RB ≤ 5 / 6 * T) (hRD : 0 ≤ RD)
     (hP : P ≤ 25 / 48 * T)
     (hbalance : 6 * C * T ≤ (z - h) * (2 - h - z) / 4 + RB - RD +
       (S - T) * ((S + T) / 2 - 3 * C) + P) : False := by
-  have _ := hTC -- not needed by the proof; it stays in the statement for the callers
   linarith [mul_nonneg (sub_nonneg.2 hST) (by linarith : 0 ≤ 3 * C - (S + T) / 2), sq_nonneg z,
     mul_nonneg hh (by linarith : 0 ≤ 2 - h), mul_pos (by linarith : 0 < C - 1 / 2) hT]
 

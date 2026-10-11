@@ -85,10 +85,10 @@ theorem IsJointCapMaximizer.properReflected_entry_quadratic_of_tail_regime
     properReflectedP U m ρ (Real.pi / 2 - α) ≤ terminalReflectedHeight U α -
       terminalReflectedSpan U α * (Real.pi / 2 - α) + (Real.pi / 2 - α) ^ 2 / 2 ∧
       terminalReflectedSpan U α - 1 - (Real.pi / 2 - α) ≤
-        properReflectedQ U m ρ (Real.pi / 2 - α) := by
+        properReflectedQ U ρ (Real.pi / 2 - α) := by
   have hparams := hU.centered_terminal_reflected_parameters_of_tail_regime hregime hproper hl hr
     hheight haffine
-  have htrace := hU.properReflected_terminal_impulse_of_tail_regime hregime hproper hheight haffine
+  have htrace := hU.properReflected_terminal_impulse_of_tail_regime hregime hproper haffine
     hρ hρ0 hρK heq
   have hQ := Analysis.one_lt_terminal_free_second hparams.1 hparams.2.1
     hU.terminal_angle_gt_arctan_eight_thirds.le hproper

@@ -44,15 +44,15 @@ theorem IsDownwardCap.leftCompanion_curvature_restrict_open_after_affine
     (hmx : affineNormalAngle m ≤ x) :
     (upperCurvature (AmbidextrousSofa.leftCompanionCap U a)).restrict (Ioo x Real.pi) =
       (upperCurvature U).restrict (Ioo x Real.pi) := by
-  have hlocal (r s : ℝ) (hxr : x < r) (hrs : r ≤ s) (hsπ : s < Real.pi) :
+  have hlocal (r s : ℝ) (hxr : x < r) (hsπ : s < Real.pi) :
       (upperCurvature (AmbidextrousSofa.leftCompanionCap U a)).restrict (Ioo r s) =
         (upperCurvature U).restrict (Ioo r s) := by
     rw [← Measure.restrict_restrict_of_subset Ioo_subset_Ioc_self,
-      hU.leftCompanion_curvature_restrict_after_affine ha hb hab haffine hrs (hmx.trans hxr.le) hsπ,
+      hU.leftCompanion_curvature_restrict_after_affine ha hb hab haffine (hmx.trans hxr.le) hsπ,
       Measure.restrict_restrict_of_subset Ioo_subset_Ioc_self]
   exact le_antisymm
-    (measure_restrict_Ioo_le_of_compactly_contained fun r s h₁ h₂ h₃ => (hlocal r s h₁ h₂ h₃).le)
-    (measure_restrict_Ioo_le_of_compactly_contained fun r s h₁ h₂ h₃ => (hlocal r s h₁ h₂ h₃).ge)
+    (measure_restrict_Ioo_le_of_compactly_contained fun r s h₁ _ h₃ => (hlocal r s h₁ h₃).le)
+    (measure_restrict_Ioo_le_of_compactly_contained fun r s h₁ _ h₃ => (hlocal r s h₁ h₃).ge)
 
 def leftCompanionWingDensity (m : ℝ) (ρ : ℝ → ℝ) : ℝ → ℝ :=
   (Ioi (max (Real.pi / 2) (affineNormalAngle m))).indicator ρ

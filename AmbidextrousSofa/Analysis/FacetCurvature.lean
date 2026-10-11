@@ -68,14 +68,6 @@ theorem eq_upper_line_iff {n : Plane} (hny : n.2 ≠ 0) (height x y : ℝ) :
     eq_div_iff hny, coordDot]
   constructor <;> intro h <;> linarith
 
-theorem capRoof_eq_roofEnvelope_of_circumscription [Fintype ι] {U : Set Plane}
-    (hU : IsDownwardCap U) (normal : ι → Plane)
-    (hnormal : ∀ i, 0 < (normal i).2) (hpoly : U = circumscription U normal)
-    {x : ℝ} (hx : x ∈ Icc (horizontalLeft U) (horizontalRight U)) :
-    capRoof U x = roofEnvelope normal (fun i => support U (normal i)) x :=
-  (congrArg (capRoof · x) hpoly).trans
-    (capRoof_upperPolygon _ _ normal _ hnormal (circumscription_baseline hU normal) hx)
-
 /-- On the actual projection, selecting the outer wall is equivalent
 almost everywhere to belonging to the literal supporting face projection. -/
 theorem outerSource_ae_eq_faceProjection [Fintype ι] [DecidableEq ι]
@@ -100,7 +92,7 @@ theorem outerSource_ae_eq_faceProjection [Fintype ι] [DecidableEq ι]
   constructor
   · rintro ⟨hx, hsource⟩
     refine ⟨_, (hline x hx).1 ?_, rfl⟩
-    rw [capRoof_eq_roofEnvelope_of_circumscription hU normal hnormal hpoly hx, roofEnvelope,
+    rw [← eqOn_roofEnvelope_of_circumscription hU normal hnormal hpoly hx, roofEnvelope,
       WallExpr.eval_eq_source, show roofExpr.source _ = some j from hsource]
     rfl
   · rintro ⟨p, hp, rfl⟩
@@ -109,7 +101,7 @@ theorem outerSource_ae_eq_faceProjection [Fintype ι] [DecidableEq ι]
       rwa [← hU.capRoof_eq_of_mem_upper_edge (by simpa only [hangle, unitNormal] using hnormal j)
         hp]
     exact ⟨hx, hinj (((roofExpr (ι := ι)).eval_eq_source _).symm.trans
-      ((capRoof_eq_roofEnvelope_of_circumscription hU normal hnormal hpoly hx).symm.trans
+      ((eqOn_roofEnvelope_of_circumscription hU normal hnormal hpoly hx).trans
         ((hline _ hx).2 hp')))⟩
 
 /-- The entire outer selected-source derivative is exactly the atom of

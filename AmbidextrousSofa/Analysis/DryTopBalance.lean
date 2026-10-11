@@ -66,9 +66,8 @@ theorem finiteWingMass_top_le [Fintype ι] {U : Set Plane} (hU : IsDownwardCap U
     have hx' : x ∈ Icc (horizontalLeft U) (horizontalRight U) := by
       rcases hx with hx | hx
       exacts [⟨hx.1.1.le, by linarith [hx.1.2]⟩, ⟨by linarith [hx.1.1], hx.1.2⟩]
-    have h := capRoof_mem hU.isCompact
-      (hU.horizontalProjection_eq_Icc ▸ hx')
-    rw [capRoof_eq_roofEnvelope_of_circumscription hU normal hnormal hpoly hx', roofEnvelope,
+    have h := capRoof_mem hU.isCompact (hU.horizontalProjection_eq_Icc ▸ hx')
+    rw [← eqOn_roofEnvelope_of_circumscription hU normal hnormal hpoly hx', roofEnvelope,
       WallExpr.eval_eq_source, show roofExpr.source _ = none from hx.elim (·.2) (·.2)] at h
     simpa [wallSlope, roofIntercept] using h
   · linarith [hA.1.2, hB.1.1]

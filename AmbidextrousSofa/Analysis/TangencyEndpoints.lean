@@ -39,10 +39,6 @@ private theorem mem_edge_pi_div_two {U : Set Plane} (hheight : capHeight U = 1) 
     p ∈ edge U (Real.pi / 2) ↔ p ∈ U ∧ p.2 = 1 := by
   simp [edge, suppLine, line, dot, imported_supp_pi_div_two, hheight]
 
-theorem tendsto_add_const_nhdsLT (a b : ℝ) :
-    Tendsto (fun t : ℝ => t + b) (𝓝[<] a) (𝓝[<] (a + b)) :=
-  map_add_right_nhdsLT.le
-
 theorem IsDownwardCap.firstTangency_tendsto_zero_right
     {U : Set Plane} (hU : IsDownwardCap U) :
     Tendsto (firstTangency U) (𝓝[>] (0 : ℝ))
@@ -56,7 +52,7 @@ theorem IsDownwardCap.secondTangency_tendsto_pi_div_two_left
     Tendsto (secondTangency U) (𝓝[<] (Real.pi / 2))
       (𝓝 (horizontalLeft U + 1, capRoof U (horizontalLeft U))) := by
   have hp := (tendsto_vplus_left hU.imported_isConvexBody (Real.pi / 2 + Real.pi / 2)).comp
-    (tendsto_add_const_nhdsLT _ _)
+    map_add_right_nhdsLT.le
   simpa [funext (secondTangency_eq_vplus_sub_companionNormal U), hU.axis_vminus_pi,
     companionNormal] using hp.sub continuous_companionNormal.continuousWithinAt.tendsto
 
@@ -141,7 +137,7 @@ theorem IsFullCapMaximizer.cornerVelocities_tendsto_pi_div_two_left :
   have h := tendsto_cornerVelocities hU.isCap.isCompact nhdsWithin_le_nhds
     (tendsto_vplus_left hU.isCap.imported_isConvexBody (Real.pi / 2))
     ((tendsto_vplus_left hU.isCap.imported_isConvexBody (Real.pi / 2 + Real.pi / 2)).comp
-      (tendsto_add_const_nhdsLT _ _))
+      map_add_right_nhdsLT.le)
   rw [add_halves, hU.isCap.axis_vminus_pi, hU.top_vminus_pi_div_two hheight hmiddle,
     hU.isCap.imported_supp_pi, imported_supp_pi_div_two, hheight] at h
   convert h using 3 <;> simp [dot, vvec]

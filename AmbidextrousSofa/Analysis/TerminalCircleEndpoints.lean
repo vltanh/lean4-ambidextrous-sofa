@@ -33,7 +33,7 @@ theorem terminal_circle_small_average_gap {C : ℝ}
     (hC0 : (1 / 2 : ℝ) ≤ C) (hC1 : C ≤ 37 / 50) :
     (8 / 495 : ℝ) < (35 / 33 : ℝ) * (2 * C - 1 / 3) - circleAverage (1 / 3) C := by
   have h := (circleAverage_linear_gap_concave (q := 1 / 3) (e := 0) (l := 1 / 2) (u := 37 / 50)
-    (A := 70 / 33) (B := -35 / 99) (by norm_num) (by norm_num) (by norm_num)
+    (A := 70 / 33) (B := -35 / 99) (by norm_num) (by norm_num)
     (by norm_num)).min_le_of_mem_Icc (by norm_num) (by norm_num) ⟨hC0, hC1⟩
   have h1 := circleAverage_lt_of_heights (q := 1 / 3) (y := 1 / 2) (L := 19 / 20)
     (R := 11 / 15) (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
@@ -47,7 +47,7 @@ theorem terminal_circle_large_average_gap {C : ℝ}
     (39 / 4400 : ℝ) < (35 / 33 : ℝ) * (2 * C - 44 / 125) -
       circleAverage (44 / 125) (C - 1 / 216) := by
   have h := (circleAverage_linear_gap_concave (q := 44 / 125) (e := 1 / 216) (l := 1 / 2)
-    (u := 37 / 50) (A := 70 / 33) (B := -308 / 825) (by norm_num) (by norm_num) (by norm_num)
+    (u := 37 / 50) (A := 70 / 33) (B := -308 / 825) (by norm_num) (by norm_num)
     (by norm_num)).min_le_of_mem_Icc (by norm_num) (by norm_num) ⟨hC0, hC1⟩
   have h1 := circleAverage_lt_of_heights (q := 44 / 125) (y := 1 / 2 - 1 / 216) (L := 19 / 20)
     (R := 37 / 50) (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by norm_num)

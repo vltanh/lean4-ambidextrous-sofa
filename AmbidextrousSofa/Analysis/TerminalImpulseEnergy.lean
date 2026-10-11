@@ -155,8 +155,7 @@ end Analysis
 
 theorem IsJointCapMaximizer.properReflected_initial_energy_of_tail_regime
     {U : Set Plane} {α m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hregime : ProperTailRegime U α m)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (hregime : ProperTailRegime U α m) (hproper : α < Real.pi / 2)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c)
     (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
@@ -164,13 +163,13 @@ theorem IsJointCapMaximizer.properReflected_initial_energy_of_tail_regime
       (volume.restrict (regularProperCurvatureDomain α m)).withDensity
         (fun t => ENNReal.ofReal (ρ t))) :
     Analysis.initialFloorEnergy (properReflectedP U m ρ (Real.pi / 2 - α))
-      (properReflectedQ U m ρ (Real.pi / 2 - α)) =
+      (properReflectedQ U ρ (Real.pi / 2 - α)) =
         terminalReflectedSpan U α ^ 2 -
           terminalReflectedHeight U α * (1 - terminalReflectedHeight U α) + 1 / 4 +
           Analysis.terminalImpulseEnergyChange (terminalReflectedSpan U α)
             (terminalReflectedHeight U α) α (MovingSofaOptimality.sigmaAt U α) := by
-  obtain ⟨hP, hQ⟩ := hU.properReflected_terminal_impulse_of_tail_regime hregime hproper hheight
-    haffine hρ hρ0 hρK heq
+  obtain ⟨hP, hQ⟩ := hU.properReflected_terminal_impulse_of_tail_regime hregime hproper haffine
+    hρ hρ0 hρK heq
   rw [hP, hQ, Analysis.initialFloorCircle_impulse_energy]
 
 end AmbidextrousSofa

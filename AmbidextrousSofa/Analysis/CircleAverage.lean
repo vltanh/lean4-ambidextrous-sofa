@@ -168,10 +168,9 @@ theorem circleAverage_mono_width {q Q y : ℝ} (hq : 0 ≤ q) (hQ : 0 < Q)
 /-- A linear function minus a translated symmetric average is concave
 on every interval on which the average remains in the positive unit arc. -/
 theorem circleAverage_linear_gap_concave {q e l u A B : ℝ}
-    (hq : 0 ≤ q) (hA : 0 ≤ A)
-    (hl : q / 2 < l - e) (hu : u - e < 1 - q / 2) :
+    (hq : 0 ≤ q) (hl : q / 2 < l - e) (hu : u - e < 1 - q / 2) :
     ConcaveOn ℝ (Icc l u) (fun x : ℝ => A * x + B - circleAverage q (x - e)) :=
-  (((concaveOn_id (convex_Icc l u)).smul hA).add_const B).sub
+  (((LinearMap.mul ℝ ℝ A).concaveOn (convex_Icc l u)).add_const B).sub
     (((circleAverage_convexOn hq).translate_left (-e)).subset
       (fun _ hx => ⟨by linarith [hx.1], by linarith [hx.2]⟩) (convex_Icc l u))
 

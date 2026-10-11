@@ -72,13 +72,11 @@ theorem IsDownwardCap.secondWall_neg_of_lt_companionZero
     (sub_neg.2 hx) (Real.tan_pos_of_pos_of_lt_pi_div_two ht.1 ht.2))
 
 theorem IsDownwardCap.companionZero_lt_left_add_one
-    {U : Set Plane} (hU : IsDownwardCap U) (hheight : capHeight U < 1)
-    (hleft : 0 < capRoof U (horizontalLeft U)) :
+    {U : Set Plane} (hU : IsDownwardCap U) (hleft : 0 < capRoof U (horizontalLeft U)) :
     companionZero U < horizontalLeft U + 1 := by
   have hp := capRoof_mem hU.isCompact (horizontalLeft_mem hU.nonempty hU.isCompact)
-  have hsq := circleHeight_sq ⟨hleft, (hU.snd_le_capHeight hp).trans_lt hheight⟩
-  have hroot : circleHeight (capRoof U (horizontalLeft U)) < 1 := by
-    nlinarith [circleHeight_nonneg (capRoof U (horizontalLeft U))]
+  have hroot : circleHeight (capRoof U (horizontalLeft U)) < 1 :=
+    (Real.sqrt_lt' one_pos).2 (by nlinarith)
   exact (hU.companionZero_le_point hp).trans_lt (by rw [rightCircleAbscissa]; linarith)
 
 /-- The zero is attained by a genuine support point at a proper angle.
@@ -94,7 +92,7 @@ theorem IsDownwardCap.exists_companionZero_contact
     (hU.isCompact.image continuous_rightCircleAbscissa).sInf_mem (hU.nonempty.image _)
   have hpy0 : 0 < p.2 := (hU.inStrip hp).1.lt_of_ne fun h => by
     simp [rightCircleAbscissa, ← h, circleHeight] at hpzero
-    linarith [hU.companionZero_lt_left_add_one hheight hleft, (hU.fst_mem_Icc hp).1]
+    linarith [hU.companionZero_lt_left_add_one hleft, (hU.fst_mem_Icc hp).1]
   have hpy1 : p.2 < 1 := (hU.snd_le_capHeight hp).trans_lt hheight
   have ht : Real.arccos p.2 ∈ Ioo (0 : ℝ) (Real.pi / 2) :=
     ⟨Real.arccos_pos.mpr hpy1, Real.arccos_lt_pi_div_two.mpr hpy0⟩

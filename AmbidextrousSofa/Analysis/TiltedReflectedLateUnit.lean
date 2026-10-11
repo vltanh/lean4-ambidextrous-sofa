@@ -95,7 +95,7 @@ theorem fullTiltedSupportQuarterPair_companion_unit_prefix_of_collapsed_top {C h
         hU hm haffine hρ hρ0 hρK heq hl hr hC0 hsmall))
   have hzero := (ae_restrict_iff' measurableSet_Ioo).mp
     (fullTiltedSupportQuarterPair_reflected_zero_after_active
-      hU hm haffine hρ hρ0 hρK heq hl hr hC hsmall hheight hhigh)
+      hU hm haffine hρ hρ0 heq hl hr hC hsmall hheight hhigh)
   have hlate : ∀ᵐ r, r ∈ Ioo (11 / 15 : ℝ) (Real.pi / 2) →
       reflectedFirstWingDensity m ρ r ≤ 1 := by
     filter_upwards [hactive, hzero, volume.ae_ne (fullReflectedActiveEnd m)] with r ha hz hne hr

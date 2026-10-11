@@ -260,11 +260,8 @@ theorem volumeReal_referenceSofa : volume.real referenceSofa = M := by
       referenceNiche_eq_zero_outside
   change volume.real referenceSofa = 2 * volume.real referenceCap -
     capWidth referenceCap - 2 * ∫ x in horizontalProjection referenceHull, referenceNiche x at harea
-  rw [setIntegral_eq_subset_of_zero_off
+  rw [setIntegral_eq_of_subset_of_forall_sdiff_eq_zero
     (isCompact_horizontalProjection isCompact_referenceHull).measurableSet
-    (show MeasurableSet topInterval from measurableSet_Icc)
-    (continuous_referenceNiche.continuousOn.integrableOn_compact
-      (isCompact_horizontalProjection isCompact_referenceHull))
     (fun x hx => ⟨(x, 1), topFace_mem_referenceHull hx, rfl⟩)
     (fun x hx => referenceNiche_eq_zero_outside hx.2), integral_topInterval_referenceNiche,
     capWidth_referenceCap] at harea

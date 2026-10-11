@@ -53,17 +53,6 @@ theorem IsJointCapMaximizer.properTailRegime_of_largest
   hU.properTailRegime_of_not_full hproper hheight haffine fun _ hfull =>
     hproper.not_ge (hLargest U _ hfull)
 
--- Only `hregime` and `hm` are used; the other hypotheses stay in the statement for the callers.
-set_option linter.unusedVariables false in
-theorem IsJointCapMaximizer.negative_remaining_tail_geometry_of_tail_regime
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hregime : ProperTailRegime U α m)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1) (hm : m < 0)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    α < affineNormalAngle m ∧
-      Real.sin α < capRoof U (horizontalRight U - capWidth U / 4) := hregime.negative hm
-
 /-- The explicit rigidity input concerns this same cap at the completed
 full angle. The completion inequality and the joint maximum construct
 the required full maximum internally. -/

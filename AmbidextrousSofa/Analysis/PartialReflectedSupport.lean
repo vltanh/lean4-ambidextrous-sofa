@@ -26,8 +26,8 @@ open scoped Topology
 
 namespace AmbidextrousSofa
 
-/-- The first used momentum. Its slope argument is unused; it matches `properUsedQ`. -/
-def properUsedP (U : Set Plane) (_m : ℝ) (ρ : ℝ → ℝ) : ℝ → ℝ :=
+/-- The first used momentum. -/
+def properUsedP (U : Set Plane) (ρ : ℝ → ℝ) : ℝ → ℝ :=
   supportP (closedSupportDerivative U ρ 0)
     (fun t => angleSupport (leftCompanionCap U (horizontalLeft U + capWidth U / 4))
       (t + Real.pi / 2))
@@ -40,8 +40,8 @@ def properUsedQ (U : Set Plane) (m : ℝ) (ρ : ℝ → ℝ) : ℝ → ℝ :=
 def properReflectedP (U : Set Plane) (m : ℝ) (ρ : ℝ → ℝ) (r : ℝ) : ℝ :=
   -properUsedQ U m ρ (Real.pi / 2 - r)
 
-def properReflectedQ (U : Set Plane) (m : ℝ) (ρ : ℝ → ℝ) (r : ℝ) : ℝ :=
-  -properUsedP U m ρ (Real.pi / 2 - r)
+def properReflectedQ (U : Set Plane) (ρ : ℝ → ℝ) (r : ℝ) : ℝ :=
+  -properUsedP U ρ (Real.pi / 2 - r)
 
 def properReflectedFirstDensity (m : ℝ) (ρ : ℝ → ℝ) (r : ℝ) : ℝ :=
   leftCompanionWingDensity m ρ (Real.pi / 2 - r + Real.pi / 2)
@@ -77,11 +77,11 @@ include hU hρ hρ0 hρK
 gives the reflected momenta on `[π / 2 - α, π / 2]`. -/
 theorem IsJointCapMaximizer.properReflected_momenta_absolutelyContinuous :
     AbsolutelyContinuousOnInterval (properReflectedP U m ρ) (Real.pi / 2 - α) (Real.pi / 2) ∧
-      AbsolutelyContinuousOnInterval (properReflectedQ U m ρ) (Real.pi / 2 - α) (Real.pi / 2) := by
+      AbsolutelyContinuousOnInterval (properReflectedQ U ρ) (Real.pi / 2 - α) (Real.pi / 2) := by
   have hV := hU.isCap_properLeftCompanion
   have hc : AbsolutelyContinuousOnInterval (fun _ : ℝ => (1 : ℝ)) 0 α :=
     (LipschitzWith.const (1 : ℝ)).lipschitzOnWith.absolutelyContinuousOnInterval
-  have hP : AbsolutelyContinuousOnInterval (properUsedP U m ρ) 0 α :=
+  have hP : AbsolutelyContinuousOnInterval (properUsedP U ρ) 0 α :=
     ((hU.isCap.absolutelyContinuousOnInterval_closedSupportDerivative hρ hρ0 hρK 0 α 0).sub
       (hV.absolutelyContinuousOnInterval_angleSupport_shift 0 α (Real.pi / 2))).add hc
   have hQ : AbsolutelyContinuousOnInterval (properUsedQ U m ρ) 0 α :=
@@ -102,20 +102,20 @@ include hregime hproper haffine heq
 theorem IsJointCapMaximizer.properReflected_momenta_ae_derivatives_of_tail_regime :
     ∀ᵐ r ∂volume.restrict (Ioo (Real.pi / 2 - α) (Real.pi / 2)),
       HasDerivAt (properReflectedP U m ρ)
-        (properReflectedFirstDensity m ρ r - 1 - properReflectedQ U m ρ r) r ∧
-      HasDerivAt (properReflectedQ U m ρ)
+        (properReflectedFirstDensity m ρ r - 1 - properReflectedQ U ρ r) r ∧
+      HasDerivAt (properReflectedQ U ρ)
         (properReflectedSecondDensity ρ r - 1 + properReflectedP U m ρ r) r := by
   have hV := hU.isCap_properLeftCompanion
   have hσ := measurable_leftCompanionWingDensity hρ m
   have hσ0 := fun t => (leftCompanionWingDensity_bounds (m := m) hρ0 hρK t).1
   have hσK := fun t => (leftCompanionWingDensity_bounds (m := m) hρ0 hρK t).2
   have h : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) α),
-      HasDerivAt (properUsedP U m ρ) (ρ t - 1 - properUsedQ U m ρ t) t ∧
+      HasDerivAt (properUsedP U ρ) (ρ t - 1 - properUsedQ U m ρ t) t ∧
       HasDerivAt (properUsedQ U m ρ)
-        (leftCompanionWingDensity m ρ (t + Real.pi / 2) - 1 + properUsedP U m ρ t) t := by
+        (leftCompanionWingDensity m ρ (t + Real.pi / 2) - 1 + properUsedP U ρ t) t := by
     filter_upwards [ae_restrict_mem measurableSet_Ioo,
-      hU.isCap.ae_hasDerivAt_closedSupportDerivative hρ hρ0 hρK hU.angle_pos.le 0,
-      hV.ae_hasDerivAt_closedSupportDerivative hσ hσ0 hσK hU.angle_pos.le (Real.pi / 2)]
+      hU.isCap.ae_hasDerivAt_closedSupportDerivative hρ hρ0 hρK 0,
+      hV.ae_hasDerivAt_closedSupportDerivative hσ hσ0 hσK (Real.pi / 2)]
       with t ht hfDD hgDD
     have hdf := hU.isCap.hasDerivAt_angleSupport_of_open_arc hρ hρ0 hρK
       (hregime.first_density_of_regular hproper heq) Subset.rfl ht
@@ -134,7 +134,7 @@ theorem IsJointCapMaximizer.properReflected_momenta_ae_derivatives_of_tail_regim
 
 theorem IsJointCapMaximizer.properUsed_momenta_eq_actual_after_affine_of_tail_regime
     (ht : t ∈ Ico (0 : ℝ) α) (hmt : Real.arctan m ≤ t) :
-    properUsedP U m ρ t = -secondCornerVelocity U t ∧
+    properUsedP U ρ t = -secondCornerVelocity U t ∧
       properUsedQ U m ρ t = firstCornerVelocity U t := by
   obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints
     (show 0 < capWidth U by linarith only [hU.width_bounds.1, one_lt_M])
@@ -155,14 +155,13 @@ theorem IsJointCapMaximizer.properUsed_momenta_eq_actual_after_affine_of_tail_re
 
 -- `hheight` is not needed here; it stays in the statement for the callers.
 set_option linter.unusedSectionVars false in
-include hheight in
 /-- Both initial reflected values are computed at actual supporting
 endpoints. The second value contains the whole terminal atom. -/
 theorem IsJointCapMaximizer.properReflected_terminal_impulse_of_tail_regime :
     properReflectedP U m ρ (Real.pi / 2 - α) =
         Analysis.initialFloorCircleP (terminalReflectedSpan U α)
           (terminalReflectedHeight U α - 1) (Real.pi / 2 - α) ∧
-      properReflectedQ U m ρ (Real.pi / 2 - α) =
+      properReflectedQ U ρ (Real.pi / 2 - α) =
         Analysis.initialFloorCircleQ (terminalReflectedSpan U α)
           (terminalReflectedHeight U α - 1) (Real.pi / 2 - α) + MovingSofaOptimality.sigmaAt U α := by
   obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints

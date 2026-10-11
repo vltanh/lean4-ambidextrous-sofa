@@ -91,8 +91,8 @@ theorem outerSource_mem_edge {ι : Type*} [Fintype ι] [DecidableEq ι]
     (fun i => wallSlope normal i * x + roofIntercept normal (fun j => support U (normal j)) i)
   rw [show (roofExpr (ι := ι)).source _ = some j from hsource] at hvalue
   have hdot := (eq_upper_line_iff (hnormal j).ne' (support U (normal j)) x (capRoof U x)).mp
-    ((capRoof_eq_roofEnvelope_of_circumscription hU normal hnormal hpoly
-      (hU.horizontalProjection_eq_Icc ▸ hx)).trans hvalue)
+    ((eqOn_roofEnvelope_of_circumscription hU normal hnormal hpoly
+      (hU.horizontalProjection_eq_Icc ▸ hx)).symm.trans hvalue)
   rw [hangle] at hdot
   exact ⟨capRoof_mem hU.isCompact hx, hdot⟩
 

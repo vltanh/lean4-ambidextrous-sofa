@@ -47,7 +47,7 @@ theorem IsFullCapMaximizer.volumeReal_eq_horizontalSupportQuarterPair_energy
     (hd.mono fun _ h => h.1) (hd.mono fun _ h => h.2.1) (hd.mono fun _ h => h.2.2.1)
     (hd.mono fun _ h => h.2.2.2) ((intervalIntegrable_bounded_real_density hρ hρ0 hρK _ _).sub
       (hU.isCap.imported_isConvexBody.continuous_supp.intervalIntegrable _ _))
-    (hU.isCap.intervalIntegrable_shifted_density_sub_support hρ hρ0 hρK _ _ _) hp.1 hp.2
+    (hU.isCap.intervalIntegrable_shift_density hρ hρ0 hρK _ _ _) hp.1 hp.2
     (fun _ _ => rfl) (fun _ _ => rfl) (by rw [hgL, neg_neg]) hf0.symm hfL hg0 ?_
     (hface ▸ hmiddle)
   rw [hgD0, hfDL, neg_neg, neg_neg]

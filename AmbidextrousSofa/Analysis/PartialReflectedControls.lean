@@ -64,11 +64,11 @@ theorem IsJointCapMaximizer.proper_wing_densities_zero_before_affine :
 include hU hregime hproper haffine hρ hρ0 hρK heq in
 theorem IsJointCapMaximizer.properReflected_arm_bounds_of_tail_regime :
     ∀ r ∈ Icc (Real.pi / 2 - α) (properReflectedActiveEnd m),
-      properReflectedP U m ρ r ≤ 1 ∧ -1 ≤ properReflectedQ U m ρ r := by
+      properReflectedP U m ρ r ≤ 1 ∧ -1 ≤ properReflectedQ U ρ r := by
   have hab := hU.properReflected_active_interval haffine
   have hcont := hU.properReflected_momenta_absolutelyContinuous (m := m) hρ hρ0 hρK
   have hinside : ∀ r ∈ Ioo (Real.pi / 2 - α) (properReflectedActiveEnd m),
-      properReflectedP U m ρ r ≤ 1 ∧ -1 ≤ properReflectedQ U m ρ r := fun r hr => by
+      properReflectedP U m ρ r ≤ 1 ∧ -1 ≤ properReflectedQ U ρ r := fun r hr => by
     have hrt : max 0 (Real.arctan m) < Real.pi / 2 - r := by
       unfold properReflectedActiveEnd at hr; linarith [hr.2]
     have hmatch := hU.properUsed_momenta_eq_actual_after_affine_of_tail_regime hregime hproper
@@ -92,10 +92,10 @@ include hU hregime hproper hl hr hheight haffine hρ hρ0 hρK hκ heq in
 theorem IsJointCapMaximizer.properUsed_source_controls_of_tail_regime :
     ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) α),
       ρ t ≤ sourceKappa (properUsedQ U m ρ t) ∧
-      leftCompanionWingDensity m ρ (t + Real.pi / 2) ≤ sourceKappa (properUsedP U m ρ t) ∧
-      (0 < properUsedP U m ρ t → 0 < properUsedQ U m ρ t →
+      leftCompanionWingDensity m ρ (t + Real.pi / 2) ≤ sourceKappa (properUsedP U ρ t) ∧
+      (0 < properUsedP U ρ t → 0 < properUsedQ U m ρ t →
         ρ t = 0 ∧ leftCompanionWingDensity m ρ (t + Real.pi / 2) ≤ 1 / 2) ∧
-      (properUsedP U m ρ t < 0 → properUsedQ U m ρ t < 0 →
+      (properUsedP U ρ t < 0 → properUsedQ U m ρ t < 0 →
         leftCompanionWingDensity m ρ (t + Real.pi / 2) = 0 ∧ ρ t ≤ 1 / 2) := by
   filter_upwards [ae_restrict_mem measurableSet_Ioo,
     ae_restrict_of_ae ((ae_restrict_iff' measurableSet_Ioo).mp
@@ -121,11 +121,11 @@ theorem IsJointCapMaximizer.properReflected_source_controls_of_tail_regime :
     ∀ᵐ r ∂volume.restrict (Ioo (Real.pi / 2 - α) (Real.pi / 2)),
       0 ≤ properReflectedFirstDensity m ρ r ∧
       0 ≤ properReflectedSecondDensity ρ r ∧
-      properReflectedFirstDensity m ρ r ≤ sourceKappa (properReflectedQ U m ρ r) ∧
+      properReflectedFirstDensity m ρ r ≤ sourceKappa (properReflectedQ U ρ r) ∧
       properReflectedSecondDensity ρ r ≤ sourceKappa (properReflectedP U m ρ r) ∧
-      (0 < properReflectedP U m ρ r → 0 < properReflectedQ U m ρ r →
+      (0 < properReflectedP U m ρ r → 0 < properReflectedQ U ρ r →
         properReflectedFirstDensity m ρ r = 0 ∧ properReflectedSecondDensity ρ r ≤ 1 / 2) ∧
-      (properReflectedP U m ρ r < 0 → properReflectedQ U m ρ r < 0 →
+      (properReflectedP U m ρ r < 0 → properReflectedQ U ρ r < 0 →
         properReflectedSecondDensity ρ r = 0 ∧ properReflectedFirstDensity m ρ r ≤ 1 / 2) := by
   filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae
     ((volume.measurePreserving_sub_left (Real.pi / 2)).quasiMeasurePreserving.ae

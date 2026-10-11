@@ -83,12 +83,11 @@ theorem FirstUnitSetting.first_floor_right_moments {C h β γ : ℝ}
 
 /-- Every actual companion floor contact lies right of the global low-wing
 zero and at most one unit right of the low middle endpoint. The exact top
-identity gives the three displacement inequalities needed by the final
+identity gives the two displacement inequalities needed by the final
 energy argument. -/
 theorem FirstUnitSetting.floor_abscissa_bounds {C h γ : ℝ} (P : FirstUnitSetting U m ρ C h)
     (hγ : γ ∈ Ioo 0 (Real.pi / 2)) (hγy : (D γ).2 = 0) :
-    (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C ≤ C + (D γ).1 ∧
-      C + (D γ).1 ≤ 1 ∧ (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C ≤ C := by
+    (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C ≤ C + (D γ).1 ∧ C + (D γ).1 ≤ 1 := by
   have hwall : secondWall V γ (D γ).1 = (D γ).2 := by
     rw [fullTiltedSupportQuarterPair_cut_wall_eq_scalar hU hm haffine hρ hρ0 hρK heq,
       div_eq_iff (sin_cos_pos_of_mem_quarter hγ).2.ne', secondTangentPoint,
@@ -103,10 +102,7 @@ theorem FirstUnitSetting.floor_abscissa_bounds {C h γ : ℝ} (P : FirstUnitSett
       (Ioo_subset_Icc_self hγ)).2.2
   rw [P.left_quarter] at hz hx
   rw [companionSupportPoint_coordinates] at hx
-  have hright := (hU.isCap.fst_mem_Icc
-    (MovingSofaOptimality.vminus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)).1).2
-  refine ⟨by linarith only [(P.top_overhang hU hm haffine hρ hρ0 hρK heq).2.1, hz], ?_,
-    by linarith only [hright, P.hr]⟩
+  refine ⟨by linarith only [(P.top_overhang hU hm haffine hρ hρ0 hρK heq).2.1, hz], ?_⟩
   rw [secondTangentPoint, companionSupportPoint_coordinates]
   dsimp only at hx ⊢
   linarith [Real.sin_le_one γ]

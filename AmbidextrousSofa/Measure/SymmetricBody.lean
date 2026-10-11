@@ -91,13 +91,4 @@ theorem volumeReal_symmetricTrim_eq_cap_area {K : Set Plane} (hne : K.Nonempty)
     rfl
   rw [hvol, hwidth, hcap.volumeReal_eq_integral_capRoof, ← hP]
 
-/-- Restrict a barrier integral to its actual support interval or measurable
-support set. This uses the ordinary finite integral, including its sign. -/
-theorem setIntegral_eq_subset_of_zero_off {I J : Set ℝ} {f : ℝ → ℝ}
-    (hIset : MeasurableSet I) (hJ : MeasurableSet J) (hI : IntegrableOn f I) (hJI : J ⊆ I)
-    (hzero : ∀ x ∈ I \ J, f x = 0) :
-    (∫ x in I, f x) = ∫ x in J, f x := by
-  rw [← sub_eq_zero, ← setIntegral_sdiff hJ hI hJI]
-  exact integral_eq_zero_of_ae ((ae_restrict_mem (hIset.diff hJ)).mono hzero)
-
 end AmbidextrousSofa

@@ -33,7 +33,7 @@ theorem IsJointCapMaximizer.properReflected_cornerArcDynamics_of_tail_regime
     (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
       (volume.restrict (regularProperCurvatureDomain α m)).withDensity
         (fun t => ENNReal.ofReal (ρ t))) :
-    CornerArcDynamics (properReflectedP U m ρ) (properReflectedQ U m ρ)
+    CornerArcDynamics (properReflectedP U m ρ) (properReflectedQ U ρ)
       (properReflectedFirstDensity m ρ) (properReflectedSecondDensity ρ)
       (Real.pi / 2 - α) (properReflectedActiveEnd m) := by
   have hends := hU.properReflected_active_interval haffine
