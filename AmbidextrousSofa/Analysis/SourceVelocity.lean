@@ -85,9 +85,12 @@ namespace AngularGrid
 
 theorem tan_div_self_tendsto {δ : ℕ → ℝ} (hδ : Tendsto δ atTop (𝓝 0))
     (hpos : ∀ n, 0 < δ n) :
-    Tendsto (fun n => Real.tan (δ n) / δ n) atTop (𝓝 1) :=
-  Real.tendsto_tan_div_nhdsNE_zero.comp
-    (tendsto_nhdsWithin_iff.mpr ⟨hδ, Eventually.of_forall fun n => (hpos n).ne'⟩)
+    Tendsto (fun n => Real.tan (δ n) / δ n) atTop (𝓝 1) := by
+  have hderiv : HasDerivAt Real.tan 1 0 := by
+    simpa only [Real.cos_zero, one_pow, div_one] using Real.hasDerivAt_tan (x := 0) (by simp)
+  simpa only [zero_add, Real.tan_zero, sub_zero, smul_eq_mul, div_eq_mul_inv, mul_comm,
+    Function.comp_def] using hderiv.tendsto_slope_zero_right.comp
+      (tendsto_nhdsWithin_iff.mpr ⟨hδ, Eventually.of_forall hpos⟩)
 
 theorem finiteCurvatureDensity_div_tendsto {q δ : ℕ → ℝ} {v : ℝ}
     (hq : Tendsto q atTop (𝓝 v)) (hδ : Tendsto δ atTop (𝓝 0))

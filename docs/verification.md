@@ -12,10 +12,12 @@ lake env lake comparator --config=comparator.json   # Solution.lean proves Chall
 
 You need [elan](https://github.com/leanprover/elan), network access for Mathlib, and
 [bubblewrap](https://github.com/containers/bubblewrap) for Comparator. The toolchain is
-`leanprover/lean4:v4.35.0-rc4` ([`lean-toolchain`](../lean-toolchain)), and Mathlib is pinned to its release tag
-`v4.35.0-rc4`, with the exact revisions in [`lake-manifest.json`](../lake-manifest.json). Mathlib is the only
+`leanprover/lean4:v4.35.0-rc3` ([`lean-toolchain`](../lean-toolchain)), and Mathlib is pinned to its release tag
+`v4.35.0-rc3`, with the exact revisions in [`lake-manifest.json`](../lake-manifest.json). Mathlib is the only
 dependency: the formalization of Baek's theorem is a copy in
-[`MovingSofaOptimality/`](../MovingSofaOptimality/README.md).
+[`MovingSofaOptimality/`](../MovingSofaOptimality/README.md). The project stays on `v4.35.0-rc3` for now, because
+Palomar cannot yet render a Challenge built with `v4.35.0-rc4`
+([PalomarSubmission#161](https://github.com/PalomarRegistry/PalomarSubmission/issues/161)).
 
 `lake build` must succeed, and its only `sorry` warnings are the nine of [`Challenge.lean`](../Challenge.lean),
 whose theorems are the statements of record.
@@ -53,6 +55,12 @@ problem, and the nine theorems that Comparator checks. The checks of Palomar's v
 ([PalomarSubmission](https://github.com/PalomarRegistry/PalomarSubmission)), run on a fresh clone, accept the
 metadata and the 512 Lean files. The pins of [`lake-manifest.json`](../lake-manifest.json) agree with Mathlib's
 own, as the verifier requires, and with those of Verso, which renders the Challenge.
+
+[`.github/workflows/palomar_preflight.yml`](../.github/workflows/palomar_preflight.yml) runs Palomar's complete
+mechanical verification of a commit, as Palomar does after a submission, and uploads its report as the artifact
+`mechanical-report-preflight001`. It runs only on demand
+(`gh workflow run palomar_preflight.yml --ref main`), since a run can take hours, and it is pinned to
+PalomarSubmission commit `d4e41c1`.
 
 ## Continuous integration
 

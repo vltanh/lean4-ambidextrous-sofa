@@ -130,8 +130,7 @@ theorem intervalIntegrable_if_lt {a b c : ℝ} {f g : ℝ → ℝ}
     (hf : IntervalIntegrable f volume a b) (hg : IntervalIntegrable g volume a b) :
     IntervalIntegrable (fun t => if t < c then f t else g t) volume a b := by
   rw [intervalIntegrable_iff] at hf hg ⊢
-  exact Integrable.piecewise (s := Iio c) measurableSet_Iio.nullMeasurableSet hf.integrableOn
-    hg.integrableOn
+  exact Integrable.piecewise (s := Iio c) measurableSet_Iio hf.integrableOn hg.integrableOn
 
 theorem neg_referenceGD_zero : -referenceGD 0 = topLeft := by
   rw [referenceGD_zero, topLeft]; ring

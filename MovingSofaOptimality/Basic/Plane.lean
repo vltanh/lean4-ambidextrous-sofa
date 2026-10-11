@@ -6,7 +6,6 @@ public import Mathlib.Analysis.Convex.Segment
 public import Mathlib.Analysis.Convex.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 public import Mathlib.Analysis.Calculus.Deriv.Prod
-public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds

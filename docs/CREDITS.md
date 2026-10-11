@@ -117,6 +117,30 @@ Figures, from 17:43 to 18:02:
 - tokens: 0.12 million output, 0.20 million input, 26 million cache reads;
 - model calls: 94, all to `claude-opus-5-5`.
 
+## Back to Mathlib v4.35.0-rc3, and Palomar's preflight (10 October 2026)
+
+The owner submitted `a22fcc4` to Palomar. Its mechanical verification passed, but the rendering of the
+Challenge failed twice. A local reproduction showed why: on `v4.35.0-rc4`, Verso's `verso-literate` loads the
+Challenge's imports at the private level, while Lake hands it only their public data, so it stops with "missing
+data file for module Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan". Given the private data, it renders
+the Challenge. Palomar's issue [#161](https://github.com/PalomarRegistry/PalomarSubmission/issues/161) reports the
+same failure for every `v4.35.0-rc4` submission. The owner asked to go back to `v4.35.0-rc3` and to add Palomar's
+preflight.
+
+- Lean and Mathlib went back to `v4.35.0-rc3`, with the manifest of `cb4b3ed` less lean4-moving-sofa. The copy of
+  `MovingSofaOptimality` is again identical to lean4-moving-sofa's, and the change to `Value.lean` was undone.
+  The build, the audit and Comparator passed, and the Challenge rendered locally with Verso's `v4.35.0-rc3`.
+- [`.github/workflows/palomar_preflight.yml`](../.github/workflows/palomar_preflight.yml) runs Palomar's complete
+  mechanical verification on demand, pinned to PalomarSubmission commit `d4e41c1`.
+
+Figures, from 18:50 to 20:13:
+
+- elapsed time: 1 hour 23 minutes, much of it waiting for builds;
+- sub-agents: none;
+- tool calls: 67 by the main session;
+- tokens: 0.06 million output, 0.11 million input, 35 million cache reads;
+- model calls: 75, all to `claude-opus-5-5`.
+
 ## Simplifying the proof (10 and 11 October 2026)
 
 The owner asked to simplify the Lean proof greatly, and during the work for a deeper review of prior work and
@@ -147,6 +171,12 @@ for the quarter turns of an optimal sofa to be stated.
 - Prior work. Four sub-agents searched the literature on the history of the problem, on computer-assisted
   bounds, on formalizations and on AI-assisted proofs, and a fifth wrote the new [prior work](prior-work.md)
   page from their notes (`51af464`).
+- Merge. The work was done on `v4.35.0-rc4`. When it was merged into `main`, which had meanwhile gone back to
+  `v4.35.0-rc3` (previous section), two proofs needed the older Mathlib: an integrability step now converts
+  `IntegrableOn` to `Integrable` explicitly, and the limit of `tan x / x` is again proved from the derivative of
+  `tan`, since `Real.tendsto_tan_div_nhdsNE_zero` is newer than `v4.35.0-rc3`. The build, the audit, Comparator
+  and Palomar's checks pass on `v4.35.0-rc3`. At the owner's request the README became shorter and no longer
+  recounts how the formalization was made; this page does.
 
 Figures, from 18:26 on 10 October to 05:30 on 11 October, including a pause of 1 hour 49 minutes:
 

@@ -11,10 +11,10 @@ maxSynthPendingDepth = 3
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
-rev = "v4.35.0-rc4"
+rev = "v4.35.0-rc3"
 
 # The formalization of Jineon Baek's theorem (the optimality of Gerver's sofa), copied from
-# lean4-moving-sofa and adapted to this Mathlib (MovingSofaOptimality/README.md). Two steps of the
+# lean4-moving-sofa (MovingSofaOptimality/README.md). Two steps of the
 # proof use its bound 2.2199 for the area of a moving sofa, and some proofs its convex-body library
 # (support functions, surface area measures).
 [[lean_lib]]

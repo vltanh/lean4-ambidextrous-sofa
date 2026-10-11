@@ -48,8 +48,8 @@ theorem integral_sourceDensity_eq_sum [Fintype ι] (e : WallExpr ι)
   have hsum x : e.sourceDensity a b w x = ∑ j, (e.sourceSet a b j).indicator (fun _ => w j) x := by
     simp [sourceDensity, sourceSet, indicator_apply]
   simp_rw [intervalIntegral.integral_of_le hlr, hsum]
-  rw [integral_finsetSum _ fun j _ => (integrableOn_const measure_Ioc_lt_top.ne).indicator
-    (e.measurableSet_sourceSet a b j)]
+  rw [integral_finsetSum _ fun j _ => ((integrableOn_const measure_Ioc_lt_top.ne).indicator
+    (e.measurableSet_sourceSet a b j)).integrable]
   refine Finset.sum_congr rfl fun j _ => ?_
   rw [setIntegral_indicator (e.measurableSet_sourceSet a b j), setIntegral_const, smul_eq_mul]
   rfl
