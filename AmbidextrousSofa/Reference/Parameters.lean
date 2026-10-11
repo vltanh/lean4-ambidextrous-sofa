@@ -95,31 +95,40 @@ theorem three_Y_mul_sin_T : 3 * Y * Real.sin T = (1 - 2 * Y ^ 2) * Real.cos T :=
     (3 * Y * (1 - 2 * Y ^ 2)) * hcos + (3 * Y * (1 - 2 * Y ^ 2)) * Real.sin_sq_add_cos_sq T +
     (Real.sqrt 2 / 4 * Real.cos beta ^ 3 * (1 + Y ^ 2) ^ 2) * Y_equation
 
-/-- The matching identity at the first switch, where `beta / 2 + π / 8 = π / 2 - (T + beta)`; the
-nontrivial half is proved from the root equation. -/
-private theorem R_mul_trig_firstPhase :
-    R * Real.cos (beta / 2 + Real.pi / 8) = (1 - k) * cosBeta ∧
-      R * Real.sin (beta / 2 + Real.pi / 8) = 2 / 3 := by
+/-- The matching identities at the first switch, where `beta / 2 + π / 8 = π / 2 - (T + beta)`;
+the nontrivial half is proved from the root equation. -/
+theorem firstSwitch_eqs :
+    R * Real.cos (beta / 2 + Real.pi / 8) = 4 / 3 * A * Real.cos beta ∧
+      R * Real.sin (beta / 2 + Real.pi / 8) = 2 / 3 ∧ 4 * A * Real.sin beta = 1 := by
   have hR : R * Real.cos T = Real.cos beta := div_mul_cancel₀ _ cos_T_pos.ne'
   have hY : Real.sin beta = Y * Real.cos beta := sinBeta_eq_Y_mul_cosBeta
   have h3 := three_Y_mul_sin_T
   have hp := Real.sin_sq_add_cos_sq beta
   have hc : Real.cos beta ≠ 0 := cosBeta_pos.ne'
-  rw [show beta / 2 + Real.pi / 8 = Real.pi / 2 - (T + beta) by unfold T; ring,
-    Real.cos_pi_div_two_sub, Real.sin_pi_div_two_sub, Real.sin_add, Real.cos_add, k, A,
-    sinBeta, cosBeta, hY]
-  rw [hY] at hp
-  field_simp [Y_ne_zero]
-  constructor
+  refine ⟨?_, ?_, four_mul_A_mul_sinBeta⟩ <;>
+    simp only [show beta / 2 + Real.pi / 8 = Real.pi / 2 - (T + beta) by unfold T; ring,
+      Real.cos_pi_div_two_sub, Real.sin_pi_div_two_sub, Real.sin_add, Real.cos_add, A, sinBeta,
+      hY] at hp ⊢ <;>
+    field_simp [Y_ne_zero]
   · linear_combination Real.cos beta * R * h3 + (1 + Y ^ 2) * Real.cos beta * hR + hp
   · linear_combination -(Real.cos beta * R) * h3 + (2 + 2 * Y ^ 2) * Real.cos beta * hR + 2 * hp
 
 /-- The middle phase evaluated at the first switch has this cosine component. -/
 theorem R_mul_cos_firstPhase :
-    R * Real.cos (beta / 2 + Real.pi / 8) = (1 - k) * cosBeta := R_mul_trig_firstPhase.1
+    R * Real.cos (beta / 2 + Real.pi / 8) = (1 - k) * cosBeta := by
+  rw [firstSwitch_eqs.1, k, cosBeta]; ring
 
 /-- Companion sine component at the first switch. -/
 theorem R_mul_sin_firstPhase :
-    R * Real.sin (beta / 2 + Real.pi / 8) = 2 / 3 := R_mul_trig_firstPhase.2
+    R * Real.sin (beta / 2 + Real.pi / 8) = 2 / 3 := firstSwitch_eqs.2.1
+
+/-- The phase angles at the second switch, reflected to the first switch. -/
+theorem lateSwitch_trig :
+    Real.sin (lateSwitch / 2 + Real.pi / 8) = Real.cos (beta / 2 + Real.pi / 8) ∧
+      Real.cos (lateSwitch / 2 + Real.pi / 8) = Real.sin (beta / 2 + Real.pi / 8) ∧
+      Real.sin lateSwitch = Real.cos beta ∧ Real.cos lateSwitch = Real.sin beta := by
+  rw [show lateSwitch / 2 + Real.pi / 8 = Real.pi / 2 - (beta / 2 + Real.pi / 8) by
+    unfold lateSwitch; ring, lateSwitch]
+  simp only [Real.sin_pi_div_two_sub, Real.cos_pi_div_two_sub, and_self]
 
 end AmbidextrousSofa.Reference

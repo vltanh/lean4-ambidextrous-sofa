@@ -116,18 +116,6 @@ theorem referenceHull_eq_inter_caps : referenceHull = referenceCap ∩ reflect '
   simpa only [image_reflect_referenceHull, referenceCap] using
     eq_upperCap_inter_reflectedCap convex_referenceHull referenceHull_subset_unitStrip
 
-/-- Prescribed support is an upper bound; the converse is not assumed. -/
-theorem angleSupport_referenceHull_le_f {t : ℝ}
-    (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) :
-    angleSupport referenceHull t ≤ referenceF t :=
-  support_le_of_forall referenceHull_nonempty fun p hp => ((mem_referenceHull_iff p).1 hp t ht).1.1
-
-/-- The companion upper bound retains the complete second quarter. -/
-theorem angleSupport_referenceHull_le_g {t : ℝ}
-    (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) :
-    angleSupport referenceHull (t + Real.pi / 2) ≤ referenceG t :=
-  support_le_of_forall referenceHull_nonempty fun p hp => ((mem_referenceHull_iff p).1 hp t ht).1.2
-
 /-- Downward filling preserves actual upward support of the constructed hull. -/
 theorem angleSupport_referenceCap {t : ℝ} (ht : 0 ≤ Real.sin t) :
     angleSupport referenceCap t = angleSupport referenceHull t :=

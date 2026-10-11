@@ -11,8 +11,9 @@ public import AmbidextrousSofa.Measure.CapScore
 
 The realized endpoint supports give the exact horizontal projection. The two
 upper boundary arcs give the endpoints of the middle top face. A tangent
-unit-disk comparison follows from the proved curvature bound and confines the
-actual niche to that middle face interval.
+unit-disk comparison follows from the proved curvature bound and shows that the
+actual niche vanishes beyond the right end of that face; by the mirror symmetry
+of the niche it also vanishes beyond the left end.
 -/
 
 noncomputable section
@@ -57,12 +58,12 @@ theorem middleHalfInterval_referenceCap :
 
 /-- The whole top segment consists of actual points of the reference hull. -/
 theorem topFace_mem_referenceHull {x : ℝ} (hx : x ∈ topInterval) : (x, 1) ∈ referenceHull := by
-  have hl : (topLeft, (1 : ℝ)) ∈ referenceHull := by
-    simpa only [gBoundary_zero, topLeft] using
-      gBoundary_mem_referenceHull (t := 0) ⟨le_rfl, by positivity⟩
   have hr : (topRight, (1 : ℝ)) ∈ referenceHull := by
     simpa only [fBoundary_pi_div_two, topRight] using
       fBoundary_mem_referenceHull (t := Real.pi / 2) ⟨by positivity, le_rfl⟩
+  -- the left end is the mirror image of the right end
+  have hl : (topLeft, (1 : ℝ)) ∈ referenceHull := by
+    convert (mirror_mem_referenceHull _).2 hr using 2; unfold topLeft topRight k; ring
   apply convex_referenceHull.segment_subset hl hr
   rw [← Prod.image_mk_segment_left, segment_eq_Icc topLeft_lt_topRight.le]
   exact mem_image_of_mem _ hx
@@ -84,31 +85,9 @@ theorem referenceF_le_topRight_disk {t : ℝ}
       (hasDerivAt_referenceF x)).hasDerivWithinAt.congr_deriv (by ring))
     (fun x => ((Real.hasDerivAt_sin x).const_mul (-topRight)).hasDerivWithinAt.sub
       (hasDerivWithinAt_referenceFD_right x))
-    (fun x hx => by linarith [referenceF_right_curvature_le_one hx])
+    (fun x _ => by linarith [(referenceF_right_curvature x).2])
     (by linarith [Real.pi_pos]) ⟨by positivity, le_rfl⟩ ht
-  have hD : referenceFD (Real.pi / 2) = -topRight := by
-    simp [referenceFD, not_le.2 beta_lt_pi_div_two, not_le.2 lateSwitch_lt_pi_div_two,
-      fLateD_pi_div_two, topRight]
-  simp [supportProjection, referenceF_pi_div_two, hD] at h
-  linarith
-
-theorem referenceG_le_topLeft_disk {t : ℝ}
-    (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) : referenceG t ≤ 1 - topLeft * Real.sin t := by
-  have hg := continuous_referenceG
-  have hgD := continuous_referenceGD
-  have h := supportProjection_le_self (h := fun x => 1 - topLeft * Real.sin x - referenceG x)
-    (hD := fun x => -topLeft * Real.cos x - referenceGD x)
-    (hDD := fun x => topLeft * Real.sin x - referenceGSecond x) (by fun_prop) (by fun_prop)
-    (fun x => (((hasDerivAt_const x 1).sub ((Real.hasDerivAt_sin x).const_mul topLeft)).sub
-      (hasDerivAt_referenceG x)).hasDerivWithinAt.congr_deriv (by ring))
-    (fun x => (((Real.hasDerivAt_cos x).const_mul (-topLeft)).hasDerivWithinAt.sub
-      (hasDerivWithinAt_referenceGD_right x)).congr_deriv (by ring))
-    (fun x hx => by linarith [referenceG_right_curvature_le_one hx])
-    (by linarith [Real.pi_pos]) ⟨le_rfl, by positivity⟩ ht
-  have hD : referenceGD 0 = -topLeft := by
-    simp [referenceGD, beta_pos.le, gEarlyD_zero, topLeft]
-  simp [supportProjection, referenceG_zero, hD] at h
-  linarith
+  simpa [supportProjection, referenceF_pi_div_two, referenceFD_pi_div_two, topRight] using h
 
 theorem referenceNiche_eq_zero_of_topRight_le {x : ℝ} (hx : topRight ≤ x) :
     referenceNiche x = 0 := by
@@ -122,14 +101,8 @@ theorem referenceNiche_eq_zero_of_topRight_le {x : ℝ} (hx : topRight ≤ x) :
   linarith [referenceF_le_topRight_disk ⟨ht.1.le, ht.2.le⟩, mul_le_mul_of_nonneg_right hx hc]
 
 theorem referenceNiche_eq_zero_of_le_topLeft {x : ℝ} (hx : x ≤ topLeft) : referenceNiche x = 0 := by
-  refine le_antisymm (sweptNiche_le_of_forall (by positivity) le_rfl fun t ht => ?_)
-    (referenceNiche_nonneg x)
-  refine (min_le_right _ _).trans ?_
-  rw [secondWall_referenceHull ⟨ht.1.le, ht.2.le⟩]
-  refine div_nonpos_of_nonpos_of_nonneg ?_
-    (Real.cos_nonneg_of_mem_Icc ⟨by linarith [ht.1, Real.pi_pos], ht.2.le⟩)
-  have hs := Real.sin_nonneg_of_nonneg_of_le_pi ht.1.le (by linarith [ht.2, Real.pi_pos])
-  linarith [referenceG_le_topLeft_disk ⟨ht.1.le, ht.2.le⟩, mul_le_mul_of_nonneg_right hx hs]
+  rw [← sub_sub_cancel (2 * k) x, referenceNiche_mirror]
+  exact referenceNiche_eq_zero_of_topRight_le (by unfold topLeft topRight k at *; linarith)
 
 theorem referenceNiche_eq_zero_outside {x : ℝ} (hx : x ∉ topInterval) : referenceNiche x = 0 := by
   rcases le_total x topLeft with hl | hl
@@ -141,7 +114,7 @@ theorem referenceNiche_fBoundary {t : ℝ}
   -- First-arc points lie on the right flank, including the right face endpoint.
   have h := supportProjection_le_of_ge continuous_referenceF continuous_referenceFD
     (fun x => (hasDerivAt_referenceF x).hasDerivWithinAt) hasDerivWithinAt_referenceFD_right
-    (fun x hx => referenceF_right_curvature_nonneg ⟨ht.1.trans hx.1, hx.2⟩)
+    (fun x _ => (referenceF_right_curvature x).1)
     ht.2 ht.1 (show Real.pi / 2 - 0 ≤ Real.pi by linarith [Real.pi_pos])
   rw [← coordDot_fBoundary, ← coordDot_fBoundary, fBoundary_pi_div_two] at h
   refine referenceNiche_eq_zero_of_topRight_le ?_
@@ -149,14 +122,7 @@ theorem referenceNiche_fBoundary {t : ℝ}
 
 theorem referenceNiche_gBoundary {t : ℝ}
     (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) : referenceNiche (gBoundary t).1 = 0 := by
-  -- Companion-arc points lie on the left flank.
-  have h := supportProjection_le_of_ge continuous_referenceG continuous_referenceGD
-    (fun x => (hasDerivAt_referenceG x).hasDerivWithinAt) hasDerivWithinAt_referenceGD_right
-    (fun x hx => referenceG_right_curvature_nonneg ⟨hx.1, hx.2.trans ht.2⟩)
-    ht.1 (show 0 - Real.pi / 2 ≤ (0 : ℝ) by linarith [Real.pi_pos])
-    (show t - (0 - Real.pi / 2) ≤ Real.pi by linarith [ht.2])
-  rw [← coordDot_gBoundary, ← coordDot_gBoundary, gBoundary_zero] at h
-  refine referenceNiche_eq_zero_of_le_topLeft ?_
-  simpa [coordDot, unitNormal, topLeft] using h
+  rw [gBoundary_eq_mirror, referenceNiche_mirror]
+  exact referenceNiche_fBoundary ⟨by linarith [ht.2], by linarith [ht.1]⟩
 
 end AmbidextrousSofa.Reference

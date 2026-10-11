@@ -40,17 +40,12 @@ theorem fourWallFiber_eq_Icc (dU dV nU nV : ℝ) :
   simp only [fourWallFiber, Set.mem_ofPred_eq, Set.mem_Icc, max_le_iff, le_sub_comm (a := y),
     and_assoc]
 
-/-- A signed fiber has nonnegative length exactly when the fiber is nonempty. -/
-theorem fourWallFiber_nonempty_iff (dU dV nU nV : ℝ) :
-    (fourWallFiber dU dV nU nV).Nonempty ↔
-      0 ≤ signedFiberLength dU dV nU nV := by
-  rw [fourWallFiber_eq_Icc, Set.nonempty_Icc, signedFiberLength, sub_nonneg, le_sub_comm]
-
 /-- A point in the four-wall fiber certifies nonnegative signed length. -/
 theorem signedFiberLength_nonneg_of_mem (dU dV nU nV y : ℝ)
     (hy : y ∈ fourWallFiber dU dV nU nV) :
-    0 ≤ signedFiberLength dU dV nU nV :=
-  (fourWallFiber_nonempty_iff dU dV nU nV).mp ⟨y, hy⟩
+    0 ≤ signedFiberLength dU dV nU nV := by
+  rw [fourWallFiber_eq_Icc] at hy
+  rw [signedFiberLength]; linarith [hy.1.trans hy.2]
 
 /-! ## Pointwise partition defects -/
 

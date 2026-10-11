@@ -63,30 +63,15 @@ theorem center_mem_referenceSofa : center ∈ referenceSofa :=
 
 theorem referenceSofa_nonempty : referenceSofa.Nonempty := ⟨center, center_mem_referenceSofa⟩
 
-/-- A hull point over an abscissa where the niche vanishes is retained. -/
-theorem mem_referenceSofa_of_niche_eq_zero {p : Plane} (hp : p ∈ referenceHull)
-    (h : referenceNiche p.1 = 0) : p ∈ referenceSofa := by
+/-- Removing the niches keeps every support value attained at a hull point over an abscissa
+where the niche vanishes, since that point is retained. -/
+theorem support_referenceSofa_eq_of_attained {p v : Plane} (hp : p ∈ referenceHull)
+    (h0 : referenceNiche p.1 = 0) (hv : coordDot p v = support referenceHull v) :
+    support referenceSofa v = support referenceHull v := by
   have hs := referenceHull_subset_unitStrip hp
-  exact ⟨hp, h ▸ hs.1, by linarith [hs.2]⟩
-
-/-- Removing the niches preserves each first-quarter support maximum. -/
-theorem angleSupport_referenceSofa_eq_f {t : ℝ}
-    (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) : angleSupport referenceSofa t = referenceF t :=
-  le_antisymm ((support_mono referenceSofa_subset_referenceHull referenceSofa_nonempty
-    isCompact_referenceHull _).trans (angleSupport_referenceHull_eq_f ht).le) <|
-    (coordDot_fBoundary_self t).symm.trans_le <| coordDot_le_support isCompact_referenceSofa
-      (mem_referenceSofa_of_niche_eq_zero (fBoundary_mem_referenceHull ht)
-        (referenceNiche_fBoundary ht)) _
-
-/-- Every companion support maximum also survives as an actual boundary point. -/
-theorem angleSupport_referenceSofa_eq_g {t : ℝ}
-    (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) :
-    angleSupport referenceSofa (t + Real.pi / 2) = referenceG t :=
-  le_antisymm ((support_mono referenceSofa_subset_referenceHull referenceSofa_nonempty
-    isCompact_referenceHull _).trans (angleSupport_referenceHull_eq_g ht).le) <|
-    (coordDot_gBoundary_self t).symm.trans_le <| coordDot_le_support isCompact_referenceSofa
-      (mem_referenceSofa_of_niche_eq_zero (gBoundary_mem_referenceHull ht)
-        (referenceNiche_gBoundary ht)) _
+  exact support_eq_of_mem isCompact_referenceSofa
+    (fun q hq => coordDot_le_support isCompact_referenceHull hq.1 v)
+    ⟨hp, h0 ▸ hs.1, by linarith [hs.2]⟩ hv
 
 /-- Vertical interpolation to the midline remains outside both niches. -/
 theorem vertical_to_midline_mem_referenceSofa {p : Plane} (hp : p ∈ referenceSofa)

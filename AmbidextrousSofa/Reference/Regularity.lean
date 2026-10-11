@@ -40,10 +40,12 @@ theorem support_referenceSofa_eq_hull_of_upward {v : Plane} (hv : 0 ≤ v.2) :
   obtain ⟨r, hr, t, ht, rfl | rfl⟩ := exists_upper_polar hv <;>
     rw [support_smul_direction isCompact_referenceSofa referenceSofa_nonempty _ hr,
       support_smul_direction isCompact_referenceHull referenceHull_nonempty _ hr]
-  · rw [← angleSupport, ← angleSupport, angleSupport_referenceSofa_eq_f ht,
-      angleSupport_referenceHull_eq_f ht]
-  · rw [companionNormal_eq_unitNormal, ← angleSupport, ← angleSupport,
-      angleSupport_referenceSofa_eq_g ht, angleSupport_referenceHull_eq_g ht]
+  · rw [support_referenceSofa_eq_of_attained (fBoundary_mem_referenceHull ht)
+      (referenceNiche_fBoundary ht)
+      ((coordDot_fBoundary_self t).trans (angleSupport_referenceHull_eq_f ht).symm)]
+  · rw [companionNormal_eq_unitNormal, support_referenceSofa_eq_of_attained
+      (gBoundary_mem_referenceHull ht) (referenceNiche_gBoundary ht)
+      ((coordDot_gBoundary_self t).trans (angleSupport_referenceHull_eq_g ht).symm)]
 
 /-- Every directional support of the original convex body survives the cuts. -/
 theorem support_referenceSofa_eq_hull (v : Plane) :

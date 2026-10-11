@@ -90,15 +90,19 @@ theorem integral_referenceValueRemainder :
 /-- The actual self-variation is evaluated by the four endpoint fluxes. -/
 theorem reference_self_variation :
     adaptiveFirstVariation referencePair referencePair = 16 / 3 * A - 1 := by
-  have hL : (0 : ℝ) ≤ Real.pi / 2 := by positivity
   rw [adaptiveFirstVariation_eq_boundary referencePair referencePair
-    (fun _ => referencePair_eulerF) (fun _ => referencePair_eulerG),
-    referencePair_fluxF_eq (right_mem_Icc.2 hL), referencePair_fluxG_eq (right_mem_Icc.2 hL),
-    referencePair_fluxF_eq (left_mem_Icc.2 hL), referencePair_fluxG_eq (left_mem_Icc.2 hL)]
-  simp only [referencePair, referenceF_zero, referenceG_zero, referenceF_pi_div_two,
-    referenceG_pi_div_two, adjustedMomentP, adjustedMomentQ, beta_pos.le, ite_true,
-    not_le.mpr beta_lt_pi_div_two, not_le.mpr lateSwitch_lt_pi_div_two, ite_false,
-    Real.sin_zero, Real.cos_zero, Real.sin_pi_div_two, Real.cos_pi_div_two]
+    (fun _ => referencePair_eulerF) (fun _ => referencePair_eulerG)]
+  simp only [QuarterPair.fluxF, QuarterPair.fluxG]
+  rw [min_eq_left (show referencePair.p (Real.pi / 2) ≤ 0 from
+      momentP_nonpos_after_beta ⟨beta_lt_pi_div_two.le, le_rfl⟩),
+    min_eq_right (show 0 ≤ referencePair.p 0 from momentP_nonneg_early ⟨le_rfl, beta_pos.le⟩),
+    max_eq_right (show referencePair.q (Real.pi / 2) ≤ 0 from
+      momentQ_nonpos_late ⟨lateSwitch_lt_pi_div_two.le, le_rfl⟩),
+    max_eq_left (show 0 ≤ referencePair.q 0 from
+      momentQ_nonneg_before_lateSwitch ⟨le_rfl, lateSwitch_pos.le⟩)]
+  simp only [QuarterPair.p, QuarterPair.q, referencePair, referenceF_zero, referenceG_zero,
+    referenceF_pi_div_two, referenceG_pi_div_two, referenceFD_zero, referenceGD_zero,
+    referenceFD_pi_div_two, referenceGD_pi_div_two]
   ring
 
 /-- The width term is still present in the support functional. -/
@@ -130,11 +134,10 @@ theorem intervalIntegrable_if_lt {a b c : ℝ} {f g : ℝ → ℝ}
     hg.integrableOn
 
 theorem neg_referenceGD_zero : -referenceGD 0 = topLeft := by
-  simp [referenceGD, beta_pos.le, gEarlyD_zero, topLeft]
+  rw [referenceGD_zero, topLeft]; ring
 
 theorem neg_referenceFD_pi_div_two : -referenceFD (Real.pi / 2) = topRight := by
-  simp [referenceFD, not_le.mpr beta_lt_pi_div_two, not_le.mpr lateSwitch_lt_pi_div_two,
-    fLateD_pi_div_two, topRight]
+  rw [referenceFD_pi_div_two, topRight]; ring
 
 /-- This identifies the analytic functional with two independently proved
 geometric integrals: actual cap area minus actual niche area. The cap area is
@@ -175,7 +178,8 @@ theorem adaptiveFunctional_reference_eq_cap_area_sub_niche :
     (fun _ => angleSupport_referenceHull_eq_f)
     (fun t ht => companionNormal_eq_unitNormal t ▸ angleSupport_referenceHull_eq_g ht)
     referenceF_pi_div_two referenceG_zero
-    (fun _ => referenceF_right_curvature_le_one) (fun _ => referenceG_right_curvature_le_one)
+    (fun t _ => (referenceF_right_curvature t).2.le)
+    (fun t _ => referenceG_right_curvature_le_one t)
     momentP_beta momentQ_lateSwitch (fun _ => momentP_nonpos_after_beta)
     (fun _ => momentQ_nonneg_before_lateSwitch)
   rw [neg_referenceGD_zero, neg_referenceFD_pi_div_two] at hniche

@@ -11,7 +11,8 @@ public import AmbidextrousSofa.Geometry.BarrierAnalysis
 The two-wall minima have continuous positive parts at both endpoint angles.
 Their compact angular maximum is the actual whole-angle niche. The explicit
 phase formulas put every corner apex strictly below the horizontal midline;
-compactness makes this a uniform strict bound.
+compactness makes this a uniform strict bound. Complementary angles exchange
+the two walls, so the niche is symmetric about the center abscissa.
 -/
 
 noncomputable section
@@ -34,14 +35,13 @@ def referenceWallClip (x t : ℝ) : ℝ :=
     ((referenceG t - 1 + x * Real.sin t) / Real.cos t)) 0
 
 theorem R_lt_sqrt_two : R < Real.sqrt 2 := by
-  have h := R_mul_cos_firstPhase
-  rw [k] at h
+  obtain ⟨h₁, h₂, -⟩ := middlePhase_bounds le_rfl beta_lt_lateSwitch.le
   refine Real.lt_sqrt_of_sq_lt ?_
   have hR : R ^ 2 = (R * Real.cos (beta / 2 + Real.pi / 8)) ^ 2 +
       (R * Real.sin (beta / 2 + Real.pi / 8)) ^ 2 := by
     linear_combination -R ^ 2 * Real.cos_sq_add_sin_sq (beta / 2 + Real.pi / 8)
-  rw [hR, h, R_mul_sin_firstPhase]
-  nlinarith [A_mul_cosBeta_lt_seven_eighths, mul_pos A_pos cosBeta_pos]
+  rw [hR, R_mul_sin_firstPhase]
+  nlinarith
 
 theorem continuous_referenceApexHeight : Continuous referenceApexHeight :=
   ((continuous_referenceF.sub continuous_const).mul Real.continuous_sin).add
@@ -64,16 +64,6 @@ theorem earlyApex_lt_half {t : ℝ} (ht : t ∈ Icc (0 : ℝ) beta) :
       (by linarith [ht.2, beta_lt_pi_div_two, Real.pi_pos])
     unfold fEarly gEarly
     linarith [mul_le_mul_of_nonneg_right hA hc.le, Real.sin_sq_add_cos_sq t]
-
-theorem lateApex_lt_half {t : ℝ} (ht : t ∈ Icc lateSwitch (Real.pi / 2)) :
-    (fLate t - 1) * Real.sin t + (gLate t - 1) * Real.cos t < 1 / 2 := by
-  have h := earlyApex_lt_half (t := Real.pi / 2 - t)
-    (by unfold lateSwitch at ht; constructor <;> linarith [ht.1, ht.2])
-  have hf := fLate_reflection (Real.pi / 2 - t)
-  have hg := gLate_reflection (Real.pi / 2 - t)
-  simp only [sub_sub_cancel, Real.sin_pi_div_two_sub, Real.cos_pi_div_two_sub] at h hf hg
-  rw [hf, hg]
-  linarith
 
 /-- The middle phase oscillates faster than the enclosing first cosine lobe. -/
 theorem middlePhase_sin_le_cos_center {t : ℝ}
@@ -105,11 +95,18 @@ theorem middleApex_lt_half {t : ℝ}
 
 theorem referenceApexHeight_lt_half {t : ℝ}
     (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) : referenceApexHeight t < 1 / 2 := by
+  -- The apex height is symmetric under `t ↦ π / 2 - t`, which maps the late phase to the
+  -- early one.
+  wlog hlate : t ≤ lateSwitch generalizing t
+  · have h := this (t := Real.pi / 2 - t) ⟨by linarith [ht.2], by linarith [ht.1]⟩
+      (by unfold lateSwitch at hlate ⊢; linarith [beta_lt_pi_div_four])
+    simp only [referenceApexHeight, referenceF_complement, referenceG_complement,
+      Real.sin_pi_div_two_sub, Real.cos_pi_div_two_sub] at h ⊢
+    linarith
   unfold referenceApexHeight referenceF referenceG
-  split_ifs with hearly hmiddle
+  split_ifs with hearly
   · exact earlyApex_lt_half ⟨ht.1, hearly⟩
   · exact middleApex_lt_half ht
-  · exact lateApex_lt_half ⟨(lt_of_not_ge hmiddle).le, ht.2⟩
 
 theorem firstWall_referenceHull {t : ℝ}
     (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) (x : ℝ) :
@@ -123,6 +120,22 @@ theorem secondWall_referenceHull {t : ℝ}
       (referenceG t - 1 + x * Real.sin t) / Real.cos t := by
   rw [secondWall, companionNormal_eq_unitNormal, ← angleSupport,
     angleSupport_referenceHull_eq_g ht]
+
+/-- The niche is symmetric about the center abscissa `k`. -/
+theorem referenceNiche_mirror (x : ℝ) : referenceNiche (2 * k - x) = referenceNiche x := by
+  have h : EqOn (fun t => cornerWall referenceHull t (2 * k - x))
+      ((fun t => cornerWall referenceHull t x) ∘ (Real.pi / 2 - ·)) (Ioo 0 (Real.pi / 2)) := by
+    intro t ht
+    have hs : Real.pi / 2 - t ∈ Icc (0 : ℝ) (Real.pi / 2) :=
+      ⟨by linarith [ht.2], by linarith [ht.1]⟩
+    simp only [Function.comp_apply, cornerWall, firstWall_referenceHull (Ioo_subset_Icc_self ht),
+      secondWall_referenceHull (Ioo_subset_Icc_self ht), firstWall_referenceHull hs,
+      secondWall_referenceHull hs, referenceF_complement, referenceG_complement,
+      Real.sin_pi_div_two_sub, Real.cos_pi_div_two_sub]
+    rw [min_comm]
+    congr 1 <;> ring
+  unfold referenceNiche sweptNiche sweptWallValues
+  rw [h.image_eq, image_comp, image_const_sub_Ioo, sub_self, sub_zero]
 
 /-- A two-wall tent never exceeds its own apex, at any horizontal coordinate. -/
 theorem cornerWall_referenceHull_le_apex {t : ℝ}
