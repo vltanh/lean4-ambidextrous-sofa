@@ -87,7 +87,7 @@ theorem IsDownwardCap.secondWall_lt_of_late_angle {U : Set Plane}
     _ < companionPointWall p x β := hanti ⟨le_rfl, hβt.le⟩ ⟨hβt.le, le_rfl⟩ hβt
     _ ≤ _ := companionPointWall_le_secondWall hU hp (hcos β ⟨le_rfl, hβt.le⟩)
 
-/-- MP.13 for the literal actual support point. Stationarity is proved
+/-- The localized maximum of the second wall, at an attaining support point. Stationarity is proved
 for a fixed attaining point, so no differentiability of the cap support
 is required, even at the localization endpoint. -/
 theorem IsDownwardCap.exists_positive_localized_secondWall_max {U : Set Plane}

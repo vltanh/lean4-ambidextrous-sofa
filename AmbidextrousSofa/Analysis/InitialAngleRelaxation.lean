@@ -10,7 +10,7 @@ public import AmbidextrousSofa.Analysis.TerminalThreeSupports
 # The actual three-support integral relaxation
 
 The four functions below retain every positive-part, wall-switch, and
-window-endpoint clipping in the AT relaxation. Actual cap scores are
+window-endpoint clipping in the relaxation. Actual cap scores are
 bounded by this function through the three genuine support lines.
 
 The right-wall integral is reduced to two clipped ramps. Dropping its
@@ -78,7 +78,7 @@ theorem initialAngleRelaxation_le_twice_width {C : ℝ} (hC : 0 ≤ C)
   linarith [hramp v, (hramp u).trans (initialAngleRampLoss_le_rightLoss hC k u b),
     initialAngleNicheLoss_nonneg hC K k d u v b]
 
-/-- AT.14 holds with every ramp tail retained, even when a wall switch
+/-- The relaxation bound holds with every ramp tail retained, even when a wall switch
 lies outside the exterior integration interval. -/
 theorem initialAngleRightLoss_eq_ramps {C k u b : ℝ}
     (hk0 : 0 ≤ k) (hk1 : k < 1) (hbu : b ≤ u) :
@@ -127,7 +127,7 @@ theorem initialAngle_diagonal_integral_full {K C u v : ℝ}
     max_eq_left (by linarith : 0 ≤ (u + v) / 2 - K - C + (u - v) / 2)]
   ring
 
-/-- Outside both AT calibration regions, the actual finite-support
+/-- Outside both calibration regions, the actual finite-support
 relaxation has the strict complementary margin. -/
 theorem initialAngleRelaxation_complement_lt {C k d s u v b : ℝ}
     (hC : 0 ≤ C) (hk0 : 3 / 8 ≤ k) (hk1 : k ≤ 4 / 5)

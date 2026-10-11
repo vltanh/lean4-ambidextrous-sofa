@@ -7,10 +7,10 @@ public import AmbidextrousSofa.Analysis.TerminalCircleEndpoints
 /-!
 # The uniform proper-terminal circle margin
 
-The two exact circle-average comparisons cover every cosine left by AT.
+The two exact circle-average comparisons cover every remaining cosine.
 Their strict margin is retained after restoring the actual terminal
 height, both top overhangs, and every point of the terminal reserve
-interval. This is the scalar inequality MP.24. The hypotheses concern
+interval. The hypotheses concern
 the displayed geometric parameters, not a bound on the cap score.
 -/
 
@@ -52,7 +52,7 @@ theorem terminal_circle_normalized_margin {C c s d : ℝ}
         show C + c / 2 - d + c / 2 = C + c - d by ring]
       field_simp
 
-/-- Restoring the exact terminal height gives MP.24 with
+/-- Restoring the exact terminal height gives the circle margin with
 `d = (1 - H*s)/c`, including the residual negative-tilt case. -/
 theorem terminal_circle_margin_of_height {C c s H T_L T_R z : ℝ}
     (hC0 : (1 / 2 : ℝ) ≤ C) (hC1 : C ≤ 37 / 50)

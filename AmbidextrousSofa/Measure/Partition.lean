@@ -76,7 +76,8 @@ theorem integratedPartitionDefect_nonneg
 
 /-! ## Integrating the exact pointwise identities -/
 
-/-- ED.3 for any measurable equal-measure split. Signed fibers need not be
+/-- The integrated partition defect identity, for any measurable equal-measure split.
+Signed fibers need not be
 nonnegative. All integral identifications are proved from the wall functions. -/
 theorem integrated_partition_defect_identity
     {I J : Set ℝ} {dU dV nU nV : ℝ → ℝ}
@@ -106,9 +107,9 @@ theorem integrated_partition_defect_identity
 
 /-! ## Exact actual-body decomposition -/
 
-/-- ED.5 as an exact ordinary-area identity with explicitly constructed
+/-- The four-term deficit as an exact ordinary-area identity with explicitly constructed
 integral scores and set-difference filling defect. It is valid for every real
-comparison constant `C`; establishing sharp score bounds is a later task. -/
+comparison constant `C`. -/
 theorem actualBody_four_term_deficit_identity
     (C : ℝ) {S : Set Plane} {I J : Set ℝ} {dU dV nU nV : ℝ → ℝ}
     (hS : S ⊆ fourWallEnvelope I dU dV nU nV) (hMeasS : MeasurableSet S)

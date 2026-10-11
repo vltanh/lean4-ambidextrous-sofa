@@ -43,7 +43,7 @@ def support (K : Set Plane) (v : Plane) : ℝ := sSup ((fun p => coordDot p v) '
 
 def unitNormal (θ : ℝ) : Plane := (Real.cos θ, Real.sin θ)
 
-/-- The angular support convention used throughout the manuscript. -/
+/-- The support function in the direction of the angle `θ`. -/
 def angleSupport (K : Set Plane) (θ : ℝ) : ℝ := support K (unitNormal θ)
 
 theorem support_bddAbove {K : Set Plane} (hK : IsCompact K) (v : Plane) :

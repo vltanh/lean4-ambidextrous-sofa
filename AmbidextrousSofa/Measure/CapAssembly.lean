@@ -64,7 +64,7 @@ theorem subset_actualCapEnvelope {S : Set Plane} (hS : IsCompact S)
   exact ⟨bodyProjectionInterval_eq_projection hS hconn ▸ mem_image_of_mem Prod.fst hp, hroof.1,
     hU.partialBarrier_le hstrip hp, by unfold roofDeficit; linarith [hroof.2], by linarith⟩
 
-/-- ED.5 instantiated by the original hull caps, their actual barriers, and ordinary missing area.
+/-- The four-term deficit identity for the hull caps, their barriers, and the missing area.
 The identity is valid for every comparison constant; it does not claim scalar optimality. -/
 theorem actual_cap_four_term_deficit (C : ℝ) {S : Set Plane} (hS : IsCompact S)
     (hconn : IsConnected S) (hstrip : S ⊆ unitStrip) {α γ : ℝ}

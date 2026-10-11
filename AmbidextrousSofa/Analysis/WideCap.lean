@@ -13,8 +13,8 @@ signed tent integral on the middle half is evaluated exactly. This proves
 the large-width exclusion on the full cap domain, including subunit height,
 nonsmooth boundaries, and a terminal angle equal to `π / 4`.
 
-This is an uncompiled source proof. It is a compactness reduction, not the
-remaining sharp estimate on intermediate widths.
+This is a compactness reduction; the sharp estimate for intermediate widths is a
+separate step.
 -/
 
 noncomputable section

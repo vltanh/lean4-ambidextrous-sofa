@@ -7,7 +7,7 @@ public import AmbidextrousSofa.Analysis.HorizontalNicheConfinement
 /-!
 # Ordered sign phases from actual reverse-corner exclusion
 
-A first zero of the first manuscript velocity persists by the clipped
+A first zero of the first velocity persists by the clipped
 absolutely continuous barrier. The other velocity then decreases until
 its first zero and remains nonpositive. The separation hypothesis is
 an ordinary pointwise sign condition supplied for horizontal maxima

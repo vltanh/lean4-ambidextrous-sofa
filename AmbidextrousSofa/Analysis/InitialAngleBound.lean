@@ -131,7 +131,7 @@ theorem initialAngleRelaxation_left_domain_lt {C k d s u v b : ℝ}
   · exact (initialAngleRelaxation_complement_lt (by linarith) hk0 hk1 hs0 hs2 hkd hu1 hv1
       hcompat hu hY).trans (by norm_num)
 
-/-- AT's finite-support estimate holds at every nonnegative width under
+/-- The finite-support estimate holds at every nonnegative width under
 the ordinary support compatibility and either high-endpoint alternative. -/
 theorem initialAngleRelaxation_all_width_lt {C k d s u v b : ℝ}
     (hC : 0 ≤ C) (hk0 : 3 / 8 ≤ k) (hk1 : k ≤ 4 / 5)

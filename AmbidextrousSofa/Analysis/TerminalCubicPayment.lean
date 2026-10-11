@@ -82,7 +82,7 @@ theorem terminal_weight_kernel_bounds {θ t : ℝ}
     (by linarith [ht.2]) (by linarith [ht.1, Real.pi_pos])) hc.le, ?_⟩
   exact div_le_div_of_nonneg_right (Real.sin_le (by linarith [ht.2])) hc.le
 
-/-- The analytic part of MP's cubic payment. The envelope is an
+/-- The analytic part of the cubic payment. The envelope is an
 almost-everywhere density estimate, and no continuity of `v` is needed. -/
 theorem terminalWeightedExcess_le_cubic {v : ℝ → ℝ} {θ t₀ K : ℝ}
     (hθ0 : 0 ≤ θ) (hθL : θ < Real.pi / 2) (ht₀ : 0 ≤ t₀) (hK : 0 ≤ K)
@@ -145,7 +145,7 @@ theorem terminal_cubic_rational_allowance {q ℓ c : ℝ}
   rw [div_lt_iff₀ (by positivity)]
   nlinarith [mul_pos (sub_pos.2 hc) (sub_pos.2 hq)]
 
-/-- MP's exact allowance from AC's late-tail envelope, for the
+/-- The exact allowance from the late-tail envelope, for the
 complementary cotangent range. -/
 theorem terminalWeightedExcess_lt_allowance_of_late_tail
     {v : ℝ → ℝ} {C T α : ℝ}

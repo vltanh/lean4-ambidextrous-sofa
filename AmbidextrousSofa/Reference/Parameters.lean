@@ -7,11 +7,9 @@ public import AmbidextrousSofa.ExactConstant
 /-!
 # Exact parameters for the reference support functions
 
-The definitions and identities here are those of MS.11--MS.12 and calibration
-chapter 14 of the written manuscript. In particular, the second matching
-identity is proved from the cubic equation; it is not a hypothesis.
-
-This source is an uncompiled draft.
+These are the parameters of the reference support functions and the identities
+that match their phases. In particular, the second matching identity is proved
+from the cubic equation; it is not a hypothesis.
 -/
 
 noncomputable section
@@ -97,7 +95,7 @@ theorem three_Y_mul_sin_T : 3 * Y * Real.sin T = (1 - 2 * Y ^ 2) * Real.cos T :=
     (3 * Y * (1 - 2 * Y ^ 2)) * hcos + (3 * Y * (1 - 2 * Y ^ 2)) * Real.sin_sq_add_cos_sq T +
     (Real.sqrt 2 / 4 * Real.cos beta ^ 3 * (1 + Y ^ 2) ^ 2) * Y_equation
 
-/-- MS.12 at the first switch, where `beta / 2 + π / 8 = π / 2 - (T + beta)`; the
+/-- The matching identity at the first switch, where `beta / 2 + π / 8 = π / 2 - (T + beta)`; the
 nontrivial half is proved from the root equation. -/
 private theorem R_mul_trig_firstPhase :
     R * Real.cos (beta / 2 + Real.pi / 8) = (1 - k) * cosBeta ∧

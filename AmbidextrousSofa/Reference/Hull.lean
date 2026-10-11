@@ -16,8 +16,6 @@ The point `(k, 1 / 2)` is an actual witness. Endpoint normals supply the closed
 bounding rectangle. These conclusions do not assume that every prescribed
 support value is attained. The reverse support inequalities remain a separate
 support-realization obligation.
-
-This source is an uncompiled draft.
 -/
 
 noncomputable section

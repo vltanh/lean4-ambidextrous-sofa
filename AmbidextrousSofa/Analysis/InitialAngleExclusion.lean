@@ -11,7 +11,7 @@ public import AmbidextrousSofa.Analysis.TerminalScalar
 The real terminal angle determines the cotangent range and inset relation
 used by the all-width scalar estimate. Actual top endpoints determine its
 support alternative. Consequently every centered cap with such a top
-endpoint has the strict AT margin throughout the initial angle interval.
+endpoint has a strict margin throughout the initial angle interval.
 
 An arbitrary joint maximizer is recentered and then replaced by its
 proved height-one affine-middle representative at the same angle. This
@@ -65,7 +65,7 @@ theorem IsDownwardCap.capScore_lt_initialAngle_rational_of_top_endpoint
   · exact .inl (by simpa using (hU.three_support_lower_of_top hαpos hαL htop).1)
   · exact .inr (hU.three_support_lower_of_top hαpos hαL htop).2.2
 
-/-- Every actual joint cap maximizer has terminal angle beyond AT's
+/-- Every actual joint cap maximizer has terminal angle beyond the
 initial interval. Recentring and canonicalization preserve its own angle
 and maximizing score before the proved top-endpoint bound is applied. -/
 theorem IsJointCapMaximizer.terminal_angle_gt_arctan_eight_thirds

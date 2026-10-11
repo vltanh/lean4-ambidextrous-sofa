@@ -236,9 +236,8 @@ theorem IsFullCapMaximizer.ae_density_same_sign_bound
   · simpa [sameSignCoefficient, ht.1.2] using h1 ht.2.1 ⟨hbase.symm ▸ ht, hbase.symm ▸ hm⟩
   · simpa [sameSignCoefficient, hnot] using h2 ht.2.2 ⟨hshift.symm ▸ ht, hshift.symm ▸ hm⟩
 
-/-- In the manuscript convention `p = -secondCornerVelocity` and
-`q = firstCornerVelocity`, this is precisely the two same-sign quadrant
-laws. Both densities represent the actual supporting-face curvature. -/
+/-- With `p = -secondCornerVelocity` and `q = firstCornerVelocity`, these are
+the two same-sign quadrant laws. Both densities represent the actual supporting-face curvature. -/
 theorem IsFullCapMaximizer.ae_curvature_same_sign_quadrants
     {K : Set Plane} (hK : IsFullCapMaximizer K) {m c C : ℝ} {ρ : ℝ → ℝ}
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft K) (horizontalRight K),

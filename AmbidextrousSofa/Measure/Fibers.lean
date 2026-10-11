@@ -112,7 +112,7 @@ theorem signedFiberLength_nonneg_on_of_subset_projection
 /-! ## The filling defect and literal recovery -/
 
 /-- A measurable body's missing part of the finite envelope has exactly the
-area difference used in ED.4. This is ordinary set difference, not a signed
+area difference used in the deficit identity. This is ordinary set difference, not a signed
 or multiplicity-weighted area. -/
 theorem volumeReal_sdiff_fourWallEnvelope_eq_signedIntegral_sub
     {S : Set Plane} {I : Set ℝ} {dU dV nU nV : ℝ → ℝ}

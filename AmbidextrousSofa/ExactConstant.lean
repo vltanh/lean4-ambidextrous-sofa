@@ -7,13 +7,9 @@ public import Mathlib
 /-!
 # The exact ambidextrous reference constant
 
-This file begins the formalization of the constant used in the Gate 3 manuscript.
-The polynomial has a unique real root, which is positive and lies strictly between
+The cubic `4Y³ + 3Y - 1` has a unique real root, which is positive and lies strictly between
 `2 / 7` and `3 / 10`. The definitions of `Y`, `beta`, and `M` use that proved
 existence result; no area or optimality statement is assumed here.
-
-This is an uncompiled draft. External declaration signatures were inspected in
-Mathlib revision `c55e6e786f49471c72fbddbec5415808896aec1e`.
 -/
 
 noncomputable section
@@ -43,7 +39,7 @@ theorem Y_pos : 0 < Y := (Classical.choose_spec exists_positive_root).1
 /-- The selected parameter is a root of the cubic. -/
 theorem Y_cubic : cubic Y = 0 := (Classical.choose_spec exists_positive_root).2
 
-/-- The defining equation in the form used by the manuscript. -/
+/-- The defining equation of `Y`. -/
 theorem Y_equation : 4 * Y ^ 3 + 3 * Y = 1 := sub_eq_zero.mp Y_cubic
 
 /-- Every real solution of the cubic is the selected parameter. -/
@@ -84,7 +80,7 @@ def M : ℝ := 1 + 4 * Y ^ 2 + beta
 /-- A first elementary lower bound on the reference constant. -/
 theorem one_lt_M : 1 < M := by unfold M; linarith [sq_nonneg Y, beta_pos]
 
-/-- A division-free form of the manuscript identity `M = 1 / Y - 2 + beta`. -/
+/-- A division-free form of the identity `M = 1 / Y - 2 + beta`. -/
 theorem M_sub_beta_add_two_mul_Y : (M - beta + 2) * Y = 1 := by
   unfold M; linear_combination Y_equation
 

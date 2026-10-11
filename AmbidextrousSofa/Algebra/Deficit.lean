@@ -7,17 +7,16 @@ public import Mathlib
 /-!
 # Signed fibers and exact equality deficits
 
-This module formalizes the pointwise algebra in ED.1--ED.6 of the written
-Gate 3 proof, together with the truncation identity used in the inverse
-extrusion argument.
+This module holds the pointwise algebra of the equality deficits: the signed
+length of a vertical fiber cut by four walls, and the two partition defects.
 
 The four real inputs `dU`, `dV`, `nU`, and `nV` are arbitrary. In the
 geometric application, the first two are roof deficits and the last two
 are niche barriers. In particular, a signed fiber length is not silently
 replaced by its positive part. Nonemptiness is a separate conclusion.
 
-The final deficit theorems are arithmetic statements with explicit
-hypotheses. They do not assert sharp cap bounds, identify an integral
+These are arithmetic statements with explicit hypotheses. They do not assert sharp
+cap bounds, identify an integral
 with area, or classify a geometric maximizer.
 -/
 
@@ -25,7 +24,7 @@ namespace AmbidextrousSofa
 
 /-! ## The exact four-wall fiber -/
 
-/-- The signed fiber length in ED.1. It is allowed to be negative. -/
+/-- The signed length of the fiber between the four walls. It is allowed to be negative. -/
 noncomputable def signedFiberLength (dU dV nU nV : ℝ) : ℝ :=
   1 - max dV nU - max dU nV
 
@@ -55,15 +54,15 @@ theorem signedFiberLength_nonneg_of_mem (dU dV nU nV y : ℝ)
 
 /-! ## Pointwise partition defects -/
 
-/-- The positive-part identity used in both parts of ED.2. -/
+/-- The positive-part identity used for both partition defects. -/
 private theorem max_sub_eq (a b : ℝ) : max a b - b = max (a - b) 0 := by
   rw [← max_sub_sub_right, sub_self]
 
-/-- The nonnegative defect charged on the middle interval in ED.2. -/
+/-- The nonnegative defect charged on the middle interval. -/
 noncomputable def middlePartitionDefect (dU dV nU nV : ℝ) : ℝ :=
   max (dV - nU) 0 + max (dU - nV) 0
 
-/-- The nonnegative defect charged outside the middle interval in ED.2. -/
+/-- The nonnegative defect charged outside the middle interval. -/
 noncomputable def exteriorPartitionDefect (dU dV nU nV : ℝ) : ℝ :=
   max (nU - dV) 0 + max (nV - dU) 0
 

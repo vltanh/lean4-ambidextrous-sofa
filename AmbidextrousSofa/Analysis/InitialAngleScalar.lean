@@ -35,7 +35,7 @@ theorem initialAngle_offset_bounds :
   have := Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)
   constructor <;> nlinarith [Real.sqrt_nonneg 2]
 
-/-- Unrestricted optimization in `C` gives the exact strict AT margin. -/
+/-- Unrestricted optimization in `C` gives the exact strict margin. -/
 theorem initialAngle_stationary_lt_rational {C k d s : ℝ}
     (hk0 : 3 / 8 ≤ k) (hk1 : k ≤ 4 / 5) (hs0 : 0 ≤ s)
     (hs2 : s ^ 2 = 1 + k ^ 2) (hkd : k * d = s - 1) :

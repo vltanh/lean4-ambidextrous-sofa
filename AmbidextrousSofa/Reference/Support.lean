@@ -7,13 +7,11 @@ public import AmbidextrousSofa.Reference.Parameters
 /-!
 # The explicit three-phase reference support formulas
 
-These are the two upper-quarter coordinate functions in MS.11. Each smooth
+These are the two upper-quarter coordinate functions of the reference support. Each smooth
 phase has actual first and second derivative certificates. The interfaces match
 in value and first derivative by the cubic-derived identities in `Parameters`.
-The file does not yet assert that the periodic extension is the support of a
+The file does not assert that the periodic extension is the support of a
 convex body or that its swept-corridor envelope is feasible.
-
-This source is an uncompiled draft.
 -/
 
 noncomputable section
@@ -284,7 +282,7 @@ theorem fLateD_pi_div_two : fLateD (Real.pi / 2) = 2 / 3 * A - 1 := by simp [fLa
 
 theorem gEarlyD_zero : gEarlyD 0 = 2 * A - 1 := by simp [gEarlyD]
 
-/-- The exact upper margin in MS.13 for the cosine curvature. -/
+/-- The exact upper margin for the cosine curvature. -/
 theorem curvature_fMiddle_lt_seven_eighths {t : ℝ}
     (ht : t ∈ Set.Icc beta lateSwitch) :
     deriv (deriv fMiddle) t + fMiddle t < 7 / 8 := by

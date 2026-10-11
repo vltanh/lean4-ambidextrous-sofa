@@ -64,7 +64,7 @@ theorem terminal_companion_prefix_moment_le {v : ℝ → ℝ} {θ t : ℝ}
   · filter_upwards [ae_restrict_mem measurableSet_Ioc] with r hr
     exact mul_nonneg (le_max_right _ _) (terminal_weight_kernel_bounds hθ0 hθL ⟨hr.1.le, hr.2⟩).1
 
-/-- The trigonometric form of MP.14--16. The suffix comparison is
+/-- The trigonometric form of the weighted companion moment bound. The suffix comparison is
 extended to `β`, where its cosine and sine moments are exact. -/
 theorem terminal_weighted_companion_moment_trig
     {v : ℝ → ℝ} {θ β t : ℝ}
