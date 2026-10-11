@@ -37,10 +37,6 @@ theorem IsJointCapMaximizer.eq_reference_translate
     ∃ b : ℝ, U = horizontalTranslate Reference.referenceCap b :=
   hU.isFullCapMaximizer.eq_reference_translate
 
-theorem IsJointCapMaximizer.capScore_eq_half_M
-    {U : Set Plane} {α : ℝ} (hU : IsJointCapMaximizer U α) : capScore U α = M / 2 :=
-  hU.angle_eq_pi_div_two ▸ hU.isFullCapMaximizer.capScore_eq_half_M
-
 theorem IsDownwardCap.capScore_eq_half_M_iff
     {U : Set Plane} (hU : IsDownwardCap U) {α : ℝ}
     (hα : α ∈ Icc (Real.pi / 4) (Real.pi / 2)) :

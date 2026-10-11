@@ -66,15 +66,6 @@ theorem sum_sin_innerSourceMass_eq_positiveLength {U : Set Plane}
     unfold capWidth; linarith)]
   exact Finset.sum_congr rfl fun j _ => normal_snd_mul_innerSourceMass hU grid j
 
-theorem sum_sin_normalizedExposureDefect_eq_horizontal_balance {U : Set Plane}
-    (hU : IsDownwardCap U) (grid : Finset QuarterAngle) :
-    (∑ j : SourceIndex α grid, (normal α grid j).2 * normalizedExposureDefect U α hαL grid j) =
-      finitePositiveLength U (normal α grid) (pairList α grid) (some (terminalIndex α hαL grid))
-        (horizontalLeft U + capWidth U / 4) (horizontalRight U - capWidth U / 4) -
-      (capWidth U / 2 - finiteWingMass U (normal α grid) none) :=
-  (Finset.sum_congr rfl fun j _ => mul_div_cancel₀ _ (normal_snd_pos α grid j).ne').trans
-    (finite_horizontal_source_balance hU _ _ _ (wallSlopes_injective α grid))
-
 theorem normal_snd_mul_innerSourceMass_eq {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (j : SourceIndex α grid) :
     (normal α grid j).2 * innerSourceMass U α hαL grid j =

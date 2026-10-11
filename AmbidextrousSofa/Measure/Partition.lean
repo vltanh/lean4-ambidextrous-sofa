@@ -104,29 +104,6 @@ theorem integrated_partition_defect_identity
 
 /-! ## Ordinary-area enclosure, with physical fibers -/
 
-/-- The standard projection split supplies all partition geometry. -/
-theorem volumeReal_le_spatialScore_sum_middleHalf
-    {S : Set Plane} {l r : ℝ} {dU dV nU nV : ℝ → ℝ} (hlr : l ≤ r)
-    (hS : S ⊆ fourWallEnvelope (Icc l r) dU dV nU nV)
-    (hdU : Measurable dU) (hdV : Measurable dV)
-    (hnU : Measurable nU) (hnV : Measurable nV)
-    (hidU : IntegrableOn dU (Icc l r)) (hidV : IntegrableOn dV (Icc l r))
-    (hinU : IntegrableOn nU (Icc l r)) (hinV : IntegrableOn nV (Icc l r))
-    (hProjection : Icc l r ⊆ Prod.fst '' S) :
-    volume.real S ≤
-      spatialScore (Icc l r) (middleHalfInterval l r) dU nU +
-        spatialScore (Icc l r) (middleHalfInterval l r) dV nV := by
-  have hFinite : volume (Icc l r) ≠ ⊤ := measure_Icc_lt_top.ne
-  have := integrated_partition_defect_identity (measurableSet_middleHalfInterval l r)
-    (middleHalfInterval_subset hlr) hFinite (middleHalfInterval_measure_balance hlr)
-    hidU hidV hinU hinV
-  have := integratedPartitionDefect_nonneg (Icc l r) (middleHalfInterval l r) dU dV nU nV
-  have := volumeReal_le_signedIntegral_of_subset_fourWallEnvelope hS measurableSet_Icc
-    hdU hdV hnU hnV (integrableOn_signedFiberLength hFinite hidU hidV hinU hinV)
-    (ae_restrict_of_forall_mem measurableSet_Icc
-      (signedFiberLength_nonneg_on_of_subset_projection hS hProjection))
-  linarith
-
 /-! ## Exact actual-body decomposition -/
 
 /-- ED.5 as an exact ordinary-area identity with explicitly constructed

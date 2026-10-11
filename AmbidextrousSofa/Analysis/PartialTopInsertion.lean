@@ -122,16 +122,6 @@ private theorem IsJointCapMaximizer.top_mem_of_insertion {U : Set Plane} {α b :
       (by rwa [hC.capRoof_inserted_one])
   simpa only [h1] using capRoof_mem hC.isCompact hbU
 
-theorem IsJointCapMaximizer.middle_right_eq_one_of_top_right
-    {U : Set Plane} {α : ℝ} (hU : IsJointCapMaximizer U α) {t : ℝ}
-    (ht : (t, 1) ∈ U) (htRight : horizontalRight U - capWidth U / 4 ≤ t) :
-    capRoof U (horizontalRight U - capWidth U / 4) = 1 :=
-  le_antisymm (capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _) <|
-    le_capRoof hU.isCap.isCompact <| hU.top_mem_of_insertion
-      (.inr ⟨le_rfl, by linarith [hU.width_bounds.1, one_lt_M]⟩) fun _ hx =>
-        hU.isCap.partialBarrier_inserted_top_of_top_right ht htRight hU.angle_pos
-          hU.angle_mem.2 hx.2
-
 /-- Height attainment plus the two literal insertions puts an actual top
 point inside the middle interval at any height-one joint maximum. -/
 theorem IsJointCapMaximizer.top_meets_middle {U : Set Plane} {α : ℝ}

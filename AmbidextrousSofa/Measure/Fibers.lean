@@ -109,19 +109,6 @@ theorem signedFiberLength_nonneg_on_of_subset_projection
   obtain ⟨p, hp, rfl⟩ := hProjection hx
   exact signedFiberLength_nonneg_of_mem _ _ _ _ _ (hS hp).2
 
-/-- The signed envelope integral bounds a contained body's measure after
-measurability, integrability, and nonnegative fibers have been established. -/
-theorem volumeReal_le_signedIntegral_of_subset_fourWallEnvelope
-    {S : Set Plane} {I : Set ℝ} {dU dV nU nV : ℝ → ℝ}
-    (hS : S ⊆ fourWallEnvelope I dU dV nU nV)
-    (hI : MeasurableSet I) (hdU : Measurable dU) (hdV : Measurable dV)
-    (hnU : Measurable nU) (hnV : Measurable nV)
-    (hSigned : IntegrableOn (fun x => signedFiberLength (dU x) (dV x) (nU x) (nV x)) I)
-    (hNonneg : ∀ᵐ x ∂volume.restrict I, 0 ≤ signedFiberLength (dU x) (dV x) (nU x) (nV x)) :
-    volume.real S ≤ ∫ x in I, signedFiberLength (dU x) (dV x) (nU x) (nV x) :=
-  ENNReal.toReal_le_of_le_ofReal (integral_nonneg_of_ae hNonneg) ((measure_mono hS).trans_eq
-    (volume_fourWallEnvelope_eq_ofReal_signedIntegral hI hdU hdV hnU hnV hSigned hNonneg))
-
 /-! ## The filling defect and literal recovery -/
 
 /-- A measurable body's missing part of the finite envelope has exactly the

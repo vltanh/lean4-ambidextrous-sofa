@@ -20,15 +20,6 @@ open Set
 
 namespace AmbidextrousSofa.Reference
 
-/-- Every vector in the first quadrant has an actual nonnegative polar
-representation, including the vertical and zero vectors. -/
-theorem exists_quarter_polar {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) :
-    ∃ r : ℝ, 0 ≤ r ∧ ∃ t ∈ Icc (0 : ℝ) (Real.pi / 2),
-      (a, b) = r • unitNormal t :=
-  ⟨‖(⟨a, b⟩ : ℂ)‖, norm_nonneg _, Complex.arg ⟨a, b⟩,
-    ⟨Complex.arg_nonneg_iff.2 hb, Complex.arg_le_pi_div_two_iff.2 (Or.inl ha)⟩, by
-    ext <;> simp [unitNormal, Complex.norm_mul_cos_arg, Complex.norm_mul_sin_arg]⟩
-
 /-- The two displayed support quarters cover all upward-facing directions. -/
 theorem exists_upper_polar {v : Plane} (hv : 0 ≤ v.2) :
     ∃ r : ℝ, 0 ≤ r ∧ ∃ t ∈ Icc (0 : ℝ) (Real.pi / 2),

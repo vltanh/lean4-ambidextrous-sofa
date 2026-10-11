@@ -103,16 +103,6 @@ theorem tendstoUniformlyOn_niche_box (grids : ℕ → Finset QuarterAngle)
     (fun p _ _ _ h => niche_mono p.1 (hmono h) p.2) continuous_capSweptNiche.continuousOn
     fun p _ => tendsto_niche grids hmono hdense p.1 p.2
 
-/-- An explicit available dense exhaustion, useful independently of the
-equally spaced grids used for adjacent-wall estimates. -/
-def denseAngles : ℕ → QuarterAngle := by
-  letI : Nonempty QuarterAngle := ⟨zeroAngle⟩
-  exact denseSeq QuarterAngle
-
-def exhaustion (n : ℕ) : Finset QuarterAngle := by
-  classical
-  exact (Finset.range n).image denseAngles
-
 end AngularGrid
 
 end AmbidextrousSofa

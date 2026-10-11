@@ -70,20 +70,10 @@ def companionSourceCoefficient (aD v : ℝ → ℝ) (t : ℝ) : ℝ :=
 def cornerSourceCoefficient (aZ q : ℝ → ℝ) (t : ℝ) : ℝ :=
   sourceFraction (aZ t) (q t)
 
-theorem measurable_firstSourceCoefficient {charged : Set ℝ} {aB u : ℝ → ℝ}
-    (hcharged : MeasurableSet charged) (haB : Measurable aB) (hu : Measurable u) :
-    Measurable (firstSourceCoefficient charged aB u) :=
-  Measurable.ite hcharged measurable_const (measurable_sourceFraction haB (measurable_const.sub hu))
-
 theorem measurable_companionSourceCoefficient {aD v : ℝ → ℝ}
     (haD : Measurable aD) (hv : Measurable v) :
     Measurable (companionSourceCoefficient aD v) :=
   measurable_sourceFraction haD (measurable_const.sub hv)
-
-theorem measurable_cornerSourceCoefficient {aZ q : ℝ → ℝ}
-    (haZ : Measurable aZ) (hq : Measurable q) :
-    Measurable (cornerSourceCoefficient aZ q) :=
-  measurable_sourceFraction haZ hq
 
 theorem firstSourceCoefficient_bounds (charged : Set ℝ) (aB u : ℝ → ℝ) (t : ℝ) :
     0 ≤ firstSourceCoefficient charged aB u t ∧

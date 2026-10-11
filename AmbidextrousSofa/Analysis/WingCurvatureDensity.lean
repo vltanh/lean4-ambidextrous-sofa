@@ -101,26 +101,4 @@ theorem curvature_density_on_wing
 
 end AngularGrid
 
-/-- A full maximizer with an affine middle has actual bounded curvature
-density on each closedly contained wing interval. Its selected polygon
-sequence is constructed by the proof and is not an input certificate. -/
-theorem IsFullCapMaximizer.curvature_density_on_wing {K : Set Plane}
-    (hK : IsFullCapMaximizer K) {m c A B a b : ℝ}
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft K) (horizontalRight K),
-      capRoof K x = m * x + c)
-    (hA : 0 ≤ A) (hB : B ≤ Real.pi) (htop : Real.pi / 2 ∉ Ioo A B)
-    (hperp : ∀ t ∈ Ioo A B, Real.cos t + m * Real.sin t ≠ 0)
-    (ha : A < a) (hab : a ≤ b) (hb : b < B) :
-    ∃ ρ : ℝ → ℝ, Measurable ρ ∧
-      (∀ t, 0 ≤ ρ t ∧ ρ t ≤ 4 * (|horizontalLeft K| + |horizontalRight K| + 1) + 10) ∧
-      (upperCurvature K).restrict (Ioo a b) =
-        (volume.restrict (Ioo a b)).withDensity (fun t => ENNReal.ofReal (ρ t)) := by
-  have hR : 0 ≤ |horizontalLeft K| + |horizontalRight K| + 1 := by positivity
-  obtain ⟨level, coefficient, U, hlevel, hc, hrate, hU, -, hHausdorff⟩ :=
-    AngularGrid.exists_selected_sequence hK (neg_le_self hR) (subset_symmetricBox_of_horizontalBox
-      fun p hp => ⟨hK.isCap.fst_mem_Icc hp, hK.isCap.inStrip hp⟩)
-  exact AngularGrid.curvature_density_on_wing hK.isCap hU hHausdorff
-    (tendsto_atTop_mono hlevel tendsto_id) (fun n => (hc n).le) hrate hR (fun n => (hU n).inBox)
-    (by linarith only [hK.width_bounds.1, one_lt_M]) haffine hA hB htop hperp ha hab hb
-
 end AmbidextrousSofa

@@ -21,22 +21,6 @@ open scoped Topology
 
 namespace AmbidextrousSofa.Analysis
 
-/-- On the right window, the actual sine moment pays the entire
-nonnegative deficit mass with the exact factor `1 / sin β`. -/
-theorem firstUnit_right_window_mass_le_div_sin
-    {r : ℝ → ℝ} {β : ℝ}
-    (hβ0 : 0 ≤ β) (hβL : β ≤ Real.pi / 2) (hβsin : 0 < Real.sin β)
-    (hr : IntervalIntegrable r volume β (Real.pi / 2))
-    (hr0 : ∀ᵐ t ∂volume.restrict (Icc β (Real.pi / 2)), 0 ≤ r t) :
-    (∫ t in β..(Real.pi / 2), r t) ≤
-      (∫ t in β..(Real.pi / 2), r t * Real.sin t) / Real.sin β := by
-  rw [le_div_iff₀ hβsin, ← intervalIntegral.integral_mul_const]
-  refine intervalIntegral.integral_mono_ae_restrict hβL (hr.mul_const _)
-    (hr.mul_continuousOn Real.continuous_sin.continuousOn) ?_
-  filter_upwards [hr0, ae_restrict_mem measurableSet_Icc] with t hrt ht
-  exact mul_le_mul_of_nonneg_left
-    (Real.sin_le_sin_of_le_of_le_pi_div_two (by linarith [Real.pi_pos]) ht.2 ht.1) hrt
-
 theorem intervalIntegrable_firstUnitLossDensity
     {q v δ : ℝ → ℝ} {a b : ℝ} (hab : a ≤ b)
     (hq : AbsolutelyContinuousOnInterval q a b)

@@ -114,19 +114,6 @@ theorem IsJointCapMaximizer.terminalTailPoint_bounds_of_tail_regime
       (Real.sin_lt_sin_of_lt_of_le_pi_div_two (by linarith [hU.angle_pos, Real.pi_pos]) le_rfl
         hαL).trans_eq Real.sin_pi_div_two, le_rfl⟩
 
-/-- The original largest-angle interface is preserved for the value
-reduction; its proof now supplies only the local tail regime. -/
-theorem IsJointCapMaximizer.terminalTailPoint_bounds
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    horizontalRight U - capWidth U / 4 ≤ (terminalTailPoint U α).1 ∧
-      Real.sin α < (terminalTailPoint U α).2 ∧ (terminalTailPoint U α).2 ≤ 1 :=
-  hU.terminalTailPoint_bounds_of_tail_regime
-    (hU.properTailRegime_of_largest hLargest hαL hheight haffine) hαL hheight haffine
-
 theorem IsDownwardCap.terminalTailInset_bounds {U : Set Plane} (hU : IsDownwardCap U)
     {α : ℝ} (hα0 : 0 < α) (hαL : α < Real.pi / 2)
     (hH : Real.sin α < (terminalTailPoint U α).2) :

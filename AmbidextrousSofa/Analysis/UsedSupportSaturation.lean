@@ -67,23 +67,6 @@ theorem IsDownwardCap.partialBarrier_usedSupportSaturation {U : Set Plane}
           h1 ⟨ht.1.le, ht.2.le⟩, h2 ⟨ht.1.le, ht.2.le⟩]
   rw [partialBarrier, partialBarrier, hsweep, firstWall, firstWall, h1 ⟨hα0.le, le_rfl⟩]
 
-theorem IsJointCapMaximizer.usedSupportSaturation {U : Set Plane} {α : ℝ}
-    (hU : IsJointCapMaximizer U α) :
-    IsJointCapMaximizer (AmbidextrousSofa.usedSupportSaturation U α) α := by
-  have hC := hU.isCap
-  have hV := hC.isDownwardCap_usedSupportSaturation hU.angle_mem.2
-  have hproj : horizontalProjection (AmbidextrousSofa.usedSupportSaturation U α) =
-      horizontalProjection U := FinitePolygon.horizontalProjection_circumscription hC _
-  refine hU.of_score_le hV hU.angle_mem ?_
-  -- The charged roof can only increase, while both integration windows and the complete
-  -- partial barrier are unchanged.
-  rw [capScore_eq_integrals, capScore_eq_integrals, show horizontalLeft _ = horizontalLeft U from
-    congrArg sInf hproj, show horizontalRight _ = horizontalRight U from congrArg sSup hproj,
-    funext (hC.partialBarrier_usedSupportSaturation hU.angle_pos hU.angle_mem.2)]
-  exact sub_le_sub_right (setIntegral_mono ((hC.integrableOn_capRoof_Icc _ _).mono_set sdiff_subset)
-    ((hV.integrableOn_capRoof_Icc _ _).mono_set sdiff_subset)
-    (hC.capRoof_mono hV (FinitePolygon.subset_circumscription hC _))) _
-
 /-- Exact PD.15: an affine-middle maximizer is the used-support saturation
 cut by its own affine middle ceiling. -/
 theorem IsJointCapMaximizer.eq_usedSupportSaturation_capCut

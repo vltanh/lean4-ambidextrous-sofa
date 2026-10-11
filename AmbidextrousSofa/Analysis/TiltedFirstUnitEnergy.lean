@@ -221,11 +221,6 @@ theorem firstUnit_lossDensity_lower_bound {q v δ u : ℝ}
   · linarith [mul_nonneg (mul_nonneg hq hδ0) (sub_nonneg.2 h),
       mul_nonneg (by linarith : 0 ≤ 1 / 4 - q) (sub_nonneg.2 h)]
 
-theorem firstUnit_foldPayment_le {T s : ℝ} (hT : 0 ≤ T) (hs : 3 / 5 ≤ s) :
-    5 * T / (16 * s) ≤ 25 / 48 * T := by
-  rw [div_le_iff₀ (by positivity)]
-  linarith [mul_nonneg hT (show 0 ≤ s - 3 / 5 by linarith)]
-
 /-- The exact algebra preceding GF's scalar estimate. `IB` and `ID`
 are ordinary weighted momentum integrals; their hypotheses state the
 harmonic reconstructions with the actual convolution remainders. -/

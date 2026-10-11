@@ -53,11 +53,6 @@ theorem intervalIntegrable_outerDensity (U : Set Plane) (α : TerminalAngle) (gr
     (j : SourceIndex α grid) (a b : ℝ) : IntervalIntegrable (outerDensity U α grid j) volume a b :=
   intervalIntegrable_outward_sourceDensity _ _ _ _ a b
 
-theorem intervalIntegrable_innerDensity (U : Set Plane) (α : TerminalAngle)
-    (hαL : (α : ℝ) < Real.pi / 2) (grid : Finset QuarterAngle)
-    (j : SourceIndex α grid) (a b : ℝ) : IntervalIntegrable (innerDensity U α hαL grid j) volume a b :=
-  intervalIntegrable_outward_sourceDensity _ _ _ _ a b
-
 def selectionDefect (target U : Set Plane) (α : TerminalAngle) (level : ℕ) (coefficient : ℝ)
     (j : SourceIndex α (dyadic level)) : ℝ :=
   2 * coefficient * stageWeight α level j *

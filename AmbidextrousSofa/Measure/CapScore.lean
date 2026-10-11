@@ -39,10 +39,6 @@ def capScore (U : Set Plane) (α : ℝ) : ℝ :=
     (middleHalfInterval (horizontalLeft U) (horizontalRight U))
     (roofDeficit U) (partialBarrier U α)
 
-theorem measurable_roofDeficit {K : Set Plane} (hK : IsCompact K)
-    (hK0 : ∀ p ∈ K, 0 ≤ p.2) : Measurable (roofDeficit K) :=
-  measurable_const.sub (measurable_capRoof hK hK0)
-
 theorem IsDownwardCap.measurable_roofDeficit {U : Set Plane} (hU : IsDownwardCap U) :
     Measurable (roofDeficit U) :=
   measurable_const.sub hU.measurable_capRoof

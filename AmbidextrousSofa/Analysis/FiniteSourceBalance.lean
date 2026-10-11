@@ -34,9 +34,6 @@ theorem sum_weighted_abs_le_of_error {ι : Type*} [Fintype ι]
   have h : |x i| ≤ x i + 2 * e i := abs_le.mpr ⟨by linarith [hx i], by linarith [he i]⟩
   linarith [mul_le_mul_of_nonneg_left h (hw0 i), mul_le_mul_of_nonneg_right (hw1 i) (he i)]
 
-theorem max_self_zero_add_max_neg_eq_abs (x : ℝ) : max x 0 + max (-x) 0 = |x| :=
-  max_zero_add_max_neg_zero_eq_abs_self x
-
 namespace AngularGrid
 
 open FinitePolygon

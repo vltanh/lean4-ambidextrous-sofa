@@ -208,8 +208,4 @@ theorem IsDownwardCap.measurable_capRoof {U : Set Plane} (hU : IsDownwardCap U) 
     Measurable (capRoof U) :=
   hU.upperSemicontinuous_capRoof.measurable
 
-theorem IsDownwardCap.measurableSet {U : Set Plane} (hU : IsDownwardCap U) :
-    MeasurableSet U :=
-  hU.isCompact.isClosed.measurableSet
-
 end AmbidextrousSofa
