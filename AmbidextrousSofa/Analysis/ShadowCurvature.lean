@@ -13,6 +13,8 @@ normal. The exact finite shadowing inequalities therefore bound the
 actual selected curvature atoms by zero or half the mesh, with the
 already controlled errors. Summation, Hausdorff convergence, and Lebesgue
 differentiation give the corresponding bounds for the actual cap density.
+The density step is stated for any open set of normals, so that it also
+serves the proper-angle maxima.
 -/
 
 noncomputable section
@@ -157,87 +159,65 @@ theorem eventually_shadow_atoms_le
       (sameSignCoefficient_nonneg positive t),
     mul_le_mul_of_nonneg_right (sameSignCoefficient_le_half positive t) (mul_pos hε hmesh).le]
 
-theorem curvature_local_shadow_bound
-    {target : Set Plane} {U : ℕ → Set Plane}
-    {boxLeft boxRight R m c t ε : ℝ} {level : ℕ → ℕ} {coefficient : ℕ → ℝ}
-    {ρ : ℝ → ℝ}
-    (hTarget : IsDownwardCap target)
-    (hU : ∀ n, IsSelectedPolygon target boxLeft boxRight (level n) (coefficient n) (U n))
-    (hHausdorff : CapHausdorffTendsto U target) (hlevel : Tendsto level atTop atTop)
-    (hc : ∀ n, 0 ≤ coefficient n) (hrate : Tendsto coefficient atTop (𝓝 0))
-    (hbox : ∀ n, U n ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1)
-    (hwidth : 0 < capWidth target)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft target) (horizontalRight target),
-      capRoof target x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ s, 0 ≤ ρ s)
-    (heq : (upperCurvature target).restrict (regularCurvatureDomain m) =
-      (volume.restrict (regularCurvatureDomain m)).withDensity (fun s => ENNReal.ofReal (ρ s)))
-    (positive : Bool) (ht : t ∈ regularCurvatureDomain m)
-    (hpaired : sourceQuarterAngle t ∈ regularCornerDomain m)
-    (hmargin : 0 < sameSignVelocityMargin positive target (sourceQuarterAngle t))
-    (hε : 0 < ε) :
-    ∃ δ > 0, ∀ d : ℝ, 0 < d → d < δ →
-      (upperCurvature target).real (Ioc t (t + d)) ≤ (sameSignCoefficient positive t + ε) * d := by
-  obtain ⟨δ₀, hδ₀, hfinite⟩ := eventually_shadow_atoms_le hTarget hU hHausdorff hlevel hc
-    (isCompact_Icc.prod isCompact_Icc) hbox positive (mem_regularCurvatureDomain_iff.mp ht).2.2.1
-    (sigmaAt_eq_zero_of_density hρ hρ0 heq hpaired.2.1)
-    (sigmaAt_eq_zero_of_density hρ hρ0 heq hpaired.2.2) hmargin hε
-  obtain ⟨a, b, htIoo, hIoo⟩ := mem_nhds_iff_exists_Ioo_subset.mp
-    ((isOpen_Ioo.sdiff (toFinite _).isClosed).mem_nhds ht)
-  refine ⟨min δ₀ (b - t), lt_min hδ₀ (sub_pos.mpr htIoo.2), fun d hd hdδ => ?_⟩
-  have hdδ₀ := hdδ.trans_le (min_le_left _ _)
-  have hdb := hdδ.trans_le (min_le_right _ _)
-  have hreg : Icc t (t + d) ⊆ regularCurvatureDomain m := fun s hs =>
-    hIoo ⟨htIoo.1.trans_le hs.1, by linarith [hs.2]⟩
-  simpa only [add_sub_cancel_left] using curvature_Ioc_le_of_eventual_atom_bound hTarget hU
-    hHausdorff hlevel hc hrate hbox hwidth haffine
-    (add_nonneg (sameSignCoefficient_nonneg positive t) hε.le) (by linarith) hreg
-    (sigmaAt_eq_zero_of_density hρ hρ0 heq ht)
-    (sigmaAt_eq_zero_of_density hρ hρ0 heq (hreg ⟨by linarith, le_rfl⟩))
-    (hfinite.mono fun n hn j hj =>
-      hn j (abs_lt.mpr ⟨by linarith [hj.1], by linarith [hj.2]⟩))
-
 end AngularGrid
 
-/-- The actual maximizer supplies its own selected sequence. The density
-argument only assumes the literal measure representation already proved
-on the regular domain, and does not introduce an exposure certificate.
-The bound is applied at `t` and at `t + π / 2`, which both fold to the quarter angle `t`. -/
-theorem IsFullCapMaximizer.ae_density_same_sign_bound
-    {K : Set Plane} (hK : IsFullCapMaximizer K) {m c C : ℝ} {ρ : ℝ → ℝ}
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft K) (horizontalRight K),
-      capRoof K x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρC : ∀ t, ρ t ≤ C)
-    (heq : (upperCurvature K).restrict (regularCurvatureDomain m) =
-      (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
-    (positive : Bool) :
-    ∀ᵐ t ∂volume.restrict (regularCornerDomain m), 0 < sameSignVelocityMargin positive K t →
-      ρ t ≤ (if positive then 0 else 1 / 2) ∧
-        ρ (t + Real.pi / 2) ≤ (if positive then 1 / 2 else 0) := by
-  have hR : 0 ≤ |horizontalLeft K| + |horizontalRight K| + 1 := by positivity
-  obtain ⟨level, coefficient, U, hlevel, hc, hrate, hU, -, hHausdorff⟩ :=
-    AngularGrid.exists_selected_sequence hK (neg_le_self hR) (subset_symmetricBox_of_horizontalBox
-      fun p hp => ⟨hK.isCap.fst_mem_Icc hp, hK.isCap.inStrip hp⟩)
-  have h := ae_density_le_of_conditional_local_bound (isOpen_Ioo.sdiff (toFinite _).isClosed)
-    hρ hρ0 hρC heq (f := sameSignCoefficient positive) (P := fun t =>
-      sourceQuarterAngle t ∈ regularCornerDomain m ∧
-        0 < sameSignVelocityMargin positive K (sourceQuarterAngle t))
-    fun t ht hP ε hε => AngularGrid.curvature_local_shadow_bound hK.isCap hU hHausdorff
-      (tendsto_atTop_mono hlevel tendsto_id) (fun n => (hc n).le) hrate (fun n => (hU n).inBox)
-      (by linarith only [hK.width_bounds.1, one_lt_M]) haffine hρ hρ0 heq positive ht hP.1 hP.2 hε
-  filter_upwards [ae_restrict_mem (isOpen_regularCornerDomain m).measurableSet,
-    ae_restrict_of_ae h, ae_restrict_of_ae
-      ((measurePreserving_add_right volume (Real.pi / 2)).quasiMeasurePreserving.ae h)]
-    with t ht h1 h2 hm
-  have hnot : ¬ t + Real.pi / 2 < Real.pi / 2 := by linarith only [ht.1.1]
-  have hbase : sourceQuarterAngle t = t := ite_eq_left ht.1.2
-  have hshift : sourceQuarterAngle (t + Real.pi / 2) = t := by simp [sourceQuarterAngle, hnot]
-  constructor
-  · simpa [sameSignCoefficient, ht.1.2] using h1 ht.2.1 ⟨hbase.symm ▸ ht, hbase.symm ▸ hm⟩
-  · simpa [sameSignCoefficient, hnot] using h2 ht.2.2 ⟨hshift.symm ▸ ht, hshift.symm ▸ hm⟩
+/-- The two same-sign quadrant laws for a bounded density of the curvature
+of `K` on an open set `D` of normals, at the normals `t` with `t` and
+`t + π / 2` in `D`. It suffices to bound the curvature of `(t, t + d]` by
+`(sameSignCoefficient positive t + ε) * d` for small `d` with
+`[t, t + d] ⊆ D`, at the normals of `D` whose quarter angle is paired in
+`D` and has a positive margin. The bound is applied at `t` and at
+`t + π / 2`, which both fold to the quarter angle `t`. -/
+theorem ae_curvature_same_sign_quadrants_of_local_bound {K : Set Plane} {D : Set ℝ}
+    (hD : IsOpen D) {ρ : ℝ → ℝ} {C : ℝ} (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t)
+    (hρC : ∀ t, ρ t ≤ C)
+    (heq : (upperCurvature K).restrict D =
+      (volume.restrict D).withDensity (fun t => ENNReal.ofReal (ρ t)))
+    (hlocal : ∀ (positive : Bool) (t ε : ℝ), t ∈ D → sourceQuarterAngle t ∈
+        Ioo (0 : ℝ) (Real.pi / 2) ∩ (D ∩ (fun t : ℝ => t + Real.pi / 2) ⁻¹' D) →
+      0 < sameSignVelocityMargin positive K (sourceQuarterAngle t) → 0 < ε →
+      ∃ δ > 0, ∀ d : ℝ, 0 < d → d < δ → Icc t (t + d) ⊆ D →
+        (upperCurvature K).real (Ioc t (t + d)) ≤ (sameSignCoefficient positive t + ε) * d) :
+    ∀ᵐ t ∂volume.restrict
+        (Ioo (0 : ℝ) (Real.pi / 2) ∩ (D ∩ (fun t : ℝ => t + Real.pi / 2) ⁻¹' D)),
+      (0 < firstCornerVelocity K t ∧ secondCornerVelocity K t < 0 →
+        ρ t = 0 ∧ ρ (t + Real.pi / 2) ≤ 1 / 2) ∧
+      (firstCornerVelocity K t < 0 ∧ 0 < secondCornerVelocity K t →
+        ρ (t + Real.pi / 2) = 0 ∧ ρ t ≤ 1 / 2) := by
+  set P := Ioo (0 : ℝ) (Real.pi / 2) ∩ (D ∩ (fun t : ℝ => t + Real.pi / 2) ⁻¹' D)
+  have hbound (positive : Bool) : ∀ᵐ t ∂volume.restrict P,
+      0 < sameSignVelocityMargin positive K t →
+        ρ t ≤ (if positive then 0 else 1 / 2) ∧
+          ρ (t + Real.pi / 2) ≤ (if positive then 1 / 2 else 0) := by
+    have h := ae_density_le_of_conditional_local_bound hD hρ hρ0 hρC heq
+      (f := sameSignCoefficient positive) (P := fun t => sourceQuarterAngle t ∈ P ∧
+        0 < sameSignVelocityMargin positive K (sourceQuarterAngle t)) fun t ht hP ε hε => by
+      obtain ⟨δ, hδ, hle⟩ := hlocal positive t ε ht hP.1 hP.2 hε
+      obtain ⟨a, b, htIoo, hIoo⟩ := mem_nhds_iff_exists_Ioo_subset.mp (hD.mem_nhds ht)
+      refine ⟨min δ (b - t), lt_min hδ (sub_pos.mpr htIoo.2), fun d hd hdδ => hle d hd
+        (hdδ.trans_le (min_le_left _ _)) fun s hs => hIoo ⟨htIoo.1.trans_le hs.1, ?_⟩⟩
+      linarith [hs.2, hdδ.trans_le (min_le_right _ _)]
+    filter_upwards [ae_restrict_mem
+      (isOpen_Ioo.inter (hD.inter (hD.preimage (continuous_id.add_const _)))).measurableSet,
+      ae_restrict_of_ae h, ae_restrict_of_ae
+        ((measurePreserving_add_right volume (Real.pi / 2)).quasiMeasurePreserving.ae h)]
+      with t ht h1 h2 hm
+    have hnot : ¬ t + Real.pi / 2 < Real.pi / 2 := by linarith only [ht.1.1]
+    have hbase : sourceQuarterAngle t = t := ite_eq_left ht.1.2
+    have hshift : sourceQuarterAngle (t + Real.pi / 2) = t := by simp [sourceQuarterAngle, hnot]
+    constructor
+    · simpa [sameSignCoefficient, ht.1.2] using h1 ht.2.1 ⟨hbase.symm ▸ ht, hbase.symm ▸ hm⟩
+    · simpa [sameSignCoefficient, hnot] using h2 ht.2.2 ⟨hshift.symm ▸ ht, hshift.symm ▸ hm⟩
+  filter_upwards [hbound true, hbound false] with t hp hn
+  refine ⟨fun ⟨hq, hr⟩ => ?_, fun ⟨hq, hr⟩ => ?_⟩
+  · obtain ⟨h1, h2⟩ := hp (lt_min (neg_pos.mpr hr) hq)
+    exact ⟨le_antisymm h1 (hρ0 t), h2⟩
+  · obtain ⟨h1, h2⟩ := hn (lt_min hr (neg_pos.mpr hq))
+    exact ⟨le_antisymm h2 (hρ0 _), h1⟩
 
 /-- With `p = -secondCornerVelocity` and `q = firstCornerVelocity`, these are
-the two same-sign quadrant laws. Both densities represent the actual supporting-face curvature. -/
+the two same-sign quadrant laws. Both densities represent the actual supporting-face curvature.
+The actual maximizer supplies its own selected sequence. -/
 theorem IsFullCapMaximizer.ae_curvature_same_sign_quadrants
     {K : Set Plane} (hK : IsFullCapMaximizer K) {m c C : ℝ} {ρ : ℝ → ℝ}
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft K) (horizontalRight K),
@@ -250,13 +230,21 @@ theorem IsFullCapMaximizer.ae_curvature_same_sign_quadrants
         ρ t = 0 ∧ ρ (t + Real.pi / 2) ≤ 1 / 2) ∧
       (firstCornerVelocity K t < 0 ∧ 0 < secondCornerVelocity K t →
         ρ (t + Real.pi / 2) = 0 ∧ ρ t ≤ 1 / 2) := by
-  filter_upwards [hK.ae_density_same_sign_bound haffine hρ hρ0 hρC heq true,
-    hK.ae_density_same_sign_bound haffine hρ hρ0 hρC heq false] with t hp hn
-  refine ⟨fun ⟨hq, hr⟩ => ?_, fun ⟨hq, hr⟩ => ?_⟩
-  · obtain ⟨h1, h2⟩ := hp (lt_min (neg_pos.mpr hr) hq)
-    exact ⟨le_antisymm h1 (hρ0 t), h2⟩
-  · obtain ⟨h1, h2⟩ := hn (lt_min hr (neg_pos.mpr hq))
-    exact ⟨le_antisymm h2 (hρ0 _), h1⟩
+  obtain ⟨level, coefficient, U, hlevel, hc, hrate, hU, hHausdorff⟩ :=
+    hK.exists_symmetric_selected_sequence
+  have hzero {t} (ht : t ∈ regularCurvatureDomain m) := sigmaAt_eq_zero_of_density hρ hρ0 heq ht
+  refine ae_curvature_same_sign_quadrants_of_local_bound (isOpen_regularCurvatureDomain m) hρ hρ0
+    hρC heq fun positive t ε ht hpaired hmargin hε => ?_
+  obtain ⟨δ, hδ, hfinite⟩ := AngularGrid.eventually_shadow_atoms_le hK.isCap hU hHausdorff hlevel
+    hc (isCompact_Icc.prod isCompact_Icc) (fun n => (hU n).inBox) positive
+    (mem_regularCurvatureDomain_iff.mp ht).2.2.1 (hzero hpaired.2.1) (hzero hpaired.2.2) hmargin hε
+  refine ⟨δ, hδ, fun d hd hdδ hreg => ?_⟩
+  simpa only [add_sub_cancel_left] using AngularGrid.curvature_Ioc_le_of_eventual_atom_bound
+    hK.isCap hU hHausdorff hlevel hc hrate (fun n => (hU n).inBox)
+    (by linarith only [hK.width_bounds.1, one_lt_M]) haffine
+    (add_nonneg (sameSignCoefficient_nonneg positive t) hε.le) (by linarith) hreg (hzero ht)
+    (hzero (hreg ⟨by linarith, le_rfl⟩))
+    (hfinite.mono fun n hn j hj => hn j (abs_lt.mpr ⟨by linarith [hj.1], by linarith [hj.2]⟩))
 
 theorem IsFullCapMaximizer.curvature_density_corner_controls
     {K : Set Plane} (hK : IsFullCapMaximizer K) (hheight : capHeight K = 1)

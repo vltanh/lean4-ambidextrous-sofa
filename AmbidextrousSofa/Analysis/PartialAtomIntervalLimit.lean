@@ -45,12 +45,14 @@ theorem IsSelectedPolygon.curvature_Ioc_le_of_sampled_atom_bound
   have hw (q : AngularGrid.SourceIndex (dyadic level)) (j : SourceIndex α (dyadic level)) :
       0 ≤ if scaledSource α (dyadic level) q = j then mesh α level else 0 :=
     ite_nonneg (mesh_pos α level).le le_rfl
-  have hatom (j) (hj : fullAngle α (dyadic level) j ∈ Icc a b) :
-      (upperCurvature U {fullAngle α (dyadic level) j}).toReal ≤
-        C * (∑ k : AngularGrid.SourceIndex (dyadic level),
-          if scaledSource α (dyadic level) k = j then mesh α level else 0) +
-          middleOuterMass U α (dyadic level) j +
-            selectionDefect target U α level coefficient j := by
+  refine upperCurvature_real_le_of_atom_bound hU.isCap (outerGrid α (dyadic level)) hU.polygon_eq
+    (Ioc_subset_Icc_self.trans hupper) (fun ht => htop (Ioc_subset_Icc_self ht))
+    (q := fun j => fullAngle α (dyadic level) j ∈ Icc a b)
+    (δ := fun j => ∑ k, if scaledSource α (dyadic level) k = j then mesh α level else 0)
+    (fun _ hj => Ioc_subset_Icc_self hj) hC (fun j => Finset.sum_nonneg fun k _ => hw k j)
+    (middleOuterMass_nonneg hU.isCap α _) (selectionDefect_nonneg target U α level hc)
+    (fun j hj => ?_) ?_
+  · change (upperCurvature U {fullAngle α (dyadic level) j}).toReal ≤ _
     by_cases hscaled : ∃ k, j = scaledSource α (dyadic level) k
     · obtain ⟨k, rfl⟩ := hscaled
       have := Finset.single_le_sum (fun q _ => hw q (scaledSource α (dyadic level) k))
@@ -61,22 +63,9 @@ theorem IsSelectedPolygon.curvature_Ioc_le_of_sampled_atom_bound
       rw [innerSourceMass_eq_zero_of_not_scaled U α hαL _ j (by rintro rfl; exact hterminal hj)
         hscaled] at h
       linarith [mul_nonneg hC (Finset.sum_nonneg fun k (_ : k ∈ Finset.univ) => hw k j)]
-  calc
-    (upperCurvature U).real (Ioc a b) ≤
-        ∑ j ∈ Finset.univ.filter (fun j => fullAngle α (dyadic level) j ∈ Icc a b),
-          (upperCurvature U {fullAngle α (dyadic level) j}).toReal := by
-      rw [AngularGrid.upperCurvature_real_eq_sum_sources hU.isCap (outerGrid α (dyadic level))
-        hU.polygon_eq (Ioc_subset_Icc_self.trans hupper) fun ht => htop (Ioc_subset_Icc_self ht)]
-      exact Finset.sum_le_sum_of_subset_of_nonneg
-        (Finset.monotone_filter_right _ fun _ _ h => Ioc_subset_Icc_self h)
-        fun _ _ _ => ENNReal.toReal_nonneg
-    _ ≤ _ := by
-      refine (Finset.sum_le_sum fun j hj => hatom j (Finset.mem_filter.mp hj).2).trans ?_
-      rw [Finset.sum_add_distrib, Finset.sum_add_distrib, ← Finset.mul_sum, Finset.sum_comm]
-      simp only [Finset.sum_ite_eq, Finset.mem_filter, Finset.mem_univ, true_and]
-      gcongr
-      exacts [sum_mesh_scaled_sources_interval_le_of_no_top α level hab htop,
-        fun j _ _ => selectionDefect_nonneg target U α level hc j, Finset.subset_univ _]
+  · rw [Finset.sum_comm]
+    simpa only [Finset.sum_ite_eq, Finset.mem_filter, Finset.mem_univ, true_and] using
+      sum_mesh_scaled_sources_interval_le_of_no_top α level hab htop
 
 theorem curvature_Ioc_le_of_eventual_sampled_atom_bound
     {target : Set Plane} {U : ℕ → Set Plane}
@@ -102,22 +91,10 @@ theorem curvature_Ioc_le_of_eventual_sampled_atom_bound
     (upperCurvature target).real (Ioc a b) ≤ C * (b - a) := by
   have hupper := hregular.trans (regularProperCurvatureDomain_subset α m)
   have hreg {t} (ht : t ∈ Icc a b) := mem_regularCurvatureDomain_iff.mp (hregular ht).1
-  have hcap n := (hU n).isCap
-  have hsigma {t} := MovingSofaOptimality.ang_tendsto_sigmaFun (t := t)
-    (fun n => (hcap n).imported_isConvexBody) hTarget.imported_isConvexBody
-    (hHausdorff.imported_hausdorffTendsto hcap hTarget)
-  have hmiddle := (AngularGrid.middleOuterMass_sum_tendsto_of_compact hHausdorff hcap hTarget
-    (grid := fun n => outerGrid α (dyadic (level n))) (fun n => (hU n).polygon_eq) hbox hwidth
-    haffine isCompact_Icc hupper fun t ht => (hreg ht).2.2.2).congr
-    fun n => Finset.sum_congr (Finset.filter_congr_decidable _ _ _) fun _ _ => rfl
-  refine le_of_tendsto_of_tendsto (b := atTop)
-    (by simpa only [(hcap _).upperCurvature_real_Ioc hab, hTarget.upperCurvature_real_Ioc hab]
-      using (hsigma hb).sub (hsigma ha))
-    (by
-      have h := (((((mesh_tendsto α).comp hlevel).const_add (b - a)).const_mul C).add hmiddle).add
-            (selectionDefect_sum_tendsto (α := α) (level := level) hTarget hcap hc hrate hHausdorff)
-      simp only [add_zero] at h
-      exact h)
+  exact curvature_Ioc_le_of_eventually_le hTarget (fun n => (hU n).isCap)
+    (fun n => (hU n).polygon_eq) hHausdorff hbox hwidth haffine hab hupper
+    (fun t ht => (hreg ht).2.2.2) ha hb ((mesh_tendsto α).comp hlevel)
+    (selectionDefect_sum_tendsto (α := α) hTarget (fun n => (hU n).isCap) hc hrate hHausdorff)
     (hsampled.mono fun n hn => (hU n).curvature_Ioc_le_of_sampled_atom_bound (hc n) hC hab hupper
       (fun h => (hreg h).2.2.1 rfl) (fun h => (hregular h).2 rfl) hn)
 

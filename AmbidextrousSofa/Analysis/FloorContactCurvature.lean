@@ -80,9 +80,9 @@ def regularCornerDomain (m : ℝ) : Set ℝ :=
   Ioo (0 : ℝ) (Real.pi / 2) ∩ (regularCurvatureDomain m ∩
     (fun t : ℝ => t + Real.pi / 2) ⁻¹' regularCurvatureDomain m)
 
-theorem isOpen_regularCornerDomain (m : ℝ) : IsOpen (regularCornerDomain m) := by
-  have hreg : IsOpen (regularCurvatureDomain m) := isOpen_Ioo.sdiff (Set.toFinite _).isClosed
-  exact isOpen_Ioo.inter (hreg.inter (hreg.preimage (continuous_id.add_const _)))
+theorem isOpen_regularCornerDomain (m : ℝ) : IsOpen (regularCornerDomain m) :=
+  have hreg := isOpen_regularCurvatureDomain m
+  isOpen_Ioo.inter (hreg.inter (hreg.preimage (continuous_id.add_const _)))
 
 /-- Local density/ODE control applies throughout the actual regular
 domain, with arbitrary floor-contact sets and no component enumeration. -/

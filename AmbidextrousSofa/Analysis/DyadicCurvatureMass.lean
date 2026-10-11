@@ -13,6 +13,8 @@ Finite half-plane concentration is reindexed by the distinct actual
 source normals. Combining the source atom bound with exact dyadic counting
 gives a uniform linear bound on both punctured axis neighborhoods. The
 only remaining addition is the total selected support penalty defect.
+The summation of atom bounds is stated for any grid, angle set and errors,
+so that it also gives the interval bounds on the wings.
 -/
 
 noncomputable section
@@ -61,22 +63,24 @@ theorem upperCurvature_real_eq_sum_sources {U : Set Plane} (hU : IsDownwardCap U
   exact ENNReal.toReal_sum (fun _ _ => isCompact_singleton.measure_ne_top)
 
 open Classical in
-theorem upperCurvature_real_le_mesh_sum {U : Set Plane} (hU : IsDownwardCap U)
+/-- Summing atom bounds `C * δ j + e₁ j + e₂ j` over the sources whose angle lies in `s`.
+Only the sources with `q j` contribute; the error `e₂` is summed over all sources. -/
+theorem upperCurvature_real_le_of_atom_bound {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (hpoly : U = circumscription U (normal grid))
     {s : Set ℝ} [DecidablePred (fun t => t ∈ s)] (hs : s ⊆ Ioo 0 Real.pi)
     (htop : Real.pi / 2 ∉ s) {q : SourceIndex grid → Prop} [DecidablePred q]
-    (hq : ∀ j, fullAngle grid j ∈ s → q j) (error : SourceIndex grid → ℝ)
-    (herror : ∀ j, 0 ≤ error j) {C δ ε : ℝ} (hC : 0 ≤ C) (hδ : 0 ≤ δ)
-    (hatom : ∀ j, q j → (upperCurvature U {fullAngle grid j}).toReal ≤ C * δ + error j)
-    (hcount : (∑ _j ∈ Finset.univ.filter q, δ) ≤ ε) :
-    (upperCurvature U).real s ≤ C * ε + ∑ j, error j := by
+    (hq : ∀ j, fullAngle grid j ∈ s → q j) {δ e₁ e₂ : SourceIndex grid → ℝ} {C ε : ℝ}
+    (hC : 0 ≤ C) (hδ : ∀ j, 0 ≤ δ j) (he₁ : ∀ j, 0 ≤ e₁ j) (he₂ : ∀ j, 0 ≤ e₂ j)
+    (hatom : ∀ j, q j → (upperCurvature U {fullAngle grid j}).toReal ≤ C * δ j + e₁ j + e₂ j)
+    (hcount : (∑ j ∈ Finset.univ.filter q, δ j) ≤ ε) :
+    (upperCurvature U).real s ≤ C * ε + (∑ j ∈ Finset.univ.filter q, e₁ j) + ∑ j, e₂ j := by
   rw [upperCurvature_real_eq_sum_sources hU grid hpoly hs htop]
   refine (Finset.sum_le_sum fun j hj => hatom j (hq j (Finset.mem_filter.mp hj).2)).trans
     ((Finset.sum_le_sum_of_subset_of_nonneg (Finset.monotone_filter_right _ fun j _ => hq j)
-      fun j _ _ => add_nonneg (mul_nonneg hC hδ) (herror j)).trans ?_)
-  rw [Finset.sum_add_distrib, ← Finset.mul_sum]
-  exact add_le_add (mul_le_mul_of_nonneg_left hcount hC)
-    (Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _) fun j _ _ => herror j)
+      fun j _ _ => add_nonneg (add_nonneg (mul_nonneg hC (hδ j)) (he₁ j)) (he₂ j)).trans ?_)
+  rw [Finset.sum_add_distrib, Finset.sum_add_distrib, ← Finset.mul_sum]
+  exact add_le_add (add_le_add (mul_le_mul_of_nonneg_left hcount hC) le_rfl)
+    (Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _) fun j _ _ => he₂ j)
 
 theorem IsSelectedPolygon.curvature_right_axis_bound {target U : Set Plane}
     {a b coefficient R w ε : ℝ} {level : ℕ}
@@ -86,11 +90,14 @@ theorem IsSelectedPolygon.curvature_right_axis_bound {target U : Set Plane}
     (upperCurvature U).real (Ioc 0 ε) ≤
       (4 * R + 10) * ε + ∑ j, selectionDefect target U level coefficient j := by
   have hεquarter : ε ≤ Real.pi / 4 := hεcut.trans (min_le_left _ _)
-  exact upperCurvature_real_le_mesh_sum hU.isCap (dyadic level) hU.polygon_eq
-    (fun t ht => ⟨ht.1, by linarith [ht.2, Real.pi_pos]⟩) (fun h => by linarith [h.2, Real.pi_pos])
-    (fun j hj => hj.2) _ (selectionDefect_nonneg target U level hcoefficient) (by linarith)
-    (mesh_pos level).le (fun j hj => hU.curvature_atom_coarse_near_axes hcoefficient hR hbox hw hW
-      j (Or.inl (hj.trans hεcut))) (sum_mesh_right_sources_le level hε)
+  simpa only [Finset.sum_const_zero, add_zero] using
+    upperCurvature_real_le_of_atom_bound hU.isCap (dyadic level) hU.polygon_eq
+      (fun t ht => ⟨ht.1, by linarith [ht.2, Real.pi_pos]⟩)
+      (fun h => by linarith [h.2, Real.pi_pos]) (fun j hj => hj.2) (by linarith)
+      (fun _ => (mesh_pos level).le) (fun _ => le_rfl)
+      (selectionDefect_nonneg target U level hcoefficient) (fun j hj => by
+        simpa only [add_zero] using hU.curvature_atom_coarse_near_axes hcoefficient hR hbox hw hW
+          j (Or.inl (hj.trans hεcut))) (sum_mesh_right_sources_le level hε)
 
 theorem IsSelectedPolygon.curvature_left_axis_bound {target U : Set Plane}
     {a b coefficient R w ε : ℝ} {level : ℕ}
@@ -100,12 +107,15 @@ theorem IsSelectedPolygon.curvature_left_axis_bound {target U : Set Plane}
     (upperCurvature U).real (Ico (Real.pi - ε) Real.pi) ≤
       (4 * R + 10) * ε + ∑ j, selectionDefect target U level coefficient j := by
   have hεquarter : ε ≤ Real.pi / 4 := hεcut.trans (min_le_left _ _)
-  exact upperCurvature_real_le_mesh_sum hU.isCap (dyadic level) hU.polygon_eq
-    (fun t ht => ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩) (fun h => by linarith [h.1, Real.pi_pos])
-    (q := fun j => Real.pi - fullAngle (dyadic level) j ≤ ε) (fun j hj => by linarith [hj.1]) _
-    (selectionDefect_nonneg target U level hcoefficient) (by linarith) (mesh_pos level).le
-    (fun j hj => hU.curvature_atom_coarse_near_axes hcoefficient hR hbox hw hW j
-      (Or.inr (hj.trans hεcut))) (sum_mesh_left_sources_le level hε)
+  simpa only [Finset.sum_const_zero, add_zero] using
+    upperCurvature_real_le_of_atom_bound hU.isCap (dyadic level) hU.polygon_eq
+      (fun t ht => ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩)
+      (fun h => by linarith [h.1, Real.pi_pos])
+      (q := fun j => Real.pi - fullAngle (dyadic level) j ≤ ε) (fun j hj => by linarith [hj.1])
+      (by linarith) (fun _ => (mesh_pos level).le) (fun _ => le_rfl)
+      (selectionDefect_nonneg target U level hcoefficient) (fun j hj => by
+        simpa only [add_zero] using hU.curvature_atom_coarse_near_axes hcoefficient hR hbox hw hW
+          j (Or.inr (hj.trans hεcut))) (sum_mesh_left_sources_le level hε)
 
 end AngularGrid
 

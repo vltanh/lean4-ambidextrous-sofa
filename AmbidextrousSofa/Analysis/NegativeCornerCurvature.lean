@@ -8,12 +8,14 @@ public import AmbidextrousSofa.Analysis.CornerConfinement
 /-!
 # Actual curvature vanishes at corners below the floor
 
-The minimum of the two inner walls never exceeds their intersection
-height. A selected finite inner source is nonnegative, so its own corner
-cannot lie below the floor. Strict corner negativity persists uniformly
-on compact angular sets under actual cap Hausdorff convergence. The
-proved finite source-occupation limit then forces the actual limiting
-curvature to vanish on every regular interval of negative corners.
+The corner apex height is a convex combination of the two inner walls.
+A selected finite inner source is nonnegative, so its own corner cannot
+lie below the floor. Strict corner negativity persists uniformly on
+compact angular sets under actual cap Hausdorff convergence. The proved
+finite source-occupation limit then forces the actual limiting curvature
+to vanish on every regular interval of negative corners. A local covering
+argument, shared with the proper-angle case, extends this to the whole
+set of negative corners.
 -/
 
 noncomputable section
@@ -23,21 +25,20 @@ open scoped Topology
 
 namespace AmbidextrousSofa
 
-theorem cornerWall_le_attachedCorner_snd (U : Set Plane) {θ : ℝ}
-    (hs : 0 < Real.sin θ) (hc : 0 < Real.cos θ) (x : ℝ) :
-    cornerWall U θ x ≤ (attachedCorner U θ).2 := by
-  have _ := And.intro hs hc -- not needed by the proof; they stay in the statement for the callers
+/-- The corner apex height is a convex combination of the two inner walls,
+so it is nonnegative wherever both walls are. -/
+theorem attachedCorner_snd_nonneg (U : Set Plane) {θ x : ℝ} (hfirst : 0 ≤ firstWall U θ x)
+    (hsecond : 0 ≤ secondWall U θ x) : 0 ≤ (attachedCorner U θ).2 := by
   have hmean : firstWall U θ x * Real.sin θ ^ 2 + secondWall U θ x * Real.cos θ ^ 2 =
       (attachedCorner U θ).2 := by
     simp only [firstWall, secondWall, attachedCorner]
     field_simp
     ring
-  rw [← hmean, cornerWall]
-  linarith [mul_le_mul_of_nonneg_right (min_le_left (firstWall U θ x) (secondWall U θ x))
-      (sq_nonneg (Real.sin θ)),
-    mul_le_mul_of_nonneg_right (min_le_right (firstWall U θ x) (secondWall U θ x))
-      (sq_nonneg (Real.cos θ)),
-    congrArg (min (firstWall U θ x) (secondWall U θ x) * ·) (Real.sin_sq_add_cos_sq θ)]
+  rw [← hmean]
+  positivity
+
+theorem isOpen_regularCurvatureDomain (m : ℝ) : IsOpen (regularCurvatureDomain m) :=
+  isOpen_Ioo.sdiff (toFinite _).isClosed
 
 /-- Both upper source normals are indexed by the angle of their own
 quarter-turn corner. The top normal itself is excluded when continuity
@@ -118,21 +119,15 @@ below its own corner apex. In particular that apex is nonnegative. -/
 theorem innerSource_corner_height_nonneg (U : Set Plane) (grid : Finset QuarterAngle)
     (j : SourceIndex grid) {x : ℝ} (hx : x ∈ innerSourceSet U grid j) :
     0 ≤ sourceCornerHeight U (fullAngle grid j) := by
-  have hcorner (t : InteriorPoint grid) : cornerWall U t x ≤ (attachedCorner U t).2 := by
-    have ht := interiorPoint_mem grid t
-    exact cornerWall_le_attachedCorner_snd U (Real.sin_pos_of_pos_of_lt_pi ht.1
-      (by linarith [Real.pi_pos])) (Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], ht.2⟩) x
   have h0 := (finiteBarrier_nonneg U (normal grid) (pairList grid) none x).trans_eq
     (innerSource_height U grid j hx)
   rw [sourceCornerHeight, sourceQuarterAngle_fullAngle]
   rcases j with t | t
-  · have hcomp := first_source_le_companion U grid t hx
-    rw [supportWall_unitNormal, supportWall_companionNormal] at hcomp
-    exact h0.trans ((min_eq_left hcomp).symm.le.trans (hcorner t))
-  · have hcomp := second_source_le_first U grid t hx
-    rw [supportWall_unitNormal, supportWall_companionNormal] at hcomp
-    exact h0.trans (((supportWall_companionNormal U t x).trans
-      (min_eq_right hcomp).symm).le.trans (hcorner t))
+  · exact attachedCorner_snd_nonneg U h0
+      ((h0.trans (first_source_le_companion U grid t hx)).trans_eq
+        (supportWall_companionNormal U _ x))
+  · exact attachedCorner_snd_nonneg U (h0.trans (second_source_le_first U grid t hx))
+      (h0.trans_eq (supportWall_companionNormal U _ x))
 
 theorem innerAngularMass_eq_zero_of_corner_neg (U : Set Plane) (grid : Finset QuarterAngle)
     {E : Set ℝ} (hnegative : ∀ t ∈ E, sourceCornerHeight U t < 0) :
@@ -158,12 +153,8 @@ theorem IsFullCapMaximizer.upperCurvature_Ioc_eq_zero_of_negative_corners
     (hst : s ≤ t) (hregular : Icc s t ⊆ regularCurvatureDomain m)
     (hnegative : ∀ θ ∈ Icc s t, sourceCornerHeight U θ < 0) :
     upperCurvature U (Ioc s t) = 0 := by
-  have hlr := horizontalLeft_le_horizontalRight hU.isCap.nonempty hU.isCap.isCompact
-  have hbox : U ⊆ Icc (horizontalLeft U - 1) (horizontalRight U + 1) ×ˢ Icc (0 : ℝ) 1 :=
-    fun p hp => ⟨⟨by linarith [(hU.isCap.fst_mem_Icc hp).1],
-      by linarith [(hU.isCap.fst_mem_Icc hp).2]⟩, hU.isCap.inStrip hp⟩
-  obtain ⟨level, coefficient, V, hlevel, hc, hrate, hV, -, hHausdorff⟩ :=
-    AngularGrid.exists_selected_sequence hU (by linarith) hbox
+  obtain ⟨level, coefficient, V, hlevel, hc, hrate, hV, hHausdorff⟩ :=
+    hU.exists_symmetric_selected_sequence
   have htop : Real.pi / 2 ∉ Icc s t := fun ht =>
     (mem_regularCurvatureDomain_iff.mp (hregular ht)).2.2.1 rfl
   have hzero : Tendsto (fun n => AngularGrid.innerAngularMass (V n)
@@ -173,33 +164,42 @@ theorem IsFullCapMaximizer.upperCurvature_Ioc_eq_zero_of_negative_corners
         (AngularGrid.innerAngularMass_eq_zero_of_corner_neg _ _
           fun θ hθ => hn θ (Ioc_subset_Icc_self hθ)).symm)
   have hreal := tendsto_nhds_unique (AngularGrid.innerAngularMass_Ioc_tendsto_of_canonical_maximum
-    hU hheight haffine hbox hV hHausdorff (tendsto_atTop_mono hlevel tendsto_id)
-    (fun n => (hc n).le) hrate (by linarith) (by linarith) hst hregular) hzero
+    hU hheight haffine (subset_symmetricBox_of_horizontalBox fun p hp =>
+      ⟨hU.isCap.fst_mem_Icc hp, hU.isCap.inStrip hp⟩) hV hHausdorff hlevel hc hrate
+    (by linarith [neg_abs_le (horizontalLeft U), abs_nonneg (horizontalRight U)])
+    (by linarith [le_abs_self (horizontalRight U), abs_nonneg (horizontalLeft U)]) hst hregular)
+    hzero
   exact (measureReal_eq_zero_iff (measure_ne_top_of_subset Ioc_subset_Icc_self
     (isCompact_Icc.measure_ne_top (μ := upperCurvature U)))).mp hreal
 
-/-- Every negative-corner direction in the regular upper domain has a
-zero-curvature neighborhood. Second countability gives the statement
-for the entire actual set, including arbitrarily many components. -/
+/-- Curvature vanishes on the negative corners of an open set of normals
+avoiding the top once it vanishes on every compact interval of negative
+corners inside it: each such direction has a zero-curvature neighborhood,
+and second countability gives the statement for the entire set, including
+arbitrarily many components. -/
+theorem upperCurvature_negative_corners_eq_zero_of_Ioc {U : Set Plane} (hU : IsCompact U)
+    {D : Set ℝ} (hD : IsOpen D) (htop : ∀ θ ∈ D, θ ≠ Real.pi / 2)
+    (h : ∀ a b, a ≤ b → Icc a b ⊆ D → (∀ θ ∈ Icc a b, sourceCornerHeight U θ < 0) →
+      upperCurvature U (Ioc a b) = 0) :
+    upperCurvature U {θ ∈ D | sourceCornerHeight U θ < 0} = 0 := by
+  refine measure_null_of_locally_null _ fun x hx => ?_
+  obtain ⟨l, r, ⟨hl, hr⟩, hsub⟩ := mem_nhds_iff_exists_Ioo_subset.mp <| inter_mem (hD.mem_nhds hx.1)
+    ((continuousAt_sourceCornerHeight hU (htop x hx.1)).tendsto.eventually_lt_const hx.2)
+  obtain ⟨a, hla, hax⟩ := exists_between hl
+  obtain ⟨b, hxb, hbr⟩ := exists_between hr
+  have habsub := (Icc_subset_Ioo hla hbr).trans hsub
+  exact ⟨Ioc a b, nhdsWithin_le_nhds (Ioc_mem_nhds hax hxb),
+    h a b (hax.trans hxb).le (fun θ hθ => (habsub hθ).1) fun θ hθ => (habsub hθ).2⟩
+
 theorem IsFullCapMaximizer.upperCurvature_negative_corners_eq_zero
     {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1)
     {m c : ℝ}
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    upperCurvature U {θ ∈ regularCurvatureDomain m | sourceCornerHeight U θ < 0} = 0 := by
-  have hopen : IsOpen (regularCurvatureDomain m) :=
-    regularCurvatureDomain_eq_three m ▸ (isOpen_Ioo.union isOpen_Ioo).union isOpen_Ioo
-  refine measure_null_of_locally_null _ fun x hx => ?_
-  have hnhds : {θ ∈ regularCurvatureDomain m | sourceCornerHeight U θ < 0} ∈ 𝓝 x :=
-    inter_mem (hopen.mem_nhds hx.1) ((continuousAt_sourceCornerHeight hU.isCap.isCompact
-      (mem_regularCurvatureDomain_iff.mp hx.1).2.2.1).tendsto.eventually_lt_const hx.2)
-  obtain ⟨l, r, ⟨hl, hr⟩, hsub⟩ := mem_nhds_iff_exists_Ioo_subset.mp hnhds
-  have habsub : Icc ((l + x) / 2) ((x + r) / 2) ⊆
-      {θ ∈ regularCurvatureDomain m | sourceCornerHeight U θ < 0} := fun θ hθ =>
-    hsub ⟨by linarith [hθ.1], by linarith [hθ.2]⟩
-  exact ⟨Ioc ((l + x) / 2) ((x + r) / 2), nhdsWithin_le_nhds (mem_of_superset
-    (Ioo_mem_nhds (by linarith) (by linarith)) Ioo_subset_Ioc_self),
-    hU.upperCurvature_Ioc_eq_zero_of_negative_corners hheight haffine (by linarith)
-      (fun θ hθ => (habsub hθ).1) (fun θ hθ => (habsub hθ).2)⟩
+    upperCurvature U {θ ∈ regularCurvatureDomain m | sourceCornerHeight U θ < 0} = 0 :=
+  upperCurvature_negative_corners_eq_zero_of_Ioc hU.isCap.isCompact
+    (isOpen_regularCurvatureDomain m) (fun _ hθ => (mem_regularCurvatureDomain_iff.mp hθ).2.2.1)
+    fun _ _ hst hregular hnegative =>
+      hU.upperCurvature_Ioc_eq_zero_of_negative_corners hheight haffine hst hregular hnegative
 
 end AmbidextrousSofa

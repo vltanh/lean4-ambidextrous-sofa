@@ -7,11 +7,14 @@ public import AmbidextrousSofa.Analysis.SharpCurvatureDensity
 /-!
 # Curvature on entire open wings
 
-An explicit increasing exhaustion promotes the compactly contained
-interval bounds to each whole open wing. The actual curvature has a
-single measurable density on that whole interval, with the proved
-coarse bound and the sharp velocity-dependent bound simultaneously.
-No endpoint atom is included in an open-wing density.
+An explicit increasing exhaustion promotes linear bounds on the compactly
+contained closed intervals to domination of the actual curvature on a
+whole open wing by a multiple of Lebesgue measure. The local sharp source
+bounds at almost every normal give domination by the sharp
+velocity-dependent coefficient. The actual curvature therefore has a
+single measurable density on that whole interval, with the proved coarse
+bound and the sharp bound simultaneously. No endpoint atom is included
+in an open-wing density.
 -/
 
 noncomputable section
@@ -43,6 +46,28 @@ theorem measure_restrict_Ioo_le_of_compactly_contained
   · rw [Ioo_eq_empty (not_lt.2 hab.le)]
     simp
 
+/-- Linear bounds on the closed subintervals of `(A, B)` give domination of the restriction
+to `(A, B)` by the same multiple of Lebesgue measure. -/
+theorem restrict_Ioo_le_smul_of_Icc_le {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] {A B C : ℝ}
+    (hC : 0 ≤ C) (h : ∀ a b, A < a → a ≤ b → b < B → μ.real (Icc a b) ≤ C * (b - a)) :
+    μ.restrict (Ioo A B) ≤ ENNReal.ofReal C • volume.restrict (Ioo A B) := by
+  rw [← Measure.restrict_smul]
+  refine measure_restrict_Ioo_le_of_compactly_contained fun a b ha hab hb => ?_
+  rw [Measure.restrict_smul]
+  have : IsFiniteMeasure (μ.restrict (Ioo a b)) :=
+    isFiniteMeasure_restrict.mpr measure_Ioo_lt_top.ne
+  have : IsFiniteMeasure (ENNReal.ofReal C • volume.restrict (Ioo a b)) :=
+    Measure.smul_finite _ ENNReal.ofReal_ne_top
+  refine MovingSofaOptimality.inj_measure_le_of_Ioo fun x y _ => ?_
+  rw [Measure.restrict_apply measurableSet_Ioo, Measure.smul_apply, smul_eq_mul,
+    Measure.restrict_apply measurableSet_Ioo, Ioo_inter_Ioo]
+  rcases lt_or_ge (x ⊔ a) (y ⊓ b) with hxy | hxy
+  · rw [Real.volume_Ioo, ← ENNReal.ofReal_mul hC, ENNReal.le_ofReal_iff_toReal_le
+      measure_Ioo_lt_top.ne (mul_nonneg hC (sub_nonneg.mpr hxy.le))]
+    exact (measureReal_mono Ioo_subset_Icc_self measure_Icc_lt_top.ne).trans
+      (h _ _ (ha.trans_le le_sup_right) hxy.le (inf_le_right.trans_lt hb))
+  · rw [Ioo_eq_empty hxy.not_gt, measure_empty, measure_empty, mul_zero]
+
 /-- A single density can obey a uniform bound and a second measurable
 pointwise bound at once. Both are derived from domination of measures. -/
 theorem exists_real_density_of_two_bounds
@@ -67,6 +92,8 @@ theorem exists_real_density_of_two_bounds
 
 namespace AngularGrid
 
+/-- Both source families are covered by their full upper normal; their exceptional companion
+atoms are a null set and do not need a regularity hypothesis. -/
 theorem curvature_density_sharp_on_open_wing
     {target : Set Plane} {U : ℕ → Set Plane}
     {boxLeft boxRight R m c A B : ℝ} {level : ℕ → ℕ} {coefficient : ℕ → ℝ}
@@ -85,20 +112,20 @@ theorem curvature_density_sharp_on_open_wing
       (∀ t, ρ t ≤ 4 * R + 10) ∧
       (upperCurvature target).restrict (Ioo A B) =
         (volume.restrict (Ioo A B)).withDensity (fun t => ENNReal.ofReal (ρ t)) := by
+  have hC : 0 ≤ 4 * R + 10 := by linarith
+  have hcoarse := restrict_Ioo_le_smul_of_Icc_le hC fun a b ha hab hb =>
+    curvature_Icc_le_on_wing hTarget hU hHausdorff hlevel hc hrate hR hbox hwidth haffine hA hB
+      htop hperp ha hab hb
   have : IsFiniteMeasure ((upperCurvature target).restrict (Ioo A B)) :=
     isFiniteMeasure_restrict.mpr measure_Ioo_lt_top.ne
-  refine exists_real_density_of_two_bounds (by linarith)
+  refine exists_real_density_of_two_bounds hC
     (continuous_sourceKappa.measurable.comp hTarget.measurable_upperCornerVelocity)
-    (fun t => sourceKappa_nonneg _) ?_ ?_
-  · rw [← Measure.restrict_smul]
-    exact measure_restrict_Ioo_le_of_compactly_contained fun a b ha hab hb => by
-      simpa only [Measure.restrict_smul] using curvature_restrict_le_on_wing hTarget hU
-        hHausdorff hlevel hc hrate hR hbox hwidth haffine hA hB htop hperp ha hab hb
-  · rw [← restrict_withDensity measurableSet_Ioo]
-    exact measure_restrict_Ioo_le_of_compactly_contained fun a b ha hab hb => by
-      simpa only [restrict_withDensity measurableSet_Ioo] using
-        curvature_restrict_le_source_density hTarget hU hHausdorff hlevel hc hrate hR hbox
-          hwidth haffine hA hB htop hperp ha hab hb
+    (fun t => sourceKappa_nonneg _) hcoarse
+    (restrict_Ioo_le_withDensity_of_local_bound hC hcoarse ?_)
+  filter_upwards [ae_sigmaAt_companionSourceAngle_eq_zero target] with t hcomp ht ε hε
+  obtain ⟨δ, hδ, -, hlocal⟩ := curvature_local_source_bound hTarget hU hHausdorff hlevel hc hrate
+    hR hbox hwidth haffine hA hB htop hperp ht hcomp hε
+  exact ⟨δ, hδ, hlocal⟩
 
 end AngularGrid
 
@@ -113,12 +140,10 @@ theorem IsFullCapMaximizer.curvature_density_sharp_on_open_wing {K : Set Plane}
       (∀ t, ρ t ≤ 4 * (|horizontalLeft K| + |horizontalRight K| + 1) + 10) ∧
       (upperCurvature K).restrict (Ioo A B) =
         (volume.restrict (Ioo A B)).withDensity (fun t => ENNReal.ofReal (ρ t)) := by
-  have hR : 0 ≤ |horizontalLeft K| + |horizontalRight K| + 1 := by positivity
-  obtain ⟨level, coefficient, U, hlevel, hc, hrate, hU, -, hHausdorff⟩ :=
-    AngularGrid.exists_selected_sequence hK (neg_le_self hR) (subset_symmetricBox_of_horizontalBox
-      fun p hp => ⟨hK.isCap.fst_mem_Icc hp, hK.isCap.inStrip hp⟩)
-  exact AngularGrid.curvature_density_sharp_on_open_wing hK.isCap hU hHausdorff
-    (tendsto_atTop_mono hlevel tendsto_id) (fun n => (hc n).le) hrate hR (fun n => (hU n).inBox)
-    (by linarith only [hK.width_bounds.1, one_lt_M]) haffine hA hB htop hperp
+  obtain ⟨level, coefficient, U, hlevel, hc, hrate, hU, hHausdorff⟩ :=
+    hK.exists_symmetric_selected_sequence
+  exact AngularGrid.curvature_density_sharp_on_open_wing hK.isCap hU hHausdorff hlevel hc hrate
+    (by positivity) (fun n => (hU n).inBox) (by linarith only [hK.width_bounds.1, one_lt_M])
+    haffine hA hB htop hperp
 
 end AmbidextrousSofa
