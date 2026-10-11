@@ -31,8 +31,7 @@ theorem leftCompanionWingDensity_bounds {ρ : ℝ → ℝ} {K m : ℝ}
 theorem IsFullCapMaximizer.isCap_fullLeftCompanion
     {U : Set Plane} (hU : IsFullCapMaximizer U) :
     IsDownwardCap (leftCompanionCap U (horizontalLeft U + capWidth U / 4)) :=
-  hU.isCap.leftCompanionCap (hU.isCap.middleChord_endpoints
-    (show 0 < capWidth U by linarith only [hU.width_bounds.1, one_lt_M])).1
+  hU.isCap.leftCompanionCap (hU.isCap.middleChord_endpoints (zero_lt_two.trans hU.two_lt_width)).1
 
 def fullTiltedSupportQuarterPair {U : Set Plane} (hU : IsFullCapMaximizer U)
     {m c : ℝ} {ρ : ℝ → ℝ} {K : ℝ} (hm : 0 ≤ m)
@@ -117,7 +116,7 @@ theorem fullTiltedSupportQuarterPair_traces (hmpos : 0 < m) :
       (F).gD 0 = -(horizontalLeft U + capWidth U / 4) ∧
       (F).fD (Real.pi / 2) = -(MovingSofaOptimality.vminus U (Real.pi / 2)).1 ∧
       (F).gD (Real.pi / 2) = -capRoof U (horizontalLeft U) := by
-  have hW : 0 < capWidth U := by linarith only [hU.width_bounds.1, one_lt_M]
+  have hW := zero_lt_two.trans hU.two_lt_width
   obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints hW
   have htop := hU.isCap.top_leftCompanionCap_of_positive_affine ha hb hab hmpos haffine
   have hP := horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact hU.isCap.convex
@@ -142,8 +141,7 @@ theorem fullTiltedSupportQuarterPair_after_affine {t : ℝ}
       (F).gD t = supportTangent U (t + Real.pi / 2) ∧
       supportP (F).fD (F).g t = -secondCornerVelocity U t ∧
       supportQ (F).gD (F).f t = firstCornerVelocity U t := by
-  obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints
-    (show 0 < capWidth U by linarith only [hU.width_bounds.1, one_lt_M])
+  obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints (zero_lt_two.trans hU.two_lt_width)
   have hmatch := hU.isCap.companionSupport_and_tangent_leftCut_after_affine
     ha hb hab haffine hmt ht.1 ht.2
   have hgd := hU.isCap_fullLeftCompanion.closedSupportDerivative_eq_supportTangent

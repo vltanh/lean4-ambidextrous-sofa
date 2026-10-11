@@ -12,8 +12,8 @@ If the top overhang vanished, the exact selected-source projection would
 put the low-wing zero at or to the left of the low middle endpoint. Its
 actual minimizing contact occurs in the companion unit-curvature prefix.
 The initial companion kernel is then strictly negative at the low middle
-endpoint, contradicting that contact. The two endpoint circles give the
-remaining overhang bounds directly from the same minimum.
+endpoint, contradicting that contact. The low endpoint circle bounds the
+overhang directly from the same minimum.
 -/
 
 noncomputable section
@@ -21,30 +21,6 @@ noncomputable section
 open Set Filter MeasureTheory
 
 namespace AmbidextrousSofa
-
-/-- The low companion cut of a tilted full maximum has a lower top and a positive left roof. -/
-private theorem tilted_companion_cut {U : Set Plane} (hU : IsFullCapMaximizer U) {C h m c : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC0 : 2 / 3 ≤ C) (hC1 : C ≤ 37 / 50) (hh0 : 0 < h) (hh1 : h < 17 / 50)
-    (hheight : capHeight U = 1) (haffine : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c)
-    (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1) :
-    0 < m ∧ -C ∈ horizontalProjection U ∧ C ∈ horizontalProjection U ∧
-      IsDownwardCap (leftCompanionCap U (-C)) ∧
-      horizontalLeft (leftCompanionCap U (-C)) = -2 * C ∧ capHeight (leftCompanionCap U (-C)) < 1 ∧
-      0 < capRoof (leftCompanionCap U (-C)) (horizontalLeft (leftCompanionCap U (-C))) := by
-  have hC : 0 < C := by linarith
-  have hm := positive_affine_slope_of_middle_heights hC hh0 haffine hlow hhigh
-  have hproj : horizontalProjection U = Icc (-2 * C) (2 * C) := by
-    rw [horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact hU.isCap.convex, hl, hr]
-  have ha : -C ∈ horizontalProjection U := by rw [hproj]; constructor <;> linarith
-  have hb : C ∈ horizontalProjection U := by rw [hproj]; constructor <;> linarith
-  have hleft := horizontalLeft_leftCompanionCap hU.isCap ha
-  refine ⟨hm, ha, hb, hU.isCap.leftCompanionCap ha, hleft.trans hl, ?_, ?_⟩
-  · rw [(hU.isCap.top_leftCompanionCap_of_positive_affine ha hb (by linarith) hm haffine).1, hlow]
-    linarith
-  · rw [hleft, hU.isCap.capRoof_leftCompanionCap ha ⟨le_rfl, by rw [hl]; linarith⟩]
-    linarith [(hU.tilted_left_endpoint_height_bounds hl hr hC hC1 hh0.le hh1 hheight
-      haffine hlow hhigh).1]
 
 /-- The density, reflected crossing, zero contact, and projection are
 all obtained from the actual maximum. No overhang or occupation premise
@@ -59,23 +35,20 @@ theorem IsFullCapMaximizer.tilted_top_overhang_pos
     0 < (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C := by
   have hC : 0 < C := by linarith
   obtain ⟨hm, ha, hb, hV, hlV, hVH, hVL⟩ :=
-    tilted_companion_cut hU hl hr hC0 hC1 hh0 hh1 hheight haffine hlow hhigh
+    hU.tilted_companion_cut hl hr hC0 hC1 hh0 hh1 hheight haffine hlow hhigh
   have h1 := le_max_left (C + companionZero (leftCompanionCap U (-C))) 0
   have h2 := le_max_right (C + companionZero (leftCompanionCap U (-C))) 0
   rw [← hU.tilted_top_projection_eq hl hr hC0 hC1 hh0 hh1 hheight haffine hlow hhigh] at h1 h2
   by_contra! hTle
   have hz : companionZero (leftCompanionCap U (-C)) ≤ -C := by linarith only [h1, hTle]
   -- Without overhang, the slope is small and the companion density has a unit prefix.
-  have hmEq : m = h / (2 * C) := by
-    rw [eq_div_iff (by positivity)]
-    linarith only [hlow, hhigh, haffine (-C) ⟨le_rfl, neg_le_self hC.le⟩,
-      haffine C ⟨neg_le_self hC.le, le_rfl⟩]
   have hsmall : C + m < 1 := by
-    rw [hmEq]; exact canonical_width_add_slope_lt_one (by linarith only [hC0]) hC1 hh1
-  have hmid : middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
-    rw [middleHalfInterval, hl, hr]; congr 1 <;> ring
+    by_contra! hcm
+    linarith only [mul_nonneg (sub_nonneg.2 hC0) (sub_nonneg.2 hC1), hC1, hh1, hlow, hhigh,
+      haffine (-C) ⟨le_rfl, neg_le_self hC.le⟩, haffine C ⟨neg_le_self hC.le, le_rfl⟩,
+      mul_le_mul_of_nonneg_left hcm hC.le]
   have haff : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c := hmid ▸ haffine
+      capRoof U x = m * x + c := (hU.isCap.tilted_centered_middle hl hr hC).2.2 ▸ haffine
   obtain ⟨ρ, hρ, hbounds, hcoarse, heq, -⟩ := hU.curvature_density_corner_controls hheight haff
   have hρ0 : ∀ s, 0 ≤ ρ s := fun s => (hbounds s).1
   have hunit := fullTiltedSupportQuarterPair_companion_unit_prefix_of_collapsed_top
@@ -104,16 +77,14 @@ theorem IsFullCapMaximizer.tilted_top_overhang_pos
   have hVtop := hU.isCap.top_leftCompanionCap_of_positive_affine ha hb (neg_lt_self hC) hm haffine
   simp only [hVtop.1, hVtop.2, hlow] at hkernel
   -- Then the companion wall at `-C` is both nonnegative and at most `-h`.
-  have hs := Real.sin_nonneg_of_nonneg_of_le_pi ht.1.le (by linarith only [ht.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith only [ht.1, Real.pi_pos], ht.2⟩
+  obtain ⟨hs, hc⟩ := sin_pos_cos_pos_of_mem_quarter ht
   have hwallle : secondWall (leftCompanionCap U (-C)) t (companionZero (leftCompanionCap U (-C)))
       ≤ secondWall (leftCompanionCap U (-C)) t (-C) :=
-    div_le_div_of_nonneg_right (by linarith only [mul_le_mul_of_nonneg_right hz hs]) hc.le
+    div_le_div_of_nonneg_right (by linarith only [mul_le_mul_of_nonneg_right hz hs.le]) hc.le
   linarith only [hwallle, hwall, hkernel, hh0]
 
-/-- RT.9--RT.12 for the actual full maximum: the low middle endpoint is
-dry, the top extends strictly to its right, and both literal endpoint
-circles bound that overhang. -/
+/-- For the actual full maximum the low middle endpoint is dry, the top extends strictly to its
+right, and the low endpoint circle bounds that overhang. -/
 theorem IsFullCapMaximizer.tilted_dry_left_and_overhang_bounds
     {U : Set Plane} (hU : IsFullCapMaximizer U) {C h m c : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
@@ -122,10 +93,7 @@ theorem IsFullCapMaximizer.tilted_dry_left_and_overhang_bounds
     (haffine : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c)
     (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1) :
     let T := (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C
-    0 < T ∧ sweptNiche U (Real.pi / 2) (-C) = 0 ∧
-      T = C + companionZero (leftCompanionCap U (-C)) ∧
-      T ≤ Real.sqrt (h * (2 - h)) ∧
-      T ≤ Real.sqrt (1 - capRoof U (horizontalLeft U) ^ 2) - C ∧ T < 1 - C := by
+    0 < T ∧ sweptNiche U (Real.pi / 2) (-C) = 0 ∧ T ≤ Real.sqrt (h * (2 - h)) := by
   intro T
   have hT : 0 < T := hU.tilted_top_overhang_pos hl hr hC0 hC1 hh0 hh1 hheight haffine hlow hhigh
   have hprojection : T = max (C + companionZero (leftCompanionCap U (-C))) 0 :=
@@ -134,21 +102,16 @@ theorem IsFullCapMaximizer.tilted_dry_left_and_overhang_bounds
     by_contra! hz
     rw [max_eq_right (by linarith only [hz])] at hprojection
     linarith only [hT, hprojection]
-  have hTeq : T = C + companionZero (leftCompanionCap U (-C)) := by
-    rwa [max_eq_left (by linarith only [hz])] at hprojection
-  obtain ⟨-, ha, hb, hV, hlV, hVH, hVL⟩ :=
-    tilted_companion_cut hU hl hr hC0 hC1 hh0 hh1 hheight haffine hlow hhigh
-  -- Both endpoint circles bound the companion zero.
+  rw [max_eq_left (by linarith only [hz])] at hprojection
+  obtain ⟨-, ha, hb, hV, -⟩ :=
+    hU.tilted_companion_cut hl hr hC0 hC1 hh0 hh1 hheight haffine hlow hhigh
+  -- The low endpoint circle bounds the companion zero.
   have hzlow := hV.companionZero_le_point (p := (-C, 1 - h))
     (by simpa only [hlow] using hU.isCap.rightRoof_mem_leftCompanionCap ha)
-  have hzleft := hV.companionZero_le_point (p := (horizontalLeft U, capRoof U (horizontalLeft U)))
-    ⟨capRoof_mem hU.isCap.isCompact (horizontalLeft_mem hU.isCap.nonempty hU.isCap.isCompact),
-      le_rfl, by rw [hl]; linarith only [hC0]⟩
-  simp only [rightCircleAbscissa, circleHeight] at hzlow hzleft
+  simp only [rightCircleAbscissa, circleHeight] at hzlow
   refine ⟨hT, hU.isCap.sweptNiche_eq_zero_of_le_low_wing_zero ha hb (by linarith only [hC0])
-    haffine (by linarith only [hC0]) hz.le, hTeq, ?_, by linarith only [hTeq, hzleft, hl], ?_⟩
-  · rw [show h * (2 - h) = 1 - (1 - h) ^ 2 by ring]
-    linarith only [hTeq, hzlow]
-  · linarith only [hTeq, hlV, hV.companionZero_lt_left_add_one hVH hVL]
+    haffine (by linarith only [hC0]) hz.le, ?_⟩
+  rw [show h * (2 - h) = 1 - (1 - h) ^ 2 by ring]
+  linarith only [hprojection, hzlow]
 
 end AmbidextrousSofa

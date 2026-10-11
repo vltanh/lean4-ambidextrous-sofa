@@ -15,7 +15,8 @@ Small widths satisfy the initial-floor test directly. At larger widths,
 the actual dry endpoint and top projection supply the small-height area
 comparison. The remaining height ranges satisfy the established energy
 tests or contradict the actual three-angle triangle estimate. The final
-selector has only the centered canonical cap hypotheses.
+selector has only the centered canonical cap hypotheses and selects its
+density from the cap itself.
 -/
 
 noncomputable section
@@ -31,7 +32,7 @@ theorem IsFullCapMaximizer.exists_tilted_first_unit_density
     {U : Set Plane} (hU : IsFullCapMaximizer U) {C h m c : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hC0 : 1 / 2 < C) (hC1 : C < 37 / 50) (hh0 : 0 < h) (hh1 : h < 17 / 50)
-    (hheight : capHeight U = 1)
+    (hm : 0 < m) (hsmall : C + m < 1) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c)
     (hhigh : capRoof U C = 1) (hlow : capRoof U (-C) = 1 - h) :
@@ -43,8 +44,11 @@ theorem IsFullCapMaximizer.exists_tilted_first_unit_density
       (∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1) := by
   have haff : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c := by
     simpa only [middleHalfInterval_eq_centered hl hr] using haffine
-  refine hU.exists_tilted_first_unit_density_of_initial_floor_conditions
-    hl hr hC0 hC1.le hh0 hh1 hheight haffine hhigh hlow ?_
+  obtain ⟨ρ, hρ, hbounds, hcoarse, heq, -⟩ := hU.curvature_density_corner_controls hheight haffine
+  have hρ0 (t : ℝ) := (hbounds t).1
+  refine ⟨ρ, hρ, hbounds, hcoarse, heq,
+    fullTiltedSupportQuarterPair_ae_first_le_one_of_initial_floor_conditions hU hm.le haffine hρ
+      hρ0 hcoarse heq hl hr hC0 hm hsmall hh0 hheight hhigh hlow (fun t => (hbounds t).2) ?_⟩
   by_cases hCsmall : C ≤ 2 / 3
   · -- Small widths pass the initial-floor test directly.
     have he0 := capRoof_nonneg hU.isCap.isCompact
@@ -61,24 +65,22 @@ theorem IsFullCapMaximizer.exists_tilted_first_unit_density
         hhs, mul_nonneg (by linarith only [hC0] : (0 : ℝ) ≤ 3 * C - 1)
           (Analysis.initialFloorSine_nonneg h)]
   replace hC0 : 2 / 3 < C := lt_of_not_ge hCsmall
-  have hm := positive_affine_slope_of_middle_heights (by linarith only [hC0]) hh0 haff hlow hhigh
-  obtain ⟨hT, hdry, -, hTs, -⟩ :=
+  obtain ⟨hT, hdry, hTs⟩ :=
     hU.tilted_dry_left_and_overhang_bounds hl hr hC0.le hC1.le hh0 hh1 hheight haff hlow hhigh
   by_cases hhsmall : h ≤ 509 / 10000
   · -- Small heights: the dry endpoint and the top projection give the area comparison.
-    obtain ⟨ρ, hρ, hbounds, hcoarse, heq, hlate, hJ⟩ :=
-      hU.exists_tilted_first_density_with_late_controls hl hr hC0 hC1 hh0 hh1 hheight haffine
-        hhigh hlow
+    obtain ⟨hlate, hJ⟩ := fullTiltedSupportQuarterPair_late_unit_and_excess_moment hU hm.le
+      haffine hρ hρ0 hcoarse heq hl hr hC0 hC1 hm hsmall hh0 hh1 hheight hhigh hlow
+      (fun t => (hbounds t).2)
     have htop : MovingSofaOptimality.vminus U (Real.pi / 2) =
         (C + ((MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C), 1) :=
       Prod.ext (by ring) ((top_vminus_snd_eq_capHeight U).trans hheight)
-    have hn := hU.isCap.middle_niche_le_top_overhang_of_late_unit hρ (fun s => (hbounds s).1)
-      hcoarse heq (firstQuarter_subset_regularCurvatureDomain_of_nonneg hm.le) hr
+    have hsub := firstQuarter_subset_regularCurvatureDomain_of_nonneg hm.le
+    have hn := hU.isCap.middle_niche_le_top_overhang_of_late_unit hρ hρ0 hcoarse heq hsub hr
       (by linarith only [hC0]) hC1.le (by linarith only [hT]) htop hlate
     refine hU.smallTilt_initialFloorEnergyConditions_of_actual_geometry hl hr hC0.le hC1.le hh0
-      hhsmall hheight haff hlow hhigh hdry hT.le htop hTs (hn.trans ?_) hρ
-      (fun s => (hbounds s).1) hcoarse heq
-      (firstQuarter_subset_regularCurvatureDomain_of_nonneg hm.le) hJ.le
+      hhsmall hheight haff hlow hhigh hdry hT.le htop hTs (hn.trans ?_) hρ hρ0 hcoarse heq hsub
+      hJ.le
     have hsq : 9 * C / 10 ≤ Real.sqrt (1 - C ^ 2) :=
       Real.le_sqrt_of_sq_le (by nlinarith only [hC0, hC1])
     rw [div_le_iff₀ ((by linarith only [hC0] : (0 : ℝ) < 9 * C / 10).trans_le hsq)]

@@ -67,19 +67,22 @@ theorem cotangent_le_at_arccos {C t x : ℝ} (hx : 0 ≤ x)
   rw [div_le_div_iff₀ hs hroot, mul_assoc, mul_assoc]
   exact mul_le_mul_of_nonneg_left (mul_le_mul hcos hsin hroot.le hC0.le) hx
 
-/-- The bound is for the actual swept niche at the middle endpoint.
-Every early first wall is compared with the wall at `arccos C`; no
-attained-angle or source-occupation hypothesis is added. -/
-theorem IsDownwardCap.middle_niche_le_top_overhang_of_unit_tail
+/-- The bound is for the actual swept niche at the middle endpoint, once the first-wing
+curvature is at most one after `11/15 < arccos C`. Every early first wall is compared with the
+wall at `arccos C`; no attained-angle or source-occupation hypothesis is added. -/
+theorem IsDownwardCap.middle_niche_le_top_overhang_of_late_unit
     {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {K C b : ℝ}
     (hρ : Measurable ρ) (hρ0 : ∀ s, 0 ≤ ρ s) (hρK : ∀ s, ρ s ≤ K)
     (heq : (upperCurvature U).restrict S =
       (volume.restrict S).withDensity (fun s => ENNReal.ofReal (ρ s)))
     (hsub : Ioo (0 : ℝ) (Real.pi / 2) ⊆ S)
-    (hright : horizontalRight U = 2 * C) (hC0 : 0 < C) (hC1 : C < 1)
+    (hright : horizontalRight U = 2 * C) (hC0 : 0 < C) (hC1 : C ≤ 37 / 50)
     (hCb : C ≤ b) (htop : MovingSofaOptimality.vminus U (Real.pi / 2) = (b, 1))
-    (hunit : ∀ᵐ s ∂volume.restrict (Ioo (Real.arccos C) (Real.pi / 2)), ρ s ≤ 1) :
+    (hunit : ∀ᵐ s ∂volume.restrict (Ioo (11 / 15 : ℝ) (Real.pi / 2)), ρ s ≤ 1) :
     sweptNiche U (Real.pi / 2) C ≤ (b - C) * C / Real.sqrt (1 - C ^ 2) := by
+  replace hunit := ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo
+    (Analysis.eleven_fifteenths_lt_arccos_of_le (by linarith only [hC0]) hC1).le le_rfl) hunit
+  replace hC1 : C < 1 := by linarith only [hC1]
   have hA0 : 0 < Real.arccos C := Real.arccos_pos.mpr hC1
   have hAL : Real.arccos C < Real.pi / 2 := Real.arccos_lt_pi_div_two.mpr hC0
   have hT0 : 0 ≤ b - C := sub_nonneg.mpr hCb
@@ -119,20 +122,5 @@ theorem IsDownwardCap.middle_niche_le_top_overhang_of_unit_tail
   rw [firstTangency_eq_vplus_sub_unitNormal]
   change (MovingSofaOptimality.vplus U s).1 - Real.cos s ≤ C
   linarith
-
-theorem IsDownwardCap.middle_niche_le_top_overhang_of_late_unit
-    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {K C b : ℝ}
-    (hρ : Measurable ρ) (hρ0 : ∀ s, 0 ≤ ρ s) (hρK : ∀ s, ρ s ≤ K)
-    (heq : (upperCurvature U).restrict S =
-      (volume.restrict S).withDensity (fun s => ENNReal.ofReal (ρ s)))
-    (hsub : Ioo (0 : ℝ) (Real.pi / 2) ⊆ S)
-    (hright : horizontalRight U = 2 * C) (hC0 : 0 < C) (hC1 : C ≤ 37 / 50)
-    (hCb : C ≤ b) (htop : MovingSofaOptimality.vminus U (Real.pi / 2) = (b, 1))
-    (hunit : ∀ᵐ s ∂volume.restrict (Ioo (11 / 15 : ℝ) (Real.pi / 2)), ρ s ≤ 1) :
-    sweptNiche U (Real.pi / 2) C ≤ (b - C) * C / Real.sqrt (1 - C ^ 2) :=
-  hU.middle_niche_le_top_overhang_of_unit_tail hρ hρ0 hρK heq hsub hright hC0
-    (by linarith only [hC1]) hCb htop
-    (ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo
-      (Analysis.eleven_fifteenths_lt_arccos_of_le (by linarith only [hC0]) hC1).le le_rfl) hunit)
 
 end AmbidextrousSofa

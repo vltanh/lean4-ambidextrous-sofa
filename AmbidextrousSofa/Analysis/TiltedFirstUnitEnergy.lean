@@ -221,7 +221,7 @@ theorem firstUnit_lossDensity_lower_bound {q v δ u : ℝ}
   · linarith [mul_nonneg (mul_nonneg hq hδ0) (sub_nonneg.2 h),
       mul_nonneg (by linarith : 0 ≤ 1 / 4 - q) (sub_nonneg.2 h)]
 
-/-- The exact algebra preceding GF's scalar estimate. `IB` and `ID`
+/-- The exact algebra preceding the scalar estimate. `IB` and `ID`
 are ordinary weighted momentum integrals; their hypotheses state the
 harmonic reconstructions with the actual convolution remainders. -/
 theorem firstUnit_balance_after_endpoint_substitution
@@ -238,7 +238,7 @@ theorem firstUnit_balance_after_endpoint_substitution
   unfold firstUnitFinalEnergy firstUnitInitialEnergy momentumQuadraticEnergy at henergy
   linarith
 
-/-- The nonsharp scalar endpoint of GF. Its premises are the
+/-- The nonsharp scalar endpoint of the first-unit argument. Its premises are the
 first-floor displacement bounds and the three independently paid
 moment budgets. The numerical contradiction has a fixed rational gap. -/
 theorem firstUnit_terminal_contradiction

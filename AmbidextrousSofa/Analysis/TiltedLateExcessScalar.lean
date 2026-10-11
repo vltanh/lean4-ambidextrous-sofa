@@ -68,13 +68,13 @@ theorem initial_circle_excess_bounds {d B a : ℝ}
     (ha : a ∈ Ioo (0 : ℝ) (Real.pi / 2))
     (hp : initialFloorCircleP d B a = 0)
     (hq : 1 < initialFloorCircleQ d B a) :
-    B < 0 ∧ a < 8 / 15 ∧ initialFloorCircleQ d B a - 1 < 7 / 100 ∧
+    a < 8 / 15 ∧ initialFloorCircleQ d B a - 1 < 7 / 100 ∧
       quadraticExcessLength (initialFloorCircleQ d B a - 1) < 2 / 15 := by
   have hr := initialFloorCircle_radius d B a
   rw [hp] at hr
   have hB : B < 0 := by nlinarith
   have hq7 : initialFloorCircleQ d B a - 1 < 7 / 100 := by nlinarith
-  refine ⟨hB, ?_, hq7, quadraticExcessLength_lt (by linarith) (by norm_num) (by linarith)⟩
+  refine ⟨?_, hq7, quadraticExcessLength_lt (by linarith) (by norm_num) (by linarith)⟩
   by_contra! h
   have := Real.sin_le_sin_of_le_of_le_pi_div_two (by linarith [Real.pi_pos]) ha.2.le h
   have := Real.sin_gt_sub_cube (by norm_num : (0 : ℝ) < 8 / 15)
@@ -94,57 +94,51 @@ theorem initial_floor_positive_forces_small_tilt {d B h : ℝ}
   nlinarith [mul_le_mul_of_nonneg_right hB (by linarith : 0 ≤ 1 - h),
     mul_nonneg (sub_nonneg.2 hd) (initialFloorSine_nonneg h)]
 
-theorem initial_floor_test_medium_tilt_le {d B h : ℝ}
-    (hd0 : 2 ≤ d) (hd1 : d ≤ 111 / 50)
-    (hh0 : 1 / 25 ≤ h) (hh1 : h ≤ 1 / 8)
-    (hB0 : -7 / 12 + 3 / 2 * h ≤ B)
-    (hB1 : B ≤ -1 / 4 + 5 / 4 * h) :
-    initialFloorTest d B h ≤ 10387 / 2500 :=
-  (initialFloorTest_mono_d (by linarith) (by linarith) (by linarith) hd1).trans <|
-    (initialFloorTest_mono_B hB1 (by linarith)).trans <|
-      initialFloorTest_affine_le_of_endpoint_bounds (l := 1 / 25) (r := 1 / 8) (sl := 7 / 25)
-        (sr := 15 / 32) (by norm_num) (by norm_num) (by norm_num) (by norm_num) ⟨hh0, hh1⟩
-        (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+/-- In the medium tilt range a rational chord bounds the floor test, so the excess energy
+stops the excess before `11/15`. -/
+theorem medium_tilt_excess_stops_early {d B h ε a : ℝ}
+    (hd0 : 2 ≤ d) (hd1 : d ≤ 111 / 50) (hh0 : 1 / 25 ≤ h) (hh1 : h ≤ 1 / 8)
+    (hB0 : -7 / 12 + 3 / 2 * h ≤ B) (hB1 : B ≤ -1 / 4 + 5 / 4 * h) (hε : 0 ≤ ε) (had : a ≤ d)
+    (henergy : (2 + ε) ^ 2 ≤ initialFloorTest d B h) (hquad : 0 ≤ 1 + B - d * a + a ^ 2 / 2) :
+    ε < 19 / 100 ∧ quadraticExcessLength ε < 1 / 3 ∧ a + quadraticExcessLength ε < 11 / 15 := by
+  have htest : initialFloorTest d B h ≤ 10387 / 2500 :=
+    (initialFloorTest_mono_d (by linarith only [hh0]) (by linarith only [hh1])
+      (by linarith only [hd0]) hd1).trans <|
+      (initialFloorTest_mono_B hB1 (by linarith only [hB0, hh0, hh1])).trans <|
+        initialFloorTest_affine_le_of_endpoint_bounds (l := 1 / 25) (r := 1 / 8) (sl := 7 / 25)
+          (sr := 15 / 32) (by norm_num) (by norm_num) ⟨hh0, hh1⟩
+          (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  have he : ε < 1 / 25 := by nlinarith only [henergy.trans htest, hε]
+  have ha := first_zero_lt_of_quadratic had (by linarith only [hd0]) hquad
+    (show 1 + B - d * (3 / 5) + (3 / 5) ^ 2 / 2 < 0 by linarith only [hB1, hh1, hd0])
+  have hl := quadraticExcessLength_lt hε (by norm_num : (0 : ℝ) ≤ 2 / 25) (by linarith only [he])
+  exact ⟨by linarith only [he], by linarith only [hl], by linarith only [ha, hl]⟩
 
-theorem initial_floor_test_small_tilt_le {d B h : ℝ}
-    (hd : 2 ≤ d) (hh0 : 0 ≤ h) (hh1 : h ≤ 1 / 25)
-    (hB0 : -7 / 12 ≤ B) (hB1 : B ≤ -1 / 5) :
-    initialFloorTest d B h ≤ d ^ 2 - 4 / 25 := by
-  have hs0 := initialFloorSine_nonneg h
-  have hhs : h ≤ initialFloorSine h := Real.le_sqrt_of_sq_le (by nlinarith)
-  unfold initialFloorTest
-  nlinarith [mul_nonneg (sub_nonneg.2 hd) hs0, mul_nonneg (by linarith : 0 ≤ B + 7 / 12) hh0]
-
-theorem medium_tilt_excess_stops_early {d ε a : ℝ}
-    (hd : 2 ≤ d) (hε : 0 ≤ ε) (had : a ≤ d)
-    (henergy : (2 + ε) ^ 2 ≤ 10387 / 2500)
-    (hquad : 0 ≤ 29 / 32 - d * a + a ^ 2 / 2) :
-    ε < 1 / 25 ∧ a < 3 / 5 ∧ quadraticExcessLength ε < 2 / 25 ∧
-      a + quadraticExcessLength ε < 11 / 15 := by
-  have he : ε < 1 / 25 := by nlinarith
-  have ha := first_zero_lt_of_quadratic had (by linarith) hquad
-    (show 29 / 32 - d * (3 / 5) + (3 / 5) ^ 2 / 2 < 0 by linarith)
-  have hl := quadraticExcessLength_lt hε (by norm_num : (0 : ℝ) ≤ 2 / 25) (by linarith)
-  exact ⟨he, ha, hl, by linarith⟩
-
-/-- Two rational width ranges replace the derivative argument for the
+/-- In the small tilt range two rational width ranges replace the derivative argument for the
 nested-root sum. Both give strict stopping time below `11/15`. -/
-theorem small_tilt_excess_stops_early {d ε a : ℝ}
-    (hd0 : 2 ≤ d) (hd1 : d ≤ 111 / 50) (hε : 0 ≤ ε) (had : a ≤ d)
-    (henergy : (2 + ε) ^ 2 ≤ d ^ 2 - 4 / 25)
-    (hquad : 0 ≤ 4 / 5 - d * a + a ^ 2 / 2) :
-    ε < 19 / 100 ∧ quadraticExcessLength ε < 1 / 3 ∧
-      a + quadraticExcessLength ε < 11 / 15 := by
-  have he : ε < 37 / 200 := by nlinarith
-  have hl := quadraticExcessLength_lt hε (by norm_num : (0 : ℝ) ≤ 8 / 25) (by linarith)
-  refine ⟨by linarith, by linarith, ?_⟩
+theorem small_tilt_excess_stops_early {d B h ε a : ℝ}
+    (hd0 : 2 ≤ d) (hd1 : d ≤ 111 / 50) (hh0 : 0 ≤ h) (hh1 : h ≤ 1 / 25)
+    (hB0 : -7 / 12 ≤ B) (hB1 : B ≤ -1 / 5) (hε : 0 ≤ ε) (had : a ≤ d)
+    (henergy : (2 + ε) ^ 2 ≤ initialFloorTest d B h) (hquad : 0 ≤ 1 + B - d * a + a ^ 2 / 2) :
+    ε < 19 / 100 ∧ quadraticExcessLength ε < 1 / 3 ∧ a + quadraticExcessLength ε < 11 / 15 := by
+  have htest : initialFloorTest d B h ≤ d ^ 2 - 4 / 25 := by
+    have hs0 := initialFloorSine_nonneg h
+    have hhs : h ≤ initialFloorSine h := Real.le_sqrt_of_sq_le (by nlinarith only [hh0, hh1])
+    unfold initialFloorTest
+    nlinarith only [hB0, hB1, hhs, hh0, mul_nonneg (sub_nonneg.2 hd0) hs0,
+      mul_nonneg (by linarith only [hB0] : 0 ≤ B + 7 / 12) hh0]
+  replace henergy := henergy.trans htest
+  have he : ε < 37 / 200 := by nlinarith only [henergy, hε, hd0, hd1]
+  have hl := quadraticExcessLength_lt hε (by norm_num : (0 : ℝ) ≤ 8 / 25) (by linarith only [he])
+  refine ⟨by linarith only [he], by linarith only [hl], ?_⟩
   rcases le_or_gt d (54 / 25) with hdcut | hdcut
-  · have hl' := quadraticExcessLength_lt hε (by norm_num : (0 : ℝ) ≤ 6 / 25) (by nlinarith)
-    have ha := first_zero_lt_of_quadratic had (by linarith) hquad
-      (show 4 / 5 - d * (23 / 50) + (23 / 50) ^ 2 / 2 < 0 by linarith)
-    linarith
-  · have ha := first_zero_lt_of_quadratic had (by linarith) hquad
-      (show 4 / 5 - d * (41 / 100) + (41 / 100) ^ 2 / 2 < 0 by linarith)
-    linarith
+  · have hl' := quadraticExcessLength_lt hε (by norm_num : (0 : ℝ) ≤ 6 / 25)
+      (by nlinarith only [henergy, hε, hd0, hdcut])
+    have ha := first_zero_lt_of_quadratic had (by linarith only [hd0]) hquad
+      (show 1 + B - d * (23 / 50) + (23 / 50) ^ 2 / 2 < 0 by linarith only [hB1, hd0])
+    linarith only [ha, hl']
+  · have ha := first_zero_lt_of_quadratic had (by linarith only [hd0]) hquad
+      (show 1 + B - d * (41 / 100) + (41 / 100) ^ 2 / 2 < 0 by linarith only [hB1, hdcut])
+    linarith only [ha, hl]
 
 end AmbidextrousSofa.Analysis

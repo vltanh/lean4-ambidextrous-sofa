@@ -81,11 +81,8 @@ theorem fullTiltedSupportQuarterPair_companion_unit_prefix_of_collapsed_top {C h
     ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2 - 11 / 15)),
       leftCompanionWingDensity m ρ (t + Real.pi / 2) ≤ 1 := by
   have hC : 0 < C := by linarith
-  have hmid : middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
-    rw [middleHalfInterval, hl, hr]
-    congr 1 <;> ring
   have he := hU.tilted_left_endpoint_height_bounds hl hr hC hC1 hh0.le hh1 hheight
-    (hmid ▸ haffine) hlow hhigh
+    ((hU.isCap.tilted_centered_middle hl hr hC).2.2 ▸ haffine) hlow hhigh
   have hvalues := fullTiltedSupportQuarterPair_reflected_initial_values
     hU hm haffine hρ hρ0 hρK heq hl hmpos hheight
   -- Unit curvature before the reflected deadline, zero density after the active arc.

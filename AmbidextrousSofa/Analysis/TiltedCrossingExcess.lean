@@ -39,8 +39,8 @@ set_option quotPrecheck false in
 local notation "q" => supportQ (F).gD (F).f
 
 /-- All circle, floor, and endpoint estimates are supplied by the
-actual tilted maximum. The first-zero and quadratic inputs are the
-ordinary crossing conclusions of the source ODE calculus. -/
+actual tilted maximum. The energy barrier, first-zero and quadratic
+inputs are the ordinary conclusions of the source ODE calculus. -/
 theorem fullTiltedSupportQuarterPair_first_zero_excess_stops_early {C h A : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hC0 : 2 / 3 < C) (hC1 : C < 37 / 50)
@@ -49,6 +49,8 @@ theorem fullTiltedSupportQuarterPair_first_zero_excess_stops_early {C h A : ℝ}
     (hheight : capHeight U = 1) (hhigh : capRoof U C = 1)
     (hlow : capRoof U (-C) = 1 - h)
     (hκ : ∀ s, ρ s ≤ sourceKappa (upperCornerVelocity U s))
+    (hbarrier : ∀ a ∈ Icc 0 (Real.pi / 2), ∀ t ∈ Icc a (Real.pi / 2),
+      clippedCornerEnergy p q t ≤ max (17 / 4) (clippedCornerEnergy p q a))
     (hA : A ∈ Ioo (0 : ℝ) (Real.pi / 2)) (hpA : p A = 0)
     (hpbefore : ∀ t ∈ Ico (0 : ℝ) A, 0 < p t) (hqA : 1 < q A)
     (hquad : 0 ≤ capRoof U (horizontalRight U) + h - 3 * C * A + A ^ 2 / 2) :
@@ -56,9 +58,9 @@ theorem fullTiltedSupportQuarterPair_first_zero_excess_stops_early {C h A : ℝ}
       Analysis.quadraticExcessLength (q A - 1) < 1 / 3 ∧
       A + Analysis.quadraticExcessLength (q A - 1) < 11 / 15 := by
   obtain ⟨hBlo, hBhi, hBupper, hBlower⟩ := hU.tilted_endpoint_momentum_bounds hl hr
-    (by linarith only [hC0]) hC1.le hh0.le hh1 hm hheight (fun x hx => haffine x (by
-      rw [middleHalfInterval, hl, hr]; constructor <;> linarith only [hx.1, hx.2])) hlow hhigh
-  obtain ⟨τ, hτ, hphase, -, hpc, hqc, -, -, hstop⟩ :=
+    (by linarith only [hC0]) hC1.le hh0.le hh1 hm hheight
+    ((hU.isCap.tilted_centered_middle hl hr (by linarith only [hC0])).2.2 ▸ haffine) hlow hhigh
+  obtain ⟨τ, hτ, hphase, -, hpc, hqc, hstop⟩ :=
     fullTiltedSupportQuarterPair_exists_initial_stopping_circle
       hU hm haffine hρ hρ0 hρK heq hl hr (by linarith only [hC0]) hmpos hsmall hh0 hheight hhigh
       hlow hκ
@@ -74,8 +76,7 @@ theorem fullTiltedSupportQuarterPair_first_zero_excess_stops_early {C h A : ℝ}
   · have hb := Analysis.initial_circle_excess_bounds hd0 hd1 hBlo hBhi hA
       (hpc.symm.trans hpA) (hqc ▸ hqA)
     rw [← hqc] at hb
-    exact ⟨by linarith only [hb.2.2.1], by linarith only [hb.2.2.2],
-      by linarith only [hb.2.1, hb.2.2.2]⟩
+    exact ⟨by linarith only [hb.2.1], by linarith only [hb.2.2], by linarith only [hb.1, hb.2.2]⟩
   have hpτ : 0 < p τ := hpbefore τ ⟨hτ.1.le, hτA⟩
   have hfloor : τ = Analysis.initialFloorAngle h := hstop.resolve_left hpτ.ne'
   have hhsmall : h < 1 / 8 := Analysis.initial_floor_positive_forces_small_tilt (B := B) hd0
@@ -85,9 +86,7 @@ theorem fullTiltedSupportQuarterPair_first_zero_excess_stops_early {C h A : ℝ}
   have hEA : clippedCornerEnergy p q A = 1 / 4 + (q A + 1) ^ 2 := by
     rw [clippedCornerEnergy, hpA]
     norm_num
-  have hdecrease := (le_max_iff.1 (fullTiltedSupportQuarterPair_energy_le_max_from
-    hU hm haffine hρ hρ0 hρK heq hl hr (by linarith only [hC0]) hsmall hheight hhigh hκ
-    ⟨hτ.1.le, hτ.2.le⟩ ⟨hτA.le, hA.2.le⟩)).resolve_left
+  have hdecrease := (le_max_iff.1 (hbarrier τ ⟨hτ.1.le, hτ.2.le⟩ A ⟨hτA.le, hA.2.le⟩)).resolve_left
     (by rw [hEA]; nlinarith only [hqA])
   have hfloorE : clippedCornerEnergy p q τ ≤ Analysis.initialFloorTest (3 * C) B h + 1 / 4 := by
     refine (clippedCornerEnergy_le_initialFloorEnergy p q τ).trans_eq ?_
@@ -98,14 +97,10 @@ theorem fullTiltedSupportQuarterPair_first_zero_excess_stops_early {C h A : ℝ}
     linarith only [hdecrease, hfloorE, hEA]
   have hquad' : 0 ≤ 1 + B - 3 * C * A + A ^ 2 / 2 := by linarith only [hquad]
   rcases le_or_gt (1 / 25) h with hhcut | hhcut
-  · obtain ⟨hεbound, -, hell, hend⟩ := Analysis.medium_tilt_excess_stops_early hd0 hε hAd
-      (henergy.trans (Analysis.initial_floor_test_medium_tilt_le hd0 hd1.le hhcut hhsmall.le
-        (by linarith only [hBlower hhsmall.le]) (by linarith only [hBupper])))
-      (by linarith only [hquad', hBupper, hhsmall])
-    exact ⟨by linarith only [hεbound], by linarith only [hell], hend⟩
-  · exact Analysis.small_tilt_excess_stops_early hd0 hd1.le hε hAd
-      (henergy.trans (Analysis.initial_floor_test_small_tilt_le hd0 hh0.le hhcut.le hBlo.le
-        (by linarith only [hBupper, hhcut]))) (by linarith only [hquad', hBupper, hhcut])
+  · exact Analysis.medium_tilt_excess_stops_early hd0 hd1.le hhcut hhsmall.le
+      (by linarith only [hBlower hhsmall.le]) (by linarith only [hBupper]) hε hAd henergy hquad'
+  · exact Analysis.small_tilt_excess_stops_early hd0 hd1.le hh0.le hhcut.le hBlo.le
+      (by linarith only [hBupper, hhcut]) hε hAd henergy hquad'
 
 end ActualPair
 

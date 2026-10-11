@@ -110,7 +110,7 @@ theorem IsDownwardCap.right_niche_integral_le_excess_triangle
       (min_le_left _ _).trans (hU.firstWall_nonpos_after_excess_moment hρ hρ0 hρK heq hsub
         htop ht hx)) (sweptNiche_nonneg _ _ _)).trans_eq (by ring)
 
-/-- The uniform ET moment margin is exact: `121/4860 < 1/40`. -/
+/-- The uniform excess moment margin is exact: `121/4860 < 1/40`. -/
 theorem firstExcessMoment_lt_one_fortieth_of_short_envelope
     {ρ : ℝ → ℝ} {K A h : ℝ}
     (hρ : Measurable ρ) (hρ0 : ∀ s, 0 ≤ ρ s) (hρK : ∀ s, ρ s ≤ K)

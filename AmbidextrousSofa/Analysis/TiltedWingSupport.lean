@@ -13,8 +13,7 @@ Before the middle normal, the original companion support is attained at
 the high middle point, whereas the actual left cut is supported at the
 low middle point. After the middle normal the cut and original supports
 and right tangents agree. In the canonical width and tilt range the
-original corner is strictly below the floor before that normal, so the
-original first-wing curvature vanishes there by actual source occupation.
+original corner is strictly below the floor before that normal.
 -/
 
 noncomputable section
@@ -22,6 +21,19 @@ noncomputable section
 open Set MeasureTheory
 
 namespace AmbidextrousSofa
+
+theorem sin_pos_cos_pos_of_mem_quarter {t : ℝ} (ht : t ∈ Ioo 0 (Real.pi / 2)) :
+    0 < Real.sin t ∧ 0 < Real.cos t :=
+  ⟨Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos]),
+    Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩⟩
+
+/-- The middle points and the middle half of a cap whose projection is `[-2C, 2C]`. -/
+theorem IsDownwardCap.tilted_centered_middle {U : Set Plane} (hU : IsDownwardCap U) {C : ℝ}
+    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C) (hC : 0 < C) :
+    -C ∈ horizontalProjection U ∧ C ∈ horizontalProjection U ∧
+      middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
+  rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, middleHalfInterval, hl, hr]
+  exact ⟨⟨by linarith, by linarith⟩, ⟨by linarith, by linarith⟩, by congr 1 <;> ring⟩
 
 theorem tilted_initial_coefficient_nonneg {m t : ℝ}
     (ht0 : 0 ≤ t) (htm : t ≤ Real.arctan m) :
@@ -109,43 +121,18 @@ theorem IsDownwardCap.attachedCorner_neg_before_positive_affine
     (haffine : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c)
     (hhigh : capRoof U C = 1) (ht : t ∈ Ioo (0 : ℝ) (Real.arctan m)) :
     (attachedCorner U t).2 < 0 := by
-  have htL : t < Real.pi / 2 := ht.2.trans (Real.arctan_lt_pi_div_two m)
-  have hs : 0 < Real.sin t :=
-    Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith only [htL, Real.pi_pos])
-  have hc : 0 < Real.cos t := Real.cos_pos_of_mem_Ioo ⟨by linarith only [ht.1, Real.pi_pos], htL⟩
-  have hproj : horizontalProjection U = Icc (-2 * C) (2 * C) := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hl, hr]
+  obtain ⟨hs, hc⟩ := sin_pos_cos_pos_of_mem_quarter ⟨ht.1, ht.2.trans (Real.arctan_lt_pi_div_two m)⟩
+  obtain ⟨ha, hb, -⟩ := hU.tilted_centered_middle hl hr hC
   have hcoef := tilted_initial_coefficient_nonneg ht.1.le ht.2.le
   have hcos : 1 - Real.cos t ≤ m * Real.sin t := by
     nlinarith only [mul_nonneg hcoef hs.le, Real.sin_sq_add_cos_sq t, Real.cos_le_one t, hc]
   have hf : angleSupport U t ≤ 2 * C * Real.cos t + Real.sin t :=
     hU.support_unitNormal_le_centeredBox (hU.subset_centeredBox_of_endpoints hl hr) hs.le hc.le
-  rw [attachedCorner_snd_eq_support, hU.companionSupport_eq_high_of_affine
-    (by rw [hproj]; constructor <;> linarith) (by rw [hproj]; constructor <;> linarith)
-    (by linarith) haffine hhigh hs.le hc.le hcoef]
+  rw [attachedCorner_snd_eq_support,
+    hU.companionSupport_eq_high_of_affine ha hb (by linarith) haffine hhigh hs.le hc.le hcoef]
   linarith only [mul_le_mul_of_nonneg_right hf hs.le, hcos,
     mul_le_mul_of_nonneg_left (Real.cos_le_one t) (mul_nonneg hC.le hs.le),
     mul_neg_of_neg_of_pos (show C + m - 1 < 0 by linarith only [hsmall]) hs,
     Real.sin_sq_add_cos_sq t]
-
-/-- Actual source occupation supplies the initial zero-curvature
-interval of a positively tilted full maximizer. -/
-theorem IsFullCapMaximizer.first_wing_curvature_zero_before_affine
-    {U : Set Plane} (hU : IsFullCapMaximizer U) {C m c : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC : 0 < C) (hm : 0 ≤ m) (hsmall : C + m < 1)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) (hhigh : capRoof U C = 1) :
-    upperCurvature U (Ioo (0 : ℝ) (Real.arctan m)) = 0 := by
-  have hmid : middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
-    rw [middleHalfInterval, hl, hr]
-    congr 1 <;> ring
-  refine measure_mono_null (fun t ht => ?_)
-    (hU.upperCurvature_negative_corners_eq_zero hheight haffine)
-  have htL := ht.2.trans (Real.arctan_lt_pi_div_two m)
-  refine ⟨firstQuarter_subset_regularCurvatureDomain_of_nonneg hm ⟨ht.1, htL⟩, ?_⟩
-  rw [sourceCornerHeight, sourceQuarterAngle, ite_eq_left htL]
-  exact hU.isCap.attachedCorner_neg_before_positive_affine hl hr hC hsmall (hmid ▸ haffine) hhigh ht
 
 end AmbidextrousSofa

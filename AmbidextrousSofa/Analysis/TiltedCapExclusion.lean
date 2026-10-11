@@ -33,7 +33,7 @@ theorem IsFullCapMaximizer.false_of_positive_tilt
   obtain ⟨hC0, hC1, hh0, hh1, hsmall, hlow, hhigh⟩ :=
     hU.centered_positive_tilt_parameters hl hr hheight hm haffine
   obtain ⟨ρ, hρ, hsharp, hρK, heq, hunit⟩ := hU.exists_tilted_first_unit_density
-    hl hr hC0 hC1 hh0 hh1 hheight haffine hhigh hlow
+    hl hr hC0 hC1 hh0 hh1 hm hsmall hheight haffine hhigh hlow
   have hρ0 (t : ℝ) := (hsharp t).1
   have hκ (t : ℝ) := (hsharp t).2
   obtain ⟨α, η, hphase⟩ := fullTiltedSupportQuarterPair_exists_strict_sign_phases

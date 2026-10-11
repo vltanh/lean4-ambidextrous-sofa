@@ -8,10 +8,11 @@ public import AmbidextrousSofa.Analysis.NonpositiveCornerCurvature
 /-!
 # Actual source controls for the tilted support pair
 
-Before the middle normal both wing densities vanish by actual source
-occupation and the literal cut construction. After it the pair agrees
-with the original corner, so the sharp arm bounds and same-sign source
-laws transfer exactly. The single joining angle has zero Lebesgue mass.
+Before the middle normal the original corner lies below the floor, so
+both wing densities vanish by actual source occupation and the literal
+cut construction. After it the pair agrees with the original corner, so
+the sharp arm bounds and same-sign source laws transfer exactly. The
+single joining angle has zero Lebesgue mass.
 -/
 
 noncomputable section
@@ -47,10 +48,18 @@ theorem IsFullCapMaximizer.full_tilted_wing_densities_zero_before_affine
       (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t))) :
     ∀ᵐ t ∂volume.restrict (Ioo 0 (Real.arctan m)),
       ρ t = 0 ∧ leftCompanionWingDensity m ρ (t + Real.pi / 2) = 0 := by
+  -- Before the middle normal the original corner lies below the floor.
+  have hzero : upperCurvature U (Ioo (0 : ℝ) (Real.arctan m)) = 0 := by
+    refine measure_mono_null (fun t ht => ?_)
+      (hU.upperCurvature_negative_corners_eq_zero hheight haffine)
+    have htL := ht.2.trans (Real.arctan_lt_pi_div_two m)
+    refine ⟨firstQuarter_subset_regularCurvatureDomain_of_nonneg hm ⟨ht.1, htL⟩, ?_⟩
+    rw [sourceCornerHeight, sourceQuarterAngle, ite_eq_left htL]
+    exact hU.isCap.attachedCorner_neg_before_positive_affine hl hr hC hsmall
+      ((hU.isCap.tilted_centered_middle hl hr hC).2.2 ▸ haffine) hhigh ht
   filter_upwards [ae_density_eq_zero_of_restrict_withDensity_null hρ hρ0 heq measurableSet_Ioo
     (fun t ht => firstQuarter_subset_regularCurvatureDomain_of_nonneg hm
-      ⟨ht.1, ht.2.trans (Real.arctan_lt_pi_div_two m)⟩)
-    (hU.first_wing_curvature_zero_before_affine hl hr hC hm hsmall hheight haffine hhigh),
+      ⟨ht.1, ht.2.trans (Real.arctan_lt_pi_div_two m)⟩) hzero,
     ae_restrict_mem measurableSet_Ioo] with t ht hmem
   exact ⟨ht, leftCompanionWingDensity_eq_zero
     (le_max_of_le_right (by unfold affineNormalAngle; linarith [hmem.2]))⟩

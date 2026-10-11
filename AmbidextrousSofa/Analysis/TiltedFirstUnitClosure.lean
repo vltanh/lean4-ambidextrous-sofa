@@ -5,7 +5,7 @@ public import AmbidextrousSofa.Analysis.TiltedFoldPayment
 @[expose] public section
 
 /-!
-# The GF contradiction from raw analytic data
+# The first-unit contradiction from raw analytic data
 
 This theorem takes the actual momentum ODE, four fractional source
 equations, endpoint traces, and four displacement moments as explicit
@@ -22,7 +22,7 @@ open scoped Topology
 
 namespace AmbidextrousSofa.Analysis
 
-/-- Raw GF data are inconsistent. Every curvature, occupation, floor,
+/-- Raw first-unit data are inconsistent. Every curvature, occupation, floor,
 and endpoint hypothesis is stated explicitly rather than bundled as a
 sharp-value or maximizing-cap certificate. -/
 theorem firstUnit_raw_momentum_data_impossible

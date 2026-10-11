@@ -7,9 +7,12 @@ public import AmbidextrousSofa.Analysis.TiltedFirstUnitEnergy
 /-!
 # Actual moment bounds for the first-unit energy
 
-The remainders here are literal iterated sine integrals. Their bounds
-use integrable curvature densities and almost-everywhere inequalities;
-no continuous density or assumed remainder value is needed.
+The remainders here are literal iterated sine integrals. A sine
+convolution is a trigonometric combination of two moments with a moving
+endpoint, so it is continuous for every integrable density, and the
+backward convolution is the forward one based at the right endpoint. The
+bounds use integrable curvature densities and almost-everywhere
+inequalities; no continuous density or assumed remainder value is needed.
 -/
 
 noncomputable section
@@ -31,35 +34,35 @@ def firstUnitLeftRemainder (r u : ℝ → ℝ) (γ : ℝ) : ℝ :=
 def firstUnitRightRemainder (r v : ℝ → ℝ) (β L : ℝ) : ℝ :=
   ∫ t in β..L, r t * backwardSineConvolution v L t
 
-theorem absolutelyContinuousOnInterval_integral_left
-    {r : ℝ → ℝ} {a b : ℝ} (hr : IntervalIntegrable r volume a b) :
-    AbsolutelyContinuousOnInterval (fun t => ∫ s in t..b, r s) a b :=
-  (hr.absolutelyContinuousOnInterval_intervalIntegral (c := b) (by simp)).neg.congr
-    fun t _ => (intervalIntegral.integral_symm b t).symm
+/-- The backward sine convolution is the forward one based at the right endpoint. -/
+theorem backwardSineConvolution_eq_forward (v : ℝ → ℝ) (b : ℝ) :
+    backwardSineConvolution v b = forwardSineConvolution v b := by
+  ext t
+  rw [backwardSineConvolution, forwardSineConvolution, intervalIntegral.integral_symm,
+    ← intervalIntegral.integral_neg]
+  congr 1 with s
+  rw [← neg_sub t s, Real.sin_neg]; ring
 
-theorem backwardSineConvolution_eq_moments
-    {v : ℝ → ℝ} {b t : ℝ} (hv : IntervalIntegrable v volume t b) :
-    backwardSineConvolution v b t =
-      Real.cos t * (∫ s in t..b, v s * Real.sin s) -
-        Real.sin t * (∫ s in t..b, v s * Real.cos s) := by
-  rw [backwardSineConvolution, ← intervalIntegral.integral_const_mul,
+theorem forwardSineConvolution_eq_moments
+    {u : ℝ → ℝ} {a t : ℝ} (hu : IntervalIntegrable u volume a t) :
+    forwardSineConvolution u a t =
+      Real.sin t * (∫ s in a..t, u s * Real.cos s) -
+        Real.cos t * (∫ s in a..t, u s * Real.sin s) := by
+  rw [forwardSineConvolution, ← intervalIntegral.integral_const_mul,
     ← intervalIntegral.integral_const_mul, ← intervalIntegral.integral_sub
-      ((hv.mul_continuousOn Real.continuous_sin.continuousOn).const_mul _)
-      ((hv.mul_continuousOn Real.continuous_cos.continuousOn).const_mul _)]
+      ((hu.mul_continuousOn Real.continuous_cos.continuousOn).const_mul _)
+      ((hu.mul_continuousOn Real.continuous_sin.continuousOn).const_mul _)]
   congr 1 with s
   rw [Real.sin_sub]; ring
 
-theorem absolutelyContinuousOnInterval_backwardSineConvolution
-    {v : ℝ → ℝ} {a b : ℝ} (hab : a ≤ b) (hv : IntervalIntegrable v volume a b) :
-    AbsolutelyContinuousOnInterval (backwardSineConvolution v b) a b := by
-  have _ := hab -- not needed by the proof; it stays in the statement for the callers
-  have hA := absolutelyContinuousOnInterval_integral_left
-    (hv.mul_continuousOn Real.continuous_sin.continuousOn)
-  have hB := absolutelyContinuousOnInterval_integral_left
-    (hv.mul_continuousOn Real.continuous_cos.continuousOn)
-  refine ((Real.contDiff_cos.contDiffOn.absolutelyContinuousOnInterval.mul hA).sub
-    (Real.contDiff_sin.contDiffOn.absolutelyContinuousOnInterval.mul hB)).congr fun t ht => ?_
-  exact (backwardSineConvolution_eq_moments (hv.mono_set (uIcc_subset_uIcc_right ht))).symm
+theorem continuousOn_forwardSineConvolution {u : ℝ → ℝ} {a b c : ℝ}
+    (hu : IntervalIntegrable u volume a b) (hc : c ∈ uIcc a b) :
+    ContinuousOn (forwardSineConvolution u c) (uIcc a b) :=
+  ((Real.continuous_sin.continuousOn.mul (intervalIntegral.continuousOn_primitive_interval'
+    (hu.mul_continuousOn Real.continuous_cos.continuousOn) hc)).sub
+    (Real.continuous_cos.continuousOn.mul (intervalIntegral.continuousOn_primitive_interval'
+      (hu.mul_continuousOn Real.continuous_sin.continuousOn) hc))).congr fun _ ht =>
+    forwardSineConvolution_eq_moments (hu.mono_set (uIcc_subset_uIcc hc ht))
 
 theorem backwardSineConvolution_le_five_fourths
     {v : ℝ → ℝ} {β t : ℝ}
@@ -128,8 +131,8 @@ theorem firstUnitRightRemainder_le
     firstUnitRightRemainder r v β (Real.pi / 2) ≤
       5 / 6 * (∫ t in β..(Real.pi / 2), r t * Real.sin t) := by
   have hi := intervalIntegral.integral_mono_ae_restrict hβL (hr.mul_continuousOn
-    (absolutelyContinuousOnInterval_backwardSineConvolution hβL hv).continuousOn)
-    (hr.const_mul (1 / 2)) <| by
+    ((backwardSineConvolution_eq_forward v _).symm ▸
+      continuousOn_forwardSineConvolution hv right_mem_uIcc)) (hr.const_mul (1 / 2)) <| by
       filter_upwards [hr0, ae_restrict_mem measurableSet_Icc] with t hrt ht
       have hst : 3 / 5 ≤ Real.sin t := hβsin.trans
         (Real.sin_le_sin_of_le_of_le_pi_div_two (by linarith [Real.pi_pos]) ht.2 ht.1)

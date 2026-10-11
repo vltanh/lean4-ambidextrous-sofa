@@ -5,14 +5,14 @@ public import AmbidextrousSofa.Analysis.TiltedInitialCircle
 @[expose] public section
 
 /-!
-# Whole-quarter energy propagation for the actual tilted pair
+# Energy propagation through an interval with zero sources
 
 The cut companion can make the first momentum exceed one before the
 middle normal. Both sources are already zero on that interval, and the
 clipped energy then decreases for every value of the first momentum.
-This gives an energy barrier across the entire actual quarter. Combined
-with the internally constructed stopped circle, it proves the actual
-initial-floor unit-curvature criterion without a later phase partition.
+This gives an energy barrier across the entire actual quarter. The
+clipped energy is at most the initial-floor energy, so the stopped
+initial circle bounds it.
 -/
 
 noncomputable section
@@ -56,105 +56,5 @@ theorem clippedCornerEnergy_le_initialFloorEnergy (p q : ℝ → ℝ) (t : ℝ) 
   · rw [max_eq_left hp]
   · rw [max_eq_right hp]
     nlinarith
-
-section ActualPair
-
-variable {U : Set Plane} (hU : IsFullCapMaximizer U)
-  {m c : ℝ} {ρ : ℝ → ℝ} {K : ℝ} (hm : 0 ≤ m)
-  (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-    capRoof U x = m * x + c)
-  (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-  (heq : (upperCurvature U).restrict (regularCurvatureDomain m) =
-    (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
-
-local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-set_option quotPrecheck false in
-local notation "p" => supportP (F).fD (F).g
-set_option quotPrecheck false in
-local notation "q" => supportQ (F).gD (F).f
-
-theorem fullTiltedSupportQuarterPair_first_arm_or_zero_sources {C : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC : 0 < C) (hsmall : C + m < 1)
-    (hheight : capHeight U = 1) (hhigh : capRoof U C = 1) :
-    ∀ᵐ t ∂volume.restrict (Ioo 0 (Real.pi / 2)),
-      p t ≤ 1 ∨ ρ t = 0 ∧ leftCompanionWingDensity m ρ (t + Real.pi / 2) = 0 := by
-  have hinit := (ae_restrict_iff' measurableSet_Ioo).mp
-    (hU.full_tilted_wing_densities_zero_before_affine hl hr hC hm hsmall
-      hheight haffine hhigh hρ hρ0 heq)
-  filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hinit] with t ht hz
-  rcases le_or_gt (Real.arctan m) t with hpost | hpost
-  · exact .inl (fullTiltedSupportQuarterPair_p_le_one_after_affine
-      hU hm haffine hρ hρ0 hρK heq ⟨ht.1.le, ht.2⟩ hpost)
-  · exact .inr (hz ⟨ht.1, hpost⟩)
-
-theorem fullTiltedSupportQuarterPair_energy_le_max_from {C a t : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC : 0 < C) (hsmall : C + m < 1)
-    (hheight : capHeight U = 1) (hhigh : capRoof U C = 1)
-    (hκ : ∀ s, ρ s ≤ sourceKappa (upperCornerVelocity U s))
-    (ha : a ∈ Icc 0 (Real.pi / 2)) (ht : t ∈ Icc a (Real.pi / 2)) :
-    clippedCornerEnergy p q t ≤ max (17 / 4) (clippedCornerEnergy p q a) := by
-  obtain ⟨hp, hq, hode⟩ := fullTiltedSupportQuarterPair_corner_calculus hU hm haffine hρ hρ0 hρK heq
-  have hsubcc : uIcc a (Real.pi / 2) ⊆ uIcc 0 (Real.pi / 2) :=
-    uIcc_subset_uIcc (Icc_subset_uIcc ha) right_mem_uIcc
-  have hsub : Ioo a (Real.pi / 2) ⊆ Ioo (0 : ℝ) (Real.pi / 2) := Ioo_subset_Ioo ha.1 le_rfl
-  have hcontrols := ae_restrict_of_ae_restrict_of_subset hsub
-    (hU.fullTiltedSupportQuarterPair_source_controls hl hr hC hm hsmall hheight
-      haffine hhigh hρ hρ0 hρK hκ heq)
-  refine clippedCornerEnergy_le_max_of_zero_source_alternative
-    (hp.mono hsubcc) (hq.mono hsubcc) ha.2
-    (ae_restrict_of_ae_restrict_of_subset hsub hode) ?_
-    (hcontrols.mono fun _ hs => hs.2.1) (hcontrols.mono fun _ hs => hs.2.2.1)
-    (ae_restrict_of_ae_restrict_of_subset hsub
-      (fullTiltedSupportQuarterPair_first_arm_or_zero_sources
-        hU hm haffine hρ hρ0 hρK heq hl hr hC hsmall hheight hhigh)) ht
-  filter_upwards [ae_restrict_mem measurableSet_Ioo] with s hs
-  exact fullTiltedSupportQuarterPair_q_ge_neg_one hU hm haffine hρ hρ0 hρK heq
-    ⟨ha.1.trans hs.1.le, hs.2.le⟩
-
-include hU hm haffine hρ hρ0 hρK heq in
-/-- The initial-floor scalar conditions now imply unit curvature of
-the actual original first quarter. Every stopping, source and energy
-propagation hypothesis is discharged from the cap inside this proof. -/
-theorem fullTiltedSupportQuarterPair_ae_first_le_one_of_initial_floor_conditions {C h : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC : 1 / 2 < C) (hmpos : 0 < m) (hsmall : C + m < 1)
-    (hh : 0 < h) (hheight : capHeight U = 1) (hhigh : capRoof U C = 1)
-    (hlow : capRoof U (-C) = 1 - h)
-    (hκ : ∀ s, ρ s ≤ sourceKappa (upperCornerVelocity U s))
-    (hconditions : Analysis.InitialFloorEnergyConditions (3 * C)
-      (capRoof U (horizontalRight U) - 1 + h) h) :
-    ∀ᵐ t ∂volume.restrict (Ioo 0 (Real.pi / 2)), ρ t ≤ 1 := by
-  obtain ⟨τ, hτ, -, hzero, hpcircle, hqcircle, -, -, hstop⟩ :=
-    fullTiltedSupportQuarterPair_exists_initial_stopping_circle
-      hU hm haffine hρ hρ0 hρK heq hl hr hC hmpos hsmall hh hheight hhigh hlow hκ
-  have hτmem : τ ∈ Icc (0 : ℝ) τ := ⟨hτ.1.le, le_rfl⟩
-  have henergy := Analysis.initialFloor_stopped_energy_le hh.le
-    (by linarith [capRoof_nonneg hU.isCap.isCompact (fun x hx => (hU.isCap.inStrip hx).1) (-C)])
-    hconditions (hstop.imp_left (hpcircle hτmem).symm.trans)
-  rw [← hpcircle hτmem, ← hqcircle hτmem] at henergy
-  have hstart := (clippedCornerEnergy_le_initialFloorEnergy p q τ).trans henergy
-  -- After the stopping angle the energy stays at most `17/4`.
-  have hfuture : ∀ᵐ t ∂volume.restrict (Ioo τ (Real.pi / 2)), ρ t ≤ 1 := by
-    filter_upwards [ae_restrict_mem measurableSet_Ioo,
-      ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hτ.1.le le_rfl)
-        (hU.fullTiltedSupportQuarterPair_source_controls hl hr (by linarith only [hC]) hm hsmall
-          hheight haffine hhigh hρ hρ0 hρK hκ heq)] with t ht hs
-    have hE := fullTiltedSupportQuarterPair_energy_le_max_from hU hm haffine hρ hρ0 hρK heq hl hr
-      (by linarith only [hC]) hsmall hheight hhigh hκ ⟨hτ.1.le, hτ.2.le⟩ ⟨ht.1.le, ht.2.le⟩
-    rw [max_eq_left hstart] at hE
-    exact curvature_le_one_of_clippedCornerEnergy
-      (fullTiltedSupportQuarterPair_q_ge_neg_one hU hm haffine hρ hρ0 hρK heq
-        ⟨hτ.1.le.trans ht.1.le, ht.2.le⟩) hs.1 (fun hp hq => (hs.2.2.1 hp hq).1) hE
-  have hz := (ae_restrict_iff' measurableSet_Ioo).mp hzero
-  have hf := (ae_restrict_iff' measurableSet_Ioo).mp hfuture
-  filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hz,
-    ae_restrict_of_ae hf, ae_restrict_of_ae (volume.ae_ne τ)] with t ht hz hf hne
-  rcases lt_or_gt_of_ne hne with hpre | hpost
-  · exact (hz ⟨ht.1, hpre⟩).1.trans_le zero_le_one
-  · exact hf ⟨hpost, ht.2⟩
-
-end ActualPair
 
 end AmbidextrousSofa

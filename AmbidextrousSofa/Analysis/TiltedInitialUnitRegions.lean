@@ -9,10 +9,8 @@ public import AmbidextrousSofa.Analysis.TiltedEndpointBounds
 # Actual parameter regions for first-wing unit curvature
 
 Endpoint pressure and the literal middle niche bounds supply the scalar
-initial-floor conditions in the small-width, high-tilt, and dry-left
-middle-tilt regions. The final application selects the actual sharp
-curvature density and derives the slope and initial visibility margin
-from the two middle heights.
+initial-floor conditions in the high-tilt and dry-left middle-tilt
+regions.
 -/
 
 noncomputable section
@@ -48,7 +46,7 @@ theorem IsFullCapMaximizer.initial_floor_conditions_of_high_tilt
     (by linarith only [hC0]) (by linarith only [hC1])
   have hw := hU.isCap.left_middle_niche_le_tilted_box hl hr
     (by linarith only [hC0]) (by linarith only [hC1]) hm haffine hlow
-  exact Analysis.initialFloorEnergyConditions_high_tilt_of_endpoint_box hC0 hC1 hh0 hh1
+  exact Analysis.initialFloorEnergyConditions_high_tilt hC0 hC1 hh0 hh1
     (sweptNiche_nonneg U (Real.pi / 2) C) hn.2
     (sweptNiche_nonneg U (Real.pi / 2) (-C)) hw
 
@@ -65,43 +63,7 @@ theorem IsFullCapMaximizer.initial_floor_conditions_of_middle_tilt_low_width
   rw [hU.tilted_endpoint_momentum_eq hl hr hheight haffine hlow hhigh, hdry]
   have hn := hU.isCap.middle_niche_le_box_height_of_endpoints hl hr
     (by linarith only [hC0]) (by linarith only [hC1])
-  exact Analysis.initialFloorEnergyConditions_middle_tilt_low_width_of_endpoint_box
+  exact Analysis.initialFloorEnergyConditions_middle_tilt_low_width
     hC0 hC1 hh0 hh1 (sweptNiche_nonneg U (Real.pi / 2) C) hn.2
-
-/-- This actual application has no density, phase, or visibility
-hypothesis. The two scalar energy conditions can be supplied by any of
-the actual region theorems above or by the refined ordinary-area test. -/
-theorem IsFullCapMaximizer.exists_tilted_first_unit_density_of_initial_floor_conditions
-    {U : Set Plane} (hU : IsFullCapMaximizer U) {C h m c : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC0 : 1 / 2 < C) (hC1 : C ≤ 37 / 50)
-    (hh0 : 0 < h) (hh1 : h < 17 / 50) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hhigh : capRoof U C = 1) (hlow : capRoof U (-C) = 1 - h)
-    (hconditions : Analysis.InitialFloorEnergyConditions (3 * C)
-      (capRoof U (horizontalRight U) - 1 + h) h) :
-    ∃ ρ : ℝ → ℝ, Measurable ρ ∧
-      (∀ t, 0 ≤ ρ t ∧ ρ t ≤ sourceKappa (upperCornerVelocity U t)) ∧
-      (∀ t, ρ t ≤ 4 * (|horizontalLeft U| + |horizontalRight U| + 1) + 10) ∧
-      (upperCurvature U).restrict (regularCurvatureDomain m) =
-        (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)) ∧
-      (∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1) := by
-  have hmid : middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
-    rw [middleHalfInterval, hl, hr]
-    congr 1 <;> ring
-  have hleft := haffine (-C) (hmid ▸ ⟨le_rfl, by linarith only [hC0]⟩)
-  have hright := haffine C (hmid ▸ ⟨by linarith only [hC0], le_rfl⟩)
-  have hmEq : m = h / (2 * C) := by
-    rw [eq_div_iff (by linarith only [hC0])]
-    linarith only [hleft, hright, hlow, hhigh]
-  have hmpos : 0 < m := hmEq ▸ div_pos hh0 (by linarith only [hC0])
-  obtain ⟨ρ, hρ, hbounds, hcoarse, heq, _⟩ :=
-    hU.curvature_density_corner_controls hheight haffine
-  exact ⟨ρ, hρ, hbounds, hcoarse, heq,
-    fullTiltedSupportQuarterPair_ae_first_le_one_of_initial_floor_conditions hU hmpos.le haffine hρ
-      (fun t => (hbounds t).1) hcoarse heq hl hr hC0 hmpos
-      (hmEq ▸ canonical_width_add_slope_lt_one hC0.le hC1 hh1) hh0 hheight hhigh hlow
-      (fun t => (hbounds t).2) hconditions⟩
 
 end AmbidextrousSofa

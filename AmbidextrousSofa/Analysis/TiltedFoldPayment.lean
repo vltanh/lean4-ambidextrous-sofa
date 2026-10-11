@@ -70,7 +70,7 @@ theorem intervalIntegral_tail_paid
     linarith [mul_le_mul_of_nonneg_left
       (intervalIntegral.integral_mono_interval hβγ hγη hηL hr0' hr) hk]
 
-/-- GF's complete loss is the exact first-floor moment, up to a
+/-- The complete companion loss is the exact first-floor moment, up to a
 payment from the literal right-window deficit mass. -/
 theorem firstUnit_loss_integral_lower_bound
     {q u v δ : ℝ → ℝ} {γ β η L : ℝ}

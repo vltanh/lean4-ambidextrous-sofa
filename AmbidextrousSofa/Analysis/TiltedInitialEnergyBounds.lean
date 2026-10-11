@@ -42,15 +42,13 @@ theorem initialFloorSine_convex_comb_lower
 semicircle chord gives the remaining convexity estimate directly. -/
 theorem initialFloorTest_affine_le_of_endpoint_bounds
     {d A l r sl sr h K : ℝ}
-    (hd : 0 ≤ d) (hlr : l < r) (hl : 0 ≤ l) (hr : r ≤ 2)
-    (hh : h ∈ Icc l r)
+    (hd : 0 ≤ d) (hlr : l < r) (hh : h ∈ Icc l r)
     (hsl : sl ^ 2 ≤ l * (2 - l)) (hsr : sr ^ 2 ≤ r * (2 - r))
     (hleft : d ^ 2 + (A + 5 / 4 * l) ^ 2 +
       (A + 5 / 4 * l) * (1 - l) - d * sl ≤ K)
     (hright : d ^ 2 + (A + 5 / 4 * r) ^ 2 +
       (A + 5 / 4 * r) * (1 - r) - d * sr ≤ K) :
     initialFloorTest d (A + 5 / 4 * h) h ≤ K := by
-  have _ := And.intro hl hr -- not needed by the proof; they stay in the statement for the callers
   have hrl : 0 < r - l := sub_pos.mpr hlr
   -- write `h` as the convex combination `(1 - w) * l + w * r`
   obtain ⟨w, hw0, hw1, rfl⟩ : ∃ w, 0 ≤ w ∧ w ≤ 1 ∧ h = (1 - w) * l + w * r :=
@@ -85,46 +83,9 @@ theorem tiltedBoxHeight_lt_thirty_three_hundredths {C : ℝ}
     (hC0 : 0 ≤ C) (hC : C ≤ 37 / 50) : tiltedBoxHeight C < 33 / 100 :=
   tiltedBoxHeight_lt_of_width_bound hC0 hC (by norm_num)
 
-/-- IE8, including its narrow exact radius margin. -/
+/-- The high-tilt strip for the endpoint momentum of a box, including its narrow exact radius
+margin. -/
 theorem initialFloorEnergyConditions_high_tilt
-    {C B h : ℝ} (hC0 : 2 / 3 ≤ C) (hC : C ≤ 37 / 50)
-    (hh0 : 21 / 100 ≤ h) (hh1 : h ≤ 17 / 50)
-    (hBlo : -107 / 400 ≤ B)
-    (hBhi : B ≤ -101 / 400 + 5 / 4 * h) :
-    InitialFloorEnergyConditions (3 * C) B h := by
-  constructor
-  · linarith [mul_nonneg (show 0 ≤ 111 / 50 - 3 * C by linarith)
-      (show 0 ≤ 111 / 50 + 3 * C by linarith), mul_nonneg (show 0 ≤ B + 107 / 400 by linarith)
-      (show 0 ≤ 107 / 400 - B by linarith)]
-  exact (initialFloorTest_mono_B hBhi (by linarith)).trans
-    ((initialFloorTest_mono_d (by linarith) (by linarith) (by linarith)
-      (show 3 * C ≤ 111 / 50 by linarith)).trans
-      (initialFloorTest_affine_le_of_endpoint_bounds
-        (l := 21 / 100) (r := 17 / 50) (sl := 61 / 100) (sr := 3 / 4)
-        (by norm_num) (by norm_num) (by norm_num) (by norm_num) ⟨hh0, hh1⟩
-        (by norm_num) (by norm_num) (by norm_num) (by norm_num)))
-
-/-- FR's lower-width strip, using the actual nonnegative right niche
-height and vanishing left niche height through the displayed interval. -/
-theorem initialFloorEnergyConditions_middle_tilt_low_width
-    {C B h : ℝ} (hC0 : 2 / 3 ≤ C) (hC : C ≤ 73 / 100)
-    (hh0 : 1 / 20 ≤ h) (hh1 : h ≤ 21 / 100)
-    (hBlo : -1 / 2 + 5 / 4 * h ≤ B)
-    (hBhi : B ≤ -13 / 50 + 5 / 4 * h) :
-    InitialFloorEnergyConditions (3 * C) B h := by
-  constructor
-  · linarith [mul_nonneg (show 0 ≤ 219 / 100 - 3 * C by linarith)
-      (show 0 ≤ 219 / 100 + 3 * C by linarith), mul_nonneg (show 0 ≤ B + 7 / 16 by linarith)
-      (show 0 ≤ 7 / 16 - B by linarith)]
-  exact (initialFloorTest_mono_B hBhi (by linarith)).trans
-    ((initialFloorTest_mono_d (by linarith) (by linarith) (by linarith)
-      (show 3 * C ≤ 219 / 100 by linarith)).trans
-      (initialFloorTest_affine_le_of_endpoint_bounds
-        (l := 1 / 20) (r := 21 / 100) (sl := 31 / 100) (sr := 61 / 100)
-        (by norm_num) (by norm_num) (by norm_num) (by norm_num) ⟨hh0, hh1⟩
-        (by norm_num) (by norm_num) (by norm_num) (by norm_num)))
-
-theorem initialFloorEnergyConditions_high_tilt_of_endpoint_box
     {C h z w : ℝ} (hC0 : 2 / 3 ≤ C) (hC : C ≤ 37 / 50)
     (hh0 : 21 / 100 ≤ h) (hh1 : h ≤ 17 / 50)
     (hz0 : 0 ≤ z) (hz : z ≤ tiltedBoxHeight C)
@@ -132,17 +93,34 @@ theorem initialFloorEnergyConditions_high_tilt_of_endpoint_box
     InitialFloorEnergyConditions (3 * C) (tiltedEndpointMomentum h z w) h := by
   have hH := tiltedBoxHeight_lt_thirty_three_hundredths (by linarith) hC
   have hw' : w ≤ 3 / 25 := hw.trans (max_le (by linarith) (by norm_num))
-  apply initialFloorEnergyConditions_high_tilt hC0 hC hh0 hh1 <;>
-    unfold tiltedEndpointMomentum <;> linarith
+  unfold tiltedEndpointMomentum
+  constructor
+  · nlinarith
+  exact (initialFloorTest_mono_B (U := -101 / 400 + 5 / 4 * h) (by linarith) (by linarith)).trans
+    ((initialFloorTest_mono_d (by linarith) (by linarith) (by linarith)
+      (show 3 * C ≤ 111 / 50 by linarith)).trans
+      (initialFloorTest_affine_le_of_endpoint_bounds
+        (l := 21 / 100) (r := 17 / 50) (sl := 61 / 100) (sr := 3 / 4)
+        (by norm_num) (by norm_num) ⟨hh0, hh1⟩
+        (by norm_num) (by norm_num) (by norm_num) (by norm_num)))
 
-theorem initialFloorEnergyConditions_middle_tilt_low_width_of_endpoint_box
+/-- The lower-width middle-tilt strip, for a box with a dry left middle endpoint. -/
+theorem initialFloorEnergyConditions_middle_tilt_low_width
     {C h z : ℝ} (hC0 : 2 / 3 ≤ C) (hC : C ≤ 73 / 100)
     (hh0 : 1 / 20 ≤ h) (hh1 : h ≤ 21 / 100)
     (hz0 : 0 ≤ z) (hz : z ≤ tiltedBoxHeight C) :
     InitialFloorEnergyConditions (3 * C) (tiltedEndpointMomentum h z 0) h := by
   have hH : tiltedBoxHeight C < 8 / 25 :=
     tiltedBoxHeight_lt_of_width_bound (by linarith) hC (by norm_num)
-  apply initialFloorEnergyConditions_middle_tilt_low_width hC0 hC hh0 hh1 <;>
-    unfold tiltedEndpointMomentum <;> linarith
+  unfold tiltedEndpointMomentum
+  constructor
+  · nlinarith
+  exact (initialFloorTest_mono_B (U := -13 / 50 + 5 / 4 * h) (by linarith) (by linarith)).trans
+    ((initialFloorTest_mono_d (by linarith) (by linarith) (by linarith)
+      (show 3 * C ≤ 219 / 100 by linarith)).trans
+      (initialFloorTest_affine_le_of_endpoint_bounds
+        (l := 1 / 20) (r := 21 / 100) (sl := 31 / 100) (sr := 61 / 100)
+        (by norm_num) (by norm_num) ⟨hh0, hh1⟩
+        (by norm_num) (by norm_num) (by norm_num) (by norm_num)))
 
 end AmbidextrousSofa.Analysis

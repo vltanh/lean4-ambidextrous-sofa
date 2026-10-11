@@ -165,8 +165,7 @@ theorem fullTiltedSupportQuarterPair_reflected_second_at_activeEnd {C : ℝ}
   have hsin : Real.sin (Real.arctan m) ≤ m := by
     nlinarith [mul_nonneg hm (sub_nonneg.2 (Real.cos_le_one (Real.arctan m)))]
   have hleft : horizontalLeft U + capWidth U / 4 = -C := by unfold capWidth; rw [hl, hr]; ring
-  obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints
-    (show 0 < capWidth U by unfold capWidth; rw [hl, hr]; linarith)
+  obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints (zero_lt_two.trans hU.two_lt_width)
   have hg : (F).g (Real.arctan m) = _ :=
     hU.isCap.companionSupport_leftCut_eq_low_of_affine ha hb hab haffine hc hcoef
   have hroof : capRoof U _ ≤ 1 := (hU.isCap.inStrip (capRoof_mem hU.isCap.isCompact ha)).2
