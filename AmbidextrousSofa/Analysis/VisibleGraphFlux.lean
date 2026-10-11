@@ -94,14 +94,15 @@ theorem IsFullCapMaximizer.visible_tangency_corner_flux
       rw [(hcvisible u hu).2 v hv hmax]
       exact ⟨hu.1.lt_of_ne (by rintro rfl; exact hx.2.false),
         hu.2.lt_of_ne (by rintro rfl; exact hx.1.false)⟩
-  have hbound := hU.nicheGraphProjection_add_le_curvature_of_open_pieces hheight
-    (m := 0) (c := c) (by simpa only [zero_mul, zero_add] using haffine)
-    hθ hdir.1 hdir.2 hleft (hD.1 (hquarter hsI) (hquarter htI) hst.le)
+  have hbound := hU.nicheGraphProjection_add_le_curvature_of_open_pieces hheight (m := 0) (c := c)
+    (by simpa only [zero_mul, zero_add] using haffine) (by linarith only [hst]) hdir.2 hst.le hdir.1
+    (sub_nonneg.2 hst.le) (fun _ j hj => (AngularGrid.localized_quarter_source _ hθ j hj).1) hleft
+    (hD.1 (hquarter hsI) (hquarter htI) hst.le)
     (sub_le_self _ (mul_pos (hq t htI) (Real.cos_pos_of_mem_Ioo
       ⟨by linarith [(hquarter htI).1, Real.pi_pos], (hquarter htI).2⟩)).le)
     (hU.isCap.attachedCorner_fst_strictAntiOn_of_opposite_velocities hρ hρ0 hρC heq hreg
       (fun u hu => hq u (Ioo_subset_Icc_self hu)) (fun u hu => hr u (Ioo_subset_Icc_self hu))
-      hsI htI hst) hright (fun x hx => (hpiece x hx).1) (fun x hx => (hpiece x hx).2)
+      hsI htI hst).le hright (fun x hx => (hpiece x hx).1) (fun x hx => (hpiece x hx).2)
   simpa only [nicheGraphProjection, hDvisible s hsI, hDvisible t htI,
     (hcvisible s hsI).1, (hcvisible t htI).1] using hbound
 
