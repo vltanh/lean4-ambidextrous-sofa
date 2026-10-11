@@ -1,7 +1,6 @@
 module
 
 public import AmbidextrousSofa.Analysis.PartialWingSupport
-public import AmbidextrousSofa.Analysis.SupportArcCalculus
 public import AmbidextrousSofa.Analysis.TiltedSupportPair
 public import AmbidextrousSofa.Analysis.TiltedInitialEnergy
 
@@ -117,12 +116,12 @@ theorem IsJointCapMaximizer.properReflected_momenta_ae_derivatives_of_tail_regim
       hU.isCap.ae_hasDerivAt_closedSupportDerivative hρ hρ0 hρK 0,
       hV.ae_hasDerivAt_closedSupportDerivative hσ hσ0 hσK (Real.pi / 2)]
       with t ht hfDD hgDD
-    have hdf := hU.isCap.hasDerivAt_angleSupport_of_open_arc hρ hρ0 hρK
-      (hregime.first_density_of_regular hproper heq) Subset.rfl ht
+    have hdf := hU.isCap.hasDerivAt_shiftedSupport_of_open_density hρ hρ0 hρK
+      (hregime.first_density_of_regular hproper heq) (d := 0) (by simp) ht
     have hdg := hV.hasDerivAt_shiftedSupport_of_open_density hσ hσ0 hσK
       (hU.proper_leftCompanion_density_of_regular hproper haffine heq) (d := Real.pi / 2)
       (Ioo_subset_Ioo le_rfl (add_halves _).le) ⟨ht.1, ht.2.trans hproper⟩
-    rw [add_zero] at hfDD
+    simp only [add_zero] at hfDD hdf
     exact ⟨((hfDD.sub hdg).add_const 1).congr_deriv (by simp only [properUsedQ, supportQ]; ring),
       ((hgDD.add hdf).sub_const 1).congr_deriv (by simp only [properUsedP, supportP]; ring)⟩
   have hp := ae_hasDerivAt_comp_const_sub (c := Real.pi / 2) (h.mono fun _ ht => ht.1)
@@ -140,8 +139,8 @@ theorem IsJointCapMaximizer.properUsed_momenta_eq_actual_after_affine_of_tail_re
     (show 0 < capWidth U by linarith only [hU.width_bounds.1, one_lt_M])
   have hmatch := hU.isCap.companionSupport_and_tangent_leftCut_after_affine
     ha hb hab haffine hmt ht.1 (ht.2.trans hproper)
-  have hfd := hU.isCap.closedSupportDerivative_eq_supportTangent_on_arc hρ hρ0 hρK
-    (hregime.first_density_of_regular hproper heq) Subset.rfl ht.1 ht.2
+  have hfd := hU.isCap.closedSupportDerivative_eq_supportTangent hρ hρ0 hρK
+    (hregime.first_density_of_regular hproper heq) (d := 0) (by simp) ht.1 ht.2
   have hgd := hU.isCap_properLeftCompanion.closedSupportDerivative_eq_supportTangent
     (measurable_leftCompanionWingDensity hρ m)
     (fun s => (leftCompanionWingDensity_bounds hρ0 hρK s).1)
@@ -153,8 +152,6 @@ theorem IsJointCapMaximizer.properUsed_momenta_eq_actual_after_affine_of_tail_re
     firstCornerVelocity]
   constructor <;> ring
 
--- `hheight` is not needed here; it stays in the statement for the callers.
-set_option linter.unusedSectionVars false in
 /-- Both initial reflected values are computed at actual supporting
 endpoints. The second value contains the whole terminal atom. -/
 theorem IsJointCapMaximizer.properReflected_terminal_impulse_of_tail_regime :
@@ -169,8 +166,9 @@ theorem IsJointCapMaximizer.properReflected_terminal_impulse_of_tail_regime :
   have hmatch := hU.isCap.companionSupport_and_tangent_leftCut_after_affine ha hb hab haffine
     (by simpa [affineNormalAngle] using (hU.middle_normal_lt_terminal_companion haffine).le)
     hU.angle_pos.le hproper
-  have hfd := hU.isCap.closedSupportDerivative_at_arc_end hρ hρ0 hρK
-    (hregime.first_density_of_regular hproper heq) hU.angle_pos Subset.rfl
+  have hfd := hU.isCap.closedSupportDerivative_at_end hρ hρ0 hρK
+    (hregime.first_density_of_regular hproper heq) hU.angle_pos (d := 0) (by simp)
+  rw [add_zero] at hfd
   have hgd := hU.isCap_properLeftCompanion.closedSupportDerivative_eq_supportTangent
     (measurable_leftCompanionWingDensity hρ m)
     (fun s => (leftCompanionWingDensity_bounds hρ0 hρK s).1)

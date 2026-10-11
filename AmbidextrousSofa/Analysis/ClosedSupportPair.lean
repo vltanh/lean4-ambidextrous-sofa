@@ -61,69 +61,53 @@ theorem IsDownwardCap.ae_hasDerivAt_closedSupportDerivative
   exact (hdt ⟨(min_le_right _ _).trans ht.1.le, ht.2.le.trans (le_max_right _ _)⟩ 0
     ⟨min_le_left _ _, le_max_left _ _⟩).const_add (supportTangent U d)
 
-/-- Only the half-open Stieltjes interval must lie in the density domain.
-The initial face atom is deliberately excluded. -/
-theorem IsDownwardCap.supportTangent_sub_eq_integral_of_density_Ioc
-    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {K a b : ℝ}
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (heq : (upperCurvature U).restrict S =
-      (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
-    (hab : a ≤ b) (hsub : Ioc a b ⊆ S) :
-    supportTangent U b - supportTangent U a =
-      ∫ t in a..b, ρ t - angleSupport U t := by
-  rcases hab.eq_or_lt with rfl | hab
-  · simp
-  simp only [supportTangent, dot_vplus_vvec_sub hU.imported_isConvexBody hab,
-    angleSupport_eq_imported_supp]
-  rw [intervalIntegral.integral_sub (intervalIntegrable_bounded_real_density hρ hρ0 hρK a b)
-    (hU.imported_isConvexBody.continuous_supp.intervalIntegrable a b),
-    intervalIntegral.integral_of_le (f := ρ) hab.le,
-    ← measureReal_eq_integral_of_restrict_withDensity hρ hρ0 heq measurableSet_Ioc hsub]
-  rfl
-
+/-- Before the end `b` of an arc of the density domain, the derivative representative is the
+actual right tangent. Only the half-open Stieltjes interval enters, so the initial face atom
+is excluded. -/
 theorem IsDownwardCap.closedSupportDerivative_eq_supportTangent
-    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {K d t : ℝ}
+    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {K d b t : ℝ}
     (hρ : Measurable ρ) (hρ0 : ∀ s, 0 ≤ ρ s) (hρK : ∀ s, ρ s ≤ K)
     (heq : (upperCurvature U).restrict S =
       (volume.restrict S).withDensity (fun s => ENNReal.ofReal (ρ s)))
-    (hsub : Ioo d (d + Real.pi / 2) ⊆ S)
-    (ht0 : 0 ≤ t) (htL : t < Real.pi / 2) :
+    (hsub : Ioo d (d + b) ⊆ S) (ht0 : 0 ≤ t) (htb : t < b) :
     closedSupportDerivative U ρ d t = supportTangent U (t + d) := by
-  have hid := hU.supportTangent_sub_eq_integral_of_density_Ioc hρ hρ0 hρK heq
-    (a := d) (b := t + d) (by linarith) fun s hs => hsub ⟨hs.1, by linarith [hs.2]⟩
-  rw [closedSupportDerivative,
-    intervalIntegral.integral_comp_add_right (fun s => ρ s - angleSupport U s), zero_add]
+  have hid := hU.supportTangent_shift_sub_eq_integral_of_density hρ hρ0 hρK heq ht0
+    fun s hs => hsub ⟨by linarith [hs.1], by linarith [hs.2]⟩
+  rw [zero_add] at hid
+  rw [closedSupportDerivative]
   linarith
 
+/-- At the end `b` of the arc the derivative representative reaches the left tangent, so a
+terminal atom stays outside the closed arc. -/
 theorem IsDownwardCap.closedSupportDerivative_at_end
-    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {K d : ℝ}
+    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {K d b : ℝ}
     (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
     (heq : (upperCurvature U).restrict S =
       (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
-    (hsub : Ioo d (d + Real.pi / 2) ⊆ S) :
-    closedSupportDerivative U ρ d (Real.pi / 2) =
-      MovingSofaOptimality.dot (MovingSofaOptimality.vminus U (Real.pi / 2 + d))
-        (MovingSofaOptimality.vvec (Real.pi / 2 + d)) := by
+    (hb : 0 < b) (hsub : Ioo d (d + b) ⊆ S) :
+    closedSupportDerivative U ρ d b =
+      MovingSofaOptimality.dot (MovingSofaOptimality.vminus U (b + d))
+        (MovingSofaOptimality.vvec (b + d)) := by
   have hlim := (MovingSofaOptimality.continuous_dot_pair.tendsto _).comp
-    (((MovingSofaOptimality.tendsto_vplus_left hU.imported_isConvexBody (Real.pi / 2 + d)).comp
+    (((MovingSofaOptimality.tendsto_vplus_left hU.imported_isConvexBody (b + d)).comp
       map_add_right_nhdsLT.le).prodMk_nhds
       (((MovingSofaOptimality.continuous_vvec.comp (continuous_id.add_const d)).tendsto _).mono_left
         nhdsWithin_le_nhds))
   refine tendsto_nhds_unique (((hU.continuous_closedSupportDerivative hρ hρ0 hρK d).tendsto
     _).mono_left nhdsWithin_le_nhds) (hlim.congr' ?_)
-  filter_upwards [Ioo_mem_nhdsLT Real.pi_div_two_pos] with t ht
+  filter_upwards [Ioo_mem_nhdsLT hb] with t ht
   exact (hU.closedSupportDerivative_eq_supportTangent hρ hρ0 hρK heq hsub ht.1.le ht.2).symm
 
 theorem IsDownwardCap.hasDerivAt_shiftedSupport_of_open_density
-    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {K d t : ℝ}
+    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {K d b t : ℝ}
     (hρ : Measurable ρ) (hρ0 : ∀ s, 0 ≤ ρ s) (hρK : ∀ s, ρ s ≤ K)
     (heq : (upperCurvature U).restrict S =
       (volume.restrict S).withDensity (fun s => ENNReal.ofReal (ρ s)))
-    (hsub : Ioo d (d + Real.pi / 2) ⊆ S) (ht : t ∈ Ioo 0 (Real.pi / 2)) :
+    (hsub : Ioo d (d + b) ⊆ S) (ht : t ∈ Ioo 0 b) :
     HasDerivAt (fun s => angleSupport U (s + d)) (closedSupportDerivative U ρ d t) t := by
   rw [hU.closedSupportDerivative_eq_supportTangent hρ hρ0 hρK heq hsub ht.1.le ht.2]
   exact (hU.hasDerivAt_angleSupport_of_density hρ hρ0 hρK heq (a := d + t / 2)
-    (b := d + (t + Real.pi / 2) / 2)
+    (b := d + (t + b) / 2)
     (fun s hs => hsub ⟨by linarith [ht.1, hs.1], by linarith [ht.2, hs.2]⟩)
     ⟨by linarith [ht.1], by linarith [ht.2]⟩).comp_add_const t d
 
@@ -220,7 +204,7 @@ theorem supportQuarterPair_points_mem :
   · convert (MovingSofaOptimality.vminus_mem_edge hK (Real.pi / 2)).1 using 1
     refine supportPoint_eq_of_frame (MovingSofaOptimality.dot_vminus_uvec U _).symm ?_
     simpa only [supportQuarterPair, add_zero] using
-      hU.closedSupportDerivative_at_end hρ hρ0 hρK hfirst (d := 0) (by simp)
+      hU.closedSupportDerivative_at_end hρ hρ0 hρK hfirst Real.pi_div_two_pos (d := 0) (by simp)
   · convert (MovingSofaOptimality.vplus_mem_edge hK t).1 using 1
     refine supportPoint_eq_of_frame (MovingSofaOptimality.dot_vplus_uvec U t).symm ?_
     simpa only [supportQuarterPair, supportTangent, add_zero] using
@@ -231,7 +215,8 @@ theorem supportQuarterPair_points_mem :
     · simpa only [supportQuarterPair, add_sub_cancel_right, sub_add_cancel, add_halves,
         angleSupport_eq_imported_supp] using (MovingSofaOptimality.dot_vminus_uvec V Real.pi).symm
     · simpa only [supportQuarterPair, add_sub_cancel_right, add_halves, sub_half] using
-        hV.closedSupportDerivative_at_end hσ hσ0 hσJ hsecond (d := Real.pi / 2) (by simp)
+        hV.closedSupportDerivative_at_end hσ hσ0 hσJ hsecond Real.pi_div_two_pos
+          (d := Real.pi / 2) (by simp)
   · convert (MovingSofaOptimality.vplus_mem_edge hL (t + Real.pi / 2)).1 using 1
     rw [companionSupportPoint_eq_shifted_supportPoint]
     refine supportPoint_eq_of_frame ?_ ?_
@@ -250,9 +235,10 @@ theorem supportQuarterPair_traces :
       (F).gD 0 = -(MovingSofaOptimality.vplus V (Real.pi / 2)).1 ∧
       (F).fD (Real.pi / 2) = -(MovingSofaOptimality.vminus U (Real.pi / 2)).1 ∧
       (F).gD (Real.pi / 2) = -capRoof V (horizontalLeft V) := by
-  have hfDend := hU.closedSupportDerivative_at_end hρ hρ0 hρK hfirst (d := 0) (by simp)
-  have hgDend := hV.closedSupportDerivative_at_end hσ hσ0 hσJ hsecond (d := Real.pi / 2)
-    (by simp)
+  have hfDend := hU.closedSupportDerivative_at_end hρ hρ0 hρK hfirst Real.pi_div_two_pos
+    (d := 0) (by simp)
+  have hgDend := hV.closedSupportDerivative_at_end hσ hσ0 hσJ hsecond Real.pi_div_two_pos
+    (d := Real.pi / 2) (by simp)
   dsimp only [supportQuarterPair]
   refine ⟨imported_supp_zero U, ?_, imported_supp_pi_div_two U, ?_, ?_, ?_, hfDend.trans ?_,
     hgDend.trans ?_⟩ <;>

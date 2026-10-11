@@ -323,7 +323,6 @@ import all AmbidextrousSofa.Analysis.SourceLocalization
 import all AmbidextrousSofa.Analysis.SourceOccupation
 import all AmbidextrousSofa.Analysis.SourceVelocity
 import all AmbidextrousSofa.Analysis.SplitWingChord
-import all AmbidextrousSofa.Analysis.SupportArcCalculus
 import all AmbidextrousSofa.Analysis.SupportCurvature
 import all AmbidextrousSofa.Analysis.SupportDensityCalculus
 import all AmbidextrousSofa.Analysis.SupportHeightControl

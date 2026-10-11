@@ -14,7 +14,9 @@ objective-independent facts about the actual convex body. Substituting
 the proved curvature density turns those identities into ordinary
 integral identities, absolute continuity, and the two coupled corner
 velocity equations. Every interval used here stays inside the density
-domain; its exceptional face atoms are retained outside that domain.
+domain; its exceptional face atoms are retained outside that domain. The
+reflection `t ↦ c - t` keeps absolute continuity and almost-everywhere
+derivatives.
 -/
 
 noncomputable section
@@ -42,6 +44,28 @@ theorem absolutelyContinuousOnInterval_of_integral_sub
   ((LipschitzWith.const (f a)).lipschitzOnWith.absolutelyContinuousOnInterval.add
     (hg.absolutelyContinuousOnInterval_intervalIntegral left_mem_uIcc)).congr
     fun x hx => by simp [← heq x hx]
+
+theorem absolutelyContinuousOnInterval_comp_const_sub
+    {f : ℝ → ℝ} {a b : ℝ} (hf : AbsolutelyContinuousOnInterval f a b)
+    (hab : a ≤ b) (c : ℝ) :
+    AbsolutelyContinuousOnInterval (fun t => f (c - t)) (c - b) (c - a) := by
+  refine absolutelyContinuousOnInterval_of_integral_sub (g := fun t => -deriv f (c - t))
+    (hf.intervalIntegrable_deriv.comp_sub_left c).symm.neg fun x hx => ?_
+  rw [uIcc_of_le (by linarith)] at hx
+  rw [intervalIntegral.integral_neg, intervalIntegral.integral_comp_sub_left, sub_sub_cancel,
+    (hf.mono (uIcc_subset_uIcc (by rw [uIcc_of_le hab]; constructor <;> linarith [hx.1, hx.2])
+      right_mem_uIcc)).integral_deriv_eq_sub]
+  ring
+
+theorem ae_hasDerivAt_comp_const_sub
+    {f fD : ℝ → ℝ} {a b c : ℝ}
+    (hderiv : ∀ᵐ t ∂volume.restrict (Ioo a b), HasDerivAt f (fD t) t) :
+    ∀ᵐ t ∂volume.restrict (Ioo (c - b) (c - a)),
+      HasDerivAt (fun s => f (c - s)) (-fD (c - t)) t := by
+  have hshift := (volume.measurePreserving_sub_left c).quasiMeasurePreserving.ae
+    ((ae_restrict_iff' measurableSet_Ioo).mp hderiv)
+  filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hshift] with t ht hd
+  exact (hd ⟨by linarith [ht.2], by linarith [ht.1]⟩).comp_const_sub c t
 
 theorem IsDownwardCap.angleSupport_shift_sub_eq_integral {U : Set Plane}
     (hU : IsDownwardCap U) (a b d : ℝ) :
@@ -75,7 +99,7 @@ theorem IsDownwardCap.supportTangent_shift_sub_eq_integral_of_density
     (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρC : ∀ t, ρ t ≤ C)
     (heq : (upperCurvature U).restrict S =
       (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
-    (hab : a ≤ b) (hsub : Icc (a + d) (b + d) ⊆ S) :
+    (hab : a ≤ b) (hsub : Ioc (a + d) (b + d) ⊆ S) :
     supportTangent U (b + d) - supportTangent U (a + d) =
       ∫ t in a..b, ρ (t + d) - angleSupport U (t + d) := by
   rcases hab.eq_or_lt with rfl | hab
@@ -84,8 +108,7 @@ theorem IsDownwardCap.supportTangent_shift_sub_eq_integral_of_density
     intervalIntegral.integral_sub (intervalIntegrable_bounded_real_density hρ hρ0 hρC _ _)
       ((continuous_angleSupport hU.isCompact).intervalIntegrable _ _),
     intervalIntegral.integral_of_le (by linarith),
-    ← measureReal_eq_integral_of_restrict_withDensity hρ hρ0 heq measurableSet_Ioc
-      (Ioc_subset_Icc_self.trans hsub)]
+    ← measureReal_eq_integral_of_restrict_withDensity hρ hρ0 heq measurableSet_Ioc hsub]
   exact dot_vplus_vvec_sub hU.imported_isConvexBody (by linarith)
 
 theorem IsDownwardCap.absolutelyContinuousOnInterval_supportTangent_shift_of_density
@@ -99,7 +122,7 @@ theorem IsDownwardCap.absolutelyContinuousOnInterval_supportTangent_shift_of_den
     (hU.intervalIntegrable_shift_density hρ hρ0 hρC a b d) fun x hx => ?_
   rw [uIcc_of_le hab] at hx
   exact hU.supportTangent_shift_sub_eq_integral_of_density hρ hρ0 hρC heq hx.1
-    ((Icc_subset_Icc le_rfl (by linarith [hx.2])).trans hsub)
+    fun s hs => hsub ⟨hs.1.le, by linarith [hs.2, hx.2]⟩
 
 theorem IsDownwardCap.absolutelyContinuousOnInterval_supportTangent_of_density
     {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {C a b : ℝ}
@@ -147,7 +170,7 @@ theorem IsDownwardCap.ae_hasDerivAt_supportTangent_shift_of_density
     (supportTangent U (a + d))).congr_of_eventuallyEq ?_
   filter_upwards [Ioo_mem_nhds hx.1 hx.2] with t ht
   have := hU.supportTangent_shift_sub_eq_integral_of_density hρ hρ0 hρC heq ht.1.le
-    ((Icc_subset_Icc le_rfl (by linarith [ht.2])).trans hsub)
+    fun s hs => hsub ⟨hs.1.le, by linarith [hs.2, ht.2]⟩
   linarith
 
 theorem IsDownwardCap.absolutelyContinuousOnInterval_cornerVelocities_of_density

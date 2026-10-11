@@ -1,7 +1,6 @@
 module
 
 public import AmbidextrousSofa.Analysis.TiltedSupportControls
-public import AmbidextrousSofa.Analysis.SupportArcCalculus
 public import AmbidextrousSofa.Analysis.CornerArcCrossing
 
 @[expose] public section
