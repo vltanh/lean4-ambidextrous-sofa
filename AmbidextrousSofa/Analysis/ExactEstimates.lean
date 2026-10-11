@@ -9,7 +9,8 @@ public import AmbidextrousSofa.ExactConstant
 
 These inequalities use a polynomial lower bound for arctangent and the exact
 cubic equation. They provide the strict margins needed to discard small-area
-motion cases; no floating-point comparison is used.
+motion cases; no floating-point comparison is used. The file also records
+rational bounds on the diagonal offset `√2 - 1` and its quadratic equation.
 -/
 
 noncomputable section
