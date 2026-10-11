@@ -30,47 +30,28 @@ def initialAngleCriticalV (K C k d : ℝ) : ℝ :=
 
 theorem initialAngle_inset_equation {k d s : ℝ}
     (hk : 0 < k) (hs2 : s ^ 2 = 1 + k ^ 2) (hkd : k * d = s - 1) :
-    k * (1 - d ^ 2) = 2 * d := by
-  have hsq := congrArg (fun t : ℝ => t ^ 2) hkd
-  have hprod : k * (k * (1 - d ^ 2) - 2 * d) = 0 := by
-    nlinarith only [hs2, hkd, hsq]
-  exact sub_eq_zero.mp ((mul_eq_zero.mp hprod).resolve_left (ne_of_gt hk))
+    k * (1 - d ^ 2) = 2 * d :=
+  mul_left_cancel₀ hk.ne' (by linear_combination -hs2 - (k * d + 1 + s) * hkd)
 
 theorem initialAngle_inset_pos {k d s : ℝ}
     (hk : 0 < k) (hs0 : 0 ≤ s) (hs2 : s ^ 2 = 1 + k ^ 2)
     (hkd : k * d = s - 1) : 0 < d := by
-  have hs1 : 1 < s := by
-    apply (sq_lt_sq₀ (by norm_num : (0 : ℝ) ≤ 1) hs0).mp
-    nlinarith [sq_pos_of_pos hk]
-  have hd : d = (s - 1) / k := by
-    apply (eq_div_iff (ne_of_gt hk)).mpr
-    nlinarith only [hkd]
-  rw [hd]
-  exact div_pos (sub_pos.mpr hs1) hk
+  have hs1 : 1 < s := by nlinarith
+  exact pos_of_mul_pos_right (by linarith : 0 < k * d) hk.le
 
 theorem initialAngle_inset_lt_offset {k d : ℝ}
     (hk0 : 0 < k) (hk1 : k < 1) (hd : 0 < d)
     (hparam : k * (1 - d ^ 2) = 2 * d) : d < Real.sqrt 2 - 1 := by
-  have hden : 0 < 1 - d ^ 2 := by
-    by_contra h
-    have hprod := mul_nonpos_of_nonneg_of_nonpos hk0.le (le_of_not_gt h)
-    nlinarith only [hprod, hparam, hd]
-  have hquad : d ^ 2 + 2 * d < 1 := by
-    nlinarith only [hparam, mul_pos (show 0 < 1 - k by linarith) hden]
   have hK0 := initialAngle_offset_bounds.1
   have hK := initialAngle_offset_sq
-  by_contra h
-  have hle : Real.sqrt 2 - 1 ≤ d := le_of_not_gt h
-  have hsq := mul_nonneg (sub_nonneg.mpr hle)
-    (show 0 ≤ d + (Real.sqrt 2 - 1) by linarith)
-  nlinarith only [hK, hquad, hsq, hle]
+  have hden : 0 < 1 - d ^ 2 := by nlinarith
+  nlinarith [mul_pos (sub_pos.2 hk1) hden]
 
 theorem initialAngle_integral_affine (m c a b : ℝ) :
     (∫ x in a..b, m * x + c) = m * (b ^ 2 - a ^ 2) / 2 + c * (b - a) := by
-  have hc : Continuous (fun x : ℝ => m * x) := by fun_prop
-  rw [intervalIntegral.integral_add (hc.intervalIntegrable a b) intervalIntegrable_const,
-    intervalIntegral.integral_const_mul, integral_id, intervalIntegral.integral_const]
-  simp only [smul_eq_mul]
+  rw [intervalIntegral.integral_add (Continuous.intervalIntegrable (by fun_prop) _ _)
+    intervalIntegrable_const, intervalIntegral.integral_const_mul, integral_id,
+    intervalIntegral.integral_const, smul_eq_mul]
   ring
 
 end AmbidextrousSofa

@@ -29,15 +29,11 @@ theorem strictMonoOn_firstWallSlope :
     StrictMonoOn (fun t : ℝ => -Real.cos t / Real.sin t)
       (Ioo (0 : ℝ) (Real.pi / 2)) := by
   intro s hs t ht hst
-  have hss : 0 < Real.sin s := Real.sin_pos_of_pos_of_lt_pi hs.1
-    (by linarith only [hs.2, Real.pi_pos])
-  have hst' : 0 < Real.sin t := Real.sin_pos_of_pos_of_lt_pi ht.1
-    (by linarith only [ht.2, Real.pi_pos])
-  have hdiff := Real.sin_pos_of_pos_of_lt_pi (sub_pos.mpr hst)
-    (show t - s < Real.pi by linarith only [ht.2, hs.1, Real.pi_pos])
+  have hdiff := Real.sin_pos_of_pos_of_lt_pi (sub_pos.mpr hst) (by linarith [ht.2, hs.1])
   rw [Real.sin_sub] at hdiff
-  apply (div_lt_div_iff₀ hss hst').mpr
-  nlinarith only [hdiff]
+  apply (div_lt_div_iff₀ (Real.sin_pos_of_pos_of_lt_pi hs.1 (by linarith [hs.2, Real.pi_pos]))
+    (Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos]))).mpr
+  linarith
 
 section ActualPair
 
@@ -50,57 +46,10 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-set_option quotPrecheck false in
+set_option quotPrecheck false
 local notation "B" => firstTangentPoint (F).f (F).fD
-set_option quotPrecheck false in
-local notation "Z" => innerCornerPoint (F).f (F).g
-set_option quotPrecheck false in
 local notation "p" => supportP (F).fD (F).g
-set_option quotPrecheck false in
 local notation "q" => supportQ (F).gD (F).f
-local notation "V" => leftCompanionCap U (horizontalLeft U + capWidth U / 4)
-
-theorem fullTiltedSupportQuarterPair_first_wall_strict_at_first_tangency {t : ℝ}
-    (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) (hp : p t < 0) :
-    firstWall U t (B t).1 < secondWall U t (B t).1 := by
-  have hs : Real.sin t ≠ 0 := (Real.sin_pos_of_pos_of_lt_pi ht.1
-    (by linarith only [ht.2, Real.pi_pos])).ne'
-  have hc : 0 < Real.cos t := Real.cos_pos_of_mem_Ioo
-    ⟨by linarith only [ht.1, Real.pi_pos], ht.2⟩
-  have hgap := fullTiltedSupportQuarterPair_companion_wall_first_tangency_gap
-    hU hm haffine hρ hρ0 hρK heq hc.ne'
-  have hcut : (B t).2 < secondWall V t (B t).1 := by
-    apply sub_pos.mp
-    apply (mul_pos_iff_of_pos_right hc).mp
-    rw [hgap]
-    exact neg_pos.mpr hp
-  have hmatch := fullTiltedSupportQuarterPair_first_tangency
-    hU hm haffine hρ hρ0 hρK heq ⟨ht.1.le, ht.2⟩
-  have hfirst : firstWall U t (B t).1 = (B t).2 := by
-    rw [hmatch]
-    exact firstWall_firstTangency U hs
-  rw [hfirst]
-  exact hcut.trans_le (secondWall_mono (leftCompanionCap_subset _ _)
-    hU.isCap_fullLeftCompanion.nonempty hU.isCap.isCompact hc _)
-
-theorem fullTiltedSupportQuarterPair_niche_derivative_first_tangency
-    (hunit : ∀ᵐ s ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ s ≤ 1)
-    {t g : ℝ} (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2))
-    (hp : p t < 0) (hy : 0 ≤ (B t).2)
-    (hderiv : HasDerivAt (sweptNiche U (Real.pi / 2)) g (B t).1) :
-    g = -Real.cos t / Real.sin t := by
-  have hniche := fullTiltedSupportQuarterPair_niche_first_tangency
-    hU hm haffine hρ hρ0 hρK heq hunit ht hp.le hy
-  have hmatch := fullTiltedSupportQuarterPair_first_tangency
-    hU hm haffine hρ hρ0 hρK heq ⟨ht.1.le, ht.2⟩
-  have hs : Real.sin t ≠ 0 := (Real.sin_pos_of_pos_of_lt_pi ht.1
-    (by linarith only [ht.2, Real.pi_pos])).ne'
-  have hcontact : firstWall U t (B t).1 = sweptNiche U (Real.pi / 2) (B t).1 := by
-    rw [hniche, hmatch]
-    exact firstWall_firstTangency U hs
-  exact hU.isCap.niche_derivative_at_strict_first_contact ht hderiv hcontact
-    (fullTiltedSupportQuarterPair_first_wall_strict_at_first_tangency
-      hU hm haffine hρ hρ0 hρK heq ht hp)
 
 theorem fullTiltedSupportQuarterPair_strict_first_contact_unique
     {C α η t g s : ℝ}
@@ -114,71 +63,61 @@ theorem fullTiltedSupportQuarterPair_strict_first_contact_unique
     (hmax : fullWallClip hU.isCap.toCompactCap (B t).1 s =
       sweptNiche U (Real.pi / 2) (B t).1) :
     s = t ∧ firstWall U s (B t).1 < secondWall U s (B t).1 := by
+  have hsin {r : ℝ} (hr : r ∈ Ioo (0 : ℝ) (Real.pi / 2)) : 0 < Real.sin r :=
+    Real.sin_pos_of_pos_of_lt_pi hr.1 (by linarith [hr.2, Real.pi_pos])
+  have hcos {r : ℝ} (hr : r ∈ Ioo (0 : ℝ) (Real.pi / 2)) : 0 < Real.cos r :=
+    Real.cos_pos_of_mem_Ioo ⟨by linarith [hr.1, Real.pi_pos], hr.2⟩
   have hniche := fullTiltedSupportQuarterPair_niche_first_tangency
     hU hm haffine hρ hρ0 hρK heq hunit ht hp.le hy.le
-  have hpositive : 0 < sweptNiche U (Real.pi / 2) (B t).1 := by
-    rw [hniche]
-    exact hy
-  have hgt := fullTiltedSupportQuarterPair_niche_derivative_first_tangency
-    hU hm haffine hρ hρ0 hρK heq hunit ht hp hy.le hderiv
+  -- At `t` the first wall is a strict contact: the companion wall lies strictly above.
+  have hfirst : firstWall U t (B t).1 = (B t).2 := by
+    rw [fullTiltedSupportQuarterPair_first_tangency hU hm haffine hρ hρ0 hρK heq
+      ⟨ht.1.le, ht.2⟩]
+    exact firstWall_firstTangency U (hsin ht).ne'
+  have hcut := sub_pos.mp ((mul_pos_iff_of_pos_right (hcos ht)).mp
+    ((fullTiltedSupportQuarterPair_companion_wall_first_tangency_gap
+      hU hm haffine hρ hρ0 hρK heq (hcos ht).ne').symm ▸ neg_pos.mpr hp))
+  have hgt := hU.isCap.niche_derivative_at_strict_first_contact ht hderiv
+    (hfirst.trans hniche.symm) (hfirst ▸ hcut.trans_le (secondWall_mono
+      (leftCompanionCap_subset _ _) hU.isCap_fullLeftCompanion.nonempty hU.isCap.isCompact
+      (hcos ht) _))
   have hcorner : cornerWall U s (B t).1 = sweptNiche U (Real.pi / 2) (B t).1 :=
-    positive_fullWallClip_eq_cornerWall (U := hU.isCap.toCompactCap) hpositive hmax
-  rcases lt_trichotomy (firstWall U s (B t).1) (secondWall U s (B t).1)
-      with hfirst | htie | hsecond
+    positive_fullWallClip_eq_cornerWall (U := hU.isCap.toCompactCap) (hniche ▸ hy) hmax
+  rcases le_or_gt (firstWall U s (B t).1) (secondWall U s (B t).1) with hle | hsecond
   · have hcontact : firstWall U s (B t).1 = sweptNiche U (Real.pi / 2) (B t).1 := by
-      simpa only [cornerWall, min_eq_left hfirst.le] using hcorner
-    have hgs := hU.isCap.niche_derivative_at_strict_first_contact hs hderiv hcontact hfirst
-    exact ⟨strictMonoOn_firstWallSlope.injOn hs ht (hgs.symm.trans hgt), hfirst⟩
-  · have hfirst : firstWall U s (B t).1 = sweptNiche U (Real.pi / 2) (B t).1 := by
-      simpa only [cornerWall, min_eq_left htie.le] using hcorner
-    have hpoint := wall_tie_eq_attachedCorner hs hfirst (htie.symm.trans hfirst)
-    have hx : (B t).1 = (attachedCorner U s).1 := by rw [← hpoint]
-    have hy' : sweptNiche U (Real.pi / 2) (B t).1 = (attachedCorner U s).2 :=
-      congrArg Prod.snd hpoint
-    have hcontact : sweptNiche U (Real.pi / 2) (attachedCorner U s).1 =
-        (attachedCorner U s).2 := by simpa only [hx] using hy'
-    have hD : HasDerivAt (sweptNiche U (Real.pi / 2)) g (attachedCorner U s).1 := by
-      simpa only [hx] using hderiv
-    have hpos : 0 < (attachedCorner U s).2 := by rw [← hy']; exact hpositive
+      rwa [cornerWall, min_eq_left hle] at hcorner
+    rcases hle.lt_or_eq with hlt | htie
+    · exact ⟨strictMonoOn_firstWallSlope.injOn hs ht
+        ((hU.isCap.niche_derivative_at_strict_first_contact hs hderiv hcontact hlt).symm.trans
+          hgt), hlt⟩
+    -- A tie is an attached corner contact in the core phase, left of the first tangent.
+    obtain ⟨hx, hy'⟩ := Prod.ext_iff.mp
+      (wall_tie_eq_attachedCorner hs hcontact (htie.symm.trans hcontact)).symm
+    have hD : HasDerivAt (sweptNiche U (Real.pi / 2)) g (attachedCorner U s).1 := hx ▸ hderiv
+    have hcontact' : sweptNiche U (Real.pi / 2) (attachedCorner U s).1 =
+        (attachedCorner U s).2 := by rw [hx, hy']
     obtain ⟨hafter, hclosed⟩ :=
       fullTiltedSupportQuarterPair_positive_attachedCorner_contact_mem_closed_core_phase
-        hU hm haffine hρ hρ0 hρK heq hl hr hheight hmpos hphase hs hpos hD hcontact
-    have hcore : s ∈ Ioo α η :=
-      ⟨lt_of_le_of_ne hclosed.1 hsα.symm, lt_of_le_of_ne hclosed.2 hsη⟩
-    have hbound := (hU.isCap.niche_derivative_bounds_at_attachedCorner hs hD hcontact).1
+        hU hm haffine hρ hρ0 hρK heq hl hr hheight hmpos hphase hs
+        (by rw [hy', hniche]; exact hy) hD hcontact'
+    have hbound := (hU.isCap.niche_derivative_bounds_at_attachedCorner hs hD hcontact').1
     rw [hgt] at hbound
-    have hst : s ≤ t := by
-      by_contra hnot
-      exact (not_lt_of_ge hbound)
-        (strictMonoOn_firstWallSlope ht hs (lt_of_not_ge hnot))
-    have hmatch := (fullTiltedSupportQuarterPair_other_points_after_affine
-      hU hm haffine hρ hρ0 hρK heq ⟨hs.1.le, hs.2⟩ hafter).2
-    have hleft : (attachedCorner U s).1 < (B s).1 := by
-      rw [← hmatch, innerCorner_fst_eq_firstTangent (F).f (F).g (F).fD]
-      have hsin : 0 < Real.sin s := Real.sin_pos_of_pos_of_lt_pi hs.1
-        (by linarith only [hs.2, Real.pi_pos])
-      have hprod := mul_neg_of_neg_of_pos (hphase.core_signs s hcore).1 hsin
-      linarith only [hprod]
-    have horder := (fullTiltedSupportQuarterPair_first_tangent_order
-      hU hm haffine hρ hρ0 hρK heq hunit).1
-    have hle := horder (Ioo_subset_Icc_self hs) (Ioo_subset_Icc_self ht) hst
-    exact False.elim (by linarith only [hleft, hle, hx])
-  · have hcontact : secondWall U s (B t).1 = sweptNiche U (Real.pi / 2) (B t).1 := by
-      simpa only [cornerWall, min_eq_right hsecond.le] using hcorner
-    have hgs := hU.isCap.niche_derivative_at_strict_second_contact hs hderiv hcontact hsecond
-    have hsin_s : 0 < Real.sin s := Real.sin_pos_of_pos_of_lt_pi hs.1
-      (by linarith only [hs.2, Real.pi_pos])
-    have hcos_s : 0 < Real.cos s := Real.cos_pos_of_mem_Ioo
-      ⟨by linarith only [hs.1, Real.pi_pos], hs.2⟩
-    have hsin_t : 0 < Real.sin t := Real.sin_pos_of_pos_of_lt_pi ht.1
-      (by linarith only [ht.2, Real.pi_pos])
-    have hcos_t : 0 < Real.cos t := Real.cos_pos_of_mem_Ioo
-      ⟨by linarith only [ht.1, Real.pi_pos], ht.2⟩
-    have hgpos : 0 < g := by rw [hgs]; exact div_pos hsin_s hcos_s
-    have hgneg : g < 0 := by
-      rw [hgt]
-      exact div_neg_of_neg_of_pos (neg_neg_of_pos hcos_t) hsin_t
-    exact False.elim (lt_asymm hgpos hgneg)
+    have hst : s ≤ t := not_lt.mp fun h => hbound.not_gt (strictMonoOn_firstWallSlope ht hs h)
+    have hfst := innerCorner_fst_eq_firstTangent (F).f (F).g (F).fD s
+    rw [(fullTiltedSupportQuarterPair_other_points_after_affine
+      hU hm haffine hρ hρ0 hρK heq ⟨hs.1.le, hs.2⟩ hafter).2] at hfst
+    have hprod := mul_neg_of_neg_of_pos (hphase.core_signs s
+      ⟨lt_of_le_of_ne hclosed.1 hsα.symm, lt_of_le_of_ne hclosed.2 hsη⟩).1 (hsin hs)
+    have hle := (fullTiltedSupportQuarterPair_first_tangent_order
+      hU hm haffine hρ hρ0 hρK heq hunit).1 (Ioo_subset_Icc_self hs) (Ioo_subset_Icc_self ht) hst
+    linarith only [hprod, hle, hfst, hx]
+  -- A strict second-wall contact would have positive slope.
+  have hcontact : secondWall U s (B t).1 = sweptNiche U (Real.pi / 2) (B t).1 := by
+    rwa [cornerWall, min_eq_right hsecond.le] at hcorner
+  have hgs := hU.isCap.niche_derivative_at_strict_second_contact hs hderiv hcontact hsecond
+  have h₁ := div_pos (hsin hs) (hcos hs)
+  have h₂ := div_neg_of_neg_of_pos (neg_neg_of_pos (hcos ht)) (hsin ht)
+  linarith only [hgs, hgt, h₁, h₂]
 
 end ActualPair
 

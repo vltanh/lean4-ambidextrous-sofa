@@ -28,46 +28,32 @@ variable {ι : Type*}
 theorem supportWall_eq_affine (U : Set Plane) (normal : ι → Plane) (x : ℝ) (i : ι) :
     supportWall U (normal i) x = wallSlope normal (some i) * x +
       barrierIntercept normal (fun j => support U (normal j)) (some i) := by
-  unfold supportWall wallSlope barrierIntercept
-  ring
+  unfold supportWall wallSlope barrierIntercept; ring
 
 theorem supportWall_le_iff {U : Set Plane} {n : Plane} (hny : 0 < n.2) (x y : ℝ) :
-    supportWall U n x ≤ y ↔ support U n - 1 ≤ coordDot (x, y) n := by
-  unfold supportWall
-  rw [div_le_iff₀ hny]
-  unfold coordDot
-  constructor <;> intro h <;> linarith
+    supportWall U n x ≤ y ↔ support U n - 1 ≤ coordDot (x, y) n :=
+  (div_le_iff₀ hny).trans sub_le_iff_le_add'
 
 theorem le_supportWall_iff {U : Set Plane} {n : Plane} (hny : 0 < n.2) (x y : ℝ) :
-    y ≤ supportWall U n x ↔ coordDot (x, y) n ≤ support U n - 1 := by
-  unfold supportWall
-  rw [le_div_iff₀ hny]
-  unfold coordDot
-  constructor <;> intro h <;> linarith
+    y ≤ supportWall U n x ↔ coordDot (x, y) n ≤ support U n - 1 :=
+  (le_div_iff₀ hny).trans le_sub_iff_add_le'
 
 theorem cornerExpr_source_cases (ij : ι × ι) (v : Option ι → ℝ) :
     ((cornerExpr ij).source v = some ij.1 ∧ v (some ij.1) ≤ v (some ij.2)) ∨
       ((cornerExpr ij).source v = some ij.2 ∧ v (some ij.2) ≤ v (some ij.1)) := by
-  by_cases h : v (some ij.1) ≤ v (some ij.2)
-  · exact Or.inl ⟨by simp [cornerExpr, WallExpr.source, WallExpr.eval, h], h⟩
-  · exact Or.inr ⟨by simp [cornerExpr, WallExpr.source, WallExpr.eval, h], le_of_not_ge h⟩
+  by_cases h : v (some ij.1) ≤ v (some ij.2) <;>
+    simp [cornerExpr, WallExpr.source, WallExpr.eval, h, le_of_not_ge]
 
 theorem nicheExpr_source_some {corners : List (ι × ι)} {v : Option ι → ℝ} {j : ι}
     (hsource : (nicheExpr corners).source v = some j) :
     ∃ ij ∈ corners, (cornerExpr ij).source v = some j := by
-  revert hsource
   induction corners with
-  | nil => intro hsource; simp [nicheExpr, WallExpr.source] at hsource
+  | nil => simp [nicheExpr, WallExpr.source] at hsource
   | cons ij rest ih =>
-    intro hsource
-    change (if (cornerExpr ij).eval v ≤ (nicheExpr rest).eval v then
-      (nicheExpr rest).source v else (cornerExpr ij).source v) = some j at hsource
-    by_cases hle : (cornerExpr ij).eval v ≤ (nicheExpr rest).eval v
-    · rw [if_pos hle] at hsource
-      obtain ⟨kl, hkl, hk⟩ := ih hsource
-      exact ⟨kl, List.mem_cons_of_mem _ hkl, hk⟩
-    · rw [if_neg hle] at hsource
-      exact ⟨ij, by simp, hsource⟩
+    rw [nicheExpr, WallExpr.source] at hsource
+    split_ifs at hsource
+    · exact (ih hsource).imp fun _ h => ⟨List.mem_cons_of_mem _ h.1, h.2⟩
+    · exact ⟨ij, List.mem_cons_self, hsource⟩
 
 end FinitePolygon
 
@@ -82,30 +68,22 @@ def innerSourceSet (U : Set Plane) (grid : Finset QuarterAngle) (j : SourceIndex
 theorem innerSource_height (U : Set Plane) (grid : Finset QuarterAngle)
     (j : SourceIndex grid) {x : ℝ} (hx : x ∈ innerSourceSet U grid j) :
     finiteBarrier U (normal grid) (pairList grid) none x = supportWall U (normal grid j) x := by
-  rw [finiteBarrier_eq_eval (normal grid) _ (fun _ => rfl)]
-  rw [WallExpr.eval_eq_source]
-  change (barrierExpr (pairList grid) none).source
-    (fun i => wallSlope (normal grid) i * x +
-      barrierIntercept (normal grid) (fun j => support U (normal grid j)) i) = some j at hx
-  rw [hx, ← supportWall_eq_affine]
+  have hx : (barrierExpr (pairList grid) none).source _ = some j := hx
+  rw [finiteBarrier_eq_eval (normal grid) _ (fun _ => rfl), WallExpr.eval_eq_source, hx,
+    ← supportWall_eq_affine]
 
 theorem first_source_le_companion (U : Set Plane) (grid : Finset QuarterAngle)
     (t : InteriorPoint grid) {x : ℝ} (hx : x ∈ innerSourceSet U grid (Sum.inl t)) :
     supportWall U (unitNormal t.val) x ≤ supportWall U (companionNormal t.val) x := by
-  classical
   let v : Option (SourceIndex grid) → ℝ := fun i => wallSlope (normal grid) i * x +
     barrierIntercept (normal grid) (fun j => support U (normal grid j)) i
-  have hsource : (nicheExpr (pairList grid)).source v = some (Sum.inl t) := hx
-  obtain ⟨ij, hij, hselected⟩ := nicheExpr_source_some hsource
+  obtain ⟨ij, hij, hselected⟩ := nicheExpr_source_some (v := v) hx
   obtain ⟨s, _, rfl⟩ := List.mem_map.mp hij
-  rcases cornerExpr_source_cases (Sum.inl s, Sum.inr s) v with h | h
-  · have heq : t = s := Sum.inl.inj (Option.some.inj (hselected.symm.trans h.1))
-    subst s
-    have h2 := h.2
-    simp only [v, ← supportWall_eq_affine] at h2
-    exact h2
-  · have hfalse := hselected.symm.trans h.1
-    simp at hfalse
+  rcases cornerExpr_source_cases (Sum.inl s, Sum.inr s) v with h | h <;> rw [h.1] at hselected
+  · obtain rfl : s = t := by simpa using hselected
+    simp only [v, ← supportWall_eq_affine] at h
+    exact h.2
+  · simp at hselected
 
 /-- A point above the finite niche satisfies the actual corridor
 alternative at every sampled angle, including both axis samples. -/
@@ -115,60 +93,39 @@ theorem above_niche_wall_alternative {U : Set Plane} (hU : IsDownwardCap U)
     {s : QuarterAngle} (hs : s ∈ grid) :
     support U (unitNormal s) - 1 ≤ coordDot p (unitNormal s) ∨
       support U (companionNormal s) - 1 ≤ coordDot p (companionNormal s) := by
-  classical
+  have htop := hU.support_upward_le_one
   by_cases hs0 : (s : ℝ) = 0
-  · right
-    have htop := hU.support_upward_le_one
-    simpa only [hs0, companionNormal, Real.sin_zero, Real.cos_zero, neg_zero,
-      coordDot, mul_zero, zero_add, mul_one] using (by linarith : support U (0, 1) - 1 ≤ p.2)
+  · right; simp [hs0, companionNormal, coordDot]; linarith
   by_cases hsL : (s : ℝ) = Real.pi / 2
-  · left
-    have htop := hU.support_upward_le_one
-    simpa only [hsL, unitNormal, Real.cos_pi_div_two, Real.sin_pi_div_two,
-      coordDot, mul_zero, zero_add, mul_one] using (by linarith : support U (0, 1) - 1 ≤ p.2)
-  · have hsopen : 0 < (s : ℝ) ∧ (s : ℝ) < Real.pi / 2 :=
-      ⟨lt_of_le_of_ne s.property.1 (Ne.symm hs0), lt_of_le_of_ne s.property.2 hsL⟩
-    let t : InteriorPoint grid := ⟨s, Finset.mem_filter.mpr ⟨hs, hsopen⟩⟩
-    have hmin := ((finiteNiche_le_iff U (normal grid) (pairList grid) p.1 p.2).mp hpN).2
-      (Sum.inl t, Sum.inr t) (pair_mem_pairList grid t)
-    rcases min_le_iff.mp hmin with h | h
-    · left
-      exact (supportWall_le_iff (normal_snd_pos grid (Sum.inl t)) p.1 p.2).mp h
-    · right
-      exact (supportWall_le_iff (normal_snd_pos grid (Sum.inr t)) p.1 p.2).mp h
+  · left; simp [hsL, unitNormal, coordDot]; linarith
+  let t : InteriorPoint grid := ⟨s, Finset.mem_filter.mpr
+    ⟨hs, lt_of_le_of_ne s.2.1 (Ne.symm hs0), lt_of_le_of_ne s.2.2 hsL⟩⟩
+  exact (min_le_iff.mp (((finiteNiche_le_iff U (normal grid) (pairList grid) p.1 p.2).mp hpN).2
+      (Sum.inl t, Sum.inr t) (pair_mem_pairList grid t))).imp
+    (supportWall_le_iff (normal_snd_pos grid (Sum.inl t)) p.1 p.2).mp
+    (supportWall_le_iff (normal_snd_pos grid (Sum.inr t)) p.1 p.2).mp
 
 def wallPoint (U : Set Plane) (t v : ℝ) : Plane :=
   (support U (unitNormal t) - 1) • unitNormal t + v • companionNormal t
 
 theorem wallPoint_fst (U : Set Plane) (t v : ℝ) :
     (wallPoint U t v).1 = (support U (unitNormal t) - 1) * Real.cos t - v * Real.sin t := by
-  simp only [wallPoint, unitNormal, companionNormal, Prod.fst_add, Prod.smul_fst, smul_eq_mul]
-  ring
+  simp [wallPoint, unitNormal, companionNormal]; ring
 
 theorem dot_wallPoint_first (U : Set Plane) (t v s : ℝ) :
     coordDot (wallPoint U t v) (unitNormal s) =
       (support U (unitNormal t) - 1) * Real.cos (s - t) + v * Real.sin (s - t) := by
-  change MovingSofaOptimality.dot
-    ((support U (unitNormal t) - 1) • MovingSofaOptimality.uvec t + v • MovingSofaOptimality.vvec t) (MovingSofaOptimality.uvec s) = _
-  rw [MovingSofaOptimality.dot_add_left, MovingSofaOptimality.dot_smul_left, MovingSofaOptimality.dot_smul_left,
-    MovingSofaOptimality.dot_uvec_uvec, MovingSofaOptimality.dot_vvec_uvec', ← Real.cos_neg (t - s),
-    neg_sub]
+  simp [wallPoint, coordDot, unitNormal, companionNormal, Real.cos_sub, Real.sin_sub]; ring
 
 theorem dot_wallPoint_companion (U : Set Plane) (t v s : ℝ) :
     coordDot (wallPoint U t v) (companionNormal s) =
       (support U (unitNormal t) - 1) * Real.sin (t - s) + v * Real.cos (t - s) := by
-  change MovingSofaOptimality.dot
-    ((support U (unitNormal t) - 1) • MovingSofaOptimality.uvec t + v • MovingSofaOptimality.vvec t) (MovingSofaOptimality.vvec s) = _
-  rw [MovingSofaOptimality.dot_add_left, MovingSofaOptimality.dot_smul_left, MovingSofaOptimality.dot_smul_left,
-    MovingSofaOptimality.dot_uvec_vvec', MovingSofaOptimality.dot_vvec_vvec]
+  simp [wallPoint, coordDot, unitNormal, companionNormal, Real.cos_sub, Real.sin_sub]; ring
 
 theorem point_eq_wallPoint {U : Set Plane} {p : Plane} {t : ℝ}
     (hline : coordDot p (unitNormal t) = support U (unitNormal t) - 1) :
     p = wallPoint U t (coordDot p (companionNormal t)) := by
-  have h := MovingSofaOptimality.eq_dot_uvec_smul_add p t
-  change p = coordDot p (unitNormal t) • unitNormal t +
-    coordDot p (companionNormal t) • companionNormal t at h
-  rwa [hline] at h
+  rw [wallPoint, ← hline]; exact MovingSofaOptimality.eq_dot_uvec_smul_add p t
 
 def companionMinus (f gm δ : ℝ) : ℝ :=
   (gm - 1 - (f - 1) * Real.sin δ) / Real.cos δ
@@ -193,28 +150,13 @@ theorem mem_neighborParameters {f g fm fp gm gp δ v : ℝ}
     (hplus : fp - 1 ≤ (f - 1) * Real.cos δ + v * Real.sin δ ∨
       gp - 1 ≤ -(f - 1) * Real.sin δ + v * Real.cos δ) :
     v ∈ neighborParameters f g fm fp gm gp δ := by
-  by_cases hm : gm - 1 ≤ (f - 1) * Real.sin δ + v * Real.cos δ
-  · left
-    refine ⟨(min_le_left _ _).trans ?_, hv⟩
-    change (gm - 1 - (f - 1) * Real.sin δ) / Real.cos δ ≤ v
-    rw [div_le_iff₀ hc]
-    linarith
-  by_cases hp : gp - 1 ≤ -(f - 1) * Real.sin δ + v * Real.cos δ
-  · left
-    refine ⟨(min_le_right _ _).trans ?_, hv⟩
-    change (gp - 1 + (f - 1) * Real.sin δ) / Real.cos δ ≤ v
-    rw [div_le_iff₀ hc]
-    linarith
-  · right
-    have hm' := hminus.resolve_right hm
-    have hp' := hplus.resolve_right hp
-    constructor
-    · change (fp - 1 - (f - 1) * Real.cos δ) / Real.sin δ ≤ v
-      rw [div_le_iff₀ hs]
-      linarith
-    · change v ≤ ((f - 1) * Real.cos δ - fm + 1) / Real.sin δ
-      rw [le_div_iff₀ hs]
-      linarith
+  simp only [neighborParameters, companionMinus, companionPlus, firstLo, firstHi, mem_union,
+    mem_Icc, min_le_iff, div_le_iff₀ hc, div_le_iff₀ hs, le_div_iff₀ hs, hv, and_true]
+  rcases hminus with h | h
+  · rcases hplus with h' | h'
+    · exact .inr ⟨by linarith, by linarith⟩
+    · exact .inl (.inr (by linarith))
+  · exact .inl (.inl (by linarith))
 
 /-- Every actual first source lies in the two neighboring-wall parameter
 intervals. This statement applies to every downward cap, independently of
@@ -230,46 +172,25 @@ theorem first_source_neighbor_parameters {U : Set Plane} (hU : IsDownwardCap U)
         (support U (unitNormal ((t.val : ℝ) - δ))) (support U (unitNormal ((t.val : ℝ) + δ)))
         (support U (companionNormal ((t.val : ℝ) - δ)))
         (support U (companionNormal ((t.val : ℝ) + δ))) δ := by
-  let y := supportWall U (unitNormal t.val) x
-  let p : Plane := (x, y)
-  let v := coordDot p (companionNormal t.val)
-  have hy : finiteBarrier U (normal grid) (pairList grid) none x = y :=
+  let p : Plane := (x, supportWall U (unitNormal t.val) x)
+  have hy : finiteBarrier U (normal grid) (pairList grid) none p.1 = p.2 :=
     innerSource_height U grid (Sum.inl t) hx
-  have hy0 : 0 ≤ p.2 := by
-    change 0 ≤ y
-    rw [← hy]
-    exact finiteBarrier_nonneg _ _ _ _ _
-  have hline : coordDot p (unitNormal t.val) = support U (unitNormal t.val) - 1 := by
-    apply le_antisymm
-    · exact (le_supportWall_iff (normal_snd_pos grid (Sum.inl t)) x y).mp le_rfl
-    · exact (supportWall_le_iff (normal_snd_pos grid (Sum.inl t)) x y).mp le_rfl
-  have hp : p = wallPoint U t.val v := point_eq_wallPoint hline
-  have hv : v ≤ support U (companionNormal t.val) - 1 :=
-    (le_supportWall_iff (normal_snd_pos grid (Sum.inr t)) x y).mp
+  have hp : p = wallPoint U t.val (coordDot p (companionNormal t.val)) :=
+    point_eq_wallPoint (le_antisymm
+      ((le_supportWall_iff (normal_snd_pos grid (Sum.inl t)) _ _).mp le_rfl)
+      ((supportWall_le_iff (normal_snd_pos grid (Sum.inl t)) _ _).mp le_rfl))
+  have hv : coordDot p (companionNormal t.val) ≤ support U (companionNormal t.val) - 1 :=
+    (le_supportWall_iff (normal_snd_pos grid (Sum.inr t)) _ _).mp
       (first_source_le_companion U grid t hx)
   obtain ⟨sm, hsm, hsmval⟩ := hminus
   obtain ⟨sp, hsp, hspval⟩ := hplus
-  have hm := above_niche_wall_alternative hU grid hy0 hy.le hsm
-  have hp' := above_niche_wall_alternative hU grid hy0 hy.le hsp
-  rw [hsmval, hp, dot_wallPoint_first, dot_wallPoint_companion,
-    show (t.val : ℝ) - δ - (t.val : ℝ) = -δ by ring,
-    show (t.val : ℝ) - ((t.val : ℝ) - δ) = δ by ring,
-    Real.cos_neg, Real.sin_neg] at hm
-  rw [hspval, hp, dot_wallPoint_first, dot_wallPoint_companion,
-    show (t.val : ℝ) + δ - (t.val : ℝ) = δ by ring,
-    show (t.val : ℝ) - ((t.val : ℝ) + δ) = -δ by ring,
-    Real.sin_neg, Real.cos_neg] at hp'
-  refine ⟨v, ?_, mem_neighborParameters hc hs hv ?_ ?_⟩
-  · have h := congrArg Prod.fst hp
-    simpa only [p, wallPoint_fst] using h
-  · rcases hm with h | h
-    · left
-      nlinarith
-    · exact Or.inr h
-  · rcases hp' with h | h
-    · exact Or.inl h
-    · right
-      nlinarith
+  have hm := above_niche_wall_alternative hU grid (hy ▸ finiteBarrier_nonneg ..) hy.le hsm
+  have hp' := above_niche_wall_alternative hU grid (hy ▸ finiteBarrier_nonneg ..) hy.le hsp
+  rw [hp] at hm hp'
+  simp [hsmval, hspval, dot_wallPoint_first, dot_wallPoint_companion] at hm hp'
+  refine ⟨_, ?_, mem_neighborParameters hc hs hv (hm.imp (fun h => by linarith) fun h => by linarith)
+    (hp'.imp (fun h => by linarith) fun h => by linarith)⟩
+  simpa only [wallPoint_fst] using congrArg Prod.fst hp
 
 end AngularGrid
 

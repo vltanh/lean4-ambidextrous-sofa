@@ -35,78 +35,38 @@ theorem exists_ordered_corner_sign_switches
       (∀ t ∈ Icc b L, p t ≤ 0) ∧
       (∀ t ∈ Icc (0 : ℝ) d, 0 ≤ q t) ∧
       (∀ t ∈ Icc d L, q t ≤ 0) := by
-  have hpcont : ContinuousOn p (Icc (0 : ℝ) L) := by
-    simpa only [uIcc_of_le hL.le] using hp.continuousOn
-  have hqcont : ContinuousOn q (Icc (0 : ℝ) L) := by
-    simpa only [uIcc_of_le hL.le] using hq.continuousOn
-  obtain ⟨b, hb, hpb, hpfirst⟩ := exists_first_level_crossing hL hpcont hp0 hpL.le
-  have hbL : b < L := lt_of_le_of_ne hb.2 (by
-    intro heq
-    rw [heq] at hpb
-    linarith)
-  have hqb : 0 < q b := by
-    rcases hsep b ⟨hb.1, hbL⟩ with hqpos | hpneg
-    · exact hqpos
-    · rw [hpb] at hpneg
-      exact (lt_irrefl _ hpneg).elim
-  have hpBL : AbsolutelyContinuousOnInterval p b L := hp.mono (by
-    rw [uIcc_of_le hL.le, uIcc_of_le hb.2]
-    exact Icc_subset_Icc hb.1.le le_rfl)
-  have hpderiv : ∀ᵐ t ∂volume.restrict (Ioo b L), 0 < p t → deriv p t ≤ 0 := by
-    filter_upwards [ae_restrict_mem measurableSet_Ioo,
-      ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hb.1.le le_rfl) hode,
-      ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hb.1.le le_rfl) hunit]
-      with t ht hd hu
-    intro hpt
-    have hqt : 0 < q t := by
-      rcases hsep t ⟨hb.1.trans ht.1, ht.2⟩ with hqpos | hpneg
-      · exact hqpos
-      · linarith
-    rw [hd.1.deriv]
-    linarith [hu.1]
-  have hpafter : ∀ t ∈ Icc b L, p t ≤ 0 :=
-    fun _ ht => absolutelyContinuousOnInterval_le_of_ae_deriv_nonpos_above hpBL hb.2
-      (by rw [hpb]) hpderiv ht
+  have hsub {c : ℝ} (hc : 0 ≤ c) :=
+    ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hc le_rfl) (hode.and hunit)
+  obtain ⟨b, hb, hpb, hpfirst⟩ := exists_first_level_crossing hL
+    (by simpa only [uIcc_of_le hL.le] using hp.continuousOn) hp0 hpL.le
+  have hbL : b < L := hb.2.lt_of_ne (by rintro rfl; linarith)
+  have hpafter : ∀ t ∈ Icc b L, p t ≤ 0 := fun _ ht =>
+    absolutelyContinuousOnInterval_le_of_ae_deriv_nonpos_above
+      (hp.mono (uIcc_subset_uIcc_right (mem_uIcc_of_le hb.1.le hb.2))) hb.2 hpb.le (by
+        filter_upwards [ae_restrict_mem measurableSet_Ioo, hsub hb.1.le] with t ht hd hpt
+        rw [hd.1.1.deriv]
+        linarith [hd.2.1, (hsep t ⟨hb.1.trans ht.1, ht.2⟩).resolve_right (lt_asymm hpt)]) ht
+  have hqcont : ContinuousOn q (Icc 0 L) := by simpa only [uIcc_of_le hL.le] using hq.continuousOn
   obtain ⟨d, hd, hqd, hqfirst⟩ := exists_first_level_crossing hbL
-    (hqcont.mono (Icc_subset_Icc hb.1.le le_rfl)) hqb hqL.le
-  have hdL : d < L := lt_of_le_of_ne hd.2 (by
-    intro heq
-    rw [heq] at hqd
-    linarith)
-  have hd0 : 0 < d := hb.1.trans hd.1
-  have hqDL : AbsolutelyContinuousOnInterval q d L := hq.mono (by
-    rw [uIcc_of_le hL.le, uIcc_of_le hd.2]
-    exact Icc_subset_Icc hd0.le le_rfl)
-  have hqderiv : ∀ᵐ t ∂volume.restrict (Ioo d L), deriv q t ≤ 0 := by
-    filter_upwards [ae_restrict_mem measurableSet_Ioo,
-      ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hd0.le le_rfl) hode,
-      ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hd0.le le_rfl) hunit]
-      with t ht hdt hu
-    have hpt := hpafter t ⟨hd.1.le.trans ht.1.le, ht.2.le⟩
-    rw [hdt.2.deriv]
-    linarith [hu.2]
-  have hqafter : ∀ t ∈ Icc d L, q t ≤ 0 := by
-    intro t ht
-    have hle := absolutelyContinuousOnInterval_le_initial_of_ae_deriv_nonpos hqDL hd.2
-      hqderiv ht
-    simpa only [hqd] using hle
-  refine ⟨b, d, ⟨hb.1, hbL⟩, ⟨hd.1, hdL⟩, hpb, hqd, ?_, hpafter, ?_, hqafter⟩
-  · intro t ht
-    rcases ht.2.eq_or_lt with heq | hlt
-    · simpa only [heq, hpb] using (le_rfl : (0 : ℝ) ≤ 0)
-    · exact (hpfirst t ⟨ht.1, hlt⟩).le
-  · intro t ht
-    by_cases hbt : b ≤ t
-    · rcases ht.2.eq_or_lt with heq | hlt
-      · simpa only [heq, hqd] using (le_rfl : (0 : ℝ) ≤ 0)
-      · exact (hqfirst t ⟨hbt, hlt⟩).le
-    · have htb : t < b := lt_of_not_ge hbt
-      by_cases htzero : t = 0
-      · simpa only [htzero] using hq0.le
-      · have htpos : 0 < t := lt_of_le_of_ne ht.1 (Ne.symm htzero)
-        have hpt := hpfirst t ⟨ht.1, htb⟩
-        rcases hsep t ⟨htpos, ht.2.trans_lt hdL⟩ with hqt | hpneg
-        · exact hqt.le
-        · linarith
+    (hqcont.mono (Icc_subset_Icc hb.1.le le_rfl))
+    ((hsep b ⟨hb.1, hbL⟩).resolve_right fun h => h.ne hpb) hqL.le
+  have hdL : d < L := hd.2.lt_of_ne (by rintro rfl; linarith)
+  have hd0 : 0 ≤ d := (hb.1.trans hd.1).le
+  refine ⟨b, d, ⟨hb.1, hbL⟩, ⟨hd.1, hdL⟩, hpb, hqd, fun t ht => ?_, hpafter, fun t ht => ?_,
+    fun t ht => ?_⟩
+  · rcases ht.2.eq_or_lt with rfl | hlt
+    exacts [hpb.ge, (hpfirst t ⟨ht.1, hlt⟩).le]
+  · rcases lt_or_ge t b with htb | hbt
+    · rcases ht.1.eq_or_lt with rfl | htpos
+      · exact hq0.le
+      exact ((hsep t ⟨htpos, ht.2.trans_lt hdL⟩).resolve_right
+        (lt_asymm (hpfirst t ⟨ht.1, htb⟩))).le
+    · rcases ht.2.eq_or_lt with rfl | hlt
+      exacts [hqd.ge, (hqfirst t ⟨hbt, hlt⟩).le]
+  · refine (absolutelyContinuousOnInterval_le_initial_of_ae_deriv_nonpos
+      (hq.mono (uIcc_subset_uIcc_right (mem_uIcc_of_le hd0 hd.2))) hd.2 ?_ ht).trans_eq hqd
+    filter_upwards [ae_restrict_mem measurableSet_Ioo, hsub hd0] with t ht hdt
+    rw [hdt.1.2.deriv]
+    linarith [hdt.2.2, hpafter t ⟨hd.1.le.trans ht.1.le, ht.2.le⟩]
 
 end AmbidextrousSofa

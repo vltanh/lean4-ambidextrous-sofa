@@ -28,8 +28,7 @@ open Set MeasureTheory
 namespace AmbidextrousSofa
 
 /-- The interval is defined from the original body's own projection endpoints. -/
-def bodyProjectionInterval (S : Set Plane) : Set ℝ :=
-  Icc (horizontalLeft S) (horizontalRight S)
+def bodyProjectionInterval (S : Set Plane) : Set ℝ := Icc (horizontalLeft S) (horizontalRight S)
 
 def bodyMiddleInterval (S : Set Plane) : Set ℝ :=
   middleHalfInterval (horizontalLeft S) (horizontalRight S)
@@ -46,90 +45,24 @@ def actualPartitionDefect (S : Set Plane) (α γ : ℝ) : ℝ :=
     (roofDeficit (upperHullCap S)) (roofDeficit (reflectedHullCap S))
     (partialBarrier (upperHullCap S) α) (partialBarrier (reflectedHullCap S) γ)
 
-theorem actualPartitionDefect_nonneg (S : Set Plane) (α γ : ℝ) :
-    0 ≤ actualPartitionDefect S α γ :=
+theorem actualPartitionDefect_nonneg (S : Set Plane) (α γ : ℝ) : 0 ≤ actualPartitionDefect S α γ :=
   integratedPartitionDefect_nonneg _ _ _ _ _ _
 
 theorem bodyProjectionInterval_eq_projection {S : Set Plane} (hS : IsCompact S)
     (hconn : IsConnected S) : bodyProjectionInterval S = horizontalProjection S :=
   (horizontalProjection_eq_Icc_of_isConnected hS hconn).symm
 
-/-- Both caps use exactly the original left and right endpoints. -/
-theorem hullCaps_endpoints_eq_original {S : Set Plane} (hS : IsCompact S)
-    (hconn : IsConnected S) (hstrip : S ⊆ unitStrip) :
-    horizontalLeft (upperHullCap S) = horizontalLeft S ∧
-      horizontalRight (upperHullCap S) = horizontalRight S ∧
-      horizontalLeft (reflectedHullCap S) = horizontalLeft S ∧
-      horizontalRight (reflectedHullCap S) = horizontalRight S := by
-  have hproj := hullCaps_horizontalProjection_eq_original hS hconn hstrip
-  exact ⟨congrArg sInf hproj.1, congrArg sSup hproj.1,
-    congrArg sInf hproj.2, congrArg sSup hproj.2⟩
-
 /-- Geometric containment in the actual four-wall envelope. -/
 theorem subset_actualCapEnvelope {S : Set Plane} (hS : IsCompact S)
     (hconn : IsConnected S) (hstrip : S ⊆ unitStrip) {α γ : ℝ}
     (hU : AngularConstraints S (upperHullCap S) α)
     (hV : AngularConstraints (reflect '' S) (reflectedHullCap S) γ) :
-    S ⊆ actualCapEnvelope S α γ := by
-  intro p hp
+    S ⊆ actualCapEnvelope S α γ := fun p hp => by
   have hroof := originalPoint_roof_bounds hS hstrip hp
-  have hlower := hU.partialBarrier_le hstrip hp
-  have hupper := hV.partialBarrier_le (image_reflect_subset_unitStrip hstrip)
-    (mem_image_of_mem reflect hp)
-  change partialBarrier (reflectedHullCap S) γ p.1 ≤ 1 - p.2 at hupper
-  change p.1 ∈ bodyProjectionInterval S ∧
-    p.2 ∈ fourWallFiber (roofDeficit (upperHullCap S) p.1)
-      (roofDeficit (reflectedHullCap S) p.1)
-      (partialBarrier (upperHullCap S) α p.1)
-      (partialBarrier (reflectedHullCap S) γ p.1)
-  constructor
-  · rw [bodyProjectionInterval_eq_projection hS hconn]
-    exact mem_image_of_mem Prod.fst hp
-  · change (1 - capRoof (reflectedHullCap S) p.1 ≤ p.2 ∧
-      partialBarrier (upperHullCap S) α p.1 ≤ p.2 ∧
-      p.2 ≤ 1 - (1 - capRoof (upperHullCap S) p.1) ∧
-      p.2 ≤ 1 - partialBarrier (reflectedHullCap S) γ p.1)
-    exact ⟨hroof.1, hlower, by linarith [hroof.2], by linarith⟩
-
-/-- Connectedness supplies a genuine original point at every fiber, hence nonnegative signed length. -/
-theorem actual_signedFiberLength_nonneg {S : Set Plane} (hS : IsCompact S)
-    (hconn : IsConnected S) (hstrip : S ⊆ unitStrip) {α γ : ℝ}
-    (hU : AngularConstraints S (upperHullCap S) α)
-    (hV : AngularConstraints (reflect '' S) (reflectedHullCap S) γ) :
-    ∀ x ∈ bodyProjectionInterval S,
-      0 ≤ signedFiberLength (roofDeficit (upperHullCap S) x)
-        (roofDeficit (reflectedHullCap S) x)
-        (partialBarrier (upperHullCap S) α x) (partialBarrier (reflectedHullCap S) γ x) := by
-  apply signedFiberLength_nonneg_on_of_subset_projection (subset_actualCapEnvelope hS hconn hstrip hU hV)
-  rw [bodyProjectionInterval_eq_projection hS hconn]
-  exact Subset.rfl
-
-/-- The actual compact connected body is bounded by its two genuine cap scores.
-All regularity and integration hypotheses are discharged here. -/
-theorem volumeReal_le_actual_capScore_sum {S : Set Plane} (hS : IsCompact S)
-    (hconn : IsConnected S) (hstrip : S ⊆ unitStrip) {α γ : ℝ}
-    (hU : AngularConstraints S (upperHullCap S) α)
-    (hV : AngularConstraints (reflect '' S) (reflectedHullCap S) γ) :
-    volume.real S ≤ capScore (upperHullCap S) α + capScore (reflectedHullCap S) γ := by
-  have hcapU := isDownwardCap_upperHullCap hconn.nonempty hS hstrip
-  have hcapV := isDownwardCap_reflectedHullCap hconn.nonempty hS hstrip
-  have hlr := horizontalLeft_le_horizontalRight hconn.nonempty hS
-  have hsub := subset_actualCapEnvelope hS hconn hstrip hU hV
-  have hprojection : bodyProjectionInterval S ⊆ Prod.fst '' S := by
-    rw [bodyProjectionInterval_eq_projection hS hconn]
-    exact Subset.rfl
-  have harea := volumeReal_le_spatialScore_sum_middleHalf hlr hsub
-    hcapU.measurable_roofDeficit hcapV.measurable_roofDeficit
-    (measurable_partialBarrier hcapU.isCompact hU.angle_pos hU.angle_le)
-    (measurable_partialBarrier hcapV.isCompact hV.angle_pos hV.angle_le)
-    (hcapU.integrableOn_roofDeficit_Icc (horizontalLeft S) (horizontalRight S))
-    (hcapV.integrableOn_roofDeficit_Icc (horizontalLeft S) (horizontalRight S))
-    (integrableOn_partialBarrier_Icc hcapU.isCompact hU.angle_pos hU.angle_le
-      (horizontalLeft S) (horizontalRight S))
-    (integrableOn_partialBarrier_Icc hcapV.isCompact hV.angle_pos hV.angle_le
-      (horizontalLeft S) (horizontalRight S)) hprojection
-  obtain ⟨hUL, hUR, hVL, hVR⟩ := hullCaps_endpoints_eq_original hS hconn hstrip
-  simpa only [capScore, hUL, hUR, hVL, hVR] using harea
+  have hupper : partialBarrier (reflectedHullCap S) γ p.1 ≤ 1 - p.2 :=
+    hV.partialBarrier_le (image_reflect_subset_unitStrip hstrip) (mem_image_of_mem reflect hp)
+  exact ⟨bodyProjectionInterval_eq_projection hS hconn ▸ mem_image_of_mem Prod.fst hp, hroof.1,
+    hU.partialBarrier_le hstrip hp, by unfold roofDeficit; linarith [hroof.2], by linarith⟩
 
 /-- ED.5 instantiated by the original hull caps, their actual barriers, and ordinary missing area.
 The identity is valid for every comparison constant; it does not claim scalar optimality. -/
@@ -143,32 +76,34 @@ theorem actual_cap_four_term_deficit (C : ℝ) {S : Set Plane} (hS : IsCompact S
   have hcapU := isDownwardCap_upperHullCap hconn.nonempty hS hstrip
   have hcapV := isDownwardCap_reflectedHullCap hconn.nonempty hS hstrip
   have hlr := horizontalLeft_le_horizontalRight hconn.nonempty hS
-  have hnonneg : ∀ᵐ x ∂volume.restrict (bodyProjectionInterval S),
-      0 ≤ signedFiberLength (roofDeficit (upperHullCap S) x)
-        (roofDeficit (reflectedHullCap S) x)
-        (partialBarrier (upperHullCap S) α x) (partialBarrier (reflectedHullCap S) γ x) := by
-    filter_upwards [ae_restrict_mem (show MeasurableSet (bodyProjectionInterval S) from
-      measurableSet_Icc)] with x hx
-    exact actual_signedFiberLength_nonneg hS hconn hstrip hU hV x hx
-  have hidentity := actualBody_four_term_deficit_identity C
-    (subset_actualCapEnvelope hS hconn hstrip hU hV) hS.measurableSet measurableSet_Icc
-    (measurableSet_middleHalfInterval (horizontalLeft S) (horizontalRight S))
-    (middleHalfInterval_subset hlr)
-    (by rw [bodyProjectionInterval, Real.volume_Icc]; exact ENNReal.ofReal_ne_top)
-    (middleHalfInterval_measure_balance hlr)
+  have hsub := subset_actualCapEnvelope hS hconn hstrip hU hV
+  have hidentity := actualBody_four_term_deficit_identity C hsub hS.measurableSet
+    measurableSet_Icc (measurableSet_middleHalfInterval _ _) (middleHalfInterval_subset hlr)
+    measure_Icc_lt_top.ne (middleHalfInterval_measure_balance hlr)
     hcapU.measurable_roofDeficit hcapV.measurable_roofDeficit
     (measurable_partialBarrier hcapU.isCompact hU.angle_pos hU.angle_le)
     (measurable_partialBarrier hcapV.isCompact hV.angle_pos hV.angle_le)
-    (hcapU.integrableOn_roofDeficit_Icc (horizontalLeft S) (horizontalRight S))
-    (hcapV.integrableOn_roofDeficit_Icc (horizontalLeft S) (horizontalRight S))
-    (integrableOn_partialBarrier_Icc hcapU.isCompact hU.angle_pos hU.angle_le
-      (horizontalLeft S) (horizontalRight S))
-    (integrableOn_partialBarrier_Icc hcapV.isCompact hV.angle_pos hV.angle_le
-      (horizontalLeft S) (horizontalRight S)) hnonneg
-  obtain ⟨hUL, hUR, hVL, hVR⟩ := hullCaps_endpoints_eq_original hS hconn hstrip
-  simpa only [capScore, actualPartitionDefect, actualCapEnvelope,
-    bodyProjectionInterval, bodyMiddleInterval, hUL, hUR, hVL, hVR] using hidentity
+    (hcapU.integrableOn_roofDeficit_Icc _ _) (hcapV.integrableOn_roofDeficit_Icc _ _)
+    (integrableOn_partialBarrier_Icc hcapU.isCompact hU.angle_pos hU.angle_le _ _)
+    (integrableOn_partialBarrier_Icc hcapV.isCompact hV.angle_pos hV.angle_le _ _)
+    -- Connectedness supplies an original point in every fiber, hence nonnegative length.
+    ((ae_restrict_mem measurableSet_Icc).mono (signedFiberLength_nonneg_on_of_subset_projection
+      hsub (bodyProjectionInterval_eq_projection hS hconn).subset))
+  -- Both caps use exactly the original left and right endpoints.
+  obtain ⟨hU', hV'⟩ := hullCaps_horizontalProjection_eq_original hS hconn hstrip
+  simpa only [capScore, actualPartitionDefect, actualCapEnvelope, bodyProjectionInterval,
+    bodyMiddleInterval, horizontalLeft, horizontalRight, hU', hV'] using hidentity
 
-/-! ## Supplying the constraints from independent genuine passages -/
+/-- The actual compact connected body is bounded by its two genuine cap scores.
+All regularity and integration hypotheses are discharged here. -/
+theorem volumeReal_le_actual_capScore_sum {S : Set Plane} (hS : IsCompact S)
+    (hconn : IsConnected S) (hstrip : S ⊆ unitStrip) {α γ : ℝ}
+    (hU : AngularConstraints S (upperHullCap S) α)
+    (hV : AngularConstraints (reflect '' S) (reflectedHullCap S) γ) :
+    volume.real S ≤ capScore (upperHullCap S) α + capScore (reflectedHullCap S) γ := by
+  have h := actual_cap_four_term_deficit 0 hS hconn hstrip hU hV
+  have h0 := actualPartitionDefect_nonneg S α γ
+  have h1 : 0 ≤ volume.real (actualCapEnvelope S α γ \ S) := measureReal_nonneg
+  linarith
 
 end AmbidextrousSofa

@@ -21,97 +21,57 @@ open scoped Topology
 
 namespace AmbidextrousSofa
 
-theorem contactRamp_quotient_bounds {ε d : ℝ} (hε : 0 < ε) (hd : 0 ≤ d) :
-    0 ≤ max (ε - d) 0 / ε ∧ max (ε - d) 0 / ε ≤ 1 := by
-  refine ⟨div_nonneg (le_max_right _ _) hε.le, ?_⟩
-  apply (div_le_one hε).mpr
-  exact max_le (sub_le_self _ hd) hε.le
-
-theorem strictGapRamp_quotient_bounds {ε d : ℝ} (hε : 0 < ε) :
-    0 ≤ min ε (max d 0) / ε ∧ min ε (max d 0) / ε ≤ 1 := by
-  refine ⟨div_nonneg (le_min hε.le (le_max_right _ _)) hε.le, ?_⟩
-  exact (div_le_one hε).mpr (min_le_left _ _)
-
 theorem tendsto_contactRamp_quotient {d : ℝ} (hd : 0 ≤ d) :
-    Tendsto (fun ε : ℝ => max (ε - d) 0 / ε) (𝓝[>] 0)
-      (𝓝 (if d = 0 then 1 else 0)) := by
-  by_cases hd0 : d = 0
-  · rw [if_pos hd0]
-    apply tendsto_const_nhds.congr'
-    filter_upwards [show ∀ᶠ ε : ℝ in 𝓝[>] 0, 0 < ε from self_mem_nhdsWithin]
-      with ε hε
-    simp only [hd0, sub_zero, max_eq_left hε.le, div_self hε.ne']
-  · rw [if_neg hd0]
-    have hdpos : 0 < d := lt_of_le_of_ne hd (Ne.symm hd0)
-    apply tendsto_const_nhds.congr'
-    filter_upwards [Ioo_mem_nhdsGT hdpos] with ε hε
-    rw [max_eq_right (sub_nonpos.mpr hε.2.le), zero_div]
+    Tendsto (fun ε : ℝ => max (ε - d) 0 / ε) (𝓝[>] 0) (𝓝 (if d = 0 then 1 else 0)) := by
+  rcases hd.eq_or_lt with rfl | hd
+  · refine tendsto_const_nhds.congr' (eventually_mem_nhdsWithin.mono fun ε (hε : 0 < ε) => ?_)
+    simp [max_eq_left hε.le, hε.ne']
+  · refine tendsto_const_nhds.congr' ?_
+    filter_upwards [Ioo_mem_nhdsGT hd] with ε hε
+    simp [hd.ne', max_eq_right (sub_nonpos.2 hε.2.le)]
 
 theorem tendsto_strictGapRamp_quotient (d : ℝ) :
-    Tendsto (fun ε : ℝ => min ε (max d 0) / ε) (𝓝[>] 0)
-      (𝓝 (if 0 < d then 1 else 0)) := by
+    Tendsto (fun ε : ℝ => min ε (max d 0) / ε) (𝓝[>] 0) (𝓝 (if 0 < d then 1 else 0)) := by
   by_cases hd : 0 < d
-  · rw [if_pos hd]
-    apply tendsto_const_nhds.congr'
+  · refine tendsto_const_nhds.congr' ?_
     filter_upwards [Ioo_mem_nhdsGT hd] with ε hε
-    rw [max_eq_left hd.le, min_eq_left hε.2.le, div_self hε.1.ne']
-  · rw [if_neg hd]
-    apply tendsto_const_nhds.congr'
-    filter_upwards [show ∀ᶠ ε : ℝ in 𝓝[>] 0, 0 < ε from self_mem_nhdsWithin]
-      with ε hε
-    rw [max_eq_right (le_of_not_gt hd), min_eq_right hε.le, zero_div]
+    simp [hd, max_eq_left hd.le, min_eq_left hε.2.le, hε.1.ne']
+  · refine tendsto_const_nhds.congr' (eventually_mem_nhdsWithin.mono fun ε (hε : 0 < ε) => ?_)
+    simp [hd, max_eq_right (not_lt.1 hd), min_eq_right hε.le]
+
+/-- Dominated convergence for quotients between zero and one: their integrals converge
+to the measure of the set where their pointwise limit is one. -/
+theorem tendsto_integral_of_quotient_bounds {X : Type*} [MeasurableSpace X] (μ : Measure X)
+    [IsFiniteMeasure μ] {F : ℝ → X → ℝ} {E : Set X} (hE : MeasurableSet E)
+    (hF : ∀ ε, Measurable (F ε)) (hF01 : ∀ ε > 0, ∀ᵐ x ∂μ, 0 ≤ F ε x ∧ F ε x ≤ 1)
+    (hlim : ∀ᵐ x ∂μ, Tendsto (F · x) (𝓝[>] 0) (𝓝 (E.indicator 1 x))) :
+    Tendsto (fun ε => ∫ x, F ε x ∂μ) (𝓝[>] 0) (𝓝 (μ.real E)) := by
+  have h := tendsto_integral_filter_of_dominated_convergence (l := 𝓝[>] 0) 1
+    (Eventually.of_forall fun ε => (hF ε).aestronglyMeasurable)
+    (eventually_mem_nhdsWithin.mono fun ε hε => (hF01 ε hε).mono fun x hx => by
+      simpa [abs_of_nonneg hx.1] using hx.2)
+    (integrable_const 1) hlim
+  rwa [integral_indicator_one hE] at h
 
 theorem tendsto_integral_contactRamp_quotient {X : Type*} [MeasurableSpace X]
     (μ : Measure X) [IsFiniteMeasure μ] {d : X → ℝ} (hd : Measurable d)
     (hd0 : ∀ᵐ x ∂μ, 0 ≤ d x) :
     Tendsto (fun ε : ℝ => ∫ x, max (ε - d x) 0 / ε ∂μ) (𝓝[>] 0)
-      (𝓝 (μ.real {x | d x = 0})) := by
-  let E : Set X := {x | d x = 0}
-  have hE : MeasurableSet E := measurableSet_eq_fun hd measurable_const
-  have hmeas : ∀ᶠ ε : ℝ in 𝓝[>] 0,
-      AEStronglyMeasurable (fun x => max (ε - d x) 0 / ε) μ :=
-    Eventually.of_forall (fun ε =>
-      (((measurable_const.sub hd).max measurable_const).div_const ε).aestronglyMeasurable)
-  have hbound : ∀ᶠ ε : ℝ in 𝓝[>] 0,
-      ∀ᵐ x ∂μ, ‖max (ε - d x) 0 / ε‖ ≤ (1 : ℝ) := by
-    filter_upwards [show ∀ᶠ ε : ℝ in 𝓝[>] 0, 0 < ε from self_mem_nhdsWithin]
-      with ε hε
-    filter_upwards [hd0] with x hx
-    have h := contactRamp_quotient_bounds hε hx
-    simpa only [Real.norm_eq_abs, abs_of_nonneg h.1] using h.2
-  have hlim : ∀ᵐ x ∂μ,
-      Tendsto (fun ε : ℝ => max (ε - d x) 0 / ε) (𝓝[>] 0)
-        (𝓝 (E.indicator (fun _ => (1 : ℝ)) x)) := by
-    filter_upwards [hd0] with x hx
-    simpa only [E, indicator, mem_setOf_eq] using tendsto_contactRamp_quotient hx
-  have h := tendsto_integral_filter_of_dominated_convergence
-    (fun _ : X => (1 : ℝ)) hmeas hbound (integrable_const 1) hlim
-  simpa only [integral_indicator_const (1 : ℝ) hE, smul_eq_mul, mul_one, E] using h
+      (𝓝 (μ.real {x | d x = 0})) :=
+  tendsto_integral_of_quotient_bounds μ (measurableSet_eq_fun hd measurable_const)
+    (fun ε => ((measurable_const.sub hd).max measurable_const).div_const ε)
+    (fun ε hε => hd0.mono fun x hx =>
+      ⟨div_nonneg (le_max_right _ _) hε.le, (div_le_one hε).2 (max_le (sub_le_self _ hx) hε.le)⟩)
+    (hd0.mono fun x hx => by simpa [indicator_apply] using tendsto_contactRamp_quotient hx)
 
 theorem tendsto_integral_strictGapRamp_quotient {X : Type*} [MeasurableSpace X]
     (μ : Measure X) [IsFiniteMeasure μ] {d : X → ℝ} (hd : Measurable d) :
     Tendsto (fun ε : ℝ => ∫ x, min ε (max (d x) 0) / ε ∂μ) (𝓝[>] 0)
-      (𝓝 (μ.real {x | 0 < d x})) := by
-  let E : Set X := {x | 0 < d x}
-  have hE : MeasurableSet E := measurableSet_lt measurable_const hd
-  have hmeas : ∀ᶠ ε : ℝ in 𝓝[>] 0,
-      AEStronglyMeasurable (fun x => min ε (max (d x) 0) / ε) μ :=
-    Eventually.of_forall (fun ε =>
-      ((measurable_const.min (hd.max measurable_const)).div_const ε).aestronglyMeasurable)
-  have hbound : ∀ᶠ ε : ℝ in 𝓝[>] 0,
-      ∀ᵐ x ∂μ, ‖min ε (max (d x) 0) / ε‖ ≤ (1 : ℝ) := by
-    filter_upwards [show ∀ᶠ ε : ℝ in 𝓝[>] 0, 0 < ε from self_mem_nhdsWithin]
-      with ε hε
-    exact Eventually.of_forall (fun x => by
-      have h := strictGapRamp_quotient_bounds (d := d x) hε
-      simpa only [Real.norm_eq_abs, abs_of_nonneg h.1] using h.2)
-  have hlim : ∀ᵐ x ∂μ,
-      Tendsto (fun ε : ℝ => min ε (max (d x) 0) / ε) (𝓝[>] 0)
-        (𝓝 (E.indicator (fun _ => (1 : ℝ)) x)) :=
-    Eventually.of_forall (fun x => by
-      simpa only [E, indicator, mem_setOf_eq] using tendsto_strictGapRamp_quotient (d x))
-  have h := tendsto_integral_filter_of_dominated_convergence
-    (fun _ : X => (1 : ℝ)) hmeas hbound (integrable_const 1) hlim
-  simpa only [integral_indicator_const (1 : ℝ) hE, smul_eq_mul, mul_one, E] using h
+      (𝓝 (μ.real {x | 0 < d x})) :=
+  tendsto_integral_of_quotient_bounds μ (measurableSet_lt measurable_const hd)
+    (fun ε => (measurable_const.min (hd.max measurable_const)).div_const ε)
+    (fun ε hε => .of_forall fun x =>
+      ⟨div_nonneg (le_min hε.le (le_max_right _ _)) hε.le, (div_le_one hε).2 (min_le_left _ _)⟩)
+    (.of_forall fun x => by simpa [indicator_apply] using tendsto_strictGapRamp_quotient (d x))
 
 end AmbidextrousSofa

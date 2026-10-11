@@ -18,55 +18,16 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-theorem image_addParameterInterval {s : ℝ} (hs : 0 < s) (c a b : ℝ) :
-    (fun v : ℝ => c + v * s) '' Icc a b = Icc (c + a * s) (c + b * s) := by
-  ext x
-  constructor
-  · rintro ⟨v, hv, rfl⟩
-    exact ⟨add_le_add_right (mul_le_mul_of_nonneg_right hv.1 hs.le) _,
-      add_le_add_right (mul_le_mul_of_nonneg_right hv.2 hs.le) _⟩
-  · intro hx
-    refine ⟨(x - c) / s, ⟨?_, ?_⟩, ?_⟩
-    · rw [le_div_iff₀ hs]
-      linarith [hx.1]
-    · rw [div_le_iff₀ hs]
-      linarith [hx.2]
-    · dsimp only
-      rw [div_mul_cancel₀ _ hs.ne']
-      ring
-
-theorem volume_real_image_addParameterInterval {s : ℝ} (hs : 0 < s) (c a b : ℝ) :
-    volume.real ((fun v : ℝ => c + v * s) '' Icc a b) = s * max (b - a) 0 := by
-  rw [image_addParameterInterval hs, Real.volume_real_Icc,
-    mul_max_of_nonneg _ _ hs.le, mul_zero]
-  congr 1
-  ring
-
 theorem measure_addParameterIntervals_le {S : Set ℝ} {s : ℝ} (hs : 0 < s)
     (c a b d e : ℝ)
     (hS : ∀ x ∈ S, ∃ v : ℝ, x = c + v * s ∧ v ∈ Icc a b ∪ Icc d e) :
     volume.real S / s ≤ max (b - a) 0 + max (e - d) 0 := by
-  let F : ℝ → ℝ := fun v => c + v * s
-  have hsub : S ⊆ F '' Icc a b ∪ F '' Icc d e := by
-    intro x hx
-    obtain ⟨v, rfl, hv⟩ := hS x hx
-    rcases hv with hv | hv
-    · exact Or.inl ⟨v, hv, rfl⟩
-    · exact Or.inr ⟨v, hv, rfl⟩
-  have hfinite : volume (F '' Icc a b ∪ F '' Icc d e) ≠ ⊤ := by
-    dsimp only [F]
-    rw [image_addParameterInterval hs, image_addParameterInterval hs]
-    exact (measure_union_lt_top isCompact_Icc.measure_lt_top isCompact_Icc.measure_lt_top).ne
-  have hvol : volume.real S ≤ s * max (b - a) 0 + s * max (e - d) 0 := by
-    calc
-      volume.real S ≤ volume.real (F '' Icc a b ∪ F '' Icc d e) :=
-        measureReal_mono hsub hfinite
-      _ ≤ volume.real (F '' Icc a b) + volume.real (F '' Icc d e) :=
-        measureReal_union_le _ _
-      _ = s * max (b - a) 0 + s * max (e - d) 0 := by
-        rw [volume_real_image_addParameterInterval hs, volume_real_image_addParameterInterval hs]
-  rw [div_le_iff₀ hs]
-  nlinarith
+  simpa only [neg_sub_neg] using measure_parameterIntervals_le hs c (-b) (-a) (-e) (-d)
+    fun x hx => by
+      obtain ⟨v, rfl, hv⟩ := hS x hx
+      refine ⟨-v, by ring, ?_⟩
+      rcases hv with hv | hv
+      exacts [Or.inl ⟨neg_le_neg hv.2, neg_le_neg hv.1⟩, Or.inr ⟨neg_le_neg hv.2, neg_le_neg hv.1⟩]
 
 namespace AngularGrid
 
@@ -78,14 +39,11 @@ theorem second_source_le_first (U : Set Plane) (grid : Finset QuarterAngle)
   classical
   let v : Option (SourceIndex grid) → ℝ := fun i => wallSlope (normal grid) i * x +
     barrierIntercept (normal grid) (fun j => support U (normal grid j)) i
-  have hsource : (nicheExpr (pairList grid)).source v = some (Sum.inr t) := hx
-  obtain ⟨ij, hij, hselected⟩ := nicheExpr_source_some hsource
+  obtain ⟨ij, hij, hselected⟩ := nicheExpr_source_some (v := v) hx
   obtain ⟨s, _, rfl⟩ := List.mem_map.mp hij
-  rcases cornerExpr_source_cases (Sum.inl s, Sum.inr s) v with h | h
-  · have hfalse := hselected.symm.trans h.1
-    simp at hfalse
-  · have heq : t = s := Sum.inr.inj (Option.some.inj (hselected.symm.trans h.1))
-    subst s
+  rcases cornerExpr_source_cases (Sum.inl s, Sum.inr s) v with h | h <;> rw [h.1] at hselected
+  · simp at hselected
+  · obtain rfl : s = t := by simpa using hselected
     have h2 := h.2
     simp only [v, ← supportWall_eq_affine] at h2
     exact h2
@@ -103,21 +61,14 @@ theorem companionPoint_fst (U : Set Plane) (t v : ℝ) :
 theorem dot_companionPoint_first (U : Set Plane) (t v s : ℝ) :
     coordDot (companionPoint U t v) (unitNormal s) =
       v * Real.cos (s - t) + (support U (companionNormal t) - 1) * Real.sin (s - t) := by
-  change MovingSofaOptimality.dot
-    (v • MovingSofaOptimality.uvec t + (support U (companionNormal t) - 1) • MovingSofaOptimality.vvec t)
-      (MovingSofaOptimality.uvec s) = _
-  rw [MovingSofaOptimality.dot_add_left, MovingSofaOptimality.dot_smul_left, MovingSofaOptimality.dot_smul_left,
-    MovingSofaOptimality.dot_uvec_uvec, MovingSofaOptimality.dot_vvec_uvec',
-    show Real.cos (t - s) = Real.cos (s - t) by rw [← Real.cos_neg, neg_sub]]
+  simp [companionPoint, coordDot, unitNormal, companionNormal, Real.cos_sub, Real.sin_sub]
+  ring
 
 theorem dot_companionPoint_companion (U : Set Plane) (t v s : ℝ) :
     coordDot (companionPoint U t v) (companionNormal s) =
       v * Real.sin (t - s) + (support U (companionNormal t) - 1) * Real.cos (t - s) := by
-  change MovingSofaOptimality.dot
-    (v • MovingSofaOptimality.uvec t + (support U (companionNormal t) - 1) • MovingSofaOptimality.vvec t)
-      (MovingSofaOptimality.vvec s) = _
-  rw [MovingSofaOptimality.dot_add_left, MovingSofaOptimality.dot_smul_left, MovingSofaOptimality.dot_smul_left,
-    MovingSofaOptimality.dot_uvec_vvec', MovingSofaOptimality.dot_vvec_vvec]
+  simp [companionPoint, coordDot, unitNormal, companionNormal, Real.cos_sub, Real.sin_sub]
+  ring
 
 theorem point_eq_companionPoint {U : Set Plane} {p : Plane} {t : ℝ}
     (hline : coordDot p (companionNormal t) = support U (companionNormal t) - 1) :
@@ -140,48 +91,28 @@ theorem second_source_neighbor_parameters {U : Set Plane} (hU : IsDownwardCap U)
         (support U (companionNormal ((t.val : ℝ) - δ)))
         (support U (unitNormal ((t.val : ℝ) + δ)))
         (support U (unitNormal ((t.val : ℝ) - δ))) δ := by
-  let y := supportWall U (companionNormal t.val) x
-  let p : Plane := (x, y)
-  let v := coordDot p (unitNormal t.val)
-  have hy : finiteBarrier U (normal grid) (pairList grid) none x = y :=
+  let p : Plane := (x, supportWall U (companionNormal t.val) x)
+  have hy : finiteBarrier U (normal grid) (pairList grid) none p.1 = p.2 :=
     innerSource_height U grid (Sum.inr t) hx
-  have hy0 : 0 ≤ p.2 := by
-    change 0 ≤ y
-    rw [← hy]
-    exact finiteBarrier_nonneg _ _ _ _ _
-  have hline : coordDot p (companionNormal t.val) = support U (companionNormal t.val) - 1 := by
-    apply le_antisymm
-    · exact (le_supportWall_iff (normal_snd_pos grid (Sum.inr t)) x y).mp le_rfl
-    · exact (supportWall_le_iff (normal_snd_pos grid (Sum.inr t)) x y).mp le_rfl
-  have hp : p = companionPoint U t.val v := point_eq_companionPoint hline
-  have hv : v ≤ support U (unitNormal t.val) - 1 :=
-    (le_supportWall_iff (normal_snd_pos grid (Sum.inl t)) x y).mp
+  have hy0 : 0 ≤ p.2 := hy ▸ finiteBarrier_nonneg _ _ _ _ _
+  have hp : p = companionPoint U t.val (coordDot p (unitNormal t.val)) :=
+    point_eq_companionPoint (le_antisymm
+      ((le_supportWall_iff (normal_snd_pos grid (Sum.inr t)) _ _).mp le_rfl)
+      ((supportWall_le_iff (normal_snd_pos grid (Sum.inr t)) _ _).mp le_rfl))
+  have hv : coordDot p (unitNormal t.val) ≤ support U (unitNormal t.val) - 1 :=
+    (le_supportWall_iff (normal_snd_pos grid (Sum.inl t)) _ _).mp
       (second_source_le_first U grid t hx)
   obtain ⟨sm, hsm, hsmval⟩ := hminus
   obtain ⟨sp, hsp, hspval⟩ := hplus
   have hm := above_niche_wall_alternative hU grid hy0 hy.le hsm
   have hp' := above_niche_wall_alternative hU grid hy0 hy.le hsp
-  rw [hsmval, hp, dot_companionPoint_first, dot_companionPoint_companion,
-    show (t.val : ℝ) - δ - (t.val : ℝ) = -δ by ring,
-    show (t.val : ℝ) - ((t.val : ℝ) - δ) = δ by ring,
-    Real.cos_neg, Real.sin_neg] at hm
-  rw [hspval, hp, dot_companionPoint_first, dot_companionPoint_companion,
-    show (t.val : ℝ) + δ - (t.val : ℝ) = δ by ring,
-    show (t.val : ℝ) - ((t.val : ℝ) + δ) = -δ by ring,
-    Real.sin_neg, Real.cos_neg] at hp'
-  refine ⟨v, ?_, mem_neighborParameters hc hs hv ?_ ?_⟩
-  · have h := congrArg Prod.fst hp
-    simpa only [p, companionPoint_fst] using h
-  · rcases hp' with h | h
-    · right
-      nlinarith
-    · left
-      nlinarith
-  · rcases hm with h | h
-    · right
-      nlinarith
-    · left
-      nlinarith
+  rw [hp] at hm hp'
+  simp only [hsmval, hspval, dot_companionPoint_first, dot_companionPoint_companion,
+    sub_sub_cancel_left, sub_sub_cancel, add_sub_cancel_left, sub_add_cancel_left,
+    Real.cos_neg, Real.sin_neg] at hm hp'
+  refine ⟨_, ?_, mem_neighborParameters hc hs hv (hp'.symm.imp (fun h => by linarith)
+    fun h => by linarith) (hm.symm.imp (fun h => by linarith) fun h => by linarith)⟩
+  simpa only [companionPoint_fst] using congrArg Prod.fst hp
 
 def secondCornerSecant (U : Set Plane) (t δ : ℝ) : ℝ :=
   support U (companionNormal t) +
@@ -197,14 +128,9 @@ theorem companion_interval_length_le_curvature {U : Set Plane} (hU : IsDownwardC
   rw [show t + Real.pi / 2 - δ = (t - δ) + Real.pi / 2 by ring,
     show t + Real.pi / 2 + δ = (t + δ) + Real.pi / 2 by ring] at h
   simp only [← companionNormal_eq_unitNormal] at h
-  calc
-    firstHi (support U (companionNormal t)) (support U (companionNormal (t + δ))) δ -
-        firstLo (support U (companionNormal t)) (support U (companionNormal (t - δ))) δ =
-      firstHi (support U (companionNormal t)) (support U (companionNormal (t - δ))) δ -
-        firstLo (support U (companionNormal t)) (support U (companionNormal (t + δ))) δ := by
-          unfold firstHi firstLo
-          ring
-    _ ≤ _ := h
+  convert h using 1
+  unfold firstHi firstLo
+  ring
 
 theorem integral_second_source_le_parameters {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (t : InteriorPoint grid) {δ a b : ℝ}
@@ -222,17 +148,11 @@ theorem integral_second_source_le_parameters {U : Set Plane} (hU : IsDownwardCap
         firstLo (support U (companionNormal t.val))
           (support U (companionNormal ((t.val : ℝ) - δ))) δ) 0 := by
   classical
-  have ht : 0 < Real.cos t.val := normal_snd_pos grid (Sum.inr t)
-  have hint := integral_sourceDensity_outward (barrierExpr (pairList grid) none)
-    (normal grid) (barrierIntercept (normal grid) (fun i => support U (normal grid i)))
-    (Sum.inr t) hab
-  change (∫ x in a..b, innerDensity U grid (Sum.inr t) x) =
-    volume.real (Ioc a b ∩ innerSourceSet U grid (Sum.inr t)) / Real.cos t.val at hint
-  rw [hint]
-  apply measure_addParameterIntervals_le ht
-    (-(support U (companionNormal t.val) - 1) * Real.sin t.val)
-  intro x hx
-  exact second_source_neighbor_parameters hU grid t hc hs hminus hplus hx.2
+  exact (integral_sourceDensity_outward (barrierExpr (pairList grid) none) (normal grid)
+    (barrierIntercept (normal grid) (fun i => support U (normal grid i))) (Sum.inr t) hab).trans_le
+    (measure_addParameterIntervals_le (normal_snd_pos grid (Sum.inr t))
+      (-(support U (companionNormal t.val) - 1) * Real.sin t.val) _ _ _ _ fun x hx =>
+        second_source_neighbor_parameters hU grid t hc hs hminus hplus hx.2)
 
 theorem integral_second_source_le {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (t : InteriorPoint grid) {δ a b : ℝ}
@@ -242,16 +162,11 @@ theorem integral_second_source_le {U : Set Plane} (hU : IsDownwardCap U)
     (hplus : ∃ s ∈ grid, (s : ℝ) = (t.val : ℝ) + δ) :
     (∫ x in a..b, innerDensity U grid (Sum.inr t) x) ≤
       Real.tan δ * (|secondCornerSecant U t.val δ| + Real.tan (δ / 2)) +
-        max (2 * Real.tan (δ / 2) - (upperCurvature U {t.val + Real.pi / 2}).toReal) 0 := by
-  have hraw := integral_second_source_le_parameters hU grid t hc hs hab hminus hplus
-  have hconv : 0 ≤ support U (unitNormal ((t.val : ℝ) + δ)) +
-      support U (unitNormal ((t.val : ℝ) - δ)) -
-        2 * Real.cos δ * support U (unitNormal t.val) := by
-    nlinarith [hU.support_secondDifference_nonneg t.val hs.le]
-  have hcomp := companion_interval_length_le (f := support U (companionNormal t.val))
-    hc hs hh hconv
-  have hfirst := companion_interval_length_le_curvature hU t.val hs hh
-  exact hraw.trans (add_le_add hcomp (max_le_max hfirst le_rfl))
+        max (2 * Real.tan (δ / 2) - (upperCurvature U {t.val + Real.pi / 2}).toReal) 0 :=
+  (integral_second_source_le_parameters hU grid t hc hs hab hminus hplus).trans
+    (add_le_add (companion_interval_length_le hc hs hh
+      (by linarith [hU.support_secondDifference_nonneg t.val hs.le]))
+      (max_le_max (companion_interval_length_le_curvature hU t.val hs hh) le_rfl))
 
 end AngularGrid
 

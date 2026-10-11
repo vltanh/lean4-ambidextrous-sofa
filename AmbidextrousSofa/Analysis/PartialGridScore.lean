@@ -36,10 +36,16 @@ theorem score_eq_integrals {U : Set Plane} (hU : IsDownwardCap U)
       (∫ x in Icc (horizontalLeft U) (horizontalRight U) \
         middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x) -
       ∫ x in middleHalfInterval (horizontalLeft U) (horizontalRight U), barrier U α grid x := by
-  rw [score, finiteSpatialScore_eq_integrals hU]
-  congr 1
-  apply integral_congr_ae
-  exact Eventually.of_forall (finiteBarrier_eq_barrier U α hαL grid)
+  simp only [score, finiteSpatialScore_eq_integrals hU, finiteBarrier_eq_barrier]
+
+theorem integrableOn_barriers {U : Set Plane} (hU : IsDownwardCap U) (α : TerminalAngle)
+    (grid : Finset AngularGrid.QuarterAngle) :
+    IntegrableOn (partialBarrier U α) (middleHalfInterval (horizontalLeft U) (horizontalRight U)) ∧
+      IntegrableOn (barrier U α grid) (middleHalfInterval (horizontalLeft U) (horizontalRight U)) :=
+  ⟨integrableOn_partialBarrier_Icc hU.isCompact (TerminalAngle.pos α) α.property.2 _ _,
+    (show Continuous (barrier U α grid) from ((continuous_barrier grid).comp
+      (continuous_const.prodMk continuous_id) (f := fun x => ((hU.toCompactCap, α), x)) :)
+      ).integrableOn_Icc⟩
 
 theorem score_sub_capScore_eq {U : Set Plane} (hU : IsDownwardCap U)
     (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2)
@@ -47,26 +53,15 @@ theorem score_sub_capScore_eq {U : Set Plane} (hU : IsDownwardCap U)
     score U α hαL grid - capScore U α =
       ∫ x in middleHalfInterval (horizontalLeft U) (horizontalRight U),
         partialBarrier U α x - barrier U α grid x := by
-  have hN : IntegrableOn (partialBarrier U α)
-      (middleHalfInterval (horizontalLeft U) (horizontalRight U)) :=
-    integrableOn_partialBarrier_Icc hU.isCompact (TerminalAngle.pos α) α.property.2 _ _
-  have hc : Continuous (barrier U α grid) := by
-    have h := (continuous_barrier grid).comp (continuous_const.prodMk continuous_id :
-      Continuous (fun x : ℝ => ((hU.toCompactCap, α), x)))
-    exact h
-  have hG : IntegrableOn (barrier U α grid)
-      (middleHalfInterval (horizontalLeft U) (horizontalRight U)) :=
-    hc.integrableOn_Icc
+  obtain ⟨hN, hG⟩ := integrableOn_barriers hU α grid
   rw [score_eq_integrals hU α hαL grid, capScore_eq_integrals, integral_sub hN hG]
   ring
 
 theorem capScore_le_score {U : Set Plane} (hU : IsDownwardCap U)
     (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2)
     (grid : Finset AngularGrid.QuarterAngle) :
-    capScore U α ≤ score U α hαL grid := by
-  apply sub_nonneg.mp
-  rw [score_sub_capScore_eq hU α hαL grid]
-  exact integral_nonneg (fun x =>
+    capScore U α ≤ score U α hαL grid :=
+  sub_nonneg.mp (score_sub_capScore_eq hU α hαL grid ▸ integral_nonneg fun x =>
     sub_nonneg.mpr (barrier_le_partialBarrier hU.toCompactCap α grid x))
 
 theorem score_sub_capScore_le {U : Set Plane} (hU : IsDownwardCap U)
@@ -75,76 +70,42 @@ theorem score_sub_capScore_le {U : Set Plane} (hU : IsDownwardCap U)
     (herror : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       partialBarrier U α x - barrier U α grid x ≤ ε) :
     score U α hαL grid - capScore U α ≤ capWidth U / 2 * ε := by
-  have hN : IntegrableOn (partialBarrier U α)
-      (middleHalfInterval (horizontalLeft U) (horizontalRight U)) :=
-    integrableOn_partialBarrier_Icc hU.isCompact (TerminalAngle.pos α) α.property.2 _ _
-  have hc : Continuous (barrier U α grid) := by
-    have h := (continuous_barrier grid).comp (continuous_const.prodMk continuous_id :
-      Continuous (fun x : ℝ => ((hU.toCompactCap, α), x)))
-    exact h
-  have hG : IntegrableOn (barrier U α grid)
-      (middleHalfInterval (horizontalLeft U) (horizontalRight U)) :=
-    hc.integrableOn_Icc
-  have hConst : IntegrableOn (fun _ : ℝ => ε)
-      (middleHalfInterval (horizontalLeft U) (horizontalRight U)) :=
-    continuous_const.integrableOn_Icc
-  have hbound := setIntegral_mono_on (hN.sub hG) hConst
-    (measurableSet_middleHalfInterval _ _) herror
+  obtain ⟨hN, hG⟩ := integrableOn_barriers hU α grid
   rw [score_sub_capScore_eq hU α hαL grid]
-  calc
-    _ ≤ ∫ _x in middleHalfInterval (horizontalLeft U) (horizontalRight U), ε := hbound
-    _ = capWidth U / 2 * ε := by
-      rw [setIntegral_const, smul_eq_mul,
-        volumeReal_middleHalfInterval (horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact)]
-      rfl
+  refine (setIntegral_mono_on (hN.sub hG) continuous_const.integrableOn_Icc
+    (measurableSet_middleHalfInterval _ _) herror).trans_eq ?_
+  rw [setIntegral_const, smul_eq_mul,
+    volumeReal_middleHalfInterval (horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact)]
+  rfl
 
 theorem eventually_score_error_le {a b ε : ℝ} (hab : a ≤ b) (hε : 0 < ε)
     (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2) :
-    ∀ᶠ n in atTop, ∀ U : Set Plane, ∀ hU : IsDownwardCap U,
+    ∀ᶠ n in atTop, ∀ U : Set Plane, IsDownwardCap U →
       U ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1 →
         0 ≤ score U α hαL (AngularGrid.dyadic n) - capScore U α ∧
           score U α hαL (AngularGrid.dyadic n) - capScore U α ≤ ε := by
-  let B : Set Plane := Icc a b ×ˢ Icc (0 : ℝ) 1
-  have hB : IsCompact B := isCompact_Icc.prod isCompact_Icc
-  let δ : ℝ := ε / (b - a + 1)
   have hden : 0 < b - a + 1 := by linarith
-  have hδ : 0 < δ := div_pos hε hden
-  have hδε : δ * (b - a + 1) = ε := div_mul_cancel₀ ε hden.ne'
-  have hDini := Metric.tendstoUniformlyOn_iff.mp
-    (tendstoUniformlyOn_dyadic_box hB a b) δ hδ
-  filter_upwards [hDini] with n hn
-  intro U hU hUB
+  have hδ : 0 < ε / (b - a + 1) := div_pos hε hden
+  filter_upwards [Metric.tendstoUniformlyOn_iff.mp (tendstoUniformlyOn_dyadic_box
+    (isCompact_Icc.prod isCompact_Icc) a b) _ hδ] with n hn U hU hUB
   have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
-  have hprojection : Icc (horizontalLeft U) (horizontalRight U) ⊆ Icc a b := by
-    rw [← horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
-    rintro x ⟨p, hp, rfl⟩
-    exact (hUB hp).1
-  have hwidth : capWidth U ≤ b - a := by
-    have hl := (hprojection ⟨le_rfl, hlr⟩).1
-    have hr := (hprojection ⟨hlr, le_rfl⟩).2
-    unfold capWidth
-    linarith
-  have hpoint : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      partialBarrier U α x - barrier U α (AngularGrid.dyadic n) x ≤ δ := by
-    intro x hx
-    have h := hn ((hU.toCompactCap, α), x)
-      ⟨⟨hUB, mem_univ _⟩, hprojection (middleHalfInterval_subset hlr hx)⟩
-    rw [Real.dist_eq] at h
-    exact (le_abs_self _).trans h.le
-  have hbound := score_sub_capScore_le hU α hαL (AngularGrid.dyadic n) hpoint
-  have hmul := mul_le_mul_of_nonneg_right hwidth hδ.le
-  refine ⟨sub_nonneg.mpr (capScore_le_score hU α hαL (AngularGrid.dyadic n)), ?_⟩
-  nlinarith
+  have hproj : Icc (horizontalLeft U) (horizontalRight U) ⊆ Icc a b :=
+    horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex ▸
+      image_subset_iff.2 fun p hp => (hUB hp).1
+  have hbound := score_sub_capScore_le hU α hαL (AngularGrid.dyadic n) fun x hx =>
+    (le_abs_self _).trans (Real.dist_eq _ _ ▸ hn ((hU.toCompactCap, α), x)
+      ⟨⟨hUB, mem_univ _⟩, hproj (middleHalfInterval_subset hlr hx)⟩).le
+  refine ⟨sub_nonneg.mpr (capScore_le_score hU α hαL _), hbound.trans ?_⟩
+  rw [capWidth, mul_div_assoc', div_le_iff₀ hden]
+  nlinarith [(hproj ⟨le_rfl, hlr⟩).1, (hproj ⟨hlr, le_rfl⟩).2]
 
 theorem exists_level_score_error_le {a b ε : ℝ} (hab : a ≤ b) (hε : 0 < ε)
     (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2) (m : ℕ) :
-    ∃ n ≥ m, ∀ U : Set Plane, ∀ hU : IsDownwardCap U,
+    ∃ n ≥ m, ∀ U : Set Plane, IsDownwardCap U →
       U ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1 →
         0 ≤ score U α hαL (AngularGrid.dyadic n) - capScore U α ∧
-          score U α hαL (AngularGrid.dyadic n) - capScore U α ≤ ε := by
-  obtain ⟨n, hn, herror⟩ := ((eventually_ge_atTop m).and
-    (eventually_score_error_le hab hε α hαL)).exists
-  exact ⟨n, hn, herror⟩
+          score U α hαL (AngularGrid.dyadic n) - capScore U α ≤ ε :=
+  ((eventually_ge_atTop m).and (eventually_score_error_le hab hε α hαL)).exists
 
 end PartialGrid
 

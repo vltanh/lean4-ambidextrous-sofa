@@ -32,74 +32,11 @@ variable {U : Set Plane} {a b : ℝ} (J : SelectedJointSourceLimit U a b)
   (heq : (upperCurvature U).restrict (regularCurvatureDomain m) =
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
+set_option quotPrecheck false
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-set_option quotPrecheck false in
 local notation "B" => firstTangentPoint (F).f (F).fD
-set_option quotPrecheck false in
 local notation "p" => supportP (F).fD (F).g
-set_option quotPrecheck false in
 local notation "q" => supportQ (F).gD (F).f
-
-theorem ae_exclusive_first_source_on_positive_tangent {C α η : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1) (hmpos : 0 < m)
-    (hleft : a < horizontalLeft U) (hright : horizontalRight U < b)
-    (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1)
-    (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η) :
-    ∀ᵐ z ∂(J.measure : Measure Plane), ∀ t ∈ Ioo (0 : ℝ) (Real.pi / 2),
-      p t < 0 → 0 < (B t).2 → (B t).1 = z.2 →
-        z ∈ firstTangentSource U ∧ z.1 = t := by
-  have hC := (hU.centered_positive_tilt_parameters hl hr hheight hmpos haffine).1
-  filter_upwards [J.ae_angle_mem_upper, J.ae_angle_ne (Real.pi / 2),
-    J.ae_angle_ne α, J.ae_angle_ne η,
-    J.ae_angle_ne (α + Real.pi / 2), J.ae_angle_ne (η + Real.pi / 2),
-    J.ae_first_wall_contact hU.isCap, J.ae_second_wall_contact hU.isCap,
-    J.ae_hasDerivAt_niche_on_source hU hl hr hC hleft hright]
-      with z hz htop hα hη hα' hη' hfirst hsecond hderiv
-  intro t ht hp hy hx
-  have hD : HasDerivAt (sweptNiche U (Real.pi / 2)) (J.nicheDerivative z.2) (B t).1 := by
-    simpa only [hx] using hderiv
-  rcases lt_or_gt_of_ne htop with hbefore | hafter
-  · have hquarter : z.1 ∈ Ioo (0 : ℝ) (Real.pi / 2) := ⟨hz.1, hbefore⟩
-    have hmax : fullWallClip hU.isCap.toCompactCap (B t).1 z.1 =
-        sweptNiche U (Real.pi / 2) (B t).1 := by
-      simpa only [hx] using (hfirst hquarter).2
-    obtain ⟨hangle, hstrict⟩ := fullTiltedSupportQuarterPair_strict_first_contact_unique
-      hU hm haffine hρ hρ0 hρK heq hl hr hheight hmpos hunit hphase
-      ht hp hy hD hquarter hα hη hmax
-    refine ⟨⟨hquarter, ?_⟩, hangle⟩
-    show firstWall U z.1 z.2 < secondWall U z.1 z.2
-    simpa only [hx] using hstrict
-  · have hupper : z.1 ∈ Ioo (Real.pi / 2) Real.pi := ⟨hafter, hz.2⟩
-    have hquarter : z.1 - Real.pi / 2 ∈ Ioo (0 : ℝ) (Real.pi / 2) := by
-      constructor <;> linarith only [hupper.1, hupper.2]
-    have hneα : z.1 - Real.pi / 2 ≠ α := by
-      intro he
-      exact hα' (by linarith only [he])
-    have hneη : z.1 - Real.pi / 2 ≠ η := by
-      intro he
-      exact hη' (by linarith only [he])
-    have hmax : fullWallClip hU.isCap.toCompactCap (B t).1 (z.1 - Real.pi / 2) =
-        sweptNiche U (Real.pi / 2) (B t).1 := by
-      simpa only [hx] using (hsecond hupper).2
-    have hstrict := (fullTiltedSupportQuarterPair_strict_first_contact_unique
-      hU hm haffine hρ hρ0 hρK heq hl hr hheight hmpos hunit hphase
-      ht hp hy hD hquarter hneα hneη hmax).2
-    have hniche := fullTiltedSupportQuarterPair_niche_first_tangency
-      hU hm haffine hρ hρ0 hρK heq hunit ht hp.le hy.le
-    have hpositive : 0 < sweptNiche U (Real.pi / 2) (B t).1 := by
-      rw [hniche]
-      exact hy
-    have hcorner : cornerWall U (z.1 - Real.pi / 2) (B t).1 =
-        sweptNiche U (Real.pi / 2) (B t).1 :=
-      positive_fullWallClip_eq_cornerWall (U := hU.isCap.toCompactCap) hpositive hmax
-    have hfirst_eq : firstWall U (z.1 - Real.pi / 2) (B t).1 =
-        sweptNiche U (Real.pi / 2) (B t).1 := by
-      simpa only [cornerWall, min_eq_left hstrict.le] using hcorner
-    have hsecond_eq : secondWall U (z.1 - Real.pi / 2) (B t).1 =
-        sweptNiche U (Real.pi / 2) (B t).1 := by
-      simpa only [hx] using (hsecond hupper).1
-    exact False.elim (hstrict.ne (hfirst_eq.trans hsecond_eq.symm))
 
 theorem ae_exclusive_first_source_on_image {C α η : ℝ} {S : Set ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
@@ -110,12 +47,33 @@ theorem ae_exclusive_first_source_on_image {C α η : ℝ} {S : Set ℝ}
     (hS : ∀ t ∈ S, t ∈ Ioo (0 : ℝ) (Real.pi / 2) ∧ p t < 0 ∧ 0 < (B t).2) :
     ∀ᵐ z ∂(J.measure : Measure Plane), z.2 ∈ (fun t => (B t).1) '' S →
       z ∈ firstTangentSource U ∧ z.1 ∈ S := by
-  filter_upwards [J.ae_exclusive_first_source_on_positive_tangent hU hm haffine hρ hρ0 hρK heq
-    hl hr hheight hmpos hleft hright hunit hphase] with z hz
-  rintro ⟨t, ht, hx⟩
-  have hgood := hS t ht
-  have hexclusive := hz t hgood.1 hgood.2.1 hgood.2.2 hx
-  exact ⟨hexclusive.1, by simpa only [hexclusive.2] using ht⟩
+  have hC := (hU.centered_positive_tilt_parameters hl hr hheight hmpos haffine).1
+  filter_upwards [J.ae_angle_mem_upper, J.ae_angle_ne (Real.pi / 2), J.ae_angle_ne α,
+    J.ae_angle_ne η, J.ae_angle_ne (α + Real.pi / 2), J.ae_angle_ne (η + Real.pi / 2),
+    J.ae_first_wall_contact hU.isCap, J.ae_second_wall_contact hU.isCap,
+    J.ae_hasDerivAt_niche_on_source hU hl hr hC hleft hright]
+    with z hz htop hα hη hα' hη' hfirst hsecond hderiv
+  rintro ⟨t, htS, hx⟩
+  obtain ⟨ht, hp, hy⟩ := hS t htS
+  dsimp only at hx
+  rw [← hx] at hderiv hfirst hsecond
+  rcases lt_or_gt_of_ne htop with hbefore | hafter
+  · obtain ⟨rfl, hstrict⟩ := fullTiltedSupportQuarterPair_strict_first_contact_unique hU hm
+      haffine hρ hρ0 hρK heq hl hr hheight hmpos hunit hphase ht hp hy hderiv ⟨hz.1, hbefore⟩
+      hα hη (hfirst ⟨hz.1, hbefore⟩).2
+    exact ⟨⟨⟨hz.1, hbefore⟩, by rwa [hx] at hstrict⟩, htS⟩
+  · have hupper : z.1 ∈ Ioo (Real.pi / 2) Real.pi := ⟨hafter, hz.2⟩
+    have hstrict := (fullTiltedSupportQuarterPair_strict_first_contact_unique hU hm haffine hρ
+      hρ0 hρK heq hl hr hheight hmpos hunit hphase ht hp hy hderiv
+      ⟨by linarith [hupper.1], by linarith [hupper.2]⟩ (fun he => hα' (by linarith))
+      (fun he => hη' (by linarith)) (hsecond hupper).2).2
+    have hpos : 0 < sweptNiche U (Real.pi / 2) (B t).1 := by
+      rwa [fullTiltedSupportQuarterPair_niche_first_tangency hU hm haffine hρ hρ0 hρK heq
+        hunit ht hp.le hy.le]
+    have hcorner : cornerWall U (z.1 - Real.pi / 2) (B t).1 = sweptNiche U (Real.pi / 2) (B t).1 :=
+      positive_fullWallClip_eq_cornerWall (U := hU.isCap.toCompactCap) hpos (hsecond hupper).2
+    rw [cornerWall, min_eq_left hstrict.le] at hcorner
+    exact (hstrict.ne (hcorner.trans (hsecond hupper).1.symm)).elim
 
 end AngularGrid.SelectedJointSourceLimit
 end AmbidextrousSofa

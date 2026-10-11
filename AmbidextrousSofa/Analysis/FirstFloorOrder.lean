@@ -49,6 +49,17 @@ local notation "q" => supportQ (F).gD (F).f
 local notation "v" => (fun t : ℝ => leftCompanionWingDensity m ρ (t + Real.pi / 2))
 local notation "V" => leftCompanionCap U (horizontalLeft U + capWidth U / 4)
 
+/-- A negative first momentum keeps the inner corner strictly above the floor. -/
+theorem fullTiltedSupportQuarterPair_core_pos_of_momentum_neg {t : ℝ}
+    (hheight : capHeight U = 1)
+    (hunit : ∀ᵐ s ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ s ≤ 1)
+    (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) (hp : p t < 0) : 0 < (Z t).2 := by
+  rw [innerCorner_snd_eq_firstTangent (F).f (F).g (F).fD]
+  exact sub_pos.mpr ((mul_neg_of_neg_of_pos hp (Real.cos_pos_of_mem_Ioo
+    ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩)).trans_le
+    (fullTiltedSupportQuarterPair_first_tangent_nonneg hU hm haffine hρ hρ0 hρK heq hheight hunit
+      (Ioo_subset_Icc_self ht)))
+
 /-- The positive core and its strict right middle bound continue through
 the entire opposite-sign phase, including its last endpoint. No bound
 on the companion density is used. -/
@@ -59,66 +70,28 @@ theorem fullTiltedSupportQuarterPair_core_phase_positive_and_right {C h α η t 
     (hunit : ∀ᵐ s ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ s ≤ 1)
     (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η)
     (ht : t ∈ Ioc α η) : (Z t).1 < C ∧ 0 < (Z t).2 := by
-  have hαη : α < η := hphase.second_mem.1
-  have htq : t ∈ Ioo (0 : ℝ) (Real.pi / 2) :=
-    ⟨hphase.first_mem.1.trans ht.1, ht.2.trans_lt hphase.second_mem.2⟩
-  have hBxα : (B α).1 < C := by
-    by_contra hnot
-    have hnegative := (fullTiltedSupportQuarterPair_first_momentum_neg_after_middle
+  have hBxα : (Z α).1 < C := by
+    rw [innerCorner_eq_firstTangent_of_momentum_zero hphase.first_zero]
+    exact lt_of_not_ge fun h => (fullTiltedSupportQuarterPair_first_momentum_neg_after_middle
       hU hm haffine hρ hρ0 hρK heq hl hr hC0 hC1 hh hlow
-      (Ioo_subset_Icc_self hphase.first_mem) (le_of_not_gt hnot)).2
-    rw [hphase.first_zero] at hnegative
-    exact lt_irrefl 0 hnegative
-  have hjoin : Z α = B α := innerCorner_eq_firstTangent_of_momentum_zero hphase.first_zero
-  have hreverse := fullTiltedSupportQuarterPair_core_strictAntiOn
-    hU hm haffine hρ hρ0 hρK heq hphase.first_mem.1.le hphase.second_mem.2.le
-    hphase.core_signs ⟨le_rfl, hαη.le⟩ ⟨ht.1.le, ht.2⟩ ht.1
-  have hright : (Z t).1 < C := by
-    dsimp only at hreverse
-    rw [hjoin] at hreverse
-    exact hreverse.trans hBxα
+      (Ioo_subset_Icc_self hphase.first_mem) h).2.ne hphase.first_zero
   have hp : p t < 0 := by
-    rcases ht.2.eq_or_lt with heq | hlt
-    · simpa only [heq] using hphase.first_at_second
-    · exact (hphase.core_signs t ⟨ht.1, hlt⟩).1
-  have hcos : 0 < Real.cos t := Real.cos_pos_of_mem_Ioo
-    ⟨by linarith only [htq.1, Real.pi_pos], htq.2⟩
-  have hBy := fullTiltedSupportQuarterPair_first_tangent_nonneg
-    hU hm haffine hρ hρ0 hρK heq hheight hunit (Ioo_subset_Icc_self htq)
-  refine ⟨hright, ?_⟩
-  rw [innerCorner_snd_eq_firstTangent (F).f (F).g (F).fD]
-  exact sub_pos.mpr ((mul_neg_of_neg_of_pos hp hcos).trans_le hBy)
+    rcases ht.2.eq_or_lt with rfl | hlt
+    exacts [hphase.first_at_second, (hphase.core_signs t ⟨ht.1, hlt⟩).1]
+  exact ⟨(fullTiltedSupportQuarterPair_core_strictAntiOn hU hm haffine hρ hρ0 hρK heq
+      hphase.first_mem.1.le hphase.second_mem.2.le hphase.core_signs
+      ⟨le_rfl, hphase.second_mem.1.le⟩ ⟨ht.1.le, ht.2⟩ ht.1).trans hBxα,
+    fullTiltedSupportQuarterPair_core_pos_of_momentum_neg hU hm haffine hρ hρ0 hρK heq hheight
+      hunit ⟨hphase.first_mem.1.trans ht.1, ht.2.trans_lt hphase.second_mem.2⟩ hp⟩
 
 theorem fullTiltedSupportQuarterPair_companion_floor_pos_at_second_phase {α η : ℝ}
     (hheight : capHeight U = 1)
     (hunit : ∀ᵐ s ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ s ≤ 1)
     (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η) : 0 < (D η).2 := by
-  have hη : η ∈ Ioo (0 : ℝ) (Real.pi / 2) :=
-    ⟨hphase.first_mem.1.trans hphase.second_mem.1, hphase.second_mem.2⟩
-  have hjoin : Z η = D η := innerCorner_eq_secondTangent_of_momentum_zero hphase.second_zero
-  have hBy := fullTiltedSupportQuarterPair_first_tangent_nonneg
-    hU hm haffine hρ hρ0 hρK heq hheight hunit (Ioo_subset_Icc_self hη)
-  have hcos : 0 < Real.cos η := Real.cos_pos_of_mem_Ioo
-    ⟨by linarith only [hη.1, Real.pi_pos], hη.2⟩
-  rw [← hjoin, innerCorner_snd_eq_firstTangent (F).f (F).g (F).fD]
-  exact sub_pos.mpr ((mul_neg_of_neg_of_pos hphase.first_at_second hcos).trans_le hBy)
-
-/-- This ordering is valid in both branches of the companion-unit
-dichotomy. The first-zero data are the literal tangent data. -/
-theorem fullTiltedSupportQuarterPair_first_floor_lt_second_phase {α η γ : ℝ}
-    (hheight : capHeight U = 1)
-    (hunit : ∀ᵐ s ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ s ≤ 1)
-    (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η)
-    (hγzero : (D γ).2 = 0) (hbefore : ∀ t ∈ Ico (0 : ℝ) γ, (D t).2 < 0) : γ < η := by
-  have hpositive := fullTiltedSupportQuarterPair_companion_floor_pos_at_second_phase
-    hU hm haffine hρ hρ0 hρK heq hheight hunit hphase
-  by_contra hnot
-  rcases (le_of_not_gt hnot).eq_or_lt with heq | hlt
-  · rw [heq, hγzero] at hpositive
-    exact lt_irrefl 0 hpositive
-  · have hnegative := hbefore η
-      ⟨(hphase.first_mem.1.trans hphase.second_mem.1).le, hlt⟩
-    exact (not_lt_of_ge hpositive.le) hnegative
+  rw [← innerCorner_eq_secondTangent_of_momentum_zero hphase.second_zero]
+  exact fullTiltedSupportQuarterPair_core_pos_of_momentum_neg hU hm haffine hρ hρ0 hρK heq
+    hheight hunit ⟨hphase.first_mem.1.trans hphase.second_mem.1, hphase.second_mem.2⟩
+    hphase.first_at_second
 
 theorem fullTiltedSupportQuarterPair_exists_first_floor_before_second_phase {C h α η : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
@@ -131,9 +104,13 @@ theorem fullTiltedSupportQuarterPair_exists_first_floor_before_second_phase {C h
   obtain ⟨γ, hγ, hzero, hbefore, hzeroX, hX⟩ :=
     fullTiltedSupportQuarterPair_first_floor_crossing hU hm haffine hρ hρ0 hρK heq
       hl hr hmpos hheight hh hlow
-  exact ⟨γ, ⟨hγ.1, fullTiltedSupportQuarterPair_first_floor_lt_second_phase
-    hU hm haffine hρ hρ0 hρK heq hheight hunit hphase hzero hbefore⟩,
-    hzero, hbefore, hzeroX, hX⟩
+  -- The floor is already positive at the second momentum zero.
+  have hpositive := fullTiltedSupportQuarterPair_companion_floor_pos_at_second_phase
+    hU hm haffine hρ hρ0 hρK heq hheight hunit hphase
+  refine ⟨γ, ⟨hγ.1, lt_of_not_ge fun hηγ => ?_⟩, hzero, hbefore, hzeroX, hX⟩
+  rcases hηγ.eq_or_lt with rfl | hlt
+  · linarith
+  · linarith [hbefore η ⟨(hphase.first_mem.1.trans hphase.second_mem.1).le, hlt⟩]
 
 /-- The only analytic premise still exposed here is the local source
 law at the actual uniquely visible core. Initial-floor visibility and
@@ -155,37 +132,21 @@ theorem fullTiltedSupportQuarterPair_first_floor_lt_bad_entry_of_visible_law
       Analysis.firstFloorVisibleLaw p q ρ v δ t) : γ < τ := by
   have hτq : τ ∈ Ioo (0 : ℝ) (Real.pi / 2) :=
     ⟨hphase.first_mem.1.trans hτ.1, hτ.2.trans hphase.second_mem.2⟩
-  have hJR : horizontalRight U - capWidth U / 4 = C := by
-    unfold capWidth
-    rw [hl, hr]
-    ring
+  have hJR : horizontalRight U - capWidth U / 4 = C := by rw [capWidth, hl, hr]; ring
   have hgeometry (t : ℝ) (ht : t ∈ Ioc α η) :=
     fullTiltedSupportQuarterPair_core_phase_positive_and_right
       hU hm haffine hρ hρ0 hρK heq hl hr hC0 hC1 hh hheight hlow hunit hphase ht
-  have hpositive := fullTiltedSupportQuarterPair_companion_floor_pos_at_second_phase
-    hU hm haffine hρ hρ0 hρK heq hheight hunit hphase
-  obtain ⟨hpAC, _hqAC, hpD⟩ := fullTiltedSupportQuarterPair_corner_calculus
+  obtain ⟨hpAC, -, hpD⟩ := fullTiltedSupportQuarterPair_corner_calculus
     hU hm haffine hρ hρ0 hρK heq
-  obtain ⟨_hBx, _hBy, _hDx, hyAC, hyD⟩ := fullTiltedSupportQuarterPair_tangent_calculus
+  obtain ⟨-, -, -, hyAC, hyD⟩ := fullTiltedSupportQuarterPair_tangent_calculus
     hU hm haffine hρ hρ0 hρK heq
-  have hsub : uIcc τ η ⊆ uIcc (0 : ℝ) (Real.pi / 2) := by
-    rw [uIcc_of_le hτ.2.le, uIcc_of_le (by positivity : (0 : ℝ) ≤ Real.pi / 2)]
-    exact Icc_subset_Icc hτq.1.le hphase.second_mem.2.le
-  have hinterval : Ioo τ η ⊆ Ioo (0 : ℝ) (Real.pi / 2) :=
-    Ioo_subset_Ioo hτq.1.le hphase.second_mem.2.le
-  have hode : ∀ᵐ t ∂volume.restrict (Ioo τ η),
-      HasDerivAt p (ρ t - 1 - q t) t ∧
-        HasDerivAt (fun s => (D s).2) ((1 - v t) * Real.sin t) t := by
-    filter_upwards [ae_restrict_of_ae_restrict_of_subset hinterval hpD,
-      ae_restrict_of_ae_restrict_of_subset hinterval hyD] with t hp hy
-    exact ⟨hp.1, hy.2.2.2⟩
-  by_contra hnot
-  have hτγ : τ ≤ γ := le_of_not_gt hnot
-  have hinitial : ∀ s ∈ Icc (0 : ℝ) τ, (D s).2 ≤ 0 := by
-    intro s hs
-    rcases (hs.2.trans hτγ).eq_or_lt with heq | hlt
-    · simpa only [heq, hγzero] using (le_rfl : (0 : ℝ) ≤ 0)
-    · exact (hbefore s ⟨hs.1, hlt⟩).le
+  have hsub : uIcc τ η ⊆ uIcc (0 : ℝ) (Real.pi / 2) :=
+    uIcc_subset_uIcc (Icc_subset_uIcc (Ioo_subset_Icc_self hτq))
+      (Icc_subset_uIcc ⟨(hτq.1.trans hτ.2).le, hphase.second_mem.2.le⟩)
+  by_contra! hτγ
+  have hinitial : ∀ s ∈ Icc (0 : ℝ) τ, (D s).2 ≤ 0 := fun s hs => by
+    rcases (hs.2.trans hτγ).eq_or_lt with rfl | hlt
+    exacts [hγzero.le, (hbefore s ⟨hs.1, hlt⟩).le]
   have hvisible : ∀ b ∈ Ioc τ η, (∀ s ∈ Icc τ b, (D s).2 ≤ 0) →
       ∀ᵐ t ∂volume.restrict (Ioo τ b), Analysis.firstFloorVisibleLaw p q ρ v δ t := by
     intro b hb hnonpos
@@ -193,53 +154,34 @@ theorem fullTiltedSupportQuarterPair_first_floor_lt_bad_entry_of_visible_law
       ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo le_rfl hb.2) hsource]
       with t ht hs
     have htphase : t ∈ Ioo α η := ⟨hτ.1.trans ht.1, ht.2.trans_le hb.2⟩
-    have htq : t ∈ Ioo (0 : ℝ) (Real.pi / 2) :=
-      ⟨hphase.first_mem.1.trans htphase.1, htphase.2.trans hphase.second_mem.2⟩
     have hgeo := hgeometry t (Ioo_subset_Ioc_self htphase)
-    have hfloor : ∀ r ∈ Ioc (0 : ℝ) t, (D r).2 ≤ 0 := by
-      intro r hrI
-      by_cases hrτ : r ≤ τ
-      · exact hinitial r ⟨hrI.1.le, hrτ⟩
-      · exact hnonpos r ⟨(lt_of_not_ge hrτ).le, hrI.2.trans ht.2.le⟩
-    have hcontact := fullTiltedSupportQuarterPair_core_contact_of_initial_floor_nonpos
-      hU hm haffine hρ hρ0 hρK heq hunit htq (hphase.core_signs t htphase).1
-      hgeo.2 (by rw [hJR]; exact hgeo.1.le) hfloor
-    exact hs hcontact.1 hcontact.2
+    have hfloor : ∀ r ∈ Ioc (0 : ℝ) t, (D r).2 ≤ 0 := fun r hr => by
+      rcases le_or_gt r τ with hrτ | hrτ
+      exacts [hinitial r ⟨hr.1.le, hrτ⟩, hnonpos r ⟨hrτ.le, hr.2.trans ht.2.le⟩]
+    obtain ⟨h1, h2⟩ := fullTiltedSupportQuarterPair_core_contact_of_initial_floor_nonpos
+      hU hm haffine hρ hρ0 hρK heq hunit
+      ⟨hphase.first_mem.1.trans htphase.1, htphase.2.trans hphase.second_mem.2⟩
+      (hphase.core_signs t htphase).1 hgeo.2 (hJR ▸ hgeo.1.le) hfloor
+    exact hs h1 h2
   have hboundary : (D τ).2 = 0 → ∃ b ∈ Ioc τ η,
       ∀ᵐ t ∂volume.restrict (Ioo τ b), Analysis.firstFloorVisibleLaw p q ρ v δ t := by
-    intro _hzero
+    intro _
     have hgeo := hgeometry τ (Ioo_subset_Ioc_self hτ)
-    have hevent := fullTiltedSupportQuarterPair_core_contact_eventually_of_initial_floor_nonpos
-      hU hm haffine hρ hρ0 hρK heq hunit hτq (by rw [hpτ]; norm_num)
-      (hphase.core_signs τ hτ).2 hgeo.2 (by rw [hJR]; exact hgeo.1)
-      (fun s hs => hinitial s ⟨hs.1.le, hs.2⟩)
-    obtain ⟨l, u, hτlu, hlocal⟩ := mem_nhds_iff_exists_Ioo_subset.mp hevent
-    obtain ⟨b, hτb, hb⟩ := exists_between (lt_min hτlu.2 hτ.2)
-    have hbη : b ≤ η := (hb.trans_le (min_le_right _ _)).le
-    refine ⟨b, ⟨hτb, hbη⟩, ?_⟩
+    obtain ⟨b, hb, hlocal⟩ := ((TFAE_mem_nhdsGT hτ.2 _).out 1 4).mp (nhdsWithin_le_nhds
+      (fullTiltedSupportQuarterPair_core_contact_eventually_of_initial_floor_nonpos
+        hU hm haffine hρ hρ0 hρK heq hunit hτq (by rw [hpτ]; norm_num)
+        (hphase.core_signs τ hτ).2 hgeo.2 (hJR ▸ hgeo.1) (fun s hs => hinitial s ⟨hs.1.le, hs.2⟩)))
+    refine ⟨b, hb, ?_⟩
     filter_upwards [ae_restrict_mem measurableSet_Ioo,
-      ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo le_rfl hbη) hsource]
-      with t ht hs
-    have hcontact := hlocal (show t ∈ Ioo l u from
-      ⟨hτlu.1.trans ht.1, ht.2.trans (hb.trans_le (min_le_left _ _))⟩)
-    exact hs hcontact.2.1 hcontact.2.2
+      ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo le_rfl hb.2) hsource] with t ht hs
+    exact hs (hlocal ht).2.1 (hlocal ht).2.2
   exact Analysis.firstFloor_bad_entry_trapping hτq.1.le hτ.2
-    (by linarith only [hphase.second_mem.2, Real.pi_pos])
-    (hpAC.mono hsub) (hyAC.mono hsub) hpτ.le
-    (hinitial τ ⟨hτq.1.le, le_rfl⟩) hpositive hode hvisible hboundary
-
-/-- A positive literal cut wall already places the core strictly to the
-right of the actual low-wing zero. This does not require any contact or
-companion tangent monotonicity. -/
-theorem fullTiltedSupportQuarterPair_companionZero_lt_positive_core {t : ℝ}
-    (ht : t ∈ Ioo 0 (Real.pi / 2)) (hy : 0 < (Z t).2) :
-    companionZero V < (Z t).1 := by
-  by_contra hnot
-  have hwall := hU.isCap_fullLeftCompanion.secondWall_nonpos_of_le_companionZero
-    (le_of_not_gt hnot) ht
-  rw [(fullTiltedSupportQuarterPair_walls_core
-    hU hm haffine hρ hρ0 hρK heq ht).2] at hwall
-  exact (not_le_of_gt hy) hwall
+    (by linarith [hphase.second_mem.2, Real.pi_pos]) (hpAC.mono hsub) (hyAC.mono hsub) hpτ.le
+    (hinitial τ ⟨hτq.1.le, le_rfl⟩)
+    (fullTiltedSupportQuarterPair_companion_floor_pos_at_second_phase
+      hU hm haffine hρ hρ0 hρK heq hheight hunit hphase)
+    ((ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hτq.1.le hphase.second_mem.2.le)
+      (hpD.and hyD)).mono fun t h => ⟨h.1.1, h.2.2.2.2⟩) hvisible hboundary
 
 /-- Actual top projection keeps the whole positive core phase inside
 the middle interval. The literal positive-wall identity also excludes
@@ -256,35 +198,26 @@ theorem fullTiltedSupportQuarterPair_core_phase_geometry {C h α η t : ℝ}
     (Z t).1 ∈ Ioo (-C) C ∧ 0 < (Z t).2 ∧
       t ∈ regularCornerDomain m ∧ Z t = attachedCorner U t := by
   have hmid : middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
-    rw [middleHalfInterval, hl, hr]
-    congr 1 <;> ring
-  have hJL : horizontalLeft U + capWidth U / 4 = -C := by
-    unfold capWidth
-    rw [hl, hr]
-    ring
-  have hJR : horizontalRight U - capWidth U / 4 = C := by
-    unfold capWidth
-    rw [hl, hr]
-    ring
+    rw [middleHalfInterval, hl, hr]; congr 1 <;> ring
+  have hJL : horizontalLeft U + capWidth U / 4 = -C := by rw [capWidth, hl, hr]; ring
+  have hJR : horizontalRight U - capWidth U / 4 = C := by rw [capWidth, hl, hr]; ring
   have hdry := hU.firstUnit_dry_left_and_overhang_bounds
     hl hr hC0 hC1 hh0 hh1 hheight (by simpa only [hmid] using haffine)
     hlow hhigh hρ hρ0 hρK heq hκ hunit
-  have hzero : -C < companionZero V := by
-    rw [hJL]
-    linarith only [hdry.1, hdry.2.2.1]
   have hgeo := fullTiltedSupportQuarterPair_core_phase_positive_and_right
     hU hm haffine hρ hρ0 hρK heq hl hr hC0 hC1 hh1.le hheight hlow hunit hphase ht
   have htq : t ∈ Ioo (0 : ℝ) (Real.pi / 2) :=
     ⟨hphase.first_mem.1.trans ht.1, ht.2.trans_lt hphase.second_mem.2⟩
-  have hleft := hzero.trans (fullTiltedSupportQuarterPair_companionZero_lt_positive_core
-    hU hm haffine hρ hρ0 hρK heq htq hgeo.2)
-  have hright : (Z t).1 ≤ horizontalRight U - capWidth U / 4 := by
-    rw [hJR]
-    exact hgeo.1.le
-  have hpost := fullTiltedSupportQuarterPair_positive_core_after_affine
-    hU hm haffine hρ hρ0 hρK heq (by rw [hJR]; exact hhigh) htq hgeo.2 hright
-  exact ⟨⟨hleft, hgeo.1⟩, hgeo.2,
-    mem_regularCornerDomain_of_after_nonneg_affine hm htq hpost,
+  -- A positive cut wall places the core strictly right of the low-wing zero.
+  have hleft : companionZero V < (Z t).1 := lt_of_not_ge fun h => hgeo.2.not_ge
+    ((fullTiltedSupportQuarterPair_walls_core hU hm haffine hρ hρ0 hρK heq htq).2 ▸
+      hU.isCap_fullLeftCompanion.secondWall_nonpos_of_le_companionZero h htq)
+  have hright : (Z t).1 ≤ horizontalRight U - capWidth U / 4 := hJR ▸ hgeo.1.le
+  have hzero : -C < companionZero V := by rw [hJL]; linarith [hdry.1, hdry.2.2.1]
+  exact ⟨⟨hzero.trans hleft, hgeo.1⟩, hgeo.2,
+    mem_regularCornerDomain_of_after_nonneg_affine hm htq
+      (fullTiltedSupportQuarterPair_positive_core_after_affine
+        hU hm haffine hρ hρ0 hρK heq (hJR ▸ hhigh) htq hgeo.2 hright),
     fullTiltedSupportQuarterPair_core_eq_attachedCorner
       hU hm haffine hρ hρ0 hρK heq htq hgeo.2 hright⟩
 
@@ -314,9 +247,8 @@ theorem fullTiltedSupportQuarterPair_first_floor_lt_bad_entry_of_regular_visible
     fullTiltedSupportQuarterPair_core_phase_geometry
       hU hm haffine hρ hρ0 hρK heq hl hr hC0 hC1 hh0 hh1 hheight hlow hhigh
       hκ hunit hphase ht
-  have hregular : Ioo τ η ⊆ regularCornerDomain m := by
-    intro t ht
-    exact (hgeometry t ⟨hτ.1.trans ht.1, ht.2.le⟩).2.2.1
+  have hregular : Ioo τ η ⊆ regularCornerDomain m := fun t ht =>
+    (hgeometry t ⟨hτ.1.trans ht.1, ht.2.le⟩).2.2.1
   have hBmono := (fullTiltedSupportQuarterPair_first_tangent_order
     hU hm haffine hρ hρ0 hρK heq hunit).1
   apply fullTiltedSupportQuarterPair_first_floor_lt_bad_entry_of_visible_law
@@ -324,16 +256,12 @@ theorem fullTiltedSupportQuarterPair_first_floor_lt_bad_entry_of_regular_visible
     hphase hτ hpτ hγzero hbefore
   filter_upwards [ae_restrict_mem measurableSet_Ioo,
     ae_restrict_of_ae_restrict_of_subset hregular hsource] with t ht hs
-  intro hcontact hunique
   have htphase : t ∈ Ioo α η := ⟨hτ.1.trans ht.1, ht.2⟩
   have hgeo := hgeometry t (Ioo_subset_Ioc_self htphase)
-  have hBt := hBmono hβ
+  have hBt : C ≤ (B t).1 := hβx ▸ hBmono hβ
     ⟨(hphase.first_mem.1.trans htphase.1).le, htphase.2.le.trans hphase.second_mem.2.le⟩
     (hβτ.trans ht.1.le)
-  dsimp only at hBt
-  rw [hβx] at hBt
-  exact hs (hphase.core_signs t htphase).1 (hphase.core_signs t htphase).2
-    hgeo.1 hgeo.2.1 hBt hcontact hunique
+  exact hs (hphase.core_signs t htphase).1 (hphase.core_signs t htphase).2 hgeo.1 hgeo.2.1 hBt
 
 end ActualPair
 

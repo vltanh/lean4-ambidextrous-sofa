@@ -40,8 +40,7 @@ theorem measurable_vplus {K : Set (ℝ × ℝ)} (hK : IsConvexBody K) :
   have e : vplus K = fun t =>
       supp K t • uvec t + (sigmaFun K t - ∫ s in (0 : ℝ)..t, supp K s) • vvec t := by
     funext t; rw [← inj_dot_vplus_vvec_eq]; exact vplus_eq_frame K t
-  rw [e]
-  exact (hK.continuous_supp.measurable.smul continuous_uvec.measurable).add
+  exact e ▸ (hK.continuous_supp.measurable.smul continuous_uvec.measurable).add
     (((monotone_sigmaFun hK).measurable.sub (continuous_integral_supp hK).measurable).smul
       continuous_vvec.measurable)
 
@@ -50,8 +49,8 @@ theorem dot_vplus_vvec_sub {K : Set (ℝ × ℝ)} (hK : IsConvexBody K) {a b : �
     (hab : a < b) :
     dot (vplus K b) (vvec b) - dot (vplus K a) (vvec a) =
       (sigma K (Ioc a b)).toReal - ∫ s in a..b, supp K s := by
-  have hmono : sigmaFun K a ≤ sigmaFun K b := monotone_sigmaFun hK hab.le
-  rw [sigma_Ioc hK, ENNReal.toReal_ofReal (sub_nonneg.mpr hmono), sigmaFun_sub hK a b]
+  rw [sigma_Ioc hK, ENNReal.toReal_ofReal (sub_nonneg.mpr (monotone_sigmaFun hK hab.le)),
+    sigmaFun_sub hK a b]
   ring
 
 end AmbidextrousSofa

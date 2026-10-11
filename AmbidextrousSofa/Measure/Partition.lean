@@ -36,25 +36,17 @@ theorem measurableSet_middleHalfInterval (l r : ℝ) :
   measurableSet_Icc
 
 theorem middleHalfInterval_subset {l r : ℝ} (hlr : l ≤ r) :
-    middleHalfInterval l r ⊆ Icc l r := by
-  intro x hx
-  change l + (r - l) / 4 ≤ x ∧ x ≤ r - (r - l) / 4 at hx
-  exact ⟨by linarith [hx.1], by linarith [hx.2]⟩
+    middleHalfInterval l r ⊆ Icc l r :=
+  Icc_subset_Icc (by linarith) (by linarith)
 
 theorem volumeReal_middleHalfInterval {l r : ℝ} (hlr : l ≤ r) :
     volume.real (middleHalfInterval l r) = (r - l) / 2 := by
-  unfold middleHalfInterval
-  rw [Real.volume_real_Icc_of_le (by linarith :
-    l + (r - l) / 4 ≤ r - (r - l) / 4)]
+  rw [middleHalfInterval, Real.volume_real_Icc_of_le (by linarith)]
   ring
 
 theorem volumeReal_exterior_middleHalfInterval {l r : ℝ} (hlr : l ≤ r) :
     volume.real (Icc l r \ middleHalfInterval l r) = (r - l) / 2 := by
-  have hFinite : volume (Icc l r) ≠ ⊤ := by
-    rw [Real.volume_Icc]
-    exact ENNReal.ofReal_ne_top
-  rw [measureReal_sdiff (middleHalfInterval_subset hlr)
-    (measurableSet_middleHalfInterval l r) hFinite,
+  rw [measureReal_sdiff (middleHalfInterval_subset hlr) measurableSet_Icc measure_Icc_lt_top.ne,
     Real.volume_real_Icc_of_le hlr, volumeReal_middleHalfInterval hlr]
   ring
 
@@ -76,53 +68,13 @@ def integratedPartitionDefect (I J : Set ℝ) (dU dV nU nV : ℝ → ℝ) : ℝ 
   (∫ x in J, middlePartitionDefect (dU x) (dV x) (nU x) (nV x)) +
     ∫ x in I \ J, exteriorPartitionDefect (dU x) (dV x) (nU x) (nV x)
 
-theorem integral_middlePartitionDefect_nonneg
-    (I : Set ℝ) (dU dV nU nV : ℝ → ℝ) :
-    0 ≤ ∫ x in I, middlePartitionDefect (dU x) (dV x) (nU x) (nV x) :=
-  integral_nonneg (fun x => middlePartitionDefect_nonneg (dU x) (dV x) (nU x) (nV x))
-
-theorem integral_exteriorPartitionDefect_nonneg
-    (I : Set ℝ) (dU dV nU nV : ℝ → ℝ) :
-    0 ≤ ∫ x in I, exteriorPartitionDefect (dU x) (dV x) (nU x) (nV x) :=
-  integral_nonneg (fun x => exteriorPartitionDefect_nonneg (dU x) (dV x) (nU x) (nV x))
-
 theorem integratedPartitionDefect_nonneg
     (I J : Set ℝ) (dU dV nU nV : ℝ → ℝ) :
     0 ≤ integratedPartitionDefect I J dU dV nU nV :=
-  add_nonneg (integral_middlePartitionDefect_nonneg J dU dV nU nV)
-    (integral_exteriorPartitionDefect_nonneg (I \ J) dU dV nU nV)
+  add_nonneg (integral_nonneg fun x => middlePartitionDefect_nonneg (dU x) (dV x) (nU x) (nV x))
+    (integral_nonneg fun x => exteriorPartitionDefect_nonneg (dU x) (dV x) (nU x) (nV x))
 
 /-! ## Integrating the exact pointwise identities -/
-
-theorem integral_middle_partition_defect_identity
-    {I : Set ℝ} {dU dV nU nV : ℝ → ℝ}
-    (hOne : IntegrableOn (fun _ : ℝ => (1 : ℝ)) I)
-    (hnU : IntegrableOn nU I) (hnV : IntegrableOn nV I)
-    (hSigned : IntegrableOn
-      (fun x => signedFiberLength (dU x) (dV x) (nU x) (nV x)) I) :
-    (∫ x in I, 1 - nU x - nV x) -
-        (∫ x in I, signedFiberLength (dU x) (dV x) (nU x) (nV x)) =
-      ∫ x in I, middlePartitionDefect (dU x) (dV x) (nU x) (nV x) := by
-  rw [← integral_sub (f := fun x => 1 - nU x - nV x)
-    (Integrable.sub (Integrable.sub hOne hnU) hnV) hSigned]
-  apply integral_congr_ae
-  exact Filter.Eventually.of_forall
-    (fun x => middle_partition_defect_identity (dU x) (dV x) (nU x) (nV x))
-
-theorem integral_exterior_partition_defect_identity
-    {I : Set ℝ} {dU dV nU nV : ℝ → ℝ}
-    (hOne : IntegrableOn (fun _ : ℝ => (1 : ℝ)) I)
-    (hdU : IntegrableOn dU I) (hdV : IntegrableOn dV I)
-    (hSigned : IntegrableOn
-      (fun x => signedFiberLength (dU x) (dV x) (nU x) (nV x)) I) :
-    (∫ x in I, 1 - dU x - dV x) -
-        (∫ x in I, signedFiberLength (dU x) (dV x) (nU x) (nV x)) =
-      ∫ x in I, exteriorPartitionDefect (dU x) (dV x) (nU x) (nV x) := by
-  rw [← integral_sub (f := fun x => 1 - dU x - dV x)
-    (Integrable.sub (Integrable.sub hOne hdU) hdV) hSigned]
-  apply integral_congr_ae
-  exact Filter.Eventually.of_forall
-    (fun x => exterior_partition_defect_identity (dU x) (dV x) (nU x) (nV x))
 
 /-- ED.3 for any measurable equal-measure split. Signed fibers need not be
 nonnegative. All integral identifications are proved from the wall functions. -/
@@ -135,71 +87,22 @@ theorem integrated_partition_defect_identity
     spatialScore I J dU nU + spatialScore I J dV nV -
         (∫ x in I, signedFiberLength (dU x) (dV x) (nU x) (nV x)) =
       integratedPartitionDefect I J dU dV nU nV := by
-  have hOne : IntegrableOn (fun _ : ℝ => (1 : ℝ)) I := integrableOn_const hFinite
-  have hOneJ := hOne.mono_set hJI
-  have hOneE := hOne.mono_set (sdiff_subset : I \ J ⊆ I)
-  have hdUE := hdU.mono_set (sdiff_subset : I \ J ⊆ I)
-  have hdVE := hdV.mono_set (sdiff_subset : I \ J ⊆ I)
-  have hnUJ := hnU.mono_set hJI
-  have hnVJ := hnV.mono_set hJI
-  have hSigned := integrableOn_signedFiberLength hFinite hdU hdV hnU hnV
-  have hMiddle := integral_middle_partition_defect_identity hOneJ hnUJ hnVJ
-    (hSigned.mono_set hJI)
-  have hExterior := integral_exterior_partition_defect_identity hOneE hdUE hdVE
-    (hSigned.mono_set (sdiff_subset : I \ J ⊆ I))
-  have hSplit := setIntegral_sdiff hJ hSigned hJI
-  have hMiddleExpanded :
-      (∫ x in J, 1 - nU x - nV x) =
-        volume.real J - (∫ x in J, nU x) - ∫ x in J, nV x := by
-    rw [integral_sub (f := fun x => 1 - nU x) (Integrable.sub hOneJ hnUJ) hnVJ,
-      integral_sub hOneJ hnUJ]
-    simp only [setIntegral_const, smul_eq_mul, mul_one]
-  have hExteriorExpanded :
-      (∫ x in I \ J, 1 - dU x - dV x) =
-        volume.real (I \ J) - (∫ x in I \ J, dU x) - ∫ x in I \ J, dV x := by
-    rw [integral_sub (f := fun x => 1 - dU x) (Integrable.sub hOneE hdUE) hdVE,
-      integral_sub hOneE hdUE]
-    simp only [setIntegral_const, smul_eq_mul, mul_one]
+  have h1 : IntegrableOn (fun _ : ℝ => (1 : ℝ)) I := integrableOn_const hFinite
+  have hs := integrableOn_signedFiberLength hFinite hdU hdV hnU hnV
+  have hE : I \ J ⊆ I := sdiff_subset
   unfold spatialScore integratedPartitionDefect
-  rw [integral_sub hOneE hdUE, integral_sub hOneE hdVE]
+  simp only [← middle_partition_defect_identity, ← exterior_partition_defect_identity]
+  rw [integral_sub (IntegrableOn.mono_set ((h1.sub' hnU).sub' hnV) hJI) (hs.mono_set hJI),
+    integral_sub (IntegrableOn.mono_set ((h1.sub' hdU).sub' hdV) hE) (hs.mono_set hE),
+    integral_sub (IntegrableOn.mono_set (h1.sub' hnU) hJI) (hnV.mono_set hJI),
+    integral_sub (IntegrableOn.mono_set (h1.sub' hdU) hE) (hdV.mono_set hE),
+    integral_sub (h1.mono_set hJI) (hnU.mono_set hJI),
+    integral_sub (h1.mono_set hE) (hdU.mono_set hE), integral_sub (h1.mono_set hE) (hdV.mono_set hE),
+    setIntegral_sdiff hJ hs hJI]
   simp only [setIntegral_const, smul_eq_mul, mul_one]
   linarith
 
-theorem signedIntegral_le_spatialScore_sum
-    {I J : Set ℝ} {dU dV nU nV : ℝ → ℝ}
-    (hJ : MeasurableSet J) (hJI : J ⊆ I) (hFinite : volume I ≠ ⊤)
-    (hBalance : volume.real J = volume.real (I \ J))
-    (hdU : IntegrableOn dU I) (hdV : IntegrableOn dV I)
-    (hnU : IntegrableOn nU I) (hnV : IntegrableOn nV I) :
-    (∫ x in I, signedFiberLength (dU x) (dV x) (nU x) (nV x)) ≤
-      spatialScore I J dU nU + spatialScore I J dV nV := by
-  have hIdentity := integrated_partition_defect_identity hJ hJI hFinite hBalance hdU hdV hnU hnV
-  have hNonneg := integratedPartitionDefect_nonneg I J dU dV nU nV
-  linarith
-
-/-! ## Exact almost-everywhere equality conditions -/
-
 /-! ## Ordinary-area enclosure, with physical fibers -/
-
-/-- A contained body's actual area is bounded by the two spatial scores.
-The geometric and analytic hypotheses are all exposed, including nonnegative
-signed fibers; no sharp scalar cap inequality occurs among the assumptions. -/
-theorem volumeReal_le_spatialScore_sum_of_subset_fourWallEnvelope
-    {S : Set Plane} {I J : Set ℝ} {dU dV nU nV : ℝ → ℝ}
-    (hS : S ⊆ fourWallEnvelope I dU dV nU nV)
-    (hI : MeasurableSet I) (hJ : MeasurableSet J) (hJI : J ⊆ I)
-    (hFinite : volume I ≠ ⊤) (hBalance : volume.real J = volume.real (I \ J))
-    (hdU : Measurable dU) (hdV : Measurable dV)
-    (hnU : Measurable nU) (hnV : Measurable nV)
-    (hidU : IntegrableOn dU I) (hidV : IntegrableOn dV I)
-    (hinU : IntegrableOn nU I) (hinV : IntegrableOn nV I)
-    (hNonneg : ∀ᵐ x ∂volume.restrict I,
-      0 ≤ signedFiberLength (dU x) (dV x) (nU x) (nV x)) :
-    volume.real S ≤ spatialScore I J dU nU + spatialScore I J dV nV := by
-  have hSigned := integrableOn_signedFiberLength hFinite hidU hidV hinU hinV
-  exact (volumeReal_le_signedIntegral_of_subset_fourWallEnvelope
-    hS hI hdU hdV hnU hnV hSigned hNonneg).trans
-    (signedIntegral_le_spatialScore_sum hJ hJI hFinite hBalance hidU hidV hinU hinV)
 
 /-- The standard projection split supplies all partition geometry. -/
 theorem volumeReal_le_spatialScore_sum_middleHalf
@@ -213,40 +116,18 @@ theorem volumeReal_le_spatialScore_sum_middleHalf
     volume.real S ≤
       spatialScore (Icc l r) (middleHalfInterval l r) dU nU +
         spatialScore (Icc l r) (middleHalfInterval l r) dV nV := by
-  have hNonneg := signedFiberLength_nonneg_on_of_subset_projection hS hProjection
-  have hNonnegAE : ∀ᵐ x ∂volume.restrict (Icc l r),
-      0 ≤ signedFiberLength (dU x) (dV x) (nU x) (nV x) := by
-    filter_upwards [ae_restrict_mem measurableSet_Icc] with x hx
-    exact hNonneg x hx
-  exact volumeReal_le_spatialScore_sum_of_subset_fourWallEnvelope
-    hS measurableSet_Icc (measurableSet_middleHalfInterval l r)
-    (middleHalfInterval_subset hlr) (by rw [Real.volume_Icc]; exact ENNReal.ofReal_ne_top)
-    (middleHalfInterval_measure_balance hlr) hdU hdV hnU hnV hidU hidV hinU hinV hNonnegAE
+  have hFinite : volume (Icc l r) ≠ ⊤ := measure_Icc_lt_top.ne
+  have := integrated_partition_defect_identity (measurableSet_middleHalfInterval l r)
+    (middleHalfInterval_subset hlr) hFinite (middleHalfInterval_measure_balance hlr)
+    hidU hidV hinU hinV
+  have := integratedPartitionDefect_nonneg (Icc l r) (middleHalfInterval l r) dU dV nU nV
+  have := volumeReal_le_signedIntegral_of_subset_fourWallEnvelope hS measurableSet_Icc
+    hdU hdV hnU hnV (integrableOn_signedFiberLength hFinite hidU hidV hinU hinV)
+    (ae_restrict_of_forall_mem measurableSet_Icc
+      (signedFiberLength_nonneg_on_of_subset_projection hS hProjection))
+  linarith
 
 /-! ## Exact actual-body decomposition -/
-
-/-- The difference between the two scores and the actual body's area splits
-into the nonnegative partition defect and the ordinary missing-envelope area. -/
-theorem spatialScore_sum_sub_volumeReal_eq_defects
-    {S : Set Plane} {I J : Set ℝ} {dU dV nU nV : ℝ → ℝ}
-    (hS : S ⊆ fourWallEnvelope I dU dV nU nV) (hMeasS : MeasurableSet S)
-    (hI : MeasurableSet I) (hJ : MeasurableSet J) (hJI : J ⊆ I)
-    (hFinite : volume I ≠ ⊤) (hBalance : volume.real J = volume.real (I \ J))
-    (hdU : Measurable dU) (hdV : Measurable dV)
-    (hnU : Measurable nU) (hnV : Measurable nV)
-    (hidU : IntegrableOn dU I) (hidV : IntegrableOn dV I)
-    (hinU : IntegrableOn nU I) (hinV : IntegrableOn nV I)
-    (hNonneg : ∀ᵐ x ∂volume.restrict I,
-      0 ≤ signedFiberLength (dU x) (dV x) (nU x) (nV x)) :
-    spatialScore I J dU nU + spatialScore I J dV nV - volume.real S =
-      integratedPartitionDefect I J dU dV nU nV +
-        volume.real (fourWallEnvelope I dU dV nU nV \ S) := by
-  have hPartition := integrated_partition_defect_identity
-    hJ hJI hFinite hBalance hidU hidV hinU hinV
-  have hSigned := integrableOn_signedFiberLength hFinite hidU hidV hinU hinV
-  have hFill := volumeReal_sdiff_fourWallEnvelope_eq_signedIntegral_sub
-    hS hMeasS hI hdU hdV hnU hnV hSigned hNonneg
-  linarith
 
 /-- ED.5 as an exact ordinary-area identity with explicitly constructed
 integral scores and set-difference filling defect. It is valid for every real
@@ -267,8 +148,9 @@ theorem actualBody_four_term_deficit_identity
         (C / 2 - spatialScore I J dV nV) +
         integratedPartitionDefect I J dU dV nU nV +
         volume.real (fourWallEnvelope I dU dV nU nV \ S) := by
-  have hDefects := spatialScore_sum_sub_volumeReal_eq_defects
-    hS hMeasS hI hJ hJI hFinite hBalance hdU hdV hnU hnV hidU hidV hinU hinV hNonneg
+  have := integrated_partition_defect_identity hJ hJI hFinite hBalance hidU hidV hinU hinV
+  have := volumeReal_sdiff_fourWallEnvelope_eq_signedIntegral_sub hS hMeasS hI hdU hdV hnU hnV
+    (integrableOn_signedFiberLength hFinite hidU hidV hinU hinV) hNonneg
   linarith
 
 end AmbidextrousSofa

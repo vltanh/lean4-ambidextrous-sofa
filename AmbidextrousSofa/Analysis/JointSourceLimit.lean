@@ -34,55 +34,6 @@ def sourceLimitFilter : Ultrafilter ℕ := Ultrafilter.of atTop
 theorem sourceLimitFilter_le_atTop : (sourceLimitFilter : Filter ℕ) ≤ atTop :=
   Ultrafilter.of_le atTop
 
-theorem innerJointFiniteMeasure_middle_mass_dyadic_le
-    {U : Set Plane} (hU : IsDownwardCap U) {R : ℝ} (hR : 0 ≤ R)
-    (hbox : U ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1) (level : ℕ) :
-    (innerJointFiniteMeasure U (dyadic level)
-      (horizontalLeft U + capWidth U / 4)
-      (horizontalRight U - capWidth U / 4)).mass ≤
-        Real.toNNReal ((4 * R + 12) * Real.pi) := by
-  change (innerJointMeasure U (dyadic level)
-      (horizontalLeft U + capWidth U / 4)
-      (horizontalRight U - capWidth U / 4)).real univ ≤
-    (Real.toNNReal ((4 * R + 12) * Real.pi) : ℝ)
-  rw [Real.coe_toNNReal _ (by positivity)]
-  exact innerJointMeasure_middle_mass_dyadic_le hU hR hbox level
-
-/-- Compactness applies to arbitrary dyadic cap sequences in the fixed
-box. The angular mesh need not tend to zero for this step. -/
-theorem exists_innerJointFiniteMeasure_limit
-    {U : ℕ → Set Plane} (hU : ∀ n, IsDownwardCap (U n))
-    {R : ℝ} (hR : 0 ≤ R)
-    (hbox : ∀ n, U n ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1) (level : ℕ → ℕ) :
-    ∃ μ : FiniteMeasure Plane,
-      Tendsto (fun n => innerJointFiniteMeasure (U n) (dyadic (level n))
-        (horizontalLeft (U n) + capWidth (U n) / 4)
-        (horizontalRight (U n) - capWidth (U n) / 4))
-        (sourceLimitFilter : Filter ℕ) (𝓝 μ) ∧
-      μ.mass ≤ Real.toNNReal ((4 * R + 12) * Real.pi) ∧
-      (μ : Measure Plane) (Icc (0 : ℝ) Real.pi ×ˢ Icc (-R) R)ᶜ = 0 := by
-  let ν : ℕ → FiniteMeasure Plane := fun n =>
-    innerJointFiniteMeasure (U n) (dyadic (level n))
-      (horizontalLeft (U n) + capWidth (U n) / 4)
-      (horizontalRight (U n) - capWidth (U n) / 4)
-  let S : Set (FiniteMeasure Plane) := {μ |
-    μ.mass ≤ Real.toNNReal ((4 * R + 12) * Real.pi) ∧
-      μ (Icc (0 : ℝ) Real.pi ×ˢ Icc (-R) R)ᶜ = 0}
-  have hS : IsCompact S :=
-    isCompact_setOfPred_finiteMeasure_le_of_isCompact _ (isCompact_Icc.prod isCompact_Icc)
-  have hν : ∀ n, ν n ∈ S := by
-    intro n
-    refine ⟨innerJointFiniteMeasure_middle_mass_dyadic_le (hU n) hR (hbox n) (level n), ?_⟩
-    apply (FiniteMeasure.null_iff_toMeasure_null _ _).mpr
-    exact innerJointMeasure_middle_compl_box_eq_zero (hU n) (hbox n) (dyadic (level n))
-  have hmap : (sourceLimitFilter.map ν : Filter (FiniteMeasure Plane)) ≤ 𝓟 S := by
-    apply le_principal_iff.mpr
-    change ∀ᶠ n in (sourceLimitFilter : Filter ℕ), ν n ∈ S
-    exact Eventually.of_forall hν
-  obtain ⟨μ, hμ, hlim⟩ := hS.ultrafilter_le_nhds (sourceLimitFilter.map ν) hmap
-  refine ⟨μ, hlim, hμ.1, ?_⟩
-  exact (FiniteMeasure.null_iff_toMeasure_null _ _).mp hμ.2
-
 /-- A selected approximation sequence together with the common weak
 limit of its literal finite inner source measures. -/
 structure SelectedJointSourceLimit (target : Set Plane) (a b : ℝ) where
@@ -129,17 +80,12 @@ theorem angular_mass_tendsto
     (hst : s ≤ t) (hregular : Icc s t ⊆ regularCurvatureDomain m) :
     Tendsto (fun n => (J.finiteMeasure n : Measure Plane).real (Ioc s t ×ˢ univ))
       (sourceLimitFilter : Filter ℕ) (𝓝 ((upperCurvature target).real (Ioc s t))) := by
-  have hlim := innerAngularMass_Ioc_tendsto_of_canonical_maximum hTarget hheight haffine
-    hTargetBox J.selected J.hausdorff J.level_tendsto
-    (fun n => (J.coefficient_pos n).le) J.coefficient_tendsto hleft hright hst hregular
-  have heq (n : ℕ) : (J.finiteMeasure n : Measure Plane).real (Ioc s t ×ˢ univ) =
-      innerAngularMass (J.caps n) (dyadic (J.level n)) (Ioc s t) := by
-    have hlr := horizontalLeft_le_horizontalRight (J.isCap n).nonempty (J.isCap n).isCompact
-    exact innerJointMeasure_angular_mass (J.caps n) (dyadic (J.level n))
-      (show horizontalLeft (J.caps n) + capWidth (J.caps n) / 4 ≤
-        horizontalRight (J.caps n) - capWidth (J.caps n) / 4 by unfold capWidth; linarith)
-      measurableSet_Ioc
-  simpa only [heq] using hlim.mono_left sourceLimitFilter_le_atTop
+  refine ((innerAngularMass_Ioc_tendsto_of_canonical_maximum hTarget hheight haffine hTargetBox
+    J.selected J.hausdorff J.level_tendsto (fun n => (J.coefficient_pos n).le)
+    J.coefficient_tendsto hleft hright hst hregular).mono_left sourceLimitFilter_le_atTop).congr
+    fun n => ?_
+  have hlr := horizontalLeft_le_horizontalRight (J.isCap n).nonempty (J.isCap n).isCompact
+  exact (innerJointMeasure_angular_mass _ _ (by linarith) measurableSet_Ioc).symm
 
 end SelectedJointSourceLimit
 
@@ -147,13 +93,22 @@ theorem exists_selected_joint_source_limit {target : Set Plane}
     (hTarget : IsFullCapMaximizer target) {a b : ℝ} (hab : a ≤ b)
     (hTargetBox : target ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1) :
     Nonempty (SelectedJointSourceLimit target a b) := by
-  obtain ⟨level, coefficient, U, hlevel, hc, hrate, hU, _hpenalty, hHausdorff⟩ :=
+  obtain ⟨level, coefficient, U, hlevel, hc, hrate, hU, -, hHausdorff⟩ :=
     exists_selected_sequence hTarget hab hTargetBox
-  have hbox : ∀ n, U n ⊆ Icc (-(|a| + |b| + 1)) (|a| + |b| + 1) ×ˢ Icc (0 : ℝ) 1 :=
-    fun n => subset_symmetricBox_of_horizontalBox (hU n).inBox
-  obtain ⟨μ, hlim, hmass, hsupport⟩ := exists_innerJointFiniteMeasure_limit
-    (fun n => (hU n).isCap) (show 0 ≤ |a| + |b| + 1 by positivity) hbox level
-  exact ⟨⟨level, coefficient, U, hlevel, hc, hrate, hU, hHausdorff, μ, hlim, hmass, hsupport⟩⟩
+  let ν n := innerJointFiniteMeasure (U n) (dyadic (level n))
+    (horizontalLeft (U n) + capWidth (U n) / 4) (horizontalRight (U n) - capWidth (U n) / 4)
+  have hν (n : ℕ) : (ν n).mass ≤ Real.toNNReal ((4 * (|a| + |b| + 1) + 12) * Real.pi) ∧
+      ν n (Icc (0 : ℝ) Real.pi ×ˢ Icc (-(|a| + |b| + 1)) (|a| + |b| + 1))ᶜ = 0 := by
+    have hbox := subset_symmetricBox_of_horizontalBox (hU n).inBox
+    exact ⟨(Real.le_toNNReal_iff_coe_le (by positivity)).2
+      (innerJointMeasure_middle_mass_dyadic_le (hU n).isCap (by positivity) hbox (level n)),
+      (FiniteMeasure.null_iff_toMeasure_null _ _).mpr
+        (innerJointMeasure_middle_compl_box_eq_zero (hU n).isCap hbox (dyadic (level n)))⟩
+  obtain ⟨μ, hμ, hlim⟩ := (isCompact_setOfPred_finiteMeasure_le_of_isCompact _
+    (isCompact_Icc.prod isCompact_Icc)).ultrafilter_le_nhds' (sourceLimitFilter.map ν)
+      (Ultrafilter.mem_map.2 (univ_mem' hν))
+  exact ⟨⟨level, coefficient, U, hlevel, hc, hrate, hU, hHausdorff, μ, hlim, hμ.1,
+    (FiniteMeasure.null_iff_toMeasure_null _ _).mp hμ.2⟩⟩
 
 end AngularGrid
 
@@ -164,22 +119,11 @@ theorem IsFullCapMaximizer.exists_jointSourceLimit {U : Set Plane}
     ∃ a b : ℝ, a < horizontalLeft U ∧ horizontalRight U < b ∧
       U ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1 ∧
       Nonempty (AngularGrid.SelectedJointSourceLimit U a b) := by
-  let a := horizontalLeft U - 1
-  let b := horizontalRight U + 1
   have hlr := horizontalLeft_le_horizontalRight hU.isCap.nonempty hU.isCap.isCompact
-  have hab : a ≤ b := by dsimp only [a, b]; linarith
-  have hbox : U ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1 := by
-    intro P hP
-    have hx := hU.isCap.fst_mem_Icc hP
-    refine ⟨⟨?_, ?_⟩, hU.isCap.inStrip hP⟩
-    · dsimp only [a]
-      linarith only [hx.1]
-    · dsimp only [b]
-      linarith only [hx.2]
-  refine ⟨a, b, ?_, ?_, hbox, AngularGrid.exists_selected_joint_source_limit hU hab hbox⟩
-  · dsimp only [a]
-    linarith
-  · dsimp only [b]
-    linarith
+  have hbox : U ⊆ Icc (horizontalLeft U - 1) (horizontalRight U + 1) ×ˢ Icc (0 : ℝ) 1 :=
+    fun P hP => ⟨⟨by linarith [(hU.isCap.fst_mem_Icc hP).1],
+      by linarith [(hU.isCap.fst_mem_Icc hP).2]⟩, hU.isCap.inStrip hP⟩
+  exact ⟨_, _, by linarith, by linarith, hbox,
+    AngularGrid.exists_selected_joint_source_limit hU (by linarith) hbox⟩
 
 end AmbidextrousSofa

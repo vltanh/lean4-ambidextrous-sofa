@@ -19,8 +19,7 @@ open Set
 
 namespace AmbidextrousSofa
 
-theorem rotate_rotate (θ φ : ℝ) (p : Plane) :
-    rotate θ (rotate φ p) = rotate (θ + φ) p := by
+theorem rotate_rotate (θ φ : ℝ) (p : Plane) : rotate θ (rotate φ p) = rotate (θ + φ) p := by
   apply Prod.ext <;> simp only [rotate, Real.cos_add, Real.sin_add] <;> ring
 
 theorem rotate_add_vector (θ : ℝ) (p q : Plane) :
@@ -31,12 +30,8 @@ theorem rotate_sub_vector (θ : ℝ) (p q : Plane) :
     rotate θ (p - q) = rotate θ p - rotate θ q := by
   apply Prod.ext <;> simp only [rotate, Prod.fst_sub, Prod.snd_sub] <;> ring
 
-theorem continuous_rotate (θ : ℝ) : Continuous (rotate θ) := by
-  unfold rotate
-  fun_prop
-
-theorem continuous_rigidMap (θ : ℝ) (v : Plane) : Continuous (rigidMap θ v) :=
-  (continuous_rotate θ).add continuous_const
+theorem continuous_rigidMap (θ : ℝ) (v : Plane) : Continuous (rigidMap θ v) := by
+  unfold rigidMap rotate; fun_prop
 
 /-- A coordinate rotation as a linear map, with a fixed two-vector basis. -/
 def rotationLinearMap (θ : ℝ) : Plane →ₗ[ℝ] Plane :=
@@ -44,25 +39,13 @@ def rotationLinearMap (θ : ℝ) : Plane →ₗ[ℝ] Plane :=
     !![Real.cos θ, -Real.sin θ; Real.sin θ, Real.cos θ]
 
 @[simp]
-theorem rotationLinearMap_apply (θ : ℝ) (p : Plane) :
-    rotationLinearMap θ p = rotate θ p := by
-  simp [rotationLinearMap, Matrix.toLin_finTwoProd_apply, rotate, sub_eq_add_neg]
-
-@[simp]
-theorem coe_rotationLinearMap (θ : ℝ) :
-    (rotationLinearMap θ : Plane → Plane) = rotate θ :=
-  funext (rotationLinearMap_apply θ)
+theorem coe_rotationLinearMap (θ : ℝ) : (rotationLinearMap θ : Plane → Plane) = rotate θ :=
+  funext fun p => by simp [rotationLinearMap, Matrix.toLin_finTwoProd_apply, rotate, sub_eq_add_neg]
 
 /-- The determinant calculation does not depend on the product norm. -/
 @[simp]
 theorem det_rotationLinearMap (θ : ℝ) : LinearMap.det (rotationLinearMap θ) = 1 := by
-  simp only [rotationLinearMap, LinearMap.det_toLin, Matrix.det_fin_two_of]
-  nlinarith [Real.sin_sq_add_cos_sq θ]
-
-theorem rigidMap_eq_of_rotate_eq {θ φ : ℝ} (h : rotate θ = rotate φ) (v : Plane) :
-    rigidMap θ v = rigidMap φ v := by
-  funext p
-  simp only [rigidMap, h]
+  simp [rotationLinearMap, Matrix.det_fin_two_of, ← sq]
 
 /-- Express an old path in body coordinates obtained by a fixed rigid map. -/
 def RigidMotionPath.rebase (path : RigidMotionPath) (β : ℝ) (v : Plane) :
@@ -92,25 +75,10 @@ theorem RigidMotionPath.rebase_placement (path : RigidMotionPath)
 theorem Passage.rebase {S hall incoming outgoing : Set Plane} {path : RigidMotionPath}
     (h : Passage S hall incoming outgoing path) (β : ℝ) (v : Plane) :
     Passage (rigidMap β v '' S) hall incoming outgoing (path.rebase β v) := by
-  refine ⟨?_, ?_, ?_⟩
-  · intro t ht
-    rintro _ ⟨_, ⟨p, hp, rfl⟩, rfl⟩
-    rw [RigidMotionPath.rebase_placement]
-    exact h.inside t ht ⟨p, hp, rfl⟩
-  · rintro _ ⟨_, ⟨p, hp, rfl⟩, rfl⟩
-    rw [RigidMotionPath.rebase_placement]
-    exact h.start ⟨p, hp, rfl⟩
-  · rintro _ ⟨_, ⟨p, hp, rfl⟩, rfl⟩
-    rw [RigidMotionPath.rebase_placement]
-    exact h.finish ⟨p, hp, rfl⟩
-
-theorem Passage.rebase_of_same_rotation
-    {S hall incoming outgoing : Set Plane} {path : RigidMotionPath}
-    (h : Passage S hall incoming outgoing path) {β γ : ℝ}
-    (hβγ : rotate β = rotate γ) (v : Plane) :
-    Passage (rigidMap β v '' S) hall incoming outgoing (path.rebase γ v) := by
-  rw [rigidMap_eq_of_rotate_eq hβγ]
-  exact h.rebase γ v
+  have e (t : ℝ) :
+      (path.rebase β v).placement t '' (rigidMap β v '' S) = path.placement t '' S := by
+    simp only [image_image, RigidMotionPath.rebase_placement]
+  exact ⟨fun t ht => e t ▸ h.inside t ht, e 0 ▸ h.start, e 1 ▸ h.finish⟩
 
 /-- A shared incoming placement puts the actual body in the unit strip.
 The two original translations remain independent after the change of body
@@ -124,25 +92,15 @@ theorem IsAmbidextrous.exists_normalized_passages {S : Set Plane}
         Passage T lowerHall incomingArm lowerOutgoingArm lower ∧
         Passage T upperHall incomingArm upperOutgoingArm upper := by
   obtain ⟨lower, upper, horient, hlower, hupper⟩ := hS.passages
-  let θ := lower.angle 0
-  let v := lower.shift 0
-  let T := rigidMap θ v '' S
-  let lower' := lower.rebase (lower.angle 0) v
-  let upper' := upper.rebase (upper.angle 0) v
-  have hl : Passage T lowerHall incomingArm lowerOutgoingArm lower' :=
-    hlower.rebase θ v
-  have hu : Passage T upperHall incomingArm upperOutgoingArm upper' :=
-    hupper.rebase_of_same_rotation horient v
-  have hl0 : lower'.angle 0 = 0 := lower.rebase_angle_zero v
-  have hu0 : upper'.angle 0 = 0 := upper.rebase_angle_zero v
-  have hT : IsAmbidextrous T := by
-    refine ⟨hS.nonempty.image _, hS.isCompact.image (continuous_rigidMap θ v),
-      hS.isConnected.image _ (continuous_rigidMap θ v).continuousOn,
-      lower', upper', ?_, hl, hu⟩
-    simp only [SameInitialOrientation, hl0, hu0]
-  refine ⟨θ, v, lower', upper', hT, ?_, hl0, hu0, hl, hu⟩
-  intro p hp
-  have hp' : p ∈ incomingArm := hlower.start hp
-  exact ⟨hp'.2.1, hp'.2.2⟩
+  have hrot : rigidMap (lower.angle 0) = rigidMap (upper.angle 0) := by
+    unfold rigidMap; rw [horient]
+  have hl := hlower.rebase (lower.angle 0) (lower.shift 0)
+  have hu := hupper.rebase (upper.angle 0) (lower.shift 0)
+  rw [← hrot] at hu
+  refine ⟨lower.angle 0, lower.shift 0, _, _, ⟨hS.nonempty.image _,
+    hS.isCompact.image (continuous_rigidMap _ _),
+    hS.isConnected.image _ (continuous_rigidMap _ _).continuousOn, _, _, ?_, hl, hu⟩,
+    fun _ hp => (hlower.start hp).2, lower.rebase_angle_zero _, upper.rebase_angle_zero _, hl, hu⟩
+  simp [SameInitialOrientation]
 
 end AmbidextrousSofa

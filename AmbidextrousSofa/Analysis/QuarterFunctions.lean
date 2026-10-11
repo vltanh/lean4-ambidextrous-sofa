@@ -53,10 +53,8 @@ def QuarterPair.sub (p q : QuarterPair) : QuarterPair where
   hasDeriv_g := fun t ht => (p.hasDeriv_g t ht).sub (q.hasDeriv_g t ht)
 
 theorem QuarterPair.zeroTraces_sub {p q : QuarterPair} (h : p.SameTraces q) :
-    (p.sub q).ZeroTraces := by
-  rcases h with ⟨hf0, hg0, hfL, hgL⟩
-  simp only [QuarterPair.ZeroTraces, QuarterPair.sub, hf0, hg0, hfL, hgL, sub_self,
-    and_self]
+    (p.sub q).ZeroTraces :=
+  ⟨sub_eq_zero.2 h.1, sub_eq_zero.2 h.2.1, sub_eq_zero.2 h.2.2.1, sub_eq_zero.2 h.2.2.2⟩
 
 /-- Multiplication by the half-angle rotation `exp (-i t / 2)`, written in
 real coordinates. Its derivative includes the derivative of the rotation. -/
@@ -67,26 +65,14 @@ def QuarterPair.gauge (p : QuarterPair) : QuarterPair where
     (Real.cos (t / 2) * p.g t - Real.sin (t / 2) * p.f t) / 2
   gD := fun t => Real.cos (t / 2) * p.gD t - Real.sin (t / 2) * p.fD t -
     (Real.cos (t / 2) * p.f t + Real.sin (t / 2) * p.g t) / 2
-  continuous_f := by
-    have hf := p.continuous_f
-    have hg := p.continuous_g
-    fun_prop
-  continuous_g := by
-    have hf := p.continuous_f
-    have hg := p.continuous_g
-    fun_prop
+  continuous_f := by have := p.continuous_f; have := p.continuous_g; fun_prop
+  continuous_g := by have := p.continuous_f; have := p.continuous_g; fun_prop
   continuous_fD := by
-    have hf := p.continuous_f
-    have hg := p.continuous_g
-    have hfD := p.continuous_fD
-    have hgD := p.continuous_gD
-    fun_prop
+    have := p.continuous_f; have := p.continuous_g; have := p.continuous_fD
+    have := p.continuous_gD; fun_prop
   continuous_gD := by
-    have hf := p.continuous_f
-    have hg := p.continuous_g
-    have hfD := p.continuous_fD
-    have hgD := p.continuous_gD
-    fun_prop
+    have := p.continuous_f; have := p.continuous_g; have := p.continuous_fD
+    have := p.continuous_gD; fun_prop
   hasDeriv_f := by
     intro t ht
     have hc := ((hasDerivAt_id t).div_const 2).cos.hasDerivWithinAt (s := Ioi t)
@@ -102,18 +88,12 @@ def QuarterPair.gauge (p : QuarterPair) : QuarterPair where
 
 theorem QuarterPair.gauge_zeroTraces {p : QuarterPair} (h : p.ZeroTraces) :
     p.gauge.ZeroTraces := by
-  rcases h with ⟨hf0, hg0, hfL, hgL⟩
-  simp only [QuarterPair.ZeroTraces, QuarterPair.gauge, hf0, hg0, hfL, hgL,
-    mul_zero, add_zero, sub_zero, and_self]
+  simp_all [QuarterPair.ZeroTraces, QuarterPair.gauge]
 
 theorem QuarterPair.gauge_norm_sq (p : QuarterPair) (t : ℝ) :
     p.gauge.f t ^ 2 + p.gauge.g t ^ 2 = p.f t ^ 2 + p.g t ^ 2 := by
-  change (Real.cos (t / 2) * p.f t + Real.sin (t / 2) * p.g t) ^ 2 +
-    (Real.cos (t / 2) * p.g t - Real.sin (t / 2) * p.f t) ^ 2 = _
-  calc
-    _ = (Real.sin (t / 2) ^ 2 + Real.cos (t / 2) ^ 2) *
-        (p.f t ^ 2 + p.g t ^ 2) := by ring
-    _ = _ := by rw [Real.sin_sq_add_cos_sq, one_mul]
+  dsimp only [QuarterPair.gauge]
+  linear_combination (p.f t ^ 2 + p.g t ^ 2) * Real.sin_sq_add_cos_sq (t / 2)
 
 /-- The skew derivative term becomes an ordinary Dirichlet energy after
 the half-angle rotation. This is a pointwise polynomial identity. -/
@@ -123,10 +103,7 @@ theorem QuarterPair.gauge_energy_identity (p : QuarterPair) (t : ℝ) :
       p.fD t ^ 2 + p.gD t ^ 2 - 2 * (p.f t ^ 2 + p.g t ^ 2) -
         (p.f t * p.gD t - p.g t * p.fD t) := by
   dsimp only [QuarterPair.gauge]
-  calc
-    _ = (Real.sin (t / 2) ^ 2 + Real.cos (t / 2) ^ 2) *
-        (p.fD t ^ 2 + p.gD t ^ 2 - 2 * (p.f t ^ 2 + p.g t ^ 2) -
-          (p.f t * p.gD t - p.g t * p.fD t)) := by ring
-    _ = _ := by rw [Real.sin_sq_add_cos_sq, one_mul]
+  linear_combination (p.fD t ^ 2 + p.gD t ^ 2 - 2 * (p.f t ^ 2 + p.g t ^ 2) -
+    (p.f t * p.gD t - p.g t * p.fD t)) * Real.sin_sq_add_cos_sq (t / 2)
 
 end AmbidextrousSofa.Analysis

@@ -51,112 +51,55 @@ theorem mem_referenceHull_iff (p : Plane) :
       p ∈ upperHalfPlanes t ∧ reflect p ∈ upperHalfPlanes t := by
   simp only [referenceHull, Set.mem_iInter, Set.mem_inter_iff, Set.mem_preimage]
 
-theorem reflect_center : reflect center = center := by
-  norm_num [reflect, center]
-
-theorem coordDot_center_unitNormal (t : ℝ) :
-    coordDot center (unitNormal t) = k * Real.cos t + 1 / 2 * Real.sin t := rfl
-
-theorem coordDot_center_companion (t : ℝ) :
-    coordDot center (unitNormal (t + Real.pi / 2)) =
-      -k * Real.sin t + 1 / 2 * Real.cos t := by
-  simp only [coordDot, center, unitNormal, Real.cos_add_pi_div_two,
-    Real.sin_add_pi_div_two]
-  ring
-
-theorem center_mem_upperHalfPlanes {t : ℝ}
-    (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) : center ∈ upperHalfPlanes t := by
-  constructor
-  · rw [coordDot_center_unitNormal]
-    exact referenceF_ge_center ht
-  · rw [coordDot_center_companion]
-    exact referenceG_ge_center ht
-
 /-- Nonemptiness is supplied by an explicit point, not by a realization assumption. -/
 theorem center_mem_referenceHull : center ∈ referenceHull := by
-  apply (mem_referenceHull_iff center).mpr
-  intro t ht
-  have hcenter := center_mem_upperHalfPlanes ht
-  exact ⟨hcenter, by simpa only [reflect_center] using hcenter⟩
+  have hc {t : ℝ} (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) : center ∈ upperHalfPlanes t := by
+    refine ⟨referenceF_ge_center ht, ?_⟩
+    simpa only [coordDot, center, unitNormal, Real.cos_add_pi_div_two, Real.sin_add_pi_div_two,
+      mul_neg, neg_mul] using referenceG_ge_center ht
+  have hr : reflect center = center := by norm_num [reflect, center]
+  exact (mem_referenceHull_iff center).2 fun t ht => ⟨hc ht, by rw [hr]; exact hc ht⟩
 
 theorem referenceHull_nonempty : referenceHull.Nonempty :=
   ⟨center, center_mem_referenceHull⟩
 
-theorem isClosed_upperHalfPlanes (t : ℝ) : IsClosed (upperHalfPlanes t) :=
-  (isClosed_le (continuous_coordDot_right (unitNormal t)) continuous_const).inter
-    (isClosed_le (continuous_coordDot_right (unitNormal (t + Real.pi / 2))) continuous_const)
-
-theorem convex_upperHalfPlanes (t : ℝ) : Convex ℝ (upperHalfPlanes t) :=
-  (convex_coordDot_halfspace (unitNormal t) (referenceF t)).inter
-    (convex_coordDot_halfspace (unitNormal (t + Real.pi / 2)) (referenceG t))
-
 theorem isClosed_referenceHull : IsClosed referenceHull := by
-  unfold referenceHull
-  exact isClosed_iInter fun t => isClosed_iInter fun _ =>
-    (isClosed_upperHalfPlanes t).inter
-      ((isClosed_upperHalfPlanes t).preimage continuous_reflect)
+  have h (t : ℝ) : IsClosed (upperHalfPlanes t) :=
+    (isClosed_le (continuous_coordDot_right _) continuous_const).inter
+      (isClosed_le (continuous_coordDot_right _) continuous_const)
+  exact isClosed_biInter fun t _ => (h t).inter ((h t).preimage continuous_reflect)
 
 theorem convex_referenceHull : Convex ℝ referenceHull := by
-  unfold referenceHull
-  exact convex_iInter fun t => convex_iInter fun _ =>
-    (convex_upperHalfPlanes t).inter
-      (convex_preimage_reflect (convex_upperHalfPlanes t))
+  have h (t : ℝ) : Convex ℝ (upperHalfPlanes t) :=
+    (convex_coordDot_halfspace _ _).inter (convex_coordDot_halfspace _ _)
+  exact convex_iInter₂ fun t _ => (h t).inter (convex_preimage_reflect (h t))
 
 /-- Endpoint normals give an actual closed rectangle containing the intersection. -/
-theorem referenceHull_subset_box : referenceHull ⊆ referenceBox := by
-  intro p hp
-  have hzero := (mem_referenceHull_iff p).mp hp 0
-    ⟨le_rfl, le_of_lt (by linarith [Real.pi_pos])⟩
-  have htop := (mem_referenceHull_iff p).mp hp (Real.pi / 2)
-    ⟨le_of_lt (by linarith [Real.pi_pos]), le_rfl⟩
-  have hxright : p.1 ≤ 1 := by
-    simpa only [coordDot, unitNormal, Real.cos_zero, Real.sin_zero,
-      mul_one, mul_zero, add_zero, referenceF_zero] using hzero.1.1
-  have hytop : p.2 ≤ 1 := by
-    simpa only [zero_add, coordDot, unitNormal, Real.cos_pi_div_two,
-      Real.sin_pi_div_two, mul_zero, mul_one, referenceG_zero] using hzero.1.2
-  have hybottom : 0 ≤ p.2 := by
-    have hreflect : 1 - p.2 ≤ 1 := by
-      simpa only [zero_add, coordDot, unitNormal, reflect, Real.cos_pi_div_two,
-        Real.sin_pi_div_two, mul_zero, mul_one, referenceG_zero] using hzero.2.2
-    linarith
-  have hxleft : 1 - 8 / 3 * A ≤ p.1 := by
-    have hangle : Real.pi / 2 + Real.pi / 2 = Real.pi := by ring
-    have hleft : -p.1 ≤ 8 / 3 * A - 1 := by
-      simpa only [hangle, coordDot, unitNormal, Real.cos_pi, Real.sin_pi,
-        mul_neg_one, mul_zero, add_zero, referenceG_pi_div_two] using htop.1.2
-    linarith
-  exact ⟨⟨hxleft, hxright⟩, ⟨hybottom, hytop⟩⟩
+theorem referenceHull_subset_box : referenceHull ⊆ referenceBox := fun p hp => by
+  have h0 := (mem_referenceHull_iff p).1 hp 0 ⟨le_rfl, by positivity⟩
+  have h1 := ((mem_referenceHull_iff p).1 hp (Real.pi / 2) ⟨by positivity, le_rfl⟩).1.2
+  simp only [upperHalfPlanes, mem_ofPred_eq, coordDot, unitNormal, reflect, zero_add, add_halves,
+    Real.cos_zero, Real.sin_zero, Real.cos_pi_div_two, Real.sin_pi_div_two, Real.cos_pi,
+    Real.sin_pi, mul_one, mul_zero, add_zero, mul_neg, referenceF_zero, referenceG_zero,
+    referenceG_pi_div_two] at h0 h1
+  exact ⟨⟨by linarith, h0.1.1⟩, by linarith, h0.1.2⟩
 
-theorem referenceHull_subset_unitStrip : referenceHull ⊆ unitStrip := by
-  intro p hp
-  exact (referenceHull_subset_box hp).2
-
-theorem isCompact_referenceBox : IsCompact referenceBox := isCompact_Icc.prod isCompact_Icc
+theorem referenceHull_subset_unitStrip : referenceHull ⊆ unitStrip :=
+  fun _ hp => (referenceHull_subset_box hp).2
 
 /-- Compactness follows from closedness and the proved coordinate bounds. -/
 theorem isCompact_referenceHull : IsCompact referenceHull :=
-  isCompact_referenceBox.of_isClosed_subset isClosed_referenceHull referenceHull_subset_box
+  (isCompact_Icc.prod isCompact_Icc).of_isClosed_subset isClosed_referenceHull
+    referenceHull_subset_box
 
 /-- Reflection exchanges the two retained members of each half-plane family. -/
 theorem reflect_mem_referenceHull (p : Plane) :
     reflect p ∈ referenceHull ↔ p ∈ referenceHull := by
-  rw [mem_referenceHull_iff, mem_referenceHull_iff]
-  constructor
-  · intro h t ht
-    have hp := h t ht
-    exact ⟨by simpa only [reflect_reflect] using hp.2, hp.1⟩
-  · intro h t ht
-    have hp := h t ht
-    exact ⟨hp.2, by simpa only [reflect_reflect] using hp.1⟩
-
-theorem preimage_reflect_referenceHull : reflect ⁻¹' referenceHull = referenceHull := by
-  ext p
-  exact reflect_mem_referenceHull p
+  simp only [mem_referenceHull_iff, reflect_reflect, and_comm]
 
 /-- Literal set symmetry, including every boundary point. -/
-theorem image_reflect_referenceHull : reflect '' referenceHull = referenceHull := by
-  rw [image_reflect_eq_preimage, preimage_reflect_referenceHull]
+theorem image_reflect_referenceHull : reflect '' referenceHull = referenceHull :=
+  (image_reflect_eq_preimage _).trans (ext reflect_mem_referenceHull)
 
 /-- The actual upper cap meets the broad intrinsic cap definition. -/
 theorem isDownwardCap_referenceCap : IsDownwardCap referenceCap :=
@@ -164,37 +107,33 @@ theorem isDownwardCap_referenceCap : IsDownwardCap referenceCap :=
     convex_referenceHull referenceHull_subset_unitStrip
 
 theorem referenceHull_subset_referenceCap : referenceHull ⊆ referenceCap :=
-  subset_upperCap (fun p hp => (referenceHull_subset_unitStrip hp).1)
+  subset_upperCap (fun _ hp => (referenceHull_subset_unitStrip hp).1)
 
 theorem horizontalProjection_referenceCap :
     horizontalProjection referenceCap = horizontalProjection referenceHull :=
-  horizontalProjection_upperCap (fun p hp => (referenceHull_subset_unitStrip hp).1)
+  horizontalProjection_upperCap (fun _ hp => (referenceHull_subset_unitStrip hp).1)
 
 /-- Symmetry and convexity recover this hull from its actual downward cap. -/
 theorem referenceHull_eq_inter_caps : referenceHull = referenceCap ∩ reflect '' referenceCap := by
-  have h := eq_upperCap_inter_reflectedCap convex_referenceHull referenceHull_subset_unitStrip
-  simpa only [image_reflect_referenceHull, referenceCap] using h
+  simpa only [image_reflect_referenceHull, referenceCap] using
+    eq_upperCap_inter_reflectedCap convex_referenceHull referenceHull_subset_unitStrip
 
 /-- Prescribed support is an upper bound; the converse is not assumed. -/
 theorem angleSupport_referenceHull_le_f {t : ℝ}
     (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) :
-    angleSupport referenceHull t ≤ referenceF t := by
-  apply support_le_of_forall referenceHull_nonempty
-  intro p hp
-  exact ((mem_referenceHull_iff p).mp hp t ht).1.1
+    angleSupport referenceHull t ≤ referenceF t :=
+  support_le_of_forall referenceHull_nonempty fun p hp => ((mem_referenceHull_iff p).1 hp t ht).1.1
 
 /-- The companion upper bound retains the complete second quarter. -/
 theorem angleSupport_referenceHull_le_g {t : ℝ}
     (ht : t ∈ Icc (0 : ℝ) (Real.pi / 2)) :
-    angleSupport referenceHull (t + Real.pi / 2) ≤ referenceG t := by
-  apply support_le_of_forall referenceHull_nonempty
-  intro p hp
-  exact ((mem_referenceHull_iff p).mp hp t ht).1.2
+    angleSupport referenceHull (t + Real.pi / 2) ≤ referenceG t :=
+  support_le_of_forall referenceHull_nonempty fun p hp => ((mem_referenceHull_iff p).1 hp t ht).1.2
 
 /-- Downward filling preserves actual upward support of the constructed hull. -/
 theorem angleSupport_referenceCap {t : ℝ} (ht : 0 ≤ Real.sin t) :
     angleSupport referenceCap t = angleSupport referenceHull t :=
   angleSupport_upperCap isCompact_referenceHull referenceHull_nonempty
-    (fun p hp => (referenceHull_subset_unitStrip hp).1) ht
+    (fun _ hp => (referenceHull_subset_unitStrip hp).1) ht
 
 end AmbidextrousSofa.Reference

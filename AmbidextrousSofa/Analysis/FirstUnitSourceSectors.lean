@@ -21,45 +21,6 @@ open Set Filter MeasureTheory
 
 namespace AmbidextrousSofa.Analysis
 
-theorem firstUnit_initial_source_of_common_balance
-    {p q u v b δ χ : ℝ} (hq : 0 < q) (hb : 0 ≤ b) (hχ : 0 ≤ χ)
-    (hu0 : u = 0) (hu : u = (1 - u) * b + q * χ)
-    (hv : v = (1 - v) * δ - p * χ) : u = 0 ∧ v = (1 - v) * δ := by
-  have heq : 0 = b + q * χ := by
-    simpa only [hu0, sub_zero, one_mul] using hu
-  have hprod : 0 ≤ q * χ := mul_nonneg hq.le hχ
-  have hprod0 : q * χ = 0 := by linarith only [heq, hb, hprod]
-  have hχ0 : χ = 0 := (mul_eq_zero.mp hprod0).resolve_left hq.ne'
-  exact ⟨hu0, by simpa only [hχ0, mul_zero, sub_zero] using hv⟩
-
-theorem firstUnit_negative_source_coefficients_zero
-    {p v δ χ : ℝ} (hp : p < 0) (hδ : 0 ≤ δ) (hχ : 0 ≤ χ)
-    (hv0 : v = 0) (hv : v = (1 - v) * δ - p * χ) : δ = 0 ∧ χ = 0 := by
-  have heq : 0 = δ - p * χ := by
-    simpa only [hv0, sub_zero, one_mul] using hv
-  have hprod : 0 ≤ (-p) * χ := mul_nonneg (neg_nonneg.mpr hp.le) hχ
-  have hprod0 : (-p) * χ = 0 := by nlinarith only [heq, hδ, hprod]
-  have hχ0 : χ = 0 := (mul_eq_zero.mp hprod0).resolve_left (neg_pos.mpr hp).ne'
-  have hδ0 : δ = 0 := by simpa only [hχ0, mul_zero, sub_zero] using heq.symm
-  exact ⟨hδ0, hχ0⟩
-
-theorem firstUnit_late_charged_source_of_common_balance
-    {p q u v b δ χ : ℝ} (hp : p < 0) (hδ : 0 ≤ δ) (hχ : 0 ≤ χ)
-    (hb : b = 1) (hv0 : v = 0)
-    (hu : u = (1 - u) * b + q * χ) (hv : v = (1 - v) * δ - p * χ) :
-    u = 1 / 2 ∧ v = 0 := by
-  have hzero := firstUnit_negative_source_coefficients_zero hp hδ hχ hv0 hv
-  rw [hb, hzero.2, mul_one, mul_zero, add_zero] at hu
-  exact ⟨by linarith only [hu], hv0⟩
-
-theorem firstUnit_final_source_of_common_balance
-    {p q u v b δ χ : ℝ} (hp : p < 0) (hδ : 0 ≤ δ) (hχ : 0 ≤ χ)
-    (hb : b = 0) (hv0 : v = 0)
-    (hu : u = (1 - u) * b + q * χ) (hv : v = (1 - v) * δ - p * χ) :
-    u = 0 ∧ v = 0 := by
-  have hzero := firstUnit_negative_source_coefficients_zero hp hδ hχ hv0 hv
-  exact ⟨by simpa only [hb, hzero.2, mul_zero, add_zero] using hu, hv0⟩
-
 /-- The exact five sectors follow from the common balance and the
 actual charged first-tangent indicator. Corner visibility is used only
 on the charged part of the positive core. -/
@@ -86,64 +47,42 @@ theorem firstUnit_source_sectors_of_common_balance
       u t = q t * χ t ∧ v t = (1 - v t) * δ t - p t * χ t) ∧
     (∀ᵐ t ∂volume.restrict (Icc η (max β η)), u t = 1 / 2 ∧ v t = 0) ∧
     (∀ᵐ t ∂volume.restrict (Icc (max β η) L), u t = 0 ∧ v t = 0) := by
-  have h0α : 0 ≤ α := hphase.first_mem.1.le
-  have h0η : 0 ≤ η := (hphase.first_mem.1.trans hphase.second_mem.1).le
-  have hmaxL : max β η ≤ L := max_le hβL hphase.second_mem.2.le
-  have hchargedGlobal := (ae_restrict_iff' measurableSet_Ioo).mp hcharged
-  have hafterGlobal := (ae_restrict_iff' measurableSet_Ioo).mp hafter
-  refine ⟨?_, ?_, ?_, ?_, ?_⟩
-  · rw [← restrict_Ioo_eq_restrict_Icc]
-    have hsub : Ioo (0 : ℝ) α ⊆ Ioo (0 : ℝ) L :=
-      Ioo_subset_Ioo le_rfl hphase.first_mem.2.le
-    filter_upwards [ae_restrict_mem measurableSet_Ioo,
-      ae_restrict_of_ae_restrict_of_subset hsub hbalance,
-      ae_restrict_of_ae_restrict_of_subset hsub hnonneg,
-      ae_restrict_of_ae_restrict_of_subset hsub hfirstShadow] with t ht hs hn hz
-    have hsign := hphase.initial_signs t ⟨ht.1.le, ht.2⟩
-    exact firstUnit_initial_source_of_common_balance hsign.2 hn.1 hn.2.2
-      (hz hsign.1 hsign.2) hs.1 hs.2
-  · rw [← restrict_Ioo_eq_restrict_Icc]
-    have hsub : Ioo α (min β η) ⊆ Ioo (0 : ℝ) L :=
-      Ioo_subset_Ioo h0α ((min_le_right _ _).trans hphase.second_mem.2.le)
-    filter_upwards [ae_restrict_mem measurableSet_Ioo,
-      ae_restrict_of_ae_restrict_of_subset hsub hbalance,
-      ae_restrict_of_ae hchargedGlobal, hvisible] with t ht hs hb hχ
-    have hb1 := hb ⟨ht.1, ht.2.trans_le (min_le_left _ _)⟩
-    simpa only [hb1, hχ, mul_one] using hs
-  · rw [← restrict_Ioo_eq_restrict_Icc]
-    have hsub : Ioo (min β η) η ⊆ Ioo (0 : ℝ) L :=
-      Ioo_subset_Ioo (le_min (h0α.trans hαβ) h0η) hphase.second_mem.2.le
-    filter_upwards [ae_restrict_mem measurableSet_Ioo,
-      ae_restrict_of_ae_restrict_of_subset hsub hbalance,
-      ae_restrict_of_ae hafterGlobal] with t ht hs hb
-    have hβt : β < t := by
-      by_contra hnot
-      exact (not_le_of_gt ht.1) (le_min (le_of_not_gt hnot) ht.2.le)
-    have hb0 := hb ⟨hβt, ht.2.trans hphase.second_mem.2⟩
-    simpa only [hb0, mul_zero, zero_add] using hs
-  · rw [← restrict_Ioo_eq_restrict_Icc]
-    have hsub : Ioo η (max β η) ⊆ Ioo (0 : ℝ) L := Ioo_subset_Ioo h0η hmaxL
-    filter_upwards [ae_restrict_mem measurableSet_Ioo,
-      ae_restrict_of_ae_restrict_of_subset hsub hbalance,
-      ae_restrict_of_ae_restrict_of_subset hsub hnonneg,
-      ae_restrict_of_ae_restrict_of_subset hsub hsecondShadow,
-      ae_restrict_of_ae hchargedGlobal] with t ht hs hn hz hb
-    have htβ : t < β := by
-      by_contra hnot
-      exact (not_le_of_gt ht.2) (max_le (le_of_not_gt hnot) ht.1.le)
-    have hsign := hphase.final_signs t ⟨ht.1, ht.2.le.trans hmaxL⟩
-    exact firstUnit_late_charged_source_of_common_balance hsign.1 hn.2.1 hn.2.2
-      (hb ⟨hphase.second_mem.1.trans ht.1, htβ⟩) (hz hsign.1 hsign.2) hs.1 hs.2
-  · rw [← restrict_Ioo_eq_restrict_Icc]
-    have hsub : Ioo (max β η) L ⊆ Ioo (0 : ℝ) L :=
-      Ioo_subset_Ioo (h0η.trans (le_max_right _ _)) le_rfl
-    filter_upwards [ae_restrict_mem measurableSet_Ioo,
-      ae_restrict_of_ae_restrict_of_subset hsub hbalance,
-      ae_restrict_of_ae_restrict_of_subset hsub hnonneg,
-      ae_restrict_of_ae_restrict_of_subset hsub hsecondShadow,
-      ae_restrict_of_ae hafterGlobal] with t ht hs hn hz hb
-    have hsign := hphase.final_signs t ⟨(le_max_right _ _).trans_lt ht.1, ht.2.le⟩
-    exact firstUnit_final_source_of_common_balance hsign.1 hn.2.1 hn.2.2
-      (hb ⟨(le_max_left _ _).trans_lt ht.1, ht.2⟩) (hz hsign.1 hsign.2) hs.1 hs.2
+  obtain ⟨h0α, hαL⟩ := hphase.first_mem
+  obtain ⟨hαη, hηL⟩ := hphase.second_mem
+  have hmaxL : max β η ≤ L := max_le hβL hηL.le
+  have hall := (ae_restrict_iff' measurableSet_Ioo).mp
+    (hbalance.and (hnonneg.and (hfirstShadow.and hsecondShadow)))
+  have hC := (ae_restrict_iff' measurableSet_Ioo).mp hcharged
+  have hA := (ae_restrict_iff' measurableSet_Ioo).mp hafter
+  have hV := (ae_restrict_iff' measurableSet_Ioo).mp hvisible
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> rw [← restrict_Ioo_eq_restrict_Icc] <;>
+    filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hall,
+      ae_restrict_of_ae hC, ae_restrict_of_ae hA, ae_restrict_of_ae hV]
+      with t ht hk hb1 hb0 hχ1
+  · obtain ⟨⟨hu, hv⟩, ⟨hb, -, hχ⟩, hz, -⟩ := hk ⟨ht.1, ht.2.trans hαL⟩
+    obtain ⟨hp, hq⟩ := hphase.initial_signs t ⟨ht.1.le, ht.2⟩
+    rw [hz hp hq] at hu ⊢
+    have hχ0 : χ t = 0 := by nlinarith only [hu, hb, hχ, hq]
+    exact ⟨rfl, by simpa only [hχ0, mul_zero, sub_zero] using hv⟩
+  · simpa only [hb1 ⟨ht.1, ht.2.trans_le (min_le_left _ _)⟩, hχ1 ht, mul_one] using
+      (hk ⟨h0α.trans ht.1, ht.2.trans_le ((min_le_right _ _).trans hηL.le)⟩).1
+  · have hβt : β < t := (min_lt_iff.mp ht.1).resolve_right (not_lt.mpr ht.2.le)
+    simpa only [hb0 ⟨hβt, ht.2.trans hηL⟩, mul_zero, zero_add] using
+      (hk ⟨(h0α.trans_le hαβ).trans hβt, ht.2.trans hηL⟩).1
+  · obtain ⟨⟨hu, hv⟩, ⟨-, hδ, hχ⟩, -, hz⟩ :=
+      hk ⟨(h0α.trans hαη).trans ht.1, ht.2.trans_le hmaxL⟩
+    obtain ⟨hp, hq⟩ := hphase.final_signs t ⟨ht.1, ht.2.le.trans hmaxL⟩
+    rw [hz hp hq] at hv ⊢
+    have hχ0 : χ t = 0 := by nlinarith only [hv, hδ, hχ, hp]
+    rw [hb1 ⟨hαη.trans ht.1, (lt_max_iff.mp ht.2).resolve_right (not_lt.mpr ht.1.le)⟩,
+      hχ0] at hu
+    exact ⟨by linarith only [hu], rfl⟩
+  · have hηt := (le_max_right β η).trans_lt ht.1
+    obtain ⟨⟨hu, hv⟩, ⟨-, hδ, hχ⟩, -, hz⟩ := hk ⟨(h0α.trans hαη).trans hηt, ht.2⟩
+    obtain ⟨hp, hq⟩ := hphase.final_signs t ⟨hηt, ht.2.le⟩
+    rw [hz hp hq] at hv ⊢
+    have hχ0 : χ t = 0 := by nlinarith only [hv, hδ, hχ, hp]
+    rw [hb0 ⟨(le_max_left β η).trans_lt ht.1, ht.2⟩, hχ0] at hu
+    exact ⟨by linarith only [hu], rfl⟩
 
 end AmbidextrousSofa.Analysis

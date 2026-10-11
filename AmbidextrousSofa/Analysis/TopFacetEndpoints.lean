@@ -24,8 +24,7 @@ namespace AmbidextrousSofa
 theorem roofChord_eq_affine {f : ℝ → ℝ} {a b m c : ℝ} (hab : a < b)
     (ha : f a = m * a + c) (hb : f b = m * b + c) (x : ℝ) :
     roofChord f a b x = m * x + c := by
-  unfold roofChord
-  rw [ha, hb]
+  rw [roofChord, ha, hb]
   field_simp [(sub_pos.mpr hab).ne']
   ring
 
@@ -35,49 +34,31 @@ theorem IsFullCapMaximizer.middle_right_eq_one_of_affine_nonneg
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
     capRoof U (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4) = 1 := by
-  let l := horizontalLeft U
-  let r := horizontalRight U
-  let a := l + (r - l) / 4
-  let b := r - (r - l) / 4
-  have hlr : l < r := by
-    have hw := hU.width_bounds.1
-    change M ≤ r - l at hw
-    linarith [one_lt_M]
-  have hab : a < b := by dsimp [a, b]; linarith
-  have hla : l ≤ a := by dsimp [a]; linarith
-  have hbr : b ≤ r := by dsimp [b]; linarith
-  have hproj : horizontalProjection U = Icc l r :=
-    horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact hU.isCap.convex
-  have hbU : b ∈ horizontalProjection U := by
-    rw [hproj]
-    exact ⟨hla.trans hab.le, hbr⟩
-  have hA : capRoof U a = m * a + c := haffine a ⟨le_rfl, hab.le⟩
-  have hB : capRoof U b = m * b + c := haffine b ⟨hab.le, le_rfl⟩
-  apply le_antisymm (capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _)
-  by_contra h
-  have hlow : capRoof U b < 1 := lt_of_not_ge h
+  set l := horizontalLeft U
+  set r := horizontalRight U
+  have hw : M ≤ r - l := hU.width_bounds.1
+  have hab : l + (r - l) / 4 < r - (r - l) / 4 := by linarith [one_lt_M]
+  have hbU : r - (r - l) / 4 ∈ horizontalProjection U := by
+    rw [horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact hU.isCap.convex]
+    constructor <;> linarith [one_lt_M]
+  have hA := haffine _ ⟨le_rfl, hab.le⟩
+  have hB := haffine _ ⟨hab.le, le_rfl⟩
+  refine le_antisymm (capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _)
+    (not_lt.mp fun hlow => ?_)
+  -- A highest point of the cap lies at or to the right of the middle's right endpoint.
   obtain ⟨q, hq, hqH⟩ := exists_coordDot_eq_support hU.isCap.isCompact hU.isCap.nonempty (0, 1)
-  have hqone : q.2 = 1 := by
-    change q.1 * 0 + q.2 * 1 = capHeight U at hqH
-    simpa only [mul_zero, mul_one, zero_add, hheight] using hqH
-  have hqroof : 1 ≤ capRoof U q.1 := by
-    rw [← hqone]
-    exact le_capRoof hU.isCap.isCompact (by simpa only [Prod.mk.eta] using hq)
-  have hbq : b ≤ q.1 := by
-    by_contra hnot
-    have hqb : q.1 ≤ b := (lt_of_not_ge hnot).le
+  have hqone : q.2 = 1 := by simpa [coordDot] using hqH.trans hheight
+  have hbq : r - (r - l) / 4 ≤ q.1 := by
+    by_contra! hqb
     have hline : capRoof U q.1 ≤ m * q.1 + c := by
-      by_cases hqa : q.1 ≤ a
-      · have hchord := ConcaveOn.le_roofChord_of_le hU.isCap.concaveOn_capRoof
-          (show q.1 ∈ horizontalProjection U from ⟨q, hq, rfl⟩) hbU hab hqa
-        rwa [roofChord_eq_affine hab hA hB] at hchord
-      · exact (haffine q.1 ⟨le_of_not_ge hqa, hqb⟩).le
-    have hproduct := mul_nonneg hm (sub_nonneg.mpr hqb)
-    rw [hB] at hlow
-    nlinarith
-  have htop : (q.1, 1) ∈ U := by simpa only [← hqone, Prod.mk.eta] using hq
-  have heq := hU.middle_right_eq_one_of_top_right htop hbq
-  exact (ne_of_lt hlow) heq
+      rcases le_or_gt q.1 (l + (r - l) / 4) with hqa | hqa
+      · simpa only [roofChord_eq_affine hab hA hB] using
+          ConcaveOn.le_roofChord_of_le hU.isCap.concaveOn_capRoof ⟨q, hq, rfl⟩ hbU hab hqa
+      · exact (haffine q.1 ⟨hqa.le, hqb.le⟩).le
+    linarith [hqone.ge.trans (le_capRoof hU.isCap.isCompact hq),
+      mul_nonneg hm (sub_nonneg.mpr hqb.le)]
+  exact hlow.ne (hU.middle_right_eq_one_of_top_right
+    (by simpa only [← hqone, Prod.mk.eta] using hq) hbq)
 
 theorem IsFullCapMaximizer.middle_left_eq_one_of_affine_nonpos
     {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1)
@@ -85,27 +66,15 @@ theorem IsFullCapMaximizer.middle_left_eq_one_of_affine_nonpos
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
     capRoof U (horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4) = 1 := by
-  have hV := hU.horizontalMirror
-  have hheightV : capHeight (AmbidextrousSofa.horizontalMirror U) = 1 := by
-    rw [capHeight_horizontalMirror, hheight]
-  have haffineV : ∀ x ∈ middleHalfInterval
-      (horizontalLeft (AmbidextrousSofa.horizontalMirror U)) (horizontalRight (AmbidextrousSofa.horizontalMirror U)),
-      capRoof (AmbidextrousSofa.horizontalMirror U) x = (-m) * x + c := by
-    intro x hx
-    rw [horizontalLeft_horizontalMirror hU.isCap,
-      horizontalRight_horizontalMirror hU.isCap] at hx
-    rw [capRoof_horizontalMirror, haffine (-x) (by
-      change -horizontalRight U + (-horizontalLeft U - -horizontalRight U) / 4 ≤ x ∧
-        x ≤ -horizontalLeft U - (-horizontalLeft U - -horizontalRight U) / 4 at hx
-      change horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4 ≤ -x ∧
-        -x ≤ horizontalRight U - (horizontalRight U - horizontalLeft U) / 4
-      constructor <;> linarith [hx.1, hx.2])]
-    ring
-  have heq := hV.middle_right_eq_one_of_affine_nonneg hheightV (neg_nonneg.mpr hm) haffineV
-  rw [horizontalLeft_horizontalMirror hU.isCap,
-    horizontalRight_horizontalMirror hU.isCap, capRoof_horizontalMirror] at heq
-  convert heq using 1
-  congr 1
+  have heq := hU.horizontalMirror.middle_right_eq_one_of_affine_nonneg
+    (by rw [capHeight_horizontalMirror, hheight]) (neg_nonneg.mpr hm) (c := c) fun x hx => by
+      rw [horizontalLeft_horizontalMirror hU.isCap, horizontalRight_horizontalMirror hU.isCap]
+        at hx
+      rw [capRoof_horizontalMirror, haffine (-x) ⟨by linarith [hx.2], by linarith [hx.1]⟩]
+      ring
+  rw [horizontalLeft_horizontalMirror hU.isCap, horizontalRight_horizontalMirror hU.isCap,
+    capRoof_horizontalMirror] at heq
+  convert heq using 2
   ring
 
 end AmbidextrousSofa

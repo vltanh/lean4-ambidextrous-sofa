@@ -15,9 +15,7 @@ The final lower bounds have no supplied contact, occupation, or flux
 certificate. The charged bound stops at the actual middle crossing.
 -/
 
-noncomputable section
-
-open Set Filter MeasureTheory
+open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
@@ -31,14 +29,10 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
   (heq : (upperCurvature U).restrict (regularCurvatureDomain m) =
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
+set_option quotPrecheck false
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-set_option quotPrecheck false in
 local notation "B" => firstTangentPoint (F).f (F).fD
-set_option quotPrecheck false in
-local notation "Z" => innerCornerPoint (F).f (F).g
-set_option quotPrecheck false in
 local notation "p" => supportP (F).fD (F).g
-set_option quotPrecheck false in
 local notation "q" => supportQ (F).gD (F).f
 local notation "v" => (fun t : ℝ => leftCompanionWingDensity m ρ (t + Real.pi / 2))
 
@@ -52,22 +46,14 @@ theorem fullTiltedSupportQuarterPair_core_prefix_regular {C h α τ : ℝ}
     (hphase : ∀ r ∈ Ioo α τ, p r < 0 ∧ 0 < q r)
     (hcompanion : ∀ᵐ r ∂volume.restrict (Ioo 0 τ), v r ≤ 1) :
     Ioo α τ ⊆ regularCornerDomain m := by
-  have hmidR : horizontalRight U - capWidth U / 4 = C := by
-    unfold capWidth
-    rw [hl, hr]
-    ring
-  have hhigh' : capRoof U (horizontalRight U - capWidth U / 4) = 1 := by
-    rwa [hmidR]
+  have hmidR : horizontalRight U - capWidth U / 4 = C := by rw [capWidth, hl, hr]; ring
   intro t ht
   have htq : t ∈ Ioo (0 : ℝ) (Real.pi / 2) := ⟨hα.trans_lt ht.1, ht.2.trans_le hτ.2⟩
   have hgeometry := fullTiltedSupportQuarterPair_core_geometry hU hm haffine hρ hρ0 hρK heq
     hl hr hC0 hC1 hh hmpos hheight hlow hunit hα hτ hpα hphase hcompanion ht
-  have hx : (Z t).1 ≤ horizontalRight U - capWidth U / 4 := by
-    rw [hmidR]
-    exact hgeometry.1.2.le
   exact mem_regularCornerDomain_of_after_nonneg_affine hm htq
-    (fullTiltedSupportQuarterPair_positive_core_after_affine
-      hU hm haffine hρ hρ0 hρK heq hhigh' htq hgeometry.2.1 hx)
+    (fullTiltedSupportQuarterPair_positive_core_after_affine hU hm haffine hρ hρ0 hρK heq
+      (hmidR ▸ hhigh) htq hgeometry.2.1 (hmidR ▸ hgeometry.1.2.le))
 
 theorem fullTiltedSupportQuarterPair_ae_first_density_ge_core_on_prefix {C h α τ : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
@@ -78,15 +64,13 @@ theorem fullTiltedSupportQuarterPair_ae_first_density_ge_core_on_prefix {C h α 
     (hα : 0 ≤ α) (hτ : τ ∈ Icc 0 (Real.pi / 2)) (hpα : p α = 0)
     (hphase : ∀ r ∈ Ioo α τ, p r < 0 ∧ 0 < q r)
     (hcompanion : ∀ᵐ r ∂volume.restrict (Ioo 0 τ), v r ≤ 1) :
-    ∀ᵐ t ∂volume.restrict (Ioo α τ), q t ≤ ρ t := by
-  apply fullTiltedSupportQuarterPair_ae_first_density_ge_core
-    hU hm haffine hρ hρ0 hρK heq hheight
+    ∀ᵐ t ∂volume.restrict (Ioo α τ), q t ≤ ρ t :=
+  fullTiltedSupportQuarterPair_ae_first_density_ge_core hU hm haffine hρ hρ0 hρK heq hheight
     (fullTiltedSupportQuarterPair_core_prefix_regular hU hm haffine hρ hρ0 hρK heq
       hl hr hC0 hC1 hh hmpos hheight hlow hhigh hunit hα hτ hpα hphase hcompanion)
-  intro s t hαs hst htτ
-  exact fullTiltedSupportQuarterPair_first_source_core_piece hU hm haffine hρ hρ0 hρK heq
-    hl hr hC0 hC1 hh hmpos hheight hlow hunit hα hτ hpα hphase hcompanion
-    ⟨hαs, hst.trans htτ⟩ ⟨hαs.trans hst, htτ⟩ hst
+    fun _ _ hαs hst htτ => fullTiltedSupportQuarterPair_first_source_core_piece hU hm haffine
+      hρ hρ0 hρK heq hl hr hC0 hC1 hh hmpos hheight hlow hunit hα hτ hpα hphase hcompanion
+      ⟨hαs, hst.trans htτ⟩ ⟨hαs.trans hst, htτ⟩ hst
 
 theorem fullTiltedSupportQuarterPair_ae_first_density_ge_charged_on_prefix {C h α τ β : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
@@ -98,18 +82,16 @@ theorem fullTiltedSupportQuarterPair_ae_first_density_ge_charged_on_prefix {C h 
     (hphase : ∀ r ∈ Ioo α τ, p r < 0 ∧ 0 < q r)
     (hcompanion : ∀ᵐ r ∂volume.restrict (Ioo 0 τ), v r ≤ 1)
     (hβ : β ∈ Icc 0 (Real.pi / 2)) (hβx : (B β).1 = C) :
-    ∀ᵐ t ∂volume.restrict (Ioo α (min β τ)), 1 + q t ≤ 2 * ρ t := by
-  have hregular := fullTiltedSupportQuarterPair_core_prefix_regular hU hm haffine hρ hρ0 hρK heq
-    hl hr hC0 hC1 hh hmpos hheight hlow hhigh hunit hα hτ hpα hphase hcompanion
-  apply fullTiltedSupportQuarterPair_ae_first_density_ge_charged
-    hU hm haffine hρ hρ0 hρK heq hheight
-    (fun t ht => hregular ⟨ht.1, ht.2.trans_le (min_le_right _ _)⟩)
-  intro s t hαs hst htb
-  have htτ : t < τ := htb.trans_le (min_le_right _ _)
-  have htβ : t ≤ β := htb.le.trans (min_le_left _ _)
-  exact fullTiltedSupportQuarterPair_first_source_charged_pieces hU hm haffine hρ hρ0 hρK heq
-    hl hr hC0 hC1 hh hmpos hheight hlow hunit hα hτ hpα hphase hcompanion hβ hβx
-    ⟨hαs, hst.trans htτ⟩ ⟨hαs.trans hst, htτ⟩ hst htβ
+    ∀ᵐ t ∂volume.restrict (Ioo α (min β τ)), 1 + q t ≤ 2 * ρ t :=
+  fullTiltedSupportQuarterPair_ae_first_density_ge_charged hU hm haffine hρ hρ0 hρK heq hheight
+    ((Ioo_subset_Ioo_right (min_le_right _ _)).trans
+      (fullTiltedSupportQuarterPair_core_prefix_regular hU hm haffine hρ hρ0 hρK heq
+        hl hr hC0 hC1 hh hmpos hheight hlow hhigh hunit hα hτ hpα hphase hcompanion))
+    fun _ _ hαs hst htb =>
+      have htτ := htb.trans_le (min_le_right _ _)
+      fullTiltedSupportQuarterPair_first_source_charged_pieces hU hm haffine hρ hρ0 hρK heq
+        hl hr hC0 hC1 hh hmpos hheight hlow hunit hα hτ hpα hphase hcompanion hβ hβx
+        ⟨hαs, hst.trans htτ⟩ ⟨hαs.trans hst, htτ⟩ hst (htb.le.trans (min_le_left _ _))
 
 end ActualPair
 

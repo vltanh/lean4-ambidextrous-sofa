@@ -28,17 +28,13 @@ theorem abs_coordDot_unitNormal_le_box {a b : ℝ} {p : Plane}
   have hx : |p.1| ≤ |a| + |b| := abs_le.mpr
     ⟨by linarith [hp.1.1, neg_abs_le a, abs_nonneg b],
       by linarith [hp.1.2, le_abs_self b, abs_nonneg a]⟩
-  have hy : |p.2| ≤ 1 := by rw [abs_of_nonneg hp.2.1]; exact hp.2.2
-  calc
-    |coordDot p (unitNormal t)| ≤
-        |p.1| * |Real.cos t| + |p.2| * |Real.sin t| := by
-      simpa only [coordDot, unitNormal, abs_mul] using
-        abs_add_le (p.1 * Real.cos t) (p.2 * Real.sin t)
-    _ ≤ |p.1| + |p.2| := by
-      have hc := mul_le_mul_of_nonneg_left (Real.abs_cos_le_one t) (abs_nonneg p.1)
-      have hs := mul_le_mul_of_nonneg_left (Real.abs_sin_le_one t) (abs_nonneg p.2)
-      simpa only [mul_one] using add_le_add hc hs
-    _ ≤ |a| + |b| + 1 := by linarith
+  have hy : |p.2| ≤ 1 := abs_le.mpr ⟨by linarith [hp.2.1], hp.2.2⟩
+  calc |coordDot p (unitNormal t)| ≤ |p.1| * |Real.cos t| + |p.2| * |Real.sin t| := by
+        simpa only [coordDot, unitNormal, abs_mul] using
+          abs_add_le (p.1 * Real.cos t) (p.2 * Real.sin t)
+    _ ≤ |a| + |b| + 1 := by
+        linarith [mul_le_mul_of_nonneg_left (Real.abs_cos_le_one t) (abs_nonneg p.1),
+          mul_le_mul_of_nonneg_left (Real.abs_sin_le_one t) (abs_nonneg p.2)]
 
 namespace AngularGrid
 
@@ -49,8 +45,7 @@ def endpointSelectionError (a b coefficient : ℝ) : ℝ :=
 
 theorem endpointSelectionError_nonneg (a b : ℝ) {coefficient : ℝ}
     (hc : 0 ≤ coefficient) : 0 ≤ endpointSelectionError a b coefficient := by
-  unfold endpointSelectionError
-  positivity
+  unfold endpointSelectionError; positivity
 
 theorem endpointSelectionError_tendsto (a b : ℝ) {coefficient : ℕ → ℝ}
     (hc : Tendsto coefficient atTop (𝓝 0)) :
@@ -61,30 +56,19 @@ theorem supportPenaltyLipschitz_stage_le (a b : ℝ) (level : ℕ) {coefficient 
     (hc : 0 ≤ coefficient) :
     supportPenaltyLipschitz (|a| + |b| + 1) (normal (dyadic level))
       (fun i => coefficient * stageWeight level i) ≤ endpointSelectionError a b coefficient := by
-  have hweights : (∑ i, coefficient * stageWeight level i) ≤ coefficient := by
-    rw [← Finset.mul_sum]
-    simpa only [mul_one] using mul_le_mul_of_nonneg_left (sum_stageWeight_le_one level) hc
   have hsum : (∑ i, coefficient * stageWeight level i *
-      (|(normal (dyadic level) i).1| + |(normal (dyadic level) i).2|)) ≤ 2 * coefficient := by
-    calc
-      (∑ i, coefficient * stageWeight level i *
-          (|(normal (dyadic level) i).1| + |(normal (dyadic level) i).2|)) ≤
-          ∑ i, 2 * (coefficient * stageWeight level i) := by
-        apply Finset.sum_le_sum
-        intro i _
-        have hn : |(normal (dyadic level) i).1| + |(normal (dyadic level) i).2| ≤ 2 := by
+      (|(normal (dyadic level) i).1| + |(normal (dyadic level) i).2|)) ≤ 2 * coefficient :=
+    calc _ ≤ ∑ i, coefficient * stageWeight level i * 2 := Finset.sum_le_sum fun i _ => by
+          refine mul_le_mul_of_nonneg_left ?_ (mul_nonneg hc (stageWeight_nonneg level i))
           rw [normal_eq_unitNormal]
-          change |Real.cos _| + |Real.sin _| ≤ 2
-          linarith [Real.abs_cos_le_one (fullAngle (dyadic level) i),
-            Real.abs_sin_le_one (fullAngle (dyadic level) i)]
-        have h := mul_le_mul_of_nonneg_left hn (mul_nonneg hc (stageWeight_nonneg level i))
-        exact h.trans_eq (mul_comm _ _)
-      _ = 2 * ∑ i, coefficient * stageWeight level i := by rw [Finset.mul_sum]
-      _ ≤ 2 * coefficient := mul_le_mul_of_nonneg_left hweights (by norm_num)
-  have h := mul_le_mul_of_nonneg_left hsum
-    (show 0 ≤ 4 * (|a| + |b| + 1) by positivity)
+          exact (add_le_add (Real.abs_cos_le_one _) (Real.abs_sin_le_one _)).trans_eq
+            one_add_one_eq_two
+      _ = 2 * (coefficient * ∑ i, stageWeight level i) := by
+          rw [← Finset.sum_mul, ← Finset.mul_sum]; ring
+      _ ≤ 2 * coefficient := by
+          linarith [mul_le_of_le_one_right hc (sum_stageWeight_le_one level)]
   unfold supportPenaltyLipschitz endpointSelectionError
-  nlinarith
+  linarith [mul_le_mul_of_nonneg_left hsum (show 0 ≤ 4 * (|a| + |b| + 1) by positivity)]
 
 theorem IsSelectedPolygon.maximizes_contained {target U : Set Plane}
     {a b coefficient : ℝ} {level : ℕ}
@@ -99,6 +83,19 @@ theorem IsSelectedPolygon.maximizes_contained {target U : Set Plane}
   simpa only [score, stagePenalty, sampledPenalty_mul] using
     hU.maximizes V hV (hVU.trans hU.inBox)
 
+/-- The box bounds the selected points and the target supports in every grid direction. -/
+private theorem IsSelectedPolygon.support_bounds {target U : Set Plane}
+    {a b coefficient : ℝ} {level : ℕ}
+    (hU : IsSelectedPolygon target a b level coefficient U)
+    (hTarget : IsDownwardCap target) (hTargetBox : target ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1) :
+    (∀ p ∈ U, ∀ i, |coordDot p (normal (dyadic level) i)| ≤ |a| + |b| + 1) ∧
+      ∀ i, |support target (normal (dyadic level) i)| ≤ |a| + |b| + 1 := by
+  have h (p : Plane) (hp : p ∈ Icc a b ×ˢ Icc (0 : ℝ) 1) (i : SourceIndex (dyadic level)) :
+      |coordDot p (normal (dyadic level) i)| ≤ |a| + |b| + 1 := by
+    rw [normal_eq_unitNormal]; exact abs_coordDot_unitNormal_le_box hp _
+  exact ⟨fun p hp => h p (hU.inBox hp),
+    fun i => abs_support_le_of_pointwise_bound hTarget _ fun p hp => h p (hTargetBox hp) i⟩
+
 theorem IsSelectedPolygon.right_erosion_bound {target U : Set Plane}
     {a b coefficient : ℝ} {level : ℕ}
     (hU : IsSelectedPolygon target a b level coefficient U)
@@ -109,25 +106,11 @@ theorem IsSelectedPolygon.right_erosion_bound {target U : Set Plane}
         rightEndpointPressure (capRoof U)
           (finiteBarrier U (normal (dyadic level)) (pairList (dyadic level)) none)
           (horizontalLeft U) (horizontalRight U) + endpointSelectionError a b coefficient := by
-  have hpoints : ∀ p ∈ U, ∀ i,
-      |coordDot p (normal (dyadic level) i)| ≤ |a| + |b| + 1 := by
-    intro p hp i
-    rw [normal_eq_unitNormal]
-    exact abs_coordDot_unitNormal_le_box (hU.inBox hp) _
-  have htargets : ∀ i, |support target (normal (dyadic level) i)| ≤ |a| + |b| + 1 := by
-    intro i
-    apply abs_support_le_of_pointwise_bound hTarget
-    intro p hp
-    rw [normal_eq_unitNormal]
-    exact abs_coordDot_unitNormal_le_box (hTargetBox hp) _
-  have h := selected_right_erosion_moment hU.isCap hW (normal (dyadic level))
-    (normal_snd_pos (dyadic level)) (wallSlopes_injective (dyadic level)) hU.polygon_eq
-    (pairList (dyadic level)) none (normal (dyadic level))
-    (fun i => coefficient * stageWeight level i)
-    (fun i => support target (normal (dyadic level) i))
-    (show 0 ≤ |a| + |b| + 1 by positivity)
-    (fun i => mul_nonneg hc (stageWeight_nonneg level i)) hpoints htargets hU.maximizes_contained
-  exact h.trans (add_le_add_right (supportPenaltyLipschitz_stage_le a b level hc) _)
+  obtain ⟨hpoints, htargets⟩ := hU.support_bounds hTarget hTargetBox
+  exact (selected_right_erosion_moment hU.isCap hW _ (normal_snd_pos _)
+    (wallSlopes_injective _) hU.polygon_eq _ none _ _ _ (by positivity)
+    (fun i => mul_nonneg hc (stageWeight_nonneg level i)) hpoints htargets
+    hU.maximizes_contained).trans (add_le_add_right (supportPenaltyLipschitz_stage_le a b level hc) _)
 
 theorem IsSelectedPolygon.left_erosion_bound {target U : Set Plane}
     {a b coefficient : ℝ} {level : ℕ}
@@ -139,25 +122,11 @@ theorem IsSelectedPolygon.left_erosion_bound {target U : Set Plane}
         leftEndpointPressure (capRoof U)
           (finiteBarrier U (normal (dyadic level)) (pairList (dyadic level)) none)
           (horizontalLeft U) (horizontalRight U) + endpointSelectionError a b coefficient := by
-  have hpoints : ∀ p ∈ U, ∀ i,
-      |coordDot p (normal (dyadic level) i)| ≤ |a| + |b| + 1 := by
-    intro p hp i
-    rw [normal_eq_unitNormal]
-    exact abs_coordDot_unitNormal_le_box (hU.inBox hp) _
-  have htargets : ∀ i, |support target (normal (dyadic level) i)| ≤ |a| + |b| + 1 := by
-    intro i
-    apply abs_support_le_of_pointwise_bound hTarget
-    intro p hp
-    rw [normal_eq_unitNormal]
-    exact abs_coordDot_unitNormal_le_box (hTargetBox hp) _
-  have h := selected_left_erosion_moment hU.isCap hW (normal (dyadic level))
-    (normal_snd_pos (dyadic level)) (wallSlopes_injective (dyadic level)) hU.polygon_eq
-    (pairList (dyadic level)) none (normal (dyadic level))
-    (fun i => coefficient * stageWeight level i)
-    (fun i => support target (normal (dyadic level) i))
-    (show 0 ≤ |a| + |b| + 1 by positivity)
-    (fun i => mul_nonneg hc (stageWeight_nonneg level i)) hpoints htargets hU.maximizes_contained
-  exact h.trans (add_le_add_right (supportPenaltyLipschitz_stage_le a b level hc) _)
+  obtain ⟨hpoints, htargets⟩ := hU.support_bounds hTarget hTargetBox
+  exact (selected_left_erosion_moment hU.isCap hW _ (normal_snd_pos _)
+    (wallSlopes_injective _) hU.polygon_eq _ none _ _ _ (by positivity)
+    (fun i => mul_nonneg hc (stageWeight_nonneg level i)) hpoints htargets
+    hU.maximizes_contained).trans (add_le_add_right (supportPenaltyLipschitz_stage_le a b level hc) _)
 
 theorem IsSelectedPolygon.right_inward_pressure_bound {target U : Set Plane}
     {a b coefficient : ℝ} {level : ℕ}
@@ -168,24 +137,11 @@ theorem IsSelectedPolygon.right_inward_pressure_bound {target U : Set Plane}
       (finiteBarrier U (normal (dyadic level)) (pairList (dyadic level)) none)
       (horizontalLeft U) (horizontalRight U) ≤
         capRoof U (horizontalRight U) + endpointSelectionError a b coefficient := by
-  have hpoints : ∀ p ∈ U, ∀ i,
-      |coordDot p (normal (dyadic level) i)| ≤ |a| + |b| + 1 := by
-    intro p hp i
-    rw [normal_eq_unitNormal]
-    exact abs_coordDot_unitNormal_le_box (hU.inBox hp) _
-  have htargets : ∀ i, |support target (normal (dyadic level) i)| ≤ |a| + |b| + 1 := by
-    intro i
-    apply abs_support_le_of_pointwise_bound hTarget
-    intro p hp
-    rw [normal_eq_unitNormal]
-    exact abs_coordDot_unitNormal_le_box (hTargetBox hp) _
-  have h := selected_right_inward_pressure hU.isCap hW (normal (dyadic level))
-    (fun i => (normal_snd_pos (dyadic level) i).le) (pairList (dyadic level)) none
-    (normal (dyadic level)) (fun i => coefficient * stageWeight level i)
-    (fun i => support target (normal (dyadic level) i))
-    (show 0 ≤ |a| + |b| + 1 by positivity)
-    (fun i => mul_nonneg hc (stageWeight_nonneg level i)) hpoints htargets hU.maximizes_contained
-  exact h.trans (add_le_add_right (supportPenaltyLipschitz_stage_le a b level hc) _)
+  obtain ⟨hpoints, htargets⟩ := hU.support_bounds hTarget hTargetBox
+  exact (selected_right_inward_pressure hU.isCap hW _
+    (fun i => (normal_snd_pos _ i).le) _ none _ _ _ (by positivity)
+    (fun i => mul_nonneg hc (stageWeight_nonneg level i)) hpoints htargets
+    hU.maximizes_contained).trans (add_le_add_right (supportPenaltyLipschitz_stage_le a b level hc) _)
 
 theorem IsSelectedPolygon.left_inward_pressure_bound {target U : Set Plane}
     {a b coefficient : ℝ} {level : ℕ}
@@ -196,24 +152,11 @@ theorem IsSelectedPolygon.left_inward_pressure_bound {target U : Set Plane}
       (finiteBarrier U (normal (dyadic level)) (pairList (dyadic level)) none)
       (horizontalLeft U) (horizontalRight U) ≤
         capRoof U (horizontalLeft U) + endpointSelectionError a b coefficient := by
-  have hpoints : ∀ p ∈ U, ∀ i,
-      |coordDot p (normal (dyadic level) i)| ≤ |a| + |b| + 1 := by
-    intro p hp i
-    rw [normal_eq_unitNormal]
-    exact abs_coordDot_unitNormal_le_box (hU.inBox hp) _
-  have htargets : ∀ i, |support target (normal (dyadic level) i)| ≤ |a| + |b| + 1 := by
-    intro i
-    apply abs_support_le_of_pointwise_bound hTarget
-    intro p hp
-    rw [normal_eq_unitNormal]
-    exact abs_coordDot_unitNormal_le_box (hTargetBox hp) _
-  have h := selected_left_inward_pressure hU.isCap hW (normal (dyadic level))
-    (fun i => (normal_snd_pos (dyadic level) i).le) (pairList (dyadic level)) none
-    (normal (dyadic level)) (fun i => coefficient * stageWeight level i)
-    (fun i => support target (normal (dyadic level) i))
-    (show 0 ≤ |a| + |b| + 1 by positivity)
-    (fun i => mul_nonneg hc (stageWeight_nonneg level i)) hpoints htargets hU.maximizes_contained
-  exact h.trans (add_le_add_right (supportPenaltyLipschitz_stage_le a b level hc) _)
+  obtain ⟨hpoints, htargets⟩ := hU.support_bounds hTarget hTargetBox
+  exact (selected_left_inward_pressure hU.isCap hW _
+    (fun i => (normal_snd_pos _ i).le) _ none _ _ _ (by positivity)
+    (fun i => mul_nonneg hc (stageWeight_nonneg level i)) hpoints htargets
+    hU.maximizes_contained).trans (add_le_add_right (supportPenaltyLipschitz_stage_le a b level hc) _)
 
 /-- A positive right end face has an actual outward competitor. The
 strict box slack is used only to keep this small competitor in the box. -/
@@ -234,59 +177,38 @@ theorem IsSelectedPolygon.right_height_le_pressure_of_pos {target U : Set Plane}
   have hroof := eqOn_roofEnvelope_of_circumscription hU.isCap (normal grid)
     (normal_snd_pos grid) hU.polygon_eq
   have hbarrier : barrierEnvelope (normal grid) height (pairList grid) none =
-      finiteBarrier U (normal grid) (pairList grid) none := by
-    funext x
-    exact (finiteBarrier_eq_eval (normal grid) height (fun _ => rfl) (pairList grid) none x).symm
+      finiteBarrier U (normal grid) (pairList grid) none :=
+    funext fun x => (finiteBarrier_eq_eval _ height (fun _ => rfl) _ none x).symm
   have hzero : F 0 = score U grid := by
-    dsimp only [F]
-    rw [add_zero, hbarrier]
-    exact intervalSpatialScore_congr_roof hlr hroof
-  have hface := subset_circumscription hU.isCap (normal grid)
-    (capRoof_mem hU.isCap.isCompact (horizontalRight_mem hU.isCap.nonempty hU.isCap.isCompact))
+    simp only [F, add_zero, hbarrier]; exact intervalSpatialScore_congr_roof hlr hroof
   obtain ⟨δ, hδ, hfamily⟩ := exists_right_axis_variation (normal grid) height hlr
     (normal_snd_pos grid) (circumscription_baseline hU.isCap (normal grid))
-    (support_circumscription hU.isCap (normal grid)) hface he
-  have hleftBox : a ≤ horizontalLeft U :=
-    (hU.inBox (hU.isCap.baseline_mem_of_mem_projection
-      (horizontalLeft_mem hU.isCap.nonempty hU.isCap.isCompact))).1.1
+    (support_circumscription hU.isCap (normal grid)) (subset_circumscription hU.isCap _
+      (capRoof_mem hU.isCap.isCompact (horizontalRight_mem hU.isCap.nonempty hU.isCap.isCompact))) he
+  have hleftBox : a ≤ horizontalLeft U := (hU.inBox (hU.isCap.baseline_mem_of_mem_projection
+    (horizontalLeft_mem hU.isCap.nonempty hU.isCap.isCompact))).1.1
   have hmax : ∀ᶠ ε in 𝓝[>] (0 : ℝ), F ε ≤ F 0 := by
-    have hsmall : Iio δ ∈ 𝓝[>] (0 : ℝ) := mem_nhdsWithin_of_mem_nhds (Iio_mem_nhds hδ)
-    have hboxSmall : Iio (b - horizontalRight U) ∈ 𝓝[>] (0 : ℝ) :=
-      mem_nhdsWithin_of_mem_nhds (Iio_mem_nhds (sub_pos.mpr hslack))
-    filter_upwards [hsmall, hboxSmall, self_mem_nhdsWithin] with ε hεδ hεbox hεpos
-    have hε0 : 0 ≤ ε := (show 0 < ε from hεpos).le
-    obtain ⟨hV, hbase, _, hsupport⟩ := hfamily ε ⟨hε0, hεδ⟩
-    let V := upperPolygon (horizontalLeft U) (horizontalRight U + ε) (normal grid) height
-    have hVB : V ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1 := by
-      intro p hp
+    filter_upwards [mem_nhdsWithin_of_mem_nhds (Iio_mem_nhds hδ), self_mem_nhdsWithin,
+      mem_nhdsWithin_of_mem_nhds (Iio_mem_nhds (sub_pos.mpr hslack))] with ε hεδ hε0 hεb
+    obtain ⟨hV, hbase, _, hsupport⟩ := hfamily ε ⟨le_of_lt hε0, hεδ⟩
+    have hscore : score (upperPolygon _ _ (normal grid) height) grid = F ε :=
+      finiteSpatialScore_upperPolygon _ height (by linarith [mem_Ioi.mp hε0]) (normal_snd_pos grid)
+        hbase hsupport _ none
+    have h := hU.maximizes _ hV fun p hp => by
       obtain ⟨hx, hy, _⟩ := (mem_upperPolygon_iff _ _ _ _ _).mp hp
-      have hεb : ε < b - horizontalRight U := hεbox
-      exact ⟨⟨hleftBox.trans hx.1, by linarith [hx.2]⟩, hy⟩
-    have hpenalty : stagePenalty level target V = stagePenalty level target U := by
+      exact ⟨⟨hleftBox.trans hx.1, by linarith [hx.2, mem_Iio.mp hεb]⟩, hy⟩
+    have hpen : stagePenalty level target (upperPolygon (horizontalLeft U) (horizontalRight U + ε)
+        (normal grid) height) = stagePenalty level target U := by
       unfold stagePenalty sampledPenalty heightPenalty
-      apply Finset.sum_congr rfl
-      intro i _
-      beta_reduce
-      rw [hsupport i]
-    have hscore : score V grid = F ε :=
-      finiteSpatialScore_upperPolygon (normal grid) height (by linarith)
-        (normal_snd_pos grid) hbase hsupport (pairList grid) none
-    have h := hU.maximizes V hV hVB
-    rw [hpenalty, hscore, ← hzero] at h
+      exact Finset.sum_congr rfl fun i _ => by beta_reduce; rw [hsupport i]
+    rw [hpen, hscore, ← hzero] at h
     linarith
-  have hderiv := hasDerivAt_intervalSpatialScore_right
+  have hsign := hasDerivAt_nonpos_of_right_max (f := F) (hasDerivAt_intervalSpatialScore_right
     (continuous_roofEnvelope (normal grid) height)
-    (continuous_barrierEnvelope (normal grid) height (pairList grid) none)
-    (horizontalLeft U) (horizontalRight U)
-  have hsign := hasDerivAt_nonpos_of_right_max (f := F) hderiv hmax
-  have hpressure : roofEnvelope (normal grid) height (horizontalRight U) ≤
-      rightEndpointPressure (roofEnvelope (normal grid) height)
-        (barrierEnvelope (normal grid) height (pairList grid) none)
-        (horizontalLeft U) (horizontalRight U) := by
-    unfold rightEndpointPressure
-    linarith
-  rw [hbarrier, rightEndpointPressure_congr_roof hlr hroof, hroof ⟨hlr, le_rfl⟩] at hpressure
-  exact hpressure
+    (continuous_barrierEnvelope (normal grid) height (pairList grid) none) _ _) hmax
+  rw [← hbarrier, ← rightEndpointPressure_congr_roof hlr hroof, ← hroof ⟨hlr, le_rfl⟩]
+  unfold rightEndpointPressure
+  linarith
 
 theorem IsSelectedPolygon.left_height_le_pressure_of_pos {target U : Set Plane}
     {a b coefficient : ℝ} {level : ℕ}
@@ -305,59 +227,38 @@ theorem IsSelectedPolygon.left_height_le_pressure_of_pos {target U : Set Plane}
   have hroof := eqOn_roofEnvelope_of_circumscription hU.isCap (normal grid)
     (normal_snd_pos grid) hU.polygon_eq
   have hbarrier : barrierEnvelope (normal grid) height (pairList grid) none =
-      finiteBarrier U (normal grid) (pairList grid) none := by
-    funext x
-    exact (finiteBarrier_eq_eval (normal grid) height (fun _ => rfl) (pairList grid) none x).symm
+      finiteBarrier U (normal grid) (pairList grid) none :=
+    funext fun x => (finiteBarrier_eq_eval _ height (fun _ => rfl) _ none x).symm
   have hzero : F 0 = score U grid := by
-    dsimp only [F]
-    rw [sub_zero, hbarrier]
-    exact intervalSpatialScore_congr_roof hlr hroof
-  have hface := subset_circumscription hU.isCap (normal grid)
-    (capRoof_mem hU.isCap.isCompact (horizontalLeft_mem hU.isCap.nonempty hU.isCap.isCompact))
+    simp only [F, sub_zero, hbarrier]; exact intervalSpatialScore_congr_roof hlr hroof
   obtain ⟨δ, hδ, hfamily⟩ := exists_left_axis_variation (normal grid) height hlr
     (normal_snd_pos grid) (circumscription_baseline hU.isCap (normal grid))
-    (support_circumscription hU.isCap (normal grid)) hface he
-  have hrightBox : horizontalRight U ≤ b :=
-    (hU.inBox (hU.isCap.baseline_mem_of_mem_projection
-      (horizontalRight_mem hU.isCap.nonempty hU.isCap.isCompact))).1.2
+    (support_circumscription hU.isCap (normal grid)) (subset_circumscription hU.isCap _
+      (capRoof_mem hU.isCap.isCompact (horizontalLeft_mem hU.isCap.nonempty hU.isCap.isCompact))) he
+  have hrightBox : horizontalRight U ≤ b := (hU.inBox (hU.isCap.baseline_mem_of_mem_projection
+    (horizontalRight_mem hU.isCap.nonempty hU.isCap.isCompact))).1.2
   have hmax : ∀ᶠ ε in 𝓝[>] (0 : ℝ), F ε ≤ F 0 := by
-    have hsmall : Iio δ ∈ 𝓝[>] (0 : ℝ) := mem_nhdsWithin_of_mem_nhds (Iio_mem_nhds hδ)
-    have hboxSmall : Iio (horizontalLeft U - a) ∈ 𝓝[>] (0 : ℝ) :=
-      mem_nhdsWithin_of_mem_nhds (Iio_mem_nhds (sub_pos.mpr hslack))
-    filter_upwards [hsmall, hboxSmall, self_mem_nhdsWithin] with ε hεδ hεbox hεpos
-    have hε0 : 0 ≤ ε := (show 0 < ε from hεpos).le
-    obtain ⟨hV, hbase, _, hsupport⟩ := hfamily ε ⟨hε0, hεδ⟩
-    let V := upperPolygon (horizontalLeft U - ε) (horizontalRight U) (normal grid) height
-    have hVB : V ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1 := by
-      intro p hp
+    filter_upwards [mem_nhdsWithin_of_mem_nhds (Iio_mem_nhds hδ), self_mem_nhdsWithin,
+      mem_nhdsWithin_of_mem_nhds (Iio_mem_nhds (sub_pos.mpr hslack))] with ε hεδ hε0 hεa
+    obtain ⟨hV, hbase, _, hsupport⟩ := hfamily ε ⟨le_of_lt hε0, hεδ⟩
+    have hscore : score (upperPolygon _ _ (normal grid) height) grid = F ε :=
+      finiteSpatialScore_upperPolygon _ height (by linarith [mem_Ioi.mp hε0]) (normal_snd_pos grid)
+        hbase hsupport _ none
+    have h := hU.maximizes _ hV fun p hp => by
       obtain ⟨hx, hy, _⟩ := (mem_upperPolygon_iff _ _ _ _ _).mp hp
-      have hεb : ε < horizontalLeft U - a := hεbox
-      exact ⟨⟨by linarith [hx.1], hx.2.trans hrightBox⟩, hy⟩
-    have hpenalty : stagePenalty level target V = stagePenalty level target U := by
+      exact ⟨⟨by linarith [hx.1, mem_Iio.mp hεa], hx.2.trans hrightBox⟩, hy⟩
+    have hpen : stagePenalty level target (upperPolygon (horizontalLeft U - ε) (horizontalRight U)
+        (normal grid) height) = stagePenalty level target U := by
       unfold stagePenalty sampledPenalty heightPenalty
-      apply Finset.sum_congr rfl
-      intro i _
-      beta_reduce
-      rw [hsupport i]
-    have hscore : score V grid = F ε :=
-      finiteSpatialScore_upperPolygon (normal grid) height (by linarith)
-        (normal_snd_pos grid) hbase hsupport (pairList grid) none
-    have h := hU.maximizes V hV hVB
-    rw [hpenalty, hscore, ← hzero] at h
+      exact Finset.sum_congr rfl fun i _ => by beta_reduce; rw [hsupport i]
+    rw [hpen, hscore, ← hzero] at h
     linarith
-  have hderiv := hasDerivAt_intervalSpatialScore_left
+  have hsign := hasDerivAt_nonpos_of_right_max (f := F) (hasDerivAt_intervalSpatialScore_left
     (continuous_roofEnvelope (normal grid) height)
-    (continuous_barrierEnvelope (normal grid) height (pairList grid) none)
-    (horizontalLeft U) (horizontalRight U)
-  have hsign := hasDerivAt_nonpos_of_right_max (f := F) hderiv hmax
-  have hpressure : roofEnvelope (normal grid) height (horizontalLeft U) ≤
-      leftEndpointPressure (roofEnvelope (normal grid) height)
-        (barrierEnvelope (normal grid) height (pairList grid) none)
-        (horizontalLeft U) (horizontalRight U) := by
-    unfold leftEndpointPressure
-    linarith
-  rw [hbarrier, leftEndpointPressure_congr_roof hlr hroof, hroof ⟨le_rfl, hlr⟩] at hpressure
-  exact hpressure
+    (continuous_barrierEnvelope (normal grid) height (pairList grid) none) _ _) hmax
+  rw [← hbarrier, ← leftEndpointPressure_congr_roof hlr hroof, ← hroof ⟨le_rfl, hlr⟩]
+  unfold leftEndpointPressure
+  linarith
 
 theorem IsSelectedPolygon.right_height_le_positive_pressure {target U : Set Plane}
     {a b coefficient : ℝ} {level : ℕ}
@@ -391,13 +292,10 @@ theorem IsSelectedPolygon.abs_right_complementarity_le {target U : Set Plane}
       max (rightEndpointPressure (capRoof U)
         (finiteBarrier U (normal (dyadic level)) (pairList (dyadic level)) none)
         (horizontalLeft U) (horizontalRight U)) 0| ≤ endpointSelectionError a b coefficient := by
-  have hupper := hU.right_height_le_positive_pressure hslack
-  have hlower := hU.right_inward_pressure_bound hTarget hTargetBox hc hW
-  have he0 := capRoof_nonneg hU.isCap.isCompact (fun p hp => (hU.isCap.inStrip hp).1)
-    (horizontalRight U)
   have hK0 := endpointSelectionError_nonneg a b hc
-  have hmax := max_le hlower (add_nonneg he0 hK0)
-  exact abs_le.mpr ⟨by linarith, by linarith⟩
+  have hmax := max_le (hU.right_inward_pressure_bound hTarget hTargetBox hc hW)
+    (add_nonneg (capRoof_nonneg hU.isCap.isCompact (fun p hp => (hU.isCap.inStrip hp).1) _) hK0)
+  exact abs_le.mpr ⟨by linarith, by linarith [hU.right_height_le_positive_pressure hslack]⟩
 
 theorem IsSelectedPolygon.abs_left_complementarity_le {target U : Set Plane}
     {a b coefficient : ℝ} {level : ℕ}
@@ -408,13 +306,10 @@ theorem IsSelectedPolygon.abs_left_complementarity_le {target U : Set Plane}
       max (leftEndpointPressure (capRoof U)
         (finiteBarrier U (normal (dyadic level)) (pairList (dyadic level)) none)
         (horizontalLeft U) (horizontalRight U)) 0| ≤ endpointSelectionError a b coefficient := by
-  have hupper := hU.left_height_le_positive_pressure hslack
-  have hlower := hU.left_inward_pressure_bound hTarget hTargetBox hc hW
-  have he0 := capRoof_nonneg hU.isCap.isCompact (fun p hp => (hU.isCap.inStrip hp).1)
-    (horizontalLeft U)
   have hK0 := endpointSelectionError_nonneg a b hc
-  have hmax := max_le hlower (add_nonneg he0 hK0)
-  exact abs_le.mpr ⟨by linarith, by linarith⟩
+  have hmax := max_le (hU.left_inward_pressure_bound hTarget hTargetBox hc hW)
+    (add_nonneg (capRoof_nonneg hU.isCap.isCompact (fun p hp => (hU.isCap.inStrip hp).1) _) hK0)
+  exact abs_le.mpr ⟨by linarith, by linarith [hU.left_height_le_positive_pressure hslack]⟩
 
 end AngularGrid
 

@@ -37,67 +37,22 @@ def sampledPenalty [Fintype ι] (U : Set Plane) (normal : ι → Plane)
 theorem sampledPenalty_eq_heightPenalty [Fintype ι] {U : Set Plane}
     (normal : ι → Plane) (weight target height : ι → ℝ)
     (hexact : ∀ i, support U (normal i) = height i) :
-    sampledPenalty U normal weight target = heightPenalty weight target height := by
-  unfold sampledPenalty heightPenalty
-  apply Finset.sum_congr rfl
-  intro i _
-  simp only [hexact]
+    sampledPenalty U normal weight target = heightPenalty weight target height :=
+  congrArg (heightPenalty weight target) (funext hexact)
 
 theorem hasDerivAt_heightPenalty_update [Fintype ι] [DecidableEq ι]
     (weight target height : ι → ℝ) (j : ι) :
     HasDerivAt (fun ε : ℝ =>
       heightPenalty weight target (Function.update height j (height j + ε)))
       (2 * weight j * (height j - target j)) 0 := by
-  have hi : ∀ i, HasDerivAt (fun ε : ℝ =>
+  have hi (i : ι) : HasDerivAt (fun ε : ℝ =>
       weight i * (Function.update height j (height j + ε) i - target i) ^ 2)
       (if i = j then 2 * weight j * (height j - target j) else 0) 0 := by
-    intro i
-    by_cases hij : i = j
-    · subst i
-      simp only [Function.update_self, ↓reduceIte]
-      have hline : HasDerivAt (fun ε : ℝ => height j + ε - target j) 1 0 :=
-        ((hasDerivAt_id' (x := (0 : ℝ))).const_add (height j)).sub_const (target j)
-      convert (hline.pow 2).const_mul (weight j) using 1 <;> norm_num <;> ring
-    · simp only [Function.update_of_ne hij, if_neg hij]
-      exact hasDerivAt_const _ _
-  have hsum := HasDerivAt.fun_sum (u := Finset.univ) (fun i _ => hi i)
-  simpa [heightPenalty] using hsum
-
-theorem finiteSpatialScore_upperPolygon_update [Fintype ι] [DecidableEq ι]
-    {l r : ℝ} (normal : ι → Plane) (height : ι → ℝ) (j : ι) {ε : ℝ}
-    (hlr : l ≤ r) (hε : 0 ≤ ε) (hnormal : ∀ i, 0 < (normal i).2)
-    (hbaseline : ∀ x ∈ Icc l r, ∀ i, coordDot (x, 0) (normal i) ≤ height i)
-    (hexact : ∀ i, support
-      (upperPolygon l r normal (Function.update height j (height j + ε))) (normal i) =
-        Function.update height j (height j + ε) i)
-    (corners : List (ι × ι)) (terminal : Option ι) :
-    finiteSpatialScore (upperPolygon l r normal (Function.update height j (height j + ε)))
-        normal corners terminal =
-      intervalSpatialScore
-        ((roofExpr (ι := ι)).affineEnvelope (wallSlope normal) (roofIntercept normal height)
-          (outwardVelocity normal j) ε)
-        ((barrierExpr corners terminal).affineEnvelope (wallSlope normal)
-          (barrierIntercept normal height) (outwardVelocity normal j) ε) l r := by
-  have hbaseline' : ∀ x ∈ Icc l r, ∀ i,
-      coordDot (x, 0) (normal i) ≤ Function.update height j (height j + ε) i := by
-    intro x hx i
-    by_cases hij : i = j
-    · subst i
-      rw [Function.update_self]
-      exact (hbaseline x hx j).trans (by linarith)
-    · simpa only [Function.update_of_ne hij] using hbaseline x hx i
-  unfold finiteSpatialScore
-  rw [horizontalLeft_upperPolygon normal _ hlr hbaseline',
-    horizontalRight_upperPolygon normal _ hlr hbaseline',
-    finiteBarrier_eq_affineEnvelope_update normal height j ε hexact corners terminal]
-  calc
-    _ = intervalSpatialScore
-        (roofEnvelope normal (Function.update height j (height j + ε)))
-        ((barrierExpr corners terminal).affineEnvelope (wallSlope normal)
-          (barrierIntercept normal height) (outwardVelocity normal j) ε) l r :=
-      intervalSpatialScore_congr_roof hlr
-        (fun _ hx => capRoof_upperPolygon l r normal _ hnormal hbaseline' hx)
-    _ = _ := by rw [roofEnvelope_update]
+    rcases eq_or_ne i j with rfl | hij
+    · convert ((((hasDerivAt_id (0 : ℝ)).const_add (height i)).sub_const (target i)).pow
+        2).const_mul (weight i) using 1 <;> simp; ring
+    · simpa [hij] using hasDerivAt_const (0 : ℝ) (weight i * (height i - target i) ^ 2)
+  simpa [heightPenalty] using HasDerivAt.fun_sum (u := Finset.univ) (fun i _ => hi i)
 
 /-- The maximization premise is over actual caps with the same projection.
 Any maximum in a larger cap domain implies this premise whenever these
@@ -133,38 +88,41 @@ theorem selected_polygon_exposure_inequality [Fintype ι] [DecidableEq ι]
   obtain ⟨δ, hδ, hfamily⟩ := exists_outward_support_variation j hlr
     (fun i => (hnormal i).le) hbaseline hexact hp hq hpq hpface hqface hnx
     (hnormal j).ne' hdet hunit
-  have hscore0 := finiteSpatialScore_upperPolygon_update normal height j hlr
-    (show 0 ≤ (0 : ℝ) from le_rfl) hnormal hbaseline
-    (by simpa only [add_zero, Function.update_eq_self] using hexact) corners terminal
+  -- the score of the moved polygon, as an affine envelope in the displacement `ε`
+  have hscore {ε : ℝ} (hε : 0 ≤ ε) (hsup : ∀ i, support
+      (upperPolygon l r normal (Function.update height j (height j + ε))) (normal i) =
+        Function.update height j (height j + ε) i) :
+      finiteSpatialScore (upperPolygon l r normal (Function.update height j (height j + ε)))
+        normal corners terminal = intervalSpatialScore
+        ((roofExpr (ι := ι)).affineEnvelope (wallSlope normal) (roofIntercept normal height)
+          (outwardVelocity normal j) ε)
+        ((barrierExpr corners terminal).affineEnvelope (wallSlope normal)
+          (barrierIntercept normal height) (outwardVelocity normal j) ε) l r := by
+    have hbaseline' : ∀ x ∈ Icc l r, ∀ i,
+        coordDot (x, 0) (normal i) ≤ Function.update height j (height j + ε) i :=
+      fun x hx i => (hbaseline x hx i).trans (le_update_self_iff.2 (le_add_of_nonneg_right hε) i)
+    rw [finiteSpatialScore, horizontalLeft_upperPolygon normal _ hlr hbaseline',
+      horizontalRight_upperPolygon normal _ hlr hbaseline',
+      finiteBarrier_eq_affineEnvelope_update normal height j ε hsup corners terminal,
+      ← roofEnvelope_update]
+    exact intervalSpatialScore_congr_roof hlr
+      (fun _ hx => capRoof_upperPolygon l r normal _ hnormal hbaseline' hx)
+  have hscore0 := hscore le_rfl (by simpa only [add_zero, Function.update_eq_self] using hexact)
   simp only [add_zero, Function.update_eq_self] at hscore0
-  have hpenalty0 := sampledPenalty_eq_heightPenalty normal weight target height hexact
-  apply finite_selected_exposure_inequality (roofExpr (ι := ι)) (barrierExpr corners terminal)
-    (wallSlope normal) (roofIntercept normal height) (outwardVelocity normal j)
-    (wallSlope normal) (barrierIntercept normal height) (outwardVelocity normal j)
-    hslopes hslopes l r (hasDerivAt_heightPenalty_update weight target height j)
-  have hsmall : Iio δ ∈ 𝓝[>] (0 : ℝ) :=
-    mem_nhdsWithin_of_mem_nhds (Iio_mem_nhds hδ)
-  filter_upwards [hsmall, self_mem_nhdsWithin] with ε hεδ hεpos
-  have hε : 0 ≤ ε := (show 0 < ε from hεpos).le
-  obtain ⟨hcap, hprojection, hsupport⟩ := hfamily ε ⟨hε, hεδ⟩
+  apply finite_selected_exposure_inequality _ _ _ _ _ _ _ _ hslopes hslopes l r
+    (hasDerivAt_heightPenalty_update weight target height j)
+  filter_upwards [Ioo_mem_nhdsGT hδ] with ε hε
+  obtain ⟨hcap, hprojection, hsupport⟩ := hfamily ε ⟨hε.1.le, hε.2⟩
   have h := hmax _ hcap hprojection
-  rw [finiteSpatialScore_upperPolygon_update normal height j hlr hε hnormal hbaseline
-    hsupport corners terminal,
-    sampledPenalty_eq_heightPenalty normal weight target _ hsupport,
-    hscore0, hpenalty0] at h
+  rw [hscore hε.1.le hsupport, sampledPenalty_eq_heightPenalty normal weight target _ hsupport,
+    hscore0, sampledPenalty_eq_heightPenalty normal weight target height hexact] at h
   simpa only [add_zero, Function.update_eq_self] using h
 
 theorem outwardVelocity_eq_single [DecidableEq ι] (normal : ι → Plane) (j : ι) :
     outwardVelocity normal j =
       fun i : Option ι => if i = some j then 1 / (normal j).2 else 0 := by
   funext i
-  cases i with
-  | none => simp [outwardVelocity]
-  | some i =>
-    by_cases hij : i = j
-    · subst i
-      simp [outwardVelocity]
-    · simp [outwardVelocity, hij]
+  cases i <;> simp +contextual [outwardVelocity]
 
 /-- The derivative densities above are literal horizontal exposure
 measures divided by the vertical component of the moved unit normal. -/

@@ -38,38 +38,14 @@ theorem fourWallFiber_eq_Icc (dU dV nU nV : ℝ) :
     fourWallFiber dU dV nU nV =
       Set.Icc (max dV nU) (1 - max dU nV) := by
   ext y
-  change (dV ≤ y ∧ nU ≤ y ∧ y ≤ 1 - dU ∧ y ≤ 1 - nV) ↔
-    (max dV nU ≤ y ∧ y ≤ 1 - max dU nV)
-  constructor
-  · rintro ⟨hdV, hnU, hdU, hnV⟩
-    refine ⟨max_le hdV hnU, ?_⟩
-    have hUpper : max dU nV ≤ 1 - y :=
-      max_le (by linarith) (by linarith)
-    linarith
-  · rintro ⟨hLower, hUpper⟩
-    refine ⟨(le_max_left dV nU).trans hLower,
-      (le_max_right dV nU).trans hLower, ?_, ?_⟩
-    · have hdU : dU ≤ max dU nV := le_max_left dU nV
-      linarith
-    · have hnV : nV ≤ max dU nV := le_max_right dU nV
-      linarith
+  simp only [fourWallFiber, Set.mem_ofPred_eq, Set.mem_Icc, max_le_iff, le_sub_comm (a := y),
+    and_assoc]
 
 /-- A signed fiber has nonnegative length exactly when the fiber is nonempty. -/
 theorem fourWallFiber_nonempty_iff (dU dV nU nV : ℝ) :
     (fourWallFiber dU dV nU nV).Nonempty ↔
       0 ≤ signedFiberLength dU dV nU nV := by
-  rw [fourWallFiber_eq_Icc]
-  constructor
-  · rintro ⟨y, hy⟩
-    change max dV nU ≤ y ∧ y ≤ 1 - max dU nV at hy
-    unfold signedFiberLength
-    linarith [hy.1, hy.2]
-  · intro hLength
-    refine ⟨max dV nU, ?_⟩
-    change max dV nU ≤ max dV nU ∧ max dV nU ≤ 1 - max dU nV
-    refine ⟨le_rfl, ?_⟩
-    unfold signedFiberLength at hLength
-    linarith
+  rw [fourWallFiber_eq_Icc, Set.nonempty_Icc, signedFiberLength, sub_nonneg, le_sub_comm]
 
 /-- A point in the four-wall fiber certifies nonnegative signed length. -/
 theorem signedFiberLength_nonneg_of_mem (dU dV nU nV y : ℝ)
@@ -80,17 +56,8 @@ theorem signedFiberLength_nonneg_of_mem (dU dV nU nV y : ℝ)
 /-! ## Pointwise partition defects -/
 
 /-- The positive-part identity used in both parts of ED.2. -/
-theorem max_sub_left_eq_max_sub_zero (a b : ℝ) :
-    max a b - a = max (b - a) 0 := by
-  rcases le_total a b with hab | hba
-  · rw [max_eq_right hab, max_eq_left (sub_nonneg.mpr hab)]
-  · rw [max_eq_left hba, max_eq_right (sub_nonpos.mpr hba), sub_self]
-
-/-- The same positive-part identity with the second argument subtracted. -/
-theorem max_sub_right_eq_max_sub_zero (a b : ℝ) :
-    max a b - b = max (a - b) 0 := by
-  rw [max_comm a b]
-  exact max_sub_left_eq_max_sub_zero b a
+private theorem max_sub_eq (a b : ℝ) : max a b - b = max (a - b) 0 := by
+  rw [← max_sub_sub_right, sub_self]
 
 /-- The nonnegative defect charged on the middle interval in ED.2. -/
 noncomputable def middlePartitionDefect (dU dV nU nV : ℝ) : ℝ :=
@@ -104,32 +71,22 @@ noncomputable def exteriorPartitionDefect (dU dV nU nV : ℝ) : ℝ :=
 theorem middle_partition_defect_identity (dU dV nU nV : ℝ) :
     (1 - nU - nV) - signedFiberLength dU dV nU nV =
       middlePartitionDefect dU dV nU nV := by
-  unfold signedFiberLength middlePartitionDefect
-  have hV := max_sub_right_eq_max_sub_zero dV nU
-  have hU := max_sub_right_eq_max_sub_zero dU nV
-  linarith
+  rw [signedFiberLength, middlePartitionDefect, ← max_sub_eq, ← max_sub_eq]; ring
 
 /-- The exterior comparison is an exact identity, even for negative signed fibers. -/
 theorem exterior_partition_defect_identity (dU dV nU nV : ℝ) :
     (1 - dU - dV) - signedFiberLength dU dV nU nV =
       exteriorPartitionDefect dU dV nU nV := by
-  unfold signedFiberLength exteriorPartitionDefect
-  have hV := max_sub_left_eq_max_sub_zero dV nU
-  have hU := max_sub_left_eq_max_sub_zero dU nV
-  linarith
+  rw [signedFiberLength, exteriorPartitionDefect, ← max_sub_eq, ← max_sub_eq, max_comm nU,
+    max_comm nV]
+  ring
 
 theorem middlePartitionDefect_nonneg (dU dV nU nV : ℝ) :
     0 ≤ middlePartitionDefect dU dV nU nV := by
-  unfold middlePartitionDefect
-  exact add_nonneg (le_max_right (dV - nU) 0) (le_max_right (dU - nV) 0)
+  unfold middlePartitionDefect; positivity
 
 theorem exteriorPartitionDefect_nonneg (dU dV nU nV : ℝ) :
     0 ≤ exteriorPartitionDefect dU dV nU nV := by
-  unfold exteriorPartitionDefect
-  exact add_nonneg (le_max_right (nU - dV) 0) (le_max_right (nV - dU) 0)
-
-/-! ## The four-term arithmetic deficit -/
-
-/-! ## The pointwise extrusion deficit -/
+  unfold exteriorPartitionDefect; positivity
 
 end AmbidextrousSofa

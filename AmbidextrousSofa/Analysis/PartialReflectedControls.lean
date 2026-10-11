@@ -25,148 +25,71 @@ namespace AmbidextrousSofa
 def properReflectedActiveEnd (m : ℝ) : ℝ :=
   Real.pi / 2 - max 0 (Real.arctan m)
 
-theorem IsJointCapMaximizer.properReflected_active_interval
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
+variable {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
+  (hregime : ProperTailRegime U α m) (hproper : α < Real.pi / 2)
+  (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C) (hheight : capHeight U = 1)
+  (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+    capRoof U x = m * x + c)
+  (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
+  (hκ : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
+  (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
+    (volume.restrict (regularProperCurvatureDomain α m)).withDensity
+      (fun t => ENNReal.ofReal (ρ t)))
+
+include hU haffine in
+theorem IsJointCapMaximizer.properReflected_active_interval :
     Real.pi / 2 - α < properReflectedActiveEnd m ∧
       properReflectedActiveEnd m ≤ Real.pi / 2 := by
-  have hmα : Real.arctan m < α := by
-    have h := hU.middle_normal_lt_terminal_companion haffine
-    unfold affineNormalAngle at h
-    linarith only [h]
-  have hmax : max 0 (Real.arctan m) < α := max_lt hU.angle_pos hmα
-  dsimp only [properReflectedActiveEnd]
-  exact ⟨sub_lt_sub_left hmax _, sub_le_self _ (le_max_left _ _)⟩
+  have h : Real.arctan m < α := by
+    simpa [affineNormalAngle] using hU.middle_normal_lt_terminal_companion haffine
+  exact ⟨sub_lt_sub_left (max_lt hU.angle_pos h) _, sub_le_self _ (le_max_left _ _)⟩
 
-theorem IsJointCapMaximizer.mem_regularProperCornerDomain_after_affine_of_tail_regime
-    {U : Set Plane} {α m c t : ℝ} (hU : IsJointCapMaximizer U α)
-    (hregime : ProperTailRegime U α m)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (ht : t ∈ Ioo (0 : ℝ) α) (hmt : Real.arctan m < t) :
-    t ∈ regularProperCornerDomain α m := by
-  refine ⟨⟨ht.1, ht.2.trans hproper⟩,
-    hU.proper_first_arc_subset_regular_of_tail_regime hregime hproper hheight haffine ht, ?_⟩
-  apply regularCompanionDomain_subset_regularProperCurvatureDomain hproper
-  refine ⟨⟨by linarith only [ht.1], by linarith only [ht.2, hproper]⟩, ?_⟩
-  intro heq
-  simp only [mem_singleton_iff] at heq
-  unfold affineNormalAngle at heq
-  linarith only [heq, hmt]
-
-theorem IsJointCapMaximizer.proper_wing_densities_zero_before_affine
-    {U : Set Plane} {α C m c : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t)
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
+include hU hproper hl hr hheight haffine hρ hρ0 heq in
+theorem IsJointCapMaximizer.proper_wing_densities_zero_before_affine :
     ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.arctan m)),
       ρ t = 0 ∧ leftCompanionWingDensity m ρ (t + Real.pi / 2) = 0 := by
   by_cases hm : 0 ≤ m
-  · have hzero := hU.proper_first_wing_initial_curvature_zero
-      hproper hl hr hheight hm haffine
-    have hmα : Real.arctan m < α := by
-      have h := hU.middle_normal_lt_terminal_companion haffine
-      unfold affineNormalAngle at h
-      linarith only [h]
-    have hsub : Ioo (0 : ℝ) (Real.arctan m) ⊆ regularProperCurvatureDomain α m := by
-      intro t ht
-      exact ⟨firstQuarter_subset_regularCurvatureDomain_of_nonneg hm
-        ⟨ht.1, ht.2.trans (Real.arctan_lt_pi_div_two m)⟩, (ht.2.trans hmα).ne⟩
-    have hfirst := ae_density_eq_zero_of_restrict_withDensity_null hρ hρ0 heq
-      measurableSet_Ioo hsub hzero
-    filter_upwards [hfirst, ae_restrict_mem measurableSet_Ioo] with t ht hmem
-    refine ⟨ht, leftCompanionWingDensity_eq_zero ?_⟩
-    apply le_trans _ (le_max_right _ _)
-    unfold affineNormalAngle
-    linarith only [hmem.2]
-  · have hm0 : Real.arctan m ≤ 0 := Real.arctan_le_zero.mpr (le_of_not_ge hm)
-    filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ht
-    exfalso
-    linarith only [ht.1, ht.2, hm0]
+  · have hmα : Real.arctan m < α := by
+      simpa [affineNormalAngle] using hU.middle_normal_lt_terminal_companion haffine
+    filter_upwards [ae_density_eq_zero_of_restrict_withDensity_null hρ hρ0 heq measurableSet_Ioo
+      (fun t ht => ⟨firstQuarter_subset_regularCurvatureDomain_of_nonneg hm
+        ⟨ht.1, ht.2.trans (Real.arctan_lt_pi_div_two m)⟩, (ht.2.trans hmα).ne⟩)
+      (hU.proper_first_wing_initial_curvature_zero hproper hl hr hheight hm haffine),
+      ae_restrict_mem measurableSet_Ioo] with t ht hmem
+    exact ⟨ht, leftCompanionWingDensity_eq_zero <| le_max_of_le_right <| by
+      unfold affineNormalAngle; linarith [hmem.2]⟩
+  · filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ht
+    exact absurd (Real.arctan_pos.mp (ht.1.trans ht.2)).le hm
 
-theorem IsJointCapMaximizer.properUsed_momenta_continuous
-    {U : Set Plane} {α m K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K) :
-    Continuous (properUsedP U m ρ) ∧ Continuous (properUsedQ U m ρ) := by
-  have hV := hU.isCap_properLeftCompanion
-  have hf := hU.isCap.imported_isConvexBody.continuous_supp
-  have hg := hV.imported_isConvexBody.continuous_supp.comp
-    (continuous_id.add_const (Real.pi / 2))
-  have hfD := hU.isCap.continuous_closedSupportDerivative hρ hρ0 hρK 0
-  have hgD := hV.continuous_closedSupportDerivative
-    (measurable_leftCompanionWingDensity hρ m)
-    (fun t => (leftCompanionWingDensity_bounds hρ0 hρK t).1)
-    (fun t => (leftCompanionWingDensity_bounds hρ0 hρK t).2) (Real.pi / 2)
-  exact ⟨(hfD.sub hg).add continuous_const, (hgD.add hf).sub continuous_const⟩
-
-theorem IsJointCapMaximizer.properReflected_momenta_continuous
-    {U : Set Plane} {α m K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K) :
-    Continuous (properReflectedP U m ρ) ∧ Continuous (properReflectedQ U m ρ) := by
-  have h := hU.properUsed_momenta_continuous (m := m) hρ hρ0 hρK
-  exact ⟨(h.2.comp (continuous_const.sub continuous_id)).neg,
-    (h.1.comp (continuous_const.sub continuous_id)).neg⟩
-
-theorem IsJointCapMaximizer.properReflected_arm_bounds_of_tail_regime
-    {U : Set Plane} {α m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hregime : ProperTailRegime U α m)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
+include hU hregime hproper hheight haffine hρ hρ0 hρK heq in
+theorem IsJointCapMaximizer.properReflected_arm_bounds_of_tail_regime :
     ∀ r ∈ Icc (Real.pi / 2 - α) (properReflectedActiveEnd m),
       properReflectedP U m ρ r ≤ 1 ∧ -1 ≤ properReflectedQ U m ρ r := by
-  have hab := (hU.properReflected_active_interval haffine).1
-  have hcont := hU.properReflected_momenta_continuous (m := m) hρ hρ0 hρK
+  have hab := hU.properReflected_active_interval haffine
+  have hcont := hU.properReflected_momenta_absolutelyContinuous (m := m) hρ hρ0 hρK
   have hinside : ∀ r ∈ Ioo (Real.pi / 2 - α) (properReflectedActiveEnd m),
-      properReflectedP U m ρ r ≤ 1 ∧ -1 ≤ properReflectedQ U m ρ r := by
-    intro r hr
+      properReflectedP U m ρ r ≤ 1 ∧ -1 ≤ properReflectedQ U m ρ r := fun r hr => by
     have hrt : max 0 (Real.arctan m) < Real.pi / 2 - r := by
-      dsimp only [properReflectedActiveEnd] at hr
-      linarith only [hr.2]
-    have ht0 : 0 < Real.pi / 2 - r := (le_max_left _ _).trans_lt hrt
-    have htα : Real.pi / 2 - r < α := by linarith only [hr.1]
-    have hmt : Real.arctan m ≤ Real.pi / 2 - r := (le_max_right _ _).trans hrt.le
-    have hmatch := hU.properUsed_momenta_eq_actual_after_affine_of_tail_regime
-      hregime hproper hheight haffine hρ hρ0 hρK heq ⟨ht0.le, htα⟩ hmt
-    dsimp only [properReflectedP, properReflectedQ]
-    rw [hmatch.1, hmatch.2, neg_neg]
-    have hp := hU.isCap.firstCornerVelocity_ge_neg_one (Real.pi / 2 - r)
-    have hq := hU.isCap.neg_secondCornerVelocity_le_one (Real.pi / 2 - r)
-    constructor <;> linarith only [hp, hq]
-  have hclosure : closure (Ioo (Real.pi / 2 - α) (properReflectedActiveEnd m)) =
-      Icc (Real.pi / 2 - α) (properReflectedActiveEnd m) := closure_Ioo hab.ne
+      unfold properReflectedActiveEnd at hr; linarith [hr.2]
+    have hmatch := hU.properUsed_momenta_eq_actual_after_affine_of_tail_regime hregime hproper
+      hheight haffine hρ hρ0 hρK heq ⟨(le_max_left _ _).trans hrt.le, by linarith [hr.1]⟩
+      ((le_max_right _ _).trans hrt.le)
+    rw [properReflectedP, properReflectedQ, hmatch.1, hmatch.2, neg_neg]
+    exact ⟨by linarith [hU.isCap.firstCornerVelocity_ge_neg_one (Real.pi / 2 - r)],
+      by linarith [hU.isCap.neg_secondCornerVelocity_le_one (Real.pi / 2 - r)]⟩
+  have hcl : closure (Ioo (Real.pi / 2 - α) (properReflectedActiveEnd m)) ⊆
+      uIcc (Real.pi / 2 - α) (Real.pi / 2) := by
+    rw [closure_Ioo hab.1.ne, uIcc_of_le (hab.1.le.trans hab.2)]
+    exact Icc_subset_Icc_right hab.2
   intro r hr
-  have hrcl := hclosure.symm ▸ hr
-  exact ⟨le_on_closure (fun s hs => (hinside s hs).1)
-      hcont.1.continuousOn continuousOn_const hrcl,
-    le_on_closure (fun s hs => (hinside s hs).2)
-      continuousOn_const hcont.2.continuousOn hrcl⟩
+  rw [← closure_Ioo hab.1.ne] at hr
+  exact ⟨le_on_closure (fun s hs => (hinside s hs).1) (hcont.1.continuousOn.mono hcl)
+      continuousOn_const hr,
+    le_on_closure (fun s hs => (hinside s hs).2) continuousOn_const
+      (hcont.2.continuousOn.mono hcl) hr⟩
 
-theorem IsJointCapMaximizer.properUsed_source_controls_of_tail_regime
-    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hregime : ProperTailRegime U α m)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (hκ : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
+include hU hregime hproper hl hr hheight haffine hρ hρ0 hρK hκ heq in
+theorem IsJointCapMaximizer.properUsed_source_controls_of_tail_regime :
     ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) α),
       ρ t ≤ sourceKappa (properUsedQ U m ρ t) ∧
       leftCompanionWingDensity m ρ (t + Real.pi / 2) ≤ sourceKappa (properUsedP U m ρ t) ∧
@@ -174,62 +97,28 @@ theorem IsJointCapMaximizer.properUsed_source_controls_of_tail_regime
         ρ t = 0 ∧ leftCompanionWingDensity m ρ (t + Real.pi / 2) ≤ 1 / 2) ∧
       (properUsedP U m ρ t < 0 → properUsedQ U m ρ t < 0 →
         leftCompanionWingDensity m ρ (t + Real.pi / 2) = 0 ∧ ρ t ≤ 1 / 2) := by
-  have hinit := (ae_restrict_iff' measurableSet_Ioo).mp
-    (hU.proper_wing_densities_zero_before_affine hproper hl hr hheight haffine hρ hρ0 heq)
-  have hshadow := (ae_restrict_iff'
-    (isOpen_regularProperCornerDomain α m).measurableSet).mp
-      (hU.ae_proper_curvature_same_sign_quadrants hproper haffine hρ hρ0 hρK heq)
-  filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hinit,
-    ae_restrict_of_ae hshadow, ae_restrict_of_ae (volume.ae_ne (Real.arctan m))]
-    with t ht hz hs hne
-  by_cases hpre : t < Real.arctan m
-  · have hzero := hz ⟨ht.1, hpre⟩
-    refine ⟨?_, ?_, ?_, ?_⟩
-    · rw [hzero.1]
-      exact sourceKappa_nonneg _
-    · rw [hzero.2]
-      exact sourceKappa_nonneg _
-    · intro _ _
-      exact ⟨hzero.1, by rw [hzero.2]; norm_num⟩
-    · intro _ _
-      exact ⟨hzero.2, by rw [hzero.1]; norm_num⟩
-  · have hpost : Real.arctan m < t :=
-      lt_of_le_of_ne (le_of_not_gt hpre) (Ne.symm hne)
-    have hsource := hs (hU.mem_regularProperCornerDomain_after_affine_of_tail_regime
-      hregime hproper hheight haffine ht hpost)
-    have hmatch := hU.properUsed_momenta_eq_actual_after_affine_of_tail_regime
-      hregime hproper hheight haffine hρ hρ0 hρK heq ⟨ht.1.le, ht.2⟩ hpost.le
-    have hveq := leftCompanionWingDensity_shift_eq_after (ρ := ρ) ht.1 hpost
-    have hbounds := upperCorner_density_bounds_on_quarter hκ ⟨ht.1, ht.2.trans hproper⟩
-    refine ⟨?_, ?_, ?_, ?_⟩
-    · rw [hmatch.2]
-      exact hbounds.1
-    · rw [hveq, hmatch.1, sourceKappa_neg]
-      exact hbounds.2
-    · intro hp hq
-      rw [hmatch.1] at hp
-      rw [hmatch.2] at hq
-      have h := hsource.1 ⟨hq, by linarith only [hp]⟩
-      exact ⟨h.1, by rw [hveq]; exact h.2⟩
-    · intro hp hq
-      rw [hmatch.1] at hp
-      rw [hmatch.2] at hq
-      have h := hsource.2 ⟨hq, by linarith only [hp]⟩
-      exact ⟨by rw [hveq]; exact h.1, h.2⟩
+  filter_upwards [ae_restrict_mem measurableSet_Ioo,
+    ae_restrict_of_ae ((ae_restrict_iff' measurableSet_Ioo).mp
+      (hU.proper_wing_densities_zero_before_affine hproper hl hr hheight haffine hρ hρ0 heq)),
+    ae_restrict_of_ae ((ae_restrict_iff' (isOpen_regularProperCornerDomain α m).measurableSet).mp
+      (hU.ae_proper_curvature_same_sign_quadrants hproper haffine hρ hρ0 hρK heq)),
+    ae_restrict_of_ae (volume.ae_ne (Real.arctan m))] with t ht hz hs hne
+  rcases lt_or_gt_of_ne hne with hpre | hpost
+  · obtain ⟨h1, h2⟩ := hz ⟨ht.1, hpre⟩
+    simp [h1, h2, sourceKappa_nonneg]
+  obtain ⟨hP, hQ⟩ := hU.properUsed_momenta_eq_actual_after_affine_of_tail_regime hregime hproper
+    hheight haffine hρ hρ0 hρK heq ⟨ht.1.le, ht.2⟩ hpost.le
+  have hsource := hs ⟨⟨ht.1, ht.2.trans hproper⟩,
+    hU.proper_first_arc_subset_regular_of_tail_regime hregime hproper hheight haffine ht,
+    regularCompanionDomain_subset_regularProperCurvatureDomain hproper ⟨⟨by linarith [ht.1],
+      by linarith [ht.2]⟩, fun h => hne (by simpa [affineNormalAngle] using h)⟩⟩
+  have hbounds := upperCorner_density_bounds_on_quarter hκ ⟨ht.1, ht.2.trans hproper⟩
+  rw [hP, hQ, leftCompanionWingDensity_shift_eq_after ht.1 hpost, sourceKappa_neg]
+  exact ⟨hbounds.1, hbounds.2, fun hp hq => hsource.1 ⟨hq, neg_pos.mp hp⟩,
+    fun hp hq => hsource.2 ⟨hq, neg_lt_zero.mp hp⟩⟩
 
-theorem IsJointCapMaximizer.properReflected_source_controls_of_tail_regime
-    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hregime : ProperTailRegime U α m)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (hκ : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
+include hU hregime hproper hl hr hheight haffine hρ hρ0 hρK hκ heq in
+theorem IsJointCapMaximizer.properReflected_source_controls_of_tail_regime :
     ∀ᵐ r ∂volume.restrict (Ioo (Real.pi / 2 - α) (Real.pi / 2)),
       0 ≤ properReflectedFirstDensity m ρ r ∧
       0 ≤ properReflectedSecondDensity ρ r ∧
@@ -239,47 +128,28 @@ theorem IsJointCapMaximizer.properReflected_source_controls_of_tail_regime
         properReflectedFirstDensity m ρ r = 0 ∧ properReflectedSecondDensity ρ r ≤ 1 / 2) ∧
       (properReflectedP U m ρ r < 0 → properReflectedQ U m ρ r < 0 →
         properReflectedSecondDensity ρ r = 0 ∧ properReflectedFirstDensity m ρ r ≤ 1 / 2) := by
-  have hused := (ae_restrict_iff' measurableSet_Ioo).mp
-    (hU.properUsed_source_controls_of_tail_regime hregime hproper hl hr hheight haffine hρ hρ0 hρK hκ heq)
-  have hshift := (volume.measurePreserving_sub_left (Real.pi / 2)).quasiMeasurePreserving.ae hused
-  filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hshift] with r hr hs
-  have ht : Real.pi / 2 - r ∈ Ioo (0 : ℝ) α := by
-    constructor <;> linarith only [hr.1, hr.2]
-  obtain ⟨hu, hv, hpp, hmm⟩ := hs ht
-  refine ⟨(leftCompanionWingDensity_bounds hρ0 hρK _).1, hρ0 _, ?_, ?_, ?_, ?_⟩
-  · simpa only [properReflectedFirstDensity, properReflectedQ, sourceKappa_neg] using hv
-  · simpa only [properReflectedSecondDensity, properReflectedP, sourceKappa_neg] using hu
-  · intro hp hq
-    dsimp only [properReflectedP, properReflectedQ] at hp hq
-    exact hmm (by linarith only [hq]) (by linarith only [hp])
-  · intro hp hq
-    dsimp only [properReflectedP, properReflectedQ] at hp hq
-    exact hpp (by linarith only [hq]) (by linarith only [hp])
+  filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae
+    ((volume.measurePreserving_sub_left (Real.pi / 2)).quasiMeasurePreserving.ae
+      ((ae_restrict_iff' measurableSet_Ioo).mp (hU.properUsed_source_controls_of_tail_regime
+        hregime hproper hl hr hheight haffine hρ hρ0 hρK hκ heq)))] with r hr hs
+  obtain ⟨hu, hv, hpp, hmm⟩ :=
+    hs (show Real.pi / 2 - r ∈ Ioo 0 α from ⟨by linarith [hr.2], by linarith [hr.1]⟩)
+  simp only [properReflectedFirstDensity, properReflectedSecondDensity, properReflectedP,
+    properReflectedQ, sourceKappa_neg, neg_pos, neg_lt_zero]
+  exact ⟨(leftCompanionWingDensity_bounds hρ0 hρK _).1, hρ0 _, hv, hu,
+    fun h1 h2 => hmm h2 h1, fun h1 h2 => hpp h2 h1⟩
 
-theorem IsJointCapMaximizer.properReflected_densities_zero_after_active
-    {U : Set Plane} {α C m c : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t)
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
+include hU hproper hl hr hheight haffine hρ hρ0 heq in
+theorem IsJointCapMaximizer.properReflected_densities_zero_after_active :
     ∀ᵐ r ∂volume.restrict (Ioo (properReflectedActiveEnd m) (Real.pi / 2)),
       properReflectedFirstDensity m ρ r = 0 ∧ properReflectedSecondDensity ρ r = 0 := by
-  have hzero := (ae_restrict_iff' measurableSet_Ioo).mp
-    (hU.proper_wing_densities_zero_before_affine hproper hl hr hheight haffine hρ hρ0 heq)
-  have hshift := (volume.measurePreserving_sub_left (Real.pi / 2)).quasiMeasurePreserving.ae hzero
-  filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hshift] with r hr hs
-  have ht0 : 0 < Real.pi / 2 - r := by linarith only [hr.2]
-  have htmax : Real.pi / 2 - r < max 0 (Real.arctan m) := by
-    dsimp only [properReflectedActiveEnd] at hr
-    linarith only [hr.1]
-  have htm : Real.pi / 2 - r < Real.arctan m :=
-    (lt_max_iff.mp htmax).resolve_left (not_lt_of_ge ht0.le)
-  have h := hs ⟨ht0, htm⟩
+  filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae
+    ((volume.measurePreserving_sub_left (Real.pi / 2)).quasiMeasurePreserving.ae
+      ((ae_restrict_iff' measurableSet_Ioo).mp (hU.proper_wing_densities_zero_before_affine
+        hproper hl hr hheight haffine hρ hρ0 heq)))] with r hr hs
+  have ht0 : 0 < Real.pi / 2 - r := by linarith [hr.2]
+  unfold properReflectedActiveEnd at hr
+  have h := hs ⟨ht0, (lt_max_iff.mp (by linarith [hr.1])).resolve_left ht0.le.not_gt⟩
   exact ⟨h.2, h.1⟩
 
 end AmbidextrousSofa

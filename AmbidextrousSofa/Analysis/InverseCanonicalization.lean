@@ -32,12 +32,10 @@ namespace AmbidextrousSofa
 
 theorem IsDownwardCap.verticalExtrusion_zero {U : Set Plane} (hU : IsDownwardCap U) :
     verticalExtrusion U 0 = U := by
-  apply Set.Subset.antisymm
-  · intro p hp
-    obtain ⟨hp0, q, hq, hqx, hpy⟩ := (mem_verticalExtrusion_iff U 0 p).mp hp
-    have h := hU.downward q hq p.2 hp0 (by simpa only [add_zero] using hpy)
-    simpa only [hqx, Prod.mk.eta] using h
-  · exact hU.subset_verticalExtrusion le_rfl
+  refine Subset.antisymm (fun p hp => ?_) (hU.subset_verticalExtrusion le_rfl)
+  obtain ⟨hp0, q, hq, hqx, hpy⟩ := (mem_verticalExtrusion_iff U 0 p).mp hp
+  simpa only [hqx, Prod.mk.eta] using
+    hU.downward q hq p.2 hp0 (by simpa only [add_zero] using hpy)
 
 /-- The charged exterior roof gains exactly the extrusion height. If the
 final full barrier has not gained that much at even one middle point,
@@ -49,105 +47,36 @@ theorem IsDownwardCap.capScore_lt_verticalExtrusion_of_middle_barrier_lt
     (hx₀ : x₀ ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U))
     (hsmall : partialBarrier (verticalExtrusion U ε) (Real.pi / 2) x₀ < ε) :
     capScore U (Real.pi / 2) < capScore (verticalExtrusion U ε) (Real.pi / 2) := by
-  let V := verticalExtrusion U ε
-  let l := horizontalLeft U
-  let r := horizontalRight U
-  let a := l + (r - l) / 4
-  let b := r - (r - l) / 4
-  have hV : IsDownwardCap V := hU.isDownwardCap_verticalExtrusion hε hheight
-  have hproj : horizontalProjection V = horizontalProjection U :=
-    hU.horizontalProjection_verticalExtrusion hε
-  have hleft : horizontalLeft V = l := congrArg sInf hproj
-  have hright : horizontalRight V = r := congrArg sSup hproj
-  have hlr : l < r := by change 0 < r - l at hwidth; linarith
-  have hla : l < a := by dsimp [a]; linarith
-  have hab : a < b := by dsimp [a, b]; linarith
-  have hbr : b < r := by dsimp [b]; linarith
-  have hcU : ContinuousOn (capRoof U) (Icc l r) := by
-    rw [← horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
-    exact hU.continuousOn_capRoof
+  have hV := hU.isDownwardCap_verticalExtrusion hε hheight
+  have hproj := hU.horizontalProjection_verticalExtrusion hε
+  have hIcc := horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex
+  have hcU := hU.continuousOn_capRoof_Icc
+  set l := horizontalLeft U
+  set r := horizontalRight U
+  have hlr : l < r := sub_pos.mp hwidth
   have houter (s t : ℝ) (hs : l ≤ s) (hst : s ≤ t) (ht : t ≤ r) :
-      (∫ x in s..t, capRoof V x) = (∫ x in s..t, capRoof U x) + (t - s) * ε := by
-    calc
-      (∫ x in s..t, capRoof V x) = ∫ x in s..t, capRoof U x + ε := by
-        apply intervalIntegral.integral_congr
-        intro x hx
-        rw [uIcc_of_le hst] at hx
-        apply hU.capRoof_verticalExtrusion hε
-        rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
-        exact ⟨hs.trans hx.1, hx.2.trans ht⟩
-      _ = (∫ x in s..t, capRoof U x) + (t - s) * ε := by
-        rw [intervalIntegral.integral_add
-          ((hcU.mono (Icc_subset_Icc hs ht)).intervalIntegrable_of_Icc hst)
-          intervalIntegrable_const, intervalIntegral.integral_const, smul_eq_mul]
-  have hbarrierU := hU.continuous_partialBarrier_pi_div_two
-  have hbarrierV := hV.continuous_partialBarrier_pi_div_two
-  have hstrict : (∫ x in a..b, partialBarrier V (Real.pi / 2) x) <
-      ∫ x in a..b, partialBarrier U (Real.pi / 2) x + ε := by
-    apply intervalIntegral.integral_lt_integral_of_continuousOn_of_le_of_exists_lt
-      hab hbarrierV.continuousOn (hbarrierU.add continuous_const).continuousOn
-    · intro x _
-      exact hU.partialBarrier_verticalExtrusion_le hε (by linarith [Real.pi_pos]) le_rfl x
-    · refine ⟨x₀, hx₀, ?_⟩
-      exact hsmall.trans_le (le_add_of_nonneg_left (partialBarrier_nonneg U _ x₀))
-  rw [intervalIntegral.integral_add (hbarrierU.intervalIntegrable _ _) intervalIntegrable_const,
+      (∫ x in s..t, capRoof (verticalExtrusion U ε) x) =
+        (∫ x in s..t, capRoof U x) + (t - s) * ε := by
+    rw [intervalIntegral.integral_congr (g := fun x => capRoof U x + ε) fun x hx =>
+        hU.capRoof_verticalExtrusion hε (hIcc ▸ Icc_subset_Icc hs ht (uIcc_of_le hst ▸ hx)),
+      intervalIntegral.integral_add ((hcU.mono (Icc_subset_Icc hs ht)).intervalIntegrable_of_Icc
+        hst) intervalIntegrable_const, intervalIntegral.integral_const, smul_eq_mul]
+  have hbU := hU.continuous_partialBarrier_pi_div_two
+  have hstrict : (∫ x in (l + (r - l) / 4)..(r - (r - l) / 4),
+      partialBarrier (verticalExtrusion U ε) (Real.pi / 2) x) <
+        ∫ x in (l + (r - l) / 4)..(r - (r - l) / 4), partialBarrier U (Real.pi / 2) x + ε :=
+    intervalIntegral.integral_lt_integral_of_continuousOn_of_le_of_exists_lt (by linarith)
+    hV.continuous_partialBarrier_pi_div_two.continuousOn (hbU.add continuous_const).continuousOn
+    (fun x _ => hU.partialBarrier_verticalExtrusion_le hε (by positivity) le_rfl x)
+    ⟨x₀, hx₀, hsmall.trans_le (le_add_of_nonneg_left (partialBarrier_nonneg U _ x₀))⟩
+  rw [intervalIntegral.integral_add (hbU.intervalIntegrable _ _) intervalIntegrable_const,
     intervalIntegral.integral_const, smul_eq_mul] at hstrict
   rw [hU.capScore_eq_intervalSpatialScore, hV.capScore_eq_intervalSpatialScore,
-    hleft, hright]
-  change (∫ x in l..a, capRoof U x) + (∫ x in b..r, capRoof U x) -
-      (∫ x in a..b, partialBarrier U (Real.pi / 2) x) <
-    (∫ x in l..a, capRoof V x) + (∫ x in b..r, capRoof V x) -
-      (∫ x in a..b, partialBarrier V (Real.pi / 2) x)
-  rw [houter l a le_rfl hla.le (hab.le.trans hbr.le),
-    houter b r (hla.le.trans hab.le) hbr.le le_rfl]
-  have hlength : (a - l) * ε + (r - b) * ε = (b - a) * ε := by
-    dsimp [a, b]
-    ring
+    show horizontalLeft (verticalExtrusion U ε) = l from congrArg sInf hproj,
+    show horizontalRight (verticalExtrusion U ε) = r from congrArg sSup hproj,
+    intervalSpatialScore, intervalSpatialScore, houter l _ le_rfl (by linarith) (by linarith),
+    houter _ r (by linarith) (by linarith) le_rfl]
   linarith
-
-/-- Equal-score extrusion to an actual translated reference cap has height
-zero. This uses the zero reference niche at a middle endpoint, not a
-general claim that extrusion is strictly score improving. -/
-theorem IsDownwardCap.verticalExtrusion_eq_reference_of_score_eq
-    {U : Set Plane} (hU : IsDownwardCap U) {ε c : ℝ} (hε : 0 ≤ ε)
-    (hheight : ∀ p ∈ U, p.2 + ε ≤ 1)
-    (href : verticalExtrusion U ε = AmbidextrousSofa.horizontalTranslate Reference.referenceCap c)
-    (hscore : capScore U (Real.pi / 2) =
-      capScore (verticalExtrusion U ε) (Real.pi / 2)) :
-    ε = 0 ∧ U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap c := by
-  have hproj := hU.horizontalProjection_verticalExtrusion hε
-  have hleft : horizontalLeft U = horizontalLeft Reference.referenceCap + c := by
-    have h : horizontalLeft (verticalExtrusion U ε) = horizontalLeft U := congrArg sInf hproj
-    rw [href, horizontalLeft_horizontalTranslate Reference.isDownwardCap_referenceCap] at h
-    exact h.symm
-  have hright : horizontalRight U = horizontalRight Reference.referenceCap + c := by
-    have h : horizontalRight (verticalExtrusion U ε) = horizontalRight U := congrArg sSup hproj
-    rw [href, horizontalRight_horizontalTranslate Reference.isDownwardCap_referenceCap] at h
-    exact h.symm
-  have hwidth : 0 < capWidth U := by
-    unfold capWidth
-    rw [hleft, hright, Reference.horizontalLeft_referenceCap,
-      Reference.horizontalRight_referenceCap]
-    linarith [Reference.A_pos]
-  have hpoint : Reference.topLeft + c ∈
-      middleHalfInterval (horizontalLeft U) (horizontalRight U) := by
-    rw [hleft, hright, middleHalfInterval_add, Reference.middleHalfInterval_referenceCap]
-    exact ⟨Reference.topLeft, ⟨le_rfl, Reference.topLeft_lt_topRight.le⟩, rfl⟩
-  have hzero : partialBarrier (verticalExtrusion U ε) (Real.pi / 2)
-      (Reference.topLeft + c) = 0 := by
-    rw [href, partialBarrier_horizontalTranslate Reference.isDownwardCap_referenceCap,
-      add_sub_cancel_right, Reference.isDownwardCap_referenceCap.partialBarrier_pi_div_two,
-      Reference.sweptNiche_referenceCap]
-    exact Reference.referenceNiche_eq_zero_of_le_topLeft le_rfl
-  have hεzero : ε = 0 := by
-    apply le_antisymm _ hε
-    by_contra h
-    have hpos : 0 < ε := lt_of_not_ge h
-    have hstrict := hU.capScore_lt_verticalExtrusion_of_middle_barrier_lt hε hheight
-      hwidth hpoint (by rwa [hzero])
-    linarith
-  refine ⟨hεzero, ?_⟩
-  simpa only [hεzero, hU.verticalExtrusion_zero] using href
 
 /-- If the middle chord has roof one on the entire middle window, clipping
 has removed no actual cap point. Exterior roofs agree by the chord lemma;
@@ -159,17 +88,14 @@ theorem IsDownwardCap.eq_middleChordCap_of_middle_roof_one {U : Set Plane}
   have hV := hU.isDownwardCap_middleChordCap hwidth
   have hproj := hU.horizontalProjection_middleChordCap hwidth
   obtain ⟨ha, hb, hab⟩ := hU.middleChord_endpoints hwidth
-  apply hU.eq_of_projection_eq_of_capRoof_eq hV hproj.symm
-  funext x
+  refine hU.eq_of_projection_eq_of_capRoof_eq hV hproj.symm (funext fun x => ?_)
   by_cases hx : x ∈ horizontalProjection U
   · by_cases hmiddle : x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U)
-    · rw [hroof x hmiddle]
-      apply le_antisymm (capRoof_le_one hU.isCompact hU.inStrip x)
-      have hmono := hV.capRoof_mono hU (capCut_subset _ _) x
-      rwa [hroof x hmiddle] at hmono
+    · have hmono := hV.capRoof_mono hU (capCut_subset _ _) x
+      rw [hroof x hmiddle] at hmono ⊢
+      exact le_antisymm (capRoof_le_one hU.isCompact hU.inStrip x) hmono
     · exact (hU.capRoof_chordCap_outside ha hb hab hx hmiddle).symm
-  · rw [capRoof_eq_zero_of_not_mem hx, capRoof_eq_zero_of_not_mem]
-    rwa [hproj]
+  · rw [capRoof_eq_zero_of_not_mem hx, capRoof_eq_zero_of_not_mem (hproj ▸ hx)]
 
 /-- The literal reference inverse for any original full-score equality cap.
 The only reference-identification input concerns the actual canonicalized
@@ -180,39 +106,51 @@ theorem IsDownwardCap.eq_reference_of_heightSaturation_middleChordCap_eq
     (href : heightSaturation (middleChordCap U) =
       AmbidextrousSofa.horizontalTranslate Reference.referenceCap c) :
     U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap c := by
-  let V := middleChordCap U
+  have hR := Reference.isDownwardCap_referenceCap
+  set V := middleChordCap U
   have hV : IsDownwardCap V := hU.isDownwardCap_middleChordCap hwidth
-  have hα0 : 0 < Real.pi / 2 := by linarith [Real.pi_pos]
-  have hcanonical : capScore (heightSaturation V) (Real.pi / 2) = M / 2 := by
-    rw [href, capScore_horizontalTranslate Reference.isDownwardCap_referenceCap,
-      Reference.capScore_referenceCap]
-  have hbefore := hU.capScore_le_middleChordCap hwidth hα0 le_rfl
-  have hafter := hV.capScore_le_heightSaturation hα0 le_rfl
-  have hsame : capScore V (Real.pi / 2) = capScore (heightSaturation V) (Real.pi / 2) := by
-    rw [hscore] at hbefore
-    rw [hcanonical]
-    exact le_antisymm (hcanonical ▸ hafter) hbefore
-  obtain ⟨hε, hVref⟩ := hV.verticalExtrusion_eq_reference_of_score_eq
-    (sub_nonneg.mpr hV.capHeight_le_one)
-    (fun p hp => by linarith [hV.snd_le_capHeight hp]) href hsame
-  have hproj : horizontalProjection V = horizontalProjection U :=
+  have hε : 0 ≤ 1 - capHeight V := sub_nonneg.mpr hV.capHeight_le_one
+  have hheight (p) (hp : p ∈ V) : p.2 + (1 - capHeight V) ≤ 1 := by
+    linarith [hV.snd_le_capHeight hp]
+  -- The three caps `U`, `V` and the saturation of `V` share their projection.
+  have hprojV : horizontalProjection V = horizontalProjection U :=
     hU.horizontalProjection_middleChordCap hwidth
-  have hleft : horizontalLeft U = horizontalLeft Reference.referenceCap + c := by
-    have h : horizontalLeft V = horizontalLeft U := congrArg sInf hproj
-    rw [hVref, horizontalLeft_horizontalTranslate Reference.isDownwardCap_referenceCap] at h
-    exact h.symm
-  have hright : horizontalRight U = horizontalRight Reference.referenceCap + c := by
-    have h : horizontalRight V = horizontalRight U := congrArg sSup hproj
-    rw [hVref, horizontalRight_horizontalTranslate Reference.isDownwardCap_referenceCap] at h
-    exact h.symm
-  have hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof (middleChordCap U) x = 1 := by
-    intro x hx
-    rw [hleft, hright, middleHalfInterval_add, Reference.middleHalfInterval_referenceCap] at hx
-    obtain ⟨y, hy, rfl⟩ := hx
-    change capRoof V (y + c) = 1
-    rw [hVref, capRoof_horizontalTranslate, add_sub_cancel_right]
-    exact Reference.capRoof_referenceCap_eq_one hy
-  exact (hU.eq_middleChordCap_of_middle_roof_one hwidth hmiddle).trans hVref
+  have hproj : horizontalProjection U = horizontalProjection
+      (AmbidextrousSofa.horizontalTranslate Reference.referenceCap c) := by
+    rw [← href, heightSaturation, hV.horizontalProjection_verticalExtrusion hε, hprojV]
+  have hlV : horizontalLeft V = horizontalLeft U := congrArg sInf hprojV
+  have hrV : horizontalRight V = horizontalRight U := congrArg sSup hprojV
+  have hmid : middleHalfInterval (horizontalLeft U) (horizontalRight U) =
+      (fun x => x + c) '' Reference.topInterval := by
+    rw [show horizontalLeft U = _ from
+        (congrArg sInf hproj).trans (horizontalLeft_horizontalTranslate hR c),
+      show horizontalRight U = _ from
+        (congrArg sSup hproj).trans (horizontalRight_horizontalTranslate hR c),
+      middleHalfInterval_add, Reference.middleHalfInterval_referenceCap]
+  -- Both canonicalization steps keep the score `M / 2`.
+  have hsame : capScore V (Real.pi / 2) = capScore (heightSaturation V) (Real.pi / 2) := by
+    have hbefore := hU.capScore_le_middleChordCap hwidth (by positivity) le_rfl
+    have hafter := hV.capScore_le_heightSaturation (by positivity) le_rfl
+    rw [href, capScore_horizontalTranslate hR, Reference.capScore_referenceCap] at hafter ⊢
+    exact le_antisymm hafter (hscore ▸ hbefore)
+  -- An extrusion of positive height would increase the score.
+  have hx₀ : Reference.topLeft + c ∈ middleHalfInterval (horizontalLeft V) (horizontalRight V) := by
+    rw [hlV, hrV, hmid]
+    exact ⟨_, ⟨le_rfl, Reference.topLeft_lt_topRight.le⟩, rfl⟩
+  have hzero : 1 - capHeight V = 0 := by
+    refine hε.antisymm' (not_lt.mp fun hpos =>
+      (hV.capScore_lt_verticalExtrusion_of_middle_barrier_lt hε hheight
+        (by rw [capWidth, hlV, hrV]; exact hwidth) hx₀ ?_).ne hsame)
+    rw [← heightSaturation, href, partialBarrier_horizontalTranslate hR, add_sub_cancel_right,
+      hR.partialBarrier_pi_div_two, Reference.sweptNiche_referenceCap,
+      Reference.referenceNiche_eq_zero_of_le_topLeft le_rfl]
+    exact hpos
+  have hVref : V = AmbidextrousSofa.horizontalTranslate Reference.referenceCap c := by
+    rwa [heightSaturation, hzero, hV.verticalExtrusion_zero] at href
+  refine (hU.eq_middleChordCap_of_middle_roof_one hwidth fun x hx => ?_).trans hVref
+  obtain ⟨y, hy, rfl⟩ := hmid ▸ hx
+  change capRoof V (y + c) = 1
+  rw [hVref, capRoof_horizontalTranslate, add_sub_cancel_right]
+  exact Reference.capRoof_referenceCap_eq_one hy
 
 end AmbidextrousSofa

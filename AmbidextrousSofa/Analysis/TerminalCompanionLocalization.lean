@@ -22,7 +22,6 @@ is required for this geometric step.
 noncomputable section
 
 open Set Filter
-open scoped Topology
 
 namespace AmbidextrousSofa
 
@@ -33,7 +32,8 @@ theorem companionPointWall_eq {p : Plane} {x t : ℝ} (hc : Real.cos t ≠ 0) :
     companionPointWall p x t =
       (coordDot p (companionNormal t) - 1 + x * Real.sin t) / Real.cos t := by
   unfold companionPointWall coordDot companionNormal
-  field_simp [hc] <;> ring
+  field_simp
+  ring
 
 theorem companionPointWall_le_secondWall {U : Set Plane}
     (hU : IsDownwardCap U) {p : Plane} (hp : p ∈ U) {x t : ℝ}
@@ -46,35 +46,16 @@ theorem companionPointWall_eq_secondWall_of_support {U : Set Plane}
     {p : Plane} {x t : ℝ} (hc : Real.cos t ≠ 0)
     (hp : coordDot p (companionNormal t) = support U (companionNormal t)) :
     companionPointWall p x t = secondWall U t x := by
-  rw [companionPointWall_eq hc, hp]
-  rfl
+  rw [companionPointWall_eq hc, hp]; rfl
 
 theorem hasDerivAt_companionPointWall {p : Plane} {x t : ℝ}
     (hc : Real.cos t ≠ 0) :
     HasDerivAt (companionPointWall p x)
       ((x - p.1 - Real.sin t) / Real.cos t ^ 2) t := by
-  have hn := ((Real.hasDerivAt_sin t).const_mul (x - p.1)).sub_const 1
-  have hd := (hn.div (Real.hasDerivAt_cos t) hc).const_add p.2
-  apply hd.congr_deriv
+  refine (((((Real.hasDerivAt_sin t).const_mul (x - p.1)).sub_const 1).div
+    (Real.hasDerivAt_cos t) hc).const_add p.2).congr_deriv ?_
   congr 1
-  have hcircle := congrArg (fun z : ℝ => (x - p.1) * z) (Real.sin_sq_add_cos_sq t)
-  nlinarith only [hcircle]
-
-theorem companionPointWall_strictAntiOn {p : Plane} {x β α : ℝ}
-    (hβ0 : 0 ≤ β) (hβα : β ≤ α) (hαL : α < Real.pi / 2)
-    (hx : x - p.1 ≤ Real.sin β) :
-    StrictAntiOn (companionPointWall p x) (Icc β α) := by
-  have hcos (t : ℝ) (ht : t ∈ Icc β α) : 0 < Real.cos t :=
-    Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2.trans_lt hαL⟩
-  apply strictAntiOn_of_deriv_neg (convex_Icc _ _)
-    (fun t ht => (hasDerivAt_companionPointWall (hcos t ht).ne').continuousAt.continuousWithinAt)
-  intro t ht
-  rw [interior_Icc] at ht
-  have hct := hcos t ⟨ht.1.le, ht.2.le⟩
-  rw [(hasDerivAt_companionPointWall hct.ne').deriv]
-  have hsin : Real.sin β < Real.sin t := Real.sin_lt_sin_of_lt_of_le_pi_div_two
-    (by linarith [Real.pi_pos]) (ht.2.le.trans hαL.le) ht.1
-  exact div_neg_of_neg_of_pos (by linarith) (sq_pos_of_pos hct)
+  linear_combination (x - p.1) * Real.sin_sq_add_cos_sq t
 
 /-- The actual support wall is strictly lower at every angle after
 the projection-controlled prefix. This does not assume smooth support. -/
@@ -85,54 +66,26 @@ theorem IsDownwardCap.secondWall_lt_of_late_angle {U : Set Plane}
     secondWall U t x < secondWall U β x := by
   obtain ⟨p, hp, hsupport⟩ :=
     exists_coordDot_eq_support hU.isCompact hU.nonempty (companionNormal t)
-  have hproj : p.1 ∈ Icc (horizontalLeft U) (horizontalRight U) := by
-    rw [← horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
-    exact ⟨p, hp, rfl⟩
-  have hct : 0 < Real.cos t := Real.cos_pos_of_mem_Ioo
-    ⟨by linarith [Real.pi_pos], htL⟩
-  have hcβ : 0 < Real.cos β := Real.cos_pos_of_mem_Ioo
-    ⟨by linarith [Real.pi_pos], hβt.trans htL⟩
-  have hanti := companionPointWall_strictAntiOn hβ0 hβt.le htL
-    (show x - p.1 ≤ Real.sin β by linarith [hproj.1])
+  have hp1 : p.1 ∈ Icc (horizontalLeft U) (horizontalRight U) :=
+    horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex ▸ ⟨p, hp, rfl⟩
+  have hcos (s : ℝ) (hs : s ∈ Icc β t) : 0 < Real.cos s :=
+    Real.cos_pos_of_mem_Ioo ⟨by linarith [hs.1, Real.pi_pos], hs.2.trans_lt htL⟩
+  -- The wall of the fixed support point `p` decreases on `[β, t]`.
+  have hanti : StrictAntiOn (companionPointWall p x) (Icc β t) := by
+    refine strictAntiOn_of_deriv_neg (convex_Icc _ _) (fun s hs =>
+      (hasDerivAt_companionPointWall (hcos s hs).ne').continuousAt.continuousWithinAt) ?_
+    intro s hs
+    rw [interior_Icc] at hs
+    have hcs := hcos s ⟨hs.1.le, hs.2.le⟩
+    rw [(hasDerivAt_companionPointWall hcs.ne').deriv]
+    have := Real.sin_lt_sin_of_lt_of_le_pi_div_two (by linarith [Real.pi_pos])
+      (hs.2.trans htL).le hs.1
+    exact div_neg_of_neg_of_pos (by linarith [hp1.1]) (sq_pos_of_pos hcs)
   calc
     _ = companionPointWall p x t :=
-      (companionPointWall_eq_secondWall_of_support hct.ne' hsupport).symm
+      (companionPointWall_eq_secondWall_of_support (hcos t ⟨hβt.le, le_rfl⟩).ne' hsupport).symm
     _ < companionPointWall p x β := hanti ⟨le_rfl, hβt.le⟩ ⟨hβt.le, le_rfl⟩ hβt
-    _ ≤ _ := companionPointWall_le_secondWall hU hp hcβ
-
-theorem IsDownwardCap.secondWall_zero_nonpos {U : Set Plane}
-    (hU : IsDownwardCap U) (x : ℝ) : secondWall U 0 x ≤ 0 := by
-  have hs : support U (companionNormal 0) ≤ 1 := by
-    apply support_le_of_forall hU.nonempty
-    intro p hp
-    simpa only [coordDot, companionNormal, Real.sin_zero, Real.cos_zero,
-      neg_zero, mul_zero, mul_one, zero_add] using (hU.inStrip hp).2
-  simpa only [secondWall, Real.sin_zero, Real.cos_zero, mul_zero, add_zero, div_one]
-    using sub_nonpos.mpr hs
-
-theorem IsDownwardCap.exists_localized_secondWall_max {U : Set Plane}
-    (hU : IsDownwardCap U) {α B x : ℝ}
-    (hα0 : 0 < α) (hαL : α < Real.pi / 2)
-    (hB0 : 0 ≤ B) (hBα : B < Real.sin α)
-    (hx : x - horizontalLeft U ≤ B) :
-    ∃ t ∈ Icc 0 (Real.arcsin B), IsMaxOn (fun r => secondWall U r x) (Icc 0 α) t := by
-  have hB1 : B < 1 := hBα.trans_le (Real.sin_le_one α)
-  have hβ0 : 0 ≤ Real.arcsin B := Real.arcsin_nonneg.mpr hB0
-  have hβα : Real.arcsin B < α := by
-    have h := Real.arcsin_lt_arcsin (by linarith : -1 ≤ B) hBα (Real.sin_le_one α)
-    rwa [Real.arcsin_sin (by linarith [Real.pi_pos]) hαL.le] at h
-  have hc : ContinuousOn (fun r => secondWall U r x) (Icc 0 α) := by
-    intro r hr
-    apply (hU.secondWall_continuousAt_angle
-      (Real.cos_pos_of_mem_Ioo ⟨by linarith [hr.1, Real.pi_pos], hr.2.trans_lt hαL⟩).ne' x).continuousWithinAt
-  obtain ⟨t, ht, hmax⟩ := isCompact_Icc.exists_isMaxOn ⟨0, le_rfl, hα0.le⟩ hc
-  refine ⟨t, ⟨ht.1, ?_⟩, hmax⟩
-  by_contra hlate
-  have hβt : Real.arcsin B < t := lt_of_not_ge hlate
-  have hstrict := hU.secondWall_lt_of_late_angle hβ0 hβt (ht.2.trans_lt hαL)
-    (show x - horizontalLeft U ≤ Real.sin (Real.arcsin B) by
-      rwa [Real.sin_arcsin (by linarith) hB1.le])
-  exact (not_lt_of_ge (hmax ⟨hβ0, hβα.le⟩)) hstrict
+    _ ≤ _ := companionPointWall_le_secondWall hU hp (hcos β ⟨le_rfl, hβt.le⟩)
 
 /-- MP.13 for the literal actual support point. Stationarity is proved
 for a fixed attaining point, so no differentiability of the cap support
@@ -147,39 +100,38 @@ theorem IsDownwardCap.exists_positive_localized_secondWall_max {U : Set Plane}
       IsMaxOn (fun r => secondWall U r x) (Icc 0 α) t ∧
       (MovingSofaOptimality.vplus U (t + Real.pi / 2)).1 + Real.sin t = x ∧
       secondWall U t x = (MovingSofaOptimality.vplus U (t + Real.pi / 2)).2 - Real.cos t := by
-  obtain ⟨t, ht, hmax⟩ := hU.exists_localized_secondWall_max hα0 hαL hB0 hBα hx
-  obtain ⟨r, hr, hpos⟩ := hpositive
-  have htpos : 0 < secondWall U t x := hpos.trans_le (hmax hr)
-  have ht0 : 0 < t := by
-    by_contra hbad
-    have htzero : t = 0 := le_antisymm (le_of_not_gt hbad) ht.1
-    rw [htzero] at htpos
-    exact (not_lt_of_ge (hU.secondWall_zero_nonpos x)) htpos
-  have hβα : Real.arcsin B < α := by
-    have h := Real.arcsin_lt_arcsin (by linarith : -1 ≤ B) hBα (Real.sin_le_one α)
-    rwa [Real.arcsin_sin (by linarith [Real.pi_pos]) hαL.le] at h
-  have htα : t < α := ht.2.trans_lt hβα
   have hcos (r : ℝ) (hr : r ∈ Icc 0 α) : 0 < Real.cos r :=
     Real.cos_pos_of_mem_Ioo ⟨by linarith [hr.1, Real.pi_pos], hr.2.trans_lt hαL⟩
-  let p := MovingSofaOptimality.vplus U (t + Real.pi / 2)
+  have hβ0 : 0 ≤ Real.arcsin B := Real.arcsin_nonneg.mpr hB0
+  have hβα : Real.arcsin B < α :=
+    (Real.arcsin_lt_iff_lt_sin' ⟨by linarith [Real.pi_pos], hαL.le⟩).2 hBα
+  -- A maximum over `[0, α]` exists, and it lies before `arcsin B`.
+  obtain ⟨t, ht, hmax⟩ := isCompact_Icc.exists_isMaxOn ⟨0, le_rfl, hα0.le⟩ fun r hr =>
+    (hU.secondWall_continuousAt_angle (hcos r hr).ne' x).continuousWithinAt
+  have htB : t ≤ Real.arcsin B := not_lt.1 fun hlate => (hmax ⟨hβ0, hβα.le⟩).not_gt
+    (hU.secondWall_lt_of_late_angle hβ0 hlate (ht.2.trans_lt hαL) (by
+      rwa [Real.sin_arcsin (by linarith) (hBα.trans_le (Real.sin_le_one α)).le]))
+  obtain ⟨r, hr, hpos⟩ := hpositive
+  have htpos : 0 < secondWall U t x := hpos.trans_le (hmax hr)
+  -- The wall at angle `0` is nonpositive, so the maximum is interior.
+  have ht0 : 0 < t := ht.1.lt_of_ne <| by
+    rintro rfl
+    exact htpos.not_ge (by simpa [secondWall, companionNormal, capHeight] using hU.capHeight_le_one)
+  have htα : t < α := htB.trans_lt hβα
+  have hct := hcos t ⟨ht0.le, htα.le⟩
+  set p := MovingSofaOptimality.vplus U (t + Real.pi / 2)
   have hp : p ∈ U := (MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody _).1
-  have hpSupport : coordDot p (companionNormal t) = support U (companionNormal t) := by
-    rw [companionNormal_eq_unitNormal]
-    exact MovingSofaOptimality.dot_vplus_uvec U (t + Real.pi / 2)
-  have hpeq := companionPointWall_eq_secondWall_of_support (x := x)
-    (hcos t ⟨ht0.le, htα.le⟩).ne' hpSupport
-  have hpmax : IsMaxOn (companionPointWall p x) (Icc 0 α) t := by
-    intro r hr
-    exact ((companionPointWall_le_secondWall hU hp (hcos r hr)).trans (hmax hr)).trans_eq hpeq.symm
-  have hstation := (hpmax.isLocalMax (Icc_mem_nhds ht0 htα)).hasDerivAt_eq_zero
-    (hasDerivAt_companionPointWall (hcos t ⟨ht0.le, htα.le⟩).ne')
-  have hnumerator := (div_eq_iff (pow_ne_zero 2 (hcos t ⟨ht0.le, htα.le⟩).ne')).mp hstation
-  simp only [zero_mul] at hnumerator
-  have hpx : p.1 + Real.sin t = x := by linarith
-  have hpy : secondWall U t x = p.2 - Real.cos t := by
-    rw [← hpeq, companionPointWall, show x - p.1 = Real.sin t by linarith]
-    field_simp [(hcos t ⟨ht0.le, htα.le⟩).ne']
-    nlinarith only [Real.sin_sq_add_cos_sq t]
-  exact ⟨t, ⟨ht0, htα⟩, ht.2, htpos, hmax, hpx, hpy⟩
+  have hpeq := companionPointWall_eq_secondWall_of_support (x := x) hct.ne'
+    (by rw [companionNormal_eq_unitNormal]; exact MovingSofaOptimality.dot_vplus_uvec U _)
+  -- The wall of the attaining point `p` has an interior maximum at `t`.
+  have hpmax : IsMaxOn (companionPointWall p x) (Icc 0 α) t := fun r hr =>
+    ((companionPointWall_le_secondWall hU hp (hcos r hr)).trans (hmax hr)).trans_eq hpeq.symm
+  have hstation := (div_eq_iff (pow_ne_zero 2 hct.ne')).mp
+    ((hpmax.isLocalMax (Icc_mem_nhds ht0 htα)).hasDerivAt_eq_zero
+      (hasDerivAt_companionPointWall hct.ne'))
+  refine ⟨t, ⟨ht0, htα⟩, htB, htpos, hmax, by linarith, ?_⟩
+  rw [← hpeq, companionPointWall, show x - p.1 = Real.sin t by linarith]
+  field_simp
+  linear_combination Real.sin_sq_add_cos_sq t
 
 end AmbidextrousSofa

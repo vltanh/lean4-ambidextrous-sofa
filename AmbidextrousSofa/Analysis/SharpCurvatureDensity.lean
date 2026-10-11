@@ -29,16 +29,11 @@ theorem measureReal_eq_integral_of_restrict_withDensity
     (heq : μ.restrict S = (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
     (hs : MeasurableSet s) (hsub : s ⊆ S) :
     μ.real s = ∫ t in s, ρ t := by
-  have hmeasure : μ s = ∫⁻ t in s, ENNReal.ofReal (ρ t) := by
-    calc
-      μ s = μ.restrict S s := by rw [Measure.restrict_apply hs, inter_eq_left.mpr hsub]
-      _ = (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)) s := by rw [heq]
-      _ = ∫⁻ t in s, ENNReal.ofReal (ρ t) := by
-        rw [withDensity_apply _ hs, Measure.restrict_restrict_of_subset hsub]
-  rw [measureReal_def, hmeasure]
-  exact (integral_eq_lintegral_of_nonneg_ae (Eventually.of_forall hρ0)
-    hρ.aestronglyMeasurable).symm
+  have h : μ s = μ.restrict S s := by rw [Measure.restrict_apply hs, inter_eq_left.mpr hsub]
+  rw [measureReal_def, h, heq, withDensity_apply _ hs, Measure.restrict_restrict_of_subset hsub,
+    integral_eq_lintegral_of_nonneg_ae (.of_forall hρ0) hρ.aestronglyMeasurable]
 
+open AngularGrid in
 /-- A local interval estimate controls the actual density at its Lebesgue
 points. The coefficient need not be continuous. -/
 theorem density_le_of_local_interval_bound
@@ -50,46 +45,27 @@ theorem density_le_of_local_interval_bound
       ∃ δ > 0, ∀ d : ℝ, 0 < d → d < δ →
         μ.real (Ioc t (t + d)) ≤ (f t + ε) * d) :
     ∀ᵐ t ∂volume.restrict (Ioo a b), ρ t ≤ f t := by
-  have hint : IntervalIntegrable ρ volume a b := by
-    apply IntegrableOn.intervalIntegrable
-    apply IntegrableOn.of_bound isCompact_uIcc.measure_lt_top hρ.aestronglyMeasurable C
-    exact Eventually.of_forall (fun t => by
-      rw [Real.norm_eq_abs, abs_of_nonneg (hρ0 t)]
-      exact hρC t)
-  have hdiff := hint.ae_hasDerivAt_integral
+  have hint : IntervalIntegrable ρ volume a b :=
+    (IntegrableOn.of_bound isCompact_uIcc.measure_lt_top hρ.aestronglyMeasurable C
+      (.of_forall fun t => (abs_of_nonneg (hρ0 t)).trans_le (hρC t))).intervalIntegrable
   filter_upwards [hlocal, ae_restrict_mem measurableSet_Ioo,
-    ae_restrict_of_ae hdiff] with t htlocal ht hdt
-  have hab : a ≤ b := le_of_lt (ht.1.trans ht.2)
-  have htcc : t ∈ uIcc a b := by
-    rw [uIcc_of_le hab]
-    exact ⟨ht.1.le, ht.2.le⟩
-  have hderiv := hdt htcc t htcc
-  have hstep : Tendsto AngularGrid.selectionRate atTop (𝓝[>] (0 : ℝ)) :=
-    tendsto_nhdsWithin_iff.mpr
-      ⟨AngularGrid.selectionRate_tendsto, Eventually.of_forall AngularGrid.selectionRate_pos⟩
-  have hquot : Tendsto (fun n =>
-      (∫ s in t..(t + AngularGrid.selectionRate n), ρ s) / AngularGrid.selectionRate n)
+    ae_restrict_of_ae hint.ae_hasDerivAt_integral] with t htlocal ht hdt
+  have htcc := Icc_subset_uIcc (Ioo_subset_Icc_self ht)
+  have hquot : Tendsto (fun n => (∫ s in t..(t + selectionRate n), ρ s) / selectionRate n)
       atTop (𝓝 (ρ t)) := by
-    simpa only [intervalIntegral.integral_same, sub_zero, smul_eq_mul,
-      div_eq_mul_inv, mul_comm, Function.comp_def] using hderiv.tendsto_slope_zero_right.comp hstep
-  apply le_of_forall_pos_le_add
-  intro ε hε
+    simpa only [intervalIntegral.integral_same, sub_zero, smul_eq_mul, div_eq_mul_inv, mul_comm,
+      Function.comp_def] using (hdt htcc t htcc).tendsto_slope_zero_right.comp
+        (tendsto_nhdsWithin_iff.mpr ⟨selectionRate_tendsto, .of_forall selectionRate_pos⟩)
+  refine le_of_forall_pos_le_add fun ε hε => ?_
   obtain ⟨δ, hδ, hbound⟩ := htlocal ε hε
-  apply le_of_tendsto hquot
-  filter_upwards [AngularGrid.selectionRate_tendsto.eventually (isOpen_Iio.mem_nhds hδ),
-    AngularGrid.selectionRate_tendsto.eventually
-      (isOpen_Iio.mem_nhds (sub_pos.mpr ht.2))] with n hnδ hnb
-  have hpos := AngularGrid.selectionRate_pos n
-  have hsub : Ioc t (t + AngularGrid.selectionRate n) ⊆ Ioo a b := by
-    intro s hs
-    exact ⟨ht.1.trans hs.1, by linarith [hs.2]⟩
-  have hmass : μ.real (Ioc t (t + AngularGrid.selectionRate n)) =
-      ∫ s in t..(t + AngularGrid.selectionRate n), ρ s := by
-    rw [intervalIntegral.integral_of_le (by linarith : t ≤ t + AngularGrid.selectionRate n)]
-    exact measureReal_eq_integral_of_restrict_withDensity hρ hρ0 heq measurableSet_Ioc hsub
-  have h := hbound (AngularGrid.selectionRate n) hpos hnδ
-  rw [hmass] at h
-  exact (div_le_iff₀ hpos).mpr h
+  refine le_of_tendsto hquot ?_
+  filter_upwards [selectionRate_tendsto.eventually (isOpen_Iio.mem_nhds hδ),
+    selectionRate_tendsto.eventually (isOpen_Iio.mem_nhds (sub_pos.mpr ht.2))] with n hnδ hnb
+  have hpos := selectionRate_pos n
+  rw [div_le_iff₀ hpos, intervalIntegral.integral_of_le (by linarith),
+    ← measureReal_eq_integral_of_restrict_withDensity hρ hρ0 heq measurableSet_Ioc
+      fun s hs => ⟨ht.1.trans hs.1, by linarith [hs.2]⟩]
+  exact hbound _ hpos hnδ
 
 namespace AngularGrid
 
@@ -119,30 +95,21 @@ theorem curvature_density_sharp_on_wing
     hc hrate hR hbox hwidth haffine hA hB htop hperp ha hab hb
   have hsharp : ∀ᵐ t ∂volume.restrict (Ioo a b),
       ρ t ≤ sourceKappa (upperCornerVelocity target t) := by
-    apply density_le_of_local_interval_bound hρ (fun t => (hρbounds t).1)
-      (fun t => (hρbounds t).2) heq
+    refine density_le_of_local_interval_bound hρ (fun t => (hρbounds t).1)
+      (fun t => (hρbounds t).2) heq ?_
     filter_upwards [ae_restrict_mem measurableSet_Ioo,
-      ae_restrict_of_ae (ae_sigmaAt_companionSourceAngle_eq_zero target)] with t ht hcomp
-    intro ε hε
-    have htwing : t ∈ Ioo A B := ⟨ha.trans ht.1, ht.2.trans hb⟩
-    obtain ⟨δ, hδ, _, hlocal⟩ := curvature_local_source_bound hTarget hU hHausdorff hlevel
-      hc hrate hR hbox hwidth haffine hA hB htop hperp htwing hcomp hε
-    refine ⟨δ, hδ, ?_⟩
-    intro d hd hdδ
-    have h := hlocal t (t + d) (by linarith) (by linarith) (by linarith)
-    simpa only [add_sub_cancel_left] using h
-  let η := fun t => min (ρ t) (sourceKappa (upperCornerVelocity target t))
-  have hη : Measurable η :=
-    hρ.min (continuous_sourceKappa.measurable.comp hTarget.measurable_upperCornerVelocity)
-  refine ⟨η, hη, ?_, ?_, heq.trans ?_⟩
-  · intro t
-    exact ⟨le_min (hρbounds t).1 (sourceKappa_nonneg _), min_le_right _ _⟩
-  · intro t
-    exact (min_le_left _ _).trans (hρbounds t).2
-  · apply withDensity_congr_ae
-    filter_upwards [hsharp] with t ht
-    change ENNReal.ofReal (ρ t) = ENNReal.ofReal (min (ρ t) _)
-    rw [min_eq_left ht]
+      ae_restrict_of_ae (ae_sigmaAt_companionSourceAngle_eq_zero target)] with t ht hcomp ε hε
+    obtain ⟨δ, hδ, -, hlocal⟩ := curvature_local_source_bound hTarget hU hHausdorff hlevel
+      hc hrate hR hbox hwidth haffine hA hB htop hperp ⟨ha.trans ht.1, ht.2.trans hb⟩ hcomp hε
+    refine ⟨δ, hδ, fun d hd hdδ => ?_⟩
+    simpa only [add_sub_cancel_left] using
+      hlocal t (t + d) (by linarith) (by linarith) (by linarith)
+  refine ⟨fun t => min (ρ t) (sourceKappa (upperCornerVelocity target t)),
+    hρ.min (continuous_sourceKappa.measurable.comp hTarget.measurable_upperCornerVelocity),
+    fun t => ⟨le_min (hρbounds t).1 (sourceKappa_nonneg _), min_le_right _ _⟩,
+    fun t => (min_le_left _ _).trans (hρbounds t).2, heq.trans (withDensity_congr_ae ?_)⟩
+  filter_upwards [hsharp] with t ht
+  rw [min_eq_left ht]
 
 theorem curvature_restrict_le_source_density
     {target : Set Plane} {U : ℕ → Set Plane}
@@ -163,8 +130,7 @@ theorem curvature_restrict_le_source_density
         (fun t => ENNReal.ofReal (sourceKappa (upperCornerVelocity target t))) := by
   obtain ⟨ρ, _, hρ, _, heq⟩ := curvature_density_sharp_on_wing hTarget hU hHausdorff hlevel
     hc hrate hR hbox hwidth haffine hA hB htop hperp ha hab hb
-  rw [heq]
-  exact withDensity_mono (Eventually.of_forall (fun t => ENNReal.ofReal_le_ofReal (hρ t).2))
+  exact heq ▸ withDensity_mono (.of_forall fun t => ENNReal.ofReal_le_ofReal (hρ t).2)
 
 end AngularGrid
 
@@ -183,21 +149,13 @@ theorem IsFullCapMaximizer.curvature_density_sharp_on_wing {K : Set Plane}
       (∀ t, ρ t ≤ 4 * (|horizontalLeft K| + |horizontalRight K| + 1) + 10) ∧
       (upperCurvature K).restrict (Ioo a b) =
         (volume.restrict (Ioo a b)).withDensity (fun t => ENNReal.ofReal (ρ t)) := by
-  let R := |horizontalLeft K| + |horizontalRight K| + 1
-  have hR : 0 ≤ R := by positivity
-  have hbox : K ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1 := by
-    apply subset_symmetricBox_of_horizontalBox
-    intro p hp
-    refine ⟨?_, hK.isCap.inStrip hp⟩
-    rw [← horizontalProjection_eq_Icc hK.isCap.nonempty hK.isCap.isCompact hK.isCap.convex]
-    exact ⟨p, hp, rfl⟩
-  obtain ⟨level, coefficient, U, hlevel, hc, hrate, hU, _, hHausdorff⟩ :=
-    AngularGrid.exists_selected_sequence hK (by linarith : -R ≤ R) hbox
-  have hlevelTop : Tendsto level atTop atTop := tendsto_atTop_mono hlevel tendsto_id
-  have hwidth : 0 < capWidth K := by linarith [hK.width_bounds.1, one_lt_M]
-  exact AngularGrid.curvature_density_sharp_on_wing hK.isCap hU hHausdorff hlevelTop
-    (fun n => (hc n).le) hrate hR (fun n => (hU n).inBox) hwidth haffine
-    hA hB htop hperp ha hab hb
+  have hR : 0 ≤ |horizontalLeft K| + |horizontalRight K| + 1 := by positivity
+  obtain ⟨level, coefficient, U, hlevel, hc, hrate, hU, -, hHausdorff⟩ :=
+    AngularGrid.exists_selected_sequence hK (neg_le_self hR) (subset_symmetricBox_of_horizontalBox
+      fun p hp => ⟨hK.isCap.fst_mem_Icc hp, hK.isCap.inStrip hp⟩)
+  exact AngularGrid.curvature_density_sharp_on_wing hK.isCap hU hHausdorff
+    (tendsto_atTop_mono hlevel tendsto_id) (fun n => (hc n).le) hrate hR (fun n => (hU n).inBox)
+    (by linarith only [hK.width_bounds.1, one_lt_M]) haffine hA hB htop hperp ha hab hb
 
 theorem IsFullCapMaximizer.curvature_restrict_le_source_density {K : Set Plane}
     (hK : IsFullCapMaximizer K) {m c A B a b : ℝ}
@@ -211,7 +169,6 @@ theorem IsFullCapMaximizer.curvature_restrict_le_source_density {K : Set Plane}
         (fun t => ENNReal.ofReal (sourceKappa (upperCornerVelocity K t))) := by
   obtain ⟨ρ, _, hρ, _, heq⟩ := hK.curvature_density_sharp_on_wing haffine
     hA hB htop hperp ha hab hb
-  rw [heq]
-  exact withDensity_mono (Eventually.of_forall (fun t => ENNReal.ofReal_le_ofReal (hρ t).2))
+  exact heq ▸ withDensity_mono (.of_forall fun t => ENNReal.ofReal_le_ofReal (hρ t).2)
 
 end AmbidextrousSofa

@@ -43,12 +43,7 @@ theorem initialFloorSine_sq {h : ℝ} (h0 : 0 ≤ h) (h2 : h ≤ 2) :
 
 theorem initialFloorSine_le_one {h : ℝ} (h0 : 0 ≤ h) (h2 : h ≤ 2) :
     initialFloorSine h ≤ 1 := by
-  have hs := initialFloorSine_sq h0 h2
-  by_contra hnle
-  have hgt : 1 < initialFloorSine h := lt_of_not_ge hnle
-  have hp := mul_pos (sub_pos.mpr hgt)
-    (show 0 < initialFloorSine h + 1 by linarith)
-  nlinarith [sq_nonneg (h - 1)]
+  nlinarith [initialFloorSine_sq h0 h2, initialFloorSine_nonneg h, sq_nonneg (h - 1)]
 
 theorem cos_initialFloorAngle {h : ℝ} (h0 : 0 ≤ h) (h2 : h ≤ 2) :
     Real.cos (initialFloorAngle h) = 1 - h :=
@@ -57,8 +52,7 @@ theorem cos_initialFloorAngle {h : ℝ} (h0 : 0 ≤ h) (h2 : h ≤ 2) :
 theorem sin_initialFloorAngle (h : ℝ) :
     Real.sin (initialFloorAngle h) = initialFloorSine h := by
   rw [initialFloorAngle, Real.sin_arccos, initialFloorSine]
-  congr 1
-  ring
+  ring_nf
 
 theorem hasDerivAt_initialFloorCircleP (d B t : ℝ) :
     HasDerivAt (initialFloorCircleP d B) (-1 - initialFloorCircleQ d B t) t := by
@@ -77,59 +71,33 @@ theorem hasDerivAt_initialFloorCircleQ (d B t : ℝ) :
 theorem initialFloorCircle_radius (d B t : ℝ) :
     (initialFloorCircleP d B t - 1) ^ 2 + (initialFloorCircleQ d B t + 1) ^ 2 =
       d ^ 2 + B ^ 2 := by
-  have hd := congrArg (fun x : ℝ => d ^ 2 * x) (Real.sin_sq_add_cos_sq t)
-  have hB := congrArg (fun x : ℝ => B ^ 2 * x) (Real.sin_sq_add_cos_sq t)
   unfold initialFloorCircleP initialFloorCircleQ
-  nlinarith
+  linear_combination (d ^ 2 + B ^ 2) * Real.sin_sq_add_cos_sq t
 
 theorem initialFloorCircle_energy (d B t : ℝ) :
     initialFloorEnergy (initialFloorCircleP d B t) (initialFloorCircleQ d B t) =
       d ^ 2 + B ^ 2 + initialFloorCircleP d B t - 3 / 4 := by
-  have h := initialFloorCircle_radius d B t
   unfold initialFloorEnergy
-  nlinarith
+  linear_combination initialFloorCircle_radius d B t
 
 theorem initialFloorCircle_energy_at_floor {d B h : ℝ} (h0 : 0 ≤ h) (h2 : h ≤ 2) :
     initialFloorEnergy (initialFloorCircleP d B (initialFloorAngle h))
       (initialFloorCircleQ d B (initialFloorAngle h)) =
         d ^ 2 + B ^ 2 + 1 / 4 + B * (1 - h) - d * initialFloorSine h := by
-  rw [initialFloorCircle_energy]
-  unfold initialFloorCircleP
-  rw [cos_initialFloorAngle h0 h2, sin_initialFloorAngle]
+  rw [initialFloorCircle_energy, initialFloorCircleP, cos_initialFloorAngle h0 h2,
+    sin_initialFloorAngle]
   ring
-
-theorem initialFloor_conditions_iff_stopping_energy (d B h : ℝ) :
-    InitialFloorEnergyConditions d B h ↔
-      d ^ 2 + B ^ 2 + 1 / 4 + max (B * (1 - h) - d * initialFloorSine h) (-1) ≤ 17 / 4 := by
-  constructor
-  · rintro ⟨hr, he⟩
-    have hm : max (B * (1 - h) - d * initialFloorSine h) (-1) ≤ 4 - (d ^ 2 + B ^ 2) :=
-      max_le (by linarith) (by linarith)
-    linarith
-  · intro he
-    constructor
-    · linarith [le_max_right (B * (1 - h) - d * initialFloorSine h) (-1)]
-    · linarith [le_max_left (B * (1 - h) - d * initialFloorSine h) (-1)]
 
 /-- The circle is used only at its actual stopping point. In the first
 alternative no continuation to the later floor angle is invoked. -/
-theorem initialFloor_stopped_circle_energy {d B h τ : ℝ}
-    (h0 : 0 ≤ h) (h2 : h ≤ 2)
-    (hstop : initialFloorCircleP d B τ = 0 ∨ τ = initialFloorAngle h) :
-    initialFloorEnergy (initialFloorCircleP d B τ) (initialFloorCircleQ d B τ) ≤
-      d ^ 2 + B ^ 2 + 1 / 4 + max (B * (1 - h) - d * initialFloorSine h) (-1) := by
-  rcases hstop with hp | rfl
-  · rw [initialFloorCircle_energy, hp]
-    linarith [le_max_right (B * (1 - h) - d * initialFloorSine h) (-1)]
-  · rw [initialFloorCircle_energy_at_floor h0 h2]
-    linarith [le_max_left (B * (1 - h) - d * initialFloorSine h) (-1)]
-
 theorem initialFloor_stopped_energy_le {d B h τ : ℝ}
     (h0 : 0 ≤ h) (h2 : h ≤ 2) (hcond : InitialFloorEnergyConditions d B h)
     (hstop : initialFloorCircleP d B τ = 0 ∨ τ = initialFloorAngle h) :
-    initialFloorEnergy (initialFloorCircleP d B τ) (initialFloorCircleQ d B τ) ≤ 17 / 4 :=
-  (initialFloor_stopped_circle_energy h0 h2 hstop).trans
-    ((initialFloor_conditions_iff_stopping_energy d B h).1 hcond)
+    initialFloorEnergy (initialFloorCircleP d B τ) (initialFloorCircleQ d B τ) ≤ 17 / 4 := by
+  obtain ⟨hr, he⟩ := hcond
+  rcases hstop with hp | rfl
+  · rw [initialFloorCircle_energy, hp]; linarith
+  · rw [initialFloorCircle_energy_at_floor h0 h2]; linarith
 
 theorem absolutelyContinuousOnInterval_const_real (c a b : ℝ) :
     AbsolutelyContinuousOnInterval (fun _ : ℝ => c) a b :=
@@ -146,34 +114,21 @@ theorem eqOn_initialFloorCircle_of_zero_source {p q : ℝ → ℝ} {d B τ : ℝ
     (hp0 : p 0 = 1 + B) (hq0 : q 0 = d - 1) :
     EqOn p (initialFloorCircleP d B) (Icc 0 τ) ∧
       EqOn q (initialFloorCircleQ d B) (Icc 0 τ) := by
-  have hcp : ContDiff ℝ 1 (initialFloorCircleP d B) := by unfold initialFloorCircleP; fun_prop
-  have hcq : ContDiff ℝ 1 (initialFloorCircleQ d B) := by unfold initialFloorCircleQ; fun_prop
-  let x : ℝ → ℝ := fun t => p t - initialFloorCircleP d B t
-  let y : ℝ → ℝ := fun t => q t - initialFloorCircleQ d B t
-  have hx : AbsolutelyContinuousOnInterval x 0 τ :=
-    hp.sub hcp.contDiffOn.absolutelyContinuousOnInterval
-  have hy : AbsolutelyContinuousOnInterval y 0 τ :=
-    hq.sub hcq.contDiffOn.absolutelyContinuousOnInterval
-  have hE : AbsolutelyContinuousOnInterval (fun t => x t ^ 2 + y t ^ 2) 0 τ := by
-    simpa only [pow_two, Pi.add_apply, Pi.mul_apply] using (hx.fun_mul hx).fun_add (hy.fun_mul hy)
-  have hode' := (ae_restrict_iff' measurableSet_Icc).1 hode
-  have hD : ∀ᵐ t ∂volume, t ∈ uIcc 0 τ →
-      HasDerivAt (fun s => x s ^ 2 + y s ^ 2) 0 t := by
-    filter_upwards [hode'] with t ht hmem
-    rw [uIcc_of_le hτ] at hmem
-    have hd := (((ht hmem).1.fun_sub (hasDerivAt_initialFloorCircleP d B t)).fun_pow 2).fun_add
-      (((ht hmem).2.fun_sub (hasDerivAt_initialFloorCircleQ d B t)).fun_pow 2)
-    exact hd.congr_deriv (by ring)
-  obtain ⟨K, hK⟩ := hE.const_of_ae_hasDerivAt_zero hD
-  have hzero := hK 0 (by simp)
-  have hx0 : x 0 = 0 := by simp [x, initialFloorCircleP, hp0]
-  have hy0 : y 0 = 0 := by simp [y, initialFloorCircleQ, hq0]; ring
-  rw [hx0, hy0] at hzero
-  have hpoint : ∀ t ∈ Icc (0 : ℝ) τ, x t = 0 ∧ y t = 0 := by
-    intro t ht
-    have h := hK t (by simpa only [uIcc_of_le hτ] using ht)
-    constructor <;> apply sq_eq_zero_iff.mp <;> nlinarith [sq_nonneg (x t), sq_nonneg (y t)]
-  exact ⟨fun t ht => sub_eq_zero.mp (hpoint t ht).1,
-    fun t ht => sub_eq_zero.mp (hpoint t ht).2⟩
+  have hx := hp.fun_sub (ContDiffOn.absolutelyContinuousOnInterval (f := initialFloorCircleP d B)
+    (by unfold initialFloorCircleP; fun_prop))
+  have hy := hq.fun_sub (ContDiffOn.absolutelyContinuousOnInterval (f := initialFloorCircleQ d B)
+    (by unfold initialFloorCircleQ; fun_prop))
+  obtain ⟨K, hK⟩ := ((hx.fun_mul hx).fun_add (hy.fun_mul hy)).const_of_ae_hasDerivAt_zero <| by
+    rw [uIcc_of_le hτ]
+    filter_upwards [(ae_restrict_iff' measurableSet_Icc).1 hode] with t ht hmem
+    have hx := (ht hmem).1.fun_sub (hasDerivAt_initialFloorCircleP d B t)
+    have hy := (ht hmem).2.fun_sub (hasDerivAt_initialFloorCircleQ d B t)
+    exact ((hx.fun_mul hx).fun_add (hy.fun_mul hy)).congr_deriv (by ring)
+  have hK0 := hK 0 (by simp)
+  simp only [initialFloorCircleP, initialFloorCircleQ, hp0, hq0, Real.cos_zero,
+    Real.sin_zero] at hK0
+  have key t (ht : t ∈ Icc 0 τ) := mul_self_add_mul_self_eq_zero.1
+    ((hK t (by rwa [uIcc_of_le hτ])).trans (by rw [← hK0]; ring))
+  exact ⟨fun t ht => sub_eq_zero.1 (key t ht).1, fun t ht => sub_eq_zero.1 (key t ht).2⟩
 
 end AmbidextrousSofa.Analysis

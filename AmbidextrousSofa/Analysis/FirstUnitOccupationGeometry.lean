@@ -31,15 +31,12 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
   (heq : (upperCurvature U).restrict (regularCurvatureDomain m) =
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
+set_option quotPrecheck false
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-set_option quotPrecheck false in
 local notation "p" => supportP (F).fD (F).g
-set_option quotPrecheck false in
 local notation "q" => supportQ (F).gD (F).f
 local notation "v" => (fun t : ℝ => leftCompanionWingDensity m ρ (t + Real.pi / 2))
-set_option quotPrecheck false in
 local notation "B" => firstTangentPoint (F).f (F).fD
-set_option quotPrecheck false in
 local notation "Z" => innerCornerPoint (F).f (F).g
 
 theorem fullTiltedSupportQuarterPair_first_window_positive_contact {C h α β η t : ℝ}
@@ -52,29 +49,20 @@ theorem fullTiltedSupportQuarterPair_first_window_positive_contact {C h α β η
     (hbefore : ∀ s ∈ Ico (0 : ℝ) β, (B s).1 < C) (ht : t ∈ Ioo α β) :
     p t < 0 ∧ (B t).1 ∈ Ioo (-C) C ∧ 0 < (B t).2 ∧
       sweptNiche U (Real.pi / 2) (B t).1 = (B t).2 := by
-  have htq : t ∈ Ioo (0 : ℝ) (Real.pi / 2) :=
-    ⟨hphase.first_mem.1.trans ht.1, ht.2.trans hβ.2⟩
+  have htq : t ∈ Ioo (0 : ℝ) (Real.pi / 2) := ⟨hphase.first_mem.1.trans ht.1, ht.2.trans hβ.2⟩
   have hp : p t < 0 := by
-    rcases lt_trichotomy t η with hlt | heq | hgt
-    · exact (hphase.core_signs t ⟨ht.1, hlt⟩).1
-    · simpa only [heq] using hphase.first_at_second
-    · exact (hphase.final_signs t ⟨hgt, htq.2.le⟩).1
+    obtain hlt | rfl | hgt := lt_trichotomy t η
+    exacts [(hphase.core_signs t ⟨ht.1, hlt⟩).1, hphase.first_at_second,
+      (hphase.final_signs t ⟨hgt, htq.2.le⟩).1]
   have hxR : (B t).1 < C := hbefore t ⟨htq.1.le, ht.2⟩
-  have hB0 := (fullTiltedSupportQuarterPair_tangent_traces
-    hU hm haffine hρ hρ0 hρK heq hl hr hmpos hheight hlow).1
-  have horder := (fullTiltedSupportQuarterPair_first_tangent_order
-    hU hm haffine hρ hρ0 hρK heq hunit).1
-  have hx0 := horder (show (0 : ℝ) ∈ Icc 0 (Real.pi / 2) from
-    ⟨le_rfl, by positivity⟩) (Ioo_subset_Icc_self htq) htq.1.le
-  dsimp only at hx0
-  rw [hB0] at hx0
-  have hxL : -C < (B t).1 := by
-    change 2 * C - 1 ≤ (B t).1 at hx0
-    linarith only [hx0, hC]
+  have hx0 := (fullTiltedSupportQuarterPair_first_tangent_order hU hm haffine hρ hρ0 hρK heq
+    hunit).1 ⟨le_rfl, by positivity⟩ (Ioo_subset_Icc_self htq) htq.1.le
+  simp only [(fullTiltedSupportQuarterPair_tangent_traces
+    hU hm haffine hρ hρ0 hρK heq hl hr hmpos hheight hlow).1] at hx0
   have hy := fullTiltedSupportQuarterPair_first_tangent_height_pos_of_abscissa_lt
     hU hm haffine hρ hρ0 hρK heq hheight hunit (Ioo_subset_Icc_self htq) hβ
-    ht.2.le (by rw [hβx]; exact hxR)
-  exact ⟨hp, ⟨hxL, hxR⟩, hy,
+    ht.2.le (hxR.trans_eq hβx.symm)
+  exact ⟨hp, ⟨by linarith only [hx0, hC], hxR⟩, hy,
     fullTiltedSupportQuarterPair_niche_first_tangency
       hU hm haffine hρ hρ0 hρK heq hunit htq hp.le hy.le⟩
 
@@ -98,15 +86,10 @@ theorem fullTiltedSupportQuarterPair_unique_core_contact_on_prefix {C h α η τ
   have hgeo := fullTiltedSupportQuarterPair_core_phase_geometry
     hU hm haffine hρ hρ0 hρK heq hl hr hC0 hC1 hh0 hh1 hheight hlow hhigh
     hκ hunit hphase (Ioo_subset_Ioc_self htphase)
-  have hJR : horizontalRight U - capWidth U / 4 = C := by
-    unfold capWidth
-    rw [hl, hr]
-    ring
-  have hcontact := fullTiltedSupportQuarterPair_core_contact hU hm haffine hρ hρ0 hρK heq
-    hτ hunit hcompanion ⟨hphase.first_mem.1.trans ht.1, ht.2⟩
+  exact ⟨hgeo.2.2.1, hgeo.1, hgeo.2.1, fullTiltedSupportQuarterPair_core_contact
+    hU hm haffine hρ hρ0 hρK heq hτ hunit hcompanion ⟨hphase.first_mem.1.trans ht.1, ht.2⟩
     (hphase.core_signs t htphase).1 (hphase.core_signs t htphase).2 hgeo.2.1
-    (by rw [hJR]; exact hgeo.1.2.le)
-  exact ⟨hgeo.2.2.1, hgeo.1, hgeo.2.1, hcontact.1, hcontact.2⟩
+    (by rw [capWidth, hl, hr]; linarith only [hgeo.1.2])⟩
 
 end ActualPair
 

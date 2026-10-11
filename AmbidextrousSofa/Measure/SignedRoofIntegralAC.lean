@@ -20,143 +20,17 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-theorem integral_firstTangent_density_ac {a b : ℝ} {f g fD gD fDD : ℝ → ℝ}
-    (hab : a ≤ b) (hf : Continuous f) (hg : Continuous g)
-    (hfD : Continuous fD) (hgD : Continuous gD)
-    (hfAC : AbsolutelyContinuousOnInterval f a b)
-    (hgAC : AbsolutelyContinuousOnInterval g a b)
-    (hfDAC : AbsolutelyContinuousOnInterval fD a b)
-    (hderivF : ∀ᵐ t ∂volume.restrict (Ioo a b), HasDerivAt f (fD t) t)
-    (hderivG : ∀ᵐ t ∂volume.restrict (Ioo a b), HasDerivAt g (gD t) t)
-    (hsecondF : ∀ᵐ t ∂volume.restrict (Ioo a b), HasDerivAt fD (fDD t) t)
-    (hfDD : IntervalIntegrable fDD volume a b) :
-    (∫ t in a..b, (f t - 1) * (f t - 1 + fDD t)) =
-      (∫ t in a..b, cornerDensity f g fD gD t) -
-      (∫ t in a..b, supportP fD g t ^ 2) +
-      firstMomentumPrimitive f g fD b - firstMomentumPrimitive f g fD a := by
-  have hp : Continuous (supportP fD g) := (hfD.sub hg).add continuous_const
-  have hp2 : Continuous (fun t => supportP fD g t ^ 2) := hp.pow 2
-  have hc : Continuous (cornerDensity f g fD gD) := by
-    unfold cornerDensity supportP supportQ
-    fun_prop
-  have hconst : AbsolutelyContinuousOnInterval (fun _ : ℝ => (1 : ℝ)) a b :=
-    (LipschitzWith.const (1 : ℝ)).lipschitzOnWith.absolutelyContinuousOnInterval
-  have hprimitive : AbsolutelyContinuousOnInterval (firstMomentumPrimitive f g fD) a b :=
-    (hfAC.sub hconst).mul ((hfDAC.sub hgAC).add hconst)
-  have hd : IntervalIntegrable (firstMomentumDerivative f g fD gD fDD) volume a b :=
-    ((hfD.mul hp).intervalIntegrable _ _).add
-      ((hfDD.sub (hgD.intervalIntegrable _ _)).continuousOn_mul
-        (hf.sub continuous_const).continuousOn)
-  have hftc : (∫ t in a..b, firstMomentumDerivative f g fD gD fDD t) =
-      firstMomentumPrimitive f g fD b - firstMomentumPrimitive f g fD a := by
-    apply integral_eq_sub_of_ac_of_ae_hasDerivAt hab hprimitive
-    filter_upwards [hderivF, hderivG, hsecondF] with t hdf hdg hddf
-    exact (hdf.sub_const 1).mul ((hddf.sub hdg).add_const 1)
-  calc
-    _ = ∫ t in a..b, (cornerDensity f g fD gD t - supportP fD g t ^ 2) +
-        firstMomentumDerivative f g fD gD fDD t := by
-      apply intervalIntegral.integral_congr
-      intro t _
-      exact firstTangent_density_identity f g fD gD fDD t
-    _ = _ := by
-      rw [intervalIntegral.integral_add
-        ((hc.intervalIntegrable _ _).sub (hp2.intervalIntegrable _ _)) hd,
-        intervalIntegral.integral_sub (hc.intervalIntegrable _ _)
-          (hp2.intervalIntegrable _ _), hftc]
-      ring
-
-theorem integral_secondTangent_density_ac {a b : ℝ} {f g fD gD gDD : ℝ → ℝ}
-    (hab : a ≤ b) (hf : Continuous f) (hg : Continuous g)
-    (hfD : Continuous fD) (hgD : Continuous gD)
-    (hfAC : AbsolutelyContinuousOnInterval f a b)
-    (hgAC : AbsolutelyContinuousOnInterval g a b)
-    (hgDAC : AbsolutelyContinuousOnInterval gD a b)
-    (hderivF : ∀ᵐ t ∂volume.restrict (Ioo a b), HasDerivAt f (fD t) t)
-    (hderivG : ∀ᵐ t ∂volume.restrict (Ioo a b), HasDerivAt g (gD t) t)
-    (hsecondG : ∀ᵐ t ∂volume.restrict (Ioo a b), HasDerivAt gD (gDD t) t)
-    (hgDD : IntervalIntegrable gDD volume a b) :
-    (∫ t in a..b, (g t - 1) * (g t - 1 + gDD t)) =
-      (∫ t in a..b, cornerDensity f g fD gD t) -
-      (∫ t in a..b, supportQ gD f t ^ 2) +
-      secondMomentumPrimitive f g gD b - secondMomentumPrimitive f g gD a := by
-  have hq : Continuous (supportQ gD f) := (hgD.add hf).sub continuous_const
-  have hq2 : Continuous (fun t => supportQ gD f t ^ 2) := hq.pow 2
-  have hc : Continuous (cornerDensity f g fD gD) := by
-    unfold cornerDensity supportP supportQ
-    fun_prop
-  have hconst : AbsolutelyContinuousOnInterval (fun _ : ℝ => (1 : ℝ)) a b :=
-    (LipschitzWith.const (1 : ℝ)).lipschitzOnWith.absolutelyContinuousOnInterval
-  have hprimitive : AbsolutelyContinuousOnInterval (secondMomentumPrimitive f g gD) a b :=
-    (hgAC.sub hconst).mul ((hgDAC.add hfAC).sub hconst)
-  have hd : IntervalIntegrable (secondMomentumDerivative f g fD gD gDD) volume a b :=
-    ((hgD.mul hq).intervalIntegrable _ _).add
-      ((hgDD.add (hfD.intervalIntegrable _ _)).continuousOn_mul
-        (hg.sub continuous_const).continuousOn)
-  have hftc : (∫ t in a..b, secondMomentumDerivative f g fD gD gDD t) =
-      secondMomentumPrimitive f g gD b - secondMomentumPrimitive f g gD a := by
-    apply integral_eq_sub_of_ac_of_ae_hasDerivAt hab hprimitive
-    filter_upwards [hderivF, hderivG, hsecondG] with t hdf hdg hddg
-    exact (hdg.sub_const 1).mul ((hddg.add hdf).sub_const 1)
-  calc
-    _ = ∫ t in a..b, (cornerDensity f g fD gD t - supportQ gD f t ^ 2) +
-        secondMomentumDerivative f g fD gD gDD t := by
-      apply intervalIntegral.integral_congr
-      intro t _
-      exact secondTangent_density_identity f g fD gD gDD t
-    _ = _ := by
-      rw [intervalIntegral.integral_add
-        ((hc.intervalIntegrable _ _).sub (hq2.intervalIntegrable _ _)) hd,
-        intervalIntegral.integral_sub (hc.intervalIntegrable _ _)
-          (hq2.intervalIntegrable _ _), hftc]
-      ring
-
-/-- The middle graph arc is traversed in reverse. Absolute continuity of
-the six coordinates is enough; no multiplicity or injectivity premise is
-needed for this identity of oriented graph integrals. -/
-theorem twice_integral_three_graph_arcs_ac
-    {a b d e : ℝ} {F : ℝ → ℝ} {P Q R : ℝ → Plane}
-    {PX PY QX QY RX RY : ℝ → ℝ}
-    (had : a ≤ d) (hbd : b ≤ d) (hbe : b ≤ e)
-    (hPXac : AbsolutelyContinuousOnInterval (fun t => (P t).1) a d)
-    (hPYac : AbsolutelyContinuousOnInterval (fun t => (P t).2) a d)
-    (hQXac : AbsolutelyContinuousOnInterval (fun t => (Q t).1) b d)
-    (hQYac : AbsolutelyContinuousOnInterval (fun t => (Q t).2) b d)
-    (hRXac : AbsolutelyContinuousOnInterval (fun t => (R t).1) b e)
-    (hRYac : AbsolutelyContinuousOnInterval (fun t => (R t).2) b e)
-    (hPX : ∀ᵐ t ∂volume.restrict (Ioo a d), HasDerivAt (fun s => (P s).1) (PX t) t)
-    (hPY : ∀ᵐ t ∂volume.restrict (Ioo a d), HasDerivAt (fun s => (P s).2) (PY t) t)
-    (hQX : ∀ᵐ t ∂volume.restrict (Ioo b d), HasDerivAt (fun s => (Q s).1) (QX t) t)
-    (hQY : ∀ᵐ t ∂volume.restrict (Ioo b d), HasDerivAt (fun s => (Q s).2) (QY t) t)
-    (hRX : ∀ᵐ t ∂volume.restrict (Ioo b e), HasDerivAt (fun s => (R s).1) (RX t) t)
-    (hRY : ∀ᵐ t ∂volume.restrict (Ioo b e), HasDerivAt (fun s => (R s).2) (RY t) t)
-    (hPXi : IntervalIntegrable PX volume a d) (hPYi : IntervalIntegrable PY volume a d)
-    (hQXi : IntervalIntegrable QX volume b d) (hQYi : IntervalIntegrable QY volume b d)
-    (hRXi : IntervalIntegrable RX volume b e) (hRYi : IntervalIntegrable RY volume b e)
-    (hF : Continuous F)
-    (hgraphP : ∀ t ∈ Ioo a d, F (P t).1 = (P t).2)
-    (hgraphQ : ∀ t ∈ Ioo b d, F (Q t).1 = (Q t).2)
-    (hgraphR : ∀ t ∈ Ioo b e, F (R t).1 = (R t).2)
-    (hPQ : P d = Q d) (hQR : Q b = R b)
-    (hPzero : (P a).2 = 0) (hRzero : (R e).2 = 0) :
-    2 * (∫ x in (P a).1..(R e).1, F x) =
-      -(∫ t in a..d, coordDet (P t) (PX t, PY t)) +
-        (∫ t in b..d, coordDet (Q t) (QX t, QY t)) -
-        ∫ t in b..e, coordDet (R t) (RX t, RY t) := by
-  have hpi := twice_integral_graph_parametrization_ac had
-    hPXac hPYac hPX hPY hPXi hPYi hF.continuousOn hgraphP
-  have hqi := twice_integral_graph_parametrization_ac hbd
-    hQXac hQYac hQX hQY hQXi hQYi hF.continuousOn hgraphQ
-  have hri := twice_integral_graph_parametrization_ac hbe
-    hRXac hRYac hRX hRY hRXi hRYi hF.continuousOn hgraphR
-  rw [hPQ, hPzero, mul_zero] at hpi
-  rw [← hQR, hRzero, mul_zero] at hri
-  have hsplit := intervalIntegral.integral_add_adjacent_intervals
-    (hF.intervalIntegrable (μ := volume) (P a).1 (Q b).1)
-    (hF.intervalIntegrable (μ := volume) (Q b).1 (Q d).1)
-  have hjoin := intervalIntegral.integral_add_adjacent_intervals
-    (hF.intervalIntegrable (μ := volume) (P a).1 (Q b).1)
-    (hF.intervalIntegrable (μ := volume) (Q b).1 (R e).1)
-  linarith
+/-- Integration of a density identity `L = c - P ^ 2 + M` whose correction `M` integrates
+to `m`. -/
+theorem integral_density_of_identity_ac {a b m : ℝ} {L c P M : ℝ → ℝ}
+    (hid : ∀ t, L t = c t - P t ^ 2 + M t) (hc : Continuous c) (hP : Continuous P)
+    (hMi : IntervalIntegrable M volume a b) (hftc : ∫ t in a..b, M t = m) :
+    (∫ t in a..b, L t) = (∫ t in a..b, c t) - (∫ t in a..b, P t ^ 2) + m := by
+  have hc' := hc.intervalIntegrable (μ := volume) a b
+  have hP' : IntervalIntegrable (fun t => P t ^ 2) volume a b := (hP.pow 2).intervalIntegrable a b
+  have hcP : IntervalIntegrable (fun t => c t - P t ^ 2) volume a b := hc'.sub hP'
+  rw [intervalIntegral.integral_congr fun t _ => hid t, intervalIntegral.integral_add hcP hMi,
+    intervalIntegral.integral_sub hc' hP', hftc]
 
 /-- Signed integration for the actual three graph arcs with measurable
 curvature. All derivative assertions are almost everywhere on the open
@@ -187,159 +61,103 @@ theorem signedRoof_integral_of_graphs_ac
       -(∫ t in (0 : ℝ)..(Real.pi / 2), cornerDensity f g fD gD t) +
       (∫ t in b..(Real.pi / 2), supportP fD g t ^ 2) +
       ∫ t in (0 : ℝ)..d, supportQ gD f t ^ 2 := by
-  have hL : (0 : ℝ) ≤ Real.pi / 2 := by linarith [Real.pi_pos]
   have h0d : 0 ≤ d := hb0.trans hbd
   have hbL : b ≤ Real.pi / 2 := hbd.trans hdL
-  have hsubD : uIcc (0 : ℝ) d ⊆ uIcc 0 (Real.pi / 2) := by
-    rw [uIcc_of_le h0d, uIcc_of_le hL]
-    exact Icc_subset_Icc le_rfl hdL
-  have hsubC : uIcc b d ⊆ uIcc 0 (Real.pi / 2) := by
-    rw [uIcc_of_le hbd, uIcc_of_le hL]
-    exact Icc_subset_Icc hb0 hdL
-  have hsubB : uIcc b (Real.pi / 2) ⊆ uIcc 0 (Real.pi / 2) := by
-    rw [uIcc_of_le hbL, uIcc_of_le hL]
-    exact Icc_subset_Icc hb0 le_rfl
-  have hderivD := ae_restrict_of_ae_restrict_of_subset
-    (show Ioo (0 : ℝ) d ⊆ Ioo 0 (Real.pi / 2) from
-      fun _ ht => ⟨ht.1, ht.2.trans_le hdL⟩) hderiv
-  have hderivC := ae_restrict_of_ae_restrict_of_subset
-    (show Ioo b d ⊆ Ioo 0 (Real.pi / 2) from
-      fun _ ht => ⟨hb0.trans_lt ht.1, ht.2.trans_le hdL⟩) hderiv
-  have hderivB := ae_restrict_of_ae_restrict_of_subset
-    (show Ioo b (Real.pi / 2) ⊆ Ioo 0 (Real.pi / 2) from
-      fun _ ht => ⟨hb0.trans_lt ht.1, ht.2⟩) hderiv
+  have hsubD : uIcc 0 d ⊆ uIcc 0 (Real.pi / 2) :=
+    uIcc_subset_uIcc left_mem_uIcc (mem_uIcc_of_le h0d hdL)
+  have hsubC : uIcc b d ⊆ uIcc 0 (Real.pi / 2) :=
+    uIcc_subset_uIcc (mem_uIcc_of_le hb0 hbL) (mem_uIcc_of_le h0d hdL)
+  have hsubB : uIcc b (Real.pi / 2) ⊆ uIcc 0 (Real.pi / 2) :=
+    uIcc_subset_uIcc (mem_uIcc_of_le hb0 hbL) right_mem_uIcc
+  have hderivD := ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo le_rfl hdL) hderiv
+  have hderivC := ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hb0 hdL) hderiv
+  have hderivB := ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hb0 le_rfl) hderiv
   have hconst : AbsolutelyContinuousOnInterval (fun _ : ℝ => (1 : ℝ)) 0 (Real.pi / 2) :=
     (LipschitzWith.const (1 : ℝ)).lipschitzOnWith.absolutelyContinuousOnInterval
   have hsin : AbsolutelyContinuousOnInterval Real.sin 0 (Real.pi / 2) :=
-    (show ContDiff ℝ 1 Real.sin by fun_prop).contDiffOn.absolutelyContinuousOnInterval
+    Real.contDiff_sin.contDiffOn.absolutelyContinuousOnInterval
   have hcos : AbsolutelyContinuousOnInterval Real.cos 0 (Real.pi / 2) :=
-    (show ContDiff ℝ 1 Real.cos by fun_prop).contDiffOn.absolutelyContinuousOnInterval
-  have hBXac : AbsolutelyContinuousOnInterval (fun t => (firstTangentPoint f fD t).1)
-      0 (Real.pi / 2) :=
-    ((hfAC.sub hconst).mul hcos).sub (hfDAC.mul hsin)
-  have hBYac : AbsolutelyContinuousOnInterval (fun t => (firstTangentPoint f fD t).2)
-      0 (Real.pi / 2) :=
-    ((hfAC.sub hconst).mul hsin).add (hfDAC.mul hcos)
-  have hDXac : AbsolutelyContinuousOnInterval (fun t => (secondTangentPoint g gD t).1)
-      0 (Real.pi / 2) := by
-    have h : AbsolutelyContinuousOnInterval
-        (fun t => -(g t - 1) * Real.sin t - gD t * Real.cos t) 0 (Real.pi / 2) :=
-      ((hgAC.sub hconst).neg.mul hsin).sub (hgDAC.mul hcos)
-    simpa only [secondTangentPoint, companionSupportPoint_coordinates] using h
-  have hDYac : AbsolutelyContinuousOnInterval (fun t => (secondTangentPoint g gD t).2)
-      0 (Real.pi / 2) := by
-    have h : AbsolutelyContinuousOnInterval
-        (fun t => (g t - 1) * Real.cos t - gD t * Real.sin t) 0 (Real.pi / 2) :=
-      ((hgAC.sub hconst).mul hcos).sub (hgDAC.mul hsin)
-    simpa only [secondTangentPoint, companionSupportPoint_coordinates] using h
+    Real.contDiff_cos.contDiffOn.absolutelyContinuousOnInterval
+  have hBac :
+      AbsolutelyContinuousOnInterval (fun t => (firstTangentPoint f fD t).1) 0 (Real.pi / 2) ∧
+        AbsolutelyContinuousOnInterval (fun t => (firstTangentPoint f fD t).2) 0 (Real.pi / 2) :=
+    absolutelyContinuousOnInterval_supportPoint (hfAC.sub hconst) hfDAC
+  have hDac :
+      AbsolutelyContinuousOnInterval (fun t => (secondTangentPoint g gD t).1) 0 (Real.pi / 2) ∧
+        AbsolutelyContinuousOnInterval (fun t => (secondTangentPoint g gD t).2) 0 (Real.pi / 2) :=
+    absolutelyContinuousOnInterval_companionSupportPoint (hgAC.sub hconst) hgDAC
   have hCXac : AbsolutelyContinuousOnInterval (fun t => (innerCornerPoint f g t).1)
       0 (Real.pi / 2) :=
     ((hfAC.sub hconst).mul hcos).sub ((hgAC.sub hconst).mul hsin)
   have hCYac : AbsolutelyContinuousOnInterval (fun t => (innerCornerPoint f g t).2)
       0 (Real.pi / 2) :=
     ((hfAC.sub hconst).mul hsin).add ((hgAC.sub hconst).mul hcos)
-  have hCXc : Continuous (innerCornerDX f g fD gD) := by
-    unfold innerCornerDX supportP supportQ
-    fun_prop
-  have hCYc : Continuous (innerCornerDY f g fD gD) := by
-    unfold innerCornerDY supportP supportQ
-    fun_prop
+  have hp : Continuous (supportP fD g) := (hfD.sub hg).add continuous_const
+  have hq : Continuous (supportQ gD f) := (hgD.add hf).sub continuous_const
+  have hc : Continuous (cornerDensity f g fD gD) := by
+    unfold cornerDensity supportP supportQ; fun_prop
+  have hCX : Continuous (innerCornerDX f g fD gD) := by
+    unfold innerCornerDX supportP supportQ; fun_prop
+  have hCY : Continuous (innerCornerDY f g fD gD) := by
+    unfold innerCornerDY supportP supportQ; fun_prop
   have hfDD' := hfDD.mono_set hsubB
   have hgDD' := hgDD.mono_set hsubD
   have hBrho : IntervalIntegrable (fun t => f t - 1 + fDD t) volume b (Real.pi / 2) :=
     ((hf.sub continuous_const).intervalIntegrable _ _).add hfDD'
   have hDrho : IntervalIntegrable (fun t => g t - 1 + gDD t) volume 0 d :=
     ((hg.sub continuous_const).intervalIntegrable _ _).add hgDD'
-  have hBXi : IntervalIntegrable (supportPointDX (fun t => f t - 1) fDD)
-      volume b (Real.pi / 2) :=
-    hBrho.neg.mul_continuousOn Real.continuous_sin.continuousOn
-  have hBYi : IntervalIntegrable (supportPointDY (fun t => f t - 1) fDD)
-      volume b (Real.pi / 2) :=
-    hBrho.mul_continuousOn Real.continuous_cos.continuousOn
-  have hDXi : IntervalIntegrable (companionSupportPointDX (fun t => g t - 1) gDD) volume 0 d :=
-    hDrho.neg.mul_continuousOn Real.continuous_cos.continuousOn
-  have hDYi : IntervalIntegrable (companionSupportPointDY (fun t => g t - 1) gDD) volume 0 d :=
-    hDrho.neg.mul_continuousOn Real.continuous_sin.continuousOn
-  have hBzero : (firstTangentPoint f fD (Real.pi / 2)).2 = 0 := by
-    simp only [firstTangentPoint, Reference.supportPoint, hFtop, sub_self,
-      Real.sin_pi_div_two, Real.cos_pi_div_two, zero_mul, mul_zero, add_zero]
-  have hDzero : (secondTangentPoint g gD 0).2 = 0 := by
-    simp only [secondTangentPoint, companionSupportPoint_coordinates, hGtop,
-      sub_self, Real.sin_zero, Real.cos_zero, zero_mul, mul_zero]
-  have hgraphs := twice_integral_three_graph_arcs_ac h0d hbd hbL
-    (PX := companionSupportPointDX (fun s => g s - 1) gDD)
-    (PY := companionSupportPointDY (fun s => g s - 1) gDD)
-    (RX := supportPointDX (fun s => f s - 1) fDD)
-    (RY := supportPointDY (fun s => f s - 1) fDD)
-    (hDXac.mono hsubD) (hDYac.mono hsubD) (hCXac.mono hsubC) (hCYac.mono hsubC)
-    (hBXac.mono hsubB) (hBYac.mono hsubB)
-    (by
-      filter_upwards [hderivD] with t ht
-      exact hasDerivAt_companionSupportPoint_fst (ht.2.1.sub_const 1) ht.2.2.2)
-    (by
-      filter_upwards [hderivD] with t ht
-      exact hasDerivAt_companionSupportPoint_snd (ht.2.1.sub_const 1) ht.2.2.2)
-    (by
-      filter_upwards [hderivC] with t ht
-      apply (((ht.1.sub_const 1).mul (Real.hasDerivAt_cos t)).sub
-        ((ht.2.1.sub_const 1).mul (Real.hasDerivAt_sin t))).congr_deriv
-      unfold innerCornerDX supportP supportQ
-      ring)
-    (by
-      filter_upwards [hderivC] with t ht
-      apply (((ht.1.sub_const 1).mul (Real.hasDerivAt_sin t)).add
-        ((ht.2.1.sub_const 1).mul (Real.hasDerivAt_cos t))).congr_deriv
-      unfold innerCornerDY supportP supportQ
-      ring)
-    (by
-      filter_upwards [hderivB] with t ht
-      exact hasDerivAt_supportPoint_fst (ht.1.sub_const 1) ht.2.2.1)
-    (by
-      filter_upwards [hderivB] with t ht
-      exact hasDerivAt_supportPoint_snd (ht.1.sub_const 1) ht.2.2.1)
-    hDXi hDYi (hCXc.intervalIntegrable _ _) (hCYc.intervalIntegrable _ _)
-    hBXi hBYi hN hgraphD hgraphC hgraphB
-    (innerCorner_eq_secondTangent_of_momentum_zero hqzero).symm
-    (innerCorner_eq_firstTangent_of_momentum_zero hpzero) hDzero hBzero
-  have hdetD : (∫ t in (0 : ℝ)..d, coordDet (secondTangentPoint g gD t)
-      (companionSupportPointDX (fun s => g s - 1) gDD t,
-        companionSupportPointDY (fun s => g s - 1) gDD t)) =
-      ∫ t in (0 : ℝ)..d, (g t - 1) * (g t - 1 + gDD t) := by
-    apply intervalIntegral.integral_congr
-    intro t _
-    exact coordDet_companionSupportPoint (fun s => g s - 1) gD gDD t
-  have hdetB : (∫ t in b..(Real.pi / 2), coordDet (firstTangentPoint f fD t)
-      (supportPointDX (fun s => f s - 1) fDD t,
-        supportPointDY (fun s => f s - 1) fDD t)) =
-      ∫ t in b..(Real.pi / 2), (f t - 1) * (f t - 1 + fDD t) := by
-    apply intervalIntegral.integral_congr
-    intro t _
-    exact coordDet_supportPoint (fun s => f s - 1) fD fDD t
-  have hdetC : (∫ t in b..d, coordDet (innerCornerPoint f g t)
-      (innerCornerDX f g fD gD t, innerCornerDY f g fD gD t)) =
-      ∫ t in b..d, cornerDensity f g fD gD t := by
-    apply intervalIntegral.integral_congr
-    intro t _
-    exact coordDet_innerCorner f g fD gD t
-  rw [hdetD, hdetC, hdetB] at hgraphs
-  simp only [secondTangentPoint, companionSupportPoint_coordinates, firstTangentPoint,
-    Reference.supportPoint, Real.cos_zero, Real.sin_zero, Real.cos_pi_div_two,
-    Real.sin_pi_div_two, mul_zero, mul_one, zero_sub] at hgraphs
-  have hBint := integral_firstTangent_density_ac hbL hf hg hfD hgD
-    (hfAC.mono hsubB) (hgAC.mono hsubB) (hfDAC.mono hsubB)
-    (hderivB.mono fun _ ht => ht.1) (hderivB.mono fun _ ht => ht.2.1)
-    (hderivB.mono fun _ ht => ht.2.2.1) hfDD'
-  have hDint := integral_secondTangent_density_ac h0d hf hg hfD hgD
-    (hfAC.mono hsubD) (hgAC.mono hsubD) (hgDAC.mono hsubD)
-    (hderivD.mono fun _ ht => ht.1) (hderivD.mono fun _ ht => ht.2.1)
-    (hderivD.mono fun _ ht => ht.2.2.2) hgDD'
-  simp only [firstMomentumPrimitive, hFtop, hpzero, sub_self, zero_mul,
-    mul_zero, add_zero, sub_zero] at hBint
-  simp only [secondMomentumPrimitive, hGtop, hqzero, sub_self, zero_mul,
-    mul_zero, add_zero, sub_zero] at hDint
-  have hc : Continuous (cornerDensity f g fD gD) := by
-    unfold cornerDensity supportP supportQ
-    fun_prop
+  -- The three arcs as graphs of `N`; the corner arc is traversed in reverse.
+  have hDi := twice_integral_graph_parametrization_ac h0d (hDac.1.mono hsubD) (hDac.2.mono hsubD)
+    (XD := companionSupportPointDX (fun s => g s - 1) gDD)
+    (YD := companionSupportPointDY (fun s => g s - 1) gDD)
+    (hderivD.mono fun t ht => hasDerivAt_companionSupportPoint_fst (ht.2.1.sub_const 1) ht.2.2.2)
+    (hderivD.mono fun t ht => hasDerivAt_companionSupportPoint_snd (ht.2.1.sub_const 1) ht.2.2.2)
+    (hDrho.neg.mul_continuousOn Real.continuous_cos.continuousOn)
+    (hDrho.neg.mul_continuousOn Real.continuous_sin.continuousOn) hN.continuousOn hgraphD
+  have hCi := twice_integral_graph_parametrization_ac hbd (hCXac.mono hsubC) (hCYac.mono hsubC)
+    (XD := innerCornerDX f g fD gD) (YD := innerCornerDY f g fD gD)
+    (hderivC.mono fun t ht => (((ht.1.sub_const 1).mul (Real.hasDerivAt_cos t)).sub
+      ((ht.2.1.sub_const 1).mul (Real.hasDerivAt_sin t))).congr_deriv
+      (by simp only [innerCornerDX, supportP, supportQ]; ring))
+    (hderivC.mono fun t ht => (((ht.1.sub_const 1).mul (Real.hasDerivAt_sin t)).add
+      ((ht.2.1.sub_const 1).mul (Real.hasDerivAt_cos t))).congr_deriv
+      (by simp only [innerCornerDY, supportP, supportQ]; ring))
+    (hCX.intervalIntegrable _ _) (hCY.intervalIntegrable _ _) hN.continuousOn hgraphC
+  have hBi := twice_integral_graph_parametrization_ac hbL (hBac.1.mono hsubB) (hBac.2.mono hsubB)
+    (XD := supportPointDX (fun s => f s - 1) fDD) (YD := supportPointDY (fun s => f s - 1) fDD)
+    (hderivB.mono fun t ht => hasDerivAt_supportPoint_fst (ht.1.sub_const 1) ht.2.2.1)
+    (hderivB.mono fun t ht => hasDerivAt_supportPoint_snd (ht.1.sub_const 1) ht.2.2.1)
+    (hBrho.neg.mul_continuousOn Real.continuous_sin.continuousOn)
+    (hBrho.mul_continuousOn Real.continuous_cos.continuousOn) hN.continuousOn hgraphB
+  rw [← innerCorner_eq_secondTangent_of_momentum_zero hqzero] at hDi
+  rw [← innerCorner_eq_firstTangent_of_momentum_zero hpzero] at hBi
+  simp only [Prod.mk.eta, secondTangentPoint, firstTangentPoint, coordDet_companionSupportPoint,
+    coordDet_supportPoint, coordDet_innerCorner] at hDi hCi hBi
+  simp only [companionSupportPoint_coordinates, Reference.supportPoint, hFtop, hGtop,
+    Real.cos_zero, Real.sin_zero, Real.cos_pi_div_two, Real.sin_pi_div_two, sub_self, mul_zero,
+    mul_one, zero_sub, sub_zero, add_zero] at hDi hBi
+  have hsplit := intervalIntegral.integral_add_adjacent_intervals
+    (hN.intervalIntegrable (μ := volume) (-gD 0) (innerCornerPoint f g b).1)
+    (hN.intervalIntegrable (innerCornerPoint f g b).1 (innerCornerPoint f g d).1)
+  have hjoin := intervalIntegral.integral_add_adjacent_intervals
+    (hN.intervalIntegrable (μ := volume) (-gD 0) (innerCornerPoint f g b).1)
+    (hN.intervalIntegrable (innerCornerPoint f g b).1 (-fD (Real.pi / 2)))
+  have hB := integral_density_of_identity_ac (firstTangent_density_identity f g fD gD fDD) hc hp
+    (((hfD.mul hp).intervalIntegrable _ _).add
+      ((hfDD'.sub (hgD.intervalIntegrable _ _)).continuousOn_mul
+        (hf.sub continuous_const).continuousOn))
+    (integral_eq_sub_of_ac_of_ae_hasDerivAt hbL (E := firstMomentumPrimitive f g fD)
+      (((hfAC.sub hconst).mul ((hfDAC.sub hgAC).add hconst)).mono hsubB)
+      (hderivB.mono fun t ht => (ht.1.sub_const 1).mul ((ht.2.2.1.sub ht.2.1).add_const 1)))
+  have hD := integral_density_of_identity_ac (secondTangent_density_identity f g fD gD gDD) hc hq
+    (((hgD.mul hq).intervalIntegrable _ _).add
+      ((hgDD'.add (hfD.intervalIntegrable _ _)).continuousOn_mul
+        (hg.sub continuous_const).continuousOn))
+    (integral_eq_sub_of_ac_of_ae_hasDerivAt h0d (E := secondMomentumPrimitive f g gD)
+      (((hgAC.sub hconst).mul ((hgDAC.add hfAC).sub hconst)).mono hsubD)
+      (hderivD.mono fun t ht => (ht.2.1.sub_const 1).mul ((ht.2.2.2.add ht.1).sub_const 1)))
+  simp only [firstMomentumPrimitive, secondMomentumPrimitive, hFtop, hGtop, hpzero, hqzero,
+    sub_self, zero_mul, mul_zero, add_zero] at hB hD
   have hsplit0 := intervalIntegral.integral_add_adjacent_intervals
     (hc.intervalIntegrable (μ := volume) 0 d) (hc.intervalIntegrable d (Real.pi / 2))
   have hsplitb := intervalIntegral.integral_add_adjacent_intervals

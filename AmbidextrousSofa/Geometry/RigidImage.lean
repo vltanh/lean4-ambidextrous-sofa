@@ -20,31 +20,18 @@ open Set
 namespace AmbidextrousSofa
 
 theorem image_rigidMap_image (S : Set Plane) (θ φ : ℝ) (v w : Plane) :
-    rigidMap θ v '' (rigidMap φ w '' S) =
-      rigidMap (θ + φ) (rotate θ w + v) '' S := by
-  rw [← image_comp]
-  congr 1
-  funext p
-  simp only [Function.comp_apply, rigidMap, rotate_add_vector, rotate_rotate, add_assoc]
+    rigidMap θ v '' (rigidMap φ w '' S) = rigidMap (θ + φ) (rotate θ w + v) '' S := by
+  simp only [image_image, rigidMap, rotate_add_vector, rotate_rotate, add_assoc]; rfl
 
 theorem image_inverse_rigidMap_image (S : Set Plane) (θ : ℝ) (v : Plane) :
     rigidMap (-θ) (-rotate (-θ) v) '' (rigidMap θ v '' S) = S := by
-  rw [image_rigidMap_image]
-  have hid : rigidMap 0 0 = id := by
-    funext p
-    simp only [rigidMap, rotate_zero, add_zero, id]
-  simp only [neg_add_cancel, add_neg_cancel, hid, image_id]
+  simp [image_rigidMap_image]
 
 theorem SameInitialOrientation.rebase {lower upper : RigidMotionPath}
     (h : SameInitialOrientation lower upper) (θ : ℝ) (v : Plane) :
-    SameInitialOrientation (lower.rebase θ v) (upper.rebase θ v) := by
-  change rotate (lower.angle 0 - θ) = rotate (upper.angle 0 - θ)
-  funext p
-  calc
-    rotate (lower.angle 0 - θ) p = rotate (lower.angle 0) (rotate (-θ) p) := by
-      rw [rotate_rotate, sub_eq_add_neg]
-    _ = rotate (upper.angle 0) (rotate (-θ) p) := congrFun h _
-    _ = rotate (upper.angle 0 - θ) p := by rw [rotate_rotate, sub_eq_add_neg]
+    SameInitialOrientation (lower.rebase θ v) (upper.rebase θ v) := funext fun p => by
+  simpa only [RigidMotionPath.rebase, rotate_rotate, ← sub_eq_add_neg] using
+    congrFun h (rotate (-θ) p)
 
 theorem IsAmbidextrous.rigidImage {S : Set Plane} (hS : IsAmbidextrous S)
     (θ : ℝ) (v : Plane) : IsAmbidextrous (rigidMap θ v '' S) := by

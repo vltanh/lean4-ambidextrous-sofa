@@ -31,23 +31,11 @@ def positiveNicheOverlap (target U : Set Plane) (grid : Finset QuarterAngle) : �
     {x : ℝ | 0 < finiteBarrier U (normal grid) (pairList grid) none x}).indicator
       (fun _ => 1)
 
-theorem measurable_positiveNicheOverlap {target : Set Plane} (hTarget : IsDownwardCap target)
-    (U : Set Plane) (grid : Finset QuarterAngle) :
-    Measurable (positiveNicheOverlap target U grid) := by
-  apply measurable_const.indicator
-  exact ((measurableSet_middleHalfInterval _ _).inter
-    (measurableSet_lt measurable_const (measurable_sweptNiche hTarget.isCompact
-      (by linarith [Real.pi_pos]) le_rfl))).inter
-    (measurableSet_lt measurable_const (continuous_finiteBarrier U _ _ _).measurable)
-
-theorem positiveNicheOverlap_bounds (target U : Set Plane) (grid : Finset QuarterAngle) (x : ℝ) :
-    0 ≤ positiveNicheOverlap target U grid x ∧ positiveNicheOverlap target U grid x ≤ 1 := by
-  unfold positiveNicheOverlap
-  by_cases hx : x ∈ middleHalfInterval (horizontalLeft target) (horizontalRight target) ∩
-      {x : ℝ | 0 < sweptNiche target (Real.pi / 2) x} ∩
-      {x : ℝ | 0 < finiteBarrier U (normal grid) (pairList grid) none x}
-  · simp only [indicator_of_mem hx, zero_le_one, le_refl, and_self]
-  · simp only [indicator_of_notMem hx, le_refl, zero_le_one, and_self]
+theorem measurableSet_positiveNiche {target : Set Plane} (hTarget : IsDownwardCap target) :
+    MeasurableSet (middleHalfInterval (horizontalLeft target) (horizontalRight target) ∩
+      {x : ℝ | 0 < sweptNiche target (Real.pi / 2) x}) :=
+  (measurableSet_middleHalfInterval _ _).inter (measurableSet_lt measurable_const
+    (measurable_sweptNiche hTarget.isCompact (by linarith [Real.pi_pos]) le_rfl))
 
 theorem integral_positiveNicheOverlap_le {target U : Set Plane}
     (hTarget : IsDownwardCap target) (grid : Finset QuarterAngle) :
@@ -55,23 +43,13 @@ theorem integral_positiveNicheOverlap_le {target U : Set Plane}
       positiveNicheOverlap target U grid x) ≤
     finitePositiveLength U (normal grid) (pairList grid) none
       (horizontalLeft U + capWidth U / 4) (horizontalRight U - capWidth U / 4) := by
-  have hP : MeasurableSet (middleHalfInterval (horizontalLeft target) (horizontalRight target) ∩
-      {x : ℝ | 0 < sweptNiche target (Real.pi / 2) x} ∩
-      {x : ℝ | 0 < finiteBarrier U (normal grid) (pairList grid) none x}) :=
-    ((measurableSet_middleHalfInterval _ _).inter
-      (measurableSet_lt measurable_const (measurable_sweptNiche hTarget.isCompact
-        (by linarith [Real.pi_pos]) le_rfl))).inter
-      (measurableSet_lt measurable_const (continuous_finiteBarrier U _ _ _).measurable)
   change (∫ x in Icc (horizontalLeft U + capWidth U / 4)
     (horizontalRight U - capWidth U / 4), positiveNicheOverlap target U grid x) ≤ _
-  rw [integral_Icc_eq_integral_Ioc, positiveNicheOverlap, setIntegral_indicator hP,
-    setIntegral_const, smul_eq_mul, mul_one]
-  unfold finitePositiveLength
-  apply measureReal_mono
-  · exact fun x hx => ⟨hx.1, hx.2.2⟩
-  · apply ne_of_lt
-    exact lt_of_le_of_lt (measure_mono inter_subset_left)
-      (by rw [Real.volume_Ioc]; exact ENNReal.ofReal_lt_top)
+  rw [integral_Icc_eq_integral_Ioc, positiveNicheOverlap, setIntegral_indicator
+    ((measurableSet_positiveNiche hTarget).inter (measurableSet_lt measurable_const
+      (continuous_finiteBarrier U _ _ _).measurable)), setIntegral_const, smul_eq_mul, mul_one]
+  exact measureReal_mono (fun x hx => ⟨hx.1, hx.2.2⟩)
+    ((measure_mono inter_subset_left).trans_lt measure_Ioc_lt_top).ne
 
 /-- Uniform finite-wall convergence is used only at target points where
 the niche is strictly positive. Zero-height components may disappear. -/
@@ -87,52 +65,31 @@ theorem integral_positiveNicheOverlap_tendsto
         {x : ℝ | 0 < sweptNiche target (Real.pi / 2) x}))) := by
   let P : Set ℝ := middleHalfInterval (horizontalLeft target) (horizontalRight target) ∩
     {x : ℝ | 0 < sweptNiche target (Real.pi / 2) x}
-  have hP : MeasurableSet P := (measurableSet_middleHalfInterval _ _).inter
-    (measurableSet_lt measurable_const (measurable_sweptNiche hTarget.isCompact
-      (by linarith [Real.pi_pos]) le_rfl))
+  have hP : MeasurableSet P := measurableSet_positiveNiche hTarget
   have hflim : ∀ᵐ x : ℝ ∂volume,
       Tendsto (fun n => positiveNicheOverlap target (U n) (dyadic (level n)) x)
         atTop (𝓝 (P.indicator (fun _ => 1) x)) := by
-    apply Eventually.of_forall
-    intro x
+    refine Eventually.of_forall fun x => tendsto_const_nhds.congr' ?_
     by_cases hx : x ∈ P
     · have hxB : x ∈ Icc a b := (hTarget.projection_subset_Icc_of_box hTargetBox)
         (middleHalfInterval_subset
           (horizontalLeft_le_horizontalRight hTarget.nonempty hTarget.isCompact) hx.1)
-      have hN := finiteBarrier_dyadic_tendsto hHausdorff hU hTarget hlevel hbox
-        (fun _ => hxB) (tendsto_const_nhds : Tendsto (fun _ : ℕ => x) atTop (𝓝 x))
-      have hpos := hN.eventually (Ioi_mem_nhds hx.2)
-      rw [indicator_of_mem hx]
-      apply tendsto_const_nhds.congr'
-      filter_upwards [hpos] with n hn
-      exact (indicator_of_mem (show x ∈ P ∩ {x : ℝ | 0 < finiteBarrier (U n)
-        (normal (dyadic (level n))) (pairList (dyadic (level n))) none x} from ⟨hx, hn⟩)
-        (fun _ => (1 : ℝ))).symm
-    · rw [indicator_of_notMem hx]
-      apply tendsto_const_nhds.congr'
-      apply Eventually.of_forall
-      intro n
-      exact (indicator_of_notMem (show x ∉ P ∩ {x : ℝ | 0 < finiteBarrier (U n)
-        (normal (dyadic (level n))) (pairList (dyadic (level n))) none x} from
-        fun hm => hx hm.1) (fun _ => (1 : ℝ))).symm
-  have hwindow (n : ℕ) :
-      middleHalfInterval (horizontalLeft (U n)) (horizontalRight (U n)) ⊆ Icc a b :=
-    (middleHalfInterval_subset (horizontalLeft_le_horizontalRight (hU n).nonempty
-      (hU n).isCompact)).trans ((hU n).projection_subset_Icc_of_box (hbox n))
-  have h := tendsto_setIntegral_moving_domain
-    (fun n => measurable_positiveNicheOverlap hTarget (U n) (dyadic (level n)))
+      filter_upwards [(finiteBarrier_dyadic_tendsto hHausdorff hU hTarget hlevel hbox
+        (fun _ => hxB) tendsto_const_nhds).eventually (Ioi_mem_nhds hx.2)] with n hn
+      rw [indicator_of_mem hx, positiveNicheOverlap, indicator_of_mem]
+      exact ⟨hx, hn⟩
+    · filter_upwards with n
+      rw [indicator_of_notMem hx, positiveNicheOverlap, indicator_of_notMem]
+      exact fun hm => hx hm.1
+  have h := tendsto_setIntegral_moving_domain (fun n => measurable_const.indicator
+    (hP.inter (measurableSet_lt measurable_const (continuous_finiteBarrier _ _ _ _).measurable)))
     (fun n => measurableSet_middleHalfInterval _ _) (measurableSet_middleHalfInterval _ _)
-    hflim (hHausdorff.middle_membership_ae hU hTarget) zero_le_one hwindow
-    (fun n x _ => by
-      rw [Real.norm_of_nonneg (positiveNicheOverlap_bounds target (U n) (dyadic (level n)) x).1]
-      exact (positiveNicheOverlap_bounds target (U n) (dyadic (level n)) x).2)
-  have hIntegral :
-      (∫ x in middleHalfInterval (horizontalLeft target) (horizontalRight target),
-        P.indicator (fun _ => (1 : ℝ)) x) = volume.real P := by
-    rw [setIntegral_indicator hP, setIntegral_const, smul_eq_mul, mul_one,
-      Set.inter_eq_right.mpr (show P ⊆ middleHalfInterval
-        (horizontalLeft target) (horizontalRight target) from inter_subset_left)]
-  simpa only [hIntegral] using h
+    hflim (hHausdorff.middle_membership_ae hU hTarget) zero_le_one
+    (fun n => (middleHalfInterval_subset (horizontalLeft_le_horizontalRight (hU n).nonempty
+      (hU n).isCompact)).trans ((hU n).projection_subset_Icc_of_box (hbox n)))
+    (fun n x _ => (norm_indicator_le_norm_self _ _).trans_eq norm_one)
+  rwa [setIntegral_indicator hP, setIntegral_const, smul_eq_mul, mul_one, inter_eq_right.2
+    (show P ⊆ middleHalfInterval _ _ from inter_subset_left)] at h
 
 end AngularGrid
 

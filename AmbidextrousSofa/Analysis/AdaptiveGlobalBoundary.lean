@@ -7,16 +7,9 @@ public import AmbidextrousSofa.Analysis.EulerFlux
 /-!
 # Width variations for the adaptive functional
 
-This file proves the actual natural boundary condition for a local maximum
-when the common horizontal endpoint is allowed to vary. The proof uses the
-exact Taylor identity and a quadratic bound for both contact remainders;
-it does not presume differentiability of an optimized value function.
+`QuarterPair.WidthTraces u a` prescribes the four endpoint values of a pair
+whose common horizontal endpoint `a`, the width, is allowed to vary.
 -/
-
-noncomputable section
-
-open Set MeasureTheory
-open scoped Topology
 
 namespace AmbidextrousSofa.Analysis
 

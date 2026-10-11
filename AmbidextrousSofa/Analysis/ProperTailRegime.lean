@@ -28,11 +28,9 @@ structure ProperTailRegime (U : Set Plane) (α m : ℝ) : Prop where
 theorem ProperTailRegime.terminal_lt_affineNormal
     {U : Set Plane} {α m : ℝ} (h : ProperTailRegime U α m)
     (hproper : α < Real.pi / 2) : α < affineNormalAngle m := by
-  by_cases hm : m < 0
+  rcases lt_or_ge m 0 with hm | hm
   · exact (h.negative hm).1
-  · have hm0 := Real.arctan_nonneg.mpr (le_of_not_gt hm)
-    unfold affineNormalAngle
-    linarith only [hm0, hproper]
+  · unfold affineNormalAngle; linarith [Real.arctan_nonneg.mpr hm]
 
 theorem IsJointCapMaximizer.properTailRegime_of_largest
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
@@ -42,6 +40,8 @@ theorem IsJointCapMaximizer.properTailRegime_of_largest
       capRoof U x = m * x + c) : ProperTailRegime U α m :=
   ⟨fun hm => hU.negative_remaining_tail_geometry hLargest hproper hheight hm haffine⟩
 
+-- Only `hregime` and `hm` are used; the other hypotheses stay in the statement for the callers.
+set_option linter.unusedVariables false in
 theorem IsJointCapMaximizer.negative_remaining_tail_geometry_of_tail_regime
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hregime : ProperTailRegime U α m)
@@ -60,17 +60,8 @@ theorem IsJointCapMaximizer.properTailRegime_of_full_affine_rigidity
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c)
     (hrigid : IsFullCapMaximizer U → m = 0) : ProperTailRegime U α m := by
-  refine ⟨?_⟩
-  intro hm
-  have hnot : ¬(affineNormalAngle m ≤ α ∨
-      capRoof U (horizontalRight U - capWidth U / 4) ≤ Real.sin α) := by
-    intro hcomplete
-    have hfull := hU.full_jointMaximizer_of_negative_completion
-      hproper hheight hm haffine hcomplete
-    have hfullCap : IsFullCapMaximizer U := ⟨hfull.isCap, fun V hV =>
-      hfull.score_le hV ⟨by linarith only [Real.pi_pos], le_rfl⟩⟩
-    exact hm.ne (hrigid hfullCap)
-  exact ⟨lt_of_not_ge (fun h => hnot (Or.inl h)),
-    lt_of_not_ge (fun h => hnot (Or.inr h))⟩
+  refine ⟨fun hm => (not_or.mp fun hcomplete => hm.ne (hrigid ?_)).imp not_le.mp not_le.mp⟩
+  have hfull := hU.full_jointMaximizer_of_negative_completion hproper hheight hm haffine hcomplete
+  exact ⟨hfull.isCap, fun V hV => hfull.score_le hV ⟨by linarith [Real.pi_pos], le_rfl⟩⟩
 
 end AmbidextrousSofa

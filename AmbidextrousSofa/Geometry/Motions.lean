@@ -57,14 +57,8 @@ structure IsAmbidextrous (S : Set Plane) : Prop where
 /-- Restricting the physical body preserves a fixed passage. -/
 theorem Passage.mono {S T hall incoming outgoing : Set Plane} {path : RigidMotionPath}
     (h : Passage T hall incoming outgoing path) (hST : S ⊆ T) :
-    Passage S hall incoming outgoing path := by
-  refine ⟨?_, ?_, ?_⟩
-  · intro t ht
-    rintro _ ⟨p, hp, rfl⟩
-    exact h.inside t ht ⟨p, hST hp, rfl⟩
-  · rintro _ ⟨p, hp, rfl⟩
-    exact h.start ⟨p, hST hp, rfl⟩
-  · rintro _ ⟨p, hp, rfl⟩
-    exact h.finish ⟨p, hST hp, rfl⟩
+    Passage S hall incoming outgoing path :=
+  ⟨fun t ht => (Set.image_mono hST).trans (h.inside t ht), (Set.image_mono hST).trans h.start,
+    (Set.image_mono hST).trans h.finish⟩
 
 end AmbidextrousSofa

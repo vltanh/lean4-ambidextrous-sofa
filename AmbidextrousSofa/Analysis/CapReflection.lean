@@ -24,69 +24,39 @@ def horizontalReflection (p : Plane) : Plane := (-p.1, p.2)
 
 def horizontalMirror (U : Set Plane) : Set Plane := horizontalReflection '' U
 
-theorem horizontalReflection_involutive : Function.Involutive horizontalReflection := by
-  intro p
-  apply Prod.ext <;> simp [horizontalReflection]
-
-theorem continuous_horizontalReflection : Continuous horizontalReflection := by
-  unfold horizontalReflection
-  fun_prop
+theorem horizontalReflection_involutive : Function.Involutive horizontalReflection :=
+  fun _ => by simp [horizontalReflection]
 
 theorem mem_horizontalMirror_iff (U : Set Plane) (p : Plane) :
-    p ∈ horizontalMirror U ↔ horizontalReflection p ∈ U := by
-  constructor
-  · rintro ⟨q, hq, rfl⟩
-    simpa only [horizontalReflection_involutive q] using hq
-  · intro hp
-    exact ⟨horizontalReflection p, hp, horizontalReflection_involutive p⟩
+    p ∈ horizontalMirror U ↔ horizontalReflection p ∈ U :=
+  mem_image_iff_of_inverse horizontalReflection_involutive.leftInverse
+    horizontalReflection_involutive.rightInverse
 
 theorem horizontalMirror_involutive (U : Set Plane) :
     horizontalMirror (horizontalMirror U) = U := by
   ext p
   simp only [mem_horizontalMirror_iff, horizontalReflection_involutive p]
 
-theorem horizontalReflection_combo (p q : Plane) (a b : ℝ) :
-    horizontalReflection (a • p + b • q) =
-      a • horizontalReflection p + b • horizontalReflection q := by
-  apply Prod.ext <;> simp [horizontalReflection, smul_eq_mul] <;> ring
-
 theorem IsDownwardCap.horizontalMirror {U : Set Plane} (hU : IsDownwardCap U) :
     IsDownwardCap (AmbidextrousSofa.horizontalMirror U) := by
-  refine ⟨hU.nonempty.image _, hU.isCompact.image continuous_horizontalReflection, ?_, ?_, ?_⟩
-  · rintro p ⟨p, hp, rfl⟩ q ⟨q, hq, rfl⟩ a b ha hb hab
-    exact ⟨a • p + b • q, hU.convex hp hq ha hb hab, horizontalReflection_combo p q a b⟩
-  · rintro p ⟨q, hq, rfl⟩
+  refine ⟨hU.nonempty.image _, hU.isCompact.image (by unfold horizontalReflection; fun_prop),
+    ?_, ?_, fun p hp y hy0 hyp => (mem_horizontalMirror_iff _ _).2
+      (hU.downward _ ((mem_horizontalMirror_iff _ _).1 hp) y hy0 hyp)⟩
+  · rintro _ ⟨p, hp, rfl⟩ _ ⟨q, hq, rfl⟩ a b ha hb hab
+    exact ⟨a • p + b • q, hU.convex hp hq ha hb hab,
+      by ext <;> simp [horizontalReflection, add_comm]⟩
+  · rintro _ ⟨q, hq, rfl⟩
     exact (hU.inStrip hq : q ∈ unitStrip)
-  · intro p hp y hy0 hyp
-    rw [mem_horizontalMirror_iff] at hp ⊢
-    exact hU.downward (horizontalReflection p) hp y hy0 hyp
-
-theorem verticalFiber_horizontalMirror (U : Set Plane) (x : ℝ) :
-    verticalFiber (horizontalMirror U) x = verticalFiber U (-x) := by
-  ext y
-  exact mem_horizontalMirror_iff U (x, y)
-
-theorem horizontalProjection_horizontalMirror_iff (U : Set Plane) (x : ℝ) :
-    x ∈ horizontalProjection (horizontalMirror U) ↔ -x ∈ horizontalProjection U := by
-  rw [← verticalFiber_nonempty_iff, ← verticalFiber_nonempty_iff,
-    verticalFiber_horizontalMirror]
 
 theorem capRoof_horizontalMirror (U : Set Plane) (x : ℝ) :
     capRoof (horizontalMirror U) x = capRoof U (-x) := by
-  simp only [capRoof, horizontalProjection_horizontalMirror_iff, verticalFiber_horizontalMirror]
-  by_cases hx : -x ∈ horizontalProjection U
-  · rw [if_pos hx, if_pos ((horizontalProjection_horizontalMirror_iff U x).mpr hx)]
-  · rw [if_neg hx, if_neg (fun h => hx ((horizontalProjection_horizontalMirror_iff U x).mp h))]
+  have h : verticalFiber (horizontalMirror U) x = verticalFiber U (-x) :=
+    Set.ext fun y => mem_horizontalMirror_iff U (x, y)
+  rw [capRoof, capRoof, ← verticalFiber_nonempty_iff, ← verticalFiber_nonempty_iff, h]
 
 theorem support_horizontalMirror (U : Set Plane) (v : Plane) :
     support (horizontalMirror U) v = support U (horizontalReflection v) := by
-  unfold support horizontalMirror
-  rw [image_image]
-  congr 1
-  apply congrArg (fun f : Plane → ℝ => f '' U)
-  funext p
-  simp only [Function.comp_apply, coordDot, horizontalReflection]
-  ring
+  simp [support, horizontalMirror, image_image, coordDot, horizontalReflection]
 
 theorem horizontalRight_horizontalMirror {U : Set Plane} (hU : IsDownwardCap U) :
     horizontalRight (horizontalMirror U) = -horizontalLeft U := by
@@ -101,73 +71,40 @@ theorem horizontalLeft_horizontalMirror {U : Set Plane} (hU : IsDownwardCap U) :
 
 theorem capWidth_horizontalMirror {U : Set Plane} (hU : IsDownwardCap U) :
     capWidth (horizontalMirror U) = capWidth U := by
-  unfold capWidth
-  rw [horizontalRight_horizontalMirror hU, horizontalLeft_horizontalMirror hU]
-  ring
-
-theorem firstWall_horizontalMirror (U : Set Plane) (t x : ℝ) :
-    firstWall (horizontalMirror U) t x = secondWall U (Real.pi / 2 - t) (-x) := by
-  simp only [firstWall, secondWall, support_horizontalMirror, unitNormal,
-    companionNormal, horizontalReflection, Real.sin_pi_div_two_sub,
-    Real.cos_pi_div_two_sub]
-  congr 1
-  ring
-
-theorem secondWall_horizontalMirror (U : Set Plane) (t x : ℝ) :
-    secondWall (horizontalMirror U) t x = firstWall U (Real.pi / 2 - t) (-x) := by
-  simp only [firstWall, secondWall, support_horizontalMirror, unitNormal,
-    companionNormal, horizontalReflection, neg_neg, Real.sin_pi_div_two_sub,
-    Real.cos_pi_div_two_sub]
-  congr 1
+  rw [capWidth, capWidth, horizontalRight_horizontalMirror hU, horizontalLeft_horizontalMirror hU]
   ring
 
 theorem cornerWall_horizontalMirror (U : Set Plane) (t x : ℝ) :
     cornerWall (horizontalMirror U) t x = cornerWall U (Real.pi / 2 - t) (-x) := by
-  rw [cornerWall, firstWall_horizontalMirror, secondWall_horizontalMirror, min_comm]
-  rfl
+  simp only [cornerWall, firstWall, secondWall, support_horizontalMirror, unitNormal,
+    companionNormal, horizontalReflection, neg_neg, Real.sin_pi_div_two_sub,
+    Real.cos_pi_div_two_sub]
+  rw [min_comm]
+  congr 1 <;> ring
 
 theorem sweptNiche_horizontalMirror (U : Set Plane) (x : ℝ) :
     sweptNiche (horizontalMirror U) (Real.pi / 2) x =
       sweptNiche U (Real.pi / 2) (-x) := by
-  have hvalues : sweptWallValues (horizontalMirror U) (Real.pi / 2) x =
-      sweptWallValues U (Real.pi / 2) (-x) := by
-    ext z
-    constructor
-    · rintro ⟨t, ht, rfl⟩
-      exact ⟨Real.pi / 2 - t, ⟨by linarith [ht.2], by linarith [ht.1]⟩,
-        (cornerWall_horizontalMirror U t x).symm⟩
-    · rintro ⟨t, ht, rfl⟩
-      refine ⟨Real.pi / 2 - t, ⟨by linarith [ht.2], by linarith [ht.1]⟩, ?_⟩
-      dsimp only
-      rw [cornerWall_horizontalMirror, show Real.pi / 2 - (Real.pi / 2 - t) = t by ring]
-  simp only [sweptNiche, hvalues]
-
-theorem partialBarrier_horizontalMirror {U : Set Plane} (hU : IsDownwardCap U) (x : ℝ) :
-    partialBarrier (horizontalMirror U) (Real.pi / 2) x =
-      partialBarrier U (Real.pi / 2) (-x) := by
-  rw [hU.horizontalMirror.partialBarrier_pi_div_two, hU.partialBarrier_pi_div_two,
-    sweptNiche_horizontalMirror]
+  simp only [sweptNiche, sweptWallValues, cornerWall_horizontalMirror]
+  rw [← image_image (fun θ => cornerWall U θ (-x)) (fun θ => Real.pi / 2 - θ),
+    image_const_sub_Ioo]
+  simp
 
 theorem intervalSpatialScore_reflect (roof niche : ℝ → ℝ) (l r : ℝ) :
     intervalSpatialScore (fun x => roof (-x)) (fun x => niche (-x)) (-r) (-l) =
       intervalSpatialScore roof niche l r := by
-  unfold intervalSpatialScore
-  rw [intervalIntegral.integral_comp_neg, intervalIntegral.integral_comp_neg,
-    intervalIntegral.integral_comp_neg]
-  simp only [neg_neg]
-  rw [show -(-r + (-l - -r) / 4) = r - (r - l) / 4 by ring,
-    show -(-l - (-l - -r) / 4) = l + (r - l) / 4 by ring]
-  ring
+  simp only [intervalSpatialScore, intervalIntegral.integral_comp_neg, neg_neg]
+  ring_nf
 
 theorem capScore_horizontalMirror {U : Set Plane} (hU : IsDownwardCap U) :
     capScore (horizontalMirror U) (Real.pi / 2) = capScore U (Real.pi / 2) := by
   rw [hU.horizontalMirror.capScore_eq_intervalSpatialScore, hU.capScore_eq_intervalSpatialScore,
-    horizontalLeft_horizontalMirror hU, horizontalRight_horizontalMirror hU]
-  have hroof : capRoof (horizontalMirror U) = fun x => capRoof U (-x) :=
-    funext (capRoof_horizontalMirror U)
-  have hniche : partialBarrier (horizontalMirror U) (Real.pi / 2) =
-      fun x => partialBarrier U (Real.pi / 2) (-x) := funext (partialBarrier_horizontalMirror hU)
-  rw [hroof, hniche, intervalSpatialScore_reflect]
+    horizontalLeft_horizontalMirror hU, horizontalRight_horizontalMirror hU,
+    ← intervalSpatialScore_reflect (capRoof U)]
+  congr 1 <;> funext x
+  · exact capRoof_horizontalMirror U x
+  · rw [hU.horizontalMirror.partialBarrier_pi_div_two, hU.partialBarrier_pi_div_two,
+      sweptNiche_horizontalMirror]
 
 theorem IsFullCapMaximizer.horizontalMirror {U : Set Plane} (hU : IsFullCapMaximizer U) :
     IsFullCapMaximizer (AmbidextrousSofa.horizontalMirror U) :=
@@ -175,8 +112,6 @@ theorem IsFullCapMaximizer.horizontalMirror {U : Set Plane} (hU : IsFullCapMaxim
 
 theorem capHeight_horizontalMirror (U : Set Plane) :
     capHeight (horizontalMirror U) = capHeight U := by
-  rw [capHeight, support_horizontalMirror]
-  simp only [horizontalReflection, neg_zero]
-  rfl
+  simp [capHeight, support_horizontalMirror, horizontalReflection]
 
 end AmbidextrousSofa

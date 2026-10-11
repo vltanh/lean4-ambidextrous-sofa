@@ -14,8 +14,6 @@ terminal wall only makes the neighboring alternatives stronger.
 
 noncomputable section
 
-open Set MeasureTheory
-
 namespace AmbidextrousSofa
 
 namespace PartialGrid
@@ -37,19 +35,10 @@ theorem integral_first_source_le_parameters {U : Set Plane} (hU : IsDownwardCap 
       max (firstHi (support U (unitNormal (scaleAngle α t.val)))
           (support U (unitNormal ((scaleAngle α t.val : ℝ) - δ))) δ -
         firstLo (support U (unitNormal (scaleAngle α t.val)))
-          (support U (unitNormal ((scaleAngle α t.val : ℝ) + δ))) δ) 0 := by
-  classical
-  have ht : 0 < Real.sin (scaleAngle α t.val) := normal_snd_pos α grid (scaledSource α grid (Sum.inl t))
-  have hint := integral_sourceDensity_outward (barrierExpr (pairList α grid) (some (terminalIndex α hαL grid)))
-    (normal α grid) (barrierIntercept (normal α grid) (fun i => support U (normal α grid i)))
-    (scaledSource α grid (Sum.inl t)) hab
-  change (∫ x in a..b, innerDensity U α hαL grid (scaledSource α grid (Sum.inl t)) x) =
-    volume.real (Ioc a b ∩ innerSourceSet U α hαL grid (scaledSource α grid (Sum.inl t))) / Real.sin (scaleAngle α t.val) at hint
-  rw [hint]
-  apply measure_parameterIntervals_le ht
-    ((support U (unitNormal (scaleAngle α t.val)) - 1) * Real.cos (scaleAngle α t.val))
-  intro x hx
-  exact first_source_neighbor_parameters hU α hαL grid t hc hs hminus hplus hx.2
+          (support U (unitNormal ((scaleAngle α t.val : ℝ) + δ))) δ) 0 :=
+  (integral_sourceDensity_outward _ _ _ _ hab).trans_le <|
+    measure_parameterIntervals_le (normal_snd_pos α grid _) _ _ _ _ _ fun _ hx =>
+      first_source_neighbor_parameters hU α hαL grid t hc hs hminus hplus hx.2
 
 /-- The refined first-wall source estimate for the actual finite niche,
 on any ordered spatial integration interval. -/
@@ -62,12 +51,11 @@ theorem integral_first_source_le {U : Set Plane} (hU : IsDownwardCap U)
     (hplus : ∃ s ∈ grid, (scaleAngle α s : ℝ) = (scaleAngle α t.val : ℝ) + δ) :
     (∫ x in a..b, innerDensity U α hαL grid (scaledSource α grid (Sum.inl t)) x) ≤
       Real.tan δ * (|firstCornerSecant U (scaleAngle α t.val) δ| + Real.tan (δ / 2)) +
-        max (2 * Real.tan (δ / 2) - (upperCurvature U {((scaleAngle α t.val : QuarterAngle) : ℝ)}).toReal) 0 := by
-  have hraw := integral_first_source_le_parameters hU α hαL grid t hc hs hab hminus hplus
-  have hcomp := companion_interval_length_le (f := support U (unitNormal (scaleAngle α t.val)))
-    hc hs hh (hU.companion_secondDifference_nonneg (scaleAngle α t.val) hs.le)
-  have hfirst := first_interval_length_le_curvature hU (scaleAngle α t.val) hs hh
-  exact hraw.trans (add_le_add hcomp (max_le_max hfirst le_rfl))
+        max (2 * Real.tan (δ / 2) - (upperCurvature U {((scaleAngle α t.val : QuarterAngle) : ℝ)}).toReal) 0 :=
+  (integral_first_source_le_parameters hU α hαL grid t hc hs hab hminus hplus).trans
+    (add_le_add (companion_interval_length_le hc hs hh
+      (hU.companion_secondDifference_nonneg _ hs.le))
+      (max_le_max (first_interval_length_le_curvature hU _ hs hh) le_rfl))
 
 theorem integral_second_source_le_parameters {U : Set Plane} (hU : IsDownwardCap U)
     (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2)
@@ -84,19 +72,10 @@ theorem integral_second_source_le_parameters {U : Set Plane} (hU : IsDownwardCap
       max (firstHi (support U (companionNormal (scaleAngle α t.val)))
           (support U (companionNormal ((scaleAngle α t.val : ℝ) + δ))) δ -
         firstLo (support U (companionNormal (scaleAngle α t.val)))
-          (support U (companionNormal ((scaleAngle α t.val : ℝ) - δ))) δ) 0 := by
-  classical
-  have ht : 0 < Real.cos (scaleAngle α t.val) := normal_snd_pos α grid (scaledSource α grid (Sum.inr t))
-  have hint := integral_sourceDensity_outward (barrierExpr (pairList α grid) (some (terminalIndex α hαL grid)))
-    (normal α grid) (barrierIntercept (normal α grid) (fun i => support U (normal α grid i)))
-    (scaledSource α grid (Sum.inr t)) hab
-  change (∫ x in a..b, innerDensity U α hαL grid (scaledSource α grid (Sum.inr t)) x) =
-    volume.real (Ioc a b ∩ innerSourceSet U α hαL grid (scaledSource α grid (Sum.inr t))) / Real.cos (scaleAngle α t.val) at hint
-  rw [hint]
-  apply measure_addParameterIntervals_le ht
-    (-(support U (companionNormal (scaleAngle α t.val)) - 1) * Real.sin (scaleAngle α t.val))
-  intro x hx
-  exact second_source_neighbor_parameters hU α hαL grid t hc hs hminus hplus hx.2
+          (support U (companionNormal ((scaleAngle α t.val : ℝ) - δ))) δ) 0 :=
+  (integral_sourceDensity_outward _ _ _ _ hab).trans_le <|
+    measure_addParameterIntervals_le (normal_snd_pos α grid _) _ _ _ _ _ fun _ hx =>
+      second_source_neighbor_parameters hU α hαL grid t hc hs hminus hplus hx.2
 
 theorem integral_second_source_le {U : Set Plane} (hU : IsDownwardCap U)
     (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2)
@@ -107,16 +86,11 @@ theorem integral_second_source_le {U : Set Plane} (hU : IsDownwardCap U)
     (hplus : ∃ s ∈ grid, (scaleAngle α s : ℝ) = (scaleAngle α t.val : ℝ) + δ) :
     (∫ x in a..b, innerDensity U α hαL grid (scaledSource α grid (Sum.inr t)) x) ≤
       Real.tan δ * (|secondCornerSecant U (scaleAngle α t.val) δ| + Real.tan (δ / 2)) +
-        max (2 * Real.tan (δ / 2) - (upperCurvature U {(scaleAngle α t.val) + Real.pi / 2}).toReal) 0 := by
-  have hraw := integral_second_source_le_parameters hU α hαL grid t hc hs hab hminus hplus
-  have hconv : 0 ≤ support U (unitNormal ((scaleAngle α t.val : ℝ) + δ)) +
-      support U (unitNormal ((scaleAngle α t.val : ℝ) - δ)) -
-        2 * Real.cos δ * support U (unitNormal (scaleAngle α t.val)) := by
-    nlinarith [hU.support_secondDifference_nonneg (scaleAngle α t.val) hs.le]
-  have hcomp := companion_interval_length_le
-    (f := support U (companionNormal (scaleAngle α t.val))) hc hs hh hconv
-  have hfirst := companion_interval_length_le_curvature hU (scaleAngle α t.val) hs hh
-  exact hraw.trans (add_le_add hcomp (max_le_max hfirst le_rfl))
+        max (2 * Real.tan (δ / 2) - (upperCurvature U {(scaleAngle α t.val) + Real.pi / 2}).toReal) 0 :=
+  (integral_second_source_le_parameters hU α hαL grid t hc hs hab hminus hplus).trans
+    (add_le_add (companion_interval_length_le hc hs hh
+      (by linarith [hU.support_secondDifference_nonneg (scaleAngle α t.val) hs.le]))
+      (max_le_max (companion_interval_length_le_curvature hU _ hs hh) le_rfl))
 
 end PartialGrid
 

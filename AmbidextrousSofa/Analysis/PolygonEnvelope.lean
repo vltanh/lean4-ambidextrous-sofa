@@ -39,24 +39,11 @@ def roofExpr [Fintype ι] : WallExpr (Option ι) :=
 
 theorem le_eval_roofExprList_iff (is : List ι) (v : Option ι → ℝ) (y : ℝ) :
     y ≤ (roofExprList is).eval v ↔ y ≤ v none ∧ ∀ i ∈ is, y ≤ v (some i) := by
-  induction is with
-  | nil => simp [roofExprList, WallExpr.eval]
-  | cons i is ih =>
-    rw [roofExprList, WallExpr.eval, le_min_iff, ih]
-    constructor
-    · rintro ⟨hi, hnone, hrest⟩
-      refine ⟨hnone, ?_⟩
-      intro j hj
-      rcases List.mem_cons.mp hj with rfl | hj
-      · exact hi
-      · exact hrest j hj
-    · rintro ⟨hnone, hall⟩
-      exact ⟨hall i (by simp), hnone, fun j hj => hall j (List.mem_cons_of_mem _ hj)⟩
+  induction is <;> simp [roofExprList, WallExpr.eval, *, and_left_comm]
 
 theorem le_eval_roofExpr_iff [Fintype ι] (v : Option ι → ℝ) (y : ℝ) :
     y ≤ (roofExpr (ι := ι)).eval v ↔ y ≤ v none ∧ ∀ i, y ≤ v (some i) := by
-  rw [roofExpr, le_eval_roofExprList_iff]
-  simp only [Finset.mem_toList, Finset.mem_univ, forall_true_left]
+  simp [roofExpr, le_eval_roofExprList_iff]
 
 def wallSlope (normal : ι → Plane) : Option ι → ℝ
   | none => 0
@@ -82,56 +69,26 @@ theorem wallSlope_injective (normal : ι → Plane)
     (hdet : ∀ i j, i ≠ j →
       (normal i).1 * (normal j).2 - (normal i).2 * (normal j).1 ≠ 0) :
     Function.Injective (wallSlope normal) := by
-  intro i j heq
-  cases i with
-  | none =>
-    cases j with
-    | none => rfl
-    | some j =>
-      have hzero : -(normal j).1 / (normal j).2 = 0 := heq.symm
-      have hnxzero := (div_eq_zero_iff.mp hzero).resolve_right (hnormal j).ne'
-      exact (hnx j (neg_eq_zero.mp hnxzero)).elim
-  | some i =>
-    cases j with
-    | none =>
-      have hzero : -(normal i).1 / (normal i).2 = 0 := heq
-      have hnxzero := (div_eq_zero_iff.mp hzero).resolve_right (hnormal i).ne'
-      exact (hnx i (neg_eq_zero.mp hnxzero)).elim
-    | some j =>
-      congr 1
-      by_contra hij
-      have hcross := (div_eq_div_iff (hnormal i).ne' (hnormal j).ne').mp heq
-      apply hdet i j hij
-      nlinarith
+  rintro (_ | i) (_ | j) heq
+  · rfl
+  · simp [wallSlope, neg_div, hnx j, (hnormal j).ne'] at heq
+  · simp [wallSlope, neg_div, hnx i, (hnormal i).ne'] at heq
+  · congr 1
+    by_contra hij
+    rw [wallSlope, wallSlope, div_eq_div_iff (hnormal i).ne' (hnormal j).ne'] at heq
+    exact hdet i j hij (by linarith)
 
 def roofEnvelope [Fintype ι] (normal : ι → Plane) (height : ι → ℝ) (x : ℝ) : ℝ :=
   (roofExpr (ι := ι)).eval (fun i => wallSlope normal i * x + roofIntercept normal height i)
-
-theorem le_upper_line_iff {n : Plane} (hny : 0 < n.2) (height x y : ℝ) :
-    y ≤ -n.1 / n.2 * x + height / n.2 ↔ coordDot (x, y) n ≤ height := by
-  rw [show -n.1 / n.2 * x + height / n.2 = (height - x * n.1) / n.2 by ring,
-    le_div_iff₀ hny]
-  unfold coordDot
-  constructor <;> intro h <;> linarith
 
 theorem le_roofEnvelope_iff [Fintype ι] (normal : ι → Plane) (height : ι → ℝ)
     (hnormal : ∀ i, 0 < (normal i).2) (x y : ℝ) :
     y ≤ roofEnvelope normal height x ↔
       y ≤ 1 ∧ ∀ i, coordDot (x, y) (normal i) ≤ height i := by
-  rw [roofEnvelope, le_eval_roofExpr_iff]
-  simp only [wallSlope, roofIntercept, zero_mul, zero_add]
-  have hline : ∀ i, y ≤ -(normal i).1 / (normal i).2 * x + height i / (normal i).2 ↔
-      coordDot (x, y) (normal i) ≤ height i :=
-    fun i => le_upper_line_iff (hnormal i) (height i) x y
-  simp_rw [hline]
-
-theorem mem_upperPolygon_iff_roofEnvelope [Fintype ι] (l r : ℝ)
-    (normal : ι → Plane) (height : ι → ℝ) (hnormal : ∀ i, 0 < (normal i).2) (x y : ℝ) :
-    (x, y) ∈ upperPolygon l r normal height ↔
-      x ∈ Icc l r ∧ 0 ≤ y ∧ y ≤ roofEnvelope normal height x := by
-  rw [mem_upperPolygon_iff, le_roofEnvelope_iff normal height hnormal]
-  simp only [mem_Icc, Prod.fst, Prod.snd]
-  tauto
+  simp only [roofEnvelope, le_eval_roofExpr_iff, wallSlope, roofIntercept, zero_mul, zero_add]
+  refine and_congr_right' (forall_congr' fun i => ?_)
+  rw [div_mul_eq_mul_div, ← add_div, le_div_iff₀ (hnormal i), coordDot]
+  constructor <;> intro h <;> linarith
 
 /-- The finite upper expression is the actual fiber supremum, including
 the vertical endpoint faces. -/
@@ -140,17 +97,16 @@ theorem capRoof_upperPolygon [Fintype ι] (l r : ℝ) (normal : ι → Plane) (h
     (hbaseline : ∀ x ∈ Icc l r, ∀ i, coordDot (x, 0) (normal i) ≤ height i)
     {x : ℝ} (hx : x ∈ Icc l r) :
     capRoof (upperPolygon l r normal height) x = roofEnvelope normal height x := by
-  have hproj : x ∈ horizontalProjection (upperPolygon l r normal height) := by
-    rw [horizontalProjection_upperPolygon l r normal height hbaseline]
-    exact hx
-  have hzero : 0 ≤ roofEnvelope normal height x :=
-    (le_roofEnvelope_iff normal height hnormal x 0).mpr ⟨by norm_num, hbaseline x hx⟩
-  apply le_antisymm
-  · exact ((mem_upperPolygon_iff_roofEnvelope l r normal height hnormal _ _).mp
-      (capRoof_mem (isCompact_upperPolygon l r normal height) hproj)).2.2
-  · apply le_capRoof (isCompact_upperPolygon l r normal height)
-    exact (mem_upperPolygon_iff_roofEnvelope l r normal height hnormal _ _).mpr
-      ⟨hx, hzero, le_rfl⟩
+  have hK := isCompact_upperPolygon l r normal height
+  have hmem (y : ℝ) : (x, y) ∈ upperPolygon l r normal height ↔
+      0 ≤ y ∧ y ≤ roofEnvelope normal height x := by
+    rw [mem_upperPolygon_iff, le_roofEnvelope_iff normal height hnormal]
+    simp only [mem_Icc, hx]
+    tauto
+  refine le_antisymm ((hmem _).mp (capRoof_mem hK ?_)).2
+    (le_capRoof hK ((hmem _).mpr ⟨?_, le_rfl⟩))
+  · rwa [horizontalProjection_upperPolygon l r normal height hbaseline]
+  · exact (le_roofEnvelope_iff normal height hnormal x 0).mpr ⟨zero_le_one, hbaseline x hx⟩
 
 theorem continuous_roofEnvelope [Fintype ι] (normal : ι → Plane) (height : ι → ℝ) :
     Continuous (roofEnvelope normal height) :=
@@ -162,17 +118,11 @@ theorem roofEnvelope_update [Fintype ι] [DecidableEq ι]
       (roofExpr (ι := ι)).affineEnvelope (wallSlope normal) (roofIntercept normal height)
         (outwardVelocity normal j) ε := by
   funext x
-  unfold roofEnvelope WallExpr.affineEnvelope
-  congr 1
-  funext i
-  cases i with
-  | none => simp [wallSlope, roofIntercept, outwardVelocity]
-  | some i =>
-    by_cases hij : i = j
-    · subst i
-      simp only [wallSlope, roofIntercept, outwardVelocity, Function.update_self, ↓reduceIte]
-      ring
-    · simp [wallSlope, roofIntercept, outwardVelocity, Function.update_of_ne hij, hij]
+  refine congrArg (roofExpr (ι := ι)).eval (funext fun i => ?_)
+  rcases i with _ | i
+  · simp [wallSlope, roofIntercept, outwardVelocity]
+  rcases eq_or_ne i j with rfl | hij <;> simp [wallSlope, roofIntercept, outwardVelocity, *]
+  ring
 
 /-- One inner wall written without an angular coordinate chart. -/
 def supportWall (U : Set Plane) (n : Plane) (x : ℝ) : ℝ :=
@@ -183,9 +133,7 @@ theorem supportWall_unitNormal (U : Set Plane) (θ x : ℝ) :
 
 theorem supportWall_companionNormal (U : Set Plane) (θ x : ℝ) :
     supportWall U (companionNormal θ) x = secondWall U θ x := by
-  unfold supportWall secondWall companionNormal
-  congr 1
-  ring
+  simp only [supportWall, secondWall, companionNormal]; ring
 
 def cornerExpr (ij : ι × ι) : WallExpr (Option ι) :=
   WallExpr.minimum (WallExpr.leaf (some ij.1)) (WallExpr.leaf (some ij.2))
@@ -217,72 +165,35 @@ theorem finiteNiche_le_iff (U : Set Plane) (normal : ι → Plane)
     (corners : List (ι × ι)) (x b : ℝ) :
     finiteNiche U normal corners x ≤ b ↔ 0 ≤ b ∧ ∀ ij ∈ corners,
       min (supportWall U (normal ij.1) x) (supportWall U (normal ij.2) x) ≤ b := by
-  induction corners with
-  | nil => simp [finiteNiche]
-  | cons ij rest ih =>
-    rw [finiteNiche, max_le_iff, ih]
-    constructor
-    · rintro ⟨hij, hb, hrest⟩
-      refine ⟨hb, ?_⟩
-      intro kl hkl
-      rcases List.mem_cons.mp hkl with rfl | hkl
-      · exact hij
-      · exact hrest kl hkl
-    · rintro ⟨hb, hall⟩
-      exact ⟨hall ij (by simp), hb, fun kl hkl => hall kl (List.mem_cons_of_mem _ hkl)⟩
+  induction corners <;> simp [finiteNiche, *, and_left_comm]
 
 theorem finiteNiche_nonneg (U : Set Plane) (normal : ι → Plane)
-    (corners : List (ι × ι)) (x : ℝ) : 0 ≤ finiteNiche U normal corners x := by
-  induction corners with
-  | nil => exact le_rfl
-  | cons ij rest ih => exact ih.trans (le_max_right _ _)
+    (corners : List (ι × ι)) (x : ℝ) : 0 ≤ finiteNiche U normal corners x :=
+  ((finiteNiche_le_iff U normal corners x _).mp le_rfl).1
 
 theorem finiteBarrier_nonneg (U : Set Plane) (normal : ι → Plane)
     (corners : List (ι × ι)) (terminal : Option ι) (x : ℝ) :
     0 ≤ finiteBarrier U normal corners terminal x := by
-  cases terminal with
-  | none => exact finiteNiche_nonneg U normal corners x
-  | some j => exact (finiteNiche_nonneg U normal corners x).trans (le_max_left _ _)
-
-theorem finiteNiche_eq_eval {U : Set Plane} (normal : ι → Plane) (height : ι → ℝ)
-    (hexact : ∀ i, support U (normal i) = height i) (corners : List (ι × ι)) (x : ℝ) :
-    finiteNiche U normal corners x = (nicheExpr corners).eval
-      (fun i => wallSlope normal i * x + barrierIntercept normal height i) := by
-  have hline : ∀ i, supportWall U (normal i) x =
-      wallSlope normal (some i) * x + barrierIntercept normal height (some i) := by
-    intro i
-    unfold supportWall wallSlope barrierIntercept
-    rw [hexact i]
-    ring
-  induction corners with
-  | nil => simp [finiteNiche, nicheExpr, WallExpr.eval, wallSlope, barrierIntercept]
-  | cons ij rest ih =>
-    simp only [finiteNiche, nicheExpr, cornerExpr, WallExpr.eval, hline, ih]
+  cases terminal <;> simp [finiteBarrier, finiteNiche_nonneg]
 
 theorem finiteBarrier_eq_eval {U : Set Plane} (normal : ι → Plane) (height : ι → ℝ)
     (hexact : ∀ i, support U (normal i) = height i)
     (corners : List (ι × ι)) (terminal : Option ι) (x : ℝ) :
     finiteBarrier U normal corners terminal x = (barrierExpr corners terminal).eval
       (fun i => wallSlope normal i * x + barrierIntercept normal height i) := by
-  cases terminal with
-  | none => exact finiteNiche_eq_eval normal height hexact corners x
-  | some j =>
-    simp only [finiteBarrier, barrierExpr, WallExpr.eval,
-      finiteNiche_eq_eval normal height hexact]
-    congr 1
-    unfold supportWall wallSlope barrierIntercept
-    rw [hexact j]
-    ring
+  have hline (i : ι) : supportWall U (normal i) x =
+      wallSlope normal (some i) * x + barrierIntercept normal height (some i) := by
+    simp only [supportWall, wallSlope, barrierIntercept, hexact]; ring
+  have hniche : finiteNiche U normal corners x = (nicheExpr corners).eval
+      (fun i => wallSlope normal i * x + barrierIntercept normal height i) := by
+    induction corners <;>
+      simp [finiteNiche, nicheExpr, cornerExpr, WallExpr.eval, wallSlope, barrierIntercept, *]
+  cases terminal <;> simp only [finiteBarrier, barrierExpr, WallExpr.eval, hniche, hline]
 
 theorem continuous_finiteBarrier (U : Set Plane) (normal : ι → Plane)
     (corners : List (ι × ι)) (terminal : Option ι) :
     Continuous (finiteBarrier U normal corners terminal) := by
-  have heq : finiteBarrier U normal corners terminal = fun x =>
-      (barrierExpr corners terminal).eval
-        (fun i => wallSlope normal i * x + barrierIntercept normal (fun i => support U (normal i)) i) := by
-    funext x
-    exact finiteBarrier_eq_eval normal _ (fun _ => rfl) corners terminal x
-  rw [heq]
+  rw [funext (finiteBarrier_eq_eval normal _ (fun _ => rfl) corners terminal)]
   exact (barrierExpr corners terminal).continuous_eval (fun _ => by fun_prop)
 
 theorem finiteBarrier_eq_affineEnvelope_update [DecidableEq ι]
@@ -294,31 +205,23 @@ theorem finiteBarrier_eq_affineEnvelope_update [DecidableEq ι]
         (barrierIntercept normal height) (outwardVelocity normal j) ε := by
   funext x
   rw [finiteBarrier_eq_eval normal _ hexact]
-  unfold WallExpr.affineEnvelope
-  congr 1
-  funext i
-  cases i with
-  | none => simp [wallSlope, barrierIntercept, outwardVelocity]
-  | some i =>
-    by_cases hij : i = j
-    · subst i
-      simp only [wallSlope, barrierIntercept, outwardVelocity, Function.update_self, ↓reduceIte]
-      ring
-    · simp [wallSlope, barrierIntercept, outwardVelocity, Function.update_of_ne hij, hij]
+  refine congrArg (barrierExpr corners terminal).eval (funext fun i => ?_)
+  rcases i with _ | i
+  · simp [wallSlope, barrierIntercept, outwardVelocity]
+  rcases eq_or_ne i j with rfl | hij <;> simp [wallSlope, barrierIntercept, outwardVelocity, *]
+  ring
 
 theorem horizontalLeft_upperPolygon {l r : ℝ} (normal : ι → Plane) (height : ι → ℝ)
     (hlr : l ≤ r)
     (hbaseline : ∀ x ∈ Icc l r, ∀ i, coordDot (x, 0) (normal i) ≤ height i) :
     horizontalLeft (upperPolygon l r normal height) = l := by
-  rw [horizontalLeft, horizontalProjection_upperPolygon l r normal height hbaseline]
-  exact csInf_Icc hlr
+  rw [horizontalLeft, horizontalProjection_upperPolygon _ _ _ _ hbaseline, csInf_Icc hlr]
 
 theorem horizontalRight_upperPolygon {l r : ℝ} (normal : ι → Plane) (height : ι → ℝ)
     (hlr : l ≤ r)
     (hbaseline : ∀ x ∈ Icc l r, ∀ i, coordDot (x, 0) (normal i) ≤ height i) :
     horizontalRight (upperPolygon l r normal height) = r := by
-  rw [horizontalRight, horizontalProjection_upperPolygon l r normal height hbaseline]
-  exact csSup_Icc hlr
+  rw [horizontalRight, horizontalProjection_upperPolygon _ _ _ _ hbaseline, csSup_Icc hlr]
 
 /-- The finite geometric score uses the actual projection endpoints and
 actual support values of its cap. -/
@@ -330,22 +233,9 @@ def finiteSpatialScore (U : Set Plane) (normal : ι → Plane)
 theorem intervalSpatialScore_congr_roof {roof roof' niche : ℝ → ℝ} {l r : ℝ}
     (hlr : l ≤ r) (hroof : EqOn roof roof' (Icc l r)) :
     intervalSpatialScore roof niche l r = intervalSpatialScore roof' niche l r := by
-  have hlmid : l ≤ l + (r - l) / 4 := by linarith
-  have hrmid : r - (r - l) / 4 ≤ r := by linarith
-  have hfirst : (∫ x in l..(l + (r - l) / 4), roof x) =
-      ∫ x in l..(l + (r - l) / 4), roof' x := by
-    apply intervalIntegral.integral_congr
-    rw [uIcc_of_le hlmid]
-    intro x hx
-    exact hroof ⟨hx.1, by linarith [hx.2]⟩
-  have hlast : (∫ x in (r - (r - l) / 4)..r, roof x) =
-      ∫ x in (r - (r - l) / 4)..r, roof' x := by
-    apply intervalIntegral.integral_congr
-    rw [uIcc_of_le hrmid]
-    intro x hx
-    exact hroof ⟨by linarith [hx.1], hx.2⟩
   unfold intervalSpatialScore
-  rw [hfirst, hlast]
+  congr 2 <;> refine intervalIntegral.integral_congr (hroof.mono (uIcc_subset_Icc ?_ ?_)) <;>
+    constructor <;> linarith
 
 /-- Actual polygon geometry, rather than an abstract envelope hypothesis,
 identifies all terms of the finite spatial objective. -/
@@ -359,15 +249,9 @@ theorem finiteSpatialScore_upperPolygon [Fintype ι] {l r : ℝ}
       intervalSpatialScore (roofEnvelope normal height)
         (fun x => (barrierExpr corners terminal).eval
           (fun i => wallSlope normal i * x + barrierIntercept normal height i)) l r := by
-  unfold finiteSpatialScore
-  rw [horizontalLeft_upperPolygon normal height hlr hbaseline,
-    horizontalRight_upperPolygon normal height hlr hbaseline]
-  have hbarrier : finiteBarrier (upperPolygon l r normal height) normal corners terminal =
-      fun x => (barrierExpr corners terminal).eval
-        (fun i => wallSlope normal i * x + barrierIntercept normal height i) := by
-    funext x
-    exact finiteBarrier_eq_eval normal height hexact corners terminal x
-  rw [hbarrier]
+  rw [finiteSpatialScore, horizontalLeft_upperPolygon normal height hlr hbaseline,
+    horizontalRight_upperPolygon normal height hlr hbaseline,
+    funext (finiteBarrier_eq_eval normal height hexact corners terminal)]
   exact intervalSpatialScore_congr_roof hlr
     (fun _ hx => capRoof_upperPolygon l r normal height hnormal hbaseline hx)
 

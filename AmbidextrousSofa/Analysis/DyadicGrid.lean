@@ -24,14 +24,9 @@ namespace AngularGrid
 
 def divisions (n : ℕ) : ℕ := 2 ^ (n + 1)
 
-theorem divisions_pos (n : ℕ) : 0 < divisions n := by
-  unfold divisions
-  positivity
+theorem divisions_pos (n : ℕ) : 0 < divisions n := pow_pos two_pos _
 
-theorem divisions_ge_two (n : ℕ) : 2 ≤ divisions n := by
-  calc
-    2 = 2 ^ 1 := by norm_num
-    _ ≤ 2 ^ (n + 1) := Nat.pow_le_pow_right (by norm_num) (by omega)
+theorem divisions_ge_two (n : ℕ) : 2 ≤ divisions n := Nat.le_self_pow n.succ_ne_zero 2
 
 def dyadicPoint (n : ℕ) (i : Fin (divisions n + 1)) : QuarterAngle :=
   ⟨(i.val : ℝ) * (Real.pi / 2) / divisions n, by
@@ -52,85 +47,53 @@ theorem mem_dyadic_iff (n : ℕ) (t : QuarterAngle) :
     t ∈ dyadic n ↔ ∃ i : ℕ, i ≤ divisions n ∧
       (t : ℝ) = (i : ℝ) * (Real.pi / 2) / divisions n := by
   classical
-  constructor
-  · intro ht
-    obtain ⟨i, _, rfl⟩ := Finset.mem_image.mp ht
-    exact ⟨i.val, Nat.lt_succ_iff.mp i.isLt, rfl⟩
-  · rintro ⟨i, hi, ht⟩
-    apply Finset.mem_image.mpr
-    refine ⟨⟨i, Nat.lt_succ_iff.mpr hi⟩, Finset.mem_univ _, ?_⟩
-    exact Subtype.ext ht.symm
+  refine ⟨fun ht => ?_, fun ⟨i, hi, ht⟩ => Finset.mem_image.mpr
+    ⟨⟨i, Nat.lt_succ_iff.mpr hi⟩, Finset.mem_univ _, Subtype.ext ht.symm⟩⟩
+  obtain ⟨i, _, rfl⟩ := Finset.mem_image.mp ht
+  exact ⟨i.val, Nat.lt_succ_iff.mp i.isLt, rfl⟩
 
 theorem dyadic_mono : Monotone dyadic := by
   intro n m hnm t ht
   obtain ⟨i, hi, ht⟩ := (mem_dyadic_iff n t).mp ht
   have hfactor : divisions m = divisions n * 2 ^ (m - n) := by
-    unfold divisions
-    rw [← pow_add]
+    rw [divisions, divisions, ← pow_add]
     congr 1
     omega
-  apply (mem_dyadic_iff m t).mpr
-  refine ⟨i * 2 ^ (m - n), ?_, ?_⟩
-  · rw [hfactor]
-    exact Nat.mul_le_mul_right _ hi
-  · rw [ht, hfactor]
-    push_cast
-    have hp : (2 : ℝ) ^ (m - n) ≠ 0 := by positivity
-    have hN : (divisions n : ℝ) ≠ 0 := by exact_mod_cast (divisions_pos n).ne'
-    field_simp <;> ring
-
-/-- The floor of the rescaled angle is a grid point at distance less than
-one mesh. Closed endpoints require no separate positive-distance case. -/
-theorem exists_dyadic_near (t : QuarterAngle) {ε : ℝ} (hε : 0 < ε) :
-    ∃ n, ∃ s ∈ dyadic n, dist s t < ε := by
-  have hL : 0 < Real.pi / 2 := by linarith [Real.pi_pos]
-  obtain ⟨n, hn⟩ := exists_nat_gt ((Real.pi / 2) / ε)
-  have hnN : (n : ℝ) < divisions n := by
-    have h : n < divisions n :=
-      lt_trans (Nat.lt_succ_self n) (show n + 1 < 2 ^ (n + 1) from Nat.lt_two_pow_self)
-    exact_mod_cast h
-  have hN : (0 : ℝ) < divisions n := by exact_mod_cast divisions_pos n
-  let z : ℝ := (t : ℝ) * divisions n / (Real.pi / 2)
-  have hz0 : 0 ≤ z := div_nonneg (mul_nonneg t.property.1 hN.le) hL.le
-  have hzN : z ≤ divisions n := by
-    change (t : ℝ) * divisions n / (Real.pi / 2) ≤ divisions n
-    rw [div_le_iff₀ hL]
-    nlinarith [t.property.2]
-  let j : ℕ := ⌊z⌋₊
-  have hjle : (j : ℝ) ≤ z := Nat.floor_le hz0
-  have hjgt : z < (j : ℝ) + 1 := Nat.lt_floor_add_one z
-  have hjN : j ≤ divisions n := by exact_mod_cast hjle.trans hzN
-  let s : QuarterAngle := dyadicPoint n ⟨j, Nat.lt_succ_iff.mpr hjN⟩
-  have hs : s ∈ dyadic n := (mem_dyadic_iff n s).mpr ⟨j, hjN, rfl⟩
-  have hleft : (j : ℝ) * (Real.pi / 2) ≤ (t : ℝ) * divisions n := by
-    have h := hjle
-    change (j : ℝ) ≤ (t : ℝ) * divisions n / (Real.pi / 2) at h
-    exact (le_div_iff₀ hL).mp h
-  have hright : (t : ℝ) * divisions n < ((j : ℝ) + 1) * (Real.pi / 2) := by
-    have h := hjgt
-    change (t : ℝ) * divisions n / (Real.pi / 2) < (j : ℝ) + 1 at h
-    exact (div_lt_iff₀ hL).mp h
-  have hsle : (j : ℝ) * (Real.pi / 2) / divisions n ≤ (t : ℝ) :=
-    (div_le_iff₀ hN).mpr hleft
-  have hgap : (t : ℝ) - (j : ℝ) * (Real.pi / 2) / divisions n <
-      (Real.pi / 2) / divisions n := by
-    rw [sub_lt_iff_lt_add, ← add_div, lt_div_iff₀ hN]
-    nlinarith
-  have hmesh : (Real.pi / 2) / divisions n < ε := by
-    rw [div_lt_iff₀ hN]
-    have hratio := hn.trans hnN
-    rw [div_lt_iff₀ hε] at hratio
-    nlinarith
-  refine ⟨n, s, hs, ?_⟩
-  change dist ((j : ℝ) * (Real.pi / 2) / divisions n) (t : ℝ) < ε
-  rw [Real.dist_eq, abs_sub_comm, abs_of_nonneg (sub_nonneg.mpr hsle)]
-  exact hgap.trans hmesh
+  refine (mem_dyadic_iff m t).mpr ⟨i * 2 ^ (m - n), hfactor ▸ Nat.mul_le_mul_right _ hi, ?_⟩
+  rw [ht, hfactor]
+  have hN : (divisions n : ℝ) ≠ 0 := by exact_mod_cast (divisions_pos n).ne'
+  push_cast
+  field_simp
 
 theorem dense_iUnion_dyadic : Dense (⋃ n, (dyadic n : Set QuarterAngle)) := by
-  apply Metric.dense_iff.mpr
-  intro t ε hε
-  obtain ⟨n, s, hs, hdist⟩ := exists_dyadic_near t hε
-  exact ⟨s, hdist, mem_iUnion.mpr ⟨n, hs⟩⟩
+  -- The floor of the rescaled angle is a grid point less than one mesh below `t`.
+  refine Metric.dense_iff.mpr fun t ε hε => ?_
+  obtain ⟨n, hn⟩ := exists_nat_gt ((Real.pi / 2) / ε)
+  have hnN : (n : ℝ) < divisions n := by
+    exact_mod_cast (Nat.lt_succ_self n).trans Nat.lt_two_pow_self
+  have hN : (0 : ℝ) < divisions n := by exact_mod_cast divisions_pos n
+  set z := (t : ℝ) * divisions n / (Real.pi / 2) with hz
+  have hz0 : 0 ≤ z := div_nonneg (mul_nonneg t.property.1 hN.le) (by positivity)
+  have hjN : ⌊z⌋₊ ≤ divisions n := Nat.floor_le_of_le <| by
+    rw [hz, div_le_iff₀ (by positivity)]
+    nlinarith [t.property.2]
+  have hmesh : 0 < (Real.pi / 2) / divisions n := by positivity
+  have hmeshε : (Real.pi / 2) / divisions n < ε := by
+    rw [div_lt_iff₀ hN]
+    rw [div_lt_iff₀ hε] at hn
+    nlinarith
+  have hts : (t : ℝ) - ⌊z⌋₊ * (Real.pi / 2) / divisions n =
+      (z - ⌊z⌋₊) * ((Real.pi / 2) / divisions n) := by
+    rw [hz]
+    field_simp
+  refine ⟨dyadicPoint n ⟨⌊z⌋₊, Nat.lt_succ_iff.mpr hjN⟩, ?_,
+    mem_iUnion.mpr ⟨n, (mem_dyadic_iff n _).mpr ⟨_, hjN, rfl⟩⟩⟩
+  rw [Metric.mem_ball, Subtype.dist_eq, Real.dist_eq, abs_sub_comm, abs_lt]
+  change -ε < (t : ℝ) - ⌊z⌋₊ * (Real.pi / 2) / divisions n ∧
+    (t : ℝ) - ⌊z⌋₊ * (Real.pi / 2) / divisions n < ε
+  rw [hts]
+  constructor <;> linarith [mul_nonneg (sub_nonneg.mpr (Nat.floor_le hz0)) hmesh.le,
+    mul_lt_mul_of_pos_right (by linarith [Nat.lt_floor_add_one z] : z - ⌊z⌋₊ < 1) hmesh]
 
 theorem tendstoUniformlyOn_dyadic_box {B : Set Plane} (hB : IsCompact B) (l r : ℝ) :
     TendstoUniformlyOn (fun n (p : CompactCap × ℝ) => niche p.1 (dyadic n) p.2)

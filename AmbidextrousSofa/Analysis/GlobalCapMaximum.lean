@@ -33,9 +33,8 @@ theorem IsFullCapMaximizer.isCap {U : Set Plane} (hU : IsFullCapMaximizer U) :
     IsDownwardCap U := hU.1
 
 theorem IsFullCapMaximizer.reference_le {U : Set Plane} (hU : IsFullCapMaximizer U) :
-    M / 2 ≤ capScore U (Real.pi / 2) := by
-  have h := hU.2 Reference.referenceCap Reference.isDownwardCap_referenceCap
-  rwa [Reference.capScore_referenceCap] at h
+    M / 2 ≤ capScore U (Real.pi / 2) :=
+  Reference.capScore_referenceCap ▸ hU.2 _ Reference.isDownwardCap_referenceCap
 
 theorem IsFullCapMaximizer.width_bounds {U : Set Plane} (hU : IsFullCapMaximizer U) :
     M ≤ capWidth U ∧ capWidth U < 6 :=
@@ -46,26 +45,18 @@ regularity restriction. The final representative lies in a fixed box. -/
 theorem exists_fullCapMaximizer :
     ∃ U : Set Plane, IsFullCapMaximizer U ∧ U ⊆ Icc (-3, 0) (3, 1) := by
   have hRef := Reference.isDownwardCap_referenceCap
-  have hRefScore : M / 2 ≤ capScore Reference.referenceCap (Real.pi / 2) :=
-    Reference.capScore_referenceCap.ge
-  have hRefWidth := (hRef.competitive_width_bounds
-    (by linarith [Real.pi_pos]) le_rfl hRefScore).2
-  have hRefBox : centeredCap Reference.referenceCap ⊆ Icc (-3, 0) (3, 1) :=
-    centeredCap_subset_box_of_width_le hRef (by linarith)
-  obtain ⟨K, hK, hKB, hmax⟩ := exists_capScore_max_of_compact_containment
-    (isCompact_Icc : IsCompact (Icc ((-3, 0) : Plane) (3, 1))) hRef.centeredCap hRefBox
-  have hKRef : M / 2 ≤ capScore K (Real.pi / 2) := by
-    have h := hmax _ hRef.centeredCap hRefBox
-    rwa [capScore_centeredCap hRef, Reference.capScore_referenceCap] at h
-  refine ⟨K, ⟨hK, ?_⟩, hKB⟩
-  intro V hV
-  by_cases hwide : 6 ≤ capWidth V
-  · exact (hV.capScore_lt_half_M_of_six_le_width
-      (by linarith [Real.pi_pos]) le_rfl hwide).le.trans hKRef
-  · have hVbox : centeredCap V ⊆ Icc (-3, 0) (3, 1) :=
-      centeredCap_subset_box_of_width_le hV (by linarith [lt_of_not_ge hwide])
-    have h := hmax _ hV.centeredCap hVbox
-    rwa [capScore_centeredCap hV] at h
+  have hbox {V : Set Plane} (hV : IsDownwardCap V) (h : M / 2 ≤ capScore V (Real.pi / 2)) :
+      centeredCap V ⊆ Icc (-3, 0) (3, 1) := centeredCap_subset_box_of_width_le hV <| by
+    linarith [(hV.competitive_width_bounds (by linarith [Real.pi_pos]) le_rfl h).2]
+  have hRefBox := hbox hRef Reference.capScore_referenceCap.ge
+  obtain ⟨K, hK, hKB, hmax⟩ :=
+    exists_capScore_max_of_compact_containment isCompact_Icc hRef.centeredCap hRefBox
+  have hKRef := hmax _ hRef.centeredCap hRefBox
+  rw [capScore_centeredCap hRef, Reference.capScore_referenceCap] at hKRef
+  refine ⟨K, ⟨hK, fun V hV => ?_⟩, hKB⟩
+  rcases le_total (capScore V (Real.pi / 2)) (M / 2) with h | h
+  · exact h.trans hKRef
+  · simpa [capScore_centeredCap hV] using hmax _ hV.centeredCap (hbox hV h)
 
 theorem IsFullCapMaximizer.of_score_le {U V : Set Plane}
     (hU : IsFullCapMaximizer U) (hV : IsDownwardCap V)
@@ -82,13 +73,11 @@ theorem IsFullCapMaximizer.exists_heightOne_affine_middle
       capScore V (Real.pi / 2) = capScore U (Real.pi / 2) ∧
       ∃ m c : ℝ, ∀ x ∈ middleHalfInterval (horizontalLeft V) (horizontalRight V),
         capRoof V x = m * x + c := by
-  have hwidth : 0 < capWidth U := by linarith [hU.width_bounds.1, one_lt_M]
   obtain ⟨V, hV, hproj, hheight, hscore, m, c, haffine⟩ :=
-    hU.isCap.exists_heightOne_affine_middle hwidth (by linarith [Real.pi_pos]) le_rfl
-  have hleft : horizontalLeft V = horizontalLeft U := by unfold horizontalLeft; rw [hproj]
-  have hright : horizontalRight V = horizontalRight U := by unfold horizontalRight; rw [hproj]
+    hU.isCap.exists_heightOne_affine_middle (by linarith [hU.width_bounds.1, one_lt_M])
+      (by positivity) le_rfl
   refine ⟨V, hU.of_score_le hV hscore, hproj, hheight,
     le_antisymm (hU.2 V hV) hscore, m, c, ?_⟩
-  simpa only [hleft, hright] using haffine
+  simpa only [horizontalLeft, horizontalRight, hproj] using haffine
 
 end AmbidextrousSofa

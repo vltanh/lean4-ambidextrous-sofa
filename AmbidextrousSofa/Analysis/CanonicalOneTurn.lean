@@ -16,17 +16,14 @@ and obeys the ordinary-sofa area bound. No central fit certificate remains
 in these statements.
 -/
 
-noncomputable section
-
-open Set MeasureTheory
+open Set
 
 namespace AmbidextrousSofa
 
 theorem middleHalfInterval_eq_centered {U : Set Plane} {C : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C) :
     middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
-  unfold middleHalfInterval
-  rw [hl, hr]
+  rw [middleHalfInterval, hl, hr]
   congr 1 <;> ring
 
 theorem IsFullCapMaximizer.sweptNiche_le_roof_of_canonical_range
@@ -37,10 +34,9 @@ theorem IsFullCapMaximizer.sweptNiche_le_roof_of_canonical_range
     (hheight : capHeight U = 1)
     (haffine : ∃ m c : ℝ, ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    ∀ x ∈ horizontalProjection U, sweptNiche U (Real.pi / 2) x ≤ capRoof U x := by
-  apply hU.sweptNiche_le_roof_of_middle_height_bound
-    hl hr hleft hright hC0 hC1 hh0 hh1 hheight haffine
-  simpa only [middleHalfInterval_eq_centered hl hr] using
-    hU.sweptNiche_le_half_endpoint_height_sum_of_affine hheight haffine
+    ∀ x ∈ horizontalProjection U, sweptNiche U (Real.pi / 2) x ≤ capRoof U x :=
+  hU.sweptNiche_le_roof_of_middle_height_bound hl hr hleft hright hC0 hC1 hh0 hh1 hheight haffine
+    (middleHalfInterval_eq_centered hl hr ▸
+      hU.sweptNiche_le_half_endpoint_height_sum_of_affine hheight haffine)
 
 end AmbidextrousSofa

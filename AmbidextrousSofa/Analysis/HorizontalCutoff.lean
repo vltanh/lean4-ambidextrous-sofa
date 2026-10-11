@@ -26,19 +26,14 @@ theorem abs_cos_ge_sin_of_outside_top_interval {η t : ℝ}
     (hη : η ∈ Ioo (0 : ℝ) (Real.pi / 2)) (ht : t ∈ Ioo (0 : ℝ) Real.pi)
     (hout : t ∉ Icc (Real.pi / 2 - η) (Real.pi / 2 + η)) :
     Real.sin η ≤ |Real.cos t| := by
-  by_cases hlo : t < Real.pi / 2 - η
-  · have h := Real.cos_le_cos_of_nonneg_of_le_pi ht.1.le
-      (show Real.pi / 2 - η ≤ Real.pi by linarith [Real.pi_pos, hη.1]) hlo.le
+  rw [mem_Icc, not_and_or, not_le, not_le] at hout
+  rcases hout with hlo | hhi
+  · have h := Real.cos_le_cos_of_nonneg_of_le_pi ht.1.le (by linarith [Real.pi_pos, hη.1]) hlo.le
     rw [Real.cos_pi_div_two_sub] at h
     exact h.trans (le_abs_self _)
-  · have hhi : Real.pi / 2 + η < t := by
-      by_contra h
-      exact hout ⟨le_of_not_gt hlo, le_of_not_gt h⟩
-    have h := Real.cos_le_cos_of_nonneg_of_le_pi
-      (show 0 ≤ Real.pi / 2 + η by linarith [Real.pi_pos, hη.1]) ht.2.le hhi.le
-    rw [Real.cos_add, Real.cos_pi_div_two, Real.sin_pi_div_two] at h
-    have hneg : Real.sin η ≤ -Real.cos t := by linarith
-    exact hneg.trans (neg_le_abs _)
+  · have h := Real.cos_le_cos_of_nonneg_of_le_pi (by linarith [Real.pi_pos, hη.1]) ht.2.le hhi.le
+    rw [add_comm, Real.cos_add_pi_div_two] at h
+    exact (le_neg.mp h).trans (neg_le_abs _)
 
 namespace AngularGrid
 
@@ -58,19 +53,16 @@ def horizontalOuterMass (U : Set Plane) (grid : Finset QuarterAngle) (E : Set �
 theorem horizontalOuterDensity_bounds (U : Set Plane) (grid : Finset QuarterAngle)
     (E : Set ℝ) (x : ℝ) :
     0 ≤ horizontalOuterDensity U grid E x ∧ horizontalOuterDensity U grid E x ≤ 1 := by
-  classical
-  exact WallExpr.horizontalSourceDensity_bounds _ _ _ _ _
+  classical exact WallExpr.horizontalSourceDensity_bounds _ _ _ _ _
 
 theorem measurable_horizontalOuterDensity (U : Set Plane) (grid : Finset QuarterAngle)
     (E : Set ℝ) : Measurable (horizontalOuterDensity U grid E) := by
-  classical
-  exact WallExpr.measurable_horizontalSourceDensity _ _ _ _
+  classical exact WallExpr.measurable_horizontalSourceDensity _ _ _ _
 
 theorem intervalIntegrable_horizontalOuterDensity (U : Set Plane)
     (grid : Finset QuarterAngle) (E : Set ℝ) (l r : ℝ) :
     IntervalIntegrable (horizontalOuterDensity U grid E) volume l r := by
-  classical
-  exact WallExpr.intervalIntegrable_horizontalSourceDensity _ _ _ _ l r
+  classical exact WallExpr.intervalIntegrable_horizontalSourceDensity _ _ _ _ l r
 
 theorem horizontalOuterMass_eq_integrals {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (E : Set ℝ) :
@@ -94,16 +86,14 @@ theorem horizontalOuterDensity_eq_zero_of_no_edge {U : Set Plane}
     horizontalOuterDensity U grid E x = 0 := by
   classical
   unfold horizontalOuterDensity WallExpr.horizontalSourceDensity WallExpr.sourceDensity
-  cases hsource : (roofExpr (ι := SourceIndex grid)).source (fun i => wallSlope (normal grid) i * x +
-    roofIntercept (normal grid) (fun j => support U (normal grid j)) i) with
-  | none => rfl
-  | some j =>
-    have hj : j ∉ Finset.univ.filter (fun i : SourceIndex grid => fullAngle grid i ∈ E) := by
-      intro hj
-      apply hno (fullAngle grid j) (Finset.mem_filter.mp hj).2
-      exact outerSource_mem_edge hU (normal grid) (normal_snd_pos grid) hpoly j
-        (normal_eq_unitNormal grid j) hx hsource
-    simp only [hj, ite_false]
+  dsimp only
+  split
+  · rfl
+  rename_i j hsource
+  have hj : j ∉ Finset.univ.filter (fun i : SourceIndex grid => fullAngle grid i ∈ E) :=
+    fun hj => hno _ (Finset.mem_filter.mp hj).2 (outerSource_mem_edge hU (normal grid)
+      (normal_snd_pos grid) hpoly j (normal_eq_unitNormal grid j) hx hsource)
+  simp only [hj, ite_false]
 
 theorem normal_snd_mul_innerSourceMass_eq {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (j : SourceIndex grid) :
@@ -111,17 +101,11 @@ theorem normal_snd_mul_innerSourceMass_eq {U : Set Plane} (hU : IsDownwardCap U)
       finiteWingMass U (normal grid) (some j) +
         (normal grid j).2 * normalizedExposureDefect U grid j := by
   have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
-  have hinner : (normal grid j).2 * innerSourceMass U grid j =
-      (barrierExpr (pairList grid) none).sourceMass (wallSlope (normal grid))
-        (barrierIntercept (normal grid) (fun i => support U (normal grid i)))
-        (horizontalLeft U + capWidth U / 4) (horizontalRight U - capWidth U / 4) (some j) := by
-    unfold innerSourceMass innerDensity
-    rw [integral_sourceDensity_outward _ _ _ _ (by linarith),
-      mul_div_cancel₀ _ (normal_snd_pos grid j).ne']
-    rfl
-  rw [hinner]
-  unfold normalizedExposureDefect finiteExposureDefect finiteWingMass capWidth
-  rw [mul_div_cancel₀ _ (normal_snd_pos grid j).ne']
+  have hn := (normal_snd_pos grid j).ne'
+  unfold innerSourceMass innerDensity normalizedExposureDefect finiteExposureDefect finiteWingMass
+  rw [integral_sourceDensity_outward _ _ _ _ (by linarith), mul_div_cancel₀ _ hn,
+    mul_div_cancel₀ _ hn]
+  unfold WallExpr.sourceMass
   ring
 
 open Classical in
@@ -132,15 +116,10 @@ theorem innerSourceMass_sum_interval_le {U : Set Plane} (hU : IsDownwardCap U)
     (level : ℕ) (hst : s ≤ t) :
     (∑ j ∈ Finset.univ.filter (fun j : SourceIndex (dyadic level) =>
       fullAngle (dyadic level) j ∈ Icc s t), innerSourceMass U (dyadic level) j) ≤
-        (4 * R + 12) * (t - s + mesh level) := by
-  calc
-    _ ≤ ∑ j ∈ Finset.univ.filter (fun j : SourceIndex (dyadic level) =>
-        fullAngle (dyadic level) j ∈ Icc s t), (4 * R + 12) * mesh level :=
-      Finset.sum_le_sum (fun j _ => innerSourceMass_dyadic_le hU hR hbox level j)
-    _ = (4 * R + 12) * ∑ j ∈ Finset.univ.filter
-        (fun j : SourceIndex (dyadic level) => fullAngle (dyadic level) j ∈ Icc s t),
-          mesh level := by rw [Finset.mul_sum]
-    _ ≤ _ := mul_le_mul_of_nonneg_left (sum_mesh_interval_sources_le level hst) (by linarith)
+        (4 * R + 12) * (t - s + mesh level) :=
+  (Finset.sum_le_sum fun j _ => innerSourceMass_dyadic_le hU hR hbox level j).trans (by
+    rw [← Finset.mul_sum]
+    exact mul_le_mul_of_nonneg_left (sum_mesh_interval_sources_le level hst) (by linarith))
 
 open Classical in
 theorem finitePositiveLength_le_horizontalOuterMass_add_cutoff {U : Set Plane}
@@ -154,39 +133,18 @@ theorem finitePositiveLength_le_horizontalOuterMass_add_cutoff {U : Set Plane}
         ∑ j ∈ Finset.univ.filter (fun j : SourceIndex grid => fullAngle grid j ∉ E),
           innerSourceMass U grid j := by
   classical
+  have hs (j : SourceIndex grid) : (normal grid j).2 ≤ 1 :=
+    normal_eq_unitNormal grid j ▸ Real.sin_le_one _
   rw [← sum_sin_innerSourceMass_eq_positiveLength hU grid,
     ← Finset.sum_filter_add_sum_filter_not Finset.univ (fun j => fullAngle grid j ∈ E)]
-  have hmain :
-      (∑ j ∈ Finset.univ.filter (fun j : SourceIndex grid => fullAngle grid j ∈ E),
-        (normal grid j).2 * innerSourceMass U grid j) ≤
-      horizontalOuterMass U grid E +
-        ∑ j ∈ Finset.univ.filter (fun j : SourceIndex grid => fullAngle grid j ∈ E),
-          |normalizedExposureDefect U grid j| := by
-    unfold horizontalOuterMass
-    rw [← Finset.sum_add_distrib]
-    apply Finset.sum_le_sum
-    intro j _
-    rw [normal_snd_mul_innerSourceMass_eq hU]
-    apply add_le_add_right
-    calc
-      (normal grid j).2 * normalizedExposureDefect U grid j ≤
-          (normal grid j).2 * |normalizedExposureDefect U grid j| :=
-        mul_le_mul_of_nonneg_left (le_abs_self _) (normal_snd_pos grid j).le
-      _ ≤ _ := by
-        have hs : (normal grid j).2 ≤ 1 := by
-          rw [normal_eq_unitNormal]; exact Real.sin_le_one _
-        simpa only [one_mul] using mul_le_mul_of_nonneg_right hs (abs_nonneg _)
-  have hrest :
-      (∑ j ∈ Finset.univ.filter (fun j : SourceIndex grid => fullAngle grid j ∉ E),
-        (normal grid j).2 * innerSourceMass U grid j) ≤
-      ∑ j ∈ Finset.univ.filter (fun j : SourceIndex grid => fullAngle grid j ∉ E),
-        innerSourceMass U grid j := by
-    apply Finset.sum_le_sum
-    intro j _
-    have hs : (normal grid j).2 ≤ 1 := by rw [normal_eq_unitNormal]; exact Real.sin_le_one _
-    simpa only [one_mul] using mul_le_mul_of_nonneg_right hs (innerSourceMass_nonneg hU grid j)
-  exact add_le_add
-    (hmain.trans (add_le_add_right (sum_abs_defect_on_set_le_cos_sum U grid hδ hE) _)) hrest
+  refine add_le_add (le_trans ?_ (add_le_add_right
+    (sum_abs_defect_on_set_le_cos_sum U grid hδ hE) _)) (Finset.sum_le_sum fun j _ =>
+      mul_le_of_le_one_left (innerSourceMass_nonneg hU grid j) (hs j))
+  rw [horizontalOuterMass, ← Finset.sum_add_distrib]
+  refine Finset.sum_le_sum fun j _ => ?_
+  rw [normal_snd_mul_innerSourceMass_eq hU]
+  exact add_le_add_right ((mul_le_mul_of_nonneg_left (le_abs_self _)
+    (normal_snd_pos grid j).le).trans (mul_le_of_le_one_left (abs_nonneg _) (hs j))) _
 
 theorem finitePositiveLength_le_horizontalOuterMass_away_top {U : Set Plane}
     (hU : IsDownwardCap U) {R η : ℝ} (hR : 0 ≤ R)
@@ -206,14 +164,11 @@ theorem finitePositiveLength_le_horizontalOuterMass_away_top {U : Set Plane}
     (fun t ht => abs_cos_ge_sin_of_outside_top_interval hη ht.1 ht.2)
   have hsmall := innerSourceMass_sum_interval_le hU hR hbox level
     (show Real.pi / 2 - η ≤ Real.pi / 2 + η by linarith [hη.1])
-  have hid : Real.pi / 2 + η - (Real.pi / 2 - η) + mesh level = 2 * η + mesh level := by ring
-  rw [hid] at hsmall
-  refine h.trans (add_le_add_right (le_trans (le_of_eq ?_) hsmall) _)
+  refine h.trans (add_le_add_right ((Finset.sum_congr ?_ fun _ _ => rfl).trans_le
+    (hsmall.trans_eq (by ring))) _)
   -- the two filters agree: a source angle lies in `(0, π)`
-  refine Finset.sum_congr ?_ (fun _ _ => rfl)
   ext j
-  simp only [Finset.mem_filter, Finset.mem_univ, true_and, Set.mem_sdiff,
-    fullAngle_mem, true_and, not_not]
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and, Set.mem_sdiff, fullAngle_mem, not_not]
 
 end AngularGrid
 

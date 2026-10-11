@@ -34,41 +34,35 @@ def leftCompanionCap (U : Set Plane) (a : ℝ) : Set Plane :=
 theorem leftCompanionCap_subset (U : Set Plane) (a : ℝ) : leftCompanionCap U a ⊆ U :=
   horizontalCut_subset U (horizontalLeft U) a
 
+private theorem left_cut {U : Set Plane} (hU : IsDownwardCap U) {a : ℝ}
+    (ha : a ∈ horizontalProjection U) :
+    horizontalLeft U ≤ a ∧ Icc (horizontalLeft U) a ⊆ horizontalProjection U := by
+  rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex] at ha ⊢
+  exact ⟨ha.1, Icc_subset_Icc le_rfl ha.2⟩
+
 theorem IsDownwardCap.leftCompanionCap {U : Set Plane} (hU : IsDownwardCap U)
-    {a : ℝ} (ha : a ∈ horizontalProjection U) : IsDownwardCap (AmbidextrousSofa.leftCompanionCap U a) := by
-  have ha' := ha
-  rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex] at ha'
-  apply hU.horizontalCut ha'.1
-  rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
-  exact Icc_subset_Icc le_rfl ha'.2
+    {a : ℝ} (ha : a ∈ horizontalProjection U) :
+    IsDownwardCap (AmbidextrousSofa.leftCompanionCap U a) :=
+  (left_cut hU ha).elim hU.horizontalCut
 
 theorem horizontalLeft_leftCompanionCap {U : Set Plane} (hU : IsDownwardCap U)
     {a : ℝ} (ha : a ∈ horizontalProjection U) :
-    horizontalLeft (leftCompanionCap U a) = horizontalLeft U := by
-  have ha' := ha
-  rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex] at ha'
-  apply horizontalLeft_horizontalCut hU ha'.1
-  rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
-  exact Icc_subset_Icc le_rfl ha'.2
+    horizontalLeft (leftCompanionCap U a) = horizontalLeft U :=
+  (left_cut hU ha).elim (horizontalLeft_horizontalCut hU)
 
 theorem IsDownwardCap.rightRoof_mem_leftCompanionCap {U : Set Plane}
     (hU : IsDownwardCap U) {a : ℝ} (ha : a ∈ horizontalProjection U) :
-    (a, capRoof U a) ∈ AmbidextrousSofa.leftCompanionCap U a := by
-  have hpoint := capRoof_mem hU.isCompact ha
-  exact ⟨hpoint, (hU.fst_mem_Icc hpoint).1, le_rfl⟩
+    (a, capRoof U a) ∈ AmbidextrousSofa.leftCompanionCap U a :=
+  ⟨capRoof_mem hU.isCompact ha, (left_cut hU ha).1, le_rfl⟩
 
 theorem companionPointWall_nonpos_of_right {p : Plane} {x t : ℝ}
     (hpy : p.2 ≤ 1) (hxp : x ≤ p.1) (hs : 0 ≤ Real.sin t) (hc : 0 < Real.cos t) :
     companionPointWall p x t ≤ 0 := by
-  have heq : companionPointWall p x t =
-      (p.2 * Real.cos t + (x - p.1) * Real.sin t - 1) / Real.cos t := by
-    unfold companionPointWall
-    field_simp [hc.ne'] <;> ring
-  rw [heq]
-  apply div_nonpos_of_nonpos_of_nonneg _ hc.le
-  have hheight := mul_le_mul_of_nonneg_right hpy hc.le
-  have hhorizontal := mul_nonpos_of_nonpos_of_nonneg (sub_nonpos.mpr hxp) hs
-  linarith only [hheight, hhorizontal, Real.cos_le_one t]
+  rw [companionPointWall_eq hc.ne']
+  refine div_nonpos_of_nonpos_of_nonneg ?_ hc.le
+  simp only [coordDot, companionNormal]
+  linarith [mul_nonneg (sub_nonneg.2 hxp) hs, mul_nonneg (sub_nonneg.2 hpy) hc.le,
+    Real.cos_le_one t]
 
 /-- The high wing is nonpositive and the affine middle is controlled
 by its endpoints. The resulting bound is for the actual support of the
@@ -82,48 +76,27 @@ theorem IsDownwardCap.secondWall_le_leftCompanionCap
   have hV := hU.leftCompanionCap ha
   obtain ⟨p, hp, hsupport⟩ := exists_coordDot_eq_support hU.isCompact hU.nonempty
     (companionNormal t)
-  have hwall : secondWall U t x = companionPointWall p x t :=
-    (companionPointWall_eq_secondWall_of_support hc.ne' hsupport).symm
-  rw [hwall]
-  by_cases hpa : p.1 ≤ a
-  · have hpV : p ∈ AmbidextrousSofa.leftCompanionCap U a := ⟨hp, (hU.fst_mem_Icc hp).1, hpa⟩
-    exact (companionPointWall_le_secondWall hV hpV hc).trans (le_max_left _ _)
-  · by_cases hbp : b ≤ p.1
-    · exact (companionPointWall_nonpos_of_right (hU.inStrip hp).2
-        (hxb.trans hbp) hs hc).trans (le_max_right _ _)
-    · have hpx : p.1 ∈ Icc a b := ⟨(lt_of_not_ge hpa).le, le_of_not_ge hbp⟩
-      have hpy : p.2 ≤ m * p.1 + c := by
-        have h := le_capRoof hU.isCompact (show (p.1, p.2) ∈ U by simpa using hp)
-        rwa [haffine p.1 hpx] at h
-      have hpA : (a, m * a + c) ∈ AmbidextrousSofa.leftCompanionCap U a := by
-        rw [← haffine a ⟨le_rfl, hab.le⟩]
-        exact hU.rightRoof_mem_leftCompanionCap ha
-      have hpB : (b, m * b + c) ∈ U := by
-        rw [← haffine b ⟨hab.le, le_rfl⟩]
-        exact capRoof_mem hU.isCompact hb
-      have hheight := mul_le_mul_of_nonneg_right hpy hc.le
-      by_cases hsign : m * Real.cos t - Real.sin t ≤ 0
-      · have hhorizontal := mul_nonpos_of_nonneg_of_nonpos
-          (sub_nonneg.mpr hpx.1) hsign
-        have hdot : coordDot p (companionNormal t) ≤
-            coordDot (a, m * a + c) (companionNormal t) := by
-          unfold coordDot companionNormal
-          nlinarith only [hheight, hhorizontal]
-        have hpoint : companionPointWall p x t ≤ companionPointWall (a, m * a + c) x t := by
-          rw [companionPointWall_eq hc.ne', companionPointWall_eq hc.ne']
-          exact div_le_div_of_nonneg_right (by linarith only [hdot]) hc.le
-        exact (hpoint.trans (companionPointWall_le_secondWall hV hpA hc)).trans (le_max_left _ _)
-      · have hhorizontal := mul_nonpos_of_nonpos_of_nonneg
-          (sub_nonpos.mpr hpx.2) (le_of_not_ge hsign)
-        have hdot : coordDot p (companionNormal t) ≤
-            coordDot (b, m * b + c) (companionNormal t) := by
-          unfold coordDot companionNormal
-          nlinarith only [hheight, hhorizontal]
-        have hpoint : companionPointWall p x t ≤ companionPointWall (b, m * b + c) x t := by
-          rw [companionPointWall_eq hc.ne', companionPointWall_eq hc.ne']
-          exact div_le_div_of_nonneg_right (by linarith only [hdot]) hc.le
-        exact (hpoint.trans (companionPointWall_nonpos_of_right (hU.inStrip hpB).2
-          hxb hs hc)).trans (le_max_right _ _)
+  rw [← companionPointWall_eq_secondWall_of_support hc.ne' hsupport]
+  rcases le_or_gt p.1 a with hpa | hpa
+  · exact (companionPointWall_le_secondWall hV ⟨hp, (hU.fst_mem_Icc hp).1, hpa⟩ hc).trans
+      (le_max_left _ _)
+  rcases le_or_gt b p.1 with hbp | hbp
+  · exact (companionPointWall_nonpos_of_right (hU.inStrip hp).2 (hxb.trans hbp) hs hc).trans
+      (le_max_right _ _)
+  have hpy := (le_capRoof hU.isCompact hp).trans_eq (haffine p.1 ⟨hpa.le, hbp.le⟩)
+  have hpoint (q : ℝ) (hq : 0 ≤ (q - p.1) * (m * Real.cos t - Real.sin t)) :
+      companionPointWall p x t ≤ companionPointWall (q, m * q + c) x t := by
+    rw [companionPointWall_eq hc.ne', companionPointWall_eq hc.ne']
+    refine div_le_div_of_nonneg_right ?_ hc.le
+    simp only [coordDot, companionNormal]
+    linarith [mul_le_mul_of_nonneg_right hpy hc.le]
+  rcases le_total (m * Real.cos t - Real.sin t) 0 with hsign | hsign
+  · exact ((hpoint a (mul_nonneg_of_nonpos_of_nonpos (by linarith) hsign)).trans
+      (companionPointWall_le_secondWall hV (haffine a ⟨le_rfl, hab.le⟩ ▸
+        hU.rightRoof_mem_leftCompanionCap ha) hc)).trans (le_max_left _ _)
+  · exact ((hpoint b (mul_nonneg (by linarith) hsign)).trans (companionPointWall_nonpos_of_right
+      (haffine b ⟨hab.le, le_rfl⟩ ▸ (hU.inStrip (capRoof_mem hU.isCompact hb)).2) hxb hs hc)).trans
+      (le_max_right _ _)
 
 /-- Positive tilt gives exactly the low middle endpoint as the top
 point of the actual left cut. No support surrogate is postulated. -/
@@ -133,29 +106,23 @@ theorem IsDownwardCap.top_leftCompanionCap_of_positive_affine
     (hab : a < b) (hm : 0 < m)
     (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c) :
     capHeight (AmbidextrousSofa.leftCompanionCap U a) = capRoof U a ∧
-      MovingSofaOptimality.vplus (AmbidextrousSofa.leftCompanionCap U a) (Real.pi / 2) = (a, capRoof U a) := by
+      MovingSofaOptimality.vplus (AmbidextrousSofa.leftCompanionCap U a) (Real.pi / 2) =
+        (a, capRoof U a) := by
   have hV := hU.leftCompanionCap ha
   have hline := haffine a ⟨le_rfl, hab.le⟩
-  have hceiling (p : Plane) (hp : p ∈ AmbidextrousSofa.leftCompanionCap U a) : p.2 ≤ m * p.1 + c :=
-    (le_capRoof hU.isCompact (show (p.1, p.2) ∈ U by simpa using hp.1)).trans
+  have hceiling (p : Plane) (hp : p ∈ AmbidextrousSofa.leftCompanionCap U a) :
+      p.2 ≤ m * p.1 + c :=
+    (le_capRoof hU.isCompact hp.1).trans
       (hU.capRoof_le_affine_of_affine_segment ha hb hab haffine p.1 ⟨p, hp.1, rfl⟩)
-  have hheight : capHeight (AmbidextrousSofa.leftCompanionCap U a) = capRoof U a := by
-    refine support_eq_of_mem hV.isCompact
-      (q := (a, capRoof U a)) ?_ (hU.rightRoof_mem_leftCompanionCap ha) ?_
-    · intro p hp
-      have hmul := mul_le_mul_of_nonneg_left hp.2.2 hm.le
-      have hy : p.2 ≤ capRoof U a := by linarith only [hceiling p hp, hmul, hline]
-      simpa only [coordDot, mul_zero, mul_one, zero_add] using hy
-    · simp only [coordDot, mul_zero, mul_one, zero_add]
-  refine ⟨hheight, ?_⟩
-  let p := MovingSofaOptimality.vplus (AmbidextrousSofa.leftCompanionCap U a) (Real.pi / 2)
-  have hp : p ∈ AmbidextrousSofa.leftCompanionCap U a :=
-    (MovingSofaOptimality.vplus_mem_edge hV.imported_isConvexBody _).1
-  have hpy : p.2 = capRoof U a := (top_vplus_snd_eq_capHeight _).trans hheight
-  have hax : a ≤ p.1 := by
-    apply le_of_mul_le_mul_left _ hm
-    linarith only [hceiling p hp, hpy, hline]
-  exact Prod.ext (le_antisymm hp.2.2 hax) hpy
+  have hheight : capHeight (AmbidextrousSofa.leftCompanionCap U a) = capRoof U a :=
+    support_eq_of_mem hV.isCompact (fun p hp => by
+      simp only [coordDot, mul_zero, mul_one, zero_add]
+      linarith [hceiling p hp, mul_le_mul_of_nonneg_left hp.2.2 hm.le])
+      (hU.rightRoof_mem_leftCompanionCap ha) (by simp [coordDot])
+  have hp := (MovingSofaOptimality.vplus_mem_edge hV.imported_isConvexBody (Real.pi / 2)).1
+  have hpy := (top_vplus_snd_eq_capHeight _).trans hheight
+  exact ⟨hheight, Prod.ext (le_antisymm hp.2.2
+    (le_of_mul_le_mul_left (by linarith [hceiling _ hp]) hm)) hpy⟩
 
 /-- The actual left-wing density controls the visited niche of the
 original cap. This includes the positive-tilt case with its true low
@@ -180,28 +147,14 @@ theorem IsDownwardCap.sweptNiche_le_circle_of_leftCompanion_density
         circleHeight (x - horizontalLeft U) +
         terminalWeightedExcess (fun t => ρ (t + Real.pi / 2))
           (Real.arcsin (companionInitialOffset (AmbidextrousSofa.leftCompanionCap U a))) := by
-  have hV := hU.leftCompanionCap ha
-  have hleft := horizontalLeft_leftCompanionCap hU ha
-  have hbound (t : ℝ) (ht : t ∈ Icc 0 α) :
-      max (secondWall (AmbidextrousSofa.leftCompanionCap U a) t x) 0 ≤
-        circleHeight (companionInitialOffset (AmbidextrousSofa.leftCompanionCap U a)) -
-          circleHeight (x - horizontalLeft U) +
-          terminalWeightedExcess (fun r => ρ (r + Real.pi / 2))
-            (Real.arcsin (companionInitialOffset (AmbidextrousSofa.leftCompanionCap U a))) := by
-    have h := hV.max_secondWall_le_circle_of_density hρ hρ0 hρK heq hα0 hαL hA
-      (by simpa only [hleft] using hAB) (by simpa only [hleft] using hBα)
-      (by simpa only [hleft] using hsub) ht
-    simpa only [hleft] using h
-  apply sweptNiche_le_of_forall hα0
-    ((le_max_right (secondWall (AmbidextrousSofa.leftCompanionCap U a) 0 x) 0).trans
-      (hbound 0 ⟨le_rfl, hα0.le⟩))
-  intro t ht
-  have hs : 0 ≤ Real.sin t := Real.sin_nonneg_of_nonneg_of_le_pi ht.1.le
-    (by linarith only [ht.2, hαL, Real.pi_pos])
-  have hc : 0 < Real.cos t := Real.cos_pos_of_mem_Ioo
-    ⟨by linarith only [ht.1, Real.pi_pos], ht.2.trans hαL⟩
-  exact ((min_le_right _ _).trans
-    (hU.secondWall_le_leftCompanionCap ha hb hab haffine hxb hs hc)).trans
+  rw [← horizontalLeft_leftCompanionCap hU ha] at hAB hBα hsub ⊢
+  have hbound (r : ℝ) (hr : r ∈ Icc 0 α) :=
+    (hU.leftCompanionCap ha).max_secondWall_le_circle_of_density hρ hρ0 hρK heq hα0 hαL hA hAB
+      hBα hsub hr
+  refine sweptNiche_le_of_forall hα0 ((le_max_right _ 0).trans (hbound 0 ⟨le_rfl, hα0.le⟩))
+    fun t ht => ((min_le_right _ _).trans (hU.secondWall_le_leftCompanionCap ha hb hab haffine hxb
+      (Real.sin_nonneg_of_nonneg_of_le_pi ht.1.le (by linarith [ht.2, Real.pi_pos]))
+      (Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2.trans hαL⟩))).trans
       (hbound t ⟨ht.1.le, ht.2.le⟩)
 
 end AmbidextrousSofa

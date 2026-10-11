@@ -23,167 +23,68 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-theorem IsDownwardCap.firstWall_inserted_top {U : Set Plane}
-    (hU : IsDownwardCap U) {a t θ : ℝ} (ht : (t, 1) ∈ U) (hat : a ≤ t)
-    (hθ : θ ∈ Ioo 0 (Real.pi / 2)) (x : ℝ) :
-    firstWall (insertedCap U (a, 1)) θ x = firstWall U θ x := by
-  have hp : (a, (1 : ℝ)) ∈ unitStrip := by constructor <;> norm_num
-  have hs : 0 ≤ Real.sin θ := (Real.sin_pos_of_pos_of_lt_pi hθ.1
-    (by linarith [hθ.2, Real.pi_pos])).le
-  have hc : 0 ≤ Real.cos θ := (Real.cos_pos_of_mem_Ioo
-    ⟨by linarith [hθ.1, Real.pi_pos], hθ.2⟩).le
-  have hdom : coordDot (a, 1) (unitNormal θ) ≤ support U (unitNormal θ) := by
-    have h := coordDot_le_support hU.isCompact ht (unitNormal θ)
-    change t * Real.cos θ + 1 * Real.sin θ ≤ _ at h
-    change a * Real.cos θ + 1 * Real.sin θ ≤ _
-    nlinarith [mul_nonneg (sub_nonneg.mpr hat) hc]
-  unfold firstWall
-  rw [hU.support_insertedCap_eq_of_dominated hp hs hdom]
-
 theorem IsDownwardCap.clippedCorner_inserted_top {U : Set Plane}
     (hU : IsDownwardCap U) {a t θ x : ℝ} (ht : (t, 1) ∈ U) (hat : a ≤ t)
     (hθ : θ ∈ Ioo 0 (Real.pi / 2)) (hxa : x ≤ a) :
     max (cornerWall (insertedCap U (a, 1)) θ x) 0 =
       max (cornerWall U θ x) 0 := by
-  have hp : (a, (1 : ℝ)) ∈ unitStrip := by constructor <;> norm_num
-  have hV := hU.isDownwardCap_insertedCap hp
-  have hs : 0 < Real.sin θ := Real.sin_pos_of_pos_of_lt_pi hθ.1
-    (by linarith [hθ.2, Real.pi_pos])
-  have hc : 0 < Real.cos θ := Real.cos_pos_of_mem_Ioo
-    ⟨by linarith [hθ.1, Real.pi_pos], hθ.2⟩
+  have hp : (a, (1 : ℝ)) ∈ unitStrip := ⟨zero_le_one, le_rfl⟩
+  have hs := Real.sin_pos_of_pos_of_lt_pi hθ.1 (by linarith [hθ.2, Real.pi_pos])
+  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [hθ.1, Real.pi_pos], hθ.2⟩
   by_cases hdom : coordDot (a, 1) (companionNormal θ) ≤ support U (companionNormal θ)
-  · have hsecond : secondWall (insertedCap U (a, 1)) θ x = secondWall U θ x := by
-      unfold secondWall
-      rw [hU.support_insertedCap_eq_of_dominated hp hc.le hdom]
-    rw [cornerWall, cornerWall, hU.firstWall_inserted_top ht hat hθ x, hsecond]
-  · have hnew : support (insertedCap U (a, 1)) (companionNormal θ) =
-        coordDot (a, 1) (companionNormal θ) := by
-      rw [hU.support_insertedCap hp hc.le, max_eq_right (le_of_not_ge hdom)]
-    have hsecond : secondWall (insertedCap U (a, 1)) θ x ≤ 0 := by
-      apply (secondWall_le_iff hc).mpr
-      rw [hnew]
-      change a * (-Real.sin θ) + 1 * Real.cos θ - 1 ≤
-        x * (-Real.sin θ) + 0 * Real.cos θ
-      nlinarith [Real.cos_le_one θ, mul_nonneg (sub_nonneg.mpr hxa) hs.le]
-    have hsecondOld : secondWall U θ x ≤ 0 :=
-      (secondWall_mono (hU.subset_insertedCap hp) hU.nonempty hV.isCompact hc x).trans
-        hsecond
-    rw [cornerWall, cornerWall, max_eq_right ((min_le_right _ _).trans hsecond),
-      max_eq_right ((min_le_right _ _).trans hsecondOld)]
-
-theorem IsDownwardCap.sweptNiche_inserted_top {U : Set Plane}
-    (hU : IsDownwardCap U) {a t x : ℝ} (ht : (t, 1) ∈ U) (hat : a ≤ t)
-    (hxa : x ≤ a) :
-    sweptNiche (insertedCap U (a, 1)) (Real.pi / 2) x =
-      sweptNiche U (Real.pi / 2) x := by
-  have hp : (a, (1 : ℝ)) ∈ unitStrip := by constructor <;> norm_num
-  have hV := hU.isDownwardCap_insertedCap hp
-  apply le_antisymm
-  · apply sweptNiche_le_of_forall (by positivity)
-      (sweptNiche_nonneg U (Real.pi / 2) x)
-    intro θ hθ
-    calc
-      cornerWall (insertedCap U (a, 1)) θ x ≤
-          max (cornerWall (insertedCap U (a, 1)) θ x) 0 := le_max_left _ _
-      _ = max (cornerWall U θ x) 0 := hU.clippedCorner_inserted_top ht hat hθ hxa
-      _ ≤ sweptNiche U (Real.pi / 2) x := max_le
-        (cornerWall_le_sweptNiche (sweptWallValues_bddAbove hU.isCompact le_rfl x) hθ)
-        (sweptNiche_nonneg U (Real.pi / 2) x)
-  · exact sweptNiche_mono (hU.subset_insertedCap hp) hU.nonempty hV.isCompact
-      (by positivity) le_rfl x
-
-theorem IsDownwardCap.partialBarrier_inserted_top {U : Set Plane}
-    (hU : IsDownwardCap U) {a t x : ℝ} (ht : (t, 1) ∈ U) (hat : a ≤ t)
-    (hxa : x ≤ a) :
-    partialBarrier (insertedCap U (a, 1)) (Real.pi / 2) x =
-      partialBarrier U (Real.pi / 2) x := by
-  have hp : (a, (1 : ℝ)) ∈ unitStrip := by constructor <;> norm_num
-  rw [(hU.isDownwardCap_insertedCap hp).partialBarrier_pi_div_two,
-    hU.partialBarrier_pi_div_two, hU.sweptNiche_inserted_top ht hat hxa]
-
-/-- The changed support directions make no positive niche contribution on
-the actual moving-window middle. The charged right wing gains strictly. -/
-theorem IsDownwardCap.capScore_lt_inserted_middle_right {U : Set Plane}
-    (hU : IsDownwardCap U) (hwidth : horizontalLeft U < horizontalRight U)
-    {t : ℝ} (ht : (t, 1) ∈ U)
-    (htRight : horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 ≤ t)
-    (hlow : capRoof U
-      (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4) < 1) :
-    capScore U (Real.pi / 2) <
-      capScore (insertedCap U
-        (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4, 1))
-        (Real.pi / 2) := by
-  let l := horizontalLeft U
-  let r := horizontalRight U
-  let a := l + (r - l) / 4
-  let b := r - (r - l) / 4
-  have hlr : l < r := hwidth
-  have hla : l ≤ a := by dsimp [a]; linarith
-  have hab : a ≤ b := by dsimp [a, b]; linarith
-  have hbr : b < r := by dsimp [b]; linarith
-  have hbU : b ∈ horizontalProjection U := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
-    exact ⟨hla.trans hab, hbr.le⟩
-  have hp : (b, (1 : ℝ)) ∈ unitStrip := by constructor <;> norm_num
-  let V := insertedCap U (b, 1)
-  have hV : IsDownwardCap V := hU.isDownwardCap_insertedCap hp
-  have hsub : U ⊆ V := hU.subset_insertedCap hp
-  have hleft : horizontalLeft V = l := hU.horizontalLeft_insertedCap hp hbU
-  have hright : horizontalRight V = r := hU.horizontalRight_insertedCap hp hbU
-  have hprojV : horizontalProjection V = horizontalProjection U :=
-    hU.horizontalProjection_insertedCap hp hbU
-  have hproj : horizontalProjection U = Icc l r :=
-    horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex
-  have hcU : ContinuousOn (capRoof U) (Icc l r) := by
-    rw [← hproj]
-    exact hU.continuousOn_capRoof
-  have hcV : ContinuousOn (capRoof V) (Icc l r) := by
-    rw [← hproj, ← hprojV]
-    exact hV.continuousOn_capRoof
-  have hleftInt : (∫ x in l..a, capRoof U x) ≤ ∫ x in l..a, capRoof V x :=
-    intervalIntegral.integral_mono_on hla
-      ((hcU.mono (Icc_subset_Icc le_rfl (hab.trans hbr.le))).intervalIntegrable_of_Icc hla)
-      ((hcV.mono (Icc_subset_Icc le_rfl (hab.trans hbr.le))).intervalIntegrable_of_Icc hla)
-      (fun x _ => hU.capRoof_mono hV hsub x)
-  have hrightInt : (∫ x in b..r, capRoof U x) < ∫ x in b..r, capRoof V x := by
-    apply intervalIntegral.integral_lt_integral_of_continuousOn_of_le_of_exists_lt hbr
-      (hcU.mono (Icc_subset_Icc (hla.trans hab) le_rfl))
-      (hcV.mono (Icc_subset_Icc (hla.trans hab) le_rfl))
-      (fun x _ => hU.capRoof_mono hV hsub x)
-    refine ⟨b, ⟨le_rfl, hbr.le⟩, ?_⟩
-    have hroof : capRoof V b = 1 := hU.capRoof_inserted_one b
-    rw [hroof]
-    exact hlow
-  have hmiddle : (∫ x in a..b, partialBarrier V (Real.pi / 2) x) =
-      ∫ x in a..b, partialBarrier U (Real.pi / 2) x := by
-    apply intervalIntegral.integral_congr
-    intro x hx
-    rw [uIcc_of_le hab] at hx
-    exact hU.partialBarrier_inserted_top ht htRight hx.2
-  rw [hU.capScore_eq_intervalSpatialScore, hV.capScore_eq_intervalSpatialScore,
-    hleft, hright]
-  change (∫ x in l..a, capRoof U x) + (∫ x in b..r, capRoof U x) -
-      (∫ x in a..b, partialBarrier U (Real.pi / 2) x) <
-    (∫ x in l..a, capRoof V x) + (∫ x in b..r, capRoof V x) -
-      (∫ x in a..b, partialBarrier V (Real.pi / 2) x)
-  rw [hmiddle]
-  linarith
+  · rw [cornerWall, cornerWall, firstWall, firstWall, secondWall, secondWall,
+      hU.support_insertedCap_eq_of_dominated hp hc.le hdom,
+      hU.support_insertedCap_eq_of_dominated hp hs.le (le_trans
+        (by simp only [coordDot, unitNormal]; nlinarith) (coordDot_le_support hU.isCompact ht _))]
+  have hsecond : secondWall (insertedCap U (a, 1)) θ x ≤ 0 := by
+    rw [secondWall_le_iff hc, hU.support_insertedCap hp hc.le, max_eq_right (le_of_not_ge hdom)]
+    simp only [coordDot, companionNormal]
+    nlinarith [Real.cos_le_one θ]
+  rw [cornerWall, cornerWall, max_eq_right ((min_le_right _ _).trans hsecond),
+    max_eq_right ((min_le_right _ _).trans ((secondWall_mono (hU.subset_insertedCap hp)
+      hU.nonempty (hU.isDownwardCap_insertedCap hp).isCompact hc x).trans hsecond))]
 
 theorem IsFullCapMaximizer.middle_right_eq_one_of_top_right {U : Set Plane}
     (hU : IsFullCapMaximizer U) {t : ℝ} (ht : (t, 1) ∈ U)
     (htRight : horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 ≤ t) :
     capRoof U (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4) = 1 := by
-  apply le_antisymm (capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _)
-  by_contra h
-  have hlow : capRoof U
-      (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4) < 1 := lt_of_not_ge h
-  have hwidth : horizontalLeft U < horizontalRight U := by
-    have hw := hU.width_bounds.1
-    unfold capWidth at hw
-    linarith [one_lt_M]
-  have hstrict := hU.isCap.capScore_lt_inserted_middle_right hwidth ht htRight hlow
-  have hp : (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4, (1 : ℝ))
-      ∈ unitStrip := by constructor <;> norm_num
-  exact (not_lt_of_ge (hU.2 _ (hU.isCap.isDownwardCap_insertedCap hp))) hstrict
+  have hC := hU.isCap
+  have hlr : horizontalLeft U < horizontalRight U :=
+    sub_pos.1 ((zero_lt_one.trans one_lt_M).trans_le hU.width_bounds.1)
+  set b := horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 with hb_def
+  have hp : (b, (1 : ℝ)) ∈ unitStrip := ⟨zero_le_one, le_rfl⟩
+  have hV := hC.isDownwardCap_insertedCap hp
+  have hb : b ∈ horizontalProjection U := by
+    rw [horizontalProjection_eq_Icc hC.nonempty hC.isCompact hC.convex]
+    constructor <;> linarith
+  have hmono := hC.capRoof_mono hV (hC.subset_insertedCap hp)
+  -- On the middle window the whole partial barrier is unchanged.
+  have hniche : EqOn (partialBarrier (insertedCap U (b, 1)) (Real.pi / 2))
+      (partialBarrier U (Real.pi / 2))
+      (uIcc (horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4) b) := fun x hx => by
+    have hx : x ≤ b := hx.2.trans (sup_le (by linarith) le_rfl)
+    rw [hV.partialBarrier_pi_div_two, hC.partialBarrier_pi_div_two]
+    refine le_antisymm (sweptNiche_le_of_forall (by positivity) (sweptNiche_nonneg ..)
+      fun θ hθ => (le_max_left _ _).trans
+        ((hC.clippedCorner_inserted_top ht htRight hθ hx).trans_le (max_le
+          (cornerWall_le_sweptNiche (sweptWallValues_bddAbove hC.isCompact le_rfl x) hθ)
+          (sweptNiche_nonneg ..))))
+      (sweptNiche_mono (hC.subset_insertedCap hp) hC.nonempty hV.isCompact (by positivity) le_rfl x)
+  have hl := hC.horizontalLeft_insertedCap hp hb
+  have hr := hC.horizontalRight_insertedCap hp hb
+  have hcV := hV.continuousOn_capRoof_Icc
+  rw [hl, hr] at hcV
+  -- If the roof at the inserted point were below one, the insertion would raise the score: the
+  -- charged right wing gains strictly, and the middle barrier is unchanged.
+  refine le_antisymm (capRoof_le_one hC.isCompact hC.inStrip _)
+    (not_lt.1 fun hlow => (hU.2 _ hV).not_gt ?_)
+  rw [hC.capScore_eq_intervalSpatialScore, hV.capScore_eq_intervalSpatialScore, hl, hr,
+    intervalSpatialScore, intervalSpatialScore, ← hb_def, intervalIntegral.integral_congr hniche]
+  exact sub_lt_sub_right (add_lt_add_of_le_of_lt (intervalIntegral.integral_mono (by linarith)
+    (hC.intervalIntegrable_capRoof _ _) (hV.intervalIntegrable_capRoof _ _) hmono)
+    (intervalIntegral.integral_lt_integral_of_continuousOn_of_le_of_exists_lt (by linarith)
+      (hC.continuousOn_capRoof_Icc.mono (Icc_subset_Icc (by linarith) le_rfl))
+      (hcV.mono (Icc_subset_Icc (by linarith) le_rfl)) (fun x _ => hmono x)
+      ⟨b, ⟨le_rfl, by linarith⟩, by rwa [hC.capRoof_inserted_one]⟩)) _
 
 end AmbidextrousSofa

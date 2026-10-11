@@ -50,49 +50,36 @@ theorem IsDownwardCap.diagonalBarrier_le_partialBarrier {U : Set Plane}
 theorem IsDownwardCap.capScore_le_diagonalComparisonScore {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hα0 : Real.pi / 4 ≤ α)
     (hαL : α ≤ Real.pi / 2) : capScore U α ≤ diagonalComparisonScore U := by
-  have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
-  have hmono := intervalIntegral.integral_mono_on
-    (show horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4 ≤
-      horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 by linarith)
+  rw [hU.capScore_eq_intervalSpatialScore, diagonalComparisonScore, intervalSpatialScore,
+    intervalSpatialScore]
+  exact sub_le_sub_left (intervalIntegral.integral_mono_on
+    (by linarith [horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact])
     ((continuous_diagonalBarrier U).intervalIntegrable _ _)
     (hU.intervalIntegrable_partialBarrier (by linarith [Real.pi_pos]) hαL _ _)
-    (fun x _ => hU.diagonalBarrier_le_partialBarrier hα0 hαL x)
-  rw [hU.capScore_eq_intervalSpatialScore]
-  unfold diagonalComparisonScore intervalSpatialScore
-  linarith
+    fun x _ => hU.diagonalBarrier_le_partialBarrier hα0 hαL x) _
 
 theorem diagonalBarrier_horizontalMirror (U : Set Plane) (x : ℝ) :
     diagonalBarrier (horizontalMirror U) x = diagonalBarrier U (-x) := by
-  rw [diagonalBarrier, cornerWall_horizontalMirror,
+  rw [diagonalBarrier, diagonalBarrier, cornerWall_horizontalMirror,
     show Real.pi / 2 - Real.pi / 4 = Real.pi / 4 by ring]
-  rfl
 
 theorem diagonalComparisonScore_horizontalMirror {U : Set Plane} (hU : IsDownwardCap U) :
     diagonalComparisonScore (horizontalMirror U) = diagonalComparisonScore U := by
   unfold diagonalComparisonScore
-  rw [horizontalLeft_horizontalMirror hU, horizontalRight_horizontalMirror hU]
-  have hroof : capRoof (horizontalMirror U) = fun x => capRoof U (-x) :=
-    funext (capRoof_horizontalMirror U)
-  have hbarrier : diagonalBarrier (horizontalMirror U) = fun x => diagonalBarrier U (-x) :=
-    funext (diagonalBarrier_horizontalMirror U)
-  rw [hroof, hbarrier, intervalSpatialScore_reflect]
-
-theorem diagonalComparisonScore_horizontalTranslate {U : Set Plane}
-    (hU : IsDownwardCap U) (d : ℝ) :
-    diagonalComparisonScore (horizontalTranslate U d) = diagonalComparisonScore U := by
-  unfold diagonalComparisonScore
-  rw [horizontalLeft_horizontalTranslate hU, horizontalRight_horizontalTranslate hU]
-  have hroof : capRoof (horizontalTranslate U d) = fun x => capRoof U (x - d) :=
-    funext (capRoof_horizontalTranslate U d)
-  have hbarrier : diagonalBarrier (horizontalTranslate U d) = fun x => diagonalBarrier U (x - d) := by
-    funext x
-    rw [diagonalBarrier, cornerWall_horizontalTranslate hU]
-    rfl
-  rw [hroof, hbarrier, intervalSpatialScore_translate]
+  rw [horizontalLeft_horizontalMirror hU, horizontalRight_horizontalMirror hU,
+    show capRoof (horizontalMirror U) = _ from funext (capRoof_horizontalMirror U),
+    show diagonalBarrier (horizontalMirror U) = _ from funext (diagonalBarrier_horizontalMirror U),
+    intervalSpatialScore_reflect]
 
 theorem diagonalComparisonScore_centeredCap {U : Set Plane} (hU : IsDownwardCap U) :
-    diagonalComparisonScore (centeredCap U) = diagonalComparisonScore U :=
-  diagonalComparisonScore_horizontalTranslate hU _
+    diagonalComparisonScore (centeredCap U) = diagonalComparisonScore U := by
+  unfold diagonalComparisonScore centeredCap
+  generalize -(horizontalLeft U + horizontalRight U) / 2 = d
+  rw [horizontalLeft_horizontalTranslate hU, horizontalRight_horizontalTranslate hU,
+    show capRoof (horizontalTranslate U d) = _ from funext (capRoof_horizontalTranslate U d),
+    show diagonalBarrier (horizontalTranslate U d) = fun x => diagonalBarrier U (x - d) from
+      funext fun x => by rw [diagonalBarrier, diagonalBarrier, cornerWall_horizontalTranslate hU],
+    intervalSpatialScore_translate]
 
 theorem diagonalComparisonScore_centered_quarters {U : Set Plane} {C : ℝ}
     (hleft : horizontalLeft U = -2 * C) (hright : horizontalRight U = 2 * C) :

@@ -19,29 +19,23 @@ The independently proved finite-pressure limit supplies such a limit,
 including zero-height endpoint faces.
 -/
 
-noncomputable section
-
-open Set Filter MeasureTheory
+open Set Filter MeasureTheory MovingSofaOptimality
 open scoped Topology
 
 namespace AmbidextrousSofa
 
 theorem exists_curvature_nonatom_Ioo (U : Set Plane) {a b : ℝ} (hab : a < b) :
     ∃ t ∈ Ioo a b, MovingSofaOptimality.sigmaAt U t = 0 := by
-  have hdense := (MovingSofaOptimality.countable_sigma_singleton_ne U).dense_compl ℝ
-  obtain ⟨t, ht, hnot⟩ := hdense.inter_open_nonempty (Ioo a b) isOpen_Ioo (nonempty_Ioo.mpr hab)
-  have hzero : MovingSofaOptimality.sigma U {t} = 0 := by
-    simpa only [mem_compl_iff, mem_setOf_eq, not_not] using hnot
-  exact ⟨t, ht, by simp only [MovingSofaOptimality.sigmaAt, hzero, ENNReal.toReal_zero]⟩
+  obtain ⟨t, ht, hnot⟩ := ((countable_sigma_singleton_ne U).dense_compl ℝ).inter_open_nonempty
+    (Ioo a b) isOpen_Ioo (nonempty_Ioo.mpr hab)
+  exact ⟨t, ht, by rw [sigmaAt, not_not.1 hnot, ENNReal.toReal_zero]⟩
 
 theorem subset_symmetricBox_of_horizontalBox {U : Set Plane} {a b : ℝ}
     (hbox : U ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1) :
-    U ⊆ Icc (-(|a| + |b| + 1)) (|a| + |b| + 1) ×ˢ Icc (0 : ℝ) 1 := by
-  intro p hp
+    U ⊆ Icc (-(|a| + |b| + 1)) (|a| + |b| + 1) ×ˢ Icc (0 : ℝ) 1 := fun _ hp =>
   have h := hbox hp
-  refine ⟨⟨?_, ?_⟩, h.2⟩
-  · linarith [neg_abs_le a, abs_nonneg b, h.1.1]
-  · linarith [le_abs_self b, abs_nonneg a, h.1.2]
+  ⟨⟨by linarith [neg_abs_le a, abs_nonneg b, h.1.1],
+    by linarith [le_abs_self b, abs_nonneg a, h.1.2]⟩, h.2⟩
 
 namespace AngularGrid
 
@@ -56,44 +50,27 @@ theorem selected_right_height_limit_eq {target : Set Plane} {U : ℕ → Set Pla
     (hheight : Tendsto (fun n => capRoof (U n) (horizontalRight (U n))) atTop (𝓝 H)) :
     H = capRoof target (horizontalRight target) := by
   have hcap : ∀ n, IsDownwardCap (U n) := fun n => (hU n).isCap
-  have hcb : ∀ n, MovingSofaOptimality.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
+  have hcb : ∀ n, IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
+  have hK := hTarget.imported_isConvexBody
   have hlim := hHausdorff.imported_hausdorffTendsto hcap hTarget
-  have herr := selectionDefect_sum_tendsto (level := level) hTarget hcap hc hrate hHausdorff
-  have hupper := MovingSofaOptimality.ang_le_sigmaAt_of_tendsto hcb hTarget.imported_isConvexBody hlim
-    hheight (fun n => (hcap n).axis_curvature_zero.symm.le)
+  have hupper := ang_le_sigmaAt_of_tendsto hcb hK hlim hheight
+    fun n => (hcap n).axis_curvature_zero.symm.le
   change H ≤ (upperCurvature target {0}).toReal at hupper
   rw [hTarget.axis_curvature_zero] at hupper
-  apply le_antisymm hupper
-  by_contra hnot
-  have hgap : 0 < capRoof target (horizontalRight target) - H :=
-    sub_pos.mpr (lt_of_not_ge hnot)
-  let C : ℝ := 4 * R + 10
-  have hC : 0 ≤ C := by dsimp [C]; linarith
-  have hC1 : 0 < C + 1 := by linarith
-  let δ := min (axisCutoff w) ((capRoof target (horizontalRight target) - H) / (C + 1))
-  have hδ : 0 < δ := lt_min (axisCutoff_pos hw) (div_pos hgap hC1)
-  obtain ⟨t, ht, hfree⟩ := exists_curvature_nonatom_Ioo target hδ
-  have htcut : t ≤ axisCutoff w := ht.2.le.trans (min_le_left _ _)
-  have htgap : t < (capRoof target (horizontalRight target) - H) / (C + 1) :=
-    ht.2.trans_le (min_le_right _ _)
-  have hbound : ∀ᶠ n in atTop,
-      MovingSofaOptimality.sigmaFun (U n) t - capRoof (U n) (horizontalRight (U n)) ≤
-        C * t + ∑ j, selectionDefect target (U n) (level n) (coefficient n) j := by
+  refine le_antisymm hupper (not_lt.1 fun hlt => ?_)
+  obtain ⟨t, ht, hfree⟩ := exists_curvature_nonatom_Ioo target (lt_min (axisCutoff_pos hw)
+    (div_pos (sub_pos.2 hlt) (by positivity : (0 : ℝ) < 4 * R + 10 + 1)))
+  have hbound : ∀ᶠ n in atTop, sigmaFun (U n) t - capRoof (U n) (horizontalRight (U n)) ≤
+      (4 * R + 10) * t + ∑ j, selectionDefect target (U n) (level n) (coefficient n) j := by
     filter_upwards [hW] with n hnW
-    have h := (hU n).curvature_right_axis_bound (hc n) hR (hbox n) hw hnW ht.1.le htcut
-    rwa [(hcap n).upperCurvature_real_Ioc_zero ht.1.le] at h
-  have hleft : Tendsto
-      (fun n => MovingSofaOptimality.sigmaFun (U n) t - capRoof (U n) (horizontalRight (U n))) atTop
-        (𝓝 (MovingSofaOptimality.sigmaFun target t - H)) :=
-    (MovingSofaOptimality.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim hfree).sub hheight
-  have hright : Tendsto
-      (fun n => C * t + ∑ j, selectionDefect target (U n) (level n) (coefficient n) j)
-        atTop (𝓝 (C * t)) := by
-    simpa only [add_zero] using tendsto_const_nhds.add herr
-  have hle := le_of_tendsto_of_tendsto hleft hright hbound
-  have hmono := MovingSofaOptimality.monotone_sigmaFun hTarget.imported_isConvexBody ht.1.le
-  rw [hTarget.sigmaFun_zero] at hmono
-  rw [lt_div_iff₀ hC1] at htgap
+    rw [← (hcap n).upperCurvature_real_Ioc_zero ht.1.le]
+    exact (hU n).curvature_right_axis_bound (hc n) hR (hbox n) hw hnW ht.1.le
+      (ht.2.le.trans (min_le_left _ _))
+  have hle := le_of_tendsto_of_tendsto ((ang_tendsto_sigmaFun hcb hK hlim hfree).sub hheight)
+    (tendsto_const_nhds.add (selectionDefect_sum_tendsto hTarget hcap hc hrate hHausdorff)) hbound
+  have hmono := hTarget.sigmaFun_zero ▸ monotone_sigmaFun hK ht.1.le
+  have hgap := ht.2.trans_le (min_le_right _ _)
+  rw [lt_div_iff₀ (by positivity)] at hgap
   nlinarith [ht.1]
 
 theorem selected_left_height_limit_eq {target : Set Plane} {U : ℕ → Set Plane}
@@ -107,61 +84,36 @@ theorem selected_left_height_limit_eq {target : Set Plane} {U : ℕ → Set Plan
     (hheight : Tendsto (fun n => capRoof (U n) (horizontalLeft (U n))) atTop (𝓝 H)) :
     H = capRoof target (horizontalLeft target) := by
   have hcap : ∀ n, IsDownwardCap (U n) := fun n => (hU n).isCap
-  have hcb : ∀ n, MovingSofaOptimality.IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
+  have hcb : ∀ n, IsConvexBody (U n) := fun n => (hcap n).imported_isConvexBody
+  have hK := hTarget.imported_isConvexBody
   have hlim := hHausdorff.imported_hausdorffTendsto hcap hTarget
-  have herr := selectionDefect_sum_tendsto (level := level) hTarget hcap hc hrate hHausdorff
-  have hupper := MovingSofaOptimality.ang_le_sigmaAt_of_tendsto hcb hTarget.imported_isConvexBody hlim
-    hheight (fun n => (hcap n).axis_curvature_pi.symm.le)
+  have hupper := ang_le_sigmaAt_of_tendsto hcb hK hlim hheight
+    fun n => (hcap n).axis_curvature_pi.symm.le
   change H ≤ (upperCurvature target {Real.pi}).toReal at hupper
   rw [hTarget.axis_curvature_pi] at hupper
-  apply le_antisymm hupper
-  by_contra hnot
-  have hgap : 0 < capRoof target (horizontalLeft target) - H :=
-    sub_pos.mpr (lt_of_not_ge hnot)
-  let C : ℝ := 4 * R + 10
-  have hC : 0 ≤ C := by dsimp [C]; linarith
-  have hC1 : 0 < C + 1 := by linarith
-  let δ := min (axisCutoff w) ((capRoof target (horizontalLeft target) - H) / (C + 1))
-  have hδ : 0 < δ := lt_min (axisCutoff_pos hw) (div_pos hgap hC1)
-  obtain ⟨t, ht, hfree⟩ := exists_curvature_nonatom_Ioo target
-    (by linarith : Real.pi - δ < Real.pi)
-  let ε := Real.pi - t
-  have hε : 0 < ε := by dsimp [ε]; linarith [ht.2]
-  have hεδ : ε < δ := by dsimp [ε]; linarith [ht.1]
-  have hεcut : ε ≤ axisCutoff w := hεδ.le.trans (min_le_left _ _)
-  have hεgap : ε < (capRoof target (horizontalLeft target) - H) / (C + 1) :=
-    hεδ.trans_le (min_le_right _ _)
-  have hbound : ∀ᶠ n in atTop,
-      (∫ s in (0 : ℝ)..Real.pi, MovingSofaOptimality.supp (U n) s) -
-        capRoof (U n) (horizontalLeft (U n)) - MovingSofaOptimality.sigmaFun (U n) t ≤
-          C * ε + ∑ j, selectionDefect target (U n) (level n) (coefficient n) j := by
+  refine le_antisymm hupper (not_lt.1 fun hlt => ?_)
+  have hδ := lt_min (axisCutoff_pos hw)
+    (div_pos (sub_pos.2 hlt) (by positivity : (0 : ℝ) < 4 * R + 10 + 1))
+  obtain ⟨t, ht, hfree⟩ := exists_curvature_nonatom_Ioo target (sub_lt_self Real.pi hδ)
+  have hε : Real.pi - t < min (axisCutoff w)
+      ((capRoof target (horizontalLeft target) - H) / (4 * R + 10 + 1)) := by linarith [ht.1]
+  have hbound : ∀ᶠ n in atTop, (∫ s in (0 : ℝ)..Real.pi, supp (U n) s) -
+      capRoof (U n) (horizontalLeft (U n)) - sigmaFun (U n) t ≤ (4 * R + 10) * (Real.pi - t) +
+        ∑ j, selectionDefect target (U n) (level n) (coefficient n) j := by
     filter_upwards [hW] with n hnW
-    have h := (hU n).curvature_left_axis_bound (hc n) hR (hbox n) hw hnW hε.le hεcut
-    have hsub : Ioo t Real.pi ⊆ Ico (Real.pi - ε) Real.pi := by
-      intro x hx
-      refine ⟨?_, hx.2⟩
-      dsimp only [ε]
-      linarith [hx.1]
-    have hmono : (upperCurvature (U n)).real (Ioo t Real.pi) ≤
-        (upperCurvature (U n)).real (Ico (Real.pi - ε) Real.pi) :=
-      measureReal_mono hsub measure_Ico_lt_top.ne
-    have htotal := hmono.trans h
-    rwa [(hcap n).upperCurvature_real_Ioo_pi ht.2] at htotal
-  have hleft : Tendsto
-      (fun n => (∫ s in (0 : ℝ)..Real.pi, MovingSofaOptimality.supp (U n) s) -
-        capRoof (U n) (horizontalLeft (U n)) - MovingSofaOptimality.sigmaFun (U n) t) atTop
-      (𝓝 ((∫ s in (0 : ℝ)..Real.pi, MovingSofaOptimality.supp target s) - H - MovingSofaOptimality.sigmaFun target t)) :=
-    ((MovingSofaOptimality.ang_tendsto_integral_supp hcb hTarget.imported_isConvexBody hlim 0 Real.pi).sub
-      hheight).sub (MovingSofaOptimality.ang_tendsto_sigmaFun hcb hTarget.imported_isConvexBody hlim hfree)
-  have hright : Tendsto
-      (fun n => C * ε + ∑ j, selectionDefect target (U n) (level n) (coefficient n) j)
-        atTop (𝓝 (C * ε)) := by
-    simpa only [add_zero] using tendsto_const_nhds.add herr
-  have hle := le_of_tendsto_of_tendsto hleft hright hbound
-  have hmono := (MovingSofaOptimality.monotone_sigmaFun hTarget.imported_isConvexBody).le_leftLim ht.2
-  rw [hTarget.sigmaFun_leftLim_pi] at hmono
-  rw [lt_div_iff₀ hC1] at hεgap
-  nlinarith
+    rw [← (hcap n).upperCurvature_real_Ioo_pi ht.2]
+    refine (measureReal_mono ?_ measure_Ico_lt_top.ne).trans
+      ((hU n).curvature_left_axis_bound (hc n) hR (hbox n) hw hnW (by linarith [ht.2])
+        (hε.le.trans (min_le_left _ _)))
+    exact fun x hx => ⟨by linarith [hx.1], hx.2⟩
+  have hle := le_of_tendsto_of_tendsto
+    (((ang_tendsto_integral_supp hcb hK hlim 0 Real.pi).sub hheight).sub
+      (ang_tendsto_sigmaFun hcb hK hlim hfree))
+    (tendsto_const_nhds.add (selectionDefect_sum_tendsto hTarget hcap hc hrate hHausdorff)) hbound
+  have hmono := hTarget.sigmaFun_leftLim_pi ▸ (monotone_sigmaFun hK).le_leftLim ht.2
+  have hgap := hε.trans_le (min_le_right _ _)
+  rw [lt_div_iff₀ (by positivity)] at hgap
+  nlinarith [ht.2]
 
 theorem selected_right_height_tendsto_actual {target : Set Plane} {U : ℕ → Set Plane}
     {a b : ℝ} {level : ℕ → ℕ} {coefficient : ℕ → ℝ}
@@ -176,12 +128,9 @@ theorem selected_right_height_tendsto_actual {target : Set Plane} {U : ℕ → S
     hwidth hslack
   have hW : ∀ᶠ n in atTop, 1 ≤ capWidth (U n) :=
     ((hHausdorff.capWidth_tendsto (fun n => (hU n).isCap) hTarget).eventually
-      (Ioi_mem_nhds hwidth)).mono (fun _ hn => hn.le)
-  have heq := selected_right_height_limit_eq hTarget hU hHausdorff hc hrate
-    (by positivity : 0 ≤ |a| + |b| + 1)
-    (fun n => subset_symmetricBox_of_horizontalBox (hU n).inBox)
-    (by norm_num : (0 : ℝ) < 1) hW hheight
-  rwa [heq] at hheight
+      (Ioi_mem_nhds hwidth)).mono fun _ hn => hn.le
+  rwa [selected_right_height_limit_eq hTarget hU hHausdorff hc hrate (by positivity)
+    (fun n => subset_symmetricBox_of_horizontalBox (hU n).inBox) one_pos hW hheight] at hheight
 
 theorem selected_left_height_tendsto_actual {target : Set Plane} {U : ℕ → Set Plane}
     {a b : ℝ} {level : ℕ → ℕ} {coefficient : ℕ → ℝ}
@@ -196,12 +145,9 @@ theorem selected_left_height_tendsto_actual {target : Set Plane} {U : ℕ → Se
     hwidth hslack
   have hW : ∀ᶠ n in atTop, 1 ≤ capWidth (U n) :=
     ((hHausdorff.capWidth_tendsto (fun n => (hU n).isCap) hTarget).eventually
-      (Ioi_mem_nhds hwidth)).mono (fun _ hn => hn.le)
-  have heq := selected_left_height_limit_eq hTarget hU hHausdorff hc hrate
-    (by positivity : 0 ≤ |a| + |b| + 1)
-    (fun n => subset_symmetricBox_of_horizontalBox (hU n).inBox)
-    (by norm_num : (0 : ℝ) < 1) hW hheight
-  rwa [heq] at hheight
+      (Ioi_mem_nhds hwidth)).mono fun _ hn => hn.le
+  rwa [selected_left_height_limit_eq hTarget hU hHausdorff hc hrate (by positivity)
+    (fun n => subset_symmetricBox_of_horizontalBox (hU n).inBox) one_pos hW hheight] at hheight
 
 end AngularGrid
 

@@ -32,9 +32,8 @@ theorem restrict_withDensity_of_subset
     (heq : μ.restrict S = (volume.restrict S).withDensity f)
     (hT : MeasurableSet T) (hsub : T ⊆ S) :
     μ.restrict T = (volume.restrict T).withDensity f := by
-  have h := congrArg (fun ν : Measure ℝ => ν.restrict T) heq
-  simpa only [Measure.restrict_restrict_of_subset hsub,
-    restrict_withDensity hT] using h
+  rw [← Measure.restrict_restrict_of_subset hsub, heq, restrict_withDensity hT,
+    Measure.restrict_restrict_of_subset hsub]
 
 /-- Equality after the affine normal holds on the whole open wing,
 obtained from equality on each compactly contained Stieltjes arc. -/
@@ -48,17 +47,12 @@ theorem IsDownwardCap.leftCompanion_curvature_restrict_open_after_affine
   have hlocal (r s : ℝ) (hxr : x < r) (hrs : r ≤ s) (hsπ : s < Real.pi) :
       (upperCurvature (AmbidextrousSofa.leftCompanionCap U a)).restrict (Ioo r s) =
         (upperCurvature U).restrict (Ioo r s) := by
-    have heq := hU.leftCompanion_curvature_restrict_after_affine ha hb hab haffine
-      hrs (hmx.trans hxr.le) hsπ
-    have h := congrArg (fun ν : Measure ℝ => ν.restrict (Ioo r s)) heq
-    simpa only [Measure.restrict_restrict_of_subset Ioo_subset_Ioc_self] using h
-  apply le_antisymm
-  · apply measure_restrict_Ioo_le_of_compactly_contained
-    intro r s hxr hrs hsπ
-    exact (hlocal r s hxr hrs hsπ).le
-  · apply measure_restrict_Ioo_le_of_compactly_contained
-    intro r s hxr hrs hsπ
-    exact (hlocal r s hxr hrs hsπ).ge
+    rw [← Measure.restrict_restrict_of_subset Ioo_subset_Ioc_self,
+      hU.leftCompanion_curvature_restrict_after_affine ha hb hab haffine hrs (hmx.trans hxr.le) hsπ,
+      Measure.restrict_restrict_of_subset Ioo_subset_Ioc_self]
+  exact le_antisymm
+    (measure_restrict_Ioo_le_of_compactly_contained fun r s h₁ h₂ h₃ => (hlocal r s h₁ h₂ h₃).le)
+    (measure_restrict_Ioo_le_of_compactly_contained fun r s h₁ h₂ h₃ => (hlocal r s h₁ h₂ h₃).ge)
 
 def leftCompanionWingDensity (m : ℝ) (ρ : ℝ → ℝ) : ℝ → ℝ :=
   (Ioi (max (Real.pi / 2) (affineNormalAngle m))).indicator ρ
@@ -94,66 +88,27 @@ theorem IsJointCapMaximizer.leftCompanion_density_of_regular_companion
   let b := max (Real.pi / 2) (affineNormalAngle m)
   have hLb : Real.pi / 2 ≤ b := le_max_left _ _
   have hθb : affineNormalAngle m ≤ b := le_max_right _ _
-  have hbπ : b < Real.pi := max_lt
-    (by linarith only [Real.pi_pos]) (affineNormalAngle_mem m).2
-  have hwidth : 0 < capWidth U := by linarith only [hU.width_bounds.1, one_lt_M]
-  obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints hwidth
+  have hbπ : b < Real.pi := max_lt (by linarith only [Real.pi_pos]) (affineNormalAngle_mem m).2
+  obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints
+    (by linarith only [hU.width_bounds.1, one_lt_M])
   have hzero : upperCurvature (leftCompanionCap U (horizontalLeft U + capWidth U / 4))
       (Ioc (Real.pi / 2) b) = 0 := by
-    by_cases hθ : affineNormalAngle m ≤ Real.pi / 2
-    · have hb : b = Real.pi / 2 := max_eq_left hθ
-      rw [hb, Ioc_self, measure_empty]
-    · have hm : 0 < m := Real.arctan_pos.mp (by
-        have hpos : Real.pi / 2 < affineNormalAngle m := lt_of_not_ge hθ
-        unfold affineNormalAngle at hpos
-        linarith only [hpos])
-      have hb : b = affineNormalAngle m := max_eq_right (le_of_not_ge hθ)
-      rw [hb]
-      exact hU.leftCompanion_initial_curvature_zero hm haffine
-  have hlast := hU.isCap.leftCompanion_curvature_restrict_open_after_affine
-    ha hb hab haffine hθb
-  have hsub : Ioo b Real.pi ⊆ regularCompanionDomain m := by
-    intro t ht
-    exact ⟨⟨hLb.trans_lt ht.1, ht.2⟩, (hθb.trans_lt ht.1).ne'⟩
-  have hρlast := restrict_withDensity_of_subset heq measurableSet_Ioo hsub
-  have hdecomp : Ioo (Real.pi / 2) Real.pi =
-      Ioc (Real.pi / 2) b ∪ Ioo b Real.pi := by
-    ext t
-    constructor
-    · intro ht
-      by_cases htb : t ≤ b
-      · exact Or.inl ⟨ht.1, htb⟩
-      · exact Or.inr ⟨lt_of_not_ge htb, ht.2⟩
-    · intro ht
-      rcases ht with ht | ht
-      · exact ⟨ht.1, ht.2.trans_lt hbπ⟩
-      · exact ⟨hLb.trans_lt ht.1, ht.2⟩
-  have hd : Disjoint (Ioc (Real.pi / 2) b) (Ioo b Real.pi) := by
-    apply disjoint_left.mpr
-    intro t ht hs
-    exact (not_lt_of_ge ht.2) hs.1
-  have hinter : Ioi b ∩ Ioo (Real.pi / 2) Real.pi = Ioo b Real.pi := by
-    ext t
-    constructor
-    · exact fun ht => ⟨ht.1, ht.2.2⟩
-    · exact fun ht => ⟨ht.1, hLb.trans_lt ht.1, ht.2⟩
+    rcases le_or_gt (affineNormalAngle m) (Real.pi / 2) with hθ | hθ
+    · rw [show b = Real.pi / 2 from max_eq_left hθ, Ioc_self, measure_empty]
+    · rw [show b = affineNormalAngle m from max_eq_right hθ.le]
+      exact hU.leftCompanion_initial_curvature_zero
+        (Real.arctan_pos.mp ((lt_add_iff_pos_left _).mp hθ)) haffine
   have hind : (fun t => ENNReal.ofReal (leftCompanionWingDensity m ρ t)) =
-      (Ioi b).indicator (fun t => ENNReal.ofReal (ρ t)) := by
-    funext t
-    change ENNReal.ofReal ((Ioi b).indicator ρ t) =
-      (Ioi b).indicator (fun r => ENNReal.ofReal (ρ r)) t
-    by_cases ht : t ∈ Ioi b
-    · simp only [indicator_of_mem ht]
-    · simp only [indicator_of_notMem ht, ENNReal.ofReal_zero]
-  calc
-    _ = (upperCurvature (leftCompanionCap U (horizontalLeft U + capWidth U / 4))).restrict
-          (Ioc (Real.pi / 2) b) +
-        (upperCurvature (leftCompanionCap U (horizontalLeft U + capWidth U / 4))).restrict
-          (Ioo b Real.pi) := by rw [hdecomp, Measure.restrict_union hd measurableSet_Ioo]
-    _ = (volume.restrict (Ioo b Real.pi)).withDensity (fun t => ENNReal.ofReal (ρ t)) := by
-      rw [Measure.restrict_eq_zero.mpr hzero, zero_add, hlast, hρlast]
-    _ = _ := by
-      rw [hind, withDensity_indicator measurableSet_Ioi,
-        Measure.restrict_restrict measurableSet_Ioi, hinter]
+      (Ioi b).indicator (fun t => ENNReal.ofReal (ρ t)) :=
+    (indicator_comp_of_zero (g := ENNReal.ofReal) ENNReal.ofReal_zero).symm
+  -- On `Ioo b π` the claimed density is the original one, so the cut curvature matches it.
+  rw [hind, withDensity_indicator measurableSet_Ioi, Measure.restrict_restrict measurableSet_Ioi,
+    Ioi_inter_Ioo, max_eq_left hLb, ← restrict_withDensity_of_subset heq measurableSet_Ioo
+      fun t ht => ⟨⟨hLb.trans_lt ht.1, ht.2⟩, (hθb.trans_lt ht.1).ne'⟩,
+    ← hU.isCap.leftCompanion_curvature_restrict_open_after_affine ha hb hab haffine hθb]
+  -- On `Ioc (π / 2) b` the cut has no curvature.
+  rw [← Ioc_union_Ioo_eq_Ioo hLb hbπ, Measure.restrict_union
+    (Ioc_disjoint_Ioi_same.mono_right Ioo_subset_Ioi_self) measurableSet_Ioo,
+    Measure.restrict_eq_zero.mpr hzero, zero_add]
 
 end AmbidextrousSofa

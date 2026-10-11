@@ -47,18 +47,11 @@ theorem movesThrough_iff {S hall incoming outgoing : Set Plane} {θ : ℝ → �
         Passage S hall incoming outgoing path := by
   constructor
   · rintro ⟨hθ, hc, hstart, hinside, hfinish⟩
-    refine ⟨⟨θ, c, hθ, hc⟩, rfl, rfl, ⟨?_, ?_, ?_⟩⟩
-    · rintro t ht _ ⟨p, hp, rfl⟩
-      exact hinside t ht p hp
-    · rintro _ ⟨p, hp, rfl⟩
-      exact hstart p hp
-    · rintro _ ⟨p, hp, rfl⟩
-      exact hfinish p hp
+    exact ⟨⟨θ, c, hθ, hc⟩, rfl, rfl, fun t ht => image_subset_iff.2 (hinside t ht),
+      image_subset_iff.2 hstart, image_subset_iff.2 hfinish⟩
   · rintro ⟨path, rfl, rfl, hpass⟩
-    refine ⟨path.continuous_angle, path.continuous_shift, ?_, ?_, ?_⟩
-    · exact fun p hp => hpass.start ⟨p, hp, rfl⟩
-    · exact fun t ht p hp => hpass.inside t ht ⟨p, hp, rfl⟩
-    · exact fun p hp => hpass.finish ⟨p, hp, rfl⟩
+    exact ⟨path.continuous_angle, path.continuous_shift, image_subset_iff.1 hpass.start,
+      fun t ht => image_subset_iff.1 (hpass.inside t ht), image_subset_iff.1 hpass.finish⟩
 
 /-- The Challenge's ambidextrous sofas are the library's. -/
 theorem isAmbidextrous_iff (S : Set Plane) :
@@ -74,16 +67,11 @@ theorem isAmbidextrous_iff (S : Set Plane) :
 
 /-- The positive root of `4Y³ + 3Y = 1` is the library's `Y`. -/
 theorem eq_Y {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) : Y' = Y :=
-  eq_Y_of_cubic_eq_zero (by unfold cubic; linarith [hY.2])
+  eq_Y_of_cubic_eq_zero (sub_eq_zero.2 hY.2)
 
 /-- The cubic `4Y³ + 3Y = 1` has exactly one positive root. -/
 theorem existsUnique_root : ∃! Y' : ℝ, 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1 :=
   ⟨Y, ⟨Y_pos, Y_equation⟩, fun _ hY => eq_Y hY⟩
-
-/-- `(x ^ (1/3)) ^ 3 = x` for `x ≥ 0`. -/
-theorem rpow_one_third_pow_three {x : ℝ} (hx : 0 ≤ x) : (x ^ (1 / 3 : ℝ)) ^ 3 = x := by
-  rw [← Real.rpow_natCast, ← Real.rpow_mul hx]
-  norm_num
 
 /-- **Romik's closed form.** With `a = ∛(√2 + 1)` and `b = ∛(√2 - 1)`, the number `(a - b) / 2` is
 the positive root of `4Y³ + 3Y = 1` (Cardano's formula; `ab = 1`), and
@@ -95,40 +83,29 @@ theorem cardano :
       1 + 4 * ((a - b) / 2) ^ 2 =
         (3 + 2 * √2) ^ (1 / 3 : ℝ) + (3 - 2 * √2) ^ (1 / 3 : ℝ) - 1 := by
   intro a b
-  have h2 : (1 : ℝ) < √2 := by
-    rw [show (1 : ℝ) = √1 by simp]
-    exact Real.sqrt_lt_sqrt (by norm_num) (by norm_num)
-  have hs : √2 ^ 2 = 2 := Real.sq_sqrt (by norm_num)
+  have h2 := Real.one_lt_sqrt_two
+  have hs : √2 ^ 2 = 2 := Real.sq_sqrt zero_le_two
   have hp : (0 : ℝ) ≤ √2 + 1 := by linarith
   have hm : (0 : ℝ) ≤ √2 - 1 := by linarith
-  have ha3 : a ^ 3 = √2 + 1 := rpow_one_third_pow_three hp
-  have hb3 : b ^ 3 = √2 - 1 := rpow_one_third_pow_three hm
+  have h3 {x : ℝ} (hx : 0 ≤ x) : (x ^ (1 / 3 : ℝ)) ^ 3 = x := by
+    rw [← Real.rpow_natCast, ← Real.rpow_mul hx]; norm_num
+  have ha3 : a ^ 3 = √2 + 1 := h3 hp
+  have hb3 : b ^ 3 = √2 - 1 := h3 hm
   have hab : a * b = 1 := by
-    rw [← Real.mul_rpow hp hm]
-    have : (√2 + 1) * (√2 - 1) = 1 := by nlinarith
-    rw [this, Real.one_rpow]
+    rw [← Real.mul_rpow hp hm, show (√2 + 1) * (√2 - 1) = 1 by linear_combination hs, Real.one_rpow]
   have hlt : b < a := Real.rpow_lt_rpow hm (by linarith) (by norm_num)
   have ha2 : a ^ 2 = (3 + 2 * √2) ^ (1 / 3 : ℝ) := by
-    rw [show (3 + 2 * √2) = (√2 + 1) ^ 2 by nlinarith, ← Real.rpow_natCast,
-      ← Real.rpow_natCast, ← Real.rpow_mul hp, ← Real.rpow_mul hp]
-    norm_num
+    rw [show 3 + 2 * √2 = (√2 + 1) ^ 2 by linear_combination -hs, ← Real.rpow_pow_comm hp]
   have hb2 : b ^ 2 = (3 - 2 * √2) ^ (1 / 3 : ℝ) := by
-    rw [show (3 - 2 * √2) = (√2 - 1) ^ 2 by nlinarith, ← Real.rpow_natCast,
-      ← Real.rpow_natCast, ← Real.rpow_mul hm, ← Real.rpow_mul hm]
-    norm_num
+    rw [show 3 - 2 * √2 = (√2 - 1) ^ 2 by linear_combination -hs, ← Real.rpow_pow_comm hm]
   refine ⟨by linarith, ?_, ?_⟩
-  · have : 4 * ((a - b) / 2) ^ 3 + 3 * ((a - b) / 2) =
-        (a ^ 3 - b ^ 3) / 2 - 3 / 2 * (a * b) * (a - b) + 3 / 2 * (a - b) := by ring
-    rw [this, ha3, hb3, hab]
-    ring
-  · rw [← ha2, ← hb2]
-    nlinarith [hab]
+  · linear_combination ha3 / 2 - hb3 / 2 - 3 / 2 * (a - b) * hab
+  · linear_combination ha2 + hb2 - 2 * hab
 
 /-- The Challenge's value `1 + 4Y² + arctan Y` is the library's `M`. -/
 theorem value_eq {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) :
     1 + 4 * Y' ^ 2 + Real.arctan Y' = M := by
-  rw [eq_Y hY]
-  rfl
+  rw [eq_Y hY]; rfl
 
 /-- **Romik's value.** The area `1 + 4Y² + arctan Y` of Romik's ambidextrous sofa is
 `∛(3 + 2√2) + ∛(3 - 2√2) - 1 + arctan (½ (∛(√2 + 1) - ∛(√2 - 1))) = 1.64495…`, the closed form in
@@ -138,9 +115,7 @@ theorem value_eq_romik {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) :
       (3 + 2 * √2) ^ (1 / 3 : ℝ) + (3 - 2 * √2) ^ (1 / 3 : ℝ) - 1 +
         Real.arctan (((√2 + 1) ^ (1 / 3 : ℝ) - (√2 - 1) ^ (1 / 3 : ℝ)) / 2) := by
   obtain ⟨hpos, hcubic, hsq⟩ := cardano
-  have h : ((√2 + 1) ^ (1 / 3 : ℝ) - (√2 - 1) ^ (1 / 3 : ℝ)) / 2 = Y' :=
-    (eq_Y ⟨hpos, hcubic⟩).trans (eq_Y hY).symm
-  rw [← hsq, h]
+  rw [← hsq, (eq_Y ⟨hpos, hcubic⟩).trans (eq_Y hY).symm]
 
 /-- The Challenge's hull of Romik's ambidextrous sofa is the library's `referenceHull`. -/
 theorem referenceHull_eq : Ambidextrous.referenceHull Y = Reference.referenceHull := rfl
@@ -148,36 +123,32 @@ theorem referenceHull_eq : Ambidextrous.referenceHull Y = Reference.referenceHul
 /-- The Challenge's Romik ambidextrous sofa is the library's `referenceSofa`. -/
 theorem referenceSofa_eq {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) :
     Ambidextrous.referenceSofa Y' = Reference.referenceSofa := by
-  rw [eq_Y hY]
-  rfl
+  rw [eq_Y hY]; rfl
 
 /-- **Optimality.** Every ambidextrous sofa has area at most `1 + 4Y² + arctan Y`. -/
 theorem volume_le {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) (S : Set (ℝ × ℝ))
     (hS : Ambidextrous.IsAmbidextrous S) :
-    volume.real S ≤ 1 + 4 * Y' ^ 2 + Real.arctan Y' := by
-  rw [value_eq hY]
-  exact ((isAmbidextrous_iff S).mp hS).volumeReal_le_M
+    volume.real S ≤ 1 + 4 * Y' ^ 2 + Real.arctan Y' :=
+  value_eq hY ▸ ((isAmbidextrous_iff S).mp hS).volumeReal_le_M
 
 /-- Romik's ambidextrous sofa is an ambidextrous sofa. -/
 theorem isAmbidextrous_referenceSofa {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) :
-    Ambidextrous.IsAmbidextrous (Ambidextrous.referenceSofa Y') := by
-  rw [referenceSofa_eq hY, isAmbidextrous_iff]
-  exact Reference.isAmbidextrous_referenceSofa
+    Ambidextrous.IsAmbidextrous (Ambidextrous.referenceSofa Y') :=
+  referenceSofa_eq hY ▸ (isAmbidextrous_iff _).2 Reference.isAmbidextrous_referenceSofa
 
 /-- Romik's ambidextrous sofa has area `1 + 4Y² + arctan Y`. -/
 theorem volume_referenceSofa {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) :
     volume.real (Ambidextrous.referenceSofa Y') = 1 + 4 * Y' ^ 2 + Real.arctan Y' := by
-  rw [referenceSofa_eq hY, value_eq hY]
-  exact Reference.volumeReal_referenceSofa
+  rw [referenceSofa_eq hY, value_eq hY, Reference.volumeReal_referenceSofa]
 
 /-- Every image of Romik's ambidextrous sofa by a rotation followed by a translation is an
 ambidextrous sofa. -/
 theorem isAmbidextrous_image_referenceSofa {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1)
     (θ : ℝ) (v : ℝ × ℝ) :
     Ambidextrous.IsAmbidextrous ((fun p => Ambidextrous.rotate θ p + v) ''
-      Ambidextrous.referenceSofa Y') := by
-  rw [referenceSofa_eq hY, image_rotate_add, isAmbidextrous_iff]
-  exact Reference.isAmbidextrous_rigidImage_referenceSofa θ v
+      Ambidextrous.referenceSofa Y') :=
+  referenceSofa_eq hY ▸
+    (isAmbidextrous_iff _).2 (Reference.isAmbidextrous_rigidImage_referenceSofa θ v)
 
 /-- The convex hull of Romik's ambidextrous sofa is the hull of the Challenge. -/
 theorem convexHull_referenceSofa {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) :
@@ -192,8 +163,7 @@ theorem volume_eq_iff {Y' : ℝ} (hY : 0 < Y' ∧ 4 * Y' ^ 3 + 3 * Y' = 1) (S : 
     volume.real S = 1 + 4 * Y' ^ 2 + Real.arctan Y' ↔
       ∃ (θ : ℝ) (v : ℝ × ℝ),
         S = (fun p => Ambidextrous.rotate θ p + v) '' Ambidextrous.referenceSofa Y' := by
-  rw [value_eq hY, referenceSofa_eq hY]
-  simp only [image_rotate_add]
-  exact ((isAmbidextrous_iff S).mp hS).volumeReal_eq_M_iff
+  simpa only [value_eq hY, referenceSofa_eq hY, image_rotate_add] using
+    ((isAmbidextrous_iff S).mp hS).volumeReal_eq_M_iff
 
 end AmbidextrousSofa.Main

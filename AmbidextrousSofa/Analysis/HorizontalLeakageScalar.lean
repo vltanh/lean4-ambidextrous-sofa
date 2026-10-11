@@ -28,17 +28,14 @@ theorem horizontalLeakageA0_nonneg {h : ℝ} (hh : 0 ≤ h) :
     0 ≤ horizontalLeakageA0 h := by unfold horizontalLeakageA0; positivity
 
 theorem horizontalLeakageA0_mono {h k : ℝ} (hh : 0 ≤ h) (hhk : h ≤ k) :
-    horizontalLeakageA0 h ≤ horizontalLeakageA0 k := by
-  unfold horizontalLeakageA0
-  gcongr
+    horizontalLeakageA0 h ≤ horizontalLeakageA0 k := by unfold horizontalLeakageA0; gcongr
 
 theorem horizontalLeakageBoxSine_antitone {a b : ℝ}
     (ha : 0 ≤ a) (hab : a ≤ b) :
     horizontalLeakageBoxSine b ≤ horizontalLeakageBoxSine a := by
   unfold horizontalLeakageBoxSine
-  apply (div_le_div_iff₀ (by positivity) (by positivity)).2
-  have hsq := (sq_le_sq₀ ha (ha.trans hab)).2 hab
-  nlinarith
+  rw [div_le_div_iff₀ (by positivity) (by positivity)]
+  nlinarith [mul_le_mul hab hab ha (ha.trans hab)]
 
 /-- All fields are numerical inequalities for the displayed rational row;
 none is a cap-area or curvature hypothesis. -/
@@ -73,226 +70,62 @@ structure HorizontalLeakageRow where
   contradiction : ((22199 : ℝ) / 10000 - a * (2 - B)) ^ 2 <
     a ^ 2 + (1 - B) ^ 2 / 4
 
-def horizontalLeakageRow0 : HorizontalLeakageRow where
-  a := 8571 / 12500
-  b := 343 / 500
-  H := 681 / 2500
-  h := 27 / 2000
-  T := 377 / 1000
-  t := 46 / 125
-  B := 1 / 400000
-  a_pos := by norm_num
-  a_le_b := by norm_num
-  b_lt_one := by norm_num
-  H_nonneg := by norm_num
-  H_le_one := by norm_num
-  h_nonneg := by norm_num
-  h_lt_one := by norm_num
-  T_nonneg := by norm_num
-  t_nonneg := by norm_num
-  B_nonneg := by norm_num
-  B_le_one := by norm_num
-  box := by norm_num
-  excess := by norm_num
-  crossing := by norm_num
-  before_vertex := by norm_num
-  angle := by norm_num
-  leakage := by norm_num [horizontalLeakageA0, horizontalLeakageA1, horizontalLeakageBoxSine]
-  residual_pos := by norm_num
-  contradiction := by norm_num
+def horizontalLeakageRow0 : HorizontalLeakageRow := by
+  apply HorizontalLeakageRow.mk (8571 / 12500) (343 / 500) (681 / 2500) (27 / 2000) (377 / 1000)
+    (46 / 125) (1 / 400000) <;>
+    norm_num [horizontalLeakageA0, horizontalLeakageA1, horizontalLeakageBoxSine]
 
-def horizontalLeakageRow1 : HorizontalLeakageRow where
-  a := 343 / 500
-  b := 69 / 100
-  H := 1381 / 5000
-  h := 19 / 500
-  T := 473 / 1250
-  t := 3627 / 10000
-  B := 1 / 30000
-  a_pos := by norm_num
-  a_le_b := by norm_num
-  b_lt_one := by norm_num
-  H_nonneg := by norm_num
-  H_le_one := by norm_num
-  h_nonneg := by norm_num
-  h_lt_one := by norm_num
-  T_nonneg := by norm_num
-  t_nonneg := by norm_num
-  B_nonneg := by norm_num
-  B_le_one := by norm_num
-  box := by norm_num
-  excess := by norm_num
-  crossing := by norm_num
-  before_vertex := by norm_num
-  angle := by norm_num
-  leakage := by norm_num [horizontalLeakageA0, horizontalLeakageA1, horizontalLeakageBoxSine]
-  residual_pos := by norm_num
-  contradiction := by norm_num
+def horizontalLeakageRow1 : HorizontalLeakageRow := by
+  apply HorizontalLeakageRow.mk (343 / 500) (69 / 100) (1381 / 5000) (19 / 500) (473 / 1250)
+    (3627 / 10000) (1 / 30000) <;>
+    norm_num [horizontalLeakageA0, horizontalLeakageA1, horizontalLeakageBoxSine]
 
-def horizontalLeakageRow2 : HorizontalLeakageRow where
-  a := 69 / 100
-  b := 7 / 10
-  H := 2859 / 10000
-  h := 971 / 10000
-  T := 3801 / 10000
-  t := 873 / 2500
-  B := 1 / 2000
-  a_pos := by norm_num
-  a_le_b := by norm_num
-  b_lt_one := by norm_num
-  H_nonneg := by norm_num
-  H_le_one := by norm_num
-  h_nonneg := by norm_num
-  h_lt_one := by norm_num
-  T_nonneg := by norm_num
-  t_nonneg := by norm_num
-  B_nonneg := by norm_num
-  B_le_one := by norm_num
-  box := by norm_num
-  excess := by norm_num
-  crossing := by norm_num
-  before_vertex := by norm_num
-  angle := by norm_num
-  leakage := by norm_num [horizontalLeakageA0, horizontalLeakageA1, horizontalLeakageBoxSine]
-  residual_pos := by norm_num
-  contradiction := by norm_num
+def horizontalLeakageRow2 : HorizontalLeakageRow := by
+  apply HorizontalLeakageRow.mk (69 / 100) (7 / 10) (2859 / 10000) (971 / 10000) (3801 / 10000)
+    (873 / 2500) (1 / 2000) <;>
+    norm_num [horizontalLeakageA0, horizontalLeakageA1, horizontalLeakageBoxSine]
 
-def horizontalLeakageRow3 : HorizontalLeakageRow where
-  a := 7 / 10
-  b := 29 / 40
-  H := 3113 / 10000
-  h := 2323 / 10000
-  T := 769 / 2000
-  t := 3161 / 10000
-  B := 3 / 400
-  a_pos := by norm_num
-  a_le_b := by norm_num
-  b_lt_one := by norm_num
-  H_nonneg := by norm_num
-  H_le_one := by norm_num
-  h_nonneg := by norm_num
-  h_lt_one := by norm_num
-  T_nonneg := by norm_num
-  t_nonneg := by norm_num
-  B_nonneg := by norm_num
-  B_le_one := by norm_num
-  box := by norm_num
-  excess := by norm_num
-  crossing := by norm_num
-  before_vertex := by norm_num
-  angle := by norm_num
-  leakage := by norm_num [horizontalLeakageA0, horizontalLeakageA1, horizontalLeakageBoxSine]
-  residual_pos := by norm_num
-  contradiction := by norm_num
+def horizontalLeakageRow3 : HorizontalLeakageRow := by
+  apply HorizontalLeakageRow.mk (7 / 10) (29 / 40) (3113 / 10000) (2323 / 10000) (769 / 2000)
+    (3161 / 10000) (3 / 400) <;>
+    norm_num [horizontalLeakageA0, horizontalLeakageA1, horizontalLeakageBoxSine]
 
-def horizontalLeakageRow4 : HorizontalLeakageRow where
-  a := 29 / 40
-  b := 3 / 4
-  H := 1693 / 5000
-  h := 1771 / 5000
-  T := 3799 / 10000
-  t := 2837 / 10000
-  B := 31 / 1000
-  a_pos := by norm_num
-  a_le_b := by norm_num
-  b_lt_one := by norm_num
-  H_nonneg := by norm_num
-  H_le_one := by norm_num
-  h_nonneg := by norm_num
-  h_lt_one := by norm_num
-  T_nonneg := by norm_num
-  t_nonneg := by norm_num
-  B_nonneg := by norm_num
-  B_le_one := by norm_num
-  box := by norm_num
-  excess := by norm_num
-  crossing := by norm_num
-  before_vertex := by norm_num
-  angle := by norm_num
-  leakage := by norm_num [horizontalLeakageA0, horizontalLeakageA1, horizontalLeakageBoxSine]
-  residual_pos := by norm_num
-  contradiction := by norm_num
+def horizontalLeakageRow4 : HorizontalLeakageRow := by
+  apply HorizontalLeakageRow.mk (29 / 40) (3 / 4) (1693 / 5000) (1771 / 5000) (3799 / 10000)
+    (2837 / 10000) (31 / 1000) <;>
+    norm_num [horizontalLeakageA0, horizontalLeakageA1, horizontalLeakageBoxSine]
 
-def horizontalLeakageRow5 : HorizontalLeakageRow where
-  a := 3 / 4
-  b := 31 / 40
-  H := 3681 / 10000
-  h := 2331 / 5000
-  T := 753 / 2000
-  t := 2521 / 10000
-  B := 83 / 1000
-  a_pos := by norm_num
-  a_le_b := by norm_num
-  b_lt_one := by norm_num
-  H_nonneg := by norm_num
-  H_le_one := by norm_num
-  h_nonneg := by norm_num
-  h_lt_one := by norm_num
-  T_nonneg := by norm_num
-  t_nonneg := by norm_num
-  B_nonneg := by norm_num
-  B_le_one := by norm_num
-  box := by norm_num
-  excess := by norm_num
-  crossing := by norm_num
-  before_vertex := by norm_num
-  angle := by norm_num
-  leakage := by norm_num [horizontalLeakageA0, horizontalLeakageA1, horizontalLeakageBoxSine]
-  residual_pos := by norm_num
-  contradiction := by norm_num
+def horizontalLeakageRow5 : HorizontalLeakageRow := by
+  apply HorizontalLeakageRow.mk (3 / 4) (31 / 40) (3681 / 10000) (2331 / 5000) (753 / 2000)
+    (2521 / 10000) (83 / 1000) <;>
+    norm_num [horizontalLeakageA0, horizontalLeakageA1, horizontalLeakageBoxSine]
 
-def horizontalLeakageRow6 : HorizontalLeakageRow where
-  a := 31 / 40
-  b := 4 / 5
-  H := 2 / 5
-  h := 5703 / 10000
-  T := 1871 / 5000
-  t := 2213 / 10000
-  B := 9 / 50
-  a_pos := by norm_num
-  a_le_b := by norm_num
-  b_lt_one := by norm_num
-  H_nonneg := by norm_num
-  H_le_one := by norm_num
-  h_nonneg := by norm_num
-  h_lt_one := by norm_num
-  T_nonneg := by norm_num
-  t_nonneg := by norm_num
-  B_nonneg := by norm_num
-  B_le_one := by norm_num
-  box := by norm_num
-  excess := by norm_num
-  crossing := by norm_num
-  before_vertex := by norm_num
-  angle := by norm_num
-  leakage := by norm_num [horizontalLeakageA0, horizontalLeakageA1, horizontalLeakageBoxSine]
-  residual_pos := by norm_num
-  contradiction := by norm_num
+def horizontalLeakageRow6 : HorizontalLeakageRow := by
+  apply HorizontalLeakageRow.mk (31 / 40) (4 / 5) (2 / 5) (5703 / 10000) (1871 / 5000)
+    (2213 / 10000) (9 / 50) <;>
+    norm_num [horizontalLeakageA0, horizontalLeakageA1, horizontalLeakageBoxSine]
 
 theorem exists_horizontalLeakageRow {C : ℝ}
     (hC0 : 8571 / 12500 ≤ C) (hC1 : C ≤ 4 / 5) :
     ∃ R : HorizontalLeakageRow, R.a ≤ C ∧ C ≤ R.b := by
-  by_cases h0 : C ≤ 343 / 500
+  rcases le_or_gt C (343 / 500) with h0 | h0
   · exact ⟨horizontalLeakageRow0, hC0, h0⟩
-  by_cases h1 : C ≤ 69 / 100
-  · exact ⟨horizontalLeakageRow1, (lt_of_not_ge h0).le, h1⟩
-  by_cases h2 : C ≤ 7 / 10
-  · exact ⟨horizontalLeakageRow2, (lt_of_not_ge h1).le, h2⟩
-  by_cases h3 : C ≤ 29 / 40
-  · exact ⟨horizontalLeakageRow3, (lt_of_not_ge h2).le, h3⟩
-  by_cases h4 : C ≤ 3 / 4
-  · exact ⟨horizontalLeakageRow4, (lt_of_not_ge h3).le, h4⟩
-  by_cases h5 : C ≤ 31 / 40
-  · exact ⟨horizontalLeakageRow5, (lt_of_not_ge h4).le, h5⟩
-  exact ⟨horizontalLeakageRow6, (lt_of_not_ge h5).le, hC1⟩
+  rcases le_or_gt C (69 / 100) with h1 | h1
+  · exact ⟨horizontalLeakageRow1, h0.le, h1⟩
+  rcases le_or_gt C (7 / 10) with h2 | h2
+  · exact ⟨horizontalLeakageRow2, h1.le, h2⟩
+  rcases le_or_gt C (29 / 40) with h3 | h3
+  · exact ⟨horizontalLeakageRow3, h2.le, h3⟩
+  rcases le_or_gt C (3 / 4) with h4 | h4
+  · exact ⟨horizontalLeakageRow4, h3.le, h4⟩
+  rcases le_or_gt C (31 / 40) with h5 | h5
+  · exact ⟨horizontalLeakageRow5, h4.le, h5⟩
+  exact ⟨horizontalLeakageRow6, h5.le, hC1⟩
 
 theorem HorizontalLeakageRow.box_height_le (R : HorizontalLeakageRow) {C : ℝ}
     (hC0 : 0 ≤ C) (hCb : C ≤ R.b) :
     1 - Real.sqrt (1 - C ^ 2) ≤ R.H := by
-  have hb0 : 0 ≤ R.b := R.a_pos.le.trans R.a_le_b
-  have hsq := (sq_le_sq₀ hC0 hb0).2 hCb
-  have hroot := Real.le_sqrt_of_sq_le
-    (show (1 - R.H) ^ 2 ≤ 1 - C ^ 2 from R.box.trans (by linarith))
+  have := Real.le_sqrt_of_sq_le (R.box.trans (by nlinarith : 1 - R.b ^ 2 ≤ 1 - C ^ 2))
   linarith
 
 theorem HorizontalLeakageRow.box_angle_le (R : HorizontalLeakageRow) {C : ℝ}
@@ -300,12 +133,10 @@ theorem HorizontalLeakageRow.box_angle_le (R : HorizontalLeakageRow) {C : ℝ}
     R.t ≤ 2 * Real.arctan ((1 - C) / (1 + C)) := by
   have hb0 := R.a_pos.le.trans R.a_le_b
   have hz : (1 - R.b) / (1 + R.b) ≤ (1 - C) / (1 + C) := by
-    apply (div_le_div_iff₀ (by linarith) (by linarith)).2
-    nlinarith
-  have hpoly := self_sub_cube_div_three_le_arctan
-    (div_nonneg (sub_nonneg.mpr R.b_lt_one.le) (by linarith : 0 ≤ 1 + R.b))
-  have hmono := Real.arctan_mono hz
-  linarith [R.angle]
+    rw [div_le_div_iff₀ (by linarith) (by linarith)]
+    linarith
+  linarith [R.angle, Real.arctan_mono hz, self_sub_cube_div_three_le_arctan
+    (div_nonneg (sub_nonneg.mpr R.b_lt_one.le) (by linarith : 0 ≤ 1 + R.b))]
 
 /-- At the lower row endpoint the energy criterion is already satisfied.
 The rational lower bound for the square root avoids rounding the root of
@@ -313,11 +144,10 @@ the defining algebraic threshold. -/
 theorem horizontal_energy_threshold_of_width_le {C : ℝ}
     (hC0 : 0 ≤ C) (hC1 : C ≤ 8571 / 12500) :
     9 * C ^ 2 ≤ 4 + (1 - (1 - Real.sqrt (1 - C ^ 2)) ^ 2) / 4 := by
-  have hsq := (sq_le_sq₀ hC0 (by norm_num : (0 : ℝ) ≤ 8571 / 12500)).2 hC1
-  have hrad : 0 ≤ 1 - C ^ 2 := by nlinarith
+  have hsq : C ^ 2 ≤ (8571 / 12500) ^ 2 := by gcongr
   have hlower : (3639 : ℝ) / 5000 ≤ Real.sqrt (1 - C ^ 2) :=
     Real.le_sqrt_of_sq_le (by nlinarith)
-  nlinarith [Real.sq_sqrt hrad]
+  nlinarith [Real.sq_sqrt (by nlinarith : 0 ≤ 1 - C ^ 2)]
 
 /-- The final row inequality contradicts the monotone ordinary-area
 obstruction at every width in the row. -/
@@ -325,15 +155,9 @@ theorem HorizontalLeakageRow.not_ordinary_area_bound (R : HorizontalLeakageRow) 
     (haC : R.a ≤ C)
     (hbound : C * (2 - R.B) + Real.sqrt (C ^ 2 + (1 - R.B) ^ 2 / 4) ≤
       (22199 : ℝ) / 10000) : False := by
-  have hC0 := R.a_pos.le.trans haC
-  have hsqC := (sq_le_sq₀ R.a_pos.le hC0).2 haC
-  have hsqroot := Real.sqrt_le_sqrt
-    (show R.a ^ 2 + (1 - R.B) ^ 2 / 4 ≤ C ^ 2 + (1 - R.B) ^ 2 / 4 by linarith)
-  have hlinear := mul_le_mul_of_nonneg_right haC (by linarith [R.B_le_one] : 0 ≤ 2 - R.B)
-  have hs : Real.sqrt (R.a ^ 2 + (1 - R.B) ^ 2 / 4) ≤
-      (22199 : ℝ) / 10000 - R.a * (2 - R.B) := by linarith
-  have hsq := (sq_le_sq₀ (Real.sqrt_nonneg _) R.residual_pos.le).2 hs
-  rw [Real.sq_sqrt (by positivity)] at hsq
-  exact (not_lt_of_ge hsq) R.contradiction
+  have hroot := Real.sqrt_le_sqrt (by nlinarith [R.a_pos] :
+    R.a ^ 2 + (1 - R.B) ^ 2 / 4 ≤ C ^ 2 + (1 - R.B) ^ 2 / 4)
+  linarith [Real.lt_sqrt_of_sq_lt R.contradiction,
+    mul_le_mul_of_nonneg_right haC (by linarith [R.B_le_one] : 0 ≤ 2 - R.B)]
 
 end AmbidextrousSofa

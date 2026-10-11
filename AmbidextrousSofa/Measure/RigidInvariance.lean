@@ -20,52 +20,26 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-theorem volume_image_rotate (θ : ℝ) (S : Set Plane) :
-    volume (rotate θ '' S) = volume S := by
-  have h := Measure.addHaar_image_linearMap (volume : Measure Plane)
-    (rotationLinearMap θ) S
-  simpa only [coe_rotationLinearMap, det_rotationLinearMap, abs_one,
-    ENNReal.ofReal_one, one_mul] using h
-
 theorem volume_image_translate (v : Plane) (S : Set Plane) :
     volume ((fun p => p + v) '' S) = volume S := by
   rw [image_add_right, measure_preimage_add_right]
 
-theorem volume_image_rigidMap (θ : ℝ) (v : Plane) (S : Set Plane) :
-    volume (rigidMap θ v '' S) = volume S := by
-  change volume (((fun p => p + v) ∘ rotate θ) '' S) = volume S
-  rw [Set.image_comp, volume_image_translate, volume_image_rotate]
-
 theorem volumeReal_image_rigidMap (θ : ℝ) (v : Plane) (S : Set Plane) :
     volume.real (rigidMap θ v '' S) = volume.real S := by
-  simp only [Measure.real, volume_image_rigidMap]
-
-def verticalFlipLinearMap : Plane →ₗ[ℝ] Plane :=
-  Matrix.toLin (Module.Basis.finTwoProd ℝ) (Module.Basis.finTwoProd ℝ)
-    !![1, 0; 0, -1]
-
-theorem verticalFlipLinearMap_apply (p : Plane) :
-    verticalFlipLinearMap p = (p.1, -p.2) := by
-  simp [verticalFlipLinearMap, Matrix.toLin_finTwoProd_apply]
-
-theorem det_verticalFlipLinearMap :
-    LinearMap.det verticalFlipLinearMap = -1 := by
-  simp [verticalFlipLinearMap, LinearMap.det_toLin]
-
-theorem volume_image_reflect (S : Set Plane) : volume (reflect '' S) = volume S := by
-  have hflip : volume (verticalFlipLinearMap '' S) = volume S := by
-    simpa only [det_verticalFlipLinearMap, abs_neg, abs_one, ENNReal.ofReal_one,
-      one_mul] using
-      Measure.addHaar_image_linearMap (volume : Measure Plane) verticalFlipLinearMap S
-  have hreflect : reflect = (fun p : Plane => p + (0, 1)) ∘ verticalFlipLinearMap := by
-    funext p
-    rw [Function.comp_apply, verticalFlipLinearMap_apply]
-    apply Prod.ext <;> simp [reflect] <;> ring
-  rw [hreflect, Set.image_comp, volume_image_translate, hflip]
+  change volume.real (((· + v) ∘ rotate θ) '' S) = _
+  rw [image_comp, Measure.real, volume_image_translate, ← coe_rotationLinearMap,
+    Measure.addHaar_image_linearMap]
+  simp [Measure.real]
 
 theorem volumeReal_image_reflect (S : Set Plane) :
     volume.real (reflect '' S) = volume.real S := by
-  simp only [Measure.real, volume_image_reflect]
+  let F : Plane →ₗ[ℝ] Plane :=
+    Matrix.toLin (Module.Basis.finTwoProd ℝ) (Module.Basis.finTwoProd ℝ) !![1, 0; 0, -1]
+  have hF : reflect = (· + (0, 1)) ∘ F := by
+    funext p
+    simp [F, reflect, Matrix.toLin_finTwoProd_apply, sub_eq_neg_add]
+  rw [hF, image_comp, Measure.real, volume_image_translate, Measure.addHaar_image_linearMap]
+  simp [F, LinearMap.det_toLin, Measure.real]
 
 /-- Normalize the original motion domain without changing its actual area.
 The chosen transform is one incoming placement of the lower passage. -/
@@ -76,9 +50,7 @@ theorem IsAmbidextrous.exists_normalized {S : Set Plane} (hS : IsAmbidextrous S)
         lower.angle 0 = 0 ∧ upper.angle 0 = 0 ∧
         Passage T lowerHall incomingArm lowerOutgoingArm lower ∧
         Passage T upperHall incomingArm upperOutgoingArm upper := by
-  obtain ⟨θ, v, lower, upper, hT, hstrip, hl0, hu0, hl, hu⟩ :=
-    hS.exists_normalized_passages
-  exact ⟨θ, v, lower, upper, hT, hstrip, volumeReal_image_rigidMap θ v S,
-    hl0, hu0, hl, hu⟩
+  obtain ⟨θ, v, lower, upper, hT, hstrip, hl0, hu0, hl, hu⟩ := hS.exists_normalized_passages
+  exact ⟨θ, v, lower, upper, hT, hstrip, volumeReal_image_rigidMap θ v S, hl0, hu0, hl, hu⟩
 
 end AmbidextrousSofa

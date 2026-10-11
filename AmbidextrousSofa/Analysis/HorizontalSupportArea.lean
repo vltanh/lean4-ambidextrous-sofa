@@ -30,7 +30,7 @@ theorem IsFullCapMaximizer.volumeReal_eq_horizontalSupportQuarterPair_energy
     let F := horizontalSupportQuarterPair hU.isCap hρ hρ0 hρK heq
     volume.real U = 1 / 2 * ∫ t in (0 : ℝ)..(Real.pi / 2),
       (F.f t ^ 2 - F.fD t ^ 2) + (F.g t ^ 2 - F.gD t ^ 2) := by
-  let F := horizontalSupportQuarterPair hU.isCap hρ hρ0 hρK heq
+  intro F
   have hr := horizontal_density_quarter_restrictions heq
   have hac := supportQuarterPair_absolutelyContinuous hU.isCap hU.isCap
     hρ hρ0 hρK hρ hρ0 hρK hr.1 hr.2
@@ -38,35 +38,20 @@ theorem IsFullCapMaximizer.volumeReal_eq_horizontalSupportQuarterPair_energy
     hρ hρ0 hρK hρ hρ0 hρK hr.1 hr.2
   have hp := supportQuarterPair_points_mem hU.isCap hU.isCap
     hρ hρ0 hρK hρ hρ0 hρK hr.1 hr.2
-  have htr := hU.horizontalSupportQuarterPair_traces hρ hρ0 hρK heq hheight hmiddle
-  change F.f 0 = horizontalRight U ∧ F.g 0 = 1 ∧
-    F.f (Real.pi / 2) = 1 ∧ F.g (Real.pi / 2) = -horizontalLeft U ∧
-    F.fD 0 = capRoof U (horizontalRight U) ∧
-    F.gD 0 = -(horizontalLeft U + capWidth U / 4) ∧
-    F.fD (Real.pi / 2) = -(horizontalRight U - capWidth U / 4) ∧
-    F.gD (Real.pi / 2) = -capRoof U (horizontalLeft U) at htr
-  rcases htr with ⟨hf0, hg0, hfL, hgL, hfD0, hgD0, hfDL, hgDL⟩
-  have hfi : IntervalIntegrable (fun t => ρ t - F.f t) volume 0 (Real.pi / 2) := by
-    simpa only [F, horizontalSupportQuarterPair, supportQuarterPair, add_zero] using
-      hU.isCap.intervalIntegrable_shifted_density_sub_support hρ hρ0 hρK 0 (Real.pi / 2) 0
-  have hgi : IntervalIntegrable (fun t => ρ (t + Real.pi / 2) - F.g t)
-      volume 0 (Real.pi / 2) :=
-    hU.isCap.intervalIntegrable_shifted_density_sub_support hρ hρ0 hρK
-      0 (Real.pi / 2) (Real.pi / 2)
-  apply hU.isCap.volumeReal_eq_support_energy_ac
-    hac.1 hac.2.1 hac.2.2.1 hac.2.2.2
-    (hd.mono (fun _ h => h.1)) (hd.mono (fun _ h => h.2.1))
-    (hd.mono (fun _ h => h.2.2.1)) (hd.mono (fun _ h => h.2.2.2))
-    hfi hgi hp.1 hp.2 (fun _ _ => rfl) (fun _ _ => rfl)
-    (by change horizontalLeft U = -F.g (Real.pi / 2); rw [hgL, neg_neg]) hf0.symm hfL hg0
-  · change -F.gD 0 ≤ -F.fD (Real.pi / 2)
-    rw [hgD0, hfDL, neg_neg, neg_neg]
-    have hwidth : 0 ≤ capWidth U := hU.isCap.capWidth_nonneg
-    dsimp only [capWidth] at hwidth ⊢
-    linarith
-  · intro x hx
-    change x ∈ Icc (-F.gD 0) (-F.fD (Real.pi / 2)) at hx
-    rw [hgD0, hfDL, neg_neg, neg_neg] at hx
-    exact hmiddle x hx
+  obtain ⟨hf0, hg0, hfL, hgL, -, hgD0, hfDL, -⟩ :=
+    hU.horizontalSupportQuarterPair_traces hρ hρ0 hρK heq hheight hmiddle
+  have hface : Icc (-F.gD 0) (-F.fD (Real.pi / 2)) =
+      middleHalfInterval (horizontalLeft U) (horizontalRight U) := by
+    rw [hgD0, hfDL, neg_neg, neg_neg]; rfl
+  refine hU.isCap.volumeReal_eq_support_energy_ac hac.1 hac.2.1 hac.2.2.1 hac.2.2.2
+    (hd.mono fun _ h => h.1) (hd.mono fun _ h => h.2.1) (hd.mono fun _ h => h.2.2.1)
+    (hd.mono fun _ h => h.2.2.2) ((intervalIntegrable_bounded_real_density hρ hρ0 hρK _ _).sub
+      (hU.isCap.imported_isConvexBody.continuous_supp.intervalIntegrable _ _))
+    (hU.isCap.intervalIntegrable_shifted_density_sub_support hρ hρ0 hρK _ _ _) hp.1 hp.2
+    (fun _ _ => rfl) (fun _ _ => rfl) (by rw [hgL, neg_neg]) hf0.symm hfL hg0 ?_
+    (hface ▸ hmiddle)
+  rw [hgD0, hfDL, neg_neg, neg_neg]
+  linarith [hU.isCap.capWidth_nonneg,
+    show capWidth U = horizontalRight U - horizontalLeft U from rfl]
 
 end AmbidextrousSofa

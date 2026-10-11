@@ -30,29 +30,43 @@ theorem baseline_halfspace_of_endpoints {l r x height : ℝ} {n : Plane}
     (hl : coordDot (l, 0) n ≤ height) (hr : coordDot (r, 0) n ≤ height)
     (hx : x ∈ Icc l r) : coordDot (x, 0) n ≤ height := by
   simp only [coordDot, zero_mul, add_zero] at hl hr ⊢
-  by_cases hn : 0 ≤ n.1
-  · exact (mul_le_mul_of_nonneg_right hx.2 hn).trans hr
-  · exact (mul_le_mul_of_nonpos_right hx.1 (le_of_not_ge hn)).trans hl
+  rcases le_total 0 n.1 with hn | hn
+  exacts [(mul_le_mul_of_nonneg_right hx.2 hn).trans hr,
+    (mul_le_mul_of_nonpos_right hx.1 hn).trans hl]
 
-theorem upperPolygon_subset_of_interval_subset {l r l' r' : ℝ}
-    (normal : ι → Plane) (height : ι → ℝ) (hinterval : Icc l r ⊆ Icc l' r') :
-    upperPolygon l r normal height ⊆ upperPolygon l' r' normal height := by
-  intro p hp
-  obtain ⟨hx, hy, hhalf⟩ := (mem_upperPolygon_iff _ _ _ _ _).mp hp
-  exact (mem_upperPolygon_iff _ _ _ _ _).mpr ⟨hinterval hx, hy, hhalf⟩
+/-- Near a positive end face, the baseline stays below every wall. -/
+private theorem eventually_baseline [Fintype ι] {x₀ e : ℝ} {normal : ι → Plane}
+    {height : ι → ℝ} (hnormal : ∀ i, 0 < (normal i).2) (he : 0 < e)
+    (hface : ∀ i, coordDot (x₀, e) (normal i) ≤ height i) :
+    ∀ᶠ x in 𝓝 x₀, ∀ i, coordDot (x, 0) (normal i) ≤ height i := by
+  refine eventually_all.2 fun i => ?_
+  have h : coordDot (x₀, 0) (normal i) < height i := by
+    have := hface i
+    unfold coordDot at *
+    linarith [mul_pos he (hnormal i)]
+  have hc : Continuous fun x : ℝ => coordDot (x, 0) (normal i) := by unfold coordDot; fun_prop
+  exact (hc.tendsto x₀).eventually_le_const h
 
-theorem support_upperPolygon_of_interval_subset {l r l' r' : ℝ}
-    (normal : ι → Plane) (height : ι → ℝ) (hinterval : Icc l r ⊆ Icc l' r')
+/-- Enlarging the base interval of an exact polygon keeps every supporting parameter, as
+long as the new baseline stays below every wall. -/
+private theorem enlarged {l r l' r' : ℝ} {normal : ι → Plane} {height : ι → ℝ}
+    (hl : l' ≤ l) (hr : r ≤ r') (hlr : l ≤ r) (hnormal : ∀ i, 0 < (normal i).2)
+    (hbaseline : ∀ x ∈ Icc l' r', ∀ i, coordDot (x, 0) (normal i) ≤ height i)
     (hne : (upperPolygon l r normal height).Nonempty)
-    (hexact : ∀ i, support (upperPolygon l r normal height) (normal i) = height i) (i : ι) :
-    support (upperPolygon l' r' normal height) (normal i) = height i := by
-  have hsub := upperPolygon_subset_of_interval_subset normal height hinterval
-  apply le_antisymm
-  · apply support_le_of_forall (hne.mono hsub)
-    intro p hp
-    exact ((mem_upperPolygon_iff _ _ _ _ _).mp hp).2.2 i
-  · rw [← hexact i]
-    exact support_mono hsub hne (isCompact_upperPolygon _ _ _ _) _
+    (hexact : ∀ i, support (upperPolygon l r normal height) (normal i) = height i) :
+    IsDownwardCap (upperPolygon l' r' normal height) ∧
+      (∀ x ∈ Icc l' r', ∀ i, coordDot (x, 0) (normal i) ≤ height i) ∧
+      horizontalProjection (upperPolygon l' r' normal height) = Icc l' r' ∧
+      ∀ i, support (upperPolygon l' r' normal height) (normal i) = height i := by
+  have hsub : upperPolygon l r normal height ⊆ upperPolygon l' r' normal height := fun p hp => by
+    obtain ⟨hx, hy, hhalf⟩ := (mem_upperPolygon_iff _ _ _ _ _).mp hp
+    exact (mem_upperPolygon_iff _ _ _ _ _).mpr ⟨Icc_subset_Icc hl hr hx, hy, hhalf⟩
+  refine ⟨isDownwardCap_upperPolygon _ _ _ _ (hl.trans (hlr.trans hr)) (fun i => (hnormal i).le)
+    hbaseline, hbaseline, horizontalProjection_upperPolygon _ _ _ _ hbaseline,
+    fun i => le_antisymm ?_ ?_⟩
+  · exact support_le_of_forall (hne.mono hsub) fun p hp =>
+      ((mem_upperPolygon_iff _ _ _ _ _).mp hp).2.2 i
+  · exact hexact i ▸ support_mono hsub hne (isCompact_upperPolygon _ _ _ _) _
 
 /-- A positive right end face gives actual outward movement of the right
 projection endpoint. The top and all nonaxis supporting parameters stay
@@ -68,39 +82,11 @@ theorem exists_right_axis_variation [Fintype ι] {l r e : ℝ}
       (∀ x ∈ Icc l (r + ε), ∀ i, coordDot (x, 0) (normal i) ≤ height i) ∧
       horizontalProjection (upperPolygon l (r + ε) normal height) = Icc l (r + ε) ∧
       ∀ i, support (upperPolygon l (r + ε) normal height) (normal i) = height i := by
-  have hfacehalf := ((mem_upperPolygon_iff _ _ _ _ _).mp hface).2.2
-  have hstrict : ∀ i, coordDot (r, e / 2) (normal i) < height i := by
-    intro i
-    have h := hfacehalf i
-    unfold coordDot at h ⊢
-    nlinarith [mul_pos he (hnormal i)]
-  have hnear : ∀ᶠ ε : ℝ in 𝓝 0,
-      ∀ i, coordDot (r + ε, e / 2) (normal i) < height i := by
-    apply eventually_all.mpr
-    intro i
-    have hc : Continuous (fun ε : ℝ => coordDot (r + ε, e / 2) (normal i)) := by
-      unfold coordDot
-      fun_prop
-    exact hc.continuousAt (Iio_mem_nhds (by simpa only [add_zero] using hstrict i))
-  obtain ⟨δ, hδ, hball⟩ := Metric.mem_nhds_iff.mp hnear
-  refine ⟨δ, hδ, ?_⟩
-  intro ε hε
-  have hεball : ε ∈ Metric.ball (0 : ℝ) δ := by
-    simpa only [Metric.mem_ball, Real.dist_eq, sub_zero, abs_of_nonneg hε.1] using hε.2
-  have hnew := hball hεball
-  have hbaseline' : ∀ x ∈ Icc l (r + ε), ∀ i, coordDot (x, 0) (normal i) ≤ height i := by
-    intro x hx i
-    apply baseline_halfspace_of_endpoints (hbaseline l ⟨le_rfl, hlr⟩ i) ?_ hx
-    have h := hnew i
-    unfold coordDot at h ⊢
-    nlinarith [mul_pos he (hnormal i)]
-  have hlr' : l ≤ r + ε := by linarith [hε.1]
-  refine ⟨isDownwardCap_upperPolygon _ _ _ _ hlr' (fun i => (hnormal i).le) hbaseline',
-    hbaseline', horizontalProjection_upperPolygon _ _ _ _ hbaseline', ?_⟩
-  intro i
-  apply support_upperPolygon_of_interval_subset normal height ?_ ⟨(r, e), hface⟩ hexact i
-  intro x hx
-  exact ⟨hx.1, by linarith [hx.2, hε.1]⟩
+  obtain ⟨δ, hδ, hball⟩ := Metric.eventually_nhds_iff.1
+    (eventually_baseline hnormal he ((mem_upperPolygon_iff _ _ _ _ _).mp hface).2.2)
+  refine ⟨δ, hδ, fun ε hε => enlarged le_rfl (by linarith [hε.1]) hlr hnormal
+    (fun x hx i => baseline_halfspace_of_endpoints (hbaseline l ⟨le_rfl, hlr⟩ i)
+      (hball (by simpa [Real.dist_eq, abs_of_nonneg hε.1] using hε.2) i) hx) ⟨_, hface⟩ hexact⟩
 
 /-- The left endpoint has the same positive-face justification, with its
 actual coordinate moving at speed minus one. -/
@@ -115,39 +101,12 @@ theorem exists_left_axis_variation [Fintype ι] {l r e : ℝ}
       (∀ x ∈ Icc (l - ε) r, ∀ i, coordDot (x, 0) (normal i) ≤ height i) ∧
       horizontalProjection (upperPolygon (l - ε) r normal height) = Icc (l - ε) r ∧
       ∀ i, support (upperPolygon (l - ε) r normal height) (normal i) = height i := by
-  have hfacehalf := ((mem_upperPolygon_iff _ _ _ _ _).mp hface).2.2
-  have hstrict : ∀ i, coordDot (l, e / 2) (normal i) < height i := by
-    intro i
-    have h := hfacehalf i
-    unfold coordDot at h ⊢
-    nlinarith [mul_pos he (hnormal i)]
-  have hnear : ∀ᶠ ε : ℝ in 𝓝 0,
-      ∀ i, coordDot (l - ε, e / 2) (normal i) < height i := by
-    apply eventually_all.mpr
-    intro i
-    have hc : Continuous (fun ε : ℝ => coordDot (l - ε, e / 2) (normal i)) := by
-      unfold coordDot
-      fun_prop
-    exact hc.continuousAt (Iio_mem_nhds (by simpa only [sub_zero] using hstrict i))
-  obtain ⟨δ, hδ, hball⟩ := Metric.mem_nhds_iff.mp hnear
-  refine ⟨δ, hδ, ?_⟩
-  intro ε hε
-  have hεball : ε ∈ Metric.ball (0 : ℝ) δ := by
-    simpa only [Metric.mem_ball, Real.dist_eq, sub_zero, abs_of_nonneg hε.1] using hε.2
-  have hnew := hball hεball
-  have hbaseline' : ∀ x ∈ Icc (l - ε) r, ∀ i, coordDot (x, 0) (normal i) ≤ height i := by
-    intro x hx i
-    apply baseline_halfspace_of_endpoints ?_ (hbaseline r ⟨hlr, le_rfl⟩ i) hx
-    have h := hnew i
-    unfold coordDot at h ⊢
-    nlinarith [mul_pos he (hnormal i)]
-  have hlr' : l - ε ≤ r := by linarith [hε.1]
-  refine ⟨isDownwardCap_upperPolygon _ _ _ _ hlr' (fun i => (hnormal i).le) hbaseline',
-    hbaseline', horizontalProjection_upperPolygon _ _ _ _ hbaseline', ?_⟩
-  intro i
-  apply support_upperPolygon_of_interval_subset normal height ?_ ⟨(l, e), hface⟩ hexact i
-  intro x hx
-  exact ⟨by linarith [hx.1, hε.1], hx.2⟩
+  obtain ⟨δ, hδ, hball⟩ := Metric.eventually_nhds_iff.1
+    (eventually_baseline hnormal he ((mem_upperPolygon_iff _ _ _ _ _).mp hface).2.2)
+  refine ⟨δ, hδ, fun ε hε => enlarged (by linarith [hε.1]) le_rfl hlr hnormal
+    (fun x hx i => baseline_halfspace_of_endpoints
+      (hball (by simpa [Real.dist_eq, abs_of_nonneg hε.1] using hε.2) i)
+      (hbaseline r ⟨hlr, le_rfl⟩ i) hx) ⟨_, hface⟩ hexact⟩
 
 /-- The actual upper-system expression for the unchanged finite barrier. -/
 def barrierEnvelope (normal : ι → Plane) (height : ι → ℝ)

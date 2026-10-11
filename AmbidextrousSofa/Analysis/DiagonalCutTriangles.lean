@@ -32,34 +32,23 @@ theorem integral_affineCutTriangle_full {k δ p A B : ℝ}
     (hleft : δ ≤ k * (p - A)) (hright : δ ≤ (1 - k) * (B - p)) :
     (∫ x in A..B, affineCutTriangle k δ p x) = δ ^ 2 / (2 * k * (1 - k)) := by
   have hj : 0 < 1 - k := sub_pos.mpr hk1
-  have hl : A ≤ p - δ / k := by
-    have h := (div_le_iff₀' hk).mpr hleft
-    linarith
-  have hr : p + δ / (1 - k) ≤ B := by
-    have h := (div_le_iff₀' hj).mpr hright
-    linarith
-  have hwidth : 0 ≤ (p + δ / (1 - k)) - (p - δ / k) := by
-    linarith [div_nonneg hδ hk.le, div_nonneg hδ hj.le]
   have hfun (x : ℝ) : affineCutTriangle k δ p x =
-      max (min (k * (x - (p - δ / k)))
-        ((1 - k) * ((p + δ / (1 - k)) - x))) 0 := by
+      max (min (k * (x - (p - δ / k))) ((1 - k) * ((p + δ / (1 - k)) - x))) 0 := by
     unfold affineCutTriangle
-    congr 2 <;> field_simp [hk.ne', hj.ne'] <;> ring
+    congr 2 <;> field_simp <;> ring
   simp_rw [hfun]
-  rw [integral_positive_asymmetric_tent_full hk hj hl hr, max_eq_left hwidth]
-  field_simp [hk.ne', hj.ne'] <;> ring
+  rw [integral_positive_asymmetric_tent_full hk hj
+    (by linarith [(div_le_iff₀' hk).mpr hleft]) (by linarith [(div_le_iff₀' hj).mpr hright]),
+    max_eq_left (by linarith [div_nonneg hδ hk.le, div_nonneg hδ hj.le])]
+  field_simp
+  ring
 
 theorem affineCutTriangle_le_roof_gap {k δ p H x y : ℝ}
     (hbase : y ≤ min H (H + p - x))
     (hcut : y ≤ H + k * p - δ - k * x) :
-    affineCutTriangle k δ p x ≤ min H (H + p - x) - y := by
-  have hid : min (δ + k * (x - p)) (δ - (1 - k) * (x - p)) =
-      min H (H + p - x) - (H + k * p - δ - k * x) := by
-    rw [← min_sub_sub_right]
-    congr 1 <;> ring
-  unfold affineCutTriangle
-  rw [hid]
-  exact max_le (by linarith) (sub_nonneg.mpr hbase)
+    affineCutTriangle k δ p x ≤ min H (H + p - x) - y :=
+  max_le ((min_le_min (by linarith : _ ≤ H - y) (by linarith : _ ≤ H + p - x - y)).trans_eq
+    (min_sub_sub_right _ _ _)) (sub_nonneg.mpr hbase)
 
 /-- Both literal roof gaps pay for any two weaker complete support
 cuts. In particular, the zero cut on the opposite wing is allowed. -/
@@ -84,59 +73,41 @@ theorem IsDownwardCap.diagonalRoofDeficit_ge_near_cuts {U : Set Plane}
       rw [intervalIntegral.integral_comp_neg]
       simpa only [neg_div, neg_neg] using integral_affineCutTriangle_full hk hk1 hδL0 hLin hLout
     rw [← hint]
-    apply intervalIntegral.integral_mono_on (by linarith)
+    refine intervalIntegral.integral_mono_on (by linarith)
       (((continuous_affineCutTriangle k δL v).comp continuous_neg).intervalIntegrable _ _)
-      (((show Continuous (fun x : ℝ => min (1 - h) (1 - h + v + x)) by
-        fun_prop).intervalIntegrable _ _).sub (hU.intervalIntegrable_capRoof _ _))
-    intro x hx
-    have hxU : x ∈ horizontalProjection U := by rw [hproj]; exact ⟨hx.1, by linarith [hx.2]⟩
-    have hbase : capRoof U x ≤ min (1 - h) (1 - h + v + x) := by
-      apply le_min (hU.left_roof_le_middle_height ha hh hl hr hleft hright x hx)
-      have h := hU.capRoof_le_diagonalLeft hxU
-      rw [hv] at h
-      exact h
-    have hcut := hU.capRoof_le_nearDiagonalLeft h k v hxU
-    simpa only [sub_neg_eq_add, mul_neg, Function.comp_apply] using
-      (affineCutTriangle_le_roof_gap (k := k) (δ := δL) (p := v) (H := 1 - h)
-        (x := -x) (y := capRoof U x) (by simpa only [sub_neg_eq_add] using hbase)
-        (by nlinarith))
+      ((Continuous.intervalIntegrable (by fun_prop) _ _).sub (hU.intervalIntegrable_capRoof _ _))
+      fun x hx => ?_
+    have hxU : x ∈ horizontalProjection U := hproj ▸ ⟨hx.1, by linarith [hx.2]⟩
+    have h1 := hU.capRoof_le_nearDiagonalLeft h k v hxU
+    have h2 := hU.capRoof_le_diagonalLeft hxU
+    simpa only [sub_neg_eq_add, Function.comp_apply] using affineCutTriangle_le_roof_gap
+      (k := k) (δ := δL) (p := v) (H := 1 - h) (x := -x)
+      (le_min (hU.left_roof_le_middle_height ha hh hl hr hleft hright x hx) (by linarith))
+      (by linarith)
   have hR : δR ^ 2 / (2 * k * (1 - k)) ≤
       ∫ x in (a / 2)..a, min 1 (1 + u - x) - capRoof U x := by
     rw [← integral_affineCutTriangle_full hk hk1 hδR0 hRin hRout]
-    apply intervalIntegral.integral_mono_on (by linarith)
+    refine intervalIntegral.integral_mono_on (by linarith)
       ((continuous_affineCutTriangle k δR u).intervalIntegrable _ _)
-      (((show Continuous (fun x : ℝ => min 1 (1 + u - x)) by
-        fun_prop).intervalIntegrable _ _).sub (hU.intervalIntegrable_capRoof _ _))
-    intro x hx
-    have hxU : x ∈ horizontalProjection U := by rw [hproj]; exact ⟨by linarith [hx.1], hx.2⟩
-    have hbase : capRoof U x ≤ min 1 (1 + u - x) := by
-      apply le_min (capRoof_le_one hU.isCompact hU.inStrip x)
-      have h := hU.capRoof_le_diagonalRight hxU
-      rw [hu] at h
-      exact h
-    have hcut := hU.capRoof_le_nearDiagonalRight k u hxU
-    exact affineCutTriangle_le_roof_gap hbase (by linarith)
-  unfold diagonalRoofDeficit
-  rw [add_div]
-  exact add_le_add hL hR
+      ((Continuous.intervalIntegrable (by fun_prop) _ _).sub (hU.intervalIntegrable_capRoof _ _))
+      fun x hx => ?_
+    have hxU : x ∈ horizontalProjection U := hproj ▸ ⟨by linarith [hx.1], hx.2⟩
+    have h1 := hU.capRoof_le_nearDiagonalRight k u hxU
+    have h2 := hU.capRoof_le_diagonalRight hxU
+    exact affineCutTriangle_le_roof_gap
+      (le_min (capRoof_le_one hU.isCompact hU.inStrip x) (by linarith)) (by linarith)
+  exact (add_div _ _ _).trans_le (add_le_add hL hR)
 
 theorem short_outer_cut_area_gt {k z : ℝ} (hk0 : 2 / 5 < k) (hk1 : k < 1)
     (hksq : k ^ 2 + 2 * k = 1) (hz : 23 / 200 < z) :
     (9 / 1000 : ℝ) < ((1 - k) * z) ^ 2 / (2 * k * (1 - k)) := by
   have hk : 0 < k := by linarith
   have hj : 0 < 1 - k := sub_pos.mpr hk1
-  have hcoef : (1 - k) / (2 * k) = (1 + k) / 2 := by
-    apply (div_eq_iff (by positivity : 2 * k ≠ 0)).mpr
-    nlinarith
-  have heq : ((1 - k) * z) ^ 2 / (2 * k * (1 - k)) = (1 + k) / 2 * z ^ 2 := by
-    calc
-      _ = ((1 - k) / (2 * k)) * z ^ 2 := by field_simp [hk.ne', hj.ne'] <;> ring
-      _ = _ := by rw [hcoef]
-  rw [heq]
-  have hz0 : 0 < z := by linarith
-  have hzsq : (23 / 200 : ℝ) ^ 2 < z ^ 2 := by nlinarith [sq_nonneg (z - 23 / 200)]
-  have hprod := mul_nonneg (show 0 ≤ k - 2 / 5 by linarith) (sq_nonneg z)
-  nlinarith
+  rw [show ((1 - k) * z) ^ 2 / (2 * k * (1 - k)) = (1 + k) / 2 * z ^ 2 by
+    field_simp
+    linear_combination -hksq]
+  linarith [mul_nonneg (sub_nonneg.mpr hk0.le) (sq_nonneg z),
+    pow_lt_pow_left₀ hz (by norm_num) two_ne_zero]
 
 /-- The small actual exterior deficit rules out outer clipping on either
 wing. The two complete literal triangles then add without overlap. -/
@@ -155,23 +126,20 @@ theorem IsDownwardCap.short_diagonal_cut_payment {U : Set Plane}
       (nearDiagonalLeftDeficit U h k v ^ 2 + nearDiagonalRightDeficit U k u ^ 2) /
         (2 * k * (1 - k)) ≤ diagonalRoofDeficit U a h u v := by
   have hk : 0 < k := by linarith
-  have hj : 0 < 1 - k := sub_pos.mpr hk1
-  have hL0 : 0 ≤ (1 - k) * (a - v) := mul_nonneg hj.le (by linarith)
-  have hR0 : 0 ≤ (1 - k) * (a - u) := mul_nonneg hj.le (by linarith)
+  have hL0 : 0 ≤ (1 - k) * (a - v) := mul_nonneg (by linarith) (by linarith)
+  have hR0 : 0 ≤ (1 - k) * (a - u) := mul_nonneg (by linarith) (by linarith)
   have hLout : nearDiagonalLeftDeficit U h k v ≤ (1 - k) * (a - v) := by
-    by_contra hbad
+    by_contra! hbad
     have hcut := hU.diagonalRoofDeficit_ge_near_cuts ha hh hk hk1 hl hr hleft hright hu hv
-      hL0 (le_refl (0 : ℝ)) (le_of_not_ge hbad) hR.1
-      ((le_of_not_ge hbad).trans hL.2) le_rfl (hR.1.trans hR.2) hR0
-    simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, add_zero] at hcut
-    exact (not_lt_of_ge hcut) ((short_outer_cut_area_gt hk0 hk1 hksq hvu).trans' hD)
+      hL0 le_rfl hbad.le hR.1 (hbad.le.trans hL.2) le_rfl (hR.1.trans hR.2) hR0
+    rw [zero_pow two_ne_zero, add_zero] at hcut
+    linarith [short_outer_cut_area_gt hk0 hk1 hksq hvu]
   have hRout : nearDiagonalRightDeficit U k u ≤ (1 - k) * (a - u) := by
-    by_contra hbad
+    by_contra! hbad
     have hcut := hU.diagonalRoofDeficit_ge_near_cuts ha hh hk hk1 hl hr hleft hright hu hv
-      (le_refl (0 : ℝ)) hR0 hL.1 (le_of_not_ge hbad)
-      (hL.1.trans hL.2) hL0 ((le_of_not_ge hbad).trans hR.2) le_rfl
-    simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_add] at hcut
-    exact (not_lt_of_ge hcut) ((short_outer_cut_area_gt hk0 hk1 hksq huu).trans' hD)
+      le_rfl hR0 hL.1 hbad.le (hL.1.trans hL.2) hL0 (hbad.le.trans hR.2) le_rfl
+    rw [zero_pow two_ne_zero, zero_add] at hcut
+    linarith [short_outer_cut_area_gt hk0 hk1 hksq huu]
   exact ⟨hLout, hRout, hU.diagonalRoofDeficit_ge_near_cuts ha hh hk hk1 hl hr hleft hright
     hu hv hL.1 hR.1 le_rfl le_rfl hL.2 hLout hR.2 hRout⟩
 

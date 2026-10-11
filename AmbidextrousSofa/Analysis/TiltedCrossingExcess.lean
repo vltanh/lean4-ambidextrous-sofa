@@ -55,97 +55,57 @@ theorem fullTiltedSupportQuarterPair_first_zero_excess_stops_early {C h A : ℝ}
     q A - 1 < 19 / 100 ∧
       Analysis.quadraticExcessLength (q A - 1) < 1 / 3 ∧
       A + Analysis.quadraticExcessLength (q A - 1) < 11 / 15 := by
-  let B : ℝ := capRoof U (horizontalRight U) - 1 + h
-  have hmid : middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
-    rw [middleHalfInterval, hl, hr]
-    congr 1 <;> ring
-  have haff := haffine
-  rw [hmid] at haff
-  obtain ⟨hBlo, hBhi, hBupper, hBlower⟩ := hU.tilted_endpoint_momentum_bounds
-    hl hr (by linarith only [hC0]) hC1.le hh0.le hh1 hm hheight haff hlow hhigh
-  change -7 / 12 < B at hBlo
-  change B < 7 / 40 at hBhi
-  change B ≤ -1 / 4 + 5 * h / 4 at hBupper
-  change h ≤ 1 / 8 → -7 / 12 + 3 * h / 2 ≤ B at hBlower
+  obtain ⟨hBlo, hBhi, hBupper, hBlower⟩ := hU.tilted_endpoint_momentum_bounds hl hr
+    (by linarith only [hC0]) hC1.le hh0.le hh1 hm hheight (fun x hx => haffine x (by
+      rw [middleHalfInterval, hl, hr]; constructor <;> linarith only [hx.1, hx.2])) hlow hhigh
+  obtain ⟨τ, hτ, hphase, -, hpc, hqc, -, -, hstop⟩ :=
+    fullTiltedSupportQuarterPair_exists_initial_stopping_circle
+      hU hm haffine hρ hρ0 hρK heq hl hr (by linarith only [hC0]) hmpos hsmall hh0 hheight hhigh
+      hlow hκ
+  set B := capRoof U (horizontalRight U) - 1 + h
+  replace hpc := hpc ⟨hτ.1.le, le_rfl⟩
+  replace hqc := hqc ⟨hτ.1.le, le_rfl⟩
   have hd0 : 2 ≤ 3 * C := by linarith only [hC0]
   have hd1 : 3 * C < 111 / 50 := by linarith only [hC1]
   have hAd : A ≤ 3 * C := by linarith only [hA.2, Real.pi_lt_four, hd0]
-  have hh2 : h ≤ 2 := by linarith only [hh1]
   have hε : 0 ≤ q A - 1 := by linarith only [hqA]
-  have hquadB : 0 ≤ 1 + B - 3 * C * A + A ^ 2 / 2 := by
-    dsimp only [B]
-    linarith only [hquad]
-  obtain ⟨τ, hτ, hphase, _hzero, hpcircle, hqcircle, _hDcircle, _hqτ, hstop⟩ :=
-    fullTiltedSupportQuarterPair_exists_initial_stopping_circle
-      hU hm haffine hρ hρ0 hρK heq hl hr (by linarith only [hC0]) hmpos hsmall
-      hh0 hheight hhigh hlow hκ
-  have hτmem : τ ∈ Icc (0 : ℝ) τ := ⟨hτ.1.le, le_rfl⟩
-  have hpc : p τ = Analysis.initialFloorCircleP (3 * C) B τ := hpcircle hτmem
-  have hqc : q τ = Analysis.initialFloorCircleQ (3 * C) B τ := hqcircle hτmem
-  have hτA : τ ≤ A := by
-    by_contra hnot
-    have hpos := (hphase A ⟨hA.1.le, lt_of_not_ge hnot⟩).1
-    linarith only [hpos, hpA]
-  by_cases hτeq : τ = A
-  · rw [hτeq] at hpc hqc
-    have hbounds := Analysis.initial_circle_excess_bounds hd0 hd1 hBlo hBhi hA
-      (hpc.symm.trans hpA) (by rw [← hqc]; exact hqA)
-    rw [← hqc] at hbounds
-    exact ⟨by linarith only [hbounds.2.2.1], by linarith only [hbounds.2.2.2],
-      by linarith only [hbounds.2.1, hbounds.2.2.2]⟩
-  have hτltA : τ < A := lt_of_le_of_ne hτA hτeq
-  have hpτ : 0 < p τ := hpbefore τ ⟨hτ.1.le, hτltA⟩
-  have hfloor : τ = Analysis.initialFloorAngle h :=
-    hstop.resolve_left (ne_of_gt hpτ)
-  have hpfloor : 0 < 1 + B * (1 - h) - 3 * C * Analysis.initialFloorSine h := by
-    have hpositive : 0 < Analysis.initialFloorCircleP (3 * C) B τ := by
-      rw [← hpc]
-      exact hpτ
-    rwa [hfloor, Analysis.initialFloorCircleP,
-      Analysis.cos_initialFloorAngle hh0.le hh2, Analysis.sin_initialFloorAngle] at hpositive
-  have hhsmall : h < 1 / 8 := Analysis.initial_floor_positive_forces_small_tilt
-    hd0 hh0.le hh1.le (by linarith only [hBupper]) hpfloor
+  have hτA : τ ≤ A := not_lt.1 fun hAτ => by linarith only [(hphase A ⟨hA.1.le, hAτ⟩).1, hpA]
+  rcases hτA.eq_or_lt with rfl | hτA
+  · have hb := Analysis.initial_circle_excess_bounds hd0 hd1 hBlo hBhi hA
+      (hpc.symm.trans hpA) (hqc ▸ hqA)
+    rw [← hqc] at hb
+    exact ⟨by linarith only [hb.2.2.1], by linarith only [hb.2.2.2],
+      by linarith only [hb.2.1, hb.2.2.2]⟩
+  have hpτ : 0 < p τ := hpbefore τ ⟨hτ.1.le, hτA⟩
+  have hfloor : τ = Analysis.initialFloorAngle h := hstop.resolve_left hpτ.ne'
+  have hhsmall : h < 1 / 8 := Analysis.initial_floor_positive_forces_small_tilt (B := B) hd0
+    hh0.le hh1.le (by linarith only [hBupper]) (by
+      rwa [hpc, hfloor, Analysis.initialFloorCircleP, Analysis.cos_initialFloorAngle hh0.le
+        (by linarith only [hh1]), Analysis.sin_initialFloorAngle] at hpτ)
   have hEA : clippedCornerEnergy p q A = 1 / 4 + (q A + 1) ^ 2 := by
-    unfold clippedCornerEnergy
-    rw [hpA]
+    rw [clippedCornerEnergy, hpA]
     norm_num
-  have hEAhigh : 17 / 4 < clippedCornerEnergy p q A := by
-    rw [hEA]
-    have hprod := mul_pos (show 0 < q A - 1 by linarith only [hqA])
-      (show 0 < q A + 3 by linarith only [hqA])
-    nlinarith only [hprod]
-  have hdecrease : clippedCornerEnergy p q A ≤ clippedCornerEnergy p q τ := by
-    have hbarrier := fullTiltedSupportQuarterPair_energy_le_max_from
-      hU hm haffine hρ hρ0 hρK heq hl hr (by linarith only [hC0]) hsmall
-      hheight hhigh hκ ⟨hτ.1.le, hτ.2.le⟩ ⟨hτA, hA.2.le⟩
-    rcases le_max_iff.mp hbarrier with hbad | hgood
-    · exact False.elim (not_le_of_gt hEAhigh hbad)
-    · exact hgood
-  have hfloorE : clippedCornerEnergy p q τ ≤
-      Analysis.initialFloorTest (3 * C) B h + 1 / 4 := by
-    apply (clippedCornerEnergy_le_initialFloorEnergy p q τ).trans_eq
-    rw [hpc, hqc, hfloor, Analysis.initialFloorCircle_energy_at_floor hh0.le hh2]
-    unfold Analysis.initialFloorTest
+  have hdecrease := (le_max_iff.1 (fullTiltedSupportQuarterPair_energy_le_max_from
+    hU hm haffine hρ hρ0 hρK heq hl hr (by linarith only [hC0]) hsmall hheight hhigh hκ
+    ⟨hτ.1.le, hτ.2.le⟩ ⟨hτA.le, hA.2.le⟩)).resolve_left
+    (by rw [hEA]; nlinarith only [hqA])
+  have hfloorE : clippedCornerEnergy p q τ ≤ Analysis.initialFloorTest (3 * C) B h + 1 / 4 := by
+    refine (clippedCornerEnergy_le_initialFloorEnergy p q τ).trans_eq ?_
+    rw [hpc, hqc, hfloor, Analysis.initialFloorTest,
+      Analysis.initialFloorCircle_energy_at_floor hh0.le (by linarith only [hh1])]
     ring
   have henergy : (2 + (q A - 1)) ^ 2 ≤ Analysis.initialFloorTest (3 * C) B h := by
-    have h := hdecrease.trans hfloorE
-    rw [hEA] at h
-    nlinarith only [h]
-  by_cases hhcut : 1 / 25 ≤ h
-  · have htest := Analysis.initial_floor_test_medium_tilt_le (B := B) hd0 hd1.le hhcut hhsmall.le
-      (by linarith only [hBlower hhsmall.le]) (by linarith only [hBupper])
-    have hquad' : 0 ≤ 29 / 32 - 3 * C * A + A ^ 2 / 2 := by
-      linarith only [hquadB, hBupper, hhsmall]
-    obtain ⟨hεbound, _hAbound, hell, hend⟩ := Analysis.medium_tilt_excess_stops_early
-      hd0 hε hAd (henergy.trans htest) hquad'
+    linarith only [hdecrease, hfloorE, hEA]
+  have hquad' : 0 ≤ 1 + B - 3 * C * A + A ^ 2 / 2 := by linarith only [hquad]
+  rcases le_or_gt (1 / 25) h with hhcut | hhcut
+  · obtain ⟨hεbound, -, hell, hend⟩ := Analysis.medium_tilt_excess_stops_early hd0 hε hAd
+      (henergy.trans (Analysis.initial_floor_test_medium_tilt_le hd0 hd1.le hhcut hhsmall.le
+        (by linarith only [hBlower hhsmall.le]) (by linarith only [hBupper])))
+      (by linarith only [hquad', hBupper, hhsmall])
     exact ⟨by linarith only [hεbound], by linarith only [hell], hend⟩
-  · have hhcut' : h ≤ 1 / 25 := le_of_not_ge hhcut
-    have hBsmall : B ≤ -1 / 5 := by linarith only [hBupper, hhcut']
-    have htest := Analysis.initial_floor_test_small_tilt_le hd0 hh0.le hhcut' hBlo.le hBsmall
-    have hquad' : 0 ≤ 4 / 5 - 3 * C * A + A ^ 2 / 2 := by
-      linarith only [hquadB, hBsmall]
-    exact Analysis.small_tilt_excess_stops_early hd0 hd1.le hε hAd
-      (henergy.trans htest) hquad'
+  · exact Analysis.small_tilt_excess_stops_early hd0 hd1.le hε hAd
+      (henergy.trans (Analysis.initial_floor_test_small_tilt_le hd0 hh0.le hhcut.le hBlo.le
+        (by linarith only [hBupper, hhcut]))) (by linarith only [hquad', hBupper, hhcut])
 
 end ActualPair
 

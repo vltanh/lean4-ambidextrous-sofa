@@ -26,79 +26,46 @@ theorem IsDownwardCap.threeAngle_diagonal_floor {U : Set Plane}
   have hbound := diagonalBarrier_le_threeAngleBarrier U x
   rw [diagonalBarrier, cornerWall, firstWall_pi_div_four_eq_diagonal hU,
     secondWall_pi_div_four_eq_diagonal hU, hu, hv] at hbound
-  have hsqrt : Real.sqrt 2 = k + 1 := by linarith only [hk]
-  rw [hsqrt] at hbound
-  convert hbound using 1 <;> congr 2 <;> ring
+  convert hbound using 3 <;> linarith
 
-theorem IsDownwardCap.wide_near_right_corner_le {U : Set Plane}
-    (hU : IsDownwardCap U) {a k : ℝ} (hk : 0 < k)
-    (hr : horizontalRight U = a) (x : ℝ) :
-    min (wideNearRightIntercept U k + k * x)
-      (wideEndpointIntercept a (capRoof U a) k - x / k) ≤
-        cornerWall U (Real.arctan k) x := by
-  have hx : a ∈ horizontalProjection U := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hr]
-    exact ⟨by rw [← hr]; exact horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact, le_rfl⟩
-  have hs := coordDot_le_support hU.isCompact (capRoof_mem hU.isCompact hx) (1, k)
-  simp only [coordDot, mul_one] at hs
-  have hcomp : wideEndpointIntercept a (capRoof U a) k - x / k ≤ firstWall U (Real.arctan k) x := by
-    rw [hU.firstWall_arctan hk.ne']
-    unfold wideEndpointIntercept
-    apply (le_div_iff₀ hk).mpr
-    have hmul : (capRoof U a + (a - nearDiagonalNorm k) / k - x / k) * k =
-        a + capRoof U a * k - nearDiagonalNorm k - x := by field_simp [hk.ne'] <;> ring
-    rw [hmul]
-    linarith only [hs]
-  have hsecond : wideNearRightIntercept U k + k * x = secondWall U (Real.arctan k) x := by
-    rw [hU.secondWall_arctan]
-    rfl
-  rw [hsecond, cornerWall,
-    min_comm (secondWall U (Real.arctan k) x) (wideEndpointIntercept a (capRoof U a) k - x / k)]
-  exact min_le_min hcomp le_rfl
-
-theorem IsDownwardCap.wide_near_left_corner_le {U : Set Plane}
-    (hU : IsDownwardCap U) {a k : ℝ} (hk : 0 < k)
-    (hl : horizontalLeft U = -a) (x : ℝ) :
-    min (wideNearLeftIntercept U k + k * x)
-      (wideEndpointIntercept a (capRoof U (-a)) k - x / k) ≤
-        cornerWall U (Real.pi / 2 - Real.arctan k) (-x) := by
-  have hx : -a ∈ horizontalProjection U := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hl]
-    exact ⟨le_rfl, by rw [← hl]; exact horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact⟩
-  have hs := coordDot_le_support hU.isCompact (capRoof_mem hU.isCompact hx) (-1, k)
-  simp only [coordDot, mul_neg_one, neg_neg] at hs
-  have hcomp : wideEndpointIntercept a (capRoof U (-a)) k - x / k ≤
-      secondWall U (Real.pi / 2 - Real.arctan k) (-x) := by
-    rw [hU.secondWall_complement_arctan hk.ne']
-    unfold wideEndpointIntercept
-    apply (le_div_iff₀ hk).mpr
-    have hmul : (capRoof U (-a) + (a - nearDiagonalNorm k) / k - x / k) * k =
-        a + capRoof U (-a) * k - nearDiagonalNorm k - x := by field_simp [hk.ne'] <;> ring
-    rw [hmul]
-    linarith only [hs]
-  have hfirst : wideNearLeftIntercept U k + k * x =
-      firstWall U (Real.pi / 2 - Real.arctan k) (-x) := by
-    rw [hU.firstWall_complement_arctan]
-    unfold wideNearLeftIntercept
-    ring
-  rw [hfirst, cornerWall]
-  exact min_le_min le_rfl hcomp
+/-- The diagonal floor below the three-angle barrier, and its reflection. -/
+private theorem IsDownwardCap.threeAngle_floors {U : Set Plane} (hU : IsDownwardCap U)
+    {k u v : ℝ} (hkoffset : k = Real.sqrt 2 - 1) (hu : diagonalRight U = 1 + u)
+    (hv : diagonalLeft U = 1 + v) (x : ℝ) :
+    max (min (u - k - x) (v - k + x)) 0 ≤ threeAngleBarrier U x ∧
+      max (min (v - k - x) (u - k + x)) 0 ≤ threeAngleBarrier U (-x) := by
+  have h (y : ℝ) := hU.threeAngle_diagonal_floor (h := 0) hkoffset hu (by rwa [sub_zero]) y
+  exact ⟨by simpa using h x, by simpa [min_comm, sub_eq_add_neg] using h (-x)⟩
 
 theorem IsDownwardCap.wide_near_right_le_threeAngleBarrier {U : Set Plane}
     (hU : IsDownwardCap U) {a k : ℝ} (hk : 0 < k) (hkoffset : k = Real.sqrt 2 - 1)
     (hr : horizontalRight U = a) (x : ℝ) :
     min (wideNearRightIntercept U k + k * x)
-      (wideEndpointIntercept a (capRoof U a) k - x / k) ≤ threeAngleBarrier U x :=
-  (hU.wide_near_right_corner_le hk hr x).trans
-    (by simpa only [hkoffset] using first_corner_le_threeAngleBarrier U x)
+      (wideEndpointIntercept a (capRoof U a) k - x / k) ≤ threeAngleBarrier U x := by
+  have hs := coordDot_le_support hU.isCompact
+    (capRoof_mem hU.isCompact (hr ▸ horizontalRight_mem hU.nonempty hU.isCompact)) (1, k)
+  simp only [coordDot] at hs
+  refine le_trans ?_ (hkoffset ▸ first_corner_le_threeAngleBarrier U x)
+  rw [cornerWall, min_comm (firstWall _ _ _)]
+  refine min_le_min (hU.secondWall_arctan k x).ge ?_
+  rw [hU.firstWall_arctan hk.ne', wideEndpointIntercept, le_div_iff₀ hk, sub_mul, add_mul,
+    div_mul_cancel₀ _ hk.ne', div_mul_cancel₀ _ hk.ne']
+  linarith
 
 theorem IsDownwardCap.wide_near_left_le_threeAngleBarrier {U : Set Plane}
     (hU : IsDownwardCap U) {a k : ℝ} (hk : 0 < k) (hkoffset : k = Real.sqrt 2 - 1)
     (hl : horizontalLeft U = -a) (x : ℝ) :
     min (wideNearLeftIntercept U k + k * x)
-      (wideEndpointIntercept a (capRoof U (-a)) k - x / k) ≤ threeAngleBarrier U (-x) :=
-  (hU.wide_near_left_corner_le hk hl x).trans
-    (by simpa only [hkoffset] using last_corner_le_threeAngleBarrier U (-x))
+      (wideEndpointIntercept a (capRoof U (-a)) k - x / k) ≤ threeAngleBarrier U (-x) := by
+  have hs := coordDot_le_support hU.isCompact
+    (capRoof_mem hU.isCompact (hl ▸ horizontalLeft_mem hU.nonempty hU.isCompact)) (-1, k)
+  simp only [coordDot] at hs
+  refine le_trans ?_ (hkoffset ▸ last_corner_le_threeAngleBarrier U (-x))
+  rw [cornerWall, hU.firstWall_complement_arctan, hU.secondWall_complement_arctan hk.ne']
+  refine min_le_min (le_of_eq (by rw [wideNearLeftIntercept]; ring)) ?_
+  rw [wideEndpointIntercept, le_div_iff₀ hk, sub_mul, add_mul, div_mul_cancel₀ _ hk.ne',
+    div_mul_cancel₀ _ hk.ne']
+  linarith
 
 theorem symmetric_barrier_gain_integral {n : ℝ → ℝ} {a k u v gR gL : ℝ}
     (hn : ∀ l r, IntervalIntegrable n volume l r)
@@ -110,39 +77,20 @@ theorem symmetric_barrier_gain_integral {n : ℝ → ℝ} {a k u v gR gL : ℝ}
     (max ((u + v) / 2 - k) 0) ^ 2 - (max (u - k - a / 2) 0) ^ 2 / 2 -
       (max (v - k - a / 2) 0) ^ 2 / 2 + gR + gL ≤
         ∫ x in (-a / 2)..(a / 2), n x := by
-  let d := (u - v) / 2
-  let f : ℝ → ℝ := fun x => n x - max (min (u - k - x) (v - k + x)) 0
-  have hleftInt :
-      (∫ x in ((v - u) / 2)..(a / 2), n (-x) - max (min (v - k - x) (u - k + x)) 0) =
-        ∫ x in (-a / 2)..d, f x := by
-    have hfun (x : ℝ) : n (-x) - max (min (v - k - x) (u - k + x)) 0 = f (-x) := by
-      dsimp [f]
-      rw [min_comm]
-      congr 3 <;> ring
-    simp_rw [hfun]
-    rw [intervalIntegral.integral_comp_neg]
-    congr 1 <;> (try dsimp only [d]) <;> ring
-  rw [hleftInt] at hL
-  change gR ≤ ∫ x in d..(a / 2), f x at hR
-  have hf : ∀ l r, IntervalIntegrable f volume l r := fun l r =>
-    (hn l r).sub ((show Continuous (fun x : ℝ => max (min (u - k - x) (v - k + x)) 0)
-      by fun_prop).intervalIntegrable l r)
-  have hadd := intervalIntegral.integral_add_adjacent_intervals (hf (-a / 2) d) (hf d (a / 2))
-  have hdiag : (∫ x in (-a / 2)..(a / 2), max (min (u - k - x) (v - k + x)) 0) =
-      (max ((u + v) / 2 - k) 0) ^ 2 - (max (u - k - a / 2) 0) ^ 2 / 2 -
-        (max (v - k - a / 2) 0) ^ 2 / 2 := by
-    simpa only [sub_zero] using integral_tilted_diagonal_tent k (h := 0)
-      (show (u - v + 0) / 2 ∈ Icc (-a / 2) (a / 2) by simpa only [add_zero] using hd)
-  have hwhole : (∫ x in (-a / 2)..(a / 2), f x) =
-      (∫ x in (-a / 2)..(a / 2), n x) -
-      ((max ((u + v) / 2 - k) 0) ^ 2 - (max (u - k - a / 2) 0) ^ 2 / 2 -
-        (max (v - k - a / 2) 0) ^ 2 / 2) := by
-    dsimp only [f]
-    rw [intervalIntegral.integral_sub (hn _ _)
-      ((show Continuous (fun x : ℝ => max (min (u - k - x) (v - k + x)) 0)
-        by fun_prop).intervalIntegrable _ _), hdiag]
-  rw [hwhole] at hadd
-  linarith only [hR, hL, hadd]
+  have htent : Continuous fun x => max (min (u - k - x) (v - k + x)) 0 := by fun_prop
+  have hrefl := intervalIntegral.integral_comp_neg (a := (v - u) / 2) (b := a / 2)
+    (fun x => n x - max (min (u - k - x) (v - k + x)) 0)
+  simp only [← neg_div, neg_sub, sub_neg_eq_add, ← sub_eq_add_neg] at hrefl
+  have hadd := intervalIntegral.integral_add_adjacent_intervals
+    ((hn (-a / 2) ((u - v) / 2)).sub (htent.intervalIntegrable _ _))
+    ((hn ((u - v) / 2) (a / 2)).sub (htent.intervalIntegrable _ _))
+  have hdiag := integral_tilted_diagonal_tent k (h := 0) (a := a) (u := u) (v := v)
+    (by rwa [add_zero])
+  simp only [sub_zero] at hdiag
+  rw [intervalIntegral.integral_sub (hn (-a / 2) (a / 2)) (htent.intervalIntegrable _ _),
+    hdiag] at hadd
+  simp only [min_comm] at hL
+  linarith
 
 theorem IsDownwardCap.threeAngle_integral_ge_full_triangles {U : Set Plane}
     (hU : IsDownwardCap U) {a k u v : ℝ}
@@ -158,28 +106,18 @@ theorem IsDownwardCap.threeAngle_integral_ge_full_triangles {U : Set Plane}
       (max (v - k - a / 2) 0) ^ 2 / 2 + fullTriangleNicheGain U a k u v -
         fullTriangleNicheFloorLoss U a k u v ≤
       ∫ x in (-a / 2)..(a / 2), threeAngleBarrier U x := by
-  let n := threeAngleBarrier U
-  have hn : ∀ l r, IntervalIntegrable n volume l r :=
-    (continuous_threeAngleBarrier U).intervalIntegrable
-  have hfloor (x : ℝ) : max (min (u - k - x) (v - k + x)) 0 ≤ n x := by
-    simpa only [sub_zero] using hU.threeAngle_diagonal_floor (h := 0) hkoffset hu
-      (by simpa only [sub_zero] using hv) x
-  have hnRef : ∀ l r, IntervalIntegrable (fun x => n (-x)) volume l r :=
-    ((continuous_threeAngleBarrier U).comp continuous_neg).intervalIntegrable
-  have hfloorRef (x : ℝ) : max (min (v - k - x) (u - k + x)) 0 ≤ n (-x) := by
-    have h := hfloor (-x)
-    have hid : min (u - k - -x) (v - k + -x) = min (v - k - x) (u - k + x) := by
-      rw [min_comm]
-      congr 1 <;> ring
-    rwa [hid] at h
-  have hR := fullTriangle_niche_gain_integral hk hksq hn hfloor
+  have hn := (continuous_threeAngleBarrier U).intervalIntegrable (μ := volume)
+  have hR := fullTriangle_niche_gain_integral hk hksq hn
+    (fun x => (hU.threeAngle_floors hkoffset hu hv x).1)
     (hU.wide_near_right_le_threeAngleBarrier hk hkoffset hr) hd.2 hcR hrR
-  have hL := fullTriangle_niche_gain_integral hk hksq hnRef hfloorRef
-    (hU.wide_near_left_le_threeAngleBarrier hk hkoffset hl)
-    (show (v - u) / 2 ≤ a / 2 by linarith only [hd.1])
-    (show (v - u) / 2 ≤ wideCrossing k v (wideNearLeftIntercept U k) by linarith only [hcL]) hrL
-  have h := symmetric_barrier_gain_integral hn hd hR hL
-  convert h using 1 <;> dsimp only [n, fullTriangleNicheGain, fullTriangleNicheFloorLoss] <;> ring
+  have hL := fullTriangle_niche_gain_integral (n := fun x => threeAngleBarrier U (-x)) hk hksq
+    ((continuous_threeAngleBarrier U).comp continuous_neg).intervalIntegrable
+    (fun x => (hU.threeAngle_floors hkoffset hu hv x).2)
+    (hU.wide_near_left_le_threeAngleBarrier hk hkoffset hl) (by linarith only [hd.1])
+    (by linarith only [hcL]) hrL
+  convert symmetric_barrier_gain_integral hn hd hR hL using 1
+  simp only [fullTriangleNicheGain, fullTriangleNicheFloorLoss]
+  ring
 
 theorem IsDownwardCap.threeAngle_integral_ge_wide_pieces {U : Set Plane}
     (hU : IsDownwardCap U) {a k u v : ℝ}
@@ -198,28 +136,16 @@ theorem IsDownwardCap.threeAngle_integral_ge_wide_pieces {U : Set Plane}
        (max (wideTruncatedGain k v (wideNearLeftIntercept U k)
           (wideEndpointIntercept a (capRoof U (-a)) k)) 0) ^ 2) / (2 * (1 + k)) ≤
       ∫ x in (-a / 2)..(a / 2), threeAngleBarrier U x := by
-  let n := threeAngleBarrier U
-  have hn : ∀ l r, IntervalIntegrable n volume l r :=
-    (continuous_threeAngleBarrier U).intervalIntegrable
-  have hfloor (x : ℝ) : max (min (u - k - x) (v - k + x)) 0 ≤ n x := by
-    simpa only [sub_zero] using hU.threeAngle_diagonal_floor (h := 0) hkoffset hu
-      (by simpa only [sub_zero] using hv) x
-  have hnRef : ∀ l r, IntervalIntegrable (fun x => n (-x)) volume l r :=
-    ((continuous_threeAngleBarrier U).comp continuous_neg).intervalIntegrable
-  have hfloorRef (x : ℝ) : max (min (v - k - x) (u - k + x)) 0 ≤ n (-x) := by
-    have h := hfloor (-x)
-    have hid : min (u - k - -x) (v - k + -x) = min (v - k - x) (u - k + x) := by
-      rw [min_comm]
-      congr 1 <;> ring
-    rwa [hid] at h
-  have hR := wide_rising_piece_integral hk hksq hn hfloor
+  have hn := (continuous_threeAngleBarrier U).intervalIntegrable (μ := volume)
+  have hR := wide_rising_piece_integral hk hksq hn
+    (fun x => (hU.threeAngle_floors hkoffset hu hv x).1)
     (hU.wide_near_right_le_threeAngleBarrier hk hkoffset hr) hd.2 hcR hpR
-  have hL := wide_rising_piece_integral hk hksq hnRef hfloorRef
-    (hU.wide_near_left_le_threeAngleBarrier hk hkoffset hl)
-    (show (v - u) / 2 ≤ a / 2 by linarith only [hd.1])
-    (show (v - u) / 2 ≤ wideCrossing k v (wideNearLeftIntercept U k) by linarith only [hcL]) hpL
-  have h := symmetric_barrier_gain_integral hn hd hR hL
-  convert h using 1
+  have hL := wide_rising_piece_integral (n := fun x => threeAngleBarrier U (-x)) hk hksq
+    ((continuous_threeAngleBarrier U).comp continuous_neg).intervalIntegrable
+    (fun x => (hU.threeAngle_floors hkoffset hu hv x).2)
+    (hU.wide_near_left_le_threeAngleBarrier hk hkoffset hl) (by linarith only [hd.1])
+    (by linarith only [hcL]) hpL
+  convert symmetric_barrier_gain_integral hn hd hR hL using 1
   ring
 
 end AmbidextrousSofa

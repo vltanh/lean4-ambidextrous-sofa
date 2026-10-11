@@ -22,73 +22,28 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-def separatedWallContactSet (U : CompactCap) (X : ℝ → ℝ) (ε : ℝ) : Set ℝ :=
-  {t | ∃ s ∈ Icc (0 : ℝ) (Real.pi / 2), ε ≤ |s - t| ∧
-    fullWallClip U (X t) s = sweptNiche U.carrier (Real.pi / 2) (X t)}
-
-def uniqueWallContactSet (U : CompactCap) (X : ℝ → ℝ) : Set ℝ :=
-  {t | ∀ s ∈ Icc (0 : ℝ) (Real.pi / 2),
-    fullWallClip U (X t) s = sweptNiche U.carrier (Real.pi / 2) (X t) → s = t}
-
-theorem isClosed_separatedWallContactSet (U : CompactCap) {X : ℝ → ℝ}
-    (hX : Continuous X) (ε : ℝ) : IsClosed (separatedWallContactSet U X ε) := by
-  let B : Set (ℝ × Icc (0 : ℝ) (Real.pi / 2)) :=
-    {z | ε ≤ |(z.2 : ℝ) - z.1| ∧
-      fullWallClip U (X z.1) z.2 = sweptNiche U.carrier (Real.pi / 2) (X z.1)}
-  have hclip : Continuous (fun z : ℝ × Icc (0 : ℝ) (Real.pi / 2) =>
-      fullWallClip U (X z.1) z.2) :=
-    continuous_fullWallClip_on_angles.comp
-      (f := fun z : ℝ × Icc (0 : ℝ) (Real.pi / 2) => ((U, X z.1), z.2))
-      ((continuous_const.prodMk (hX.comp continuous_fst)).prodMk continuous_snd)
-  have hniche : Continuous (fun z : ℝ × Icc (0 : ℝ) (Real.pi / 2) =>
-      sweptNiche U.carrier (Real.pi / 2) (X z.1)) :=
-    continuous_capSweptNiche.comp (f := fun z : ℝ × Icc (0 : ℝ) (Real.pi / 2) => (U, X z.1))
-      (continuous_const.prodMk (hX.comp continuous_fst))
-  have hgap : Continuous (fun z : ℝ × Icc (0 : ℝ) (Real.pi / 2) =>
-      |(z.2 : ℝ) - z.1|) :=
-    ((continuous_subtype_val.comp continuous_snd).sub continuous_fst).abs
-  have hB : IsClosed B :=
-    (isClosed_le continuous_const hgap).inter (isClosed_eq hclip hniche)
-  have himage : Prod.fst '' B = separatedWallContactSet U X ε := by
-    ext t
-    constructor
-    · rintro ⟨⟨r, s⟩, hz, rfl⟩
-      exact ⟨s, s.property, hz⟩
-    · rintro ⟨s, hs, hdist, hcontact⟩
-      exact ⟨(t, ⟨s, hs⟩), ⟨hdist, hcontact⟩, rfl⟩
-  rw [← himage]
-  exact isClosedMap_fst_of_compactSpace B hB
-
-theorem uniqueWallContactSet_eq_iInter_compl (U : CompactCap) (X : ℝ → ℝ) :
-    uniqueWallContactSet U X =
-      ⋂ n : ℕ, (separatedWallContactSet U X (1 / ((n : ℝ) + 1)))ᶜ := by
-  ext t
-  constructor
-  · intro ht
-    apply mem_iInter.mpr
-    intro n hn
-    obtain ⟨s, hs, hdist, hcontact⟩ := hn
-    have heq := ht s hs hcontact
-    rw [heq, sub_self, abs_zero] at hdist
-    have hpos : 0 < 1 / ((n : ℝ) + 1) := by positivity
-    exact not_le_of_gt hpos hdist
-  · intro ht s hs hcontact
-    by_contra hne
-    have hdist : 0 < |s - t| := abs_pos.mpr (sub_ne_zero.mpr hne)
-    obtain ⟨n, hn⟩ := exists_nat_one_div_lt hdist
-    exact (mem_iInter.mp ht n) ⟨s, hs, hn.le, hcontact⟩
-
-theorem measurableSet_uniqueWallContactSet (U : CompactCap) {X : ℝ → ℝ}
-    (hX : Continuous X) : MeasurableSet (uniqueWallContactSet U X) := by
-  rw [uniqueWallContactSet_eq_iInter_compl]
-  exact MeasurableSet.iInter (fun n =>
-    (isClosed_separatedWallContactSet U hX (1 / ((n : ℝ) + 1))).measurableSet.compl)
-
 theorem measurableSet_unique_fullWallClip_contact (U : CompactCap) {X : ℝ → ℝ}
     (hX : Continuous X) :
     MeasurableSet {t | ∀ s ∈ Icc (0 : ℝ) (Real.pi / 2),
-      fullWallClip U (X t) s = sweptNiche U.carrier (Real.pi / 2) (X t) → s = t} :=
-  measurableSet_uniqueWallContactSet U hX
+      fullWallClip U (X t) s = sweptNiche U.carrier (Real.pi / 2) (X t) → s = t} := by
+  -- The times with a maximizing wall at angular distance at least `ε` form a closed set.
+  have hclosed (ε : ℝ) : IsClosed (Prod.fst '' {z : ℝ × Icc (0 : ℝ) (Real.pi / 2) |
+      ε ≤ |(z.2 : ℝ) - z.1| ∧
+        fullWallClip U (X z.1) z.2 = sweptNiche U.carrier (Real.pi / 2) (X z.1)}) :=
+    isClosedMap_fst_of_compactSpace _
+      ((isClosed_le (α := ℝ) continuous_const (by fun_prop)).inter
+        (isClosed_eq (continuous_fullWallClip_on_angles.comp
+            (f := fun z : ℝ × Icc (0 : ℝ) (Real.pi / 2) => ((U, X z.1), z.2)) (by fun_prop))
+          (continuous_capSweptNiche.comp
+            (f := fun z : ℝ × Icc (0 : ℝ) (Real.pi / 2) => (U, X z.1)) (by fun_prop))))
+  convert MeasurableSet.iInter fun n : ℕ => (hclosed (1 / ((n : ℝ) + 1))).measurableSet.compl
+  ext t
+  simp only [mem_ofPred_eq, mem_iInter, mem_compl_iff, mem_image, not_exists, not_and]
+  refine ⟨fun h n z hz hzt => ?_, fun h s hs hc => by_contra fun hne => ?_⟩
+  · subst hzt
+    exact (Nat.cast_add_one_pos n).not_ge (by simpa [h _ z.2.2 hz.2] using hz.1)
+  · obtain ⟨n, hn⟩ := exists_nat_one_div_lt (abs_pos.2 (sub_ne_zero.2 hne))
+    exact h n (t, ⟨s, hs⟩) ⟨hn.le, hc⟩ rfl
 
 theorem IsDownwardCap.measurableSet_unique_fullWallClip_contact
     {U : Set Plane} (hU : IsDownwardCap U) {X : ℝ → ℝ} (hX : Continuous X) :

@@ -34,85 +34,33 @@ def upperPolygon (l r : ℝ) (normal : ι → Plane) (height : ι → ℝ) : Set
 theorem mem_upperPolygon_iff (l r : ℝ) (normal : ι → Plane) (height : ι → ℝ) (p : Plane) :
     p ∈ upperPolygon l r normal height ↔
       p.1 ∈ Icc l r ∧ p.2 ∈ Icc (0 : ℝ) 1 ∧ ∀ i, coordDot p (normal i) ≤ height i := by
-  simp only [upperPolygon, mem_inter_iff, mem_prod, mem_iInter, mem_setOf_eq]
-  tauto
+  simp only [upperPolygon, mem_inter_iff, mem_prod, mem_iInter, mem_ofPred_eq, and_assoc]
 
 theorem isCompact_upperPolygon (l r : ℝ) (normal : ι → Plane) (height : ι → ℝ) :
     IsCompact (upperPolygon l r normal height) :=
   (isCompact_Icc.prod isCompact_Icc).inter_right
     (isClosed_iInter (fun i => isClosed_le (continuous_coordDot_right (normal i)) continuous_const))
 
-theorem convex_upperPolygon (l r : ℝ) (normal : ι → Plane) (height : ι → ℝ) :
-    Convex ℝ (upperPolygon l r normal height) :=
-  ((convex_Icc l r).prod (convex_Icc (0 : ℝ) 1)).inter
-    (convex_iInter (fun i => convex_coordDot_halfspace (normal i) (height i)))
-
 theorem isDownwardCap_upperPolygon (l r : ℝ) (normal : ι → Plane) (height : ι → ℝ)
     (hlr : l ≤ r) (hnormal : ∀ i, 0 ≤ (normal i).2)
     (hbaseline : ∀ x ∈ Icc l r, ∀ i, coordDot (x, 0) (normal i) ≤ height i) :
     IsDownwardCap (upperPolygon l r normal height) := by
-  refine ⟨?_, isCompact_upperPolygon _ _ _ _, convex_upperPolygon _ _ _ _, ?_, ?_⟩
-  · refine ⟨(l, 0), (mem_upperPolygon_iff _ _ _ _ _).mpr ?_⟩
-    exact ⟨⟨le_rfl, hlr⟩, ⟨le_rfl, by norm_num⟩, hbaseline l ⟨le_rfl, hlr⟩⟩
-  · intro p hp
-    exact ((mem_upperPolygon_iff _ _ _ _ _).mp hp).2.1
-  · intro p hp y hy0 hyp
-    obtain ⟨hpx, hpy, hphalf⟩ := (mem_upperPolygon_iff _ _ _ _ _).mp hp
-    apply (mem_upperPolygon_iff _ _ _ _ _).mpr
-    refine ⟨hpx, ⟨hy0, hyp.trans hpy.2⟩, ?_⟩
-    intro i
-    calc
-      coordDot (p.1, y) (normal i) ≤ coordDot p (normal i) := by
-        unfold coordDot
-        exact add_le_add_right (mul_le_mul_of_nonneg_right hyp (hnormal i)) _
-      _ ≤ height i := hphalf i
+  refine ⟨⟨(l, 0), (mem_upperPolygon_iff _ _ _ _ _).2
+      ⟨⟨le_rfl, hlr⟩, ⟨le_rfl, zero_le_one⟩, hbaseline l ⟨le_rfl, hlr⟩⟩⟩,
+    isCompact_upperPolygon _ _ _ _, ((convex_Icc l r).prod (convex_Icc 0 1)).inter
+      (convex_iInter fun i => convex_coordDot_halfspace (normal i) (height i)),
+    fun p hp => ((mem_upperPolygon_iff _ _ _ _ _).1 hp).2.1, fun p hp y hy0 hyp => ?_⟩
+  obtain ⟨hpx, hpy, hphalf⟩ := (mem_upperPolygon_iff _ _ _ _ _).1 hp
+  exact (mem_upperPolygon_iff _ _ _ _ _).2 ⟨hpx, ⟨hy0, hyp.trans hpy.2⟩, fun i =>
+    (add_le_add_right (mul_le_mul_of_nonneg_right hyp (hnormal i)) _).trans (hphalf i)⟩
 
 theorem horizontalProjection_upperPolygon (l r : ℝ) (normal : ι → Plane) (height : ι → ℝ)
     (hbaseline : ∀ x ∈ Icc l r, ∀ i, coordDot (x, 0) (normal i) ≤ height i) :
     horizontalProjection (upperPolygon l r normal height) = Icc l r := by
-  apply Set.Subset.antisymm
-  · rintro x ⟨p, hp, rfl⟩
-    exact ((mem_upperPolygon_iff _ _ _ _ _).mp hp).1
-  · intro x hx
-    refine ⟨(x, 0), (mem_upperPolygon_iff _ _ _ _ _).mpr ?_, rfl⟩
-    exact ⟨hx, ⟨le_rfl, by norm_num⟩, hbaseline x hx⟩
-
-theorem upperPolygon_mono {l r : ℝ} {normal : ι → Plane} {height height' : ι → ℝ}
-    (hheight : ∀ i, height i ≤ height' i) :
-    upperPolygon l r normal height ⊆ upperPolygon l r normal height' := by
-  intro p hp
-  obtain ⟨hx, hy, hhalf⟩ := (mem_upperPolygon_iff _ _ _ _ _).mp hp
-  exact (mem_upperPolygon_iff _ _ _ _ _).mpr ⟨hx, hy, fun i => (hhalf i).trans (hheight i)⟩
-
-theorem upperPolygon_subset_outward [DecidableEq ι] (l r : ℝ)
-    (normal : ι → Plane) (height : ι → ℝ) (j : ι) {ε : ℝ} (hε : 0 ≤ ε) :
-    upperPolygon l r normal height ⊆
-      upperPolygon l r normal (Function.update height j (height j + ε)) := by
-  apply upperPolygon_mono
-  intro i
-  by_cases hij : i = j
-  · subst i
-    simp only [Function.update_self]
-    linarith
-  · simp only [Function.update_of_ne hij, le_refl]
-
-/-- Retaining an old attaining point and its original halfplane pins every
-unchanged actual support, whether or not another constraint is redundant. -/
-theorem support_outward_unchanged [DecidableEq ι] {l r : ℝ}
-    {normal : ι → Plane} {height : ι → ℝ} (j : ι) {ε : ℝ} (hε : 0 ≤ ε)
-    (hne : (upperPolygon l r normal height).Nonempty)
-    (hexact : ∀ i, support (upperPolygon l r normal height) (normal i) = height i)
-    {i : ι} (hij : i ≠ j) :
-    support (upperPolygon l r normal (Function.update height j (height j + ε))) (normal i) =
-      height i := by
-  have hsub := upperPolygon_subset_outward l r normal height j hε
-  apply le_antisymm
-  · apply support_le_of_forall (hne.mono hsub)
-    intro p hp
-    have hhalf := ((mem_upperPolygon_iff _ _ _ _ _).mp hp).2.2 i
-    simpa only [Function.update_of_ne hij] using hhalf
-  · rw [← hexact i]
-    exact support_mono hsub hne (isCompact_upperPolygon _ _ _ _) _
+  refine Subset.antisymm ?_ fun x hx => ⟨(x, 0), (mem_upperPolygon_iff _ _ _ _ _).2
+    ⟨hx, ⟨le_rfl, zero_le_one⟩, hbaseline x hx⟩, rfl⟩
+  rintro x ⟨p, hp, rfl⟩
+  exact ((mem_upperPolygon_iff _ _ _ _ _).1 hp).1
 
 /-- A strict point of the moved face remains feasible after a sufficiently
 small displacement in its unit normal. It realizes the increased support. -/
@@ -126,37 +74,23 @@ theorem exists_outward_attaining_point [Fintype ι] [DecidableEq ι]
       p + ε • normal j ∈ upperPolygon l r normal (Function.update height j (height j + ε)) ∧
         coordDot (p + ε • normal j) (normal j) = height j + ε := by
   have hcont : Continuous (fun ε : ℝ => p + ε • normal j) := by fun_prop
-  have hx : ∀ᶠ ε : ℝ in 𝓝 0, (p + ε • normal j).1 ∈ Ioo l r :=
-    (continuous_fst.comp hcont).continuousAt (isOpen_Ioo.mem_nhds (by simpa using hpx))
-  have hy : ∀ᶠ ε : ℝ in 𝓝 0, (p + ε • normal j).2 ∈ Ioo (0 : ℝ) 1 :=
-    (continuous_snd.comp hcont).continuousAt (isOpen_Ioo.mem_nhds (by simpa using hpy))
-  have hother : ∀ i, ∀ᶠ ε : ℝ in 𝓝 0,
-      i ≠ j → coordDot (p + ε • normal j) (normal i) < height i := by
-    intro i
-    by_cases hij : i = j
-    · exact Eventually.of_forall (fun _ h => (h hij).elim)
-    · have hvalue : coordDot (p + (0 : ℝ) • normal j) (normal i) < height i := by
-        simpa only [zero_smul, add_zero] using hstrict i hij
-      have h : ∀ᶠ ε : ℝ in 𝓝 0, coordDot (p + ε • normal j) (normal i) < height i :=
-        ((continuous_coordDot_right (normal i)).comp hcont).continuousAt
-          (Iio_mem_nhds hvalue)
-      exact h.mono (fun _ h _ => h)
-  have hnear := hx.and (hy.and (eventually_all.mpr hother))
-  obtain ⟨δ, hδ, hball⟩ := Metric.mem_nhds_iff.mp hnear
-  refine ⟨δ, hδ, ?_⟩
-  intro ε hε
-  have hεball : ε ∈ Metric.ball (0 : ℝ) δ := by
-    simpa only [Metric.mem_ball, Real.dist_eq, sub_zero, abs_of_nonneg hε.1] using hε.2
-  obtain ⟨hxε, hyε, hotherε⟩ := hball hεball
+  have hev : ∀ᶠ ε : ℝ in 𝓝 0, (p + ε • normal j).1 ∈ Ioo l r ∧
+      (p + ε • normal j).2 ∈ Ioo (0 : ℝ) 1 ∧
+      ∀ i, i ≠ j → coordDot (p + ε • normal j) (normal i) < height i :=
+    (hcont.fst.continuousAt.eventually_mem (isOpen_Ioo.mem_nhds (by simpa))).and
+      ((hcont.snd.continuousAt.eventually_mem (isOpen_Ioo.mem_nhds (by simpa))).and
+        (eventually_all.2 fun i => eventually_imp_distrib_left.2 fun hij =>
+          ((continuous_coordDot_right _).comp hcont).continuousAt.eventually_lt
+            continuousAt_const (by simpa using hstrict i hij)))
+  obtain ⟨δ, hδ, hball⟩ := mem_nhdsGE_iff_exists_Ico_subset.1 (nhdsWithin_le_nhds hev)
+  refine ⟨δ, hδ, fun ε hε => ?_⟩
+  obtain ⟨hxε, hyε, hotherε⟩ := hball hε
   have hfaceε : coordDot (p + ε • normal j) (normal j) = height j + ε := by
-    rw [coordDot_add_left, coordDot_smul_left, hface, hunit]
-    ring
-  refine ⟨(mem_upperPolygon_iff _ _ _ _ _).mpr
-    ⟨⟨hxε.1.le, hxε.2.le⟩, ⟨hyε.1.le, hyε.2.le⟩, ?_⟩, hfaceε⟩
-  intro i
-  by_cases hij : i = j
-  · subst i
-    rw [Function.update_self, hfaceε]
+    rw [coordDot_add_left, coordDot_smul_left, hface, hunit, mul_one]
+  refine ⟨(mem_upperPolygon_iff _ _ _ _ _).2
+    ⟨Ioo_subset_Icc_self hxε, Ioo_subset_Icc_self hyε, fun i => ?_⟩, hfaceε⟩
+  rcases eq_or_ne i j with rfl | hij
+  · rw [Function.update_self, hfaceε]
   · rw [Function.update_of_ne hij]
     exact (hotherε i hij).le
 
@@ -166,16 +100,9 @@ theorem coordDot_ne_on_face {p q u v : Plane} (hpq : p ≠ q) (huy : u.2 ≠ 0)
     (hface : coordDot p u = coordDot q u)
     (hdet : u.1 * v.2 - u.2 * v.1 ≠ 0) : coordDot p v ≠ coordDot q v := by
   intro hother
-  have hdx : (p.1 - q.1) * (u.1 * v.2 - u.2 * v.1) = 0 := by
-    unfold coordDot at hface hother
-    linear_combination v.2 * hface - u.2 * hother
-  have hx : p.1 = q.1 := sub_eq_zero.mp ((mul_eq_zero.mp hdx).resolve_right hdet)
-  have hdy : (p.2 - q.2) * u.2 = 0 := by
-    unfold coordDot at hface
-    rw [hx] at hface
-    nlinarith
-  have hy : p.2 = q.2 := sub_eq_zero.mp ((mul_eq_zero.mp hdy).resolve_right huy)
-  exact hpq (Prod.ext hx hy)
+  unfold coordDot at hface hother
+  have hx : p.1 = q.1 := mul_right_cancel₀ hdet (by linear_combination v.2 * hface - u.2 * hother)
+  exact hpq (Prod.ext hx (mul_right_cancel₀ huy (by linear_combination hface - u.1 * hx)))
 
 /-- Two distinct points of a non-axis, non-top facet supply a point strictly
 inside the fixed box and strictly below every other nonparallel wall. -/
@@ -192,45 +119,19 @@ theorem midpoint_strict_face {l r : ℝ} {normal : ι → Plane} {height : ι �
       coordDot ((1 / 2 : ℝ) • p + (1 / 2 : ℝ) • q) (normal j) = height j ∧
       ∀ i, i ≠ j →
         coordDot ((1 / 2 : ℝ) • p + (1 / 2 : ℝ) • q) (normal i) < height i := by
-  obtain ⟨hpx, hpy, hphalf⟩ := (mem_upperPolygon_iff _ _ _ _ _).mp hp
-  obtain ⟨hqx, hqy, hqhalf⟩ := (mem_upperPolygon_iff _ _ _ _ _).mp hq
-  have hface : coordDot p (normal j) = coordDot q (normal j) := hpface.trans hqface.symm
-  have hxne : p.1 ≠ q.1 := by
-    intro hx
-    have hmul : (p.2 - q.2) * (normal j).2 = 0 := by
-      unfold coordDot at hface
-      rw [hx] at hface
-      nlinarith
-    exact hpq (Prod.ext hx (sub_eq_zero.mp ((mul_eq_zero.mp hmul).resolve_right hny)))
-  have hyne : p.2 ≠ q.2 := by
-    intro hy
-    have hmul : (p.1 - q.1) * (normal j).1 = 0 := by
-      unfold coordDot at hface
-      rw [hy] at hface
-      nlinarith
-    exact hpq (Prod.ext (sub_eq_zero.mp ((mul_eq_zero.mp hmul).resolve_right hnx)) hy)
-  have hxmid : ((p.1 + q.1) / 2) ∈ Ioo l r := by
-    rcases lt_trichotomy p.1 q.1 with hlt | heq | hgt
-    · constructor <;> linarith [hpx.1, hpx.2, hqx.1, hqx.2]
-    · exact (hxne heq).elim
-    · constructor <;> linarith [hpx.1, hpx.2, hqx.1, hqx.2]
-  have hymid : ((p.2 + q.2) / 2) ∈ Ioo (0 : ℝ) 1 := by
-    rcases lt_trichotomy p.2 q.2 with hlt | heq | hgt
-    · constructor <;> linarith [hpy.1, hpy.2, hqy.1, hqy.2]
-    · exact (hyne heq).elim
-    · constructor <;> linarith [hpy.1, hpy.2, hqy.1, hqy.2]
-  refine ⟨?_, ?_, ?_, ?_⟩
-  · convert hxmid using 1 <;> simp only [Prod.fst_add, Prod.smul_fst, smul_eq_mul] <;> ring
-  · convert hymid using 1 <;> simp only [Prod.snd_add, Prod.smul_snd, smul_eq_mul] <;> ring
-  · rw [coordDot_add_left, coordDot_smul_left, coordDot_smul_left, hpface, hqface]
-    ring
-  · intro i hij
-    have hne := coordDot_ne_on_face hpq hny hface (hdet i hij)
-    rw [coordDot_add_left, coordDot_smul_left, coordDot_smul_left]
-    rcases lt_trichotomy (coordDot p (normal i)) (coordDot q (normal i)) with hlt | heq | hgt
-    · linarith [hphalf i, hqhalf i]
-    · exact (hne heq).elim
-    · linarith [hphalf i, hqhalf i]
+  obtain ⟨⟨hpl, hpr⟩, ⟨hp0, hp1⟩, hph⟩ := (mem_upperPolygon_iff _ _ _ _ _).1 hp
+  obtain ⟨⟨hql, hqr⟩, ⟨hq0, hq1⟩, hqh⟩ := (mem_upperPolygon_iff _ _ _ _ _).1 hq
+  -- the two face points differ in every direction not parallel to the face
+  have hne (v : Plane) (hv : (normal j).1 * v.2 - (normal j).2 * v.1 ≠ 0) :=
+    (coordDot_ne_on_face hpq hny (hpface.trans hqface.symm) hv).lt_or_gt
+  simp only [coordDot_add_left, coordDot_smul_left, Prod.fst_add, Prod.snd_add, Prod.smul_fst,
+    Prod.smul_snd, smul_eq_mul, mem_Ioo]
+  refine ⟨?_, ?_, by rw [hpface, hqface]; ring, fun i hij => ?_⟩
+  · rcases hne (1, 0) (by simpa using hny) with h | h <;> simp only [coordDot] at h <;>
+      constructor <;> linarith
+  · rcases hne (0, 1) (by simpa using hnx) with h | h <;> simp only [coordDot] at h <;>
+      constructor <;> linarith
+  · rcases hne _ (hdet i hij) with h | h <;> linarith [hph i, hqh i]
 
 /-- Actual outward support realization for a nontrivial floating facet.
 The strict interior face point is constructed from the two displayed
@@ -255,28 +156,25 @@ theorem exists_outward_support_variation [Fintype ι] [DecidableEq ι]
         Function.update height j (height j + ε) i := by
   obtain ⟨hmx, hmy, hmface, hmstrict⟩ := midpoint_strict_face j hp hq hpq hpface hqface hnx hny hdet
   obtain ⟨δ, hδ, hattain⟩ := exists_outward_attaining_point j hmx hmy hmface hmstrict hunit
-  refine ⟨δ, hδ, ?_⟩
-  intro ε hε
-  have hbaseline' : ∀ x ∈ Icc l r, ∀ i,
-      coordDot (x, 0) (normal i) ≤ Function.update height j (height j + ε) i := by
-    intro x hx i
-    by_cases hij : i = j
-    · subst i
-      simp only [Function.update_self]
-      exact (hbaseline x hx j).trans (by linarith [hε.1])
-    · simpa only [Function.update_of_ne hij] using hbaseline x hx i
+  refine ⟨δ, hδ, fun ε hε => ?_⟩
+  obtain ⟨hmε, hmdot⟩ := hattain ε hε
+  have hle : height ≤ Function.update height j (height j + ε) :=
+    le_update_self_iff.2 (le_add_of_nonneg_right hε.1)
+  have hbaseline' := fun x hx i => (hbaseline x hx i).trans (hle i)
+  have hK := isCompact_upperPolygon l r normal (Function.update height j (height j + ε))
+  have hmem (z) (hz : z ∈ upperPolygon l r normal (Function.update height j (height j + ε))) :=
+    ((mem_upperPolygon_iff _ _ _ _ _).1 hz).2.2
   refine ⟨isDownwardCap_upperPolygon _ _ _ _ hlr hnormal hbaseline',
-    horizontalProjection_upperPolygon _ _ _ _ hbaseline', ?_⟩
-  intro i
-  by_cases hij : i = j
-  · subst i
-    rw [Function.update_self]
-    obtain ⟨hmε, hmdot⟩ := hattain ε hε
-    apply support_eq_of_mem (isCompact_upperPolygon _ _ _ _) ?_ hmε hmdot
-    intro z hz
-    simpa only [Function.update_self] using ((mem_upperPolygon_iff _ _ _ _ _).mp hz).2.2 j
-  · rw [Function.update_of_ne hij]
-    exact support_outward_unchanged j hε.1 ⟨p, hp⟩ hexact hij
+    horizontalProjection_upperPolygon _ _ _ _ hbaseline', fun i => ?_⟩
+  rcases eq_or_ne i j with rfl | hij
+  · exact support_eq_of_mem hK (fun z hz => hmem z hz i) hmε (by rw [hmdot, Function.update_self])
+  rw [Function.update_of_ne hij]
+  refine le_antisymm (support_le_of_forall ⟨_, hmε⟩ fun z hz => ?_) ?_
+  · simpa [hij] using hmem z hz i
+  rw [← hexact i]
+  refine support_mono (fun z hz => ?_) ⟨p, hp⟩ hK _
+  obtain ⟨hzx, hzy, hzh⟩ := (mem_upperPolygon_iff _ _ _ _ _).1 hz
+  exact (mem_upperPolygon_iff _ _ _ _ _).2 ⟨hzx, hzy, fun k => (hzh k).trans (hle k)⟩
 
 end FinitePolygon
 

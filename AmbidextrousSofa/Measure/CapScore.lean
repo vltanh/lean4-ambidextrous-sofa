@@ -47,8 +47,7 @@ theorem IsDownwardCap.measurable_roofDeficit {U : Set Plane} (hU : IsDownwardCap
     Measurable (roofDeficit U) :=
   measurable_const.sub hU.measurable_capRoof
 
-theorem IsDownwardCap.capWidth_nonneg {U : Set Plane} (hU : IsDownwardCap U) :
-    0 ≤ capWidth U :=
+theorem IsDownwardCap.capWidth_nonneg {U : Set Plane} (hU : IsDownwardCap U) : 0 ≤ capWidth U :=
   sub_nonneg.mpr (horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact)
 
 /-- The score is an ordinary exterior roof integral minus a middle barrier integral. -/
@@ -57,10 +56,7 @@ theorem capScore_eq_integrals (U : Set Plane) (α : ℝ) :
       (∫ x in Icc (horizontalLeft U) (horizontalRight U) \
           middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x) -
         ∫ x in middleHalfInterval (horizontalLeft U) (horizontalRight U), partialBarrier U α x := by
-  unfold capScore spatialScore roofDeficit
-  congr 1
-  apply integral_congr_ae
-  exact Filter.Eventually.of_forall (fun _ => by ring)
+  simp only [capScore, spatialScore, roofDeficit, sub_sub_cancel]
 
 /-- At a full quarter-turn the retained terminal wall has already been proved
 redundant for a downward cap; the score therefore uses the whole swept niche. -/
@@ -70,41 +66,28 @@ theorem IsDownwardCap.capScore_pi_div_two {U : Set Plane} (hU : IsDownwardCap U)
           middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x) -
         ∫ x in middleHalfInterval (horizontalLeft U) (horizontalRight U),
           sweptNiche U (Real.pi / 2) x := by
-  rw [capScore_eq_integrals]
-  congr 1
-  apply integral_congr_ae
-  exact Filter.Eventually.of_forall (fun x => hU.partialBarrier_pi_div_two x)
+  simp only [capScore_eq_integrals, hU.partialBarrier_pi_div_two]
 
 /-- The elementary scalar branch. It holds for every real `α`: the roof is
 at most one and the barrier is nonnegative. For meaningful passage angles,
 the separate barrier analysis also guarantees both integrals are integrable. -/
 theorem IsDownwardCap.capScore_le_half_width {U : Set Plane}
     (hU : IsDownwardCap U) (α : ℝ) : capScore U α ≤ capWidth U / 2 := by
-  let I := Icc (horizontalLeft U) (horizontalRight U)
-  let J := middleHalfInterval (horizontalLeft U) (horizontalRight U)
-  have hRoof : IntegrableOn (capRoof U) (I \ J) :=
-    (hU.integrableOn_capRoof_Icc (horizontalLeft U) (horizontalRight U)).mono_set sdiff_subset
-  have hOneI : IntegrableOn (fun _ : ℝ => (1 : ℝ)) I :=
-    integrableOn_const (by rw [Real.volume_Icc]; exact ENNReal.ofReal_ne_top)
-  have hOne : IntegrableOn (fun _ : ℝ => (1 : ℝ)) (I \ J) := hOneI.mono_set sdiff_subset
-  have hRoofBound : (∫ x in I \ J, capRoof U x) ≤ ∫ _x in I \ J, (1 : ℝ) :=
-    integral_mono hRoof hOne (fun x => capRoof_le_one hU.isCompact hU.inStrip x)
-  have hBarrierNonneg : 0 ≤ ∫ x in J, partialBarrier U α x :=
-    integral_nonneg (fun x => partialBarrier_nonneg U α x)
-  have hExteriorMeasure : volume.real (I \ J) = capWidth U / 2 :=
-    volumeReal_exterior_middleHalfInterval
-      (horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact)
-  have hOneIntegral : (∫ _x in I \ J, (1 : ℝ)) = capWidth U / 2 := by
-    rw [setIntegral_const, smul_eq_mul, mul_one, hExteriorMeasure]
-  rw [capScore_eq_integrals]
-  change (∫ x in I \ J, capRoof U x) - (∫ x in J, partialBarrier U α x) ≤ capWidth U / 2
-  linarith
+  rw [capScore_eq_integrals, sub_le_iff_le_add]
+  calc _ ≤ ∫ _ in Icc (horizontalLeft U) (horizontalRight U) \
+          middleHalfInterval (horizontalLeft U) (horizontalRight U), (1 : ℝ) :=
+        setIntegral_mono_on ((hU.integrableOn_capRoof_Icc _ _).mono_set sdiff_subset)
+          ((integrableOn_const measure_Icc_lt_top.ne).mono_set sdiff_subset)
+          (measurableSet_Icc.diff (measurableSet_middleHalfInterval _ _))
+          fun x _ => capRoof_le_one hU.isCompact hU.inStrip x
+    _ = capWidth U / 2 := by
+        rw [setIntegral_const, smul_eq_mul, mul_one, volumeReal_exterior_middleHalfInterval
+          (horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact), capWidth]
+    _ ≤ _ := le_add_of_nonneg_right (integral_nonneg (partialBarrier_nonneg U α))
 
 /-- A scalar competitor at the reference value must survive the width cutoff. -/
 theorem IsDownwardCap.width_ge_M_of_capScore_ge_half_M {U : Set Plane}
-    (hU : IsDownwardCap U) {α : ℝ} (hScore : M / 2 ≤ capScore U α) :
-    M ≤ capWidth U := by
-  have hBound := hU.capScore_le_half_width α
-  linarith
+    (hU : IsDownwardCap U) {α : ℝ} (hScore : M / 2 ≤ capScore U α) : M ≤ capWidth U := by
+  linarith [hU.capScore_le_half_width α]
 
 end AmbidextrousSofa

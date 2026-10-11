@@ -21,28 +21,6 @@ open Set Filter MeasureTheory
 
 namespace AmbidextrousSofa.Analysis
 
-theorem firstUnit_final_charged_sector_energy_eq
-    {p q u v : ℝ → ℝ} {a b : ℝ} (hab : a ≤ b)
-    (hp : AbsolutelyContinuousOnInterval p a b)
-    (hq : AbsolutelyContinuousOnInterval q a b)
-    (hode : ∀ᵐ t ∂volume.restrict (Icc a b),
-      HasDerivAt p (u t - 1 - q t) t ∧ HasDerivAt q (v t - 1 + p t) t)
-    (hsource : ∀ᵐ t ∂volume.restrict (Icc a b), u t = 1 / 2 ∧ v t = 0) :
-    firstUnitFinalEnergy (p b) (q b) = firstUnitFinalEnergy (p a) (q a) := by
-  let E : ℝ → ℝ := fun t => firstUnitFinalEnergy (p t) (q t)
-  have hE : AbsolutelyContinuousOnInterval E a b :=
-    absolutelyContinuousOnInterval_momentumQuadraticEnergy hp hq 1 (-1 / 2) (3 / 4)
-  have hEd : ∀ᵐ t ∂volume.restrict (Ioo a b), HasDerivAt E 0 t := by
-    filter_upwards [ae_restrict_of_ae_restrict_of_subset Ioo_subset_Icc_self hode,
-      ae_restrict_of_ae_restrict_of_subset Ioo_subset_Icc_self hsource] with t hd hs
-    apply (hasDerivAt_momentumQuadraticEnergy hd.1 hd.2 1 (-1 / 2) (3 / 4)).congr_deriv
-    rw [hs.1, hs.2]
-    ring
-  have hFTC := integral_eq_sub_of_ac_of_ae_hasDerivAt hab hE hEd
-  rw [intervalIntegral.integral_zero] at hFTC
-  change 0 = firstUnitFinalEnergy (p b) (q b) - firstUnitFinalEnergy (p a) (q a) at hFTC
-  linarith only [hFTC]
-
 /-- The minimum and maximum endpoints specify the actual two possible
 orders. The collapsed extra intervals have zero measure. -/
 theorem firstUnit_unit_companion_energy_balance
@@ -65,77 +43,48 @@ theorem firstUnit_unit_companion_energy_balance
     firstUnitFinalEnergy (p L) (q L) - firstUnitInitialEnergy (p 0) (q 0) ≤
       (∫ t in β..L, firstUnitGainDensity (p t) (u t)) -
         ∫ t in 0..η, firstUnitLossDensity (q t) (v t) (δ t) := by
-  by_cases hβη : β ≤ η
+  rcases le_or_gt β η with hβη | hηβ
   · apply firstUnit_momentum_energy_balance (χ := fun _ => 1)
       h0α hαβ hβη hηL hp hq hG hD hode hfirst
     · simpa only [min_eq_left hβη] using hcharged
     · simpa only [min_eq_left hβη, mul_one] using hcore
-    · exact Filter.Eventually.of_forall (fun _ => ⟨le_rfl, Or.inl rfl⟩)
+    · exact .of_forall fun _ => ⟨le_rfl, .inl rfl⟩
     · simpa only [max_eq_right hβη] using hfinal
     · exact hpα
     · exact hqη
-  · have hηβ : η ≤ β := (lt_of_not_ge hβη).le
-    have h0η : 0 ≤ η := h0α.trans hαη
-    have h0β : 0 ≤ β := h0α.trans hαβ
-    have h0L : 0 ≤ L := h0β.trans hβL
-    have hsub (a b : ℝ) (ha : 0 ≤ a) (hab : a ≤ b) (hb : b ≤ L) :
-        uIcc a b ⊆ uIcc 0 L := by
-      simpa only [uIcc_of_le hab, uIcc_of_le h0L] using Icc_subset_Icc ha hb
-    have hD0α := hD.mono_set (show uIcc 0 α ⊆ uIcc 0 η by
-      simpa only [uIcc_of_le h0α, uIcc_of_le h0η] using Icc_subset_Icc le_rfl hαη)
-    have hDαη := hD.mono_set (show uIcc α η ⊆ uIcc 0 η by
-      simpa only [uIcc_of_le hαη, uIcc_of_le h0η] using Icc_subset_Icc h0α le_rfl)
-    have h1 := firstUnit_initial_sector_energy h0α
-      (hp.mono (hsub 0 α le_rfl h0α (hαη.trans hηL)))
-      (hq.mono (hsub 0 α le_rfl h0α (hαη.trans hηL))) hD0α
-      (ae_restrict_Icc_subinterval le_rfl (hαη.trans hηL) hode) hfirst
-    have h2 := firstUnit_charged_core_energy hαη
-      (hp.mono (hsub α η h0α hαη hηL)) (hq.mono (hsub α η h0α hαη hηL)) hDαη
-      (ae_restrict_Icc_subinterval h0α hηL hode)
-      (by simpa only [min_eq_right hηβ] using hcharged)
-    have hflat := firstUnit_final_charged_sector_energy_eq hηβ
-      (hp.mono (hsub η β h0η hηβ hβL)) (hq.mono (hsub η β h0η hηβ hβL))
-      (ae_restrict_Icc_subinterval h0η hβL hode)
-      (by simpa only [max_eq_left hηβ] using hlate)
-    have h3 := firstUnit_final_sector_energy hβL
-      (hp.mono (hsub β L h0β hβL le_rfl)) (hq.mono (hsub β L h0β hβL le_rfl)) hG
-      (ae_restrict_Icc_subinterval h0β le_rfl hode)
-      (by simpa only [max_eq_left hηβ] using hfinal)
-    have hglueα : firstUnitInitialEnergy (p α) (q α) = firstUnitCoreEnergy (p α) (q α) := by
-      rw [hpα, firstUnitInitialEnergy_eq_core_at_zero]
-    have hglueη : firstUnitCoreEnergy (p η) (q η) = firstUnitFinalEnergy (p η) (q η) := by
-      rw [hqη, firstUnitCoreEnergy_eq_final_at_zero]
-    have hsum := intervalIntegral.integral_add_adjacent_intervals hD0α hDαη
-    rw [hglueα] at h1
-    rw [hglueη] at h2
-    linarith only [h1, h2, hflat, h3, hsum]
-
-theorem firstUnit_loss_integral_lower_bound_of_companion_unit
-    {q v δ : ℝ → ℝ} {γ η : ℝ} (hγ0 : 0 ≤ γ) (hγη : γ ≤ η)
-    (hD : IntervalIntegrable (fun t => firstUnitLossDensity (q t) (v t) (δ t)) volume 0 η)
-    (hfloor : ∀ᵐ t ∂volume.restrict (Icc 0 γ), δ t = 0)
-    (hq0 : ∀ᵐ t ∂volume.restrict (Icc 0 η), -1 ≤ q t)
-    (hv : ∀ᵐ t ∂volume.restrict (Icc 0 η), v t ≤ 1)
-    (hδ : ∀ᵐ t ∂volume.restrict (Icc 0 η), δ t ≤ 1) :
-    (∫ t in 0..γ, (q t + 1) * (1 - v t)) ≤
-      ∫ t in 0..η, firstUnitLossDensity (q t) (v t) (δ t) := by
-  have hnonneg : ∀ᵐ t ∂volume.restrict (Ioc (0 : ℝ) η),
-      0 ≤ firstUnitLossDensity (q t) (v t) (δ t) := by
-    filter_upwards [ae_restrict_of_ae_restrict_of_subset Ioc_subset_Icc_self hq0,
-      ae_restrict_of_ae_restrict_of_subset Ioc_subset_Icc_self hv,
-      ae_restrict_of_ae_restrict_of_subset Ioc_subset_Icc_self hδ] with t hq hv hd
-    exact mul_nonneg (mul_nonneg (by linarith only [hq]) (sub_nonneg.mpr hv))
-      (sub_nonneg.mpr hd)
-  have hmono := intervalIntegral.integral_mono_interval le_rfl hγ0 hγη hnonneg hD
-  have hfloor_eq : (∫ t in 0..γ, firstUnitLossDensity (q t) (v t) (δ t)) =
-      ∫ t in 0..γ, (q t + 1) * (1 - v t) := by
-    apply intervalIntegral.integral_congr_ae
-    have hfloor' := (ae_restrict_iff' measurableSet_Icc).mp hfloor
-    filter_upwards [hfloor'] with t ht hmem
-    have hmem' : t ∈ Icc 0 γ := by
-      simpa only [min_eq_left hγ0, max_eq_right hγ0] using Ioc_subset_Icc_self hmem
-    simp only [firstUnitLossDensity, ht hmem', sub_zero, mul_one]
-  rwa [hfloor_eq] at hmono
+  -- Otherwise the late window `[η, β]` joins the final sector with constant energy.
+  have h0η := h0α.trans hαη
+  have h0β := h0α.trans hαβ
+  have hsub {a b : ℝ} (ha : 0 ≤ a) (hab : a ≤ b) (hb : b ≤ L) : uIcc a b ⊆ uIcc 0 L :=
+    uIcc_subset_uIcc (mem_uIcc_of_le ha (hab.trans hb)) (mem_uIcc_of_le (ha.trans hab) hb)
+  have hD0α := hD.mono_set (uIcc_subset_uIcc_left (mem_uIcc_of_le h0α hαη))
+  have hDαη := hD.mono_set (uIcc_subset_uIcc_right (mem_uIcc_of_le h0α hαη))
+  have h1 := firstUnit_initial_sector_energy h0α (hp.mono (hsub le_rfl h0α (hαη.trans hηL)))
+    (hq.mono (hsub le_rfl h0α (hαη.trans hηL))) hD0α
+    (ae_restrict_Icc_subinterval le_rfl (hαη.trans hηL) hode) hfirst
+  have h2 := firstUnit_charged_core_energy hαη (hp.mono (hsub h0α hαη hηL))
+    (hq.mono (hsub h0α hαη hηL)) hDαη (ae_restrict_Icc_subinterval h0α hηL hode)
+    (by simpa only [min_eq_right hηβ.le] using hcharged)
+  have hflat : firstUnitFinalEnergy (p β) (q β) = firstUnitFinalEnergy (p η) (q η) := by
+    have h := integral_eq_sub_of_ac_of_ae_hasDerivAt (D := fun _ => 0) hηβ.le
+      (absolutelyContinuousOnInterval_momentumQuadraticEnergy (hp.mono (hsub h0η hηβ.le hβL))
+        (hq.mono (hsub h0η hηβ.le hβL)) 1 (-1 / 2) (3 / 4)) (by
+        filter_upwards [ae_restrict_of_ae_restrict_of_subset
+            (Ioo_subset_Icc_self.trans (Icc_subset_Icc h0η hβL)) hode,
+          ae_restrict_of_ae_restrict_of_subset Ioo_subset_Icc_self
+            (max_eq_left hηβ.le ▸ hlate)] with t hd hs
+        apply (hasDerivAt_momentumQuadraticEnergy hd.1 hd.2 1 (-1 / 2) (3 / 4)).congr_deriv
+        rw [hs.1, hs.2]
+        ring)
+    rw [intervalIntegral.integral_zero] at h
+    exact sub_eq_zero.mp h.symm
+  have h3 := firstUnit_final_sector_energy hβL (hp.mono (hsub h0β hβL le_rfl))
+    (hq.mono (hsub h0β hβL le_rfl)) hG (ae_restrict_Icc_subinterval h0β le_rfl hode)
+    (by simpa only [max_eq_left hηβ.le] using hfinal)
+  rw [hpα, firstUnitInitialEnergy_eq_core_at_zero] at h1
+  rw [hpα, hqη, firstUnitCoreEnergy_eq_final_at_zero] at h2
+  rw [hqη] at hflat
+  linarith only [h1, h2, hflat, h3, intervalIntegral.integral_add_adjacent_intervals hD0α hDαη]
 
 /-- Raw companion-unit data are inconsistent for either order of the
 middle tangent crossing and the second momentum zero. The exact source
@@ -177,73 +126,60 @@ theorem firstUnit_unit_companion_raw_data_impossible
     (hC : 1 / 2 < C) (hTpos : 0 < T) (hST : T ≤ S) (hSone : S ≤ 1) (hTC : T ≤ C)
     (hhz : h + z ≤ 2) (hβsin : 3 / 5 ≤ Real.sin β) : False := by
   have hβ0 : 0 ≤ β := h0α.trans hαβ
-  have h0η : 0 ≤ η := h0α.trans hαη
   have hγL : γ ≤ Real.pi / 2 := hγη.trans hηL
-  have h0L : 0 ≤ Real.pi / 2 := hβ0.trans hβL
-  have hsub (a b : ℝ) (ha : 0 ≤ a) (hab : a ≤ b) (hb : b ≤ Real.pi / 2) :
-      uIcc a b ⊆ uIcc 0 (Real.pi / 2) := by
-    simpa only [uIcc_of_le hab, uIcc_of_le h0L] using Icc_subset_Icc ha hb
-  have hpβ := hp.mono (hsub β (Real.pi / 2) hβ0 hβL le_rfl)
-  have hqβ := hq.mono (hsub β (Real.pi / 2) hβ0 hβL le_rfl)
-  have huβ := hu.mono_set (hsub β (Real.pi / 2) hβ0 hβL le_rfl)
-  have hvβ := hv.mono_set (hsub β (Real.pi / 2) hβ0 hβL le_rfl)
-  have hpγ := hp.mono (hsub 0 γ le_rfl hγ0 hγL)
-  have hqγ := hq.mono (hsub 0 γ le_rfl hγ0 hγL)
-  have huγ := hu.mono_set (hsub 0 γ le_rfl hγ0 hγL)
-  have hvγ := hv.mono_set (hsub 0 γ le_rfl hγ0 hγL)
+  have hsub {a b : ℝ} (ha : 0 ≤ a) (hab : a ≤ b) (hb : b ≤ Real.pi / 2) :
+      uIcc a b ⊆ uIcc 0 (Real.pi / 2) :=
+    uIcc_subset_uIcc (mem_uIcc_of_le ha (hab.trans hb)) (mem_uIcc_of_le (ha.trans hab) hb)
+  have hB := hsub hβ0 hβL le_rfl
+  have hΓ := hsub le_rfl hγ0 hγL
   have hrB : IntervalIntegrable (fun t => 1 - u t) volume β (Real.pi / 2) :=
-    (intervalIntegrable_const (c := (1 : ℝ))).sub huβ
-  have hrB0 : ∀ᵐ t ∂volume.restrict (Icc β (Real.pi / 2)), 0 ≤ 1 - u t := by
-    filter_upwards [ae_restrict_Icc_subinterval hβ0 le_rfl hunit] with t ht
-    exact sub_nonneg.mpr ht.2
-  have hrD0 : ∀ᵐ t ∂volume.restrict (Icc 0 γ), 0 ≤ 1 - v t := by
-    filter_upwards [ae_restrict_Icc_subinterval le_rfl hγL hcompanion] with t ht
-    exact sub_nonneg.mpr ht
-  have hG : IntervalIntegrable (fun t => firstUnitGainDensity (p t) (u t))
-      volume β (Real.pi / 2) :=
-    hrB.continuousOn_mul (continuousOn_const.sub hpβ.continuousOn)
-  have hD := intervalIntegrable_firstUnitLossDensity h0η
-    (hq.mono (hsub 0 η le_rfl h0η hηL))
-    (hv.mono_set (hsub 0 η le_rfl h0η hηL)) hδm hδ
-  have henergy := firstUnit_unit_companion_energy_balance
-    h0α hαβ hαη hβL hηL hp hq hG hD hode hfirst hcharged hcore hlate hfinal hpα hqη
-  have hpaid := firstUnit_loss_integral_lower_bound_of_companion_unit hγ0 hγη hD
-    hfloor hqnonneg (ae_restrict_Icc_subinterval le_rfl hηL hcompanion)
-    (hδ.mono (fun _ ht => ht.2))
+    intervalIntegrable_const.sub (hu.mono_set hB)
+  have hrB0 : ∀ᵐ t ∂volume.restrict (Icc β (Real.pi / 2)), 0 ≤ 1 - u t :=
+    (ae_restrict_Icc_subinterval hβ0 le_rfl hunit).mono fun _ ht => sub_nonneg.mpr ht.2
+  have hrD0 : ∀ᵐ t ∂volume.restrict (Icc 0 γ), 0 ≤ 1 - v t :=
+    (ae_restrict_Icc_subinterval le_rfl hγL hcompanion).mono fun _ ht => sub_nonneg.mpr ht
+  have hD := intervalIntegrable_firstUnitLossDensity (h0α.trans hαη)
+    (hq.mono (hsub le_rfl (h0α.trans hαη) hηL))
+    (hv.mono_set (hsub le_rfl (h0α.trans hαη) hηL)) hδm hδ
+  have henergy := firstUnit_unit_companion_energy_balance h0α hαβ hαη hβL hηL hp hq
+    (hrB.continuousOn_mul (continuousOn_const.sub (hp.mono hB).continuousOn)) hD hode hfirst
+    hcharged hcore hlate hfinal hpα hqη
+  -- The loss over `[0, η]` pays at least its floor part over `[0, γ]`.
+  have hpaid : (∫ t in 0..γ, (q t + 1) * (1 - v t)) ≤
+      ∫ t in 0..η, firstUnitLossDensity (q t) (v t) (δ t) := by
+    have hfloor_eq : (∫ t in 0..γ, firstUnitLossDensity (q t) (v t) (δ t)) =
+        ∫ t in 0..γ, (q t + 1) * (1 - v t) :=
+      intervalIntegral.integral_congr_ae_restrict ((ae_restrict_of_ae_restrict_of_subset
+        (uIoc_subset_uIcc.trans (uIcc_of_le hγ0).subset) hfloor).mono fun t ht => by
+          simp [firstUnitLossDensity, ht])
+    refine hfloor_eq ▸ intervalIntegral.integral_mono_interval le_rfl hγ0 hγη ?_ hD
+    filter_upwards [ae_restrict_of_ae_restrict_of_subset Ioc_subset_Icc_self
+      (hqnonneg.and ((ae_restrict_Icc_subinterval le_rfl hηL hcompanion).and hδ))]
+      with t ⟨hq, hv, hd⟩
+    exact mul_nonneg (mul_nonneg (by linarith only [hq]) (sub_nonneg.mpr hv)) (sub_nonneg.mpr hd.2)
   rw [hpL, hqL, hp0, hq0] at henergy
-  have henergyPaid : firstUnitFinalEnergy (1 - 3 * C - T) (-eL) -
-      firstUnitInitialEnergy (eR + h) (3 * C - 1) ≤
-        (∫ t in β..(Real.pi / 2), firstUnitGainDensity (p t) (u t)) -
-          (∫ t in 0..γ, (q t + 1) * (1 - v t)) + (0 : ℝ) := by
-    linarith only [henergy, hpaid]
-  have hIB := firstUnit_right_harmonic_moment hβL hpβ hqβ huβ hvβ
-    (ae_restrict_Icc_subinterval hβ0 le_rfl hode) hpL hqL hT hz
-  have hID := firstUnit_initial_harmonic_moment hγ0 hpγ hqγ huγ hvγ
-    (ae_restrict_Icc_subinterval le_rfl hγL hode) hp0 hq0 hS hh
-  have hbalance := firstUnit_balance_after_endpoint_substitution hR hL hIB hID henergyPaid
-  have hvbound : ∀ᵐ t ∂volume.restrict (Icc β (Real.pi / 2)), v t ≤ 5 / 4 := by
-    filter_upwards [ae_restrict_Icc_subinterval hβ0 le_rfl hcompanion] with t ht
-    linarith only [ht]
-  have hRB := firstUnitRightRemainder_le hβ0 hβL hβsin hrB hvβ hrB0 hvbound
+  have hbalance := firstUnit_balance_after_endpoint_substitution (P := 0) hR hL
+    (firstUnit_right_harmonic_moment hβL (hp.mono hB) (hq.mono hB) (hu.mono_set hB)
+      (hv.mono_set hB) (ae_restrict_Icc_subinterval hβ0 le_rfl hode) hpL hqL hT hz)
+    (firstUnit_initial_harmonic_moment hγ0 (hp.mono hΓ) (hq.mono hΓ) (hu.mono_set hΓ)
+      (hv.mono_set hΓ) (ae_restrict_Icc_subinterval le_rfl hγL hode) hp0 hq0 hS hh)
+    (by linarith only [henergy, hpaid])
+  have hRB := firstUnitRightRemainder_le hβ0 hβL hβsin hrB (hv.mono_set hB) hrB0
+    ((ae_restrict_Icc_subinterval hβ0 le_rfl hcompanion).mono fun _ ht => by linarith only [ht])
+  have hzT := (firstUnit_right_window_moment_bounds hβ0 hβL hβsin hrB hrB0).2.2
   rw [hT] at hRB
-  have hRD := firstUnitLeftRemainder_nonneg hγ0 hγL hrD0
-    (ae_restrict_Icc_subinterval le_rfl hγL (hunit.mono (fun _ ht => ht.1)))
-  have hmoment := firstUnit_right_window_moment_bounds hβ0 hβL hβsin hrB hrB0
-  have hzT := hmoment.2.2
   rw [hz, hT] at hzT
-  have hh0 : 0 ≤ h := by
-    rw [← hh]
-    apply intervalIntegral.integral_nonneg_of_ae_restrict hγ0
+  have hh0 : 0 ≤ h := hh ▸ intervalIntegral.integral_nonneg_of_ae_restrict hγ0 (by
     filter_upwards [hrD0, ae_restrict_mem measurableSet_Icc] with t hrt ht
     exact mul_nonneg hrt (Real.sin_nonneg_of_nonneg_of_le_pi ht.1
-      (by linarith only [ht.2, hγL, Real.pi_pos]))
-  have hz0 : 0 ≤ z := by
-    rw [← hz]
-    apply intervalIntegral.integral_nonneg_of_ae_restrict hβL
+      (by linarith only [ht.2, hγL, Real.pi_pos])))
+  have hz0 : 0 ≤ z := hz ▸ intervalIntegral.integral_nonneg_of_ae_restrict hβL (by
     filter_upwards [hrB0, ae_restrict_mem measurableSet_Icc] with t hrt ht
     exact mul_nonneg hrt (Real.cos_nonneg_of_neg_pi_div_two_le_of_le
-      (by linarith only [ht.1, hβ0, Real.pi_pos]) ht.2)
-  exact firstUnit_terminal_contradiction hC hTpos hST hSone hTC hh0 hz0 hhz hzT hRB hRD
-    (mul_nonneg (by norm_num : (0 : ℝ) ≤ 25 / 48) hTpos.le) hbalance
+      (by linarith only [ht.1, hβ0, Real.pi_pos]) ht.2))
+  exact firstUnit_terminal_contradiction hC hTpos hST hSone hTC hh0 hz0 hhz hzT hRB
+    (firstUnitLeftRemainder_nonneg hγ0 hγL hrD0
+      (ae_restrict_Icc_subinterval le_rfl hγL (hunit.mono fun _ ht => ht.1)))
+    (by linarith only [hTpos]) hbalance
 
 end AmbidextrousSofa.Analysis

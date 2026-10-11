@@ -26,21 +26,11 @@ theorem horizontal_box_circle_bound {C s c : ℝ}
     (hC0 : 0 ≤ C) (hC1 : C ≤ 1)
     (hcircle : c ^ 2 + s ^ 2 = 1) :
     C * c + Real.sqrt (1 - C ^ 2) * s ≤ 1 := by
-  have hrad : 0 ≤ 1 - C ^ 2 := by
-    nlinarith [mul_nonneg hC0 (sub_nonneg.mpr hC1)]
-  have hnorm : C ^ 2 + Real.sqrt (1 - C ^ 2) ^ 2 = 1 := by
-    rw [Real.sq_sqrt hrad]
-    ring
   have hid : (C * c + Real.sqrt (1 - C ^ 2) * s) ^ 2 +
       (C * s - Real.sqrt (1 - C ^ 2) * c) ^ 2 = 1 := by
-    calc
-      _ = (C ^ 2 + Real.sqrt (1 - C ^ 2) ^ 2) * (c ^ 2 + s ^ 2) := by ring
-      _ = 1 := by rw [hnorm, hcircle, one_mul]
-  by_contra hnot
-  have hhigh : 1 < C * c + Real.sqrt (1 - C ^ 2) * s := lt_of_not_ge hnot
-  have hprod := mul_pos (sub_pos.mpr hhigh)
-    (by linarith : 0 < C * c + Real.sqrt (1 - C ^ 2) * s + 1)
-  nlinarith [sq_nonneg (C * s - Real.sqrt (1 - C ^ 2) * c)]
+    linear_combination (c ^ 2 + s ^ 2) * Real.sq_sqrt (show 0 ≤ 1 - C ^ 2 by nlinarith) + hcircle
+  nlinarith [sq_nonneg (C * s - Real.sqrt (1 - C ^ 2) * c),
+    sq_nonneg (C * c + Real.sqrt (1 - C ^ 2) * s - 1)]
 
 theorem IsDownwardCap.middle_niche_le_box_height_of_box
     {U : Set Plane} (hU : IsDownwardCap U) {C : ℝ}
@@ -48,30 +38,24 @@ theorem IsDownwardCap.middle_niche_le_box_height_of_box
     (hC0 : 0 ≤ C) (hC1 : C ≤ 1) :
     sweptNiche U (Real.pi / 2) (-C) ≤ 1 - Real.sqrt (1 - C ^ 2) ∧
       sweptNiche U (Real.pi / 2) C ≤ 1 - Real.sqrt (1 - C ^ 2) := by
-  have hH : 0 ≤ 1 - Real.sqrt (1 - C ^ 2) := by
-    have hs := Real.sqrt_le_one.mpr (show 1 - C ^ 2 ≤ 1 by nlinarith [sq_nonneg C])
-    linarith
-  constructor
-  · apply sweptNiche_le_of_forall (by linarith [Real.pi_pos]) hH
-    intro t ht
+  have hH : 0 ≤ 1 - Real.sqrt (1 - C ^ 2) :=
+    sub_nonneg.mpr (Real.sqrt_le_one.mpr (by nlinarith [sq_nonneg C]))
+  constructor <;> refine sweptNiche_le_of_forall (by positivity) hH fun t ht => ?_
+  all_goals
     have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
     have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
-    have hsupport := hU.support_companionNormal_le_centeredBox hbox hs.le hc.le
-    have hcircle := horizontal_box_circle_bound (s := Real.cos t) (c := Real.sin t)
-      hC0 hC1 (Real.sin_sq_add_cos_sq t)
-    apply (min_le_right (firstWall U t (-C)) (secondWall U t (-C))).trans
+  · have := hU.support_companionNormal_le_centeredBox hbox hs.le hc.le
+    have := horizontal_box_circle_bound (s := Real.cos t) (c := Real.sin t) hC0 hC1
+      (Real.sin_sq_add_cos_sq t)
+    refine (min_le_right _ _).trans ?_
     rw [secondWall, div_le_iff₀ hc]
-    nlinarith
-  · apply sweptNiche_le_of_forall (by linarith [Real.pi_pos]) hH
-    intro t ht
-    have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
-    have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
-    have hsupport := hU.support_unitNormal_le_centeredBox hbox hs.le hc.le
-    have hcircle := horizontal_box_circle_bound (s := Real.sin t) (c := Real.cos t)
-      hC0 hC1 (Real.cos_sq_add_sin_sq t)
-    apply (min_le_left (firstWall U t C) (secondWall U t C)).trans
+    linarith
+  · have := hU.support_unitNormal_le_centeredBox hbox hs.le hc.le
+    have := horizontal_box_circle_bound (s := Real.sin t) (c := Real.cos t) hC0 hC1
+      (Real.cos_sq_add_sin_sq t)
+    refine (min_le_left _ _).trans ?_
     rw [firstWall, div_le_iff₀ hs]
-    nlinarith
+    linarith
 
 theorem IsDownwardCap.middle_niche_le_box_height_of_endpoints
     {U : Set Plane} (hU : IsDownwardCap U) {C : ℝ}
@@ -91,27 +75,20 @@ theorem IsFullCapMaximizer.horizontal_endpoint_laws
       (3 * sweptNiche U (Real.pi / 2) C - sweptNiche U (Real.pi / 2) (-C)) / 4 ∧
     capRoof U (horizontalLeft U) = 1 / 2 +
       (3 * sweptNiche U (Real.pi / 2) (-C) - sweptNiche U (Real.pi / 2) C) / 4 := by
-  have haffine : ∃ m c : ℝ, ∀ x ∈ middleHalfInterval
-      (horizontalLeft U) (horizontalRight U), capRoof U x = m * x + c := by
-    refine ⟨0, 1, ?_⟩
-    intro x hx
-    simpa only [zero_mul, zero_add] using hmiddle x hx
   have hminus : horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4 = -C := by
-    rw [hl, hr]
-    ring
+    rw [hl, hr]; ring
   have hplus : horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 = C := by
-    rw [hl, hr]
-    ring
+    rw [hl, hr]; ring
   have hleft : capRoof U (-C) = 1 := hmiddle (-C) (by
     rw [middleHalfInterval, hminus, hplus]
     exact ⟨le_rfl, by linarith⟩)
   have hright : capRoof U C = 1 := hmiddle C (by
     rw [middleHalfInterval, hminus, hplus]
     exact ⟨by linarith, le_rfl⟩)
-  obtain ⟨hR, hL⟩ := hU.endpoint_heights_eq_pressures_of_affine hheight haffine
-  unfold capRightEndpointPressure rightEndpointPressure at hR
-  unfold capLeftEndpointPressure leftEndpointPressure at hL
-  rw [hminus, hplus, hleft, hright] at hR hL
+  obtain ⟨hR, hL⟩ := hU.endpoint_heights_eq_pressures_of_affine hheight
+    ⟨0, 1, fun x hx => by simpa only [zero_mul, zero_add] using hmiddle x hx⟩
+  simp only [capRightEndpointPressure, rightEndpointPressure, capLeftEndpointPressure,
+    leftEndpointPressure, hminus, hplus, hleft, hright] at hR hL
   constructor <;> linarith only [hR, hL]
 
 theorem IsFullCapMaximizer.horizontal_endpoint_heights_bounds
@@ -138,13 +115,11 @@ theorem endpoint_product_one_ge_of_niche_bounds {x y H eR eL : ℝ}
       (1 - H ^ 2) / 4 ≤ eL * (1 - eL) := by
   rcases le_total x y with hxy | hyx
   · left
-    have hlow : 0 ≤ eR - 1 / 2 + H / 2 := by linarith
-    have hhigh : 0 ≤ H / 2 - (eR - 1 / 2) := by linarith
-    nlinarith [mul_nonneg hlow hhigh]
+    nlinarith [mul_nonneg (by linarith : 0 ≤ eR - 1 / 2 + H / 2)
+      (by linarith : 0 ≤ H / 2 - (eR - 1 / 2))]
   · right
-    have hlow : 0 ≤ eL - 1 / 2 + H / 2 := by linarith
-    have hhigh : 0 ≤ H / 2 - (eL - 1 / 2) := by linarith
-    nlinarith [mul_nonneg hlow hhigh]
+    nlinarith [mul_nonneg (by linarith : 0 ≤ eL - 1 / 2 + H / 2)
+      (by linarith : 0 ≤ H / 2 - (eL - 1 / 2))]
 
 theorem IsFullCapMaximizer.horizontal_endpoint_product_one_ge
     {U : Set Plane} (hU : IsFullCapMaximizer U) {C : ℝ}
@@ -166,34 +141,8 @@ theorem cos_horizontal_box_angle {C : ℝ} (hC0 : 0 ≤ C) :
     Real.cos (2 * Real.arctan ((1 - C) / (1 + C))) = 2 * C / (1 + C ^ 2) := by
   rw [Real.cos_two_mul, Real.cos_sq_arctan]
   have hden : (1 + C) ≠ 0 := by positivity
-  have hsq : (1 + C ^ 2) ≠ 0 := by positivity
-  have hz : (1 + ((1 - C) / (1 + C)) ^ 2) ≠ 0 := by positivity
-  field_simp [hden, hsq, hz]
-  <;> ring
-
-theorem sin_add_mul_cos_le_one_before_horizontal_box_angle {C t : ℝ}
-    (hC0 : 0 ≤ C) (hC1 : C ≤ 1)
-    (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2))
-    (htb : t ≤ 2 * Real.arctan ((1 - C) / (1 + C))) :
-    Real.sin t + C * Real.cos t ≤ 1 := by
-  have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
-  have htbpi : 2 * Real.arctan ((1 - C) / (1 + C)) ≤ Real.pi := by
-    linarith [Real.arctan_lt_pi_div_two ((1 - C) / (1 + C))]
-  have hcos := Real.cos_le_cos_of_nonneg_of_le_pi ht.1.le htbpi htb
-  rw [cos_horizontal_box_angle hC0] at hcos
-  have hcos' : 2 * C ≤ (1 + C ^ 2) * Real.cos t := by
-    have hden : 0 < 1 + C ^ 2 := by positivity
-    exact (div_le_iff₀ hden).1 hcos |>.trans_eq (mul_comm _ _)
-  have hprod := mul_nonneg hc.le (sub_nonneg.mpr hcos')
-  have hcC : C * Real.cos t ≤ 1 := calc
-    _ ≤ C * 1 := mul_le_mul_of_nonneg_left (Real.cos_le_one t) hC0
-    _ ≤ 1 := by simpa only [mul_one] using hC1
-  by_contra hnot
-  have hhigh : 1 - C * Real.cos t < Real.sin t := by linarith
-  have hstrict := mul_pos (sub_pos.mpr hhigh)
-    (by linarith : 0 < Real.sin t + (1 - C * Real.cos t))
-  nlinarith [Real.sin_sq_add_cos_sq t]
+  field_simp
+  ring
 
 theorem IsDownwardCap.firstWall_nonpos_before_horizontal_box_angle
     {U : Set Plane} (hU : IsDownwardCap U) {C t : ℝ}
@@ -206,8 +155,13 @@ theorem IsDownwardCap.firstWall_nonpos_before_horizontal_box_angle
   have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
   have hsupport := hU.support_unitNormal_le_centeredBox
     (hU.subset_centeredBox_of_endpoints hl hr) hs.le hc.le
-  have hangle := sin_add_mul_cos_le_one_before_horizontal_box_angle hC0 hC1 ht htb
+  have hcos := Real.cos_le_cos_of_nonneg_of_le_pi ht.1.le
+    (by linarith [Real.arctan_lt_pi_div_two ((1 - C) / (1 + C))]) htb
+  rw [cos_horizontal_box_angle hC0, div_le_iff₀ (by positivity)] at hcos
+  have hcC : C * Real.cos t ≤ 1 := by nlinarith only [Real.cos_le_one t, hC0, hC1]
+  have hangle : Real.sin t + C * Real.cos t ≤ 1 := by
+    nlinarith only [Real.sin_sq_add_cos_sq t, mul_nonneg hc.le (sub_nonneg.mpr hcos), hcC]
   rw [firstWall, div_le_iff₀ hs]
-  nlinarith
+  linarith only [hsupport, hangle]
 
 end AmbidextrousSofa

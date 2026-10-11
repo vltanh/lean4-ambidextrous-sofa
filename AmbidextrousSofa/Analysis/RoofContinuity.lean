@@ -20,54 +20,32 @@ open scoped Topology
 
 namespace AmbidextrousSofa
 
-theorem continuousWithinAt_of_upperSemicontinuousWithinAt_of_lower_support
-    {f g : ℝ → ℝ} {s : Set ℝ} {x : ℝ}
-    (hupper : UpperSemicontinuousWithinAt f s x)
-    (hg : ContinuousAt g x) (hvalue : g x = f x)
-    (hlower : ∀ y ∈ s, g y ≤ f y) : ContinuousWithinAt f s x := by
-  apply continuousWithinAt_iff_lower_upperSemicontinuousWithinAt.mpr
-  refine ⟨?_, hupper⟩
-  intro c hc
-  have hcg : c < g x := by rw [hvalue]; exact hc
-  have hglower := (hg.continuousWithinAt (s := s)).lowerSemicontinuousWithinAt
-  filter_upwards [hglower c hcg, self_mem_nhdsWithin] with y hy hys
-  exact hy.trans_le (hlower y hys)
-
 theorem IsDownwardCap.continuousOn_capRoof_Icc {U : Set Plane}
     (hU : IsDownwardCap U) :
     ContinuousOn (capRoof U) (Icc (horizontalLeft U) (horizontalRight U)) := by
-  let l := horizontalLeft U
-  let r := horizontalRight U
-  have hlr : l ≤ r := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
-  rcases eq_or_lt_of_le hlr with heq | hlt
-  · change ContinuousOn (capRoof U) (Icc l r)
-    rw [heq, Icc_self]
+  rcases (horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact).eq_or_lt with heq | hlt
+  · rw [heq, Icc_self]
     exact continuousOn_singleton _ _
-  · have hproj : horizontalProjection U = Icc l r :=
-      horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex
-    have hconcave : ConcaveOn ℝ (Icc l r) (capRoof U) := by
-      rw [← hproj]
-      exact hU.concaveOn_capRoof
-    have hl : l ∈ horizontalProjection U := horizontalLeft_mem hU.nonempty hU.isCompact
-    have hr : r ∈ horizontalProjection U := horizontalRight_mem hU.nonempty hU.isCompact
-    have hbelow : ∀ x ∈ Icc l r, roofChord (capRoof U) l r x ≤ capRoof U x :=
-      fun x hx => ConcaveOn.roofChord_le hU.concaveOn_capRoof hl hr hlt hx
-    have hleft : ContinuousWithinAt (capRoof U) (Icc l r) l :=
-      continuousWithinAt_of_upperSemicontinuousWithinAt_of_lower_support
-        (hU.upperSemicontinuous_capRoof.upperSemicontinuousWithinAt (Icc l r) l)
-        (continuous_roofChord _ _ _).continuousAt (roofChord_left _ _ _) hbelow
-    have hright : ContinuousWithinAt (capRoof U) (Icc l r) r :=
-      continuousWithinAt_of_upperSemicontinuousWithinAt_of_lower_support
-        (hU.upperSemicontinuous_capRoof.upperSemicontinuousWithinAt (Icc l r) r)
-        (continuous_roofChord _ _ _).continuousAt (roofChord_right _ hlt) hbelow
-    exact hconcave.continuousOn_Icc hlt
-      ((continuousWithinAt_Icc_iff_Ici hlt).mp hleft)
-      ((continuousWithinAt_Icc_iff_Iic hlt).mp hright)
+  have hbelow (x) (hx : x ∈ Icc (horizontalLeft U) (horizontalRight U)) :=
+    ConcaveOn.roofChord_le hU.concaveOn_capRoof (horizontalLeft_mem hU.nonempty hU.isCompact)
+      (horizontalRight_mem hU.nonempty hU.isCompact) hlt hx
+  -- At an endpoint the chord is a continuous lower support touching the roof.
+  have hg := continuous_roofChord (capRoof U) (horizontalLeft U) (horizontalRight U)
+  have key {x} (hx : roofChord (capRoof U) (horizontalLeft U) (horizontalRight U) x = capRoof U x) :
+      ContinuousWithinAt (capRoof U) (Icc (horizontalLeft U) (horizontalRight U)) x :=
+    continuousWithinAt_iff_lower_upperSemicontinuousWithinAt.mpr ⟨fun c hc => by
+      filter_upwards [hg.continuousAt.continuousWithinAt.lowerSemicontinuousWithinAt c
+        (by simpa only [hx] using hc), self_mem_nhdsWithin] with y hy hys
+      exact hy.trans_le (hbelow y hys),
+      hU.upperSemicontinuous_capRoof.upperSemicontinuousWithinAt _ _⟩
+  exact (horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex ▸
+    hU.concaveOn_capRoof).continuousOn_Icc hlt
+    ((continuousWithinAt_Icc_iff_Ici hlt).mp (key (roofChord_left _ _ _)))
+    ((continuousWithinAt_Icc_iff_Iic hlt).mp (key (roofChord_right _ hlt)))
 
 /-- Relative continuity includes both actual projection endpoints. -/
 theorem IsDownwardCap.continuousOn_capRoof {U : Set Plane}
-    (hU : IsDownwardCap U) : ContinuousOn (capRoof U) (horizontalProjection U) := by
-  rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
-  exact hU.continuousOn_capRoof_Icc
+    (hU : IsDownwardCap U) : ContinuousOn (capRoof U) (horizontalProjection U) :=
+  horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex ▸ hU.continuousOn_capRoof_Icc
 
 end AmbidextrousSofa

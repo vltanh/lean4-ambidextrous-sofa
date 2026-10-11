@@ -21,18 +21,6 @@ open Set
 
 namespace AmbidextrousSofa
 
-theorem IsJointCapMaximizer.false_of_centered_proper_of_full_affine_rigidity
-    {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hrigid : IsFullCapMaximizer U → m = 0) : False :=
-  hU.false_of_centered_proper_tail_regime
-    (hU.properTailRegime_of_full_affine_rigidity hproper hheight haffine hrigid)
-    hproper hl hr hheight haffine
-
 /-- Every canonical replacement remains at the prescribed original
 angle. Full-cap rigidity is used only on a same-cap negative completion. -/
 theorem IsJointCapMaximizer.angle_eq_pi_div_two_of_full_affine_rigidity
@@ -40,22 +28,14 @@ theorem IsJointCapMaximizer.angle_eq_pi_div_two_of_full_affine_rigidity
     (hrigid : ∀ (V : Set Plane) (m c : ℝ), IsFullCapMaximizer V → capHeight V = 1 →
       (∀ x ∈ middleHalfInterval (horizontalLeft V) (horizontalRight V),
         capRoof V x = m * x + c) → m = 0) : α = Real.pi / 2 := by
-  apply le_antisymm hU.angle_mem.2
-  by_contra hnot
-  have hproper : α < Real.pi / 2 := lt_of_not_ge hnot
-  have hcenter : IsJointCapMaximizer (centeredCap U) α :=
-    hU.of_score_le hU.isCap.centeredCap hU.angle_mem (by rw [capScore_centeredCap hU.isCap])
-  obtain ⟨V, hV, hproj, hheight, _, m, c, haffine⟩ := hcenter.exists_heightOne_affine_middle
-  let C := capWidth U / 4
-  have hl : horizontalLeft V = -2 * C := by
-    calc
-      _ = horizontalLeft (centeredCap U) := by unfold horizontalLeft; rw [hproj]
-      _ = _ := by rw [horizontalLeft_centeredCap hU.isCap]; dsimp only [C]; ring
-  have hr : horizontalRight V = 2 * C := by
-    calc
-      _ = horizontalRight (centeredCap U) := by unfold horizontalRight; rw [hproj]
-      _ = _ := by rw [horizontalRight_centeredCap hU.isCap]; dsimp only [C]; ring
-  exact hV.false_of_centered_proper_of_full_affine_rigidity hproper hl hr hheight haffine
-    (fun hfull => hrigid V m c hfull hheight haffine)
+  refine le_antisymm hU.angle_mem.2 (not_lt.mp fun hproper => ?_)
+  obtain ⟨V, hV, hproj, hheight, -, m, c, haffine⟩ := (hU.of_score_le hU.isCap.centeredCap
+    hU.angle_mem (capScore_centeredCap hU.isCap α).ge).exists_heightOne_affine_middle
+  have hl : horizontalLeft V = -2 * (capWidth U / 4) := (congrArg sInf hproj).trans
+    (by rw [← horizontalLeft, horizontalLeft_centeredCap hU.isCap]; ring)
+  have hr : horizontalRight V = 2 * (capWidth U / 4) := (congrArg sSup hproj).trans
+    (by rw [← horizontalRight, horizontalRight_centeredCap hU.isCap]; ring)
+  exact hV.false_of_centered_proper_tail_regime (hV.properTailRegime_of_full_affine_rigidity
+    hproper hheight haffine (hrigid V m c · hheight haffine)) hproper hl hr hheight haffine
 
 end AmbidextrousSofa

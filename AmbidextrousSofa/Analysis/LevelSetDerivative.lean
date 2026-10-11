@@ -25,20 +25,12 @@ namespace AmbidextrousSofa
 
 theorem ae_deriv_eq_zero_on_level (f : ℝ → ℝ) (c : ℝ) :
     ∀ᵐ x : ℝ ∂volume, f x = c → deriv f x = 0 := by
-  let S := {x : ℝ | f x = c}
-  have hcount : {x ∈ S | 𝓝[S ∩ Ioi x] x = ⊥}.Countable :=
-    countable_setOfPred_isolated_right_within
-  filter_upwards [hcount.ae_notMem volume] with x hx
-  intro hfx
-  have hne : 𝓝[S ∩ Ioi x] x ≠ ⊥ := fun hbot => hx ⟨hfx, hbot⟩
-  have : NeBot (𝓝[S ∩ Ioi x] x) := ⟨hne⟩
-  have hlevel : ∀ᶠ y in 𝓝[S ∩ Ioi x] x, f y = c :=
-    Filter.mem_of_superset self_mem_nhdsWithin (fun y hy => hy.1)
-  have hle : 𝓝[S ∩ Ioi x] x ≤ 𝓝[≠] x :=
-    nhdsWithin_mono x (fun y hy => by
-      change y ≠ x
-      exact hy.2.ne')
-  exact deriv_zero_of_frequently_const (hlevel.frequently.filter_mono hle)
+  filter_upwards [(countable_setOfPred_isolated_right_within (s := {x | f x = c})).ae_notMem _]
+    with x hx hfx
+  have : NeBot (𝓝[{x | f x = c} ∩ Ioi x] x) := ⟨fun h => hx ⟨hfx, h⟩⟩
+  exact deriv_zero_of_frequently_const <| .filter_mono
+    (eventually_mem_nhdsWithin.mono fun _ hy => hy.1).frequently
+    (nhdsWithin_mono x fun _ (hy : _ ∈ {x | f x = c} ∩ Ioi x) => hy.2.ne')
 
 /-- Two successive level-set applications give the precise flatness
 input used at a floor contact. The actual derivative formulas are

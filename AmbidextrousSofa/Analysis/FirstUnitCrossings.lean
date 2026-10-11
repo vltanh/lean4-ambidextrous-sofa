@@ -22,6 +22,25 @@ open Set Filter MeasureTheory
 
 namespace AmbidextrousSofa
 
+structure StrictCornerSignPhases (p q : ℝ → ℝ) (L α η : ℝ) : Prop where
+  first_mem : α ∈ Ioo (0 : ℝ) L
+  second_mem : η ∈ Ioo α L
+  first_zero : p α = 0
+  second_zero : q η = 0
+  initial_signs : ∀ t ∈ Ico (0 : ℝ) α, 0 < p t ∧ 0 < q t
+  core_signs : ∀ t ∈ Ioo α η, p t < 0 ∧ 0 < q t
+  final_signs : ∀ t ∈ Ioc η L, p t < 0 ∧ q t < 0
+  second_at_first : 0 < q α
+  first_at_second : p η < 0
+
+theorem StrictCornerSignPhases.first_lt_of_first_neg
+    {p q : ℝ → ℝ} {L α η t : ℝ} (hphase : StrictCornerSignPhases p q L α η)
+    (ht : t ∈ Icc (0 : ℝ) L) (hp : p t < 0) : α < t := by
+  by_contra! hnot
+  rcases hnot.lt_or_eq with hlt | rfl
+  · linarith [(hphase.initial_signs t ⟨ht.1, hlt⟩).1]
+  · linarith [hphase.first_zero]
+
 namespace CornerArcDynamics
 
 variable {p q u v : ℝ → ℝ} {a b : ℝ}
@@ -30,31 +49,23 @@ theorem first_linear_decrease_of_nonneg_second
     (D : CornerArcDynamics p q u v a b)
     (hq : ∀ t ∈ Ioo a b, 0 ≤ q t) {t : ℝ} (ht : t ∈ Icc a b) :
     p t ≤ p a - (t - a) / 2 := by
-  have hd : ∀ᵐ s ∂volume.restrict (Ioo a b),
-      HasDerivAt p (u s - 1 - q s) s ∧
-        u s - 1 - q s ≤ (-1 / 2 : ℝ) + 0 * (s - a) := by
-    filter_upwards [ae_restrict_mem measurableSet_Ioo, D.ode, D.source] with s hs hd hk
-    have hu := hk.1.trans (sourceKappa_le_self_add_half (hq s hs))
-    exact ⟨hd.1, by linarith only [hu]⟩
-  have h := absolutelyContinuousOnInterval_quadratic_upper_bound
-    D.first_ac D.ordered hd ht
-  linarith only [h]
+  have h := absolutelyContinuousOnInterval_quadratic_upper_bound (c := -1 / 2) (k := 0)
+    (d := fun s => u s - 1 - q s) D.first_ac D.ordered (by
+      filter_upwards [ae_restrict_mem measurableSet_Ioo, D.ode, D.source] with s hs hd hk
+      exact ⟨hd.1, by linarith [hk.1.trans (sourceKappa_le_self_add_half (hq s hs))]⟩) ht
+  linarith
 
 theorem second_linear_decrease_of_nonpos_first
     (D : CornerArcDynamics p q u v a b)
     (hp : ∀ t ∈ Ioo a b, p t ≤ 0) {t : ℝ} (ht : t ∈ Icc a b) :
     q t ≤ q a - (t - a) / 2 := by
-  have hd : ∀ᵐ s ∂volume.restrict (Ioo a b),
-      HasDerivAt q (v s - 1 + p s) s ∧
-        v s - 1 + p s ≤ (-1 / 2 : ℝ) + 0 * (s - a) := by
-    filter_upwards [ae_restrict_mem measurableSet_Ioo, D.ode, D.source] with s hs hd hk
-    have hκ := sourceKappa_le_self_add_half (neg_nonneg.mpr (hp s hs))
-    rw [sourceKappa_neg] at hκ
-    have hv := hk.2.trans hκ
-    exact ⟨hd.2, by linarith only [hv]⟩
-  have h := absolutelyContinuousOnInterval_quadratic_upper_bound
-    D.second_ac D.ordered hd ht
-  linarith only [h]
+  have h := absolutelyContinuousOnInterval_quadratic_upper_bound (c := -1 / 2) (k := 0)
+    (d := fun s => v s - 1 + p s) D.second_ac D.ordered (by
+      filter_upwards [ae_restrict_mem measurableSet_Ioo, D.ode, D.source] with s hs hd hk
+      have hκ := sourceKappa_le_self_add_half (neg_nonneg.mpr (hp s hs))
+      rw [sourceKappa_neg] at hκ
+      exact ⟨hd.2, by linarith [hk.2]⟩) ht
+  linarith
 
 /-- A short initial arm exception is harmless: before it ends, the
 second momentum can fall at speed at most one while the first remains
@@ -71,67 +82,41 @@ theorem initial_positive_first_crossing
       (∀ t ∈ Icc (0 : ℝ) α, 0 < q t) := by
   obtain ⟨α, hα, hpα, hpbefore⟩ :=
     exists_first_level_crossing hL D.continuousOn.1 hp0 hpL.le
-  have hαL : α < L := lt_of_le_of_ne hα.2 (by
-    intro heq
-    rw [heq] at hpα
-    linarith only [hpα, hpL])
-  refine ⟨α, ⟨hα.1, hαL⟩, hpα, hpbefore, ?_⟩
-  intro t ht
-  by_contra hnot
+  refine ⟨α, ⟨hα.1, hα.2.lt_of_ne (by rintro rfl; linarith)⟩, hpα, hpbefore,
+    fun t ht => ?_⟩
+  by_contra! hnot
   have hq0 : 0 < q 0 := hδ.trans_lt hqδ
-  have ht0 : 0 < t := lt_of_le_of_ne ht.1 (by
-    intro heq
-    have htq : q 0 ≤ 0 := by simpa only [← heq] using le_of_not_gt hnot
-    exact (not_le_of_gt hq0) htq)
-  have htL : t ≤ L := ht.2.trans hα.2
+  have ht0 : 0 < t := ht.1.lt_of_ne (by rintro rfl; linarith)
   obtain ⟨ξ, hξ, hqξ, hqbefore⟩ := exists_first_level_crossing ht0
-    (D.continuousOn.2.mono (Icc_subset_Icc le_rfl htL)) hq0 (le_of_not_gt hnot)
-  have hξα : ξ ≤ α := hξ.2.trans ht.2
-  have hξL : ξ ≤ L := hξ.2.trans htL
+    (D.continuousOn.2.mono (Icc_subset_Icc le_rfl (ht.2.trans hα.2))) hq0 hnot
+  have hξL : ξ ≤ L := hξ.2.trans (ht.2.trans hα.2)
   have Dξ := D.restrict le_rfl hξ.1.le hξL
   have hpξ : 0 ≤ p ξ := by
-    rcases hξα.eq_or_lt with heq | hlt
-    · simpa only [heq, hpα] using (le_rfl : (0 : ℝ) ≤ 0)
-    · exact (hpbefore ξ ⟨hξ.1.le, hlt⟩).le
-  have hpξbefore : ∀ s ∈ Ioo (0 : ℝ) ξ, 0 < p s :=
-    fun s hs => hpbefore s ⟨hs.1.le, hs.2.trans_le hξα⟩
-  by_cases hξδ : ξ ≤ δ
-  · have hqd : ∀ᵐ s ∂volume.restrict (Ioo (0 : ℝ) ξ),
-        HasDerivAt q (v s - 1 + p s) s ∧ -1 ≤ v s - 1 + p s := by
-      filter_upwards [ae_restrict_mem measurableSet_Ioo, Dξ.ode, Dξ.companion_nonneg]
-        with s hs hd hv
-      exact ⟨hd.2, by linarith only [hpξbefore s hs, hv]⟩
-    have hlow := absolutelyContinuousOnInterval_linear_lower_bound Dξ.second_ac
-      hξ.1.le hqd (right_mem_Icc.mpr hξ.1.le)
-    rw [hqξ] at hlow
-    linarith only [hlow, hξδ, hqδ]
-  · let E : ℝ → ℝ := fun s => Analysis.momentumQuadraticEnergy 1 (-1) 0 (p s) (q s)
-    have hE : AbsolutelyContinuousOnInterval E 0 ξ :=
-      Analysis.absolutelyContinuousOnInterval_momentumQuadraticEnergy
-        Dξ.first_ac Dξ.second_ac 1 (-1) 0
-    have hEd : ∀ᵐ s ∂volume.restrict (Ioo (0 : ℝ) ξ),
-        HasDerivAt E
-          (2 * (p s - 1) * (u s - 1 - q s) +
-            2 * (q s + 1) * (v s - 1 + p s)) s ∧
-          0 ≤ 2 * (p s - 1) * (u s - 1 - q s) +
-            2 * (q s + 1) * (v s - 1 + p s) := by
+    rcases (hξ.2.trans ht.2).eq_or_lt with rfl | hlt
+    exacts [hpα.ge, (hpbefore ξ ⟨hξ.1.le, hlt⟩).le]
+  have hpξbefore (s : ℝ) (hs : s ∈ Ioo (0 : ℝ) ξ) : 0 < p s :=
+    hpbefore s ⟨hs.1.le, hs.2.trans_le (hξ.2.trans ht.2)⟩
+  rcases le_or_gt ξ δ with hξδ | hξδ
+  · -- Before `δ` the second momentum falls at speed at most one.
+    have hlow := absolutelyContinuousOnInterval_linear_lower_bound (k := -1)
+      (d := fun s => v s - 1 + p s) Dξ.second_ac hξ.1.le (by
+        filter_upwards [ae_restrict_mem measurableSet_Ioo, Dξ.ode, Dξ.companion_nonneg]
+          with s hs hd hv
+        exact ⟨hd.2, by linarith [hpξbefore s hs]⟩) (right_mem_Icc.mpr hξ.1.le)
+    linarith
+  -- Afterwards the quadratic radius about `(1, -1)` increases, but it is at most two at `ξ`.
+  have hE := absolutelyContinuousOnInterval_linear_lower_bound (k := 0)
+    (Analysis.absolutelyContinuousOnInterval_momentumQuadraticEnergy
+      Dξ.first_ac Dξ.second_ac 1 (-1) 0) hξ.1.le (by
       filter_upwards [ae_restrict_mem measurableSet_Ioo, Dξ.ode, Dξ.shadow,
         Dξ.companion_nonneg] with s hs hd hshadow hv
       have hqs := hqbefore s ⟨hs.1.le, hs.2⟩
-      have hu := (hshadow (hpξbefore s hs) hqs).1
-      refine ⟨?_, ?_⟩
-      · exact (Analysis.hasDerivAt_momentumQuadraticEnergy hd.1 hd.2 1 (-1) 0).congr_deriv
-          (by ring)
-      · rw [hu]
-        have hprod := mul_nonneg (show 0 ≤ 2 * (q s + 1) by linarith only [hqs]) hv
-        nlinarith only [hprod]
-    have hmon := absolutelyContinuousOnInterval_linear_lower_bound hE hξ.1.le hEd
-      (right_mem_Icc.mpr hξ.1.le)
-    have hpξone := hfirst ξ ⟨(lt_of_not_ge hξδ).le, hξL⟩
-    have hprod := mul_nonneg hpξ (sub_nonneg.mpr hpξone)
-    dsimp only [E, Analysis.momentumQuadraticEnergy] at hmon
-    rw [hqξ] at hmon
-    nlinarith only [hmon, henergy, hprod, hpξone, hpξ]
+      refine ⟨Analysis.hasDerivAt_momentumQuadraticEnergy hd.1 hd.2 1 (-1) 0, ?_⟩
+      rw [(hshadow (hpξbefore s hs) hqs).1]
+      linarith [mul_nonneg (show 0 ≤ q s + 1 by linarith) hv])
+    (right_mem_Icc.mpr hξ.1.le)
+  simp only [Analysis.momentumQuadraticEnergy, hqξ] at hE
+  linarith [mul_nonneg hpξ (sub_nonneg.mpr (hfirst ξ ⟨hξδ.le, hξL⟩))]
 
 /-- The negative sector cannot return through `p = 0`: its shifted
 quadratic energy increases, but the lower arm bounds the energy of
@@ -144,94 +129,40 @@ theorem final_negative_sector
     ∀ t ∈ Ioc η L, p t < 0 ∧ q t < 0 := by
   have hpnegative : ∀ t ∈ Icc η L, p t < 0 := by
     intro t ht
-    by_contra hnot
-    have hηt : η < t := lt_of_le_of_ne ht.1 (by
-      intro heq
-      have hp : 0 ≤ p η := by simpa only [← heq] using le_of_not_gt hnot
-      exact (not_le_of_gt hpη) hp)
-    have hcont : ContinuousOn (fun s => -p s) (Icc η t) :=
-      (D.continuousOn.1.mono (Icc_subset_Icc hη.1.le ht.2)).neg
-    obtain ⟨ξ, hξ, hpξneg, hpbefore⟩ := exists_first_level_crossing hηt hcont
-      (neg_pos.mpr hpη) (neg_nonpos.mpr (le_of_not_gt hnot))
-    have hpξ : p ξ = 0 := by linarith only [hpξneg]
+    by_contra! hnot
+    obtain ⟨ξ, hξ, hpξ, hpbefore⟩ := exists_first_level_crossing
+      (ht.1.lt_of_ne (by rintro rfl; linarith))
+      (D.continuousOn.1.mono (Icc_subset_Icc hη.1.le ht.2)).neg (neg_pos.mpr hpη)
+      (neg_nonpos.mpr hnot)
     have hξL : ξ ≤ L := hξ.2.trans ht.2
     have Dξ := D.restrict hη.1.le hξ.1.le hξL
-    have hpbefore : ∀ s ∈ Ioo η ξ, p s < 0 := by
-      intro s hs
-      have h := hpbefore s ⟨hs.1.le, hs.2⟩
-      linarith only [h]
-    have hqnegative : ∀ s ∈ Ioc η ξ, q s < 0 := by
-      intro s hs
-      have hbound := Dξ.second_linear_decrease_of_nonpos_first
-        (fun r hr => (hpbefore r hr).le) ⟨hs.1.le, hs.2⟩
-      rw [hqη] at hbound
-      linarith only [hbound, hs.1]
-    let E : ℝ → ℝ := fun s => Analysis.momentumQuadraticEnergy 1 (-1 / 2) 0 (p s) (q s)
-    have hE : AbsolutelyContinuousOnInterval E η ξ :=
-      Analysis.absolutelyContinuousOnInterval_momentumQuadraticEnergy
-        Dξ.first_ac Dξ.second_ac 1 (-1 / 2) 0
-    have hEd : ∀ᵐ s ∂volume.restrict (Ioo η ξ),
-        HasDerivAt E
-          (2 * (p s - 1) * (u s - 1 - q s) +
-            2 * (q s + 1 / 2) * (v s - 1 + p s)) s ∧
-          0 ≤ 2 * (p s - 1) * (u s - 1 - q s) +
-            2 * (q s + 1 / 2) * (v s - 1 + p s) := by
-      filter_upwards [ae_restrict_mem measurableSet_Ioo, Dξ.ode,
-        ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hη.1.le hξL) hshadow]
-        with s hs hd hshadow
-      obtain ⟨hv, hu⟩ := hshadow (hpbefore s hs) (hqnegative s ⟨hs.1, hs.2.le⟩)
-      refine ⟨?_, ?_⟩
-      · exact (Analysis.hasDerivAt_momentumQuadraticEnergy hd.1 hd.2 1 (-1 / 2) 0).congr_deriv
-          (by ring)
-      · rw [hv]
-        have hprod := mul_nonneg
-          (show 0 ≤ 2 * (1 - p s) by linarith only [hpbefore s hs])
-          (sub_nonneg.mpr hu)
-        nlinarith only [hprod]
-    have hmon := absolutelyContinuousOnInterval_linear_lower_bound hE hξ.1.le hEd
+    have hpbefore (s : ℝ) (hs : s ∈ Ioo η ξ) : p s < 0 :=
+      neg_pos.mp (hpbefore s ⟨hs.1.le, hs.2⟩)
+    have hqnegative (s : ℝ) (hs : s ∈ Ioc η ξ) : q s < 0 := by
+      linarith [hs.1, Dξ.second_linear_decrease_of_nonpos_first
+        (fun r hr => (hpbefore r hr).le) ⟨hs.1.le, hs.2⟩]
+    -- The quadratic radius about `(1, -1/2)` increases up to the proposed exit `ξ`.
+    have hE := absolutelyContinuousOnInterval_linear_lower_bound (k := 0)
+      (Analysis.absolutelyContinuousOnInterval_momentumQuadraticEnergy
+        Dξ.first_ac Dξ.second_ac 1 (-1 / 2) 0) hξ.1.le (by
+        filter_upwards [ae_restrict_mem measurableSet_Ioo, Dξ.ode,
+          ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hη.1.le hξL) hshadow]
+          with s hs hd hshadow
+        obtain ⟨hv, hu⟩ := hshadow (hpbefore s hs) (hqnegative s ⟨hs.1, hs.2.le⟩)
+        refine ⟨Analysis.hasDerivAt_momentumQuadraticEnergy hd.1 hd.2 1 (-1 / 2) 0, ?_⟩
+        rw [hv]
+        linarith [mul_nonneg (show 0 ≤ 1 - p s by linarith [hpbefore s hs])
+          (sub_nonneg.mpr hu)])
       (right_mem_Icc.mpr hξ.1.le)
-    have hqξlow := D.lower_arm ξ ⟨hη.1.le.trans hξ.1.le, hξL⟩
-    have hqξneg := hqnegative ξ ⟨hξ.1, le_rfl⟩
-    have hqprod := mul_nonneg (show 0 ≤ q ξ + 1 by linarith only [hqξlow])
-      (neg_nonneg.mpr hqξneg.le)
-    have hpprod := mul_pos (neg_pos.mpr hpη)
-      (show 0 < 2 - p η by linarith only [hpη])
-    dsimp only [E, Analysis.momentumQuadraticEnergy] at hmon
-    rw [hpξ, hqη] at hmon
-    nlinarith only [hmon, hqprod, hpprod]
+    simp only [Analysis.momentumQuadraticEnergy, hqη, neg_eq_zero.mp hpξ] at hE
+    have hqξ := D.lower_arm ξ ⟨by linarith [hξ.1, hη.1], hξL⟩
+    linarith [mul_nonneg (show 0 ≤ q ξ + 1 by linarith)
+      (neg_nonneg.mpr (hqnegative ξ ⟨hξ.1, le_rfl⟩).le),
+      mul_pos (neg_pos.mpr hpη) (show 0 < 2 - p η by linarith)]
   intro t ht
-  have Dη := D.restrict hη.1.le hη.2.le le_rfl
-  have hbound := Dη.second_linear_decrease_of_nonpos_first
+  have hbound := (D.restrict hη.1.le hη.2.le le_rfl).second_linear_decrease_of_nonpos_first
     (fun s hs => (hpnegative s (Ioo_subset_Icc_self hs)).le) ⟨ht.1.le, ht.2⟩
-  rw [hqη] at hbound
-  exact ⟨hpnegative t ⟨ht.1.le, ht.2⟩, by linarith only [hbound, ht.1]⟩
-
-end CornerArcDynamics
-
-structure StrictCornerSignPhases (p q : ℝ → ℝ) (L α η : ℝ) : Prop where
-  first_mem : α ∈ Ioo (0 : ℝ) L
-  second_mem : η ∈ Ioo α L
-  first_zero : p α = 0
-  second_zero : q η = 0
-  initial_signs : ∀ t ∈ Ico (0 : ℝ) α, 0 < p t ∧ 0 < q t
-  core_signs : ∀ t ∈ Ioo α η, p t < 0 ∧ 0 < q t
-  final_signs : ∀ t ∈ Ioc η L, p t < 0 ∧ q t < 0
-  second_at_first : 0 < q α
-  first_at_second : p η < 0
-
-theorem StrictCornerSignPhases.first_lt_of_first_neg
-    {p q : ℝ → ℝ} {L α η t : ℝ} (hphase : StrictCornerSignPhases p q L α η)
-    (ht : t ∈ Icc (0 : ℝ) L) (hp : p t < 0) : α < t := by
-  by_contra hnot
-  rcases (le_of_not_gt hnot).lt_or_eq with hlt | heq
-  · have hpos := (hphase.initial_signs t ⟨ht.1, hlt⟩).1
-    linarith only [hp, hpos]
-  · rw [heq, hphase.first_zero] at hp
-    exact lt_irrefl 0 hp
-
-namespace CornerArcDynamics
-
-variable {p q u v : ℝ → ℝ}
+  exact ⟨hpnegative t ⟨ht.1.le, ht.2⟩, by linarith [ht.1]⟩
 
 theorem exists_strict_sign_phases {L δ : ℝ}
     (D : CornerArcDynamics p q u v 0 L) (hL : 0 < L)
@@ -247,24 +178,15 @@ theorem exists_strict_sign_phases {L δ : ℝ}
   have hqα := hqbefore α ⟨hα.1.le, le_rfl⟩
   obtain ⟨η, hη, hqη, hqcore⟩ := exists_first_level_crossing hα.2
     (D.continuousOn.2.mono (Icc_subset_Icc hα.1.le le_rfl)) hqα hqL.le
-  have hηL : η < L := lt_of_le_of_ne hη.2 (by
-    intro heq
-    rw [heq] at hqη
-    linarith only [hqη, hqL])
-  have Dcore := D.restrict hα.1.le hη.1.le hη.2
-  have hpcore : ∀ t ∈ Ioc α η, p t < 0 := by
-    intro t ht
-    have hbound := Dcore.first_linear_decrease_of_nonneg_second
-      (fun s hs => (hqcore s ⟨hs.1.le, hs.2⟩).le) ⟨ht.1.le, ht.2⟩
-    rw [hpα] at hbound
-    linarith only [hbound, ht.1]
+  have hηL : η < L := hη.2.lt_of_ne (by rintro rfl; linarith)
+  have hpcore (t : ℝ) (ht : t ∈ Ioc α η) : p t < 0 := by
+    linarith [ht.1, (D.restrict hα.1.le hη.1.le hη.2).first_linear_decrease_of_nonneg_second
+      (fun s hs => (hqcore s ⟨hs.1.le, hs.2⟩).le) ⟨ht.1.le, ht.2⟩]
   have hpη := hpcore η ⟨hη.1, le_rfl⟩
-  refine ⟨α, η, hα, ⟨hη.1, hηL⟩, hpα, hqη, ?_, ?_,
+  exact ⟨α, η, hα, ⟨hη.1, hηL⟩, hpα, hqη,
+    fun t ht => ⟨hpbefore t ht, hqbefore t ⟨ht.1, ht.2.le⟩⟩,
+    fun t ht => ⟨hpcore t ⟨ht.1, ht.2.le⟩, hqcore t ⟨ht.1.le, ht.2⟩⟩,
     D.final_negative_sector ⟨hα.1.trans hη.1, hηL⟩ hpη hqη hshadow, hqα, hpη⟩
-  · intro t ht
-    exact ⟨hpbefore t ht, hqbefore t ⟨ht.1, ht.2.le⟩⟩
-  · intro t ht
-    exact ⟨hpcore t ⟨ht.1, ht.2.le⟩, hqcore t ⟨ht.1.le, ht.2⟩⟩
 
 /-- The level `q = 0` carries no hidden excess. Its derivative vanishes
 almost everywhere there, whereas a first momentum below `-1` would
@@ -278,24 +200,15 @@ theorem ae_companion_le_one_of_no_bad {a b : ℝ}
   filter_upwards [ae_restrict_mem measurableSet_Ioo, D.ode, D.source,
     D.first_arm_or_zero, hshadow, ae_restrict_of_ae (ae_deriv_eq_zero_on_level q 0)]
     with t ht hd hk harm hshadow hlevel
-  rcases harm with hpone | hzero
-  · by_cases hplower : -1 ≤ p t
+  obtain hpone | ⟨-, hv⟩ := harm
+  · rcases le_or_gt (-1) (p t) with hplower | hpbad
     · exact hk.2.trans (sourceKappa_le_one_of_bounds hplower hpone)
-    · have hpbad : p t < -1 := lt_of_not_ge hplower
-      have hqnonpos : q t ≤ 0 := le_of_not_gt (fun hq => hno t ht ⟨hpbad, hq⟩)
-      rcases hqnonpos.lt_or_eq with hqneg | hqzero
-      · rw [(hshadow (by linarith only [hpbad]) hqneg).1]
-        norm_num
-      · have hflat := hlevel hqzero
-        rw [hd.2.deriv] at hflat
-        have hκ := sourceKappa_le_self_add_half
-          (show 0 ≤ -p t by linarith only [hpbad])
-        rw [sourceKappa_neg] at hκ
-        have hv := hk.2.trans hκ
-        exfalso
-        linarith only [hflat, hv]
-  · rw [hzero.2]
-    norm_num
+    rcases (not_lt.mp fun hq => hno t ht ⟨hpbad, hq⟩).lt_or_eq with hqneg | hqzero
+    · linarith [(hshadow (by linarith) hqneg).1]
+    have hκ := sourceKappa_le_self_add_half (neg_nonneg.mpr (by linarith : p t ≤ 0))
+    rw [sourceKappa_neg] at hκ
+    linarith [hd.2.deriv ▸ hlevel hqzero, hk.2]
+  · linarith
 
 /-- Either the companion density is unit bounded, or its first possible
 excess is reached through the literal first level `p = -1` on the one
@@ -309,55 +222,38 @@ theorem first_bad_crossing_or_unit {L α η : ℝ}
         (∀ t ∈ Ico α τ, -1 < p t) ∧
         (∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) τ), v t ≤ 1) := by
   by_cases hbad : ∃ t ∈ Ioo (0 : ℝ) L, p t < -1 ∧ 0 < q t
-  · obtain ⟨t, ht, hpbad, hqbad⟩ := hbad
-    have hαt : α < t := by
-      by_contra hnot
-      rcases (le_of_not_gt hnot).lt_or_eq with hlt | heq
-      · have hp := (hphase.initial_signs t ⟨ht.1.le, hlt⟩).1
-        linarith only [hp, hpbad]
-      · rw [heq, hphase.first_zero] at hpbad
-        norm_num at hpbad
-    have htη : t < η := by
-      by_contra hnot
-      rcases (le_of_not_gt hnot).lt_or_eq with hlt | heq
-      · have hq := (hphase.final_signs t ⟨hlt, ht.2.le⟩).2
-        linarith only [hq, hqbad]
-      · rw [← heq, hphase.second_zero] at hqbad
-        exact lt_irrefl 0 hqbad
-    obtain ⟨τ, hτ, hpτ, hpfirst⟩ := exists_first_level_crossing hαt
-      (D.continuousOn.1.mono (Icc_subset_Icc hphase.first_mem.1.le ht.2.le))
-      (show -1 < p α by rw [hphase.first_zero]; norm_num) hpbad.le
-    have hτη : τ < η := hτ.2.trans_lt htη
-    have hτL : τ ≤ L := hτη.le.trans hphase.second_mem.2.le
-    have h0τ : 0 < τ := hphase.first_mem.1.trans hτ.1
-    have hno : ∀ s ∈ Ioo (0 : ℝ) τ, ¬ (p s < -1 ∧ 0 < q s) := by
-      intro s hs hbad
-      by_cases hαs : α ≤ s
-      · have hp := hpfirst s ⟨hαs, hs.2⟩
-        linarith only [hp, hbad.1]
-      · have hp := (hphase.initial_signs s ⟨hs.1.le, lt_of_not_ge hαs⟩).1
-        linarith only [hp, hbad.1]
-    have hprefix := (D.restrict le_rfl h0τ.le hτL).ae_companion_le_one_of_no_bad
-      (ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo le_rfl hτL) hshadow) hno
-    exact Or.inr ⟨τ, ⟨hτ.1, hτη⟩, hpτ,
-      (hphase.core_signs τ ⟨hτ.1, hτη⟩).2, hpfirst, hprefix⟩
-  · exact Or.inl (D.ae_companion_le_one_of_no_bad hshadow
-      (fun t ht hbad' => hbad ⟨t, ht, hbad'⟩))
+  swap
+  · exact .inl (D.ae_companion_le_one_of_no_bad hshadow fun t ht h => hbad ⟨t, ht, h⟩)
+  obtain ⟨t, ht, hpbad, hqbad⟩ := hbad
+  have hαt := hphase.first_lt_of_first_neg ⟨ht.1.le, ht.2.le⟩ (by linarith)
+  have htη : t < η := by
+    by_contra! h
+    rcases h.eq_or_lt with rfl | h
+    · linarith [hphase.second_zero]
+    · linarith [(hphase.final_signs t ⟨h, ht.2.le⟩).2]
+  obtain ⟨τ, hτ, hpτ, hpfirst⟩ := exists_first_level_crossing hαt
+    (D.continuousOn.1.mono (Icc_subset_Icc hphase.first_mem.1.le ht.2.le))
+    (by linarith [hphase.first_zero]) hpbad.le
+  have hτη : τ < η := hτ.2.trans_lt htη
+  have hτL : τ ≤ L := hτη.le.trans hphase.second_mem.2.le
+  refine .inr ⟨τ, ⟨hτ.1, hτη⟩, hpτ, (hphase.core_signs τ ⟨hτ.1, hτη⟩).2, hpfirst,
+    (D.restrict le_rfl (hphase.first_mem.1.trans hτ.1).le hτL).ae_companion_le_one_of_no_bad
+      (ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo le_rfl hτL) hshadow)
+      fun s hs h => ?_⟩
+  rcases lt_or_ge s α with hsα | hαs
+  · linarith [(hphase.initial_signs s ⟨hs.1.le, hsα⟩).1]
+  · linarith [hpfirst s ⟨hαs, hs.2⟩]
 
 theorem first_bad_future_bounds {L α η τ : ℝ}
     (D : CornerArcDynamics p q u v 0 L) (hphase : StrictCornerSignPhases p q L α η)
     (hτ : τ ∈ Ioo α η) (hpτ : p τ = -1) :
     ∀ t ∈ Icc τ η,
       p t ≤ -1 - (t - τ) / 2 ∧ q t ≤ q τ - (t - τ) / 2 := by
-  have Dtail := D.restrict (hphase.first_mem.1.trans hτ.1).le hτ.2.le
-    hphase.second_mem.2.le
   intro t ht
-  have hp := Dtail.first_linear_decrease_of_nonneg_second
-    (fun s hs => (hphase.core_signs s ⟨hτ.1.trans hs.1, hs.2⟩).2.le) ht
-  have hq := Dtail.second_linear_decrease_of_nonpos_first
-    (fun s hs => (hphase.core_signs s ⟨hτ.1.trans hs.1, hs.2⟩).1.le) ht
-  rw [hpτ] at hp
-  exact ⟨hp, hq⟩
+  have Dtail := D.restrict (hphase.first_mem.1.trans hτ.1).le hτ.2.le hphase.second_mem.2.le
+  have hsign (s : ℝ) (hs : s ∈ Ioo τ η) := hphase.core_signs s ⟨hτ.1.trans hs.1, hs.2⟩
+  exact ⟨hpτ ▸ Dtail.first_linear_decrease_of_nonneg_second (fun s hs => (hsign s hs).2.le) ht,
+    Dtail.second_linear_decrease_of_nonpos_first (fun s hs => (hsign s hs).1.le) ht⟩
 
 end CornerArcDynamics
 

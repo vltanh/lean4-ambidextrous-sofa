@@ -31,99 +31,62 @@ abbrev TerminalAngle := Icc (Real.pi / 4) (Real.pi / 2)
 theorem TerminalAngle.pos (α : TerminalAngle) : 0 < (α : ℝ) := by
   linarith [α.property.1, Real.pi_pos]
 
-theorem TerminalAngle.sin_pos (α : TerminalAngle) : 0 < Real.sin (α : ℝ) :=
-  Real.sin_pos_of_pos_of_lt_pi (TerminalAngle.pos α) (by linarith [α.property.2, Real.pi_pos])
-
 /-- Closing the visited angular interval adds no positive height to its
 supremum, even when the terminal corner itself is positive. -/
 theorem fullWallClip_le_sweptNiche_of_mem_Icc (U : CompactCap) {α : ℝ}
     (hα0 : 0 < α) (hα : α ≤ Real.pi / 2) (x : ℝ) {t : ℝ} (ht : t ∈ Icc 0 α) :
     fullWallClip U x t ≤ sweptNiche U.carrier α x := by
-  have hcont : ContinuousOn (fun θ : ℝ => fullWallClip U x θ) (Icc 0 α) := by
-    intro θ hθ
-    exact ((continuousAt_fullWallClip (z := ((U, x), θ))
-      ⟨hθ.1, hθ.2.trans hα⟩).comp
-        (continuous_const.prodMk continuous_id).continuousAt).continuousWithinAt
-  have hinside : ∀ θ ∈ Ioo (0 : ℝ) α,
-      fullWallClip U x θ ≤ sweptNiche U.carrier α x := by
-    intro θ hθ
-    exact max_le (cornerWall_le_sweptNiche
-      (sweptWallValues_bddAbove U.isCap.isCompact hα x) hθ)
-      (sweptNiche_nonneg _ _ _)
-  have hclosure : closure (Ioo (0 : ℝ) α) = Icc 0 α := closure_Ioo (ne_of_lt hα0)
-  exact le_on_closure hinside (by simpa only [hclosure] using hcont)
-    continuousOn_const (by simpa only [hclosure] using ht)
+  have hcl := closure_Ioo hα0.ne
+  refine le_on_closure (fun θ hθ => max_le (cornerWall_le_sweptNiche
+    (sweptWallValues_bddAbove U.isCap.isCompact hα x) hθ) (sweptNiche_nonneg _ _ _))
+    (hcl ▸ fun θ hθ => ((continuousAt_fullWallClip (z := ((U, x), θ)) ⟨hθ.1, hθ.2.trans hα⟩).comp
+      (f := fun θ => ((U, x), θ)) (by fun_prop)).continuousWithinAt) continuousOn_const (hcl ▸ ht)
 
 theorem continuous_rescaledFullWallClip :
     Continuous (fun p : ((CompactCap × TerminalAngle) × ℝ) × Icc (0 : ℝ) 1 =>
-      fullWallClip p.1.1.1 p.1.2 ((p.1.1.2 : ℝ) * (p.2 : ℝ))) := by
-  apply continuous_iff_continuousAt.mpr
-  intro p
-  have hangle : (p.1.1.2 : ℝ) * (p.2 : ℝ) ∈ Icc (0 : ℝ) (Real.pi / 2) := by
-    refine ⟨mul_nonneg (TerminalAngle.pos p.1.1.2).le p.2.property.1, ?_⟩
-    have h : (p.1.1.2 : ℝ) * (p.2 : ℝ) ≤ (p.1.1.2 : ℝ) := by
-      simpa only [mul_one] using
-        mul_le_mul_of_nonneg_left p.2.property.2 (TerminalAngle.pos p.1.1.2).le
-    exact h.trans p.1.1.2.property.2
-  exact ContinuousAt.comp (x := p) (continuousAt_fullWallClip
-    (z := ((p.1.1.1, p.1.2), (p.1.1.2 : ℝ) * (p.2 : ℝ))) hangle)
-      (show ContinuousAt (fun q : ((CompactCap × TerminalAngle) × ℝ) × Icc (0 : ℝ) 1 =>
-        ((q.1.1.1, q.1.2), (q.1.1.2 : ℝ) * (q.2 : ℝ))) p by fun_prop)
+      fullWallClip p.1.1.1 p.1.2 ((p.1.1.2 : ℝ) * (p.2 : ℝ))) :=
+  continuous_iff_continuousAt.2 fun p => (continuousAt_fullWallClip
+    (z := ((p.1.1.1, p.1.2), (p.1.1.2 : ℝ) * (p.2 : ℝ)))
+    ⟨mul_nonneg (TerminalAngle.pos _).le p.2.2.1,
+      (mul_le_of_le_one_right (TerminalAngle.pos _).le p.2.2.2).trans p.1.1.2.2.2⟩).comp
+    (f := fun q : ((CompactCap × TerminalAngle) × ℝ) × Icc (0 : ℝ) 1 =>
+      ((q.1.1.1, q.1.2), (q.1.1.2 : ℝ) * (q.2 : ℝ))) (by fun_prop)
 
 theorem partialSweptNiche_eq_sSup_unit (U : CompactCap) (α : TerminalAngle) (x : ℝ) :
     sweptNiche U.carrier α x =
       sSup ((fun s : Icc (0 : ℝ) 1 => fullWallClip U x ((α : ℝ) * (s : ℝ))) '' univ) := by
-  let zero : Icc (0 : ℝ) 1 := ⟨0, le_rfl, zero_le_one⟩
-  have hcont : Continuous (fun s : Icc (0 : ℝ) 1 =>
-      fullWallClip U x ((α : ℝ) * (s : ℝ))) :=
-    continuous_rescaledFullWallClip.comp (f := fun s : Icc (0 : ℝ) 1 => (((U, α), x), s))
-      (continuous_const.prodMk continuous_id)
-  have hbounded := (isCompact_univ : IsCompact (univ : Set (Icc (0 : ℝ) 1))).bddAbove_image
-    hcont.continuousOn
-  have hzero : 0 ≤ sSup ((fun s : Icc (0 : ℝ) 1 =>
-      fullWallClip U x ((α : ℝ) * (s : ℝ))) '' univ) := by
-    have h := le_csSup hbounded (mem_image_of_mem _ (mem_univ zero))
-    simpa only [zero, mul_zero, fullWallClip_zero] using h
-  apply le_antisymm
-  · apply sweptNiche_le_of_forall (TerminalAngle.pos α) hzero
-    intro θ hθ
-    let s : Icc (0 : ℝ) 1 := ⟨θ / α, div_nonneg hθ.1.le (TerminalAngle.pos α).le, by
-      rw [div_le_iff₀ (TerminalAngle.pos α)]
-      simpa only [one_mul] using hθ.2.le⟩
-    have heq : (α : ℝ) * (s : ℝ) = θ := by
-      dsimp [s]
-      field_simp [(TerminalAngle.pos α).ne']
-    have h := le_csSup hbounded (mem_image_of_mem _ (mem_univ s))
-    rw [heq] at h
+  have hα := TerminalAngle.pos α
+  have hle (s : Icc (0 : ℝ) 1) : fullWallClip U x ((α : ℝ) * (s : ℝ)) ≤
+      sSup ((fun s : Icc (0 : ℝ) 1 => fullWallClip U x ((α : ℝ) * (s : ℝ))) '' univ) :=
+    le_csSup (isCompact_univ.bddAbove_image (continuous_rescaledFullWallClip.comp
+      (.prodMk_right ((U, α), x))).continuousOn) ⟨s, mem_univ _, rfl⟩
+  refine le_antisymm (sweptNiche_le_of_forall hα ((le_max_right _ _).trans
+    (hle ⟨0, le_rfl, zero_le_one⟩)) fun θ hθ => ?_) (csSup_le (univ_nonempty.image _) ?_)
+  · have h := hle ⟨θ / α, div_nonneg hθ.1.le hα.le, (div_le_one hα).2 hθ.2.le⟩
+    rw [mul_div_cancel₀ _ hα.ne'] at h
     exact (le_max_left _ _).trans h
-  · refine csSup_le ⟨fullWallClip U x ((α : ℝ) * (zero : ℝ)), zero, mem_univ _, rfl⟩ ?_
-    rintro y ⟨s, _, rfl⟩
-    apply fullWallClip_le_sweptNiche_of_mem_Icc U (TerminalAngle.pos α) α.property.2 x
-    refine ⟨mul_nonneg (TerminalAngle.pos α).le s.property.1, ?_⟩
-    simpa only [mul_one] using mul_le_mul_of_nonneg_left s.property.2 (TerminalAngle.pos α).le
+  · rintro _ ⟨s, -, rfl⟩
+    exact fullWallClip_le_sweptNiche_of_mem_Icc U hα α.2.2 x
+      ⟨mul_nonneg hα.le s.2.1, mul_le_of_le_one_right hα.le s.2.2⟩
 
 theorem continuous_partialCapSweptNiche :
     Continuous (fun p : (CompactCap × TerminalAngle) × ℝ =>
       sweptNiche p.1.1.carrier p.1.2 p.2) := by
-  have h := (isCompact_univ : IsCompact (univ : Set (Icc (0 : ℝ) 1))).continuous_sSup
+  simpa only [← partialSweptNiche_eq_sSup_unit] using isCompact_univ.continuous_sSup
     (f := fun (q : (CompactCap × TerminalAngle) × ℝ) (s : Icc (0 : ℝ) 1) =>
       fullWallClip q.1.1 q.2 ((q.1.2 : ℝ) * (s : ℝ))) continuous_rescaledFullWallClip
-  simpa only [← partialSweptNiche_eq_sSup_unit] using h
 
 /-- The denominator of the first wall remains positive on the entire
 allowed terminal interval, including its full-turn endpoint. -/
 theorem continuous_partialCapFirstWall :
     Continuous (fun p : (CompactCap × TerminalAngle) × ℝ =>
       firstWall p.1.1.carrier p.1.2 p.2) := by
-  have hangle : Continuous (fun p : (CompactCap × TerminalAngle) × ℝ => (p.1.2 : ℝ)) :=
-    continuous_subtype_val.comp (continuous_snd.comp continuous_fst)
-  have hsupport : Continuous (fun p : (CompactCap × TerminalAngle) × ℝ =>
-      support p.1.1.carrier (unitNormal p.1.2)) :=
-    continuous_capSupport.comp ((continuous_fst.comp continuous_fst).prodMk
-      (continuous_unitNormal.comp hangle))
-  exact ((hsupport.sub continuous_const).sub
-    (continuous_snd.mul (Real.continuous_cos.comp hangle))).div
-    (Real.continuous_sin.comp hangle) (fun p => (TerminalAngle.sin_pos p.1.2).ne')
+  have := continuous_unitNormal
+  have := continuous_capSupport.comp (f := fun p : (CompactCap × TerminalAngle) × ℝ =>
+    (p.1.1, unitNormal p.1.2)) (by fun_prop)
+  unfold firstWall
+  fun_prop (disch := exact fun p => (Real.sin_pos_of_pos_of_lt_pi (TerminalAngle.pos _)
+    (by linarith [p.1.2.2.2, Real.pi_pos])).ne')
 
 theorem continuous_partialCapBarrier :
     Continuous (fun p : (CompactCap × TerminalAngle) × ℝ =>
@@ -132,33 +95,8 @@ theorem continuous_partialCapBarrier :
 
 theorem IsDownwardCap.continuous_partialBarrier {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hα : α ∈ Icc (Real.pi / 4) (Real.pi / 2)) :
-    Continuous (partialBarrier U α) := by
-  have h := continuous_partialCapBarrier.comp
-    (continuous_const.prodMk continuous_id :
-      Continuous (fun x : ℝ => ((hU.toCompactCap, (⟨α, hα⟩ : TerminalAngle)), x)))
-  exact h
-
-theorem CapHausdorffTendsto.partialBarrier_tendsto
-    {U : ℕ → Set Plane} {K : Set Plane} (h : CapHausdorffTendsto U K)
-    (hU : ∀ n, IsDownwardCap (U n)) (hK : IsDownwardCap K)
-    {α : ℕ → TerminalAngle} {β : TerminalAngle} (hα : Tendsto α atTop (𝓝 β))
-    {x : ℕ → ℝ} {y : ℝ} (hx : Tendsto x atTop (𝓝 y)) :
-    Tendsto (fun n => partialBarrier (U n) (α n) (x n)) atTop (𝓝 (partialBarrier K β y)) := by
-  have h' := (continuous_partialCapBarrier.tendsto ((hK.toCompactCap, β), y)).comp
-    (((IsDownwardCap.tendsto_toCompactCap hU hK h).prodMk_nhds hα).prodMk_nhds hx)
-  exact h'
-
-theorem exists_uniform_partialBarrier_bound {B : Set Plane} (hB : IsCompact B) (l r : ℝ) :
-    ∃ C : ℝ, 0 ≤ C ∧ ∀ U : CompactCap, U.carrier ⊆ B →
-      ∀ α : TerminalAngle, ∀ x ∈ Icc l r, partialBarrier U.carrier α x ≤ C := by
-  have hdomain : IsCompact ((boxedCaps B ×ˢ (univ : Set TerminalAngle)) ×ˢ Icc l r) :=
-    ((isCompact_boxedCaps hB).prod isCompact_univ).prod isCompact_Icc
-  obtain ⟨C, hC⟩ := hdomain.bddAbove_image continuous_partialCapBarrier.continuousOn
-  refine ⟨max C 0, le_max_right _ _, ?_⟩
-  intro U hUB α x hx
-  exact (hC (mem_image_of_mem _ (show ((U, α), x) ∈
-    (boxedCaps B ×ˢ (univ : Set TerminalAngle)) ×ˢ Icc l r from
-      ⟨⟨hUB, mem_univ α⟩, hx⟩))).trans (le_max_left _ _)
+    Continuous (partialBarrier U α) :=
+  (continuous_partialCapBarrier.comp (.prodMk_right (hU.toCompactCap, (⟨α, hα⟩ : TerminalAngle))) :)
 
 theorem CapHausdorffTendsto.middle_partialBarrier_integral_tendsto
     {U : ℕ → Set Plane} {K : Set Plane} (h : CapHausdorffTendsto U K)
@@ -169,43 +107,37 @@ theorem CapHausdorffTendsto.middle_partialBarrier_integral_tendsto
       (horizontalLeft (U n)) (horizontalRight (U n)), partialBarrier (U n) (α n) x)
       atTop (𝓝 (∫ x in middleHalfInterval (horizontalLeft K) (horizontalRight K),
         partialBarrier K β x)) := by
-  obtain ⟨C, hC, hbound⟩ := exists_uniform_partialBarrier_bound hB
-    (horizontalLeft B) (horizontalRight B)
-  have hwindow : ∀ n, middleHalfInterval (horizontalLeft (U n)) (horizontalRight (U n)) ⊆
-      Icc (horizontalLeft B) (horizontalRight B) := fun n =>
+  -- the barrier is bounded on the compact domain of boxed caps, angles and window abscissae
+  obtain ⟨C, hC⟩ := (((isCompact_boxedCaps hB).prod (isCompact_univ (X := TerminalAngle))).prod
+    (isCompact_Icc (a := horizontalLeft B) (b := horizontalRight B))).bddAbove_image
+      continuous_partialCapBarrier.continuousOn
+  have hwindow (n : ℕ) : middleHalfInterval (horizontalLeft (U n)) (horizontalRight (U n)) ⊆
+      Icc (horizontalLeft B) (horizontalRight B) :=
     (middleHalfInterval_subset (horizontalLeft_le_horizontalRight
       (hU n).nonempty (hU n).isCompact)).trans
       ((hU n).projection_subset_bounds_of_subset hB (hsub n))
-  apply tendsto_setIntegral_moving_domain
-    (fun n => measurable_partialBarrier (hU n).isCompact (TerminalAngle.pos (α n))
-      (α n).property.2)
+  refine tendsto_setIntegral_moving_domain
+    (fun n => measurable_partialBarrier (hU n).isCompact (TerminalAngle.pos (α n)) (α n).2.2)
     (fun n => measurableSet_middleHalfInterval _ _) (measurableSet_middleHalfInterval _ _)
-    (Eventually.of_forall (fun x => h.partialBarrier_tendsto hU hK hα tendsto_const_nhds))
-    (h.middle_membership_ae hU hK) hC hwindow
-  intro n x hx
+    (.of_forall fun x => ((continuous_partialCapBarrier.tendsto ((hK.toCompactCap, β), x)).comp
+      (((IsDownwardCap.tendsto_toCompactCap hU hK h).prodMk_nhds hα).prodMk_nhds
+        tendsto_const_nhds) :))
+    (h.middle_membership_ae hU hK) (le_max_right C 0) hwindow fun n x hx => ?_
   rw [Real.norm_of_nonneg (partialBarrier_nonneg _ _ _)]
-  exact hbound (hU n).toCompactCap (hsub n) (α n) x (hwindow n hx)
-
-theorem CapHausdorffTendsto.partialCapScore_tendsto
-    {U : ℕ → Set Plane} {K : Set Plane} (h : CapHausdorffTendsto U K)
-    (hU : ∀ n, IsDownwardCap (U n)) (hK : IsDownwardCap K)
-    {α : ℕ → TerminalAngle} {β : TerminalAngle} (hα : Tendsto α atTop (𝓝 β))
-    {B : Set Plane} (hB : IsCompact B) (hsub : ∀ n, U n ⊆ B) :
-    Tendsto (fun n => capScore (U n) (α n)) atTop (𝓝 (capScore K β)) := by
-  have hlim := (h.exterior_roof_integral_tendsto hU hK hB hsub).sub
-    (h.middle_partialBarrier_integral_tendsto hU hK hα hB hsub)
-  have hScore (n : ℕ) := capScore_eq_integrals (U n) (α n)
-  simpa only [← hScore, ← capScore_eq_integrals K β] using hlim
+  exact le_max_of_le_left (hC ⟨(((hU n).toCompactCap, α n), x),
+    ⟨⟨hsub n, mem_univ _⟩, hwindow n hx⟩, rfl⟩)
 
 /-- Joint continuity on the whole compact cap-and-angle domain, retaining
 zero-width and zero-height caps at its boundary. -/
 theorem continuous_partialCapScore_on_box {B : Set Plane} (hB : IsCompact B) :
     Continuous (fun p : boxedCaps B × TerminalAngle => capScore p.1.val.carrier p.2) := by
-  apply continuous_iff_seqContinuous.mpr
-  intro U K hlim
-  have hc : Tendsto (fun n => (U n).1.val) atTop (𝓝 K.1.val) :=
-    (continuous_subtype_val.tendsto K.1).comp hlim.fst_nhds
-  exact (CompactCap.tendsto_iff_hausdorff.mp hc).partialCapScore_tendsto
-    (fun n => (U n).1.val.isCap) K.1.val.isCap hlim.snd_nhds hB (fun n => (U n).1.property)
+  refine continuous_iff_seqContinuous.mpr fun U K hlim => ?_
+  have h := CompactCap.tendsto_iff_hausdorff.mp
+    ((continuous_subtype_val.tendsto K.1).comp hlim.fst_nhds)
+  have hU n := (U n).1.val.isCap
+  have hsub n := (U n).1.property
+  simpa only [← capScore_eq_integrals, Function.comp_def] using
+    (h.exterior_roof_integral_tendsto hU K.1.val.isCap hB hsub).sub
+      (h.middle_partialBarrier_integral_tendsto hU K.1.val.isCap hlim.snd_nhds hB hsub)
 
 end AmbidextrousSofa

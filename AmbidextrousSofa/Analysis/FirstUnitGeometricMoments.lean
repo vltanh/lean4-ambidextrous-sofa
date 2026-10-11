@@ -31,9 +31,8 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-set_option quotPrecheck false in
+set_option quotPrecheck false
 local notation "B" => firstTangentPoint (F).f (F).fD
-set_option quotPrecheck false in
 local notation "D" => secondTangentPoint (F).g (F).gD
 local notation "v" => (fun t : ℝ => leftCompanionWingDensity m ρ (t + Real.pi / 2))
 local notation "V" => leftCompanionCap U (horizontalLeft U + capWidth U / 4)
@@ -46,24 +45,16 @@ theorem fullTiltedSupportQuarterPair_tangent_displacements {a b : ℝ}
       (∫ t in a..b, (1 - v t) * Real.sin t) = (D b).2 - (D a).2 := by
   obtain ⟨hBx, hBy, hDx, hDy, hderiv⟩ :=
     fullTiltedSupportQuarterPair_tangent_calculus hU hm haffine hρ hρ0 hρK heq
-  have hL : (0 : ℝ) ≤ Real.pi / 2 := by positivity
-  have hsub : uIcc a b ⊆ uIcc 0 (Real.pi / 2) := by
-    simpa only [uIcc_of_le hab, uIcc_of_le hL] using Icc_subset_Icc ha hb
+  have hsub : uIcc a b ⊆ uIcc 0 (Real.pi / 2) :=
+    uIcc_subset_uIcc (mem_uIcc_of_le ha (hab.trans hb)) (mem_uIcc_of_le (ha.trans hab) hb)
   have hd := ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo ha hb) hderiv
-  refine ⟨integral_eq_sub_of_ac_of_ae_hasDerivAt hab (hBx.mono hsub)
-    (hd.mono fun _ ht => ht.1), ?_,
-    integral_eq_sub_of_ac_of_ae_hasDerivAt hab (hDx.mono hsub)
-      (hd.mono fun _ ht => ht.2.2.1),
-    integral_eq_sub_of_ac_of_ae_hasDerivAt hab (hDy.mono hsub)
-      (hd.mono fun _ ht => ht.2.2.2)⟩
-  have hneg : ∀ᵐ t ∂volume.restrict (Ioo a b),
-      HasDerivAt (fun s => -(B s).2) ((1 - ρ t) * Real.cos t) t := by
-    filter_upwards [hd] with t ht
-    exact ht.2.1.neg.congr_deriv (by ring)
-  have h := integral_eq_sub_of_ac_of_ae_hasDerivAt hab (hBy.neg.mono hsub) hneg
-  convert h using 1
-  simp only [Pi.neg_apply]
-  ring
+  have hBy' : (∫ t in a..b, (1 - ρ t) * Real.cos t) = _ :=
+    integral_eq_sub_of_ac_of_ae_hasDerivAt hab (hBy.neg.mono hsub)
+      (hd.mono fun _ ht => ht.2.1.neg.congr_deriv (by ring))
+  refine ⟨integral_eq_sub_of_ac_of_ae_hasDerivAt hab (hBx.mono hsub) (hd.mono fun _ ht => ht.1),
+    hBy'.trans (by simp only [Pi.neg_apply]; ring),
+    integral_eq_sub_of_ac_of_ae_hasDerivAt hab (hDx.mono hsub) (hd.mono fun _ ht => ht.2.2.1),
+    integral_eq_sub_of_ac_of_ae_hasDerivAt hab (hDy.mono hsub) (hd.mono fun _ ht => ht.2.2.2)⟩
 
 /-- The first-unit hypothesis identifies the right middle niche height
 with the actual first tangent height. No moment identity is supplied as
@@ -82,28 +73,22 @@ theorem fullTiltedSupportQuarterPair_first_floor_right_moments {C h β γ : ℝ}
         (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C ∧
       (∫ t in β..(Real.pi / 2), (1 - ρ t) * Real.cos t) =
         sweptNiche U (Real.pi / 2) C := by
-  obtain ⟨_hB0, hBL, hD0, _hDL, _hpL, _hqL⟩ :=
-    fullTiltedSupportQuarterPair_tangent_traces hU hm haffine hρ hρ0 hρK heq
-      hl hr hmpos hheight hlow
-  have horder := (fullTiltedSupportQuarterPair_first_tangent_order
-    hU hm haffine hρ hρ0 hρK heq hunit).2
-  have hy := horder (Ioo_subset_Icc_self hβ)
-    ⟨by positivity, le_rfl⟩ hβ.2.le
-  dsimp only at hy
-  rw [hBL] at hy
+  obtain ⟨-, hBL, hD0, -⟩ := fullTiltedSupportQuarterPair_tangent_traces
+    hU hm haffine hρ hρ0 hρK heq hl hr hmpos hheight hlow
+  have hy : 0 ≤ (B β).2 := by
+    simpa only [hBL] using (fullTiltedSupportQuarterPair_first_tangent_order
+      hU hm haffine hρ hρ0 hρK heq hunit).2 (Ioo_subset_Icc_self hβ) ⟨by positivity, le_rfl⟩
+      hβ.2.le
   have hniche := fullTiltedSupportQuarterPair_niche_first_tangency
     hU hm haffine hρ hρ0 hρK heq hunit hβ hβp hy
-  rw [hβx] at hniche
-  have hleft := fullTiltedSupportQuarterPair_tangent_displacements
+  obtain ⟨-, -, hS, hh⟩ := fullTiltedSupportQuarterPair_tangent_displacements
     hU hm haffine hρ hρ0 hρK heq le_rfl hγ.1 hγ.2
-  have hright := fullTiltedSupportQuarterPair_tangent_displacements
+  obtain ⟨hT, hz, -⟩ := fullTiltedSupportQuarterPair_tangent_displacements
     hU hm haffine hρ hρ0 hρK heq hβ.1.le hβ.2.le le_rfl
-  rw [hD0, hγy] at hleft
-  rw [hBL, hβx] at hright
-  refine ⟨?_, ?_, hright.1, ?_⟩
-  · simpa only [Prod.fst, sub_neg_eq_add, add_comm] using hleft.2.2.1
-  · simpa only [Prod.snd, sub_neg_eq_add, zero_add] using hleft.2.2.2
-  · simpa only [Prod.snd, sub_zero, hniche] using hright.2.1
+  rw [hD0] at hS hh
+  rw [hBL, hβx] at hT
+  rw [hBL, ← hniche, hβx] at hz
+  refine ⟨hS.trans ?_, hh.trans ?_, hT, hz.trans ?_⟩ <;> simp only [hγy] <;> ring
 
 /-- Every actual companion floor contact is to the right of the global
 low-wing zero. The selected top identity and source-point box give the
@@ -118,40 +103,22 @@ theorem fullTiltedSupportQuarterPair_floor_abscissa_bounds {C h γ : ℝ}
     (hγ : γ ∈ Ioo 0 (Real.pi / 2)) (hγy : (D γ).2 = 0) :
     (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C ≤ C + (D γ).1 ∧
       C + (D γ).1 ≤ 1 ∧ (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C ≤ C := by
-  have hmid : middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
-    rw [middleHalfInterval, hl, hr]
-    congr 1 <;> ring
-  have haff := haffine
-  rw [hmid] at haff
-  have hj : horizontalLeft U + capWidth U / 4 = -C := by
-    unfold capWidth
-    rw [hl, hr]
-    ring
   have hprojection := hU.firstUnit_top_projection_eq hl hr hC0 hC1 hh0 hh1 hheight
-    haff hlow hhigh hρ hρ0 hρK heq hunit
-  have hzeroPos : 0 < C + companionZero (leftCompanionCap U (-C)) := by
-    by_contra hnot
-    rw [max_eq_right (le_of_not_gt hnot)] at hprojection
-    linarith only [hprojection, htop]
-  rw [max_eq_left hzeroPos.le] at hprojection
-  have hc : 0 < Real.cos γ := Real.cos_pos_of_mem_Ioo
-    ⟨by linarith only [hγ.1, Real.pi_pos], hγ.2⟩
+    (fun x hx => haffine x ⟨by linarith only [hx.1, hl, hr], by linarith only [hx.2, hl, hr]⟩)
+    hlow hhigh hρ hρ0 hρK heq hunit
   have hwall := fullTiltedSupportQuarterPair_companion_wall_second_tangency
-    hU hm haffine hρ hρ0 hρK heq hc.ne'
-  have hz : companionZero V ≤ (D γ).1 := by
-    by_contra hnot
-    have hnegative := hU.isCap_fullLeftCompanion.secondWall_neg_of_lt_companionZero
-      (lt_of_not_ge hnot) hγ
-    rw [hwall, hγy] at hnegative
-    exact lt_irrefl 0 hnegative
-  rw [hj] at hz
+    hU hm haffine hρ hρ0 hρK heq (Real.cos_pos_of_mem_Ioo
+      ⟨by linarith only [hγ.1, Real.pi_pos], hγ.2⟩).ne'
+  have hz : companionZero V ≤ (D γ).1 := not_lt.mp fun h => by
+    linarith only [hU.isCap_fullLeftCompanion.secondWall_neg_of_lt_companionZero h hγ, hwall, hγy]
+  rw [show horizontalLeft U + capWidth U / 4 = -C by rw [capWidth, hl, hr]; ring] at hz
   have hright := (hU.isCap.fst_mem_Icc
     (MovingSofaOptimality.vminus_mem_edge hU.isCap.imported_isConvexBody (Real.pi / 2)).1).2
-  rw [hr] at hright
   refine ⟨?_, fullTiltedSupportQuarterPair_second_tangency_abscissa_le
-    hU hm haffine hρ hρ0 hρK heq hl hr (Ioo_subset_Icc_self hγ), ?_⟩
-  · linarith only [hprojection, hz]
-  · linarith only [hright]
+    hU hm haffine hρ hρ0 hρK heq hl hr (Ioo_subset_Icc_self hγ),
+    by linarith only [hright, hr]⟩
+  rcases max_choice (C + companionZero (leftCompanionCap U (-C))) 0 with h | h <;>
+    rw [h] at hprojection <;> linarith only [hprojection, htop, hz]
 
 end ActualPair
 

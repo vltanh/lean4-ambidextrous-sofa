@@ -26,40 +26,31 @@ namespace AmbidextrousSofa
 theorem IsDownwardCap.left_baseline_mem {U : Set Plane} (hU : IsDownwardCap U) :
     (horizontalLeft U, 0) ∈ U := by
   obtain ⟨p, hp, hpx⟩ := horizontalLeft_mem hU.nonempty hU.isCompact
-  simpa only [hpx] using hU.baseline_mem hp
+  exact hpx ▸ hU.baseline_mem hp
 
 theorem IsDownwardCap.right_baseline_mem {U : Set Plane} (hU : IsDownwardCap U) :
     (horizontalRight U, 0) ∈ U := by
   obtain ⟨p, hp, hpx⟩ := horizontalRight_mem hU.nonempty hU.isCompact
-  simpa only [hpx] using hU.baseline_mem hp
+  exact hpx ▸ hU.baseline_mem hp
 
 theorem IsDownwardCap.firstWall_pi_div_four_lower {U : Set Plane}
     (hU : IsDownwardCap U) (x : ℝ) :
     horizontalRight U - Real.sqrt 2 - x ≤ firstWall U (Real.pi / 4) x := by
-  have hs : 0 < Real.sqrt 2 := Real.sqrt_pos.2 (by norm_num)
-  have hsquare : Real.sqrt 2 ^ 2 = 2 := Real.sq_sqrt (by norm_num)
-  have hw := coordDot_le_support hU.isCompact hU.right_baseline_mem
-    (unitNormal (Real.pi / 4))
-  simp only [coordDot, unitNormal, Real.cos_pi_div_four, Real.sin_pi_div_four,
-    zero_mul, add_zero] at hw
-  rw [firstWall, Real.cos_pi_div_four, Real.sin_pi_div_four,
-    le_div_iff₀ (by positivity : 0 < Real.sqrt 2 / 2)]
-  simp only [unitNormal, Real.cos_pi_div_four, Real.sin_pi_div_four]
-  nlinarith [hsquare]
+  have hw := coordDot_le_support hU.isCompact hU.right_baseline_mem (unitNormal (Real.pi / 4))
+  rw [firstWall]
+  simp only [coordDot, unitNormal, Real.cos_pi_div_four, Real.sin_pi_div_four] at hw ⊢
+  rw [le_div_iff₀ (by positivity)]
+  linarith [Real.sq_sqrt (show (0 : ℝ) ≤ 2 by norm_num)]
 
 theorem IsDownwardCap.secondWall_pi_div_four_lower {U : Set Plane}
     (hU : IsDownwardCap U) (x : ℝ) :
     x - horizontalLeft U - Real.sqrt 2 ≤ secondWall U (Real.pi / 4) x := by
-  have hs : 0 < Real.sqrt 2 := Real.sqrt_pos.2 (by norm_num)
-  have hsquare : Real.sqrt 2 ^ 2 = 2 := Real.sq_sqrt (by norm_num)
   have hw := coordDot_le_support hU.isCompact hU.left_baseline_mem
     (companionNormal (Real.pi / 4))
-  simp only [coordDot, companionNormal, Real.cos_pi_div_four, Real.sin_pi_div_four,
-    zero_mul, add_zero] at hw
-  rw [secondWall, Real.cos_pi_div_four, Real.sin_pi_div_four,
-    le_div_iff₀ (by positivity : 0 < Real.sqrt 2 / 2)]
-  simp only [companionNormal, Real.cos_pi_div_four, Real.sin_pi_div_four]
-  nlinarith [hsquare]
+  rw [secondWall]
+  simp only [coordDot, companionNormal, Real.cos_pi_div_four, Real.sin_pi_div_four] at hw ⊢
+  rw [le_div_iff₀ (by positivity)]
+  linarith [Real.sq_sqrt (show (0 : ℝ) ≤ 2 by norm_num)]
 
 /-- The endpoint case uses the actual whole terminal wall. -/
 theorem cornerWall_pi_div_four_le_partialBarrier {U : Set Plane}
@@ -76,9 +67,8 @@ theorem IsDownwardCap.baseline_tent_le_partialBarrier {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hα0 : Real.pi / 4 ≤ α)
     (hαL : α ≤ Real.pi / 2) (x : ℝ) :
     min (horizontalRight U - Real.sqrt 2 - x)
-      (x - horizontalLeft U - Real.sqrt 2) ≤ partialBarrier U α x := by
-  exact (min_le_min (hU.firstWall_pi_div_four_lower x)
-    (hU.secondWall_pi_div_four_lower x)).trans
+      (x - horizontalLeft U - Real.sqrt 2) ≤ partialBarrier U α x :=
+  (min_le_min (hU.firstWall_pi_div_four_lower x) (hU.secondWall_pi_div_four_lower x)).trans
     (cornerWall_pi_div_four_le_partialBarrier hU.isCompact hα0 hαL x)
 
 /-- Exact integral of the signed tent on the moving middle half. The formula
@@ -86,89 +76,19 @@ does not replace negative fibers by their positive part. -/
 theorem integral_middleHalf_baseline_tent {l r : ℝ} (hlr : l ≤ r) (d : ℝ) :
     (∫ x in middleHalfInterval l r, min (r - d - x) (x - l - d)) =
       3 * (r - l) ^ 2 / 16 - d * (r - l) / 2 := by
-  let a := l + (r - l) / 4
-  let m := (l + r) / 2
-  let b := r - (r - l) / 4
-  have ham : a ≤ m := by dsimp [a, m]; linarith
-  have hmb : m ≤ b := by dsimp [m, b]; linarith
-  have hc : Continuous (fun x : ℝ => min (r - d - x) (x - l - d)) := by
-    fun_prop
-  have hleft :
-      (∫ x in a..m, min (r - d - x) (x - l - d)) =
-        ∫ x in a..m, x - l - d := by
-    apply intervalIntegral.integral_congr
-    intro x hx
-    rw [uIcc_of_le ham] at hx
-    apply min_eq_right
-    dsimp [m] at hx
-    linarith [hx.2]
-  have hright :
-      (∫ x in m..b, min (r - d - x) (x - l - d)) =
-        ∫ x in m..b, r - d - x := by
-    apply intervalIntegral.integral_congr
-    intro x hx
-    rw [uIcc_of_le hmb] at hx
-    apply min_eq_left
-    dsimp [m] at hx
-    linarith [hx.1]
-  have hleft_value : (∫ x in a..m, x - l - d) =
-      (m ^ 2 - a ^ 2) / 2 - (m - a) * l - (m - a) * d := by
-    simp only [intervalIntegral.integral_sub
-      ((continuous_sub_right l).intervalIntegrable a m) intervalIntegrable_const,
-      intervalIntegral.integral_sub intervalIntegral.intervalIntegrable_id
-        intervalIntegrable_const,
-      integral_id, intervalIntegral.integral_const, smul_eq_mul]
-  have hright_value : (∫ x in m..b, r - d - x) =
-      (b - m) * (r - d) - (b ^ 2 - m ^ 2) / 2 := by
-    simp only [intervalIntegral.integral_sub intervalIntegrable_const
-      intervalIntegral.intervalIntegrable_id,
-      intervalIntegral.integral_const, integral_id, smul_eq_mul]
-  change (∫ x in Icc a b, min (r - d - x) (x - l - d)) = _
-  rw [integral_Icc_eq_integral_Ioc,
+  have hc : Continuous (fun x : ℝ => min (r - d - x) (x - l - d)) := by fun_prop
+  have ham : l + (r - l) / 4 ≤ (l + r) / 2 := by linarith
+  have hmb : (l + r) / 2 ≤ r - (r - l) / 4 := by linarith
+  rw [middleHalfInterval, integral_Icc_eq_integral_Ioc,
     ← intervalIntegral.integral_of_le (ham.trans hmb),
-    ← intervalIntegral.integral_add_adjacent_intervals
-      (hc.intervalIntegrable a m) (hc.intervalIntegrable m b),
-    hleft, hright, hleft_value, hright_value]
-  dsimp [a, m, b]
+    ← intervalIntegral.integral_add_adjacent_intervals (hc.intervalIntegrable _ ((l + r) / 2))
+      (hc.intervalIntegrable _ _),
+    intervalIntegral.integral_congr (g := fun x => x - l - d) fun x hx =>
+      min_eq_right (by rw [uIcc_of_le ham] at hx; linarith [hx.2]),
+    intervalIntegral.integral_congr (g := fun x => r - d - x) fun x hx =>
+      min_eq_left (by rw [uIcc_of_le hmb] at hx; linarith [hx.1])]
+  simp [intervalIntegral.integral_comp_sub_left (fun x => x)]
   ring
-
-/-- A quadratic upper bound tending to negative infinity with the width. -/
-theorem IsDownwardCap.capScore_le_width_quadratic {U : Set Plane}
-    (hU : IsDownwardCap U) {α : ℝ} (hα0 : Real.pi / 4 ≤ α)
-    (hαL : α ≤ Real.pi / 2) :
-    capScore U α ≤ (1 + Real.sqrt 2) * capWidth U / 2 - 3 * capWidth U ^ 2 / 16 := by
-  let l := horizontalLeft U
-  let r := horizontalRight U
-  let I := Icc l r
-  let J := middleHalfInterval l r
-  have hlr : l ≤ r := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
-  have hJ : IsCompact J := isCompact_Icc
-  have hRoof : IntegrableOn (capRoof U) (I \ J) :=
-    (hU.integrableOn_capRoof_Icc l r).mono_set sdiff_subset
-  have hOne : IntegrableOn (fun _ : ℝ => (1 : ℝ)) (I \ J) :=
-    (integrableOn_const (by rw [Real.volume_Icc]; exact ENNReal.ofReal_ne_top)).mono_set
-      sdiff_subset
-  have hRoofBound : (∫ x in I \ J, capRoof U x) ≤ capWidth U / 2 := by
-    have h := integral_mono hRoof hOne
-      (fun x => capRoof_le_one hU.isCompact hU.inStrip x)
-    simpa only [setIntegral_const, smul_eq_mul, mul_one,
-      volumeReal_exterior_middleHalfInterval hlr, capWidth, I, J, l, r] using h
-  have hTent : IntegrableOn (fun x : ℝ => min (r - Real.sqrt 2 - x)
-      (x - l - Real.sqrt 2)) J :=
-    (show Continuous (fun x : ℝ => min (r - Real.sqrt 2 - x)
-      (x - l - Real.sqrt 2)) by fun_prop).continuousOn.integrableOn_compact hJ
-  have hBarrier : IntegrableOn (partialBarrier U α) J :=
-    (integrableOn_partialBarrier_Icc hU.isCompact
-      (by linarith [Real.pi_pos]) hαL l r).mono_set (middleHalfInterval_subset hlr)
-  have hNicheBound : 3 * capWidth U ^ 2 / 16 - Real.sqrt 2 * capWidth U / 2 ≤
-      ∫ x in J, partialBarrier U α x := by
-    have h := integral_mono hTent hBarrier
-      (fun x => hU.baseline_tent_le_partialBarrier hα0 hαL x)
-    rw [integral_middleHalf_baseline_tent hlr] at h
-    exact h
-  rw [capScore_eq_integrals]
-  change (∫ x in I \ J, capRoof U x) - (∫ x in J, partialBarrier U α x) ≤ _
-  nlinarith
 
 /-- Every cap of width at least six lies strictly below half the reference
 constant; no smoothness, symmetry, or full-turn hypothesis is used. -/
@@ -176,22 +96,33 @@ theorem IsDownwardCap.capScore_lt_half_M_of_six_le_width {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hα0 : Real.pi / 4 ≤ α)
     (hαL : α ≤ Real.pi / 2) (hwidth : 6 ≤ capWidth U) :
     capScore U α < M / 2 := by
-  have hbound := hU.capScore_le_width_quadratic hα0 hαL
-  have hsqrt : Real.sqrt 2 < (17 / 12 : ℝ) :=
-    (Real.sqrt_lt (by norm_num) (by norm_num)).2 (by norm_num)
-  have hWpos : 0 < capWidth U := by linarith
-  have hstrict := mul_pos (sub_pos.mpr hsqrt) hWpos
-  have hhalf : capScore U α < (1 / 2 : ℝ) := by
-    nlinarith [sq_nonneg (capWidth U - 6)]
-  linarith [one_lt_M]
+  have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
+  rw [capScore_eq_integrals]
+  rw [capWidth] at hwidth
+  set l := horizontalLeft U
+  set r := horizontalRight U
+  -- The roof is at most one on the outer half, and the tent lies below the barrier.
+  have hroof := setIntegral_mono (s := Icc l r \ middleHalfInterval l r)
+    ((hU.integrableOn_capRoof_Icc l r).mono_set sdiff_subset)
+    (continuous_const.integrableOn_Icc.mono_set sdiff_subset)
+    (fun x => capRoof_le_one hU.isCompact hU.inStrip x)
+  rw [setIntegral_const, smul_eq_mul, mul_one, volumeReal_exterior_middleHalfInterval hlr] at hroof
+  have hniche := setIntegral_mono (s := middleHalfInterval l r)
+    ((show Continuous fun x => min (r - Real.sqrt 2 - x) (x - l - Real.sqrt 2) by
+      fun_prop).continuousOn.integrableOn_compact isCompact_Icc)
+    ((integrableOn_partialBarrier_Icc hU.isCompact (by linarith [Real.pi_pos]) hαL l r).mono_set
+      (middleHalfInterval_subset hlr)) (hU.baseline_tent_le_partialBarrier hα0 hαL)
+  rw [integral_middleHalf_baseline_tent hlr] at hniche
+  have hsqrt : Real.sqrt 2 < 17 / 12 := (Real.sqrt_lt (by norm_num) (by norm_num)).2 (by norm_num)
+  linarith [one_lt_M, sq_nonneg (r - l - 6),
+    mul_pos (sub_pos.mpr hsqrt) (by linarith : (0 : ℝ) < r - l)]
 
 /-- The competitive scalar domain has bounded, nonzero projection width. -/
 theorem IsDownwardCap.competitive_width_bounds {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hα0 : Real.pi / 4 ≤ α)
     (hαL : α ≤ Real.pi / 2) (hscore : M / 2 ≤ capScore U α) :
-    M ≤ capWidth U ∧ capWidth U < 6 := by
-  refine ⟨hU.width_ge_M_of_capScore_ge_half_M hscore, ?_⟩
-  by_contra h
-  exact (hU.capScore_lt_half_M_of_six_le_width hα0 hαL (le_of_not_gt h)).not_ge hscore
+    M ≤ capWidth U ∧ capWidth U < 6 :=
+  ⟨hU.width_ge_M_of_capScore_ge_half_M hscore, lt_of_not_ge fun h =>
+    (hU.capScore_lt_half_M_of_six_le_width hα0 hαL h).not_ge hscore⟩
 
 end AmbidextrousSofa

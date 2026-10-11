@@ -33,41 +33,24 @@ theorem IsFullCapMaximizer.horizontal_classification
     capScore U (Real.pi / 2) = M / 2 ∧ capWidth U = 8 / 3 * Reference.A ∧
       ∃ b : ℝ, U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap b ∨
         AmbidextrousSofa.horizontalMirror U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap b := by
-  have hT := hU.centeredCap
-  have hl : horizontalLeft (AmbidextrousSofa.centeredCap U) = -2 * (capWidth U / 4) := by
-    rw [horizontalLeft_centeredCap hU.isCap]
-    ring
-  have hr : horizontalRight (AmbidextrousSofa.centeredCap U) = 2 * (capWidth U / 4) := by
-    rw [horizontalRight_centeredCap hU.isCap]
-    ring
-  have hTheight : capHeight (AmbidextrousSofa.centeredCap U) = 1 := by
-    rw [capHeight_centeredCap hU.isCap, hheight]
-  have hTmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft (AmbidextrousSofa.centeredCap U))
-      (horizontalRight (AmbidextrousSofa.centeredCap U)), capRoof (AmbidextrousSofa.centeredCap U) x = 1 :=
-    hU.isCap.roof_eq_const_on_middle_horizontalTranslate hmiddle _
-  obtain ⟨V, hVor, hV, _hlV, _hrV, hVheight, hVwidth, hVscore, hVmiddle,
-      ρ, hρ, hρbound, heq⟩ :=
-    hT.exists_horizontal_oriented_unit_density hl hr hTheight hTmiddle
-  have hρ0 : ∀ t, 0 ≤ ρ t := fun t => (hρbound t).1
-  have hρ1 : ∀ t, ρ t ≤ 1 := fun t => (hρbound t).2.1
+  obtain ⟨V, hVor, hV, -, -, hVheight, hVwidth, hVscore, hVmiddle, ρ, hρ, hρbound, heq⟩ :=
+    hU.centeredCap.exists_horizontal_oriented_unit_density (C := capWidth U / 4)
+      (by rw [horizontalLeft_centeredCap hU.isCap]; ring)
+      (by rw [horizontalRight_centeredCap hU.isCap]; ring)
+      (by rw [capHeight_centeredCap hU.isCap, hheight])
+      (hU.isCap.roof_eq_const_on_middle_horizontalTranslate hmiddle _)
+  have hρ0 (t : ℝ) := (hρbound t).1
+  have hρ1 (t : ℝ) := (hρbound t).2.1
   have hunit : ∀ᵐ t ∂volume.restrict (Ioo 0 (Real.pi / 2)),
-      ρ t ≤ 1 ∧ ρ (t + Real.pi / 2) ≤ 1 :=
-    Filter.Eventually.of_forall (fun t => ⟨hρ1 t, hρ1 (t + Real.pi / 2)⟩)
-  have hscore := hV.capScore_eq_half_M_of_horizontal_unit_density
-    hVheight hVmiddle hρ hρ0 hρ1 heq hunit
+      ρ t ≤ 1 ∧ ρ (t + Real.pi / 2) ≤ 1 := .of_forall fun t => ⟨hρ1 t, hρ1 _⟩
   obtain ⟨hwidth, b, hshape⟩ := hV.eq_reference_translate_of_horizontal_unit_density
     hVheight hVmiddle hρ hρ0 hρ1 heq hunit
-  refine ⟨?_, ?_, ?_⟩
-  · rw [hVscore, capScore_centeredCap hU.isCap] at hscore
-    exact hscore
-  · rw [hVwidth, capWidth_centeredCap hU.isCap] at hwidth
-    exact hwidth
-  · rcases hVor with hVor | hVor
-    · rw [hVor] at hshape
-      have h := eq_horizontalTranslate_of_horizontalTranslate_eq hshape
-      exact ⟨_, Or.inl h⟩
-    · rw [hVor, AmbidextrousSofa.centeredCap, horizontalMirror_horizontalTranslate] at hshape
-      have h := eq_horizontalTranslate_of_horizontalTranslate_eq hshape
-      exact ⟨_, Or.inr h⟩
+  refine ⟨?_, by rwa [hVwidth, capWidth_centeredCap hU.isCap] at hwidth, ?_⟩
+  · rw [← capScore_centeredCap hU.isCap, ← hVscore]
+    exact hV.capScore_eq_half_M_of_horizontal_unit_density hVheight hVmiddle hρ hρ0 hρ1 heq hunit
+  rcases hVor with rfl | rfl
+  · exact ⟨_, .inl (eq_horizontalTranslate_of_horizontalTranslate_eq hshape)⟩
+  · rw [AmbidextrousSofa.centeredCap, horizontalMirror_horizontalTranslate] at hshape
+    exact ⟨_, .inr (eq_horizontalTranslate_of_horizontalTranslate_eq hshape)⟩
 
 end AmbidextrousSofa

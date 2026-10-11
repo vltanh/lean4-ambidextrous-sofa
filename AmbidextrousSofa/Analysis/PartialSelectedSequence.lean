@@ -62,16 +62,13 @@ theorem exists_selected_polygon {target : Set Plane} (hTarget : IsDownwardCap ta
     {a b : ℝ} (hTargetBox : target ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1)
     (level : ℕ) (coefficient : ℝ) :
     ∃ U : Set Plane, IsSelectedPolygon target α hαL a b level coefficient U := by
-  classical
   obtain ⟨U, hU, hUB, hpoly, hmax⟩ := exists_boxed_selected_polygon
     (normal α (dyadic level)) (fun i => (normal_snd_pos α (dyadic level) i).le)
     (fun i => coefficient * stageWeight α level i)
     (fun i => support target (normal α (dyadic level) i)) (pairList α (dyadic level))
     (some (terminalIndex α hαL (dyadic level))) hTarget hTargetBox
-  refine ⟨U, hU, hUB, hpoly, ?_⟩
-  intro V hV hVB
-  have h := hmax V hV hVB
-  simpa only [sampledPenalty_mul, sampledPenalty_eq_stagePenalty, score] using h
+  exact ⟨U, hU, hUB, hpoly, fun V hV hVB => by
+    simpa only [sampledPenalty_mul, sampledPenalty_eq_stagePenalty, score] using hmax V hV hVB⟩
 
 theorem IsSelectedPolygon.penalty_le {target U : Set Plane} {a b coefficient : ℝ}
     {level : ℕ} (hU : IsSelectedPolygon target α hαL a b level coefficient U)
@@ -80,12 +77,10 @@ theorem IsSelectedPolygon.penalty_le {target U : Set Plane} {a b coefficient : �
     (hcoefficient : 0 < coefficient)
     (herror : score U α hαL (dyadic level) - capScore U α ≤ coefficient ^ 2) :
     AngularGrid.stagePenalty level target U ≤ coefficient := by
-  have hselected := hU.maximizes target hTarget.isCap hTargetBox
-  rw [AngularGrid.stagePenalty_self, mul_zero, sub_zero] at hselected
-  have hfinite := capScore_le_score hTarget.isCap α hαL (dyadic level)
-  have hmax := hTarget.score_le_same_angle hU.isCap
-  apply (mul_le_mul_iff_right₀ hcoefficient).mp
-  nlinarith
+  have := hU.maximizes target hTarget.isCap hTargetBox
+  rw [AngularGrid.stagePenalty_self] at this
+  nlinarith [capScore_le_score hTarget.isCap α hαL (dyadic level),
+    hTarget.score_le_same_angle hU.isCap]
 
 theorem exists_selected_approximations {target : Set Plane}
     (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2)
@@ -95,18 +90,12 @@ theorem exists_selected_approximations {target : Set Plane}
       (∀ n, n ≤ level n) ∧
       (∀ n, IsSelectedPolygon target α hαL a b (level n) (selectionRate n) (U n)) ∧
       ∀ n, AngularGrid.stagePenalty (level n) target (U n) ≤ selectionRate n := by
-  have hstage : ∀ n, ∃ level ≥ n, ∃ U : Set Plane,
-      IsSelectedPolygon target α hαL a b level (selectionRate n) U ∧
-        AngularGrid.stagePenalty level target U ≤ selectionRate n := by
-    intro n
-    have hrate := selectionRate_pos n
-    obtain ⟨level, hlevel, herror⟩ :=
-      exists_level_score_error_le hab (sq_pos_of_pos hrate) α hαL n
-    obtain ⟨U, hU⟩ := exists_selected_polygon hTarget.isCap α hαL hTargetBox level (selectionRate n)
-    exact ⟨level, hlevel, U, hU,
-      hU.penalty_le hTarget hTargetBox hrate (herror U hU.isCap hU.inBox).2⟩
-  choose level hlevel U hU hpenalty using hstage
-  exact ⟨level, U, hlevel, hU, hpenalty⟩
+  choose level hlevel herror using fun n =>
+    exists_level_score_error_le hab (sq_pos_of_pos (selectionRate_pos n)) α hαL n
+  choose U hU using fun n =>
+    exists_selected_polygon hTarget.isCap α hαL hTargetBox (level n) (selectionRate n)
+  exact ⟨level, U, hlevel, hU, fun n => (hU n).penalty_le hTarget hTargetBox (selectionRate_pos n)
+    (herror n (U n) (hU n).isCap (hU n).inBox).2⟩
 
 /-- The terminal angle is fixed and the target is the actual given
 joint maximizer. Neither occupation nor a limiting score is a premise. -/
@@ -122,18 +111,15 @@ theorem exists_selected_sequence {target : Set Plane}
       CapHausdorffTendsto U target := by
   obtain ⟨level, U, hlevel, hU, hpenalty⟩ :=
     exists_selected_approximations α hαL hTarget hab hTargetBox
-  obtain ⟨K, hK, _, φ, hφ, hHausdorff⟩ := exists_cap_hausdorff_subsequence
-    (fun n => (hU n).isCap) (isCompact_Icc.prod isCompact_Icc) (fun n => (hU n).inBox)
-  have hlevelAtTop : Tendsto level atTop atTop := tendsto_atTop_mono hlevel tendsto_id
-  have hKTarget : K = target := AngularGrid.eq_of_penalty_tendsto hTarget.isCap hK
-    (fun n => (hU (φ n)).isCap) hHausdorff (hlevelAtTop.comp hφ.tendsto_atTop)
-    (selectionRate_tendsto.comp hφ.tendsto_atTop) (fun n => hpenalty (φ n))
-  refine ⟨level ∘ φ, selectionRate ∘ φ, U ∘ φ, ?_,
+  obtain ⟨K, hK, -, φ, hφ, hHausdorff⟩ := exists_cap_hausdorff_subsequence
+    (fun n => (hU n).isCap) (isCompact_Icc.prod isCompact_Icc) fun n => (hU n).inBox
+  obtain rfl : K = target := AngularGrid.eq_of_penalty_tendsto hTarget.isCap hK
+    (fun n => (hU (φ n)).isCap) hHausdorff
+    ((tendsto_atTop_mono hlevel tendsto_id).comp hφ.tendsto_atTop)
+    (selectionRate_tendsto.comp hφ.tendsto_atTop) fun n => hpenalty (φ n)
+  exact ⟨level ∘ φ, selectionRate ∘ φ, U ∘ φ, fun n => hφ.le_apply.trans (hlevel (φ n)),
     fun n => selectionRate_pos (φ n), selectionRate_tendsto.comp hφ.tendsto_atTop,
-    fun n => hU (φ n), fun n => hpenalty (φ n), ?_⟩
-  · intro n
-    exact (hφ.le_apply).trans (hlevel (φ n))
-  · simpa only [hKTarget] using hHausdorff
+    fun n => hU (φ n), fun n => hpenalty (φ n), hHausdorff⟩
 
 end PartialGrid
 

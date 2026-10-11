@@ -9,8 +9,7 @@ public import Mathlib
 
 The plane is represented by a pair of real coordinates, with its product
 topology and product Lebesgue measure. The product norm is not the Euclidean
-norm. Rotations are therefore defined by their coordinate formula, and the
-Euclidean squared-length identity is proved explicitly below.
+norm. Rotations are therefore defined by their coordinate formula.
 
 The lower corridor is the union of the incoming horizontal arm and the
 downward outgoing arm. The upper corridor is its reflection in `y = 1 / 2`.
@@ -31,22 +30,16 @@ def rotate (θ : ℝ) (p : Plane) : Plane :=
 def rigidMap (θ : ℝ) (v p : Plane) : Plane := rotate θ p + v
 
 @[simp]
-theorem rotate_zero (p : Plane) : rotate 0 p = p := by
-  simp [rotate]
+theorem rotate_zero (p : Plane) : rotate 0 p = p := by simp [rotate]
 
 @[simp]
-theorem rigidMap_zero_zero (p : Plane) : rigidMap 0 0 p = p := by
-  simp [rigidMap]
+theorem rigidMap_zero_zero (p : Plane) : rigidMap 0 0 p = p := by simp [rigidMap]
 
 /-- Reflection in the center line of the incoming strip. -/
 def reflect (p : Plane) : Plane := (p.1, 1 - p.2)
 
 @[simp]
-theorem reflect_reflect (p : Plane) : reflect (reflect p) = p := by
-  apply Prod.ext
-  · rfl
-  · change 1 - (1 - p.2) = p.2
-    ring
+theorem reflect_reflect (p : Plane) : reflect (reflect p) = p := by simp [reflect]
 
 def unitStrip : Set Plane := {p | 0 ≤ p.2 ∧ p.2 ≤ 1}
 
@@ -61,38 +54,20 @@ def lowerHall : Set Plane := incomingArm ∪ lowerOutgoingArm
 def upperHall : Set Plane := incomingArm ∪ upperOutgoingArm
 
 @[simp]
-theorem reflect_mem_unitStrip (p : Plane) :
-    reflect p ∈ unitStrip ↔ p ∈ unitStrip := by
-  change (0 ≤ 1 - p.2 ∧ 1 - p.2 ≤ 1) ↔ (0 ≤ p.2 ∧ p.2 ≤ 1)
-  constructor <;> rintro ⟨h0, h1⟩ <;> constructor <;> linarith
+theorem reflect_mem_unitStrip (p : Plane) : reflect p ∈ unitStrip ↔ p ∈ unitStrip := by
+  simp [reflect, unitStrip, and_comm]
 
 @[simp]
-theorem reflect_mem_incomingArm (p : Plane) :
-    reflect p ∈ incomingArm ↔ p ∈ incomingArm := by
-  change (p.1 ≤ 1 ∧ 0 ≤ 1 - p.2 ∧ 1 - p.2 ≤ 1) ↔
-    (p.1 ≤ 1 ∧ 0 ≤ p.2 ∧ p.2 ≤ 1)
-  constructor
-  · rintro ⟨hx, h0, h1⟩
-    exact ⟨hx, by linarith, by linarith⟩
-  · rintro ⟨hx, h0, h1⟩
-    exact ⟨hx, by linarith, by linarith⟩
+theorem reflect_mem_incomingArm (p : Plane) : reflect p ∈ incomingArm ↔ p ∈ incomingArm := by
+  simp [reflect, incomingArm, and_comm]
 
 @[simp]
 theorem reflect_mem_lowerOutgoingArm (p : Plane) :
     reflect p ∈ lowerOutgoingArm ↔ p ∈ upperOutgoingArm := by
-  change (0 ≤ p.1 ∧ p.1 ≤ 1 ∧ 1 - p.2 ≤ 1) ↔
-    (0 ≤ p.1 ∧ p.1 ≤ 1 ∧ 0 ≤ p.2)
-  constructor
-  · rintro ⟨hx0, hx1, hy⟩
-    exact ⟨hx0, hx1, by linarith⟩
-  · rintro ⟨hx0, hx1, hy⟩
-    exact ⟨hx0, hx1, by linarith⟩
+  simp [reflect, lowerOutgoingArm, upperOutgoingArm]
 
 /-- The upper hall really is the reflection of the lower hall. -/
-theorem reflect_mem_lowerHall (p : Plane) :
-    reflect p ∈ lowerHall ↔ p ∈ upperHall := by
-  change (reflect p ∈ incomingArm ∨ reflect p ∈ lowerOutgoingArm) ↔
-    (p ∈ incomingArm ∨ p ∈ upperOutgoingArm)
-  rw [reflect_mem_incomingArm, reflect_mem_lowerOutgoingArm]
+theorem reflect_mem_lowerHall (p : Plane) : reflect p ∈ lowerHall ↔ p ∈ upperHall := by
+  simp [lowerHall, upperHall]
 
 end AmbidextrousSofa

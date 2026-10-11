@@ -25,6 +25,10 @@ namespace CornerArcDynamics
 
 variable {p q u v : ℝ → ℝ}
 
+private theorem sourceKappa_of_neg_arm {p : ℝ} (h1 : -1 ≤ p) (h0 : p ≤ 0) :
+    sourceKappa p = (1 - p) / 2 := by
+  rw [sourceKappa, abs_of_nonpos h0, max_eq_right (by linarith only [h1])]; ring
+
 theorem charged_prefix_energy_le_five {a b : ℝ}
     (D : CornerArcDynamics p q u v a b) (hab : a < b) (hpa : p a = 0)
     (hp : ∀ t ∈ Icc a b, -1 ≤ p t ∧ p t ≤ 0)
@@ -32,41 +36,23 @@ theorem charged_prefix_energy_le_five {a b : ℝ}
     (hunit : ∀ᵐ t ∂volume.restrict (Ioo a b), u t ≤ 1)
     (hlower : ∀ᵐ t ∂volume.restrict (Ioo a b), 1 + q t ≤ 2 * u t) :
     ∀ t ∈ Icc a b, (p t - 1) ^ 2 + (q t + 1) ^ 2 ≤ 5 := by
-  have hqone : ∀ t ∈ Icc a b, q t ≤ 1 :=
-    ContinuousOn.le_on_Icc_of_ae_le_on_Ioo D.continuousOn.2 hab (by
-      filter_upwards [hunit, hlower] with t hu hl
-      linarith only [hu, hl])
-  let E : ℝ → ℝ := fun t => Analysis.momentumQuadraticEnergy 1 (-1) 0 (p t) (q t)
-  have hE : AbsolutelyContinuousOnInterval E a b :=
-    Analysis.absolutelyContinuousOnInterval_momentumQuadraticEnergy D.first_ac D.second_ac 1 (-1) 0
-  have hEd : ∀ᵐ t ∂volume.restrict (Ioo a b), deriv E t ≤ 0 := by
+  have ha := left_mem_Icc.mpr hab.le
+  have hqa := ContinuousOn.le_on_Icc_of_ae_le_on_Ioo (C := 1) D.continuousOn.2 hab (by
+    filter_upwards [hunit, hlower] with t hu hl using by linarith only [hu, hl]) a ha
+  have hEd : ∀ᵐ t ∂volume.restrict (Ioo a b),
+      deriv (fun s => Analysis.momentumQuadraticEnergy 1 (-1) 0 (p s) (q s)) t ≤ 0 := by
     filter_upwards [ae_restrict_mem measurableSet_Ioo, D.ode, D.source, hlower]
       with t ht hd hk hl
-    have hp' := hp t (Ioo_subset_Icc_self ht)
-    have hq' := hq t (Ioo_subset_Icc_self ht)
-    have hκ : sourceKappa (p t) = (1 - p t) / 2 := by
-      rw [← sourceKappa_neg (p t), sourceKappa_eq_half_of_mem_Icc
-        (show -p t ∈ Icc (0 : ℝ) 1 by constructor <;> linarith only [hp'.1, hp'.2])]
-      ring
-    have hv := hk.2
-    rw [hκ] at hv
-    have hdE := Analysis.hasDerivAt_momentumQuadraticEnergy hd.1 hd.2 1 (-1) 0
-    change deriv (fun s => Analysis.momentumQuadraticEnergy 1 (-1) 0 (p s) (q s)) t ≤ 0
-    rw [hdE.deriv]
-    have hprodU := mul_nonneg (show 0 ≤ 1 - p t by linarith only [hp'.2])
-      (show 0 ≤ 2 * u t - 1 - q t by linarith only [hl])
-    have hprodV := mul_nonneg (show 0 ≤ q t + 1 by linarith only [hq'])
-      (show 0 ≤ 1 - p t - 2 * v t by linarith only [hv])
-    nlinarith only [hprodU, hprodV]
-  have hqa0 := hq a (left_mem_Icc.mpr hab.le)
-  have hqa1 := hqone a (left_mem_Icc.mpr hab.le)
-  have hprod := mul_nonneg (sub_nonneg.mpr hqa1)
-    (show 0 ≤ q a + 3 by linarith only [hqa0])
+    obtain ⟨hp1, hp0⟩ := hp t (Ioo_subset_Icc_self ht)
+    have hv := hk.2.trans_eq (sourceKappa_of_neg_arm hp1 hp0)
+    rw [(Analysis.hasDerivAt_momentumQuadraticEnergy hd.1 hd.2 1 (-1) 0).deriv]
+    nlinarith only [hp0, hl, hv, hq t (Ioo_subset_Icc_self ht)]
   intro t ht
-  have hle := absolutelyContinuousOnInterval_le_initial_of_ae_deriv_nonpos hE hab.le hEd ht
-  dsimp only [E, Analysis.momentumQuadraticEnergy] at hle
-  rw [hpa] at hle
-  nlinarith only [hle, hprod]
+  have hle := absolutelyContinuousOnInterval_le_initial_of_ae_deriv_nonpos
+    (Analysis.absolutelyContinuousOnInterval_momentumQuadraticEnergy D.first_ac D.second_ac
+      1 (-1) 0) hab.le hEd ht
+  simp only [Analysis.momentumQuadraticEnergy, hpa] at hle
+  nlinarith only [hle, hqa, hq a ha]
 
 theorem uncharged_prefix_quantity_le_initial {a b : ℝ}
     (D : CornerArcDynamics p q u v a b)
@@ -80,25 +66,15 @@ theorem uncharged_prefix_quantity_le_initial {a b : ℝ}
     simpa only [E, pow_two, Pi.add_def, Pi.sub_def, Pi.mul_def, div_eq_mul_inv] using
       D.second_ac.add ((hp'.mul hp').mul
         (Analysis.absolutelyContinuousOnInterval_const_real ((4 : ℝ)⁻¹) a b))
-  have hEd : ∀ᵐ t ∂volume.restrict (Ioo a b), deriv E t ≤ 0 := by
-    filter_upwards [ae_restrict_mem measurableSet_Ioo, D.ode, D.source, hlower]
-      with t ht hd hk hl
-    have hp' := hp t (Ioo_subset_Icc_self ht)
-    have hκ : sourceKappa (p t) = (1 - p t) / 2 := by
-      rw [← sourceKappa_neg (p t), sourceKappa_eq_half_of_mem_Icc
-        (show -p t ∈ Icc (0 : ℝ) 1 by constructor <;> linarith only [hp'.1, hp'.2])]
-      ring
-    have hv := hk.2
-    rw [hκ] at hv
-    have hdE : HasDerivAt E
-        (v t - 1 + p t + (p t - 1) * (u t - 1 - q t) / 2) t := by
-      exact (hd.2.add (((hd.1.sub_const 1).pow 2).div_const 4)).congr_deriv (by ring)
-    rw [hdE.deriv]
-    have hprod := mul_nonneg (show 0 ≤ 1 - p t by linarith only [hp'.2])
-      (sub_nonneg.mpr hl)
-    nlinarith only [hprod, hv]
-  exact fun t ht => absolutelyContinuousOnInterval_le_initial_of_ae_deriv_nonpos
-    hE D.ordered hEd ht
+  refine fun t ht => absolutelyContinuousOnInterval_le_initial_of_ae_deriv_nonpos
+    hE D.ordered ?_ ht
+  filter_upwards [ae_restrict_mem measurableSet_Ioo, D.ode, D.source, hlower]
+    with t ht hd hk hl
+  obtain ⟨hp1, hp0⟩ := hp t (Ioo_subset_Icc_self ht)
+  have hv := hk.2.trans_eq (sourceKappa_of_neg_arm hp1 hp0)
+  rw [(show HasDerivAt E (v t - 1 + p t + (p t - 1) * (u t - 1 - q t) / 2) t from
+    (hd.2.add (((hd.1.sub_const 1).pow 2).div_const 4)).congr_deriv (by ring)).deriv]
+  nlinarith only [hp0, hl, hv]
 
 /-- The entry `p = -1,q > 0` cannot occur in the charged window. The
 two prefix estimates then give the exact `q ≤ 1/4` entry bound. -/
@@ -114,53 +90,34 @@ theorem first_bad_after_window_and_height_bound {L α β η τ : ℝ}
       (∀ t ∈ Icc α β, (p t - 1) ^ 2 + (q t + 1) ^ 2 ≤ 5) := by
   have h0α := hphase.first_mem.1.le
   have hτL := hτ.2.le.trans hphase.second_mem.2.le
-  have Dprefix := D.restrict h0α hτ.1.le hτL
-  have hp : ∀ t ∈ Icc α τ, -1 ≤ p t ∧ p t ≤ 0 := by
-    intro t ht
-    constructor
-    · rcases ht.2.eq_or_lt with heq | hlt
-      · simpa only [heq, hpτ] using (le_rfl : (-1 : ℝ) ≤ -1)
-      · exact (hpfirst t ⟨ht.1, hlt⟩).le
-    · rcases ht.1.eq_or_lt with heq | hlt
-      · simpa only [← heq, hphase.first_zero] using (le_rfl : (0 : ℝ) ≤ 0)
-      · exact (hphase.core_signs t ⟨hlt, ht.2.trans_lt hτ.2⟩).1.le
-  have hq : ∀ t ∈ Icc α τ, 0 ≤ q t := by
-    intro t ht
-    rcases ht.1.eq_or_lt with heq | hlt
-    · simpa only [← heq] using hphase.second_at_first.le
-    · exact (hphase.core_signs t ⟨hlt, ht.2.trans_lt hτ.2⟩).2.le
-  have hqτ := (hphase.core_signs τ hτ).2
-  have hunitPrefix := ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo h0α hτL) hunit
+  have hp (t : ℝ) (ht : t ∈ Icc α τ) : -1 ≤ p t ∧ p t ≤ 0 :=
+    ⟨ht.2.eq_or_lt.elim (fun h => h ▸ hpτ.ge) fun h => (hpfirst t ⟨ht.1, h⟩).le,
+      ht.1.eq_or_lt.elim (fun h => h ▸ hphase.first_zero.le)
+        fun h => (hphase.core_signs t ⟨h, ht.2.trans_lt hτ.2⟩).1.le⟩
+  have hq (t : ℝ) (ht : t ∈ Icc α τ) : 0 ≤ q t := ht.1.eq_or_lt.elim
+    (fun h => h ▸ hphase.second_at_first.le)
+    fun h => (hphase.core_signs t ⟨h, ht.2.trans_lt hτ.2⟩).2.le
+  -- The charged energy bound holds up to the first of the window exit and the entry.
+  have hmτ := min_le_right β τ
+  have henergy := (D.restrict h0α (le_min hαβ.le hτ.1.le) (hmτ.trans hτL))
+    |>.charged_prefix_energy_le_five (lt_min hαβ hτ.1) hphase.first_zero
+      (fun t ht => hp t ⟨ht.1, ht.2.trans hmτ⟩) (fun t ht => hq t ⟨ht.1, ht.2.trans hmτ⟩)
+      (ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo h0α (hmτ.trans hτL)) hunit)
+      (by filter_upwards [ae_restrict_mem measurableSet_Ioo,
+            ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo le_rfl hmτ) hcharged]
+            with t ht hc using hc (ht.2.trans_le (min_le_left β τ)))
   have hβτ : β < τ := by
     by_contra hnot
-    have hτβ : τ ≤ β := le_of_not_gt hnot
-    have hlower : ∀ᵐ t ∂volume.restrict (Ioo α τ), 1 + q t ≤ 2 * u t := by
-      filter_upwards [ae_restrict_mem measurableSet_Ioo, hcharged] with t ht hc
-      exact hc (ht.2.trans_le hτβ)
-    have henergy := Dprefix.charged_prefix_energy_le_five hτ.1 hphase.first_zero hp hq
-      hunitPrefix hlower τ (right_mem_Icc.mpr hτ.1.le)
-    rw [hpτ] at henergy
-    have hprod := mul_pos hqτ (show 0 < q τ + 2 by linarith only [hqτ])
-    nlinarith only [henergy, hprod]
-  have hβL := hβτ.le.trans hτL
-  have Dcharged := D.restrict h0α hαβ.le hβL
-  have hcharged' : ∀ᵐ t ∂volume.restrict (Ioo α β), 1 + q t ≤ 2 * u t := by
-    filter_upwards [ae_restrict_mem measurableSet_Ioo,
-      ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo le_rfl hβτ.le) hcharged]
-      with t ht hc
-    exact hc ht.2
-  have henergy := Dcharged.charged_prefix_energy_le_five hαβ hphase.first_zero
-    (fun t ht => hp t ⟨ht.1, ht.2.trans hβτ.le⟩)
-    (fun t ht => hq t ⟨ht.1, ht.2.trans hβτ.le⟩)
-    (ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo h0α hβL) hunit) hcharged'
-  have Duncharged := D.restrict (h0α.trans hαβ.le) hβτ.le hτL
-  have hquantity := Duncharged.uncharged_prefix_quantity_le_initial
-    (fun t ht => hp t ⟨hαβ.le.trans ht.1, ht.2⟩) huncharged
-    τ (right_mem_Icc.mpr hβτ.le)
-  have hEβ := henergy β (right_mem_Icc.mpr hαβ.le)
+    have h := henergy τ ⟨hτ.1.le, (min_eq_right (not_lt.mp hnot)).ge⟩
+    rw [hpτ] at h
+    nlinarith only [h, (hphase.core_signs τ hτ).2]
+  rw [min_eq_left hβτ.le] at henergy
+  have hquantity := (D.restrict (h0α.trans hαβ.le) hβτ.le hτL)
+    |>.uncharged_prefix_quantity_le_initial (fun t ht => hp t ⟨hαβ.le.trans ht.1, ht.2⟩)
+      huncharged τ (right_mem_Icc.mpr hβτ.le)
   rw [hpτ] at hquantity
   refine ⟨hβτ, ?_, henergy⟩
-  nlinarith only [hquantity, hEβ, sq_nonneg (q β - 1)]
+  nlinarith only [hquantity, henergy β (right_mem_Icc.mpr hαβ.le), sq_nonneg (q β - 1)]
 
 end CornerArcDynamics
 

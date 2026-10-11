@@ -26,56 +26,6 @@ open Set Filter MeasureTheory
 
 namespace AmbidextrousSofa
 
-theorem IsDownwardCap.top_leftCompanionCap_fst_eq_min_of_affine
-    {U : Set Plane} (hU : IsDownwardCap U) {a b m c : ℝ}
-    (ha : a ∈ horizontalProjection U) (hb : b ∈ horizontalProjection U)
-    (hab : a < b) (haffine : ∀ x ∈ Icc a b, capRoof U x = m * x + c) :
-    (MovingSofaOptimality.vplus (AmbidextrousSofa.leftCompanionCap U a) (Real.pi / 2)).1 =
-      min a (MovingSofaOptimality.vplus U (Real.pi / 2)).1 := by
-  by_cases hm : m ≤ 0
-  · have htop := (hU.leftCompanion_initial_data_of_nonpos_affine ha hb hab hm haffine).1
-    have hp := (MovingSofaOptimality.vplus_mem_edge (hU.leftCompanionCap ha).imported_isConvexBody
-      (Real.pi / 2)).1
-    have hxa : (MovingSofaOptimality.vplus U (Real.pi / 2)).1 ≤ a := by
-      rw [← htop]
-      exact hp.2.2
-    rw [htop, min_eq_right hxa]
-  · have hm0 : 0 < m := lt_of_not_ge hm
-    have htop := (hU.top_leftCompanionCap_of_positive_affine ha hb hab hm0 haffine).2
-    have hp := (MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody (Real.pi / 2)).1
-    have hceiling := (le_capRoof (x := (MovingSofaOptimality.vplus U (Real.pi / 2)).1)
-        (y := (MovingSofaOptimality.vplus U (Real.pi / 2)).2) hU.isCompact hp).trans
-      (hU.capRoof_le_affine_of_affine_segment ha hb hab haffine
-        (MovingSofaOptimality.vplus U (Real.pi / 2)).1 ⟨MovingSofaOptimality.vplus U (Real.pi / 2), hp, rfl⟩)
-    have hfa : capRoof U a ≤ capHeight U := by
-      have h := coordDot_le_support hU.isCompact (capRoof_mem hU.isCompact ha) (0, 1)
-      simpa only [coordDot, capHeight, mul_zero, mul_one, zero_add] using h
-    have hpy := top_vplus_snd_eq_capHeight U
-    have hline := haffine a ⟨le_rfl, hab.le⟩
-    have hax : a ≤ (MovingSofaOptimality.vplus U (Real.pi / 2)).1 := by
-      apply (mul_le_mul_iff_right₀ hm0).mp
-      linarith only [hceiling, hfa, hpy, hline]
-    rw [htop, min_eq_left hax]
-
-/-- The physical left overhang is precisely the missing initial
-horizontal displacement of the left charged wing. -/
-theorem IsDownwardCap.leftCompanion_initialOffset_eq_quarter_sub_topOverhang
-    {U : Set Plane} (hU : IsDownwardCap U) {m c : ℝ}
-    (hwidth : 0 < capWidth U)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    companionInitialOffset (AmbidextrousSofa.leftCompanionCap U (horizontalLeft U + capWidth U / 4)) =
-      capWidth U / 4 - topOverhangLeft U := by
-  obtain ⟨ha, hb, hab⟩ := hU.middleChord_endpoints hwidth
-  have htop := hU.top_leftCompanionCap_fst_eq_min_of_affine ha hb hab haffine
-  unfold companionInitialOffset topOverhangLeft
-  rw [htop, horizontalLeft_leftCompanionCap hU ha]
-  by_cases hx : (MovingSofaOptimality.vplus U (Real.pi / 2)).1 ≤ horizontalLeft U + capWidth U / 4
-  · rw [min_eq_right hx, max_eq_left (sub_nonneg.mpr hx)]
-    ring
-  · rw [min_eq_left (le_of_not_ge hx), max_eq_right (by linarith only [le_of_not_ge hx])]
-    ring
-
 /-- These are the actual support height and one-sided derivative in
 every sign of the middle slope, including the low positive-tilt start. -/
 theorem IsJointCapMaximizer.leftCompanion_actual_initial_data
@@ -89,58 +39,52 @@ theorem IsJointCapMaximizer.leftCompanion_actual_initial_data
       companionInitialDeficit V = 1 - capRoof U (horizontalLeft U + capWidth U / 4) ∧
       HasDerivWithinAt (fun t => angleSupport V (t + Real.pi / 2))
         (-(horizontalLeft U + capWidth U / 4) + topOverhangLeft U) (Ici 0) 0 := by
-  dsimp only
+  intro V
   have hwidth : 0 < capWidth U := by linarith only [hU.width_bounds.1, one_lt_M]
   obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints hwidth
   have hV := hU.isCap.leftCompanionCap ha
-  have hVheight : capHeight (leftCompanionCap U (horizontalLeft U + capWidth U / 4)) =
-      capRoof U (horizontalLeft U + capWidth U / 4) := by
-    by_cases hm : m ≤ 0
+  -- The top point of `V` is the original top point or the cut point, whichever lies left.
+  have key : capHeight V = capRoof U (horizontalLeft U + capWidth U / 4) ∧
+      (MovingSofaOptimality.vplus V (Real.pi / 2)).1 =
+        horizontalLeft U + capWidth U / 4 - topOverhangLeft U := by
+    unfold topOverhangLeft
+    rcases le_or_gt m 0 with hm | hm
     · have htop := (hU.isCap.leftCompanion_initial_data_of_nonpos_affine ha hb hab hm haffine).1
-      rw [← top_vplus_snd_eq_capHeight _, htop, top_vplus_snd_eq_capHeight U, hheight]
-      exact (hU.middle_left_eq_one_of_affine_nonpos hheight hm haffine).symm
-    · exact (hU.isCap.top_leftCompanionCap_of_positive_affine
-        ha hb hab (lt_of_not_ge hm) haffine).1
-  have hOffset := hU.isCap.leftCompanion_initialOffset_eq_quarter_sub_topOverhang hwidth haffine
-  refine ⟨hVheight, hOffset, ?_, ?_⟩
-  · unfold companionInitialDeficit
-    rw [hVheight]
-  · have hderiv := hV.hasDerivWithinAt_companionSupport_zero
-    have hx : (MovingSofaOptimality.vplus (leftCompanionCap U (horizontalLeft U + capWidth U / 4))
-        (Real.pi / 2)).1 = horizontalLeft U + capWidth U / 4 - topOverhangLeft U := by
-      unfold companionInitialOffset at hOffset
-      rw [horizontalLeft_leftCompanionCap hU.isCap ha] at hOffset
-      linarith only [hOffset]
-    rw [hx, show -(horizontalLeft U + capWidth U / 4 - topOverhangLeft U) =
-      -(horizontalLeft U + capWidth U / 4) + topOverhangLeft U by ring] at hderiv
-    exact hderiv
-
-theorem terminal_cosine_square_cut_after_initialAngle {α : ℝ}
-    (hα0 : Real.arctan (8 / 3) ≤ α) (hαL : α < Real.pi / 2) :
-    73 * Real.cos α ^ 2 ≤ 9 := by
-  have hαpos : 0 < α :=
-    (Real.arctan_pos.mpr (by norm_num : (0 : ℝ) < 8 / 3)).trans_le hα0
-  have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi hαpos
-    (by linarith only [hαL, Real.pi_pos])
-  have hc : 0 < Real.cos α := Real.cos_pos_of_mem_Ioo
-    ⟨by linarith only [hαpos, Real.pi_pos], hαL⟩
-  have htan : (8 / 3 : ℝ) ≤ Real.tan α := by
-    have h := Real.strictMonoOn_tan.monotoneOn (Real.arctan_mem_Ioo (8 / 3))
-      (show α ∈ Ioo (-(Real.pi / 2)) (Real.pi / 2) from
-        ⟨by linarith only [hαpos, Real.pi_pos], hαL⟩) hα0
-    simpa only [Real.tan_arctan] using h
-  rw [Real.tan_eq_sin_div_cos] at htan
-  have hsc : 8 * Real.cos α ≤ 3 * Real.sin α := by
-    have h := (le_div_iff₀ hc).mp htan
-    linarith only [h]
-  have hprod := mul_nonneg (sub_nonneg.mpr hsc)
-    (show 0 ≤ 3 * Real.sin α + 8 * Real.cos α by positivity)
-  nlinarith only [hprod, Real.sin_sq_add_cos_sq α]
+      have hxa := (MovingSofaOptimality.vplus_mem_edge hV.imported_isConvexBody
+        (Real.pi / 2)).1.2.2
+      rw [htop] at hxa ⊢
+      rw [max_eq_left (sub_nonneg.2 hxa), ← top_vplus_snd_eq_capHeight, htop,
+        top_vplus_snd_eq_capHeight, hheight, hU.middle_left_eq_one_of_affine_nonpos hheight hm
+          haffine]
+      exact ⟨rfl, by ring⟩
+    · obtain ⟨hh, htop⟩ := hU.isCap.top_leftCompanionCap_of_positive_affine ha hb hab hm haffine
+      set p := MovingSofaOptimality.vplus U (Real.pi / 2)
+      have hp : p ∈ U := (MovingSofaOptimality.vplus_mem_edge hU.isCap.imported_isConvexBody _).1
+      have := (le_capRoof (x := p.1) (y := p.2) hU.isCap.isCompact hp).trans
+        (hU.isCap.capRoof_le_affine_of_affine_segment ha hb hab haffine _ ⟨p, hp, rfl⟩)
+      have := hU.isCap.snd_le_capHeight (capRoof_mem hU.isCap.isCompact ha)
+      have := top_vplus_snd_eq_capHeight U
+      have := haffine (horizontalLeft U + capWidth U / 4) ⟨le_rfl, hab.le⟩
+      have : horizontalLeft U + capWidth U / 4 ≤ p.1 := le_of_mul_le_mul_left (by linarith) hm
+      rw [htop, max_eq_right (by linarith)]
+      exact ⟨hh, by ring⟩
+  obtain ⟨hh, hx⟩ := key
+  refine ⟨hh, ?_, by rw [companionInitialDeficit, hh], ?_⟩
+  · rw [companionInitialOffset, horizontalLeft_leftCompanionCap hU.isCap ha, hx]
+    ring
+  · exact hV.hasDerivWithinAt_companionSupport_zero.congr_deriv (by rw [hx]; ring)
 
 theorem IsJointCapMaximizer.terminal_cosine_square_cut
     {U : Set Plane} {α : ℝ} (hU : IsJointCapMaximizer U α)
-    (hproper : α < Real.pi / 2) : 73 * Real.cos α ^ 2 ≤ 9 :=
-  terminal_cosine_square_cut_after_initialAngle
-    hU.terminal_angle_gt_arctan_eight_thirds.le hproper
+    (hproper : α < Real.pi / 2) : 73 * Real.cos α ^ 2 ≤ 9 := by
+  have hα := hU.terminal_angle_gt_arctan_eight_thirds
+  have hα0 : 0 < α := (Real.arctan_pos.2 (by norm_num)).trans hα
+  have hc : 0 < Real.cos α := Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hproper⟩
+  have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [Real.pi_pos])
+  have htan : 8 / 3 < Real.tan α := by
+    simpa using Real.strictMonoOn_tan (Real.arctan_mem_Ioo _)
+      ⟨by linarith [Real.pi_pos], hproper⟩ hα
+  rw [Real.tan_eq_sin_div_cos, lt_div_iff₀ hc] at htan
+  nlinarith [Real.sin_sq_add_cos_sq α]
 
 end AmbidextrousSofa

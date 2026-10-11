@@ -17,7 +17,7 @@ absolute cosine-weighted source defect vanishes as well.
 
 noncomputable section
 
-open Set Filter MeasureTheory
+open Set Filter
 open scoped Topology
 
 namespace AmbidextrousSofa
@@ -37,12 +37,9 @@ theorem sum_cos_normalizedExposureDefect_eq_moments (U : Set Plane) (α : Termin
       finiteRightMoment U (normal α grid) (pairList α grid) (some (terminalIndex α hαL grid)) +
         finiteLeftMoment U (normal α grid) (pairList α grid) (some (terminalIndex α hαL grid)) := by
   rw [finiteRightMoment_eq_sum, finiteLeftMoment_eq_sum, ← Finset.sum_add_distrib]
-  apply Finset.sum_congr rfl
-  intro j _
-  have h := max_self_zero_add_max_neg_eq_abs (normal α grid j).1
-  dsimp only [normalizedExposureDefect]
-  rw [← mul_add, ← add_div, h]
-  ring
+  exact Finset.sum_congr rfl fun j _ => by
+    rw [normalizedExposureDefect, ← mul_add, ← add_div, max_zero_add_max_neg_zero_eq_abs_self]
+    ring
 
 theorem IsSelectedPolygon.sum_cos_abs_normalizedExposureDefect_le {target U : Set Plane}
     {a b coefficient : ℝ} {level : ℕ}
@@ -52,13 +49,10 @@ theorem IsSelectedPolygon.sum_cos_abs_normalizedExposureDefect_le {target U : Se
       finiteRightMoment U (normal α (dyadic level)) (pairList α (dyadic level)) (some (terminalIndex α hαL (dyadic level))) +
         finiteLeftMoment U (normal α (dyadic level)) (pairList α (dyadic level)) (some (terminalIndex α hαL (dyadic level))) +
           2 * ∑ j, selectionDefect target U α level coefficient j := by
-  have h := sum_weighted_abs_le_of_error (normalizedExposureDefect U α hαL (dyadic level))
-    (selectionDefect target U α level coefficient) (fun j => |(normal α (dyadic level) j).1|)
-    (selectionDefect_nonneg target U α level hc) (hU.exposure_defect_div_ge hc)
-    (fun _ => abs_nonneg _) (fun j => by
-      rw [normal_eq_unitNormal]
-      exact Real.abs_cos_le_one _)
-  rwa [sum_cos_normalizedExposureDefect_eq_moments] at h
+  rw [← sum_cos_normalizedExposureDefect_eq_moments]
+  exact sum_weighted_abs_le_of_error _ _ _ (selectionDefect_nonneg target U α level hc)
+    (hU.exposure_defect_div_ge hc) (fun _ => abs_nonneg _)
+    (fun j => by rw [normal_eq_unitNormal]; exact Real.abs_cos_le_one _)
 
 theorem sum_cos_abs_normalizedExposureDefect_tendsto_zero_of_canonical_maximum
     {target : Set Plane} {U : ℕ → Set Plane} {a b : ℝ}
@@ -76,13 +70,10 @@ theorem sum_cos_abs_normalizedExposureDefect_tendsto_zero_of_canonical_maximum
         |normalizedExposureDefect (U n) α hαL (dyadic (level n)) j|) atTop (𝓝 0) := by
   have hD := erosionMoments_tendsto_zero_of_canonical_maximum hTarget hheight haffine
     hTargetBox hU hHausdorff hlevel hc hrate hleft hright
-  have herr := selectionDefect_sum_tendsto (α := α) (level := level) hTarget.isCap
-    (fun n => (hU n).isCap) hc hrate hHausdorff
-  apply squeeze_zero
-    (fun n => Finset.sum_nonneg (fun j _ => mul_nonneg (abs_nonneg _) (abs_nonneg _)))
-    (fun n => (hU n).sum_cos_abs_normalizedExposureDefect_le (hc n))
-  simpa only [zero_add, mul_zero] using (hD.1.add hD.2).add (herr.const_mul 2)
-
+  refine squeeze_zero (fun n => Finset.sum_nonneg fun j _ => by positivity)
+    (fun n => (hU n).sum_cos_abs_normalizedExposureDefect_le (hc n)) ?_
+  simpa only [zero_add, mul_zero] using (hD.1.add hD.2).add ((selectionDefect_sum_tendsto (α := α)
+    (level := level) hTarget.isCap (fun n => (hU n).isCap) hc hrate hHausdorff).const_mul 2)
 
 end PartialGrid
 end AmbidextrousSofa

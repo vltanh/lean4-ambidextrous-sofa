@@ -53,14 +53,10 @@ theorem IsDownwardCap.absolutelyContinuousOnInterval_closedSupportDerivative
     (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
     (a b d : ℝ) :
     AbsolutelyContinuousOnInterval (closedSupportDerivative U ρ d) a b := by
-  apply absolutelyContinuousOnInterval_of_integral_sub
-    (hU.intervalIntegrable_shifted_density_sub_support hρ hρ0 hρK a b d)
-  intro x _
-  have hsum := intervalIntegral.integral_add_adjacent_intervals
-    (hU.intervalIntegrable_shifted_density_sub_support hρ hρ0 hρK 0 a d)
-    (hU.intervalIntegrable_shifted_density_sub_support hρ hρ0 hρK a x d)
-  dsimp only [closedSupportDerivative]
-  linarith
+  have hi := hU.intervalIntegrable_shifted_density_sub_support hρ hρ0 hρK
+  refine absolutelyContinuousOnInterval_of_integral_sub (hi a b d) fun x _ => ?_
+  rw [closedSupportDerivative, closedSupportDerivative, add_sub_add_left_eq_sub,
+    intervalIntegral.integral_interval_sub_left (hi 0 x d) (hi 0 a d)]
 
 theorem IsDownwardCap.ae_hasDerivAt_closedSupportDerivative
     {U : Set Plane} (hU : IsDownwardCap U) {ρ : ℝ → ℝ} {K a b : ℝ}
@@ -73,14 +69,9 @@ theorem IsDownwardCap.ae_hasDerivAt_closedSupportDerivative
     (min 0 a) (max 0 b) d
   filter_upwards [ae_restrict_mem measurableSet_Ioo,
     ae_restrict_of_ae hi.ae_hasDerivAt_integral] with t ht hdt
-  have hbig : min 0 a ≤ max 0 b := (min_le_left _ _).trans (le_max_left _ _)
-  have htbig : t ∈ uIcc (min 0 a) (max 0 b) := by
-    rw [uIcc_of_le hbig]
-    exact ⟨(min_le_right _ _).trans ht.1.le, ht.2.le.trans (le_max_right _ _)⟩
-  have hzero : (0 : ℝ) ∈ uIcc (min 0 a) (max 0 b) := by
-    rw [uIcc_of_le hbig]
-    exact ⟨min_le_left _ _, le_max_left _ _⟩
-  exact (hdt htbig 0 hzero).const_add (supportTangent U d)
+  rw [uIcc_of_le ((min_le_right 0 a).trans (hab.trans (le_max_right 0 b)))] at hdt
+  exact (hdt ⟨(min_le_right _ _).trans ht.1.le, ht.2.le.trans (le_max_right _ _)⟩ 0
+    ⟨min_le_left _ _, le_max_left _ _⟩).const_add (supportTangent U d)
 
 /-- Only the half-open Stieltjes interval must lie in the density domain.
 The initial face atom is deliberately excluded. -/
@@ -93,18 +84,14 @@ theorem IsDownwardCap.supportTangent_sub_eq_integral_of_density_Ioc
     supportTangent U b - supportTangent U a =
       ∫ t in a..b, ρ t - angleSupport U t := by
   rcases hab.eq_or_lt with rfl | hab
-  · simp only [sub_self, intervalIntegral.integral_same]
-  · have hmass : (MovingSofaOptimality.sigma U (Ioc a b)).toReal = ∫ t in a..b, ρ t := by
-      rw [intervalIntegral.integral_of_le hab.le]
-      exact measureReal_eq_integral_of_restrict_withDensity hρ hρ0 heq
-        measurableSet_Ioc hsub
-    change MovingSofaOptimality.dot (MovingSofaOptimality.vplus U b) (MovingSofaOptimality.vvec b) -
-      MovingSofaOptimality.dot (MovingSofaOptimality.vplus U a) (MovingSofaOptimality.vvec a) = _
-    rw [AmbidextrousSofa.dot_vplus_vvec_sub hU.imported_isConvexBody hab, hmass]
-    simp only [angleSupport_eq_imported_supp]
-    rw [intervalIntegral.integral_sub
-        (intervalIntegrable_bounded_real_density hρ hρ0 hρK a b)
-        (hU.imported_isConvexBody.continuous_supp.intervalIntegrable a b)]
+  · simp
+  simp only [supportTangent, dot_vplus_vvec_sub hU.imported_isConvexBody hab,
+    angleSupport_eq_imported_supp]
+  rw [intervalIntegral.integral_sub (intervalIntegrable_bounded_real_density hρ hρ0 hρK a b)
+    (hU.imported_isConvexBody.continuous_supp.intervalIntegrable a b),
+    intervalIntegral.integral_of_le (f := ρ) hab.le,
+    ← measureReal_eq_integral_of_restrict_withDensity hρ hρ0 heq measurableSet_Ioc hsub]
+  rfl
 
 theorem IsDownwardCap.closedSupportDerivative_eq_supportTangent
     {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {K d t : ℝ}
@@ -115,16 +102,9 @@ theorem IsDownwardCap.closedSupportDerivative_eq_supportTangent
     (ht0 : 0 ≤ t) (htL : t < Real.pi / 2) :
     closedSupportDerivative U ρ d t = supportTangent U (t + d) := by
   have hid := hU.supportTangent_sub_eq_integral_of_density_Ioc hρ hρ0 hρK heq
-    (a := d) (b := t + d) (by linarith) (by
-      intro s hs
-      apply hsub
-      exact ⟨hs.1, by linarith [hs.2]⟩)
-  have hshift : (∫ s in (0 : ℝ)..t, ρ (s + d) - angleSupport U (s + d)) =
-      ∫ s in d..t + d, ρ s - angleSupport U s := by
-    simpa only [zero_add] using intervalIntegral.integral_comp_add_right
-      (fun s => ρ s - angleSupport U s) d (a := 0) (b := t)
-  rw [← hshift] at hid
-  dsimp only [closedSupportDerivative]
+    (a := d) (b := t + d) (by linarith) fun s hs => hsub ⟨hs.1, by linarith [hs.2]⟩
+  rw [closedSupportDerivative,
+    intervalIntegral.integral_comp_add_right (fun s => ρ s - angleSupport U s), zero_add]
   linarith
 
 theorem IsDownwardCap.closedSupportDerivative_at_end
@@ -136,28 +116,15 @@ theorem IsDownwardCap.closedSupportDerivative_at_end
     closedSupportDerivative U ρ d (Real.pi / 2) =
       MovingSofaOptimality.dot (MovingSofaOptimality.vminus U (Real.pi / 2 + d))
         (MovingSofaOptimality.vvec (Real.pi / 2 + d)) := by
-  have hp := (MovingSofaOptimality.tendsto_vplus_left hU.imported_isConvexBody
-    (Real.pi / 2 + d)).comp (tendsto_add_const_nhdsLT (Real.pi / 2) d)
-  have hv := ((MovingSofaOptimality.continuous_vvec.comp (continuous_id.add_const d)).tendsto
-    (Real.pi / 2)).mono_left (nhdsWithin_le_nhds :
-      𝓝[<] (Real.pi / 2) ≤ 𝓝 (Real.pi / 2))
-  have htangent := (MovingSofaOptimality.continuous_dot_pair.tendsto
-    (MovingSofaOptimality.vminus U (Real.pi / 2 + d), MovingSofaOptimality.vvec (Real.pi / 2 + d))).comp
-      (hp.prodMk_nhds hv)
-  have hclosed : Tendsto (closedSupportDerivative U ρ d) (𝓝[<] (Real.pi / 2))
-      (𝓝 (MovingSofaOptimality.dot (MovingSofaOptimality.vminus U (Real.pi / 2 + d))
-        (MovingSofaOptimality.vvec (Real.pi / 2 + d)))) := by
-    apply htangent.congr'
-    filter_upwards [Ioo_mem_nhdsLT (show (0 : ℝ) < Real.pi / 2 by linarith [Real.pi_pos])]
-      with t ht
-    exact (hU.closedSupportDerivative_eq_supportTangent hρ hρ0 hρK heq hsub ht.1.le ht.2).symm
-  exact tendsto_nhds_unique
-    ((hU.continuous_closedSupportDerivative hρ hρ0 hρK d).tendsto
-      (Real.pi / 2) |>.mono_left nhdsWithin_le_nhds) hclosed
-
-@[simp] theorem closedSupportDerivative_zero (U : Set Plane) (ρ : ℝ → ℝ) (d : ℝ) :
-    closedSupportDerivative U ρ d 0 = supportTangent U d := by
-  simp only [closedSupportDerivative, intervalIntegral.integral_same, add_zero]
+  have hlim := (MovingSofaOptimality.continuous_dot_pair.tendsto _).comp
+    (((MovingSofaOptimality.tendsto_vplus_left hU.imported_isConvexBody (Real.pi / 2 + d)).comp
+      (tendsto_add_const_nhdsLT (Real.pi / 2) d)).prodMk_nhds
+      (((MovingSofaOptimality.continuous_vvec.comp (continuous_id.add_const d)).tendsto _).mono_left
+        nhdsWithin_le_nhds))
+  refine tendsto_nhds_unique (((hU.continuous_closedSupportDerivative hρ hρ0 hρK d).tendsto
+    _).mono_left nhdsWithin_le_nhds) (hlim.congr' ?_)
+  filter_upwards [Ioo_mem_nhdsLT Real.pi_div_two_pos] with t ht
+  exact (hU.closedSupportDerivative_eq_supportTangent hρ hρ0 hρK heq hsub ht.1.le ht.2).symm
 
 theorem IsDownwardCap.hasDerivAt_shiftedSupport_of_open_density
     {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {K d t : ℝ}
@@ -167,34 +134,10 @@ theorem IsDownwardCap.hasDerivAt_shiftedSupport_of_open_density
     (hsub : Ioo d (d + Real.pi / 2) ⊆ S) (ht : t ∈ Ioo 0 (Real.pi / 2)) :
     HasDerivAt (fun s => angleSupport U (s + d)) (closedSupportDerivative U ρ d t) t := by
   rw [hU.closedSupportDerivative_eq_supportTangent hρ hρ0 hρK heq hsub ht.1.le ht.2]
-  have hI : Icc (d + t / 2) (d + (t + Real.pi / 2) / 2) ⊆ S := by
-    intro s hs
-    apply hsub
-    constructor <;> linarith [ht.1, ht.2, hs.1, hs.2]
-  have hx : t + d ∈ Ioo (d + t / 2) (d + (t + Real.pi / 2) / 2) := by
-    constructor <;> linarith [ht.1, ht.2]
-  have hd := hU.hasDerivAt_angleSupport_of_density hρ hρ0 hρK heq hI hx
-  simpa only [Function.comp_def, mul_one, id_eq] using
-    hd.comp t ((hasDerivAt_id t).add_const d)
-
-theorem IsDownwardCap.shiftedSupport_eq_closed_primitive
-    {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {K d t : ℝ}
-    (hρ : Measurable ρ) (hρ0 : ∀ s, 0 ≤ ρ s) (hρK : ∀ s, ρ s ≤ K)
-    (heq : (upperCurvature U).restrict S =
-      (volume.restrict S).withDensity (fun s => ENNReal.ofReal (ρ s)))
-    (hsub : Ioo d (d + Real.pi / 2) ⊆ S) (ht : t ∈ Icc 0 (Real.pi / 2)) :
-    angleSupport U (t + d) = angleSupport U d +
-      ∫ s in (0 : ℝ)..t, closedSupportDerivative U ρ d s := by
-  have hprimitive := hU.angleSupport_shift_sub_eq_integral 0 t d
-  simp only [zero_add] at hprimitive
-  have hi : (∫ s in (0 : ℝ)..t, supportTangent U (s + d)) =
-      ∫ s in (0 : ℝ)..t, closedSupportDerivative U ρ d s := by
-    apply intervalIntegral.integral_congr_Ioo_of_le ht.1
-    intro s hs
-    exact (hU.closedSupportDerivative_eq_supportTangent hρ hρ0 hρK heq hsub hs.1.le
-      (hs.2.trans_le ht.2)).symm
-  rw [hi] at hprimitive
-  linarith
+  exact (hU.hasDerivAt_angleSupport_of_density hρ hρ0 hρK heq (a := d + t / 2)
+    (b := d + (t + Real.pi / 2) / 2)
+    (fun s hs => hsub ⟨by linarith [ht.1, hs.1], by linarith [ht.2, hs.2]⟩)
+    ⟨by linarith [ht.1], by linarith [ht.2]⟩).comp_add_const t d
 
 /-- Differentiation within the closed quarter includes the true initial
 right derivative and terminal left derivative. -/
@@ -206,10 +149,14 @@ theorem IsDownwardCap.hasDerivWithinAt_shiftedSupport_closed
     (hsub : Ioo d (d + Real.pi / 2) ⊆ S) (ht : t ∈ Icc 0 (Real.pi / 2)) :
     HasDerivWithinAt (fun s => angleSupport U (s + d))
       (closedSupportDerivative U ρ d t) (Icc 0 (Real.pi / 2)) t := by
-  have hd := ((hU.continuous_closedSupportDerivative hρ hρ0 hρK d).integral_hasStrictDerivAt
-    0 t).hasDerivAt.const_add (angleSupport U d)
-  exact hd.hasDerivWithinAt.congr_of_mem
-    (fun s hs => hU.shiftedSupport_eq_closed_primitive hρ hρ0 hρK heq hsub hs) ht
+  refine (((hU.continuous_closedSupportDerivative hρ hρ0 hρK d).integral_hasStrictDerivAt
+    0 t).hasDerivAt.const_add (angleSupport U d)).hasDerivWithinAt.congr_of_mem
+    (fun s hs => ?_) ht
+  have h := hU.angleSupport_shift_sub_eq_integral 0 s d
+  rw [zero_add, ← intervalIntegral.integral_congr_Ioo_of_le hs.1 fun r hr =>
+    hU.closedSupportDerivative_eq_supportTangent hρ hρ0 hρK heq hsub hr.1.le
+      (hr.2.trans_le hs.2)] at h
+  linarith
 
 /-- The actual support in each of two quarters, with closed continuous
 derivative representatives. The second cap may be a companion cut. -/
@@ -242,70 +189,16 @@ def supportQuarterPair {U V : Set Plane} (hU : IsDownwardCap U) (hV : IsDownward
     exact (hV.hasDerivAt_shiftedSupport_of_open_density hσ hσ0 hσJ hsecond
       (d := Real.pi / 2) (by intro s hs; exact ⟨hs.1, by linarith [hs.2]⟩) ht).hasDerivWithinAt
 
-/-- Absolute continuity and the coupled equations hold on the whole closed
-quarter, including its genuine one-sided endpoint traces. -/
-theorem supportQuarterPair_corner_calculus
-    {U V : Set Plane} (hU : IsDownwardCap U) (hV : IsDownwardCap V)
-    {ρ σ : ℝ → ℝ} {K J : ℝ}
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (hσ : Measurable σ) (hσ0 : ∀ t, 0 ≤ σ t) (hσJ : ∀ t, σ t ≤ J)
-    (hfirst : (upperCurvature U).restrict (Ioo 0 (Real.pi / 2)) =
-      (volume.restrict (Ioo 0 (Real.pi / 2))).withDensity (fun t => ENNReal.ofReal (ρ t)))
-    (hsecond : (upperCurvature V).restrict (Ioo (Real.pi / 2) Real.pi) =
-      (volume.restrict (Ioo (Real.pi / 2) Real.pi)).withDensity
-        (fun t => ENNReal.ofReal (σ t))) :
-    let F := supportQuarterPair hU hV hρ hρ0 hρK hσ hσ0 hσJ hfirst hsecond
-    AbsolutelyContinuousOnInterval (supportP F.fD F.g) 0 (Real.pi / 2) ∧
-      AbsolutelyContinuousOnInterval (supportQ F.gD F.f) 0 (Real.pi / 2) ∧
-      ∀ᵐ t ∂volume.restrict (Ioo 0 (Real.pi / 2)),
-        HasDerivAt (supportP F.fD F.g) (ρ t - 1 - supportQ F.gD F.f t) t ∧
-        HasDerivAt (supportQ F.gD F.f)
-          (σ (t + Real.pi / 2) - 1 + supportP F.fD F.g t) t := by
-  dsimp only
-  have hL : (0 : ℝ) ≤ Real.pi / 2 := by linarith [Real.pi_pos]
-  have hf := hU.absolutelyContinuousOnInterval_angleSupport 0 (Real.pi / 2)
-  have hg := hV.absolutelyContinuousOnInterval_angleSupport_shift 0 (Real.pi / 2) (Real.pi / 2)
-  have hfD := hU.absolutelyContinuousOnInterval_closedSupportDerivative hρ hρ0 hρK 0 (Real.pi / 2) 0
-  have hgD := hV.absolutelyContinuousOnInterval_closedSupportDerivative hσ hσ0 hσJ
-    0 (Real.pi / 2) (Real.pi / 2)
-  have hc : AbsolutelyContinuousOnInterval (fun _ : ℝ => (1 : ℝ)) 0 (Real.pi / 2) :=
-    (LipschitzWith.const (1 : ℝ)).lipschitzOnWith.absolutelyContinuousOnInterval
-  refine ⟨(hfD.sub hg).add hc, (hgD.add hf).sub hc, ?_⟩
-  filter_upwards [ae_restrict_mem measurableSet_Ioo,
-    hU.ae_hasDerivAt_closedSupportDerivative hρ hρ0 hρK hL 0,
-    hV.ae_hasDerivAt_closedSupportDerivative hσ hσ0 hσJ hL (Real.pi / 2)]
-    with t ht hfDD hgDD
-  have hdf := hU.hasDerivAt_shiftedSupport_of_open_density hρ hρ0 hρK hfirst
-    (d := 0) (by simpa only [zero_add] using (Subset.rfl :
-      Ioo (0 : ℝ) (Real.pi / 2) ⊆ Ioo 0 (Real.pi / 2))) ht
-  have hdg := hV.hasDerivAt_shiftedSupport_of_open_density hσ hσ0 hσJ hsecond
-    (d := Real.pi / 2) (by intro s hs; exact ⟨hs.1, by linarith [hs.2]⟩) ht
-  simp only [add_zero] at hdf hfDD
-  constructor
-  · apply ((hfDD.sub hdg).add_const 1).congr_deriv
-    dsimp only [supportQ, supportQuarterPair]
-    ring
-  · apply ((hgDD.add hdf).sub_const 1).congr_deriv
-    dsimp only [supportP, supportQuarterPair]
-    ring
-
 theorem supportPoint_eq_of_frame {f fD : ℝ → ℝ} {p : Plane} {t : ℝ}
     (hf : f t = MovingSofaOptimality.dot p (MovingSofaOptimality.uvec t))
     (hfD : fD t = MovingSofaOptimality.dot p (MovingSofaOptimality.vvec t)) :
     Reference.supportPoint f fD t = p := by
-  have hframe := MovingSofaOptimality.eq_dot_uvec_smul_add p t
-  have hx := congrArg Prod.fst hframe
-  have hy := congrArg Prod.snd hframe
-  simp only [Prod.fst_add, Prod.snd_add, Prod.smul_fst, Prod.smul_snd, smul_eq_mul,
-    MovingSofaOptimality.uvec, MovingSofaOptimality.vvec] at hx hy
-  apply Prod.ext
-  · change f t * Real.cos t - fD t * Real.sin t = p.1
-    rw [hf, hfD]
-    simp only [MovingSofaOptimality.uvec, MovingSofaOptimality.vvec]
-    nlinarith only [hx]
-  · change f t * Real.sin t + fD t * Real.cos t = p.2
-    rw [hf, hfD]
-    exact hy.symm
+  have h := Real.sin_sq_add_cos_sq t
+  simp only [MovingSofaOptimality.dot, MovingSofaOptimality.uvec,
+    MovingSofaOptimality.vvec] at hf hfD
+  ext <;> simp only [Reference.supportPoint, hf, hfD]
+  · linear_combination p.1 * h
+  · linear_combination p.2 * h
 
 theorem companionSupportPoint_eq_shifted_supportPoint (g gD : ℝ → ℝ) (t : ℝ) :
     Reference.companionSupportPoint g gD t =
@@ -330,66 +223,35 @@ variable {U V : Set Plane} (hU : IsDownwardCap U) (hV : IsDownwardCap V)
 
 local notation "F" => supportQuarterPair hU hV hρ hρ0 hρK hσ hσ0 hσJ hfirst hsecond
 
-theorem supportQuarterPair_first_point {t : ℝ} (ht : t ∈ Ico 0 (Real.pi / 2)) :
-    Reference.supportPoint (F).f (F).fD t = MovingSofaOptimality.vplus U t := by
-  apply supportPoint_eq_of_frame
-  · exact (MovingSofaOptimality.dot_vplus_uvec U t).symm
-  · change closedSupportDerivative U ρ 0 t = supportTangent U t
-    simpa only [add_zero] using hU.closedSupportDerivative_eq_supportTangent
-      hρ hρ0 hρK hfirst (d := 0)
-      (by simpa only [zero_add] using (Subset.rfl :
-        Ioo (0 : ℝ) (Real.pi / 2) ⊆ Ioo 0 (Real.pi / 2))) ht.1 ht.2
-
-theorem supportQuarterPair_second_point {t : ℝ} (ht : t ∈ Ico 0 (Real.pi / 2)) :
-    Reference.companionSupportPoint (F).g (F).gD t = MovingSofaOptimality.vplus V (t + Real.pi / 2) := by
-  rw [companionSupportPoint_eq_shifted_supportPoint]
-  apply supportPoint_eq_of_frame
-  · simpa only [supportQuarterPair, add_sub_cancel_right, angleSupport_eq_imported_supp] using
-      (MovingSofaOptimality.dot_vplus_uvec V (t + Real.pi / 2)).symm
-  · dsimp only [supportQuarterPair]
-    rw [add_sub_cancel_right]
-    exact hV.closedSupportDerivative_eq_supportTangent hσ hσ0 hσJ hsecond
-      (d := Real.pi / 2) (by intro s hs; exact ⟨hs.1, by linarith [hs.2]⟩) ht.1 ht.2
-
-theorem supportQuarterPair_first_end :
-    Reference.supportPoint (F).f (F).fD (Real.pi / 2) = MovingSofaOptimality.vminus U (Real.pi / 2) := by
-  apply supportPoint_eq_of_frame
-  · exact (MovingSofaOptimality.dot_vminus_uvec U (Real.pi / 2)).symm
-  · simpa only [supportQuarterPair, add_zero] using
-      hU.closedSupportDerivative_at_end hρ hρ0 hρK hfirst (d := 0)
-        (by simpa only [zero_add] using (Subset.rfl :
-          Ioo (0 : ℝ) (Real.pi / 2) ⊆ Ioo 0 (Real.pi / 2)))
-
-theorem supportQuarterPair_second_end :
-    Reference.companionSupportPoint (F).g (F).gD (Real.pi / 2) = MovingSofaOptimality.vminus V Real.pi := by
-  rw [companionSupportPoint_eq_shifted_supportPoint]
-  apply supportPoint_eq_of_frame
-  · simpa only [supportQuarterPair, add_sub_cancel_right, sub_add_cancel,
-      angleSupport_eq_imported_supp,
-      show Real.pi / 2 + Real.pi / 2 = Real.pi by ring] using
-      (MovingSofaOptimality.dot_vminus_uvec V Real.pi).symm
-  · dsimp only [supportQuarterPair]
-    rw [add_sub_cancel_right]
-    simpa only [show Real.pi / 2 + Real.pi / 2 = Real.pi by ring] using
-      hV.closedSupportDerivative_at_end hσ hσ0 hσJ hsecond (d := Real.pi / 2)
-        (by intro s hs; exact ⟨hs.1, by linarith [hs.2]⟩)
-
 theorem supportQuarterPair_points_mem :
     (∀ t ∈ Icc 0 (Real.pi / 2), Reference.supportPoint (F).f (F).fD t ∈ U) ∧
       ∀ t ∈ Icc 0 (Real.pi / 2), Reference.companionSupportPoint (F).g (F).gD t ∈ V := by
-  constructor
-  · intro t ht
-    rcases ht.2.eq_or_lt with rfl | htL
-    · rw [supportQuarterPair_first_end]
-      exact (MovingSofaOptimality.vminus_mem_edge hU.imported_isConvexBody _).1
-    · rw [supportQuarterPair_first_point hU hV hρ hρ0 hρK hσ hσ0 hσJ hfirst hsecond ⟨ht.1, htL⟩]
-      exact (MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody _).1
-  · intro t ht
-    rcases ht.2.eq_or_lt with rfl | htL
-    · rw [supportQuarterPair_second_end]
-      exact (MovingSofaOptimality.vminus_mem_edge hV.imported_isConvexBody _).1
-    · rw [supportQuarterPair_second_point hU hV hρ hρ0 hρK hσ hσ0 hσJ hfirst hsecond ⟨ht.1, htL⟩]
-      exact (MovingSofaOptimality.vplus_mem_edge hV.imported_isConvexBody _).1
+  have hK := hU.imported_isConvexBody
+  have hL := hV.imported_isConvexBody
+  refine ⟨fun t ht => ?_, fun t ht => ?_⟩ <;> rcases ht.2.eq_or_lt with rfl | htL
+  · convert (MovingSofaOptimality.vminus_mem_edge hK (Real.pi / 2)).1 using 1
+    refine supportPoint_eq_of_frame (MovingSofaOptimality.dot_vminus_uvec U _).symm ?_
+    simpa only [supportQuarterPair, add_zero] using
+      hU.closedSupportDerivative_at_end hρ hρ0 hρK hfirst (d := 0) (by simp)
+  · convert (MovingSofaOptimality.vplus_mem_edge hK t).1 using 1
+    refine supportPoint_eq_of_frame (MovingSofaOptimality.dot_vplus_uvec U t).symm ?_
+    simpa only [supportQuarterPair, supportTangent, add_zero] using
+      hU.closedSupportDerivative_eq_supportTangent hρ hρ0 hρK hfirst (d := 0) (by simp) ht.1 htL
+  · convert (MovingSofaOptimality.vminus_mem_edge hL Real.pi).1 using 1
+    rw [companionSupportPoint_eq_shifted_supportPoint]
+    refine supportPoint_eq_of_frame ?_ ?_
+    · simpa only [supportQuarterPair, add_sub_cancel_right, sub_add_cancel, add_halves,
+        angleSupport_eq_imported_supp] using (MovingSofaOptimality.dot_vminus_uvec V Real.pi).symm
+    · simpa only [supportQuarterPair, add_sub_cancel_right, add_halves, sub_half] using
+        hV.closedSupportDerivative_at_end hσ hσ0 hσJ hsecond (d := Real.pi / 2) (by simp)
+  · convert (MovingSofaOptimality.vplus_mem_edge hL (t + Real.pi / 2)).1 using 1
+    rw [companionSupportPoint_eq_shifted_supportPoint]
+    refine supportPoint_eq_of_frame ?_ ?_
+    · simpa only [supportQuarterPair, add_sub_cancel_right, angleSupport_eq_imported_supp] using
+        (MovingSofaOptimality.dot_vplus_uvec V (t + Real.pi / 2)).symm
+    · simpa only [supportQuarterPair, add_sub_cancel_right, supportTangent] using
+        hV.closedSupportDerivative_eq_supportTangent hσ hσ0 hσJ hsecond (d := Real.pi / 2)
+          (by simp) ht.1 htL
 
 /-- All four support traces and all four derivative traces. In particular,
 the two top traces are allowed to come from different faces and heights. -/
@@ -400,25 +262,15 @@ theorem supportQuarterPair_traces :
       (F).gD 0 = -(MovingSofaOptimality.vplus V (Real.pi / 2)).1 ∧
       (F).fD (Real.pi / 2) = -(MovingSofaOptimality.vminus U (Real.pi / 2)).1 ∧
       (F).gD (Real.pi / 2) = -capRoof V (horizontalLeft V) := by
-  have hfDend := hU.closedSupportDerivative_at_end hρ hρ0 hρK hfirst (d := 0)
-    (by simpa only [zero_add] using (Subset.rfl :
-      Ioo (0 : ℝ) (Real.pi / 2) ⊆ Ioo 0 (Real.pi / 2)))
+  have hfDend := hU.closedSupportDerivative_at_end hρ hρ0 hρK hfirst (d := 0) (by simp)
   have hgDend := hV.closedSupportDerivative_at_end hσ hσ0 hσJ hsecond (d := Real.pi / 2)
-    (by intro s hs; exact ⟨hs.1, by linarith [hs.2]⟩)
-  have hadd : Real.pi / 2 + Real.pi / 2 = Real.pi := by ring
+    (by simp)
   dsimp only [supportQuarterPair]
-  refine ⟨imported_supp_zero U, ?_, imported_supp_pi_div_two U, ?_, ?_, ?_, ?_, ?_⟩
-  · simpa only [zero_add, angleSupport_eq_imported_supp] using imported_supp_pi_div_two V
-  · simpa only [hadd, angleSupport_eq_imported_supp] using hV.imported_supp_pi
-  · simp only [closedSupportDerivative_zero, supportTangent, hU.axis_vplus_zero,
-      MovingSofaOptimality.dot, MovingSofaOptimality.vvec, Real.sin_zero, Real.cos_zero, neg_zero,
-      mul_zero, mul_one, zero_add]
-  · simp only [closedSupportDerivative_zero, supportTangent, MovingSofaOptimality.dot, MovingSofaOptimality.vvec,
-      Real.sin_pi_div_two, Real.cos_pi_div_two, mul_neg, mul_one, mul_zero, add_zero]
-  · simpa only [add_zero, MovingSofaOptimality.dot, MovingSofaOptimality.vvec, Real.sin_pi_div_two,
-      Real.cos_pi_div_two, mul_neg, mul_one, mul_zero, add_zero] using hfDend
-  · simpa only [hadd, hV.axis_vminus_pi, MovingSofaOptimality.dot, MovingSofaOptimality.vvec, Real.sin_pi,
-      Real.cos_pi, neg_zero, mul_zero, mul_neg, mul_one, zero_add] using hgDend
+  refine ⟨imported_supp_zero U, ?_, imported_supp_pi_div_two U, ?_, ?_, ?_, hfDend.trans ?_,
+    hgDend.trans ?_⟩ <;>
+    simp [closedSupportDerivative, supportTangent, hU.axis_vplus_zero, hV.axis_vminus_pi,
+      MovingSofaOptimality.dot, MovingSofaOptimality.vvec, angleSupport_eq_imported_supp,
+      imported_supp_pi_div_two, hV.imported_supp_pi]
 
 theorem supportQuarterPair_absolutelyContinuous :
     AbsolutelyContinuousOnInterval (F).f 0 (Real.pi / 2) ∧
@@ -435,35 +287,54 @@ theorem supportQuarterPair_ae_derivatives :
       HasDerivAt (F).f ((F).fD t) t ∧ HasDerivAt (F).g ((F).gD t) t ∧
       HasDerivAt (F).fD (ρ t - (F).f t) t ∧
       HasDerivAt (F).gD (σ (t + Real.pi / 2) - (F).g t) t := by
-  have hL : (0 : ℝ) ≤ Real.pi / 2 := by linarith [Real.pi_pos]
   filter_upwards [ae_restrict_mem measurableSet_Ioo,
-    hU.ae_hasDerivAt_closedSupportDerivative hρ hρ0 hρK hL 0,
-    hV.ae_hasDerivAt_closedSupportDerivative hσ hσ0 hσJ hL (Real.pi / 2)]
+    hU.ae_hasDerivAt_closedSupportDerivative hρ hρ0 hρK Real.pi_div_two_pos.le 0,
+    hV.ae_hasDerivAt_closedSupportDerivative hσ hσ0 hσJ Real.pi_div_two_pos.le (Real.pi / 2)]
     with t ht hfDD hgDD
-  have hdf := hU.hasDerivAt_shiftedSupport_of_open_density hρ hρ0 hρK hfirst
-    (d := 0) (by simpa only [zero_add] using (Subset.rfl :
-      Ioo (0 : ℝ) (Real.pi / 2) ⊆ Ioo 0 (Real.pi / 2))) ht
-  have hdg := hV.hasDerivAt_shiftedSupport_of_open_density hσ hσ0 hσJ hsecond
-    (d := Real.pi / 2) (by intro s hs; exact ⟨hs.1, by linarith [hs.2]⟩) ht
+  have hdf := hU.hasDerivAt_shiftedSupport_of_open_density hρ hρ0 hρK hfirst (d := 0) (by simp) ht
   simp only [add_zero] at hdf hfDD
-  exact ⟨hdf, hdg, hfDD, hgDD⟩
+  exact ⟨hdf, hV.hasDerivAt_shiftedSupport_of_open_density hσ hσ0 hσJ hsecond
+    (d := Real.pi / 2) (by simp) ht, hfDD, hgDD⟩
 
 theorem supportQuarterPair_derivatives_on_closed :
     ∀ t ∈ Icc 0 (Real.pi / 2),
       HasDerivWithinAt (F).f ((F).fD t) (Icc 0 (Real.pi / 2)) t ∧
-      HasDerivWithinAt (F).g ((F).gD t) (Icc 0 (Real.pi / 2)) t := by
-  intro t ht
-  constructor
-  · have h := hU.hasDerivWithinAt_shiftedSupport_closed
-      hρ hρ0 hρK hfirst (d := 0)
-      (by simpa only [zero_add] using (Subset.rfl :
-        Ioo (0 : ℝ) (Real.pi / 2) ⊆ Ioo 0 (Real.pi / 2))) ht
-    simp only [add_zero] at h
-    exact h
-  · exact hV.hasDerivWithinAt_shiftedSupport_closed hσ hσ0 hσJ hsecond
-      (d := Real.pi / 2) (by intro s hs; exact ⟨hs.1, by linarith [hs.2]⟩) ht
+      HasDerivWithinAt (F).g ((F).gD t) (Icc 0 (Real.pi / 2)) t := fun t ht =>
+  ⟨by simpa only [supportQuarterPair, add_zero] using
+        hU.hasDerivWithinAt_shiftedSupport_closed hρ hρ0 hρK hfirst (d := 0) (by simp) ht,
+    hV.hasDerivWithinAt_shiftedSupport_closed hσ hσ0 hσJ hsecond (d := Real.pi / 2) (by simp) ht⟩
 
 end PairGeometry
+
+/-- Absolute continuity and the coupled equations hold on the whole closed
+quarter, including its genuine one-sided endpoint traces. -/
+theorem supportQuarterPair_corner_calculus
+    {U V : Set Plane} (hU : IsDownwardCap U) (hV : IsDownwardCap V)
+    {ρ σ : ℝ → ℝ} {K J : ℝ}
+    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
+    (hσ : Measurable σ) (hσ0 : ∀ t, 0 ≤ σ t) (hσJ : ∀ t, σ t ≤ J)
+    (hfirst : (upperCurvature U).restrict (Ioo 0 (Real.pi / 2)) =
+      (volume.restrict (Ioo 0 (Real.pi / 2))).withDensity (fun t => ENNReal.ofReal (ρ t)))
+    (hsecond : (upperCurvature V).restrict (Ioo (Real.pi / 2) Real.pi) =
+      (volume.restrict (Ioo (Real.pi / 2) Real.pi)).withDensity
+        (fun t => ENNReal.ofReal (σ t))) :
+    let F := supportQuarterPair hU hV hρ hρ0 hρK hσ hσ0 hσJ hfirst hsecond
+    AbsolutelyContinuousOnInterval (supportP F.fD F.g) 0 (Real.pi / 2) ∧
+      AbsolutelyContinuousOnInterval (supportQ F.gD F.f) 0 (Real.pi / 2) ∧
+      ∀ᵐ t ∂volume.restrict (Ioo 0 (Real.pi / 2)),
+        HasDerivAt (supportP F.fD F.g) (ρ t - 1 - supportQ F.gD F.f t) t ∧
+        HasDerivAt (supportQ F.gD F.f)
+          (σ (t + Real.pi / 2) - 1 + supportP F.fD F.g t) t := by
+  intro F
+  obtain ⟨hf, hg, hfD, hgD⟩ :=
+    supportQuarterPair_absolutelyContinuous hU hV hρ hρ0 hρK hσ hσ0 hσJ hfirst hsecond
+  have hc : AbsolutelyContinuousOnInterval (fun _ : ℝ => (1 : ℝ)) 0 (Real.pi / 2) :=
+    (LipschitzWith.const (1 : ℝ)).lipschitzOnWith.absolutelyContinuousOnInterval
+  refine ⟨(hfD.sub hg).add hc, (hgD.add hf).sub hc, ?_⟩
+  filter_upwards [supportQuarterPair_ae_derivatives hU hV hρ hρ0 hρK hσ hσ0 hσJ hfirst hsecond]
+    with t ⟨hdf, hdg, hdfD, hdgD⟩
+  exact ⟨((hdfD.sub hdg).add_const 1).congr_deriv (by rw [supportQ]; ring),
+    ((hdgD.add hdf).sub_const 1).congr_deriv (by rw [supportP]; ring)⟩
 
 theorem horizontal_density_quarter_restrictions
     {U : Set Plane} {ρ : ℝ → ℝ}
@@ -473,23 +344,15 @@ theorem horizontal_density_quarter_restrictions
       (volume.restrict (Ioo 0 (Real.pi / 2))).withDensity (fun t => ENNReal.ofReal (ρ t))) ∧
     ((upperCurvature U).restrict (Ioo (Real.pi / 2) Real.pi) =
       (volume.restrict (Ioo (Real.pi / 2) Real.pi)).withDensity (fun t => ENNReal.ofReal (ρ t))) := by
-  have hfirst : Ioo (0 : ℝ) (Real.pi / 2) ⊆ regularCurvatureDomain 0 := by
-    intro t ht
-    simp only [regularCurvatureDomain, affineNormalAngle, Real.arctan_zero, zero_add,
-      Set.mem_sdiff, mem_Ioo, mem_insert_iff, mem_singleton_iff, or_self]
-    exact ⟨⟨ht.1, by linarith [ht.2, Real.pi_pos]⟩, ne_of_lt ht.2⟩
-  have hsecond : Ioo (Real.pi / 2) Real.pi ⊆ regularCurvatureDomain 0 := by
-    intro t ht
-    simp only [regularCurvatureDomain, affineNormalAngle, Real.arctan_zero, zero_add,
-      Set.mem_sdiff, mem_Ioo, mem_insert_iff, mem_singleton_iff, or_self]
-    exact ⟨⟨by linarith [ht.1, Real.pi_pos], ht.2⟩, ne_of_gt ht.1⟩
-  constructor
-  · have h := congrArg (fun ν : Measure ℝ => ν.restrict (Ioo 0 (Real.pi / 2))) heq
-    simpa only [Measure.restrict_restrict_of_subset hfirst,
-      restrict_withDensity measurableSet_Ioo] using h
-  · have h := congrArg (fun ν : Measure ℝ => ν.restrict (Ioo (Real.pi / 2) Real.pi)) heq
-    simpa only [Measure.restrict_restrict_of_subset hsecond,
-      restrict_withDensity measurableSet_Ioo] using h
+  have key (s : Set ℝ) (hs : s ⊆ Ioo 0 Real.pi \ {Real.pi / 2}) (hm : MeasurableSet s) :
+      (upperCurvature U).restrict s =
+        (volume.restrict s).withDensity (fun t => ENNReal.ofReal (ρ t)) := by
+    have hs' : s ⊆ regularCurvatureDomain 0 := by
+      simpa [regularCurvatureDomain, affineNormalAngle] using hs
+    simpa only [Measure.restrict_restrict_of_subset hs', restrict_withDensity hm] using
+      congrArg (fun ν : Measure ℝ => ν.restrict s) heq
+  exact ⟨key _ (fun t ht => ⟨⟨ht.1, by linarith [ht.2, Real.pi_pos]⟩, ht.2.ne⟩) measurableSet_Ioo,
+    key _ (fun t ht => ⟨⟨by linarith [ht.1, Real.pi_pos], ht.2⟩, ht.1.ne'⟩) measurableSet_Ioo⟩
 
 def horizontalSupportQuarterPair {U : Set Plane} (hU : IsDownwardCap U)
     {ρ : ℝ → ℝ} {K : ℝ}
@@ -510,18 +373,11 @@ theorem horizontalSupportQuarterPair_velocities
     supportP F.fD F.g t = -secondCornerVelocity U t ∧
       supportQ F.gD F.f t = firstCornerVelocity U t := by
   have hr := horizontal_density_quarter_restrictions heq
-  have hfD := hU.closedSupportDerivative_eq_supportTangent hρ hρ0 hρK hr.1
-    (d := 0) (by simpa only [zero_add] using (Subset.rfl :
-      Ioo (0 : ℝ) (Real.pi / 2) ⊆ Ioo 0 (Real.pi / 2))) ht.1.le ht.2
-  have hgD := hU.closedSupportDerivative_eq_supportTangent hρ hρ0 hρK hr.2
-    (d := Real.pi / 2) (by intro s hs; exact ⟨hs.1, by linarith [hs.2]⟩) ht.1.le ht.2
-  simp only [add_zero] at hfD
-  dsimp only [horizontalSupportQuarterPair, supportQuarterPair, supportP, supportQ]
-  rw [hfD, hgD]
-  change (supportTangent U t - angleSupport U (t + Real.pi / 2) + 1 =
-      -(angleSupport U (t + Real.pi / 2) - supportTangent U t - 1)) ∧
-    (supportTangent U (t + Real.pi / 2) + angleSupport U t - 1 =
-      angleSupport U t + supportTangent U (t + Real.pi / 2) - 1)
+  simp only [horizontalSupportQuarterPair, supportQuarterPair, supportP, supportQ,
+    hU.closedSupportDerivative_eq_supportTangent hρ hρ0 hρK hr.1 (d := 0) (by simp) ht.1.le ht.2,
+    hU.closedSupportDerivative_eq_supportTangent hρ hρ0 hρK hr.2 (d := Real.pi / 2) (by simp)
+      ht.1.le ht.2, secondCornerVelocity, firstCornerVelocity, angleSupport_eq_imported_supp,
+    supportTangent, add_zero]
   constructor <;> ring
 
 theorem IsFullCapMaximizer.horizontalSupportQuarterPair_traces

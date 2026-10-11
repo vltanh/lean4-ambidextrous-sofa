@@ -17,100 +17,32 @@ limiting curvature measure to vanish there.
 noncomputable section
 
 open Set Filter MeasureTheory
-open scoped Topology
 
 namespace AmbidextrousSofa
 namespace PartialGrid
 
 open FinitePolygon AngularGrid
 
-variable {α : TerminalAngle} {hαL : (α : ℝ) < Real.pi / 2}
-
-theorem scaled_innerSource_corner_height_nonneg (U : Set Plane) (grid : Finset QuarterAngle)
+theorem scaled_innerSource_corner_height_nonneg {α : TerminalAngle}
+    {hαL : (α : ℝ) < Real.pi / 2} (U : Set Plane) (grid : Finset QuarterAngle)
     (j : AngularGrid.SourceIndex grid) {x : ℝ}
     (hx : x ∈ innerSourceSet U α hαL grid (scaledSource α grid j)) :
     0 ≤ sourceCornerHeight U (fullAngle α grid (scaledSource α grid j)) := by
-  cases j with
-  | inl t =>
+  have key (t : InteriorPoint grid) (h : 0 ≤ cornerWall U (scaleAngle α t.val) x) :
+      0 ≤ (attachedCorner U (scaleAngle α t.val)).2 := by
     have ht := scaleAngle_mem_open α (interiorPoint_mem grid t)
     have htL : (scaleAngle α t.val : ℝ) < Real.pi / 2 := ht.2.trans hαL
-    have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith only [htL, Real.pi_pos])
-    have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith only [ht.1, Real.pi_pos], htL⟩
-    have hsource := innerSource_height U α hαL grid (scaledSource α grid (Sum.inl t)) hx
-    have hcomp := first_source_le_companion U α hαL grid t hx
-    change finiteBarrier U (normal α grid) (pairList α grid) (some (terminalIndex α hαL grid)) x =
-      supportWall U (unitNormal (scaleAngle α t.val)) x at hsource
-    rw [supportWall_unitNormal] at hsource
-    rw [supportWall_unitNormal, supportWall_companionNormal] at hcomp
-    rw [sourceCornerHeight, sourceQuarterAngle_scaledSource]
-    change 0 ≤ (attachedCorner U (scaleAngle α t.val)).2
-    calc
-      0 ≤ finiteBarrier U (normal α grid) (pairList α grid) (some (terminalIndex α hαL grid)) x :=
-        finiteBarrier_nonneg U (normal α grid) (pairList α grid) (some (terminalIndex α hαL grid)) x
-      _ = firstWall U (scaleAngle α t.val) x := hsource
-      _ = cornerWall U (scaleAngle α t.val) x := (min_eq_left hcomp).symm
-      _ ≤ _ := cornerWall_le_attachedCorner_snd U hs hc x
-  | inr t =>
-    have ht := scaleAngle_mem_open α (interiorPoint_mem grid t)
-    have htL : (scaleAngle α t.val : ℝ) < Real.pi / 2 := ht.2.trans hαL
-    have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith only [htL, Real.pi_pos])
-    have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith only [ht.1, Real.pi_pos], htL⟩
-    have hsource := innerSource_height U α hαL grid (scaledSource α grid (Sum.inr t)) hx
-    have hcomp := second_source_le_first U α hαL grid t hx
-    change finiteBarrier U (normal α grid) (pairList α grid) (some (terminalIndex α hαL grid)) x =
-      supportWall U (companionNormal (scaleAngle α t.val)) x at hsource
-    rw [supportWall_companionNormal] at hsource
-    rw [supportWall_unitNormal, supportWall_companionNormal] at hcomp
-    rw [sourceCornerHeight, sourceQuarterAngle_scaledSource]
-    change 0 ≤ (attachedCorner U (scaleAngle α t.val)).2
-    calc
-      0 ≤ finiteBarrier U (normal α grid) (pairList α grid) (some (terminalIndex α hαL grid)) x :=
-        finiteBarrier_nonneg U (normal α grid) (pairList α grid) (some (terminalIndex α hαL grid)) x
-      _ = secondWall U (scaleAngle α t.val) x := hsource
-      _ = cornerWall U (scaleAngle α t.val) x := (min_eq_right hcomp).symm
-      _ ≤ _ := cornerWall_le_attachedCorner_snd U hs hc x
-
-theorem scaled_innerSourceSet_eq_empty_of_corner_neg (U : Set Plane)
-    (grid : Finset QuarterAngle) (j : AngularGrid.SourceIndex grid)
-    (hnegative : sourceCornerHeight U (fullAngle α grid (scaledSource α grid j)) < 0) :
-    innerSourceSet U α hαL grid (scaledSource α grid j) = ∅ := by
-  apply Set.eq_empty_iff_forall_notMem.mpr
-  intro x hx
-  exact not_lt_of_ge (scaled_innerSource_corner_height_nonneg U grid j hx) hnegative
-
-theorem curvature_Ioc_eq_zero_of_negative_corners
-    {target : Set Plane} {U : ℕ → Set Plane}
-    {boxLeft boxRight R m c a b : ℝ} {level : ℕ → ℕ} {coefficient : ℕ → ℝ}
-    (hTarget : IsDownwardCap target)
-    (hU : ∀ n, IsSelectedPolygon target α hαL boxLeft boxRight (level n) (coefficient n) (U n))
-    (hHausdorff : CapHausdorffTendsto U target) (hlevel : Tendsto level atTop atTop)
-    (hc : ∀ n, 0 ≤ coefficient n) (hrate : Tendsto coefficient atTop (𝓝 0))
-    (hbox : ∀ n, U n ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1)
-    (hwidth : 0 < capWidth target)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft target) (horizontalRight target),
-      capRoof target x = m * x + c)
-    (hab : a ≤ b) (hregular : Icc a b ⊆ regularProperCurvatureDomain α m)
-    (ha : MovingSofaOptimality.sigmaAt target a = 0) (hb : MovingSofaOptimality.sigmaAt target b = 0)
-    (hnegative : ∀ θ ∈ Icc a b, sourceCornerHeight target θ < 0) :
-    upperCurvature target (Ioc a b) = 0 := by
-  have htop : Real.pi / 2 ∉ Icc a b := by
-    intro ht
-    exact (mem_regularCurvatureDomain_iff.mp (hregular ht).1).2.2.1 rfl
-  have hevent := hHausdorff.eventually_sourceCornerHeight_neg_on_compact
-    (fun n => (hU n).isCap) hTarget isCompact_Icc htop hnegative
-  have hbound := curvature_Ioc_le_of_eventual_sampled_atom_bound
-    hTarget hU hHausdorff hlevel hc hrate hbox hwidth haffine
-    (C := 0) le_rfl hab hregular ha hb (by
-      filter_upwards [hevent] with n hn
-      intro j hj
-      have hzero := scaled_innerSourceSet_eq_empty_of_corner_neg (hαL := hαL) (U n) (dyadic (level n)) j
-        (hn _ hj)
-      simpa only [zero_mul, zero_add] using
-        (hU n).curvature_atom_le_error_of_source_empty (hc n) _ hzero)
-  have hreal : (upperCurvature target).real (Ioc a b) = 0 :=
-    le_antisymm (by simpa only [zero_mul] using hbound) ENNReal.toReal_nonneg
-  exact (measureReal_eq_zero_iff (measure_ne_top_of_subset Ioc_subset_Icc_self
-    (isCompact_Icc.measure_ne_top (μ := upperCurvature target)))).mp hreal
+    exact h.trans (cornerWall_le_attachedCorner_snd U
+      (Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [Real.pi_pos]))
+      (Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], htL⟩) x)
+  have h0 := (finiteBarrier_nonneg U _ _ _ x).trans_eq (innerSource_height U α hαL grid _ hx)
+  rw [sourceCornerHeight, sourceQuarterAngle_scaledSource]
+  rcases j with t | t
+  · exact key t (le_min (h0.trans_eq (supportWall_unitNormal U _ x))
+      ((h0.trans (first_source_le_companion U α hαL grid t hx)).trans_eq
+        (supportWall_companionNormal U _ x)))
+  · exact key t (le_min ((h0.trans (second_source_le_first U α hαL grid t hx)).trans_eq
+      (supportWall_unitNormal U _ x)) (h0.trans_eq (supportWall_companionNormal U _ x)))
 
 end PartialGrid
 
@@ -125,25 +57,27 @@ theorem IsJointCapMaximizer.upperCurvature_proper_Ioc_eq_zero_of_negative_corner
     (hab : a ≤ b) (hregular : Icc a b ⊆ regularProperCurvatureDomain α m)
     (hnegative : ∀ θ ∈ Icc a b, sourceCornerHeight U θ < 0) :
     upperCurvature U (Ioc a b) = 0 := by
-  let R := |horizontalLeft U| + |horizontalRight U| + 1
-  let β : TerminalAngle := ⟨α, hU.angle_mem⟩
-  have hR : 0 ≤ R := by positivity
-  have hbox : U ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1 := by
-    apply subset_symmetricBox_of_horizontalBox
-    intro p hp
-    refine ⟨?_, hU.isCap.inStrip hp⟩
-    rw [← horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact hU.isCap.convex]
-    exact ⟨p, hp, rfl⟩
-  obtain ⟨level, coefficient, V, hlevel, hc, hrate, hV, _, hHausdorff⟩ :=
-    PartialGrid.exists_selected_sequence β hproper hU
-      (by linarith only [hR] : -R ≤ R) hbox
-  exact PartialGrid.curvature_Ioc_eq_zero_of_negative_corners hU.isCap hV hHausdorff
-    (tendsto_atTop_mono hlevel tendsto_id) (fun n => (hc n).le) hrate
-    (fun n => (hV n).inBox) (by linarith only [hU.width_bounds.1, one_lt_M]) haffine
-    hab hregular
-    (hU.sigmaAt_eq_zero_on_regular_proper_domain hproper haffine (hregular ⟨le_rfl, hab⟩))
-    (hU.sigmaAt_eq_zero_on_regular_proper_domain hproper haffine (hregular ⟨hab, le_rfl⟩))
+  have hR : 0 ≤ |horizontalLeft U| + |horizontalRight U| + 1 := by positivity
+  obtain ⟨level, coefficient, V, hlevel, hc, hrate, hV, -, hHausdorff⟩ :=
+    PartialGrid.exists_selected_sequence ⟨α, hU.angle_mem⟩ hproper hU (neg_le_self hR)
+      (subset_symmetricBox_of_horizontalBox fun p hp =>
+        ⟨hU.isCap.fst_mem_Icc hp, hU.isCap.inStrip hp⟩)
+  have hevent := hHausdorff.eventually_sourceCornerHeight_neg_on_compact (fun n => (hV n).isCap)
+    hU.isCap isCompact_Icc (fun ht => (mem_regularCurvatureDomain_iff.mp (hregular ht).1).2.2.1 rfl)
     hnegative
+  have hbound := PartialGrid.curvature_Ioc_le_of_eventual_sampled_atom_bound hU.isCap hV hHausdorff
+    (tendsto_atTop_mono hlevel tendsto_id) (fun n => (hc n).le) hrate (fun n => (hV n).inBox)
+    (by linarith only [hU.width_bounds.1, one_lt_M]) haffine le_rfl hab hregular
+    (hU.sigmaAt_eq_zero_on_regular_proper_domain hproper haffine (hregular ⟨le_rfl, hab⟩))
+    (hU.sigmaAt_eq_zero_on_regular_proper_domain hproper haffine (hregular ⟨hab, le_rfl⟩)) (by
+      filter_upwards [hevent] with n hn j hj
+      simpa only [zero_mul, zero_add] using
+        (hV n).curvature_atom_le_error_of_source_empty (hc n).le _
+        (eq_empty_iff_forall_notMem.mpr fun x hx =>
+          (PartialGrid.scaled_innerSource_corner_height_nonneg (V n) _ j hx).not_gt (hn _ hj)))
+  exact (measureReal_eq_zero_iff (measure_ne_top_of_subset Ioc_subset_Icc_self
+    (isCompact_Icc.measure_ne_top (μ := upperCurvature U)))).mp
+    (le_antisymm (by simpa only [zero_mul] using hbound) ENNReal.toReal_nonneg)
 
 /-- Local null neighborhoods cover arbitrary negative-corner sets;
 there is no finite-component or switching assumption. -/
@@ -153,27 +87,16 @@ theorem IsJointCapMaximizer.upperCurvature_proper_negative_corners_eq_zero
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
     upperCurvature U {θ ∈ regularProperCurvatureDomain α m | sourceCornerHeight U θ < 0} = 0 := by
-  apply measure_null_of_locally_null _
-  intro x hx
-  have htop := (mem_regularCurvatureDomain_iff.mp hx.1.1).2.2.1
-  have hneg : ∀ᶠ θ in 𝓝 x, sourceCornerHeight U θ < 0 :=
-    (continuousAt_sourceCornerHeight hU.isCap.isCompact htop).tendsto.eventually_lt_const hx.2
-  have hnhds : {θ ∈ regularProperCurvatureDomain α m | sourceCornerHeight U θ < 0} ∈ 𝓝 x :=
-    inter_mem ((isOpen_regularProperCurvatureDomain α m).mem_nhds hx.1) hneg
-  obtain ⟨l, r, ⟨hl, hr⟩, hsub⟩ := mem_nhds_iff_exists_Ioo_subset.mp hnhds
-  let a := (l + x) / 2
-  let b := (x + r) / 2
-  have hax : a < x := by dsimp only [a]; linarith only [hl]
-  have hxb : x < b := by dsimp only [b]; linarith only [hr]
-  have hab : a ≤ b := (hax.trans hxb).le
-  have habsub : Icc a b ⊆
-      {θ ∈ regularProperCurvatureDomain α m | sourceCornerHeight U θ < 0} := by
-    intro θ hθ
-    apply hsub
-    constructor <;> dsimp only [a, b] at hθ <;> linarith only [hθ.1, hθ.2, hl, hr]
-  refine ⟨Ioc a b, nhdsWithin_le_nhds ?_, ?_⟩
-  · exact mem_of_superset (Ioo_mem_nhds hax hxb) Ioo_subset_Ioc_self
-  · exact hU.upperCurvature_proper_Ioc_eq_zero_of_negative_corners hproper haffine hab
-      (fun θ hθ => (habsub hθ).1) (fun θ hθ => (habsub hθ).2)
+  refine measure_null_of_locally_null _ fun x hx => ?_
+  obtain ⟨l, r, ⟨hl, hr⟩, hsub⟩ := mem_nhds_iff_exists_Ioo_subset.mp <| inter_mem
+    ((isOpen_regularProperCurvatureDomain α m).mem_nhds hx.1)
+    ((continuousAt_sourceCornerHeight hU.isCap.isCompact
+      (mem_regularCurvatureDomain_iff.mp hx.1.1).2.2.1).tendsto.eventually_lt_const hx.2)
+  obtain ⟨a, hla, hax⟩ := exists_between hl
+  obtain ⟨b, hxb, hbr⟩ := exists_between hr
+  have habsub := (Icc_subset_Ioo hla hbr).trans hsub
+  exact ⟨Ioc a b, nhdsWithin_le_nhds (Ioc_mem_nhds hax hxb),
+    hU.upperCurvature_proper_Ioc_eq_zero_of_negative_corners hproper haffine (hax.trans hxb).le
+      (fun θ hθ => (habsub hθ).1) (fun θ hθ => (habsub hθ).2)⟩
 
 end AmbidextrousSofa

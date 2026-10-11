@@ -33,27 +33,24 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
   (heq : (upperCurvature U).restrict (regularCurvatureDomain m) =
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
+set_option quotPrecheck false
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-set_option quotPrecheck false in
 local notation "Z" => innerCornerPoint (F).f (F).g
-set_option quotPrecheck false in
 local notation "p" => supportP (F).fD (F).g
-set_option quotPrecheck false in
 local notation "q" => supportQ (F).gD (F).f
+
+private theorem continuous_f_g : Continuous (F).f ∧ Continuous (F).g :=
+  ⟨hU.isCap.imported_isConvexBody.continuous_supp,
+    hU.isCap_fullLeftCompanion.imported_isConvexBody.continuous_supp.comp
+      (continuous_id.add_const (Real.pi / 2))⟩
 
 theorem fullTiltedSupportQuarterPair_core_continuous_global :
     Continuous (fun t => (Z t).1) ∧ Continuous (fun t => (Z t).2) := by
-  have hf : Continuous (F).f := hU.isCap.imported_isConvexBody.continuous_supp
-  have hg : Continuous (F).g :=
-    hU.isCap_fullLeftCompanion.imported_isConvexBody.continuous_supp.comp
-      (continuous_id.add_const (Real.pi / 2))
+  obtain ⟨hf, hg⟩ := continuous_f_g hU hm haffine hρ hρ0 hρK heq
   constructor <;> dsimp only [innerCornerPoint] <;> fun_prop
 
 theorem fullTiltedSupportQuarterPair_momenta_continuous : Continuous p ∧ Continuous q := by
-  have hf : Continuous (F).f := hU.isCap.imported_isConvexBody.continuous_supp
-  have hg : Continuous (F).g :=
-    hU.isCap_fullLeftCompanion.imported_isConvexBody.continuous_supp.comp
-      (continuous_id.add_const (Real.pi / 2))
+  obtain ⟨hf, hg⟩ := continuous_f_g hU hm haffine hρ hρ0 hρK heq
   have hfD : Continuous (F).fD := hU.isCap.continuous_closedSupportDerivative hρ hρ0 hρK 0
   have hgD : Continuous (F).gD := hU.isCap_fullLeftCompanion.continuous_closedSupportDerivative
     (measurable_leftCompanionWingDensity hρ m)
@@ -62,25 +59,24 @@ theorem fullTiltedSupportQuarterPair_momenta_continuous : Continuous p ∧ Conti
   exact ⟨(hfD.sub hg).add continuous_const, (hgD.add hf).sub continuous_const⟩
 
 theorem fullTiltedSupportQuarterPair_joint_corner_cofactors
-    {t x : ℝ} {g : ℝ → ℝ}
-    (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) (hmt : Real.arctan m ≤ t)
+    {α η t x : ℝ} {g : ℝ → ℝ} (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η)
+    (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) (hmt : Real.arctan m ≤ t) (htα : t ≠ α) (htη : t ≠ η)
     (hpoint : (x, sweptNiche U (Real.pi / 2) x) = attachedCorner U t)
     (hderiv : HasDerivAt (sweptNiche U (Real.pi / 2)) (g x) x) :
-    x = (Z t).1 ∧
-      (g (Z t).1 * Real.sin t + Real.cos t) *
-        (p t * Real.cos t - q t * Real.sin t) = p t ∧
-      (g (Z t).1 * Real.cos t - Real.sin t) *
-        (p t * Real.cos t - q t * Real.sin t) = q t := by
+    t ∈ Ioo α η ∧ x = (Z t).1 ∧
+      (g (Z t).1 * Real.sin t + Real.cos t) * (p t * Real.cos t - q t * Real.sin t) = p t ∧
+      (g (Z t).1 * Real.cos t - Real.sin t) * (p t * Real.cos t - q t * Real.sin t) = q t := by
   have hmatch := (fullTiltedSupportQuarterPair_other_points_after_affine
     hU hm haffine hρ hρ0 hρK heq ⟨ht.1.le, ht.2⟩ hmt).2
-  have hclosed := hpoint.trans hmatch.symm
-  have hx : x = (Z t).1 := congrArg Prod.fst hclosed
-  have hn : sweptNiche U (Real.pi / 2) x = (Z t).2 := congrArg Prod.snd hclosed
-  rw [hx] at hn hderiv
+  have hx : x = (Z t).1 := congrArg Prod.fst (hpoint.trans hmatch.symm)
+  have hn : sweptNiche U (Real.pi / 2) x = (Z t).2 := congrArg Prod.snd (hpoint.trans hmatch.symm)
+  subst hx
   have hchain := fullTiltedSupportQuarterPair_niche_core_slope
     hU hm haffine hρ hρ0 hρK heq ht hderiv hn
-  exact ⟨hx, corner_graph_first_residual_identity hchain,
-    corner_graph_second_residual_identity hchain⟩
+  rw [hmatch] at hderiv hn
+  exact ⟨fullTiltedSupportQuarterPair_contact_mem_core_phase_of_after_affine
+    hU hm haffine hρ hρ0 hρK heq hphase ht hmt htα htη hderiv hn, rfl,
+    corner_graph_first_residual_identity hchain, corner_graph_second_residual_identity hchain⟩
 
 end ActualPair
 
@@ -100,14 +96,11 @@ variable {target : Set Plane} {a b : ℝ} (J : SelectedJointSourceLimit target a
   (hunit : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1)
   (hleft : a < horizontalLeft target) (hright : horizontalRight target < b)
 
+set_option quotPrecheck false
 local notation "F" => fullTiltedSupportQuarterPair hU hm.le haffine hρ hρ0 hρK heq
-set_option quotPrecheck false in
 local notation "Z" => innerCornerPoint (F).f (F).g
-set_option quotPrecheck false in
 local notation "p" => supportP (F).fD (F).g
-set_option quotPrecheck false in
 local notation "q" => supportQ (F).gD (F).f
-set_option quotPrecheck false in
 local notation "X" => (fun t => (Z t).1)
 local notation "XD" => (fun t => p t * Real.cos t - q t * Real.sin t)
 
@@ -123,17 +116,9 @@ theorem ae_first_corner_core_geometry {α η : ℝ}
     ae_restrict_of_ae (J.ae_hasDerivAt_niche_on_source hU hl hr hC hleft hright),
     ae_restrict_of_ae (J.ae_angle_ne α), ae_restrict_of_ae (J.ae_angle_ne η)]
     with z hc hafter hd hnα hnη
-  have hmt : Real.arctan m < z.1 := by
-    simpa only [sourceQuarterAngle, if_pos hc.1.2] using hafter
-  have hcalc := fullTiltedSupportQuarterPair_joint_corner_cofactors
-    hU hm.le haffine hρ hρ0 hρK heq hc.1 hmt.le hc.2 hd
-  have hx : z.2 = (attachedCorner target z.1).1 := congrArg Prod.fst hc.2
-  have hn : sweptNiche target (Real.pi / 2) z.2 =
-      (attachedCorner target z.1).2 := congrArg Prod.snd hc.2
-  rw [hx] at hd hn
-  have hcore := fullTiltedSupportQuarterPair_contact_mem_core_phase_of_after_affine
-    hU hm.le haffine hρ hρ0 hρK heq hphase hc.1 hmt.le hnα hnη hd hn
-  exact ⟨hcore, hcalc.1, hcalc.2.1⟩
+  rw [sourceQuarterAngle, ite_eq_left hc.1.2] at hafter
+  exact (fullTiltedSupportQuarterPair_joint_corner_cofactors hU hm.le haffine hρ hρ0 hρK heq
+    hphase hc.1 hafter.le hnα hnη hc.2 hd).imp_right (And.imp_right And.left)
 
 include hl hr hC hheight hlow hhigh hh hunit hleft hright in
 theorem ae_second_corner_core_geometry {α η : ℝ}
@@ -149,19 +134,10 @@ theorem ae_second_corner_core_geometry {α η : ℝ}
     ae_restrict_of_ae (J.ae_hasDerivAt_niche_on_source hU hl hr hC hleft hright),
     ae_restrict_of_ae (J.ae_angle_ne (α + Real.pi / 2)),
     ae_restrict_of_ae (J.ae_angle_ne (η + Real.pi / 2))] with z hc hafter hd hnα hnη
-  have hL : Real.pi / 2 < z.1 := by linarith only [hc.1.1]
-  have hmt : Real.arctan m < z.1 - Real.pi / 2 := by
-    simpa only [sourceQuarterAngle, if_neg (not_lt_of_ge hL.le)] using hafter
-  have hcalc := fullTiltedSupportQuarterPair_joint_corner_cofactors
-    hU hm.le haffine hρ hρ0 hρK heq hc.1 hmt.le hc.2 hd
-  have hx : z.2 = (attachedCorner target (z.1 - Real.pi / 2)).1 := congrArg Prod.fst hc.2
-  have hn : sweptNiche target (Real.pi / 2) z.2 =
-      (attachedCorner target (z.1 - Real.pi / 2)).2 := congrArg Prod.snd hc.2
-  rw [hx] at hd hn
-  have hcore := fullTiltedSupportQuarterPair_contact_mem_core_phase_of_after_affine
-    hU hm.le haffine hρ hρ0 hρK heq hphase hc.1 hmt.le
-    (fun he => hnα (by linarith only [he])) (fun he => hnη (by linarith only [he])) hd hn
-  exact ⟨hcore, hcalc.1, hcalc.2.2⟩
+  rw [sourceQuarterAngle, ite_eq_right (not_lt.2 (by linarith only [hc.1.1]))] at hafter
+  exact (fullTiltedSupportQuarterPair_joint_corner_cofactors hU hm.le haffine hρ hρ0 hρK heq
+    hphase hc.1 hafter.le (fun he => hnα (by linarith only [he]))
+    (fun he => hnη (by linarith only [he])) hc.2 hd).imp_right (And.imp_right And.right)
 
 end AngularGrid.SelectedJointSourceLimit
 end AmbidextrousSofa

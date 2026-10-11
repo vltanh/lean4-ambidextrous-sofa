@@ -32,74 +32,43 @@ theorem IsFullCapMaximizer.top_abscissa_mem_middle
     (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = 1) {p : Plane} (hp : p ∈ U) (hpone : p.2 = 1) :
     p.1 ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U) := by
-  let l := horizontalLeft U
-  let r := horizontalRight U
-  let a := l + capWidth U / 4
-  let b := r - capWidth U / 4
-  have hw : 0 < capWidth U := lt_trans (by norm_num) hU.two_lt_width
-  obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints hw
-  have hla : l ≤ a := by dsimp [l, a]; linarith only [hw]
-  have hbr : b ≤ r := by dsimp [r, b]; linarith only [hw]
+  have hw := hU.two_lt_width
+  have hwr : capWidth U = horizontalRight U - horizontalLeft U := rfl
+  obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints (by linarith)
+  set a := horizontalLeft U + capWidth U / 4 with ha_def
+  set b := horizontalRight U - capWidth U / 4 with hb_def
   have hA : capRoof U a = 1 := hmiddle a ⟨le_rfl, hab.le⟩
   have hB : capRoof U b = 1 := hmiddle b ⟨hab.le, le_rfl⟩
-  have hpA : (a, 1) ∈ U := by
-    have h := capRoof_mem hU.isCap.isCompact (show a ∈ horizontalProjection U from ha)
-    rwa [hA] at h
-  have hpB : (b, 1) ∈ U := by
-    have h := capRoof_mem hU.isCap.isCompact (show b ∈ horizontalProjection U from hb)
-    rwa [hB] at h
-  have hpTop : (p.1, 1) ∈ U := by simpa only [← hpone, Prod.mk.eta] using hp
-  have hpBounds : p.1 ∈ Icc l r := by
+  have hpA : (a, 1) ∈ U := hA ▸ capRoof_mem hU.isCap.isCompact ha
+  have hpB : (b, 1) ∈ U := hB ▸ capRoof_mem hU.isCap.isCompact hb
+  have hpTop : (p.1, 1) ∈ U := hpone ▸ hp
+  have hpl : p.1 ∈ Icc (horizontalLeft U) (horizontalRight U) := by
     rw [← horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact hU.isCap.convex]
     exact ⟨p, hp, rfl⟩
-  have hAff : ∃ m c : ℝ, ∀ x ∈ middleHalfInterval
-      (horizontalLeft U) (horizontalRight U), capRoof U x = m * x + c :=
-    ⟨0, 1, fun x hx => by simpa only [zero_mul, zero_add] using hmiddle x hx⟩
-  have hpos := hU.isCap.sweptNiche_pos_on_open_middle_of_unit_endpoints
-    hU.two_lt_width hA hB
+  have hAff : ∃ m c : ℝ, ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c := ⟨0, 1, by simpa using hmiddle⟩
   have hlength : b - a ≤ volume.real
       (middleHalfInterval (horizontalLeft U) (horizontalRight U) ∩
         {x : ℝ | 0 < sweptNiche U (Real.pi / 2) x}) := by
     rw [← Real.volume_real_Ioo_of_le hab.le]
-    apply measureReal_mono
-    · intro x hx
-      exact ⟨⟨hx.1.le, hx.2.le⟩, hpos x hx⟩
-    · exact measure_ne_top_of_subset inter_subset_left
-        (by change volume (Icc a b) ≠ ⊤; rw [Real.volume_Icc]; exact ENNReal.ofReal_ne_top)
-  have hfinite (u v : ℝ) : volume (Icc u v) ≠ ⊤ := by
-    rw [Real.volume_Icc]
-    exact ENNReal.ofReal_ne_top
-  change a ≤ p.1 ∧ p.1 ≤ b
-  constructor
-  · by_contra h
-    have hpa : p.1 < a := lt_of_not_ge h
-    have hmoment := hU.positive_middle_measure_le_outer_without_top hheight hAff hpTop hpB
-    have hleft : volume.real (Icc l a \ Ioo p.1 b) ≤ volume.real (Icc l p.1) := by
-      apply measureReal_mono _ (hfinite l p.1)
-      intro x hx
-      refine ⟨hx.1.1, ?_⟩
-      by_contra hpx
-      exact hx.2 ⟨lt_of_not_ge hpx, hx.1.2.trans_lt hab⟩
-    have hright : volume.real (Icc b r \ Ioo p.1 b) ≤ volume.real (Icc b r) :=
-      measureReal_mono sdiff_subset (hfinite b r)
-    have hbound := hlength.trans (hmoment.trans (add_le_add hleft hright))
-    rw [Real.volume_real_Icc_of_le hpBounds.1, Real.volume_real_Icc_of_le hbr] at hbound
-    dsimp [a, b, l, r, capWidth] at hbound hpa
-    linarith only [hbound, hpa]
-  · by_contra h
-    have hbp : b < p.1 := lt_of_not_ge h
-    have hmoment := hU.positive_middle_measure_le_outer_without_top hheight hAff hpA hpTop
-    have hleft : volume.real (Icc l a \ Ioo a p.1) ≤ volume.real (Icc l a) :=
-      measureReal_mono sdiff_subset (hfinite l a)
-    have hright : volume.real (Icc b r \ Ioo a p.1) ≤ volume.real (Icc p.1 r) := by
-      apply measureReal_mono _ (hfinite p.1 r)
-      intro x hx
-      refine ⟨?_, hx.1.2⟩
-      by_contra hpx
-      exact hx.2 ⟨hab.trans_le hx.1.1, lt_of_not_ge hpx⟩
-    have hbound := hlength.trans (hmoment.trans (add_le_add hleft hright))
-    rw [Real.volume_real_Icc_of_le hla, Real.volume_real_Icc_of_le hpBounds.2] at hbound
-    dsimp [a, b, l, r, capWidth] at hbound hbp
-    linarith only [hbound, hbp]
+    exact measureReal_mono (fun x hx => ⟨⟨hx.1.le, hx.2.le⟩,
+      hU.isCap.sweptNiche_pos_on_open_middle_of_unit_endpoints hw hA hB x hx⟩)
+      (measure_ne_top_of_subset inter_subset_left measure_Icc_lt_top.ne)
+  refine ⟨le_of_not_gt fun hpa => ?_, le_of_not_gt fun hbp => ?_⟩
+  · have hbound := hlength.trans
+      ((hU.positive_middle_measure_le_outer_without_top hheight hAff hpTop hpB).trans
+        (add_le_add (measureReal_mono (s₂ := Icc (horizontalLeft U) p.1) (fun x hx =>
+          ⟨hx.1.1, le_of_not_gt fun hpx => hx.2 ⟨hpx, hx.1.2.trans_lt hab⟩⟩)
+          measure_Icc_lt_top.ne) (measureReal_mono sdiff_subset measure_Icc_lt_top.ne)))
+    rw [Real.volume_real_Icc_of_le hpl.1, Real.volume_real_Icc_of_le (by linarith)] at hbound
+    linarith
+  · have hbound := hlength.trans
+      ((hU.positive_middle_measure_le_outer_without_top hheight hAff hpA hpTop).trans
+        (add_le_add (measureReal_mono sdiff_subset measure_Icc_lt_top.ne)
+          (measureReal_mono (s₂ := Icc p.1 (horizontalRight U)) (fun x hx =>
+            ⟨le_of_not_gt fun hpx => hx.2 ⟨hab.trans_le hx.1.1, hpx⟩, hx.1.2⟩)
+            measure_Icc_lt_top.ne)))
+    rw [Real.volume_real_Icc_of_le (by linarith), Real.volume_real_Icc_of_le hpl.2] at hbound
+    linarith
 
 end AmbidextrousSofa

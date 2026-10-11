@@ -14,8 +14,6 @@ Horizontal translation preserves that affine middle with its exact new
 intercept, so the centered argument applies to a prescribed original cap.
 -/
 
-noncomputable section
-
 open Set
 
 namespace AmbidextrousSofa
@@ -45,44 +43,26 @@ theorem IsFullCapMaximizer.centered_positive_tilt_parameters
     let h := 1 - capRoof U (-C)
     1 / 2 < C ∧ C < 37 / 50 ∧ 0 < h ∧ h < 17 / 50 ∧ C + m < 1 ∧
       capRoof U (-C) = 1 - h ∧ capRoof U C = 1 := by
-  let h := 1 - capRoof U (-C)
-  change 1 / 2 < C ∧ C < 37 / 50 ∧ 0 < h ∧ h < 17 / 50 ∧ C + m < 1 ∧
-    capRoof U (-C) = 1 - h ∧ capRoof U C = 1
-  have hw : capWidth U = 4 * C := by
-    unfold capWidth
-    rw [hl, hr]
-    ring
+  dsimp only
+  have hw : capWidth U = 4 * C := by rw [capWidth, hl, hr]; ring
   have hC0 : 1 / 2 < C := by linarith only [hU.two_lt_width, hw]
-  have hC1 : C < 37 / 50 := by
-    linarith only [hU.quarter_width_lt_thirty_seven_fiftieths, hw]
+  have hC1 : C < 37 / 50 := by linarith only [hU.quarter_width_lt_thirty_seven_fiftieths, hw]
   have hmid : middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
     rw [middleHalfInterval, hl, hr]
     congr 1 <;> ring
-  have haff : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c := by
-    simpa only [hmid] using haffine
+  have haff : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c := hmid ▸ haffine
   have hhigh : capRoof U C = 1 := by
     have heq := hU.middle_right_eq_one_of_affine_nonneg hheight hm.le haffine
-    rw [hl, hr, show 2 * C - (2 * C - -2 * C) / 4 = C by ring] at heq
-    exact heq
-  have hhighAff : m * C + c = 1 := by
-    rw [← haff C ⟨by linarith only [hC0], le_rfl⟩, hhigh]
-  have hrel : h = 2 * C * m := by
-    dsimp only [h]
-    rw [haff (-C) ⟨le_rfl, by linarith only [hC0]⟩]
-    nlinarith only [hhighAff]
-  have hh0 : 0 < h := by
-    rw [hrel]
-    exact mul_pos (by linarith only [hC0]) hm
-  have hh1 : h < 17 / 50 := by
-    have hbound := (hU.centered_intermediate_width_tilt (a := 2 * C)
-      (by rw [hl]; ring) hr hheight hm.le haffine).1
-    simpa only [show -(2 * C) / 2 = -C by ring] using hbound
-  have hsmall : C + m < 1 := by
-    have hbox := mul_nonneg (sub_nonneg.mpr hC0.le) (sub_nonneg.mpr hC1.le)
-    by_contra hnot
-    have hprod := mul_nonneg (show 0 ≤ 2 * C by linarith only [hC0])
-      (sub_nonneg.mpr (le_of_not_gt hnot))
-    nlinarith only [hbox, hprod, hrel, hh1, hC1]
-  exact ⟨hC0, hC1, hh0, hh1, hsmall, by dsimp only [h]; ring, hhigh⟩
+    rwa [hl, hr, show 2 * C - (2 * C - -2 * C) / 4 = C by ring] at heq
+  have hrel : 1 - capRoof U (-C) = 2 * C * m := by
+    linarith only [haff (-C) ⟨le_rfl, by linarith only [hC0]⟩,
+      haff C ⟨by linarith only [hC0], le_rfl⟩, hhigh]
+  have hh1 : 1 - capRoof U (-C) < 17 / 50 := by
+    simpa only [show -(2 * C) / 2 = -C by ring] using (hU.centered_intermediate_width_tilt
+      (a := 2 * C) (by rw [hl]; ring) hr hheight hm.le haffine).1
+  refine ⟨hC0, hC1, hrel ▸ mul_pos (by linarith only [hC0]) hm, hh1,
+    not_le.1 fun hnot => ?_, by ring, hhigh⟩
+  linarith only [mul_nonneg (sub_nonneg.mpr hC0.le) (sub_nonneg.mpr hC1.le),
+    mul_nonneg (by linarith only [hC0] : (0 : ℝ) ≤ 2 * C) (sub_nonneg.mpr hnot), hrel, hh1, hC1]
 
 end AmbidextrousSofa

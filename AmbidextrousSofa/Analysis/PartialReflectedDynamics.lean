@@ -37,27 +37,19 @@ theorem IsJointCapMaximizer.properReflected_cornerArcDynamics_of_tail_regime
       (properReflectedFirstDensity m ρ) (properReflectedSecondDensity ρ)
       (Real.pi / 2 - α) (properReflectedActiveEnd m) := by
   have hends := hU.properReflected_active_interval haffine
-  have hwhole : Real.pi / 2 - α ≤ Real.pi / 2 := by linarith only [hU.angle_pos]
-  have hsub : Ioo (Real.pi / 2 - α) (properReflectedActiveEnd m) ⊆
-      Ioo (Real.pi / 2 - α) (Real.pi / 2) := Ioo_subset_Ioo le_rfl hends.2
-  have hsubcc : uIcc (Real.pi / 2 - α) (properReflectedActiveEnd m) ⊆
-      uIcc (Real.pi / 2 - α) (Real.pi / 2) := by
-    rw [uIcc_of_le hends.1.le, uIcc_of_le hwhole]
-    exact Icc_subset_Icc le_rfl hends.2
+  have hsub := Ioo_subset_Ioo (le_refl (Real.pi / 2 - α)) hends.2
+  have hsubcc := uIcc_subset_uIcc left_mem_uIcc (mem_uIcc_of_le hends.1.le hends.2)
   have hac := hU.properReflected_momenta_absolutelyContinuous (m := m) hρ hρ0 hρK
-  have hode := ae_restrict_of_ae_restrict_of_subset hsub
-    (hU.properReflected_momenta_ae_derivatives_of_tail_regime
-      hregime hproper hheight haffine hρ hρ0 hρK heq)
   have hsource := ae_restrict_of_ae_restrict_of_subset hsub
-    (hU.properReflected_source_controls_of_tail_regime hregime hproper hl hr hheight haffine hρ hρ0 hρK hκ heq)
-  have harms := hU.properReflected_arm_bounds_of_tail_regime hregime hproper hheight haffine hρ hρ0 hρK heq
-  refine ⟨hends.1.le, hac.1.mono hsubcc, hac.2.mono hsubcc, hode, ?_, ?_,
-    fun t ht => (harms t ht).2, ?_, ?_⟩
-  · filter_upwards [hsource] with t ht
-    exact ⟨ht.2.2.1, ht.2.2.2.1⟩
-  · exact hsource.mono (fun _ ht => ht.2.1)
-  · filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ht
-    exact Or.inl (harms t (Ioo_subset_Icc_self ht)).1
-  · exact hsource.mono (fun _ ht => ht.2.2.2.2.1)
+    (hU.properReflected_source_controls_of_tail_regime hregime hproper hl hr hheight haffine hρ
+      hρ0 hρK hκ heq)
+  have harms := hU.properReflected_arm_bounds_of_tail_regime hregime hproper hheight haffine hρ
+    hρ0 hρK heq
+  exact ⟨hends.1.le, hac.1.mono hsubcc, hac.2.mono hsubcc, ae_restrict_of_ae_restrict_of_subset hsub
+    (hU.properReflected_momenta_ae_derivatives_of_tail_regime hregime hproper hheight haffine hρ
+      hρ0 hρK heq), hsource.mono fun _ ht => ⟨ht.2.2.1, ht.2.2.2.1⟩,
+    hsource.mono fun _ ht => ht.2.1, fun t ht => (harms t ht).2,
+    (ae_restrict_mem measurableSet_Ioo).mono fun t ht => .inl (harms t (Ioo_subset_Icc_self ht)).1,
+    hsource.mono fun _ ht => ht.2.2.2.2.1⟩
 
 end AmbidextrousSofa

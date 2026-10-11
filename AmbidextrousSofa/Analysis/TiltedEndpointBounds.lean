@@ -32,41 +32,27 @@ theorem IsDownwardCap.left_middle_niche_le_tilted_box
       max (Analysis.tiltedBoxHeight C - h) 0 := by
   have hproj : horizontalProjection U = Icc (-2 * C) (2 * C) := by
     rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hl, hr]
-  have ha : -C ∈ horizontalProjection U := by rw [hproj]; constructor <;> linarith
-  have hb : C ∈ horizontalProjection U := by rw [hproj]; constructor <;> linarith
-  have hab : -C < C := by linarith only [hC0]
-  have hV := hU.leftCompanionCap ha
-  have hline : m * (-C) + c = 1 - h :=
-    (haffine (-C) ⟨le_rfl, hab.le⟩).symm.trans hlow
-  apply sweptNiche_le_of_forall (by linarith only [Real.pi_pos]) (le_max_right _ _)
-  intro t ht
-  have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith only [ht.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith only [ht.1, Real.pi_pos], ht.2⟩
+  have ha : -C ∈ horizontalProjection U := hproj ▸ ⟨by linarith, by linarith⟩
+  have hb : C ∈ horizontalProjection U := hproj ▸ ⟨by linarith, by linarith⟩
+  have hab : -C < C := by linarith
+  have hline := (haffine (-C) ⟨le_rfl, hab.le⟩).symm.trans hlow
+  refine sweptNiche_le_of_forall (by positivity) (le_max_right _ _) fun t ht => ?_
+  have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
+  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
   have hsupport : support (AmbidextrousSofa.leftCompanionCap U (-C)) (companionNormal t) ≤
       2 * C * Real.sin t + (1 - h) * Real.cos t := by
-    apply support_le_of_forall hV.nonempty
-    intro p hp
-    have hxlo : -2 * C ≤ p.1 := by simpa only [hl] using hp.2.1
-    have hroof : p.2 ≤ m * p.1 + c :=
-      (le_capRoof hU.isCompact (show (p.1, p.2) ∈ U by simpa using hp.1)).trans
-        (hU.capRoof_le_affine_of_affine_segment ha hb hab haffine p.1 ⟨p, hp.1, rfl⟩)
+    refine support_le_of_forall (hU.leftCompanionCap ha).nonempty fun p hp => ?_
     have hpy : p.2 ≤ 1 - h := by
-      have hx := mul_le_mul_of_nonneg_left hp.2.2 hm
-      linarith only [hroof, hx, hline]
-    have hx := mul_le_mul_of_nonneg_right hxlo hs.le
-    have hy := mul_le_mul_of_nonneg_right hpy hc.le
-    dsimp only [coordDot, companionNormal]
-    nlinarith only [hx, hy]
-  have hcircle := horizontal_box_circle_bound (s := Real.cos t) (c := Real.sin t)
-    hC0.le hC1 (Real.sin_sq_add_cos_sq t)
-  have hwall : secondWall (AmbidextrousSofa.leftCompanionCap U (-C)) t (-C) ≤
-      Analysis.tiltedBoxHeight C - h := by
-    rw [secondWall, div_le_iff₀ hc]
-    unfold Analysis.tiltedBoxHeight
-    nlinarith only [hsupport, hcircle]
-  exact (min_le_right (firstWall U t (-C)) (secondWall U t (-C))).trans
-    ((hU.secondWall_le_leftCompanionCap ha hb hab haffine hab.le hs.le hc).trans
-      (max_le_max_right 0 hwall))
+      linarith [(le_capRoof hU.isCompact hp.1).trans (hU.capRoof_le_affine_of_affine_segment ha hb
+        hab haffine p.1 ⟨p, hp.1, rfl⟩), mul_le_mul_of_nonneg_left hp.2.2 hm]
+    simp only [coordDot, companionNormal]
+    linarith [mul_le_mul_of_nonneg_right (hl ▸ hp.2.1 : -2 * C ≤ p.1) hs.le,
+      mul_le_mul_of_nonneg_right hpy hc.le]
+  refine (min_le_right _ _).trans ((hU.secondWall_le_leftCompanionCap ha hb hab haffine hab.le
+    hs.le hc).trans (max_le_max_right 0 ?_))
+  rw [secondWall, div_le_iff₀ hc, Analysis.tiltedBoxHeight]
+  linarith [horizontal_box_circle_bound (s := Real.cos t) (c := Real.sin t) hC0.le hC1
+    (Real.sin_sq_add_cos_sq t)]
 
 theorem IsFullCapMaximizer.tilted_endpoint_laws
     {U : Set Plane} (hU : IsFullCapMaximizer U) {C h m c : ℝ}
@@ -78,15 +64,12 @@ theorem IsFullCapMaximizer.tilted_endpoint_laws
       (3 * sweptNiche U (Real.pi / 2) C - sweptNiche U (Real.pi / 2) (-C)) / 4 ∧
     capRoof U (horizontalLeft U) = 1 / 2 - 3 * h / 4 +
       (3 * sweptNiche U (Real.pi / 2) (-C) - sweptNiche U (Real.pi / 2) C) / 4 := by
-  have h := hU.centered_endpoint_laws (a := 2 * C) hheight
-    (by rw [hl]; ring) hr
-    (by simpa only [show -(2 * C) / 2 = -C by ring] using hlow)
-    (by simpa only [show 2 * C / 2 = C by ring] using hhigh)
-    ⟨m, c, by simpa only [show -(2 * C) / 2 = -C by ring,
-      show 2 * C / 2 = C by ring] using haffine⟩
-  simpa only [hl, hr, show -(2 * C) / 2 = -C by ring,
-    show 2 * C / 2 = C by ring, show -(2 * C) = -2 * C by ring,
-    show -2 * C / 2 = -C by ring] using h
+  have e1 : -(2 * C) / 2 = -C := by ring
+  have e2 : 2 * C / 2 = C := by ring
+  have h := hU.centered_endpoint_laws (a := 2 * C) hheight (by rw [hl]; ring) hr
+    (by rwa [e1]) (by rwa [e2]) ⟨m, c, by rwa [e1, e2]⟩
+  rw [hl, hr, neg_mul]
+  simpa only [e1, e2] using h
 
 /-- All bounds refer to the original right endpoint and original niche.
 The stronger lower bound keeps the low-wing floor clipping until the
@@ -104,23 +87,15 @@ theorem IsFullCapMaximizer.tilted_endpoint_momentum_bounds
       (h ≤ 1 / 8 → -7 / 12 + 3 * h / 2 ≤
         capRoof U (horizontalRight U) - 1 + h) := by
   have hEP := (hU.tilted_endpoint_laws hl hr hheight haffine hlow hhigh).1
-  have hn := hU.isCap.middle_niche_le_box_height_of_endpoints hl hr hC0.le
-    (by linarith only [hC1])
-  have hlowbox := hU.isCap.left_middle_niche_le_tilted_box hl hr hC0
-    (by linarith only [hC1]) hm haffine hlow
+  obtain ⟨hn1, hn2⟩ : sweptNiche U (Real.pi / 2) (-C) ≤ Analysis.tiltedBoxHeight C ∧
+      sweptNiche U (Real.pi / 2) C ≤ Analysis.tiltedBoxHeight C :=
+    hU.isCap.middle_niche_le_box_height_of_endpoints hl hr hC0.le (by linarith)
   have hH := Analysis.tiltedBoxHeight_lt_thirty_three_hundredths hC0.le hC1
-  change sweptNiche U (Real.pi / 2) (-C) ≤ Analysis.tiltedBoxHeight C ∧
-    sweptNiche U (Real.pi / 2) C ≤ Analysis.tiltedBoxHeight C at hn
   have hz0 := sweptNiche_nonneg U (Real.pi / 2) C
   have hw0 := sweptNiche_nonneg U (Real.pi / 2) (-C)
-  have hBlo : -7 / 12 < capRoof U (horizontalRight U) - 1 + h := by
-    linarith only [hEP, hn.1, hH, hh0, hz0]
-  have hBhi : capRoof U (horizontalRight U) - 1 + h ≤ -1 / 4 + 5 * h / 4 := by
-    linarith only [hEP, hn.2, hH, hw0]
-  refine ⟨hBlo, by linarith only [hBhi, hh1], hBhi, ?_⟩
-  intro hhsmall
-  have hw : sweptNiche U (Real.pi / 2) (-C) ≤ 1 / 3 - h :=
-    hlowbox.trans (max_le (by linarith only [hH]) (by linarith only [hhsmall]))
-  linarith only [hEP, hw, hz0]
+  refine ⟨by linarith, by linarith, by linarith, fun hhsmall => ?_⟩
+  have := (hU.isCap.left_middle_niche_le_tilted_box hl hr hC0 (by linarith) hm haffine hlow).trans
+    (max_le (c := 1 / 3 - h) (by linarith) (by linarith))
+  linarith
 
 end AmbidextrousSofa

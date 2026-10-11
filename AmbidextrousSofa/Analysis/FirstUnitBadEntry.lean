@@ -32,12 +32,10 @@ variable {U : Set Plane} (hU : IsFullCapMaximizer U)
     (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)))
 
 local notation "F" => fullTiltedSupportQuarterPair hU hm haffine hρ hρ0 hρK heq
-set_option quotPrecheck false in
+set_option quotPrecheck false
 local notation "p" => supportP (F).fD (F).g
-set_option quotPrecheck false in
 local notation "q" => supportQ (F).gD (F).f
 local notation "v" => (fun t : ℝ => leftCompanionWingDensity m ρ (t + Real.pi / 2))
-set_option quotPrecheck false in
 local notation "B" => firstTangentPoint (F).f (F).fD
 
 theorem fullTiltedSupportQuarterPair_first_bad_after_middle {C h α β η τ : ℝ}
@@ -58,9 +56,9 @@ theorem fullTiltedSupportQuarterPair_first_bad_after_middle {C h α β η τ : �
   have hC : 0 < C := by linarith only [hC0]
   have D := fullTiltedSupportQuarterPair_cornerArcDynamics
     hU hm haffine hρ hρ0 hρK heq hl hr hC hsmall hheight hhigh hκ
-  have hpβ := (fullTiltedSupportQuarterPair_first_momentum_neg_after_middle
-    hU hm haffine hρ hρ0 hρK heq hl hr hC0 hC1 hh hlow hβ (by rw [hβx])).2
-  have hαβ := hphase.first_lt_of_first_neg hβ hpβ
+  have hαβ := hphase.first_lt_of_first_neg hβ
+    (fullTiltedSupportQuarterPair_first_momentum_neg_after_middle
+      hU hm haffine hρ hρ0 hρK heq hl hr hC0 hC1 hh hlow hβ (by rw [hβx])).2
   have hτcc : τ ∈ Icc (0 : ℝ) (Real.pi / 2) :=
     ⟨(hphase.first_mem.1.trans hτ.1).le, hτ.2.le.trans hphase.second_mem.2.le⟩
   have hsign : ∀ t ∈ Ioo α τ, p t < 0 ∧ 0 < q t :=
@@ -68,34 +66,27 @@ theorem fullTiltedSupportQuarterPair_first_bad_after_middle {C h α β η τ : �
   have hcore := fullTiltedSupportQuarterPair_ae_first_density_ge_core_on_prefix
     hU hm haffine hρ hρ0 hρK heq hl hr hC0 hC1 hh hmpos hheight hlow hhigh
     hunit hphase.first_mem.1.le hτcc hphase.first_zero hsign hprefix
-  have hcharged := fullTiltedSupportQuarterPair_ae_first_density_ge_charged_on_prefix
-    hU hm haffine hρ hρ0 hρK heq hl hr hC0 hC1 hh hmpos hheight hlow hhigh
-    hunit hphase.first_mem.1.le hτcc hphase.first_zero hsign hprefix hβ hβx
-  have hchargedGlobal := (ae_restrict_iff' measurableSet_Ioo).mp hcharged
-  have hcharged' : ∀ᵐ t ∂volume.restrict (Ioo α τ), t < β → 1 + q t ≤ 2 * ρ t := by
-    filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hchargedGlobal]
-      with t ht hc
-    intro htβ
-    exact hc ⟨ht.1, lt_min htβ ht.2⟩
+  have hcharged : ∀ᵐ t ∂volume.restrict (Ioo α τ), t < β → 1 + q t ≤ 2 * ρ t := by
+    filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae
+      ((ae_restrict_iff' measurableSet_Ioo).mp
+        (fullTiltedSupportQuarterPair_ae_first_density_ge_charged_on_prefix
+          hU hm haffine hρ hρ0 hρK heq hl hr hC0 hC1 hh hmpos hheight hlow hhigh
+          hunit hphase.first_mem.1.le hτcc hphase.first_zero hsign hprefix hβ hβx))]
+      with t ht hc htβ using hc ⟨ht.1, lt_min htβ ht.2⟩
   obtain ⟨hβτ, hqτ, henergy⟩ := D.first_bad_after_window_and_height_bound
-    hphase hαβ hτ hpτ hpfirst hunit hcharged'
+    hphase hαβ hτ hpτ hpfirst hunit hcharged
     (ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hαβ.le le_rfl) hcore)
-  have hfuture := D.first_bad_future_bounds hphase hτ hpτ
-  have hprefixGlobal := (ae_restrict_iff' measurableSet_Ioo).mp hprefix
-  have hsource := hU.fullTiltedSupportQuarterPair_source_controls
-    hl hr hC hm hsmall hheight haffine hhigh hρ hρ0 hρK hκ heq
   refine ⟨hαβ, hβτ, hqτ, henergy, ?_⟩
-  filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hprefixGlobal,
-    hsource] with t ht hpref hs
-  intro hv
-  by_cases htτ : t < τ
-  · exact False.elim ((not_le_of_gt hv) (hpref ⟨ht.1, htτ⟩))
-  · by_cases htη : t ≤ η
-    · have hbound := (hfuture t ⟨le_of_not_gt htτ, htη⟩).2
-      linarith only [hbound, hqτ, le_of_not_gt htτ]
-    · obtain ⟨hp, hq⟩ := hphase.final_signs t ⟨lt_of_not_ge htη, ht.2.le⟩
-      rw [(hs.2.2.2 hp hq).1] at hv
-      norm_num at hv
+  filter_upwards [ae_restrict_mem measurableSet_Ioo,
+    ae_restrict_of_ae ((ae_restrict_iff' measurableSet_Ioo).mp hprefix),
+    hU.fullTiltedSupportQuarterPair_source_controls hl hr hC hm hsmall hheight haffine hhigh
+      hρ hρ0 hρK hκ heq] with t ht hpref hs hv
+  rcases lt_or_ge t τ with htτ | htτ
+  · exact absurd (hpref ⟨ht.1, htτ⟩) hv.not_ge
+  rcases le_or_gt t η with htη | htη
+  · linarith only [(D.first_bad_future_bounds hphase hτ hpτ t ⟨htτ, htη⟩).2, hqτ, htτ]
+  obtain ⟨hp, hq⟩ := hphase.final_signs t ⟨htη, ht.2.le⟩
+  linarith only [(hs.2.2.2 hp hq).1, hv]
 
 end ActualPair
 

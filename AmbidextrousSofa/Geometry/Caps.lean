@@ -37,33 +37,24 @@ structure IsDownwardCap (U : Set Plane) : Prop where
   inStrip : U ⊆ unitStrip
   downward : ∀ p ∈ U, ∀ y : ℝ, 0 ≤ y → y ≤ p.2 → (p.1, y) ∈ U
 
-theorem subset_actualHull (S : Set Plane) : S ⊆ actualHull S :=
-  subset_convexHull ℝ S
+theorem subset_actualHull (S : Set Plane) : S ⊆ actualHull S := subset_convexHull ℝ S
 
-theorem convex_actualHull (S : Set Plane) : Convex ℝ (actualHull S) :=
-  convex_convexHull ℝ S
+theorem convex_actualHull (S : Set Plane) : Convex ℝ (actualHull S) := convex_convexHull ℝ S
 
 /-- Every upper cap is closed downward within the nonnegative half-plane. -/
 theorem upperCap_downward {K : Set Plane} {p : Plane} (hp : p ∈ upperCap K)
-    {y : ℝ} (hy0 : 0 ≤ y) (hyp : y ≤ p.2) : (p.1, y) ∈ upperCap K := by
-  obtain ⟨_, z, hpz, hz⟩ := hp
-  exact ⟨hy0, z, hyp.trans hpz, hz⟩
+    {y : ℝ} (hy0 : 0 ≤ y) (hyp : y ≤ p.2) : (p.1, y) ∈ upperCap K :=
+  ⟨hy0, hp.2.imp fun _ h => ⟨hyp.trans h.1, h.2⟩⟩
 
 /-- A set above the baseline is contained in its own upper cap. -/
-theorem subset_upperCap {K : Set Plane} (hK : ∀ p ∈ K, 0 ≤ p.2) : K ⊆ upperCap K := by
-  intro p hp
-  refine ⟨hK p hp, p.2, le_rfl, ?_⟩
-  simpa only [Prod.mk.eta] using hp
+theorem subset_upperCap {K : Set Plane} (hK : ∀ p ∈ K, 0 ≤ p.2) : K ⊆ upperCap K :=
+  fun p hp => ⟨hK p hp, p.2, le_rfl, hp⟩
 
 /-- Vertical downward filling preserves the exact horizontal projection. -/
 theorem horizontalProjection_upperCap {K : Set Plane} (hK : ∀ p ∈ K, 0 ≤ p.2) :
-    horizontalProjection (upperCap K) = horizontalProjection K := by
-  apply Set.Subset.antisymm
-  · rintro x ⟨p, hp, hpx⟩
-    obtain ⟨_, y, _, hy⟩ := hp
-    exact ⟨(p.1, y), hy, hpx⟩
-  · rintro x ⟨p, hp, hpx⟩
-    exact ⟨p, subset_upperCap hK hp, hpx⟩
+    horizontalProjection (upperCap K) = horizontalProjection K :=
+  Set.Subset.antisymm (fun _ ⟨_, ⟨_, _, _, hy⟩, hpx⟩ => ⟨_, hy, hpx⟩)
+    (Set.image_mono (subset_upperCap hK))
 
 /-- The baseline point under any cap point remains in the cap. -/
 theorem IsDownwardCap.baseline_mem {U : Set Plane} (hU : IsDownwardCap U)

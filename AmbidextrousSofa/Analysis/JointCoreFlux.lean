@@ -57,94 +57,14 @@ include hl hr hC hheight hlow hhigh hh hunit hTargetBox hleft hright in
 theorem ae_corner_density_zero_off_core {α η : ℝ}
     (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η) :
     ∀ᵐ t ∂volume, t ∉ Ioo α η → aZ t = 0 ∧ aW t = 0 := by
-  have hfirst : ∀ᵐ z ∂J.sourceBranchMeasure (firstCornerSource target),
-      z.1 - 0 ∈ Ioo α η := by
-    filter_upwards [J.ae_first_corner_core_geometry hU hl hr hC hm hheight haffine
-      hlow hhigh hh hρ hρ0 hρK heq hunit hleft hright hphase] with z hz
-    simpa only [sub_zero] using hz.1
-  have hsecond : ∀ᵐ z ∂J.sourceBranchMeasure (secondCornerSource target),
-      z.1 - Real.pi / 2 ∈ Ioo α η := by
-    filter_upwards [J.ae_second_corner_core_geometry hU hl hr hC hm hheight haffine
-      hlow hhigh hh hρ hρ0 hρK heq hunit hleft hright hphase] with z hz
-    exact hz.1
+  have hfirst : ∀ᵐ z ∂J.sourceBranchMeasure (firstCornerSource target), z.1 - 0 ∈ Ioo α η :=
+    (J.ae_first_corner_core_geometry hU hl hr hC hm hheight haffine hlow hhigh hh hρ hρ0 hρK
+      heq hunit hleft hright hphase).mono fun z hz => by simpa only [sub_zero] using hz.1
   filter_upwards [J.ae_sourceBranch_property hU hheight haffine hTargetBox hleft hright heq
-    measurableSet_Ioo hfirst,
-    J.ae_sourceBranch_property hU hheight haffine hTargetBox hleft hright heq
-      measurableSet_Ioo hsecond] with t hZ hW
-  intro ht
-  exact ⟨by by_contra hn; exact ht (hZ hn), by by_contra hn; exact ht (hW hn)⟩
-
-include hl hr hC hheight hlow hhigh hh hunit hTargetBox hleft hright in
-theorem ae_core_residual_density_sum_eq_zero {α η : ℝ}
-    (hphase : StrictCornerSignPhases p q (Real.pi / 2) α η) :
-    ∀ᵐ t ∂volume.restrict (Ioo α η), aZ t * R₁ t + aW t * R₂ t = 0 := by
-  have hX := (fullTiltedSupportQuarterPair_core_continuous_global
-    hU hm.le haffine hρ hρ0 hρK heq).1
-  have hR₁ : Measurable R₁ := ((J.measurable_nicheDerivative.comp hX.measurable).mul
-    Real.measurable_sin).add Real.measurable_cos
-  have hR₂ : Measurable R₂ := ((J.measurable_nicheDerivative.comp hX.measurable).mul
-    Real.measurable_cos).sub Real.measurable_sin
-  have hgeom₁ := J.ae_first_corner_core_geometry hU hl hr hC hm hheight haffine
-    hlow hhigh hh hρ hρ0 hρK heq hunit hleft hright hphase
-  have hgeom₂ := J.ae_second_corner_core_geometry hU hl hr hC hm hheight haffine
-    hlow hhigh hh hρ hρ0 hρK heq hunit hleft hright hphase
-  have hgraph₁ : ∀ᵐ z ∂J.sourceBranchMeasure (firstCornerSource target),
-      z.2 = X (z.1 - 0) := by
-    filter_upwards [hgeom₁] with z hz
-    simpa only [sub_zero] using hz.2.1
-  have hgraph₂ : ∀ᵐ z ∂J.sourceBranchMeasure (secondCornerSource target),
-      z.2 = X (z.1 - Real.pi / 2) := by
-    filter_upwards [hgeom₂] with z hz
-    exact hz.2.1
-  have hres₁ : ∀ᵐ z ∂J.sourceBranchMeasure (firstCornerSource target),
-      J.sourceGraphResidual z = R₁ (z.1 - 0) := by
-    filter_upwards [hgeom₁] with z hz
-    simp only [sourceGraphResidual, sub_zero, hz.2.1]
-  have hres₂ : ∀ᵐ z ∂J.sourceBranchMeasure (secondCornerSource target),
-      J.sourceGraphResidual z = R₂ (z.1 - Real.pi / 2) := by
-    filter_upwards [hgeom₂] with z hz
-    have hs : Real.sin z.1 = Real.cos (z.1 - Real.pi / 2) := by
-      nth_rw 1 [show z.1 = (z.1 - Real.pi / 2) + Real.pi / 2 by ring]
-      exact Real.sin_add_pi_div_two _
-    have hc : Real.cos z.1 = -Real.sin (z.1 - Real.pi / 2) := by
-      nth_rw 1 [show z.1 = (z.1 - Real.pi / 2) + Real.pi / 2 by ring]
-      exact Real.cos_add_pi_div_two _
-    simp only [sourceGraphResidual, hz.2.1, hs, hc, sub_eq_add_neg]
-  have hi₁ : Integrable (fun t => aZ t * R₁ t) volume :=
-    J.integrable_sourceBranchDensity_mul_of_ae_eq hU hheight haffine hTargetBox hleft hright
-      heq hR₁ (J.integrable_sourceGraphResidual.mono_measure (J.sourceBranchMeasure_le _)) hres₁
-  have hi₂ : Integrable (fun t => aW t * R₂ t) volume :=
-    J.integrable_sourceBranchDensity_mul_of_ae_eq hU hheight haffine hTargetBox hleft hright
-      heq hR₂ (J.integrable_sourceGraphResidual.mono_measure (J.sourceBranchMeasure_le _)) hres₂
-  have hzero := J.ae_corner_density_zero_off_core hU hl hr hC hm hheight haffine
-    hlow hhigh hh hρ hρ0 hρK heq hunit hTargetBox hleft hright hphase
-  apply ae_add_eq_zero_on_of_graph_setIntegral_eq_zero measurableSet_Ioo hX.continuousOn
-    (fullTiltedSupportQuarterPair_core_strictAntiOn_open
-      hU hm.le haffine hρ hρ0 hρK heq hphase).injOn hi₁.integrableOn hi₂.integrableOn
-  intro E hE
-  have htest := J.setIntegral_corner_residuals_add_eq_zero hU hl hr hC hm hheight haffine
-    hlow hhigh hh hρ hρ0 hρK heq hunit hTargetBox hleft hright hE
-  rw [J.setIntegral_sourceBranch_eq_graph hU hheight haffine hTargetBox hleft hright heq
-    hX.measurable hR₁ hgraph₁ hres₁ hE,
-    J.setIntegral_sourceBranch_eq_graph hU hheight haffine hTargetBox hleft hright heq
-      hX.measurable hR₂ hgraph₂ hres₂ hE] at htest
-  have heq₁ : (∫ t in X ⁻¹' E, aZ t * R₁ t) =
-      ∫ t in Ioo α η ∩ X ⁻¹' E, aZ t * R₁ t := by
-    apply setIntegral_eq_of_subset_of_ae_sdiff_eq_zero
-      (hX.measurable hE).nullMeasurableSet inter_subset_right
-    filter_upwards [hzero] with t ht
-    intro hs
-    have hn : t ∉ Ioo α η := fun hc => hs.2 ⟨hc, hs.1⟩
-    rw [(ht hn).1, zero_mul]
-  have heq₂ : (∫ t in X ⁻¹' E, aW t * R₂ t) =
-      ∫ t in Ioo α η ∩ X ⁻¹' E, aW t * R₂ t := by
-    apply setIntegral_eq_of_subset_of_ae_sdiff_eq_zero
-      (hX.measurable hE).nullMeasurableSet inter_subset_right
-    filter_upwards [hzero] with t ht
-    intro hs
-    have hn : t ∉ Ioo α η := fun hc => hs.2 ⟨hc, hs.1⟩
-    rw [(ht hn).2, zero_mul]
-  rwa [heq₁, heq₂] at htest
+    measurableSet_Ioo hfirst, J.ae_sourceBranch_property hU hheight haffine hTargetBox hleft
+      hright heq measurableSet_Ioo ((J.ae_second_corner_core_geometry hU hl hr hC hm hheight
+        haffine hlow hhigh hh hρ hρ0 hρK heq hunit hleft hright hphase).mono fun z hz => hz.1)]
+    with t hZ hW ht using ⟨not_imp_comm.1 hZ ht, not_imp_comm.1 hW ht⟩
 
 include hl hr hC hheight hlow hhigh hh hunit hTargetBox hleft hright in
 theorem ae_corner_density_balance {α η : ℝ}
@@ -161,37 +81,56 @@ theorem ae_corner_density_balance {α η : ℝ}
     Real.measurable_sin).add Real.measurable_cos
   have hR₂ : Measurable R₂ := ((J.measurable_nicheDerivative.comp hX.measurable).mul
     Real.measurable_cos).sub Real.measurable_sin
-  have hfirst : ∀ᵐ z ∂J.sourceBranchMeasure (firstCornerSource target),
-      R₁ (z.1 - 0) * XD (z.1 - 0) = p (z.1 - 0) := by
-    filter_upwards [J.ae_first_corner_core_geometry hU hl hr hC hm hheight haffine
-      hlow hhigh hh hρ hρ0 hρK heq hunit hleft hright hphase] with z hz
-    simpa only [sub_zero] using hz.2.2
-  have hsecond : ∀ᵐ z ∂J.sourceBranchMeasure (secondCornerSource target),
-      R₂ (z.1 - Real.pi / 2) * XD (z.1 - Real.pi / 2) = q (z.1 - Real.pi / 2) := by
-    filter_upwards [J.ae_second_corner_core_geometry hU hl hr hC hm hheight haffine
-      hlow hhigh hh hρ hρ0 hρK heq hunit hleft hright hphase] with z hz
-    exact hz.2.2
-  have hmul₁ := J.ae_sourceBranchDensity_mul_eq hU hheight haffine hTargetBox hleft hright heq
-    (hR₁.mul hXD) hpq.1.measurable hfirst
-  have hmul₂ := J.ae_sourceBranchDensity_mul_eq hU hheight haffine hTargetBox hleft hright heq
-    (hR₂.mul hXD) hpq.2.measurable hsecond
-  have hres := (ae_restrict_iff' measurableSet_Ioo).mp
-    (J.ae_core_residual_density_sum_eq_zero hU hl hr hC hm hheight haffine
-      hlow hhigh hh hρ hρ0 hρK heq hunit hTargetBox hleft hright hphase)
-  filter_upwards [ae_restrict_of_ae hmul₁, ae_restrict_of_ae hmul₂,
-    ae_restrict_of_ae hres,
-    ae_restrict_of_ae (J.ae_corner_density_zero_off_core hU hl hr hC hm hheight haffine
-      hlow hhigh hh hρ hρ0 hρK heq hunit hTargetBox hleft hright hphase)]
-    with t h₁ h₂ hcancel hzero
+  have hgeom₁ := J.ae_first_corner_core_geometry hU hl hr hC hm hheight haffine
+    hlow hhigh hh hρ hρ0 hρK heq hunit hleft hright hphase
+  have hgeom₂ := J.ae_second_corner_core_geometry hU hl hr hC hm hheight haffine
+    hlow hhigh hh hρ hρ0 hρK heq hunit hleft hright hphase
+  have hzero := J.ae_corner_density_zero_off_core hU hl hr hC hm hheight haffine
+    hlow hhigh hh hρ hρ0 hρK heq hunit hTargetBox hleft hright hphase
+  -- The spatial cancellation of the two residuals pulls back to the core angles.
+  have hres₁ : ∀ᵐ z ∂J.sourceBranchMeasure (firstCornerSource target),
+      J.sourceGraphResidual z = R₁ (z.1 - 0) := by
+    filter_upwards [hgeom₁] with z hz
+    simp only [sourceGraphResidual, sub_zero, hz.2.1]
+  have hres₂ : ∀ᵐ z ∂J.sourceBranchMeasure (secondCornerSource target),
+      J.sourceGraphResidual z = R₂ (z.1 - Real.pi / 2) := by
+    filter_upwards [hgeom₂] with z hz
+    simp only [sourceGraphResidual, hz.2.1, Real.cos_sub_pi_div_two, Real.sin_sub_pi_div_two,
+      sub_neg_eq_add]
+  have hcore {f : ℝ → ℝ} {E : Set ℝ} (hE : MeasurableSet E)
+      (hf : ∀ᵐ t ∂volume, t ∉ Ioo α η → f t = 0) :
+      ∫ t in X ⁻¹' E, f t = ∫ t in Ioo α η ∩ X ⁻¹' E, f t :=
+    setIntegral_eq_of_subset_of_ae_sdiff_eq_zero (hX.measurable hE).nullMeasurableSet
+      inter_subset_right (hf.mono fun t ht hs => ht fun hc => hs.2 ⟨hc, hs.1⟩)
+  have hcancel := ae_add_eq_zero_on_of_graph_setIntegral_eq_zero measurableSet_Ioo
+    hX.continuousOn (fullTiltedSupportQuarterPair_core_strictAntiOn_open
+      hU hm.le haffine hρ hρ0 hρK heq hphase).injOn
+    (J.integrable_sourceBranchDensity_mul_of_ae_eq hU hheight haffine hTargetBox hleft hright
+      heq hR₁ (J.integrable_sourceGraphResidual.mono_measure (J.sourceBranchMeasure_le _))
+      hres₁).integrableOn
+    (J.integrable_sourceBranchDensity_mul_of_ae_eq hU hheight haffine hTargetBox hleft hright
+      heq hR₂ (J.integrable_sourceGraphResidual.mono_measure (J.sourceBranchMeasure_le _))
+      hres₂).integrableOn fun E hE => by
+    have htest := J.setIntegral_corner_residuals_add_eq_zero hU hl hr hC hm hheight haffine
+      hlow hhigh hh hρ hρ0 hρK heq hunit hTargetBox hleft hright hE
+    rwa [J.setIntegral_sourceBranch_eq_graph hU hheight haffine hTargetBox hleft hright heq
+      hX.measurable hR₁ (hgeom₁.mono fun z hz => by simpa only [sub_zero] using hz.2.1) hres₁ hE,
+      J.setIntegral_sourceBranch_eq_graph hU hheight haffine hTargetBox hleft hright heq
+        hX.measurable hR₂ (hgeom₂.mono fun z hz => hz.2.1) hres₂ hE,
+      hcore hE (hzero.mono fun t ht hn => by rw [(ht hn).1, zero_mul]),
+      hcore hE (hzero.mono fun t ht hn => by rw [(ht hn).2, zero_mul])] at htest
+  -- Multiplying by the corner speed uses the two contact cofactors.
+  filter_upwards [ae_restrict_of_ae (J.ae_sourceBranchDensity_mul_eq hU hheight haffine
+      hTargetBox hleft hright heq (d := 0) (f := fun t => R₁ t * XD t) (hR₁.mul hXD)
+      hpq.1.measurable (hgeom₁.mono fun z hz => by simpa only [sub_zero] using hz.2.2)),
+    ae_restrict_of_ae (J.ae_sourceBranchDensity_mul_eq hU hheight haffine hTargetBox hleft
+      hright heq (f := fun t => R₂ t * XD t) (hR₂.mul hXD) hpq.2.measurable
+      (hgeom₂.mono fun z hz => hz.2.2)),
+    ae_restrict_of_ae ((ae_restrict_iff' measurableSet_Ioo).mp hcancel),
+    ae_restrict_of_ae hzero] with t h₁ h₂ hcancel hzero
   by_cases ht : t ∈ Ioo α η
-  · calc
-      p t * aZ t + q t * aW t = aZ t * (R₁ t * XD t) + aW t * (R₂ t * XD t) := by
-        rw [show aZ t * (R₁ t * XD t) = aZ t * p t from h₁,
-          show aW t * (R₂ t * XD t) = aW t * q t from h₂]
-        ring
-      _ = (aZ t * R₁ t + aW t * R₂ t) * XD t := by ring
-      _ = 0 := by rw [hcancel ht, zero_mul]
-  · rw [(hzero ht).1, (hzero ht).2, mul_zero, mul_zero, zero_add]
+  · linear_combination (p t * Real.cos t - q t * Real.sin t) * hcancel ht - h₁ - h₂
+  · simp [(hzero ht).1, (hzero ht).2]
 
 end AngularGrid.SelectedJointSourceLimit
 end AmbidextrousSofa

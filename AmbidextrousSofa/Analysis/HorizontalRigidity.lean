@@ -24,8 +24,7 @@ theorem IsFullCapMaximizer.eq_reference_translate_of_horizontal
     (hheight : capHeight U = 1)
     (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = 1) :
     ∃ b : ℝ, U = AmbidextrousSofa.horizontalTranslate Reference.referenceCap b := by
-  obtain ⟨_hscore, _hwidth, b, h | h⟩ := hU.horizontal_classification hheight hmiddle
-  · exact ⟨b, h⟩
-  · exact ⟨_, Reference.eq_reference_translate_of_horizontalMirror_eq h⟩
+  obtain ⟨-, -, b, h | h⟩ := hU.horizontal_classification hheight hmiddle
+  exacts [⟨b, h⟩, ⟨_, Reference.eq_reference_translate_of_horizontalMirror_eq h⟩]
 
 end AmbidextrousSofa

@@ -18,7 +18,6 @@ parameter of a function; it does not reflect a maximizing objective.
 noncomputable section
 
 open Set Filter MeasureTheory
-open scoped Topology
 
 namespace AmbidextrousSofa
 
@@ -26,18 +25,12 @@ theorem absolutelyContinuousOnInterval_comp_const_sub
     {f : ℝ → ℝ} {a b : ℝ} (hf : AbsolutelyContinuousOnInterval f a b)
     (hab : a ≤ b) (c : ℝ) :
     AbsolutelyContinuousOnInterval (fun t => f (c - t)) (c - b) (c - a) := by
-  have hi : IntervalIntegrable (fun t => -deriv f (c - t)) volume (c - b) (c - a) :=
-    (hf.intervalIntegrable_deriv.comp_sub_left c).symm.neg
-  apply absolutelyContinuousOnInterval_of_integral_sub hi
-  intro x hx
-  rw [uIcc_of_le (sub_le_sub_left hab c)] at hx
-  have hleft : a ≤ c - x := by linarith only [hx.2]
-  have hright : c - x ≤ b := by linarith only [hx.1]
-  have hxb : AbsolutelyContinuousOnInterval f (c - x) b := hf.mono (by
-    rw [uIcc_of_le hab, uIcc_of_le hright]
-    exact Icc_subset_Icc hleft le_rfl)
-  rw [intervalIntegral.integral_neg, intervalIntegral.integral_comp_sub_left,
-    sub_sub_cancel, hxb.integral_deriv_eq_sub]
+  refine absolutelyContinuousOnInterval_of_integral_sub (g := fun t => -deriv f (c - t))
+    (hf.intervalIntegrable_deriv.comp_sub_left c).symm.neg fun x hx => ?_
+  rw [uIcc_of_le (by linarith)] at hx
+  rw [intervalIntegral.integral_neg, intervalIntegral.integral_comp_sub_left, sub_sub_cancel,
+    (hf.mono (uIcc_subset_uIcc (by rw [uIcc_of_le hab]; constructor <;> linarith [hx.1, hx.2])
+      right_mem_uIcc)).integral_deriv_eq_sub]
   ring
 
 theorem ae_hasDerivAt_comp_const_sub
@@ -45,14 +38,10 @@ theorem ae_hasDerivAt_comp_const_sub
     (hderiv : ∀ᵐ t ∂volume.restrict (Ioo a b), HasDerivAt f (fD t) t) :
     ∀ᵐ t ∂volume.restrict (Ioo (c - b) (c - a)),
       HasDerivAt (fun s => f (c - s)) (-fD (c - t)) t := by
-  have hglobal := (ae_restrict_iff' measurableSet_Ioo).mp hderiv
-  have hshift := (volume.measurePreserving_sub_left c).quasiMeasurePreserving.ae hglobal
-  filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hshift]
-    with t ht hd
-  have hmem : c - t ∈ Ioo a b := by
-    constructor <;> linarith only [ht.1, ht.2]
-  simpa only [Function.comp_def, sub_self, zero_sub, mul_neg_one] using
-    (hd hmem).comp t ((hasDerivAt_const t c).sub (hasDerivAt_id t))
+  have hshift := (volume.measurePreserving_sub_left c).quasiMeasurePreserving.ae
+    ((ae_restrict_iff' measurableSet_Ioo).mp hderiv)
+  filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hshift] with t ht hd
+  exact (hd ⟨by linarith [ht.2], by linarith [ht.1]⟩).comp_const_sub c t
 
 theorem IsDownwardCap.closedSupportDerivative_eq_supportTangent_on_arc
     {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {K b t : ℝ}
@@ -61,13 +50,10 @@ theorem IsDownwardCap.closedSupportDerivative_eq_supportTangent_on_arc
       (volume.restrict S).withDensity (fun s => ENNReal.ofReal (ρ s)))
     (hsub : Ioo (0 : ℝ) b ⊆ S) (ht0 : 0 ≤ t) (htb : t < b) :
     closedSupportDerivative U ρ 0 t = supportTangent U t := by
-  have hid := hU.supportTangent_sub_eq_integral_of_density_Ioc hρ hρ0 hρK heq
-    ht0 (by
-      intro s hs
-      exact hsub ⟨hs.1, hs.2.trans_lt htb⟩)
-  dsimp only [closedSupportDerivative]
-  simp only [add_zero]
-  linarith only [hid]
+  have := hU.supportTangent_sub_eq_integral_of_density_Ioc hρ hρ0 hρK heq ht0
+    fun s hs => hsub ⟨hs.1, hs.2.trans_lt htb⟩
+  simp only [closedSupportDerivative, add_zero]
+  linarith
 
 /-- The left tangent trace at the final normal is the closed arc's
 final derivative. Its atom is not put into the preceding integral. -/
@@ -78,20 +64,14 @@ theorem IsDownwardCap.closedSupportDerivative_at_arc_end
       (volume.restrict S).withDensity (fun s => ENNReal.ofReal (ρ s)))
     (hb : 0 < b) (hsub : Ioo (0 : ℝ) b ⊆ S) :
     closedSupportDerivative U ρ 0 b = MovingSofaOptimality.dot (MovingSofaOptimality.vminus U b) (MovingSofaOptimality.vvec b) := by
-  have hp := MovingSofaOptimality.tendsto_vplus_left hU.imported_isConvexBody b
-  have hv := (MovingSofaOptimality.continuous_vvec.tendsto b).mono_left
-    (nhdsWithin_le_nhds : 𝓝[<] b ≤ 𝓝 b)
-  have htangent := (MovingSofaOptimality.continuous_dot_pair.tendsto
-    (MovingSofaOptimality.vminus U b, MovingSofaOptimality.vvec b)).comp (hp.prodMk_nhds hv)
-  have hclosed : Tendsto (closedSupportDerivative U ρ 0) (𝓝[<] b)
-      (𝓝 (MovingSofaOptimality.dot (MovingSofaOptimality.vminus U b) (MovingSofaOptimality.vvec b))) := by
-    apply htangent.congr'
-    filter_upwards [Ioo_mem_nhdsLT hb] with t ht
-    exact (hU.closedSupportDerivative_eq_supportTangent_on_arc
-      hρ hρ0 hρK heq hsub ht.1.le ht.2).symm
-  exact tendsto_nhds_unique
-    ((hU.continuous_closedSupportDerivative hρ hρ0 hρK 0).tendsto b |>.mono_left nhdsWithin_le_nhds)
-    hclosed
+  refine tendsto_nhds_unique
+    (hU.continuous_closedSupportDerivative hρ hρ0 hρK 0).continuousWithinAt
+    (((MovingSofaOptimality.continuous_dot_pair.tendsto _).comp
+      ((MovingSofaOptimality.tendsto_vplus_left hU.imported_isConvexBody b).prodMk_nhds
+        MovingSofaOptimality.continuous_vvec.continuousWithinAt)).congr' ?_)
+  filter_upwards [Ioo_mem_nhdsLT hb] with t ht
+  exact (hU.closedSupportDerivative_eq_supportTangent_on_arc hρ hρ0 hρK heq hsub ht.1.le
+    ht.2).symm
 
 theorem IsDownwardCap.hasDerivAt_angleSupport_of_open_arc
     {U : Set Plane} (hU : IsDownwardCap U) {S : Set ℝ} {ρ : ℝ → ℝ} {K b t : ℝ}
@@ -101,11 +81,8 @@ theorem IsDownwardCap.hasDerivAt_angleSupport_of_open_arc
     (hsub : Ioo (0 : ℝ) b ⊆ S) (ht : t ∈ Ioo (0 : ℝ) b) :
     HasDerivAt (angleSupport U) (closedSupportDerivative U ρ 0 t) t := by
   rw [hU.closedSupportDerivative_eq_supportTangent_on_arc hρ hρ0 hρK heq hsub ht.1.le ht.2]
-  apply hU.hasDerivAt_angleSupport_of_density hρ hρ0 hρK heq
-    (a := t / 2) (b := (t + b) / 2)
-  · intro s hs
-    apply hsub
-    constructor <;> linarith only [ht.1, ht.2, hs.1, hs.2]
-  · constructor <;> linarith only [ht.1, ht.2]
+  exact hU.hasDerivAt_angleSupport_of_density hρ hρ0 hρK heq (a := t / 2) (b := (t + b) / 2)
+    (fun s hs => hsub ⟨by linarith [hs.1, ht.1], by linarith [hs.2, ht.2]⟩)
+    ⟨by linarith [ht.1], by linarith [ht.2]⟩
 
 end AmbidextrousSofa

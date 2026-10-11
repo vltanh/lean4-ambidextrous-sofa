@@ -37,45 +37,15 @@ theorem IsJointCapMaximizer.exists_fixed_terminal_support_interval
       capRoof U x = m * x + c) :
     ∃ β ∈ Ioo α (Real.pi / 2), ∀ t ∈ Icc α β,
       angleSupport U t = coordDot (terminalTailPoint U α) (unitNormal t) := by
-  let d := if α < affineNormalAngle m then min (affineNormalAngle m) (Real.pi / 2)
-    else Real.pi / 2
-  have hαd : α < d := by
-    dsimp [d]
-    split_ifs with h
-    · exact lt_min h hαL
-    · exact hαL
-  have hdL : d ≤ Real.pi / 2 := by
-    dsimp [d]
-    split_ifs
-    · exact min_le_right _ _
-    · exact le_rfl
-  obtain ⟨β, hαβ, hβd⟩ := exists_between hαd
-  have hβL : β < Real.pi / 2 := hβd.trans_le hdL
-  have hgap : affineNormalAngle m ∉ Ioo α β := by
-    intro hm
-    have hdm : d ≤ affineNormalAngle m := by
-      dsimp [d]
-      rw [if_pos hm.1]
-      exact min_le_left _ _
-    exact (not_lt_of_ge (hβd.trans_le hdm).le) hm.2
-  have hsupport := hU.support_vertices_first_unused_gap haffine le_rfl hβL.le hαβ hgap
-  refine ⟨β, ⟨hαβ, hβL⟩, ?_⟩
-  intro t ht
-  have h := hsupport.2.1 t ht
-  rw [← hsupport.1] at h
-  exact h
-
-theorem IsDownwardCap.firstWall_joint_continuousAt {U : Set Plane}
-    (hU : IsDownwardCap U) {α : ℝ} (hs : Real.sin α ≠ 0) (x : ℝ) :
-    ContinuousAt (fun p : ℝ × ℝ => firstWall U p.1 p.2) (α, x) := by
-  have hsupport : Continuous (fun p : ℝ × ℝ => support U (unitNormal p.1)) :=
-    (continuous_support hU.isCompact).comp (continuous_unitNormal.comp continuous_fst)
-  have hcos : Continuous (fun p : ℝ × ℝ => Real.cos p.1) :=
-    Real.continuous_cos.comp continuous_fst
-  have hsin : Continuous (fun p : ℝ × ℝ => Real.sin p.1) :=
-    Real.continuous_sin.comp continuous_fst
-  exact ((hsupport.continuousAt.sub continuousAt_const).sub
-    (continuous_snd.continuousAt.mul hcos.continuousAt)).div hsin.continuousAt hs
+  obtain ⟨β, hβ, hgap⟩ : ∃ β ∈ Ioo α (Real.pi / 2), affineNormalAngle m ∉ Ioo α β := by
+    by_cases h : α < affineNormalAngle m
+    · obtain ⟨β, hαβ, hβ⟩ := exists_between (lt_min hαL h)
+      exact ⟨β, ⟨hαβ, hβ.trans_le (min_le_left _ _)⟩,
+        fun hm => lt_asymm (hβ.trans_le (min_le_right _ _)) hm.2⟩
+    · obtain ⟨β, hβ⟩ := exists_between hαL
+      exact ⟨β, hβ, fun hm => h hm.1⟩
+  have h := hU.support_vertices_first_unused_gap haffine le_rfl hβ.2.le hβ.1 hgap
+  exact ⟨β, hβ, fun t ht => by rw [terminalTailPoint, h.1]; exact h.2.1 t ht⟩
 
 /-- The actual new first walls are dominated by the actual old history
 on a whole nonempty angular interval. The compact historical-gap interval
@@ -87,116 +57,64 @@ theorem IsDownwardCap.exists_right_wall_interval_of_overlong_facet
     (hsupport : ∀ t ∈ Icc α β₀,
       angleSupport U t = coordDot (terminalTailPoint U α) (unitNormal t))
     (hcorner : (attachedCorner U α).1 < terminalFirstRightAbscissa U α)
-    (hreserve : 0 < terminalTailReserve U α)
     (hfacet : terminalTailReserve U α < terminalFaceWidth U α)
     (hOld : ∀ x ∈ Icc l r, firstWall U α x ≤ sweptNiche U α x) :
     ∃ β ∈ Ioo α (Real.pi / 2), ∀ t ∈ Icc α β, ∀ x ∈ Icc l r,
       firstWall U t x ≤ sweptNiche U α x := by
   let b := (terminalTailPoint U α).1
   let H := (terminalTailPoint U α).2
-  have hα0 : 0 < α := by linarith [hα.1, Real.pi_pos]
-  have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi hα0
-    (by linarith [Real.pi_pos])
-  have hc : 0 < Real.cos α := Real.cos_pos_of_mem_Ioo
-    ⟨by linarith [Real.pi_pos], hαL⟩
-  have hBzero : terminalFirstRightAbscissa U α < terminalTailZero U α := by
-    unfold terminalFirstRightAbscissa terminalTailZero terminalTailReserve at *
-    dsimp only [terminalTailPoint] at *
-    linarith
-  have hzeroLeft : terminalTailZero U α < terminalFirstLeftAbscissa U α := by
-    rw [terminalFirstLeftAbscissa_eq_right_add_width]
-    unfold terminalFirstRightAbscissa terminalTailZero terminalTailReserve at *
-    dsimp only [terminalTailPoint] at *
-    linarith
-  obtain ⟨ζ, hcornerζ, hζB⟩ := exists_between hcorner
-  obtain ⟨rstar, hzeroStar, hstarLeft⟩ := exists_between hzeroLeft
-  have hζstar : ζ < rstar := hζB.trans (hBzero.trans hzeroStar)
-  have hfixed {t : ℝ} (ht : t ∈ Icc α β₀) :
-      angleSupport U t = b * Real.cos t + H * Real.sin t := by
-    simpa only [coordDot, unitNormal] using hsupport t ht
-  have hfirstα (x : ℝ) : firstWall U α x =
-      H + ((b - x) * Real.cos α - 1) / Real.sin α :=
-    firstWall_eq_fixedPoint_of_support hs.ne' (hfixed ⟨le_rfl, hβ₀.1.le⟩) x
-  have hN := hU.continuous_sweptNiche_terminalAngle hα
-  have hgapEvent : ∀ᶠ t in 𝓝 α, ∀ x ∈ Icc ζ rstar,
-      firstWall U t x < sweptNiche U α x := by
-    apply (isCompact_Icc : IsCompact (Icc ζ rstar)).eventually_forall_of_forall_eventually
-    intro x hx
-    exact (hU.firstWall_joint_continuousAt hs.ne' x).tendsto.eventually_lt
-      ((hN.comp continuous_snd).continuousAt.tendsto)
-      (hU.firstWall_lt_history_between_corner_and_left_endpoint hα0 hαL
-        (hcornerζ.trans_le hx.1) (hx.2.trans_lt hstarLeft))
-  have hzeroCont : ContinuousAt (fun t : ℝ => b - (1 - H * Real.sin t) / Real.cos t) α :=
-    continuousAt_const.sub ((continuousAt_const.sub
-      (continuousAt_const.mul Real.continuous_sin.continuousAt)).div
-        Real.continuous_cos.continuousAt hc.ne')
-  have hzeroEvent : ∀ᶠ t in 𝓝 α, b - (1 - H * Real.sin t) / Real.cos t < rstar :=
-    Filter.Tendsto.eventually_lt_const hzeroStar hzeroCont.tendsto
-  have hNew : ∀ᶠ t in 𝓝[>] α, ∀ x ∈ Icc l r,
-      firstWall U t x ≤ sweptNiche U α x := by
-    filter_upwards [Ioo_mem_nhdsGT hβ₀.1,
-      hgapEvent.filter_mono nhdsWithin_le_nhds,
-      hzeroEvent.filter_mono nhdsWithin_le_nhds] with t ht hgap hzero
-    have htL : t < Real.pi / 2 := ht.2.trans hβ₀.2
-    have hst : 0 < Real.sin t := Real.sin_pos_of_pos_of_lt_pi (hα0.trans ht.1)
-      (by linarith [Real.pi_pos])
-    have hct : 0 < Real.cos t := Real.cos_pos_of_mem_Ioo
-      ⟨by linarith [hα0, ht.1, Real.pi_pos], htL⟩
-    have hfirst (x : ℝ) : firstWall U t x =
-        H + ((b - x) * Real.cos t - 1) / Real.sin t :=
-      firstWall_eq_fixedPoint_of_support hst.ne' (hfixed ⟨ht.1.le, ht.2.le⟩) x
-    intro x hx
-    by_cases hxζ : x ≤ ζ
-    · have hdistance : Real.cos α ≤ b - x := by
-        unfold terminalFirstRightAbscissa at hζB
-        dsimp only [b, terminalTailPoint]
-        linarith
-      calc
-        firstWall U t x = H + ((b - x) * Real.cos t - 1) / Real.sin t := hfirst x
-        _ ≤ H + ((b - x) * Real.cos α - 1) / Real.sin α :=
-          fixedPoint_firstWall_le_initial hα0 ht.1.le htL.le hdistance
-        _ = firstWall U α x := (hfirstα x).symm
-        _ ≤ sweptNiche U α x := hOld x hx
-    · by_cases hxstar : x ≤ rstar
-      · exact (hgap x ⟨(lt_of_not_ge hxζ).le, hxstar⟩).le
-      · have hdist : b - x ≤ (1 - H * Real.sin t) / Real.cos t := by
-          linarith [lt_of_not_ge hxstar]
-        have hnum : (b - x) * Real.cos t - 1 ≤ -H * Real.sin t := by
-          have h := (le_div_iff₀ hct).mp hdist
-          nlinarith only [h]
-        have hwall : firstWall U t x ≤ 0 := by
-          rw [hfirst]
-          have h := (div_le_iff₀ hst).mpr hnum
-          linarith
-        exact hwall.trans (sweptNiche_nonneg U α x)
-  obtain ⟨c, hαc, hlocal⟩ := mem_nhdsGT_iff_exists_Ioo_subset.mp hNew
-  obtain ⟨β, hαβ, hβ⟩ := exists_between (lt_min hαc hβ₀.1)
-  have hβL : β < Real.pi / 2 :=
-    (hβ.trans_le (min_le_right _ _)).trans hβ₀.2
-  refine ⟨β, ⟨hαβ, hβL⟩, ?_⟩
-  intro t ht x hx
-  by_cases hta : t = α
-  · simpa only [hta] using hOld x hx
-  · exact hlocal ⟨lt_of_le_of_ne ht.1 (Ne.symm hta),
-      ht.2.trans_lt (hβ.trans_le (min_le_left _ _))⟩ x hx
+  have hα0 : 0 < α := by linarith only [hα.1, Real.pi_pos]
+  have hs := Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith only [hαL, Real.pi_pos])
+  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith only [hα0, Real.pi_pos], hαL⟩
+  have hB : terminalFirstRightAbscissa U α = b - Real.cos α := rfl
+  have hR : terminalTailReserve U α = Real.cos α - terminalTailInset U α := rfl
+  have hL := terminalFirstLeftAbscissa_eq_right_add_width U α
+  obtain ⟨ρ, hzeroρ, hρL⟩ :=
+    exists_between (show b - terminalTailInset U α < terminalFirstLeftAbscissa U α by
+      linarith only [hB, hR, hL, hfacet])
+  have hfixed {t : ℝ} (ht : t ∈ Icc α β₀) (x : ℝ) :
+      firstWall U t x = H + ((b - x) * Real.cos t - 1) / Real.sin t :=
+    firstWall_eq_fixedPoint_of_support (Real.sin_pos_of_pos_of_lt_pi (hα0.trans_le ht.1)
+      (by linarith only [ht.2, hβ₀.2, Real.pi_pos])).ne'
+      (by simpa only [coordDot, unitNormal] using hsupport t ht) x
+  have hjoint (x : ℝ) : ContinuousAt (fun p : ℝ × ℝ => firstWall U p.1 p.2) (α, x) :=
+    ((((continuous_angleSupport hU.isCompact).comp continuous_fst).sub continuous_const).sub
+      (continuous_snd.mul (Real.continuous_cos.comp continuous_fst))).continuousAt.div
+      (Real.continuous_sin.comp continuous_fst).continuousAt hs.ne'
+  have hgap : ∀ᶠ t in 𝓝 α, ∀ x ∈ Icc (terminalFirstRightAbscissa U α) ρ,
+      firstWall U t x < sweptNiche U α x :=
+    isCompact_Icc.eventually_forall_of_forall_eventually fun x hx =>
+      (hjoint x).eventually_lt
+        ((hU.continuous_sweptNiche_terminalAngle hα).comp continuous_snd).continuousAt
+        (hU.firstWall_lt_history_between_corner_and_left_endpoint hα0 hαL
+          (hcorner.trans_le hx.1) (hx.2.trans_lt hρL))
+  have hzero : ∀ᶠ t in 𝓝 α, b - ρ < (1 - H * Real.sin t) / Real.cos t :=
+    Tendsto.eventually_const_lt (sub_lt_comm.mp hzeroρ)
+      (show ContinuousAt (fun t => (1 - H * Real.sin t) / Real.cos t) α by
+        fun_prop (disch := exact hc.ne')).tendsto
+  obtain ⟨β, hαβ, hβ⟩ := mem_nhdsGE_iff_exists_Icc_subset.mp
+    (inter_mem (Ico_mem_nhdsGE hβ₀.1) (nhdsWithin_le_nhds (hgap.and hzero)))
+  refine ⟨β, ⟨hαβ, (hβ ⟨hαβ.le, le_rfl⟩).1.2.trans hβ₀.2⟩, fun t ht x hx => ?_⟩
+  obtain ⟨⟨htα, htβ₀⟩, hgapt, hzerot⟩ := hβ ht
+  have hst := Real.sin_pos_of_pos_of_lt_pi (hα0.trans_le htα)
+    (by linarith only [htβ₀, hβ₀.2, Real.pi_pos])
+  have hct := Real.cos_pos_of_mem_Ioo ⟨by linarith only [hα0, htα, Real.pi_pos], htβ₀.trans hβ₀.2⟩
+  rcases le_or_gt x (terminalFirstRightAbscissa U α) with hxB | hxB
+  · rw [hfixed ⟨htα, htβ₀.le⟩]
+    exact (fixedPoint_firstWall_le_initial hα0 htα (by linarith only [htβ₀, hβ₀.2])
+      (by linarith only [hxB, hB])).trans
+      ((hfixed ⟨le_rfl, hβ₀.1.le⟩ x).symm.trans_le (hOld x hx))
+  rcases le_or_gt x ρ with hxρ | hxρ
+  · exact (hgapt x ⟨hxB.le, hxρ⟩).le
+  rw [lt_div_iff₀ hct] at hzerot
+  have : ((b - x) * Real.cos t - 1) / Real.sin t ≤ -H := by
+    rw [div_le_iff₀ hst]
+    linarith only [hzerot, mul_le_mul_of_nonneg_right hxρ.le hct.le]
+  rw [hfixed ⟨htα, htβ₀.le⟩]
+  linarith only [this, sweptNiche_nonneg U α x]
 
-/-- Keeping the cap and the whole spatial window fixed, a controlled
-interval of new first walls gives identical old and new partial barriers. -/
-theorem IsDownwardCap.partialBarrier_eq_of_new_firstWalls_le_history
-    {U : Set Plane} (hU : IsDownwardCap U) {α β l r : ℝ}
-    (hα0 : 0 < α) (hαβ : α ≤ β) (hβL : β ≤ Real.pi / 2)
-    (hNew : ∀ t ∈ Icc α β, ∀ x ∈ Icc l r, firstWall U t x ≤ sweptNiche U α x) :
-    EqOn (partialBarrier U β) (partialBarrier U α) (Icc l r) := by
-  intro x hx
-  have hOld : partialBarrier U α x = sweptNiche U α x :=
-    max_eq_left (hNew α ⟨le_rfl, hαβ⟩ x hx)
-  rw [hOld]
-  apply le_antisymm
-  · exact partialBarrier_le_of_firstWall_bound_after hU.isCompact hα0 hαβ hβL
-      le_rfl (fun t ht => hNew t ht x hx)
-  · exact (sweptNiche_mono_terminalAngle hU.isCompact hα0 hαβ hβL x).trans
-      (le_max_left _ _)
-
+-- The height bound `hH` is not needed by the construction.
+set_option linter.unusedVariables false in
 /-- An overlong terminal facet gives a single, literal same-cap angle
 increase at a canonical joint maximizer. This statement itself has no
 largest-angle premise, so it also supports the later equality argument. -/
@@ -212,37 +130,20 @@ theorem IsJointCapMaximizer.exists_same_cap_angle_extension_of_overlong_facet
       EqOn (partialBarrier U β) (partialBarrier U α)
         (middleHalfInterval (horizontalLeft U) (horizontalRight U)) := by
   obtain ⟨β₀, hβ₀, hsupport⟩ := hU.exists_fixed_terminal_support_interval hαL haffine
-  obtain ⟨_, _, hreserve, _, _⟩ :=
-    hU.isCap.terminalTailInset_bounds hU.angle_pos hαL hH
   obtain ⟨β, hβ, hNew⟩ := hU.isCap.exists_right_wall_interval_of_overlong_facet
-    hU.angle_mem hαL hβ₀ hsupport hcorner hreserve hfacet
+    hU.angle_mem hαL hβ₀ hsupport hcorner hfacet
     (fun x hx => hU.firstWall_le_history_of_overlong_facet hαL hcorner hfacet hx)
-  have heq := hU.isCap.partialBarrier_eq_of_new_firstWalls_le_history
-    hU.angle_pos hβ.1.le hβ.2.le hNew
+  have hN (x : ℝ) : sweptNiche U α x ≤ partialBarrier U β x :=
+    (sweptNiche_mono_terminalAngle hU.isCap.isCompact hU.angle_pos hβ.1.le hβ.2.le x).trans
+      (le_max_left _ _)
+  have heq : EqOn (partialBarrier U β) (partialBarrier U α)
+      (middleHalfInterval (horizontalLeft U) (horizontalRight U)) := fun x hx =>
+    (partialBarrier_le_of_firstWall_bound_after hU.isCap.isCompact hU.angle_pos hβ.1.le hβ.2.le
+      (le_max_left _ _) fun t ht => (hNew t ht x hx).trans (le_max_left _ _)).antisymm
+      (max_le (hN x) ((hNew α ⟨le_rfl, hβ.1.le⟩ x hx).trans (hN x)))
   have hscore : capScore U β = capScore U α := by
-    rw [capScore_eq_integrals, capScore_eq_integrals]
-    congr 1
-    apply integral_congr_ae
-    filter_upwards [ae_restrict_mem (measurableSet_middleHalfInterval _ _)] with x hx
-    exact heq hx
-  exact ⟨β, hβ, hU.of_score_le hU.isCap
-    ⟨hU.angle_mem.1.trans hβ.1.le, hβ.2.le⟩ hscore.ge, heq⟩
-
-/-- The largest-angle contradiction uses only an actual same-cap
-competitor; no terminal source-mass identity is presumed. -/
-theorem IsJointCapMaximizer.terminalFaceWidth_le_reserve_of_corner_lt
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hαL : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hcorner : (attachedCorner U α).1 < terminalFirstRightAbscissa U α) :
-    terminalFaceWidth U α ≤ terminalTailReserve U α := by
-  by_contra h
-  have hfacet : terminalTailReserve U α < terminalFaceWidth U α := lt_of_not_ge h
-  have hH := (hU.terminalTailPoint_bounds hLargest hαL hheight haffine).2.1
-  obtain ⟨β, hβ, hmax, _⟩ :=
-    hU.exists_same_cap_angle_extension_of_overlong_facet hαL haffine hH hcorner hfacet
-  exact (not_le_of_gt hβ.1) (hLargest U β hmax)
+    rw [capScore_eq_integrals, capScore_eq_integrals,
+      setIntegral_congr_fun (measurableSet_middleHalfInterval _ _) heq]
+  exact ⟨β, hβ, hU.of_score_le hU.isCap ⟨hU.angle_mem.1.trans hβ.1.le, hβ.2.le⟩ hscore.ge, heq⟩
 
 end AmbidextrousSofa

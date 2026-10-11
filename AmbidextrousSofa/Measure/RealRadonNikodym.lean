@@ -33,48 +33,32 @@ theorem realRnDensity_nonneg (μ ν : Measure ℝ) (x : ℝ) : 0 ≤ realRnDensi
 
 theorem withDensity_realRnDensity (μ ν : Measure ℝ)
     [IsFiniteMeasure μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
-    ν.withDensity (fun x => ENNReal.ofReal (realRnDensity μ ν x)) = μ := by
-  calc
-    _ = ν.withDensity (μ.rnDeriv ν) := by
-      apply withDensity_congr_ae
-      filter_upwards [Measure.rnDeriv_lt_top μ ν] with x hx
-      exact ENNReal.ofReal_toReal hx.ne
-    _ = μ := Measure.withDensity_rnDeriv_eq μ ν hμν
+    ν.withDensity (fun x => ENNReal.ofReal (realRnDensity μ ν x)) = μ :=
+  (withDensity_congr_ae ((Measure.rnDeriv_lt_top μ ν).mono fun _ hx =>
+    ENNReal.ofReal_toReal hx.ne)).trans (Measure.withDensity_rnDeriv_eq μ ν hμν)
 
 theorem ae_realRnDensity_add (μ κ ν : Measure ℝ)
     [IsFiniteMeasure μ] [IsFiniteMeasure κ] [SigmaFinite ν] :
     ∀ᵐ x ∂ν, realRnDensity (μ + κ) ν x = realRnDensity μ ν x + realRnDensity κ ν x := by
   filter_upwards [Measure.rnDeriv_add μ κ ν,
     Measure.rnDeriv_lt_top μ ν, Measure.rnDeriv_lt_top κ ν] with x hadd hμ hκ
-  change ((μ + κ).rnDeriv ν x).toReal = (μ.rnDeriv ν x).toReal + (κ.rnDeriv ν x).toReal
-  rw [hadd, Pi.add_apply, ENNReal.toReal_add hμ.ne hκ.ne]
-
-theorem ae_realRnDensity_eq_of_withDensity₀
-    {μ ν : Measure ℝ} [SigmaFinite ν] {ρ : ℝ → ℝ}
-    (hρ : AEMeasurable ρ ν) (hρ0 : ∀ᵐ x ∂ν, 0 ≤ ρ x)
-    (hμ : μ = ν.withDensity (fun x => ENNReal.ofReal (ρ x))) :
-    realRnDensity μ ν =ᵐ[ν] ρ := by
-  have h := Measure.rnDeriv_withDensity₀ ν hρ.ennreal_ofReal
-  rw [← hμ] at h
-  filter_upwards [h, hρ0] with x hx hx0
-  change (μ.rnDeriv ν x).toReal = ρ x
-  rw [hx, ENNReal.toReal_ofReal hx0]
+  simp only [realRnDensity, hadd, Pi.add_apply, ENNReal.toReal_add hμ.ne hκ.ne]
 
 theorem ae_realRnDensity_eq_of_withDensity
     {μ ν : Measure ℝ} [SigmaFinite ν] {ρ : ℝ → ℝ}
     (hρ : Measurable ρ) (hρ0 : ∀ x, 0 ≤ ρ x)
     (hμ : μ = ν.withDensity (fun x => ENNReal.ofReal (ρ x))) :
     realRnDensity μ ν =ᵐ[ν] ρ :=
-  ae_realRnDensity_eq_of_withDensity₀ hρ.aemeasurable (ae_of_all _ hρ0) hμ
+  hμ ▸ (Measure.rnDeriv_withDensity ν hρ.ennreal_ofReal).mono fun x hx => by
+    rw [realRnDensity, hx, ENNReal.toReal_ofReal (hρ0 x)]
 
 theorem map_withDensity_comp
     {Ω Ξ : Type*} [MeasurableSpace Ω] [MeasurableSpace Ξ]
     (μ : Measure Ω) {f : Ω → Ξ} {w : Ξ → ℝ≥0∞}
     (hf : Measurable f) (hw : Measurable w) :
     (μ.withDensity (fun x => w (f x))).map f = (μ.map f).withDensity w := by
-  apply Measure.ext
-  intro E hE
-  rw [Measure.map_apply hf hE, withDensity_apply _ (hf hE), withDensity_apply _ hE]
-  exact (setLIntegral_map hE hw hf).symm
+  ext E hE
+  rw [Measure.map_apply hf hE, withDensity_apply _ (hf hE), withDensity_apply _ hE,
+    setLIntegral_map hE hw hf]
 
 end AmbidextrousSofa

@@ -30,9 +30,8 @@ theorem IsFullCapMaximizer.tilted_endpoint_momentum_eq
     capRoof U (horizontalRight U) - 1 + h =
       Analysis.tiltedEndpointMomentum h (sweptNiche U (Real.pi / 2) C)
         (sweptNiche U (Real.pi / 2) (-C)) := by
-  have hEP := (hU.tilted_endpoint_laws hl hr hheight haffine hlow hhigh).1
   unfold Analysis.tiltedEndpointMomentum
-  linarith only [hEP]
+  linarith only [(hU.tilted_endpoint_laws hl hr hheight haffine hlow hhigh).1]
 
 theorem IsFullCapMaximizer.initial_floor_conditions_of_high_tilt
     {U : Set Plane} (hU : IsFullCapMaximizer U) {C h m c : ℝ}
@@ -91,23 +90,18 @@ theorem IsFullCapMaximizer.exists_tilted_first_unit_density_of_initial_floor_con
   have hmid : middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
     rw [middleHalfInterval, hl, hr]
     congr 1 <;> ring
-  have haff := haffine
-  rw [hmid] at haff
-  have hleft := haff (-C) ⟨le_rfl, by linarith only [hC0]⟩
-  have hright := haff C ⟨by linarith only [hC0], le_rfl⟩
-  rw [hlow] at hleft
-  rw [hhigh] at hright
-  have hmEq : m = h / (2 * C) := (eq_div_iff
-    (show 2 * C ≠ 0 by linarith only [hC0])).mpr (by nlinarith only [hleft, hright])
-  have hmpos : 0 < m := by rw [hmEq]; exact div_pos hh0 (by linarith only [hC0])
-  have hsmall : C + m < 1 := by
-    rw [hmEq]
-    exact canonical_width_add_slope_lt_one hC0.le hC1 hh1
+  have hleft := haffine (-C) (hmid ▸ ⟨le_rfl, by linarith only [hC0]⟩)
+  have hright := haffine C (hmid ▸ ⟨by linarith only [hC0], le_rfl⟩)
+  have hmEq : m = h / (2 * C) := by
+    rw [eq_div_iff (by linarith only [hC0])]
+    linarith only [hleft, hright, hlow, hhigh]
+  have hmpos : 0 < m := hmEq ▸ div_pos hh0 (by linarith only [hC0])
   obtain ⟨ρ, hρ, hbounds, hcoarse, heq, _⟩ :=
     hU.curvature_density_corner_controls hheight haffine
-  have hunit := fullTiltedSupportQuarterPair_ae_first_le_one_of_initial_floor_conditions
-    hU hmpos.le haffine hρ (fun t => (hbounds t).1) hcoarse heq
-    hl hr hC0 hmpos hsmall hh0 hheight hhigh hlow (fun t => (hbounds t).2) hconditions
-  exact ⟨ρ, hρ, hbounds, hcoarse, heq, hunit⟩
+  exact ⟨ρ, hρ, hbounds, hcoarse, heq,
+    fullTiltedSupportQuarterPair_ae_first_le_one_of_initial_floor_conditions hU hmpos.le haffine hρ
+      (fun t => (hbounds t).1) hcoarse heq hl hr hC0 hmpos
+      (hmEq ▸ canonical_width_add_slope_lt_one hC0.le hC1 hh1) hh0 hheight hhigh hlow
+      (fun t => (hbounds t).2) hconditions⟩
 
 end AmbidextrousSofa

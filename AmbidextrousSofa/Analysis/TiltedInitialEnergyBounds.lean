@@ -30,32 +30,13 @@ def tiltedEndpointMomentum (h z w : ℝ) : ℝ :=
 
 /-- A rational chord below the upper semicircle stays below it. -/
 theorem initialFloorSine_convex_comb_lower
-    {x y sx sy w : ℝ}
-    (hx0 : 0 ≤ x) (hx2 : x ≤ 2) (hy0 : 0 ≤ y) (hy2 : y ≤ 2)
-    (hw0 : 0 ≤ w) (hw1 : w ≤ 1)
+    {x y sx sy w : ℝ} (hw0 : 0 ≤ w) (hw1 : w ≤ 1)
     (hsx : sx ^ 2 ≤ x * (2 - x)) (hsy : sy ^ 2 ≤ y * (2 - y)) :
     (1 - w) * sx + w * sy ≤ initialFloorSine ((1 - w) * x + w * y) := by
   have hw : 0 ≤ 1 - w := sub_nonneg.mpr hw1
-  have hz0 : 0 ≤ (1 - w) * x + w * y :=
-    add_nonneg (mul_nonneg hw hx0) (mul_nonneg hw0 hy0)
-  have hz2 : (1 - w) * x + w * y ≤ 2 := by
-    nlinarith [mul_nonneg hw (sub_nonneg.mpr hx2),
-      mul_nonneg hw0 (sub_nonneg.mpr hy2)]
-  have hsq := initialFloorSine_sq hz0 hz2
-  have hnonneg := initialFloorSine_nonneg ((1 - w) * x + w * y)
-  have hfirst := mul_nonneg hw (sub_nonneg.mpr hsx)
-  have hsecond := mul_nonneg hw0 (sub_nonneg.mpr hsy)
-  have hthird := mul_nonneg (mul_nonneg hw0 hw)
-    (add_nonneg (sq_nonneg (x - y)) (sq_nonneg (sx - sy)))
-  have hchord : ((1 - w) * sx + w * sy) ^ 2 ≤
-      ((1 - w) * x + w * y) * (2 - ((1 - w) * x + w * y)) := by
-    nlinarith
-  by_contra hnle
-  have hgt := lt_of_not_ge hnle
-  have hprod := mul_pos (sub_pos.mpr hgt)
-    (show 0 < (1 - w) * sx + w * sy +
-      initialFloorSine ((1 - w) * x + w * y) by linarith)
-  nlinarith
+  refine (le_abs_self _).trans (Real.abs_le_sqrt ?_)
+  linarith [mul_nonneg hw (sub_nonneg.mpr hsx), mul_nonneg hw0 (sub_nonneg.mpr hsy),
+    mul_nonneg (mul_nonneg hw0 hw) (add_nonneg (sq_nonneg (x - y)) (sq_nonneg (sx - sy)))]
 
 /-- The polynomial part has quadratic coefficient `5/16`; the
 semicircle chord gives the remaining convexity estimate directly. -/
@@ -69,88 +50,40 @@ theorem initialFloorTest_affine_le_of_endpoint_bounds
     (hright : d ^ 2 + (A + 5 / 4 * r) ^ 2 +
       (A + 5 / 4 * r) * (1 - r) - d * sr ≤ K) :
     initialFloorTest d (A + 5 / 4 * h) h ≤ K := by
-  let w : ℝ := (h - l) / (r - l)
+  have _ := And.intro hl hr -- not needed by the proof; they stay in the statement for the callers
   have hrl : 0 < r - l := sub_pos.mpr hlr
-  have hw0 : 0 ≤ w := div_nonneg (sub_nonneg.mpr hh.1) hrl.le
-  have hw1 : w ≤ 1 := by
-    dsimp [w]
-    apply (div_le_iff₀ hrl).2
-    linarith [hh.2]
-  have hblend : (1 - w) * l + w * r = h := by
-    dsimp [w]
-    field_simp [ne_of_gt hrl]
-    ring
-  have hroot : (1 - w) * sl + w * sr ≤ initialFloorSine h := by
-    simpa only [hblend] using initialFloorSine_convex_comb_lower
-      hl (by linarith) (by linarith) hr hw0 hw1 hsl hsr
-  let Ql := d ^ 2 + (A + 5 / 4 * l) ^ 2 +
-    (A + 5 / 4 * l) * (1 - l) - d * sl
-  let Qr := d ^ 2 + (A + 5 / 4 * r) ^ 2 +
-    (A + 5 / 4 * r) * (1 - r) - d * sr
-  have hpoly : d ^ 2 + (A + 5 / 4 * h) ^ 2 +
-      (A + 5 / 4 * h) * (1 - h) - d * ((1 - w) * sl + w * sr) =
-        (1 - w) * Ql + w * Qr - 5 / 16 * (r - l) ^ 2 * w * (1 - w) := by
-    rw [← hblend]
-    dsimp [Ql, Qr]
-    ring
-  have herr : 0 ≤ 5 / 16 * (r - l) ^ 2 * w * (1 - w) :=
-    mul_nonneg (mul_nonneg (mul_nonneg (by norm_num) (sq_nonneg _)) hw0)
-      (sub_nonneg.mpr hw1)
-  have hweighted : (1 - w) * Ql + w * Qr ≤ K := by
-    calc
-      _ ≤ (1 - w) * K + w * K := add_le_add
-        (mul_le_mul_of_nonneg_left hleft (sub_nonneg.mpr hw1))
-        (mul_le_mul_of_nonneg_left hright hw0)
-      _ = K := by ring
-  calc
-    initialFloorTest d (A + 5 / 4 * h) h ≤
-        d ^ 2 + (A + 5 / 4 * h) ^ 2 + (A + 5 / 4 * h) * (1 - h) -
-          d * ((1 - w) * sl + w * sr) := by
-      unfold initialFloorTest
-      linarith [mul_le_mul_of_nonneg_left hroot hd]
-    _ = (1 - w) * Ql + w * Qr - 5 / 16 * (r - l) ^ 2 * w * (1 - w) := hpoly
-    _ ≤ (1 - w) * Ql + w * Qr := sub_le_self _ herr
-    _ ≤ K := hweighted
+  -- write `h` as the convex combination `(1 - w) * l + w * r`
+  obtain ⟨w, hw0, hw1, rfl⟩ : ∃ w, 0 ≤ w ∧ w ≤ 1 ∧ h = (1 - w) * l + w * r :=
+    ⟨(h - l) / (r - l), div_nonneg (by linarith [hh.1]) hrl.le,
+      (div_le_one₀ hrl).2 (by linarith [hh.2]), by field_simp; ring⟩
+  unfold initialFloorTest
+  linarith [mul_le_mul_of_nonneg_left (initialFloorSine_convex_comb_lower hw0 hw1 hsl hsr) hd,
+    mul_le_mul_of_nonneg_left hleft (sub_nonneg.mpr hw1), mul_le_mul_of_nonneg_left hright hw0,
+    mul_nonneg (mul_nonneg hw0 (sub_nonneg.mpr hw1)) (sq_nonneg (r - l))]
 
 theorem initialFloorTest_mono_d {d D B h : ℝ}
     (h0 : 0 ≤ h) (h2 : h ≤ 2) (hd : 1 / 2 ≤ d) (hdD : d ≤ D) :
     initialFloorTest d B h ≤ initialFloorTest D B h := by
-  have hs := initialFloorSine_le_one h0 h2
-  have hprod := mul_nonneg (sub_nonneg.mpr hdD)
-    (show 0 ≤ D + d - initialFloorSine h by linarith)
   unfold initialFloorTest
-  nlinarith
+  linarith [mul_nonneg (sub_nonneg.mpr hdD)
+    (show 0 ≤ D + d - initialFloorSine h by linarith [initialFloorSine_le_one h0 h2])]
 
 theorem initialFloorTest_mono_B {d B U h : ℝ}
     (hBU : B ≤ U) (hsum : 0 ≤ B + U + 1 - h) :
     initialFloorTest d B h ≤ initialFloorTest d U h := by
-  have hprod := mul_nonneg (sub_nonneg.mpr hBU) hsum
   unfold initialFloorTest
-  nlinarith
+  linarith [mul_nonneg (sub_nonneg.mpr hBU) hsum]
 
 theorem tiltedBoxHeight_lt_of_width_bound {C D H : ℝ}
-    (hC0 : 0 ≤ C) (hCD : C ≤ D) (hH : 0 ≤ 1 - H)
-    (hsq : D ^ 2 + (1 - H) ^ 2 < 1) : tiltedBoxHeight C < H := by
-  have hD0 : 0 ≤ D := hC0.trans hCD
-  have hCC : C ^ 2 ≤ D ^ 2 := by
-    nlinarith [mul_nonneg (sub_nonneg.mpr hCD) (add_nonneg hC0 hD0)]
-  have hrad : 0 ≤ 1 - C ^ 2 := by nlinarith [sq_nonneg (1 - H)]
-  have hroot := Real.sq_sqrt hrad
-  have hroot0 := Real.sqrt_nonneg (1 - C ^ 2)
+    (hC0 : 0 ≤ C) (hCD : C ≤ D) (hsq : D ^ 2 + (1 - H) ^ 2 < 1) : tiltedBoxHeight C < H := by
+  have := Real.lt_sqrt_of_sq_lt
+    (show (1 - H) ^ 2 < 1 - C ^ 2 by linarith [pow_le_pow_left₀ hC0 hCD 2])
   unfold tiltedBoxHeight
-  by_contra hnlt
-  have hle : Real.sqrt (1 - C ^ 2) ≤ 1 - H := by linarith
-  have hprod := mul_nonneg (sub_nonneg.mpr hle)
-    (add_nonneg hH hroot0)
-  nlinarith
+  linarith
 
 theorem tiltedBoxHeight_lt_thirty_three_hundredths {C : ℝ}
     (hC0 : 0 ≤ C) (hC : C ≤ 37 / 50) : tiltedBoxHeight C < 33 / 100 :=
-  tiltedBoxHeight_lt_of_width_bound hC0 hC (by norm_num) (by norm_num)
-
-theorem tiltedBoxHeight_lt_eight_twenty_fifths {C : ℝ}
-    (hC0 : 0 ≤ C) (hC : C ≤ 73 / 100) : tiltedBoxHeight C < 8 / 25 :=
-  tiltedBoxHeight_lt_of_width_bound hC0 hC (by norm_num) (by norm_num)
+  tiltedBoxHeight_lt_of_width_bound hC0 hC (by norm_num)
 
 /-- IE8, including its narrow exact radius margin. -/
 theorem initialFloorEnergyConditions_high_tilt
@@ -159,22 +92,17 @@ theorem initialFloorEnergyConditions_high_tilt
     (hBlo : -107 / 400 ≤ B)
     (hBhi : B ≤ -101 / 400 + 5 / 4 * h) :
     InitialFloorEnergyConditions (3 * C) B h := by
-  have hB1 : B ≤ 107 / 400 := by linarith
-  have hdsq : (3 * C) ^ 2 ≤ (111 / 50) ^ 2 := by
-    nlinarith [mul_nonneg (show 0 ≤ 111 / 50 - 3 * C by linarith)
-      (show 0 ≤ 111 / 50 + 3 * C by linarith)]
-  have hBsq : B ^ 2 ≤ (107 / 400) ^ 2 := by
-    nlinarith [mul_nonneg (show 0 ≤ B + 107 / 400 by linarith)
+  constructor
+  · linarith [mul_nonneg (show 0 ≤ 111 / 50 - 3 * C by linarith)
+      (show 0 ≤ 111 / 50 + 3 * C by linarith), mul_nonneg (show 0 ≤ B + 107 / 400 by linarith)
       (show 0 ≤ 107 / 400 - B by linarith)]
-  have htop : initialFloorTest (111 / 50) (-101 / 400 + 5 / 4 * h) h ≤ 4 :=
-    initialFloorTest_affine_le_of_endpoint_bounds
-      (l := 21 / 100) (r := 17 / 50) (sl := 61 / 100) (sr := 3 / 4)
-      (by norm_num) (by norm_num) (by norm_num) (by norm_num) ⟨hh0, hh1⟩
-      (by norm_num) (by norm_num) (by norm_num) (by norm_num)
-  refine ⟨by nlinarith, ?_⟩
   exact (initialFloorTest_mono_B hBhi (by linarith)).trans
-    ((initialFloorTest_mono_d (by linarith) (by linarith)
-      (by linarith) (show 3 * C ≤ 111 / 50 by linarith)).trans htop)
+    ((initialFloorTest_mono_d (by linarith) (by linarith) (by linarith)
+      (show 3 * C ≤ 111 / 50 by linarith)).trans
+      (initialFloorTest_affine_le_of_endpoint_bounds
+        (l := 21 / 100) (r := 17 / 50) (sl := 61 / 100) (sr := 3 / 4)
+        (by norm_num) (by norm_num) (by norm_num) (by norm_num) ⟨hh0, hh1⟩
+        (by norm_num) (by norm_num) (by norm_num) (by norm_num)))
 
 /-- FR's lower-width strip, using the actual nonnegative right niche
 height and vanishing left niche height through the displayed interval. -/
@@ -184,23 +112,17 @@ theorem initialFloorEnergyConditions_middle_tilt_low_width
     (hBlo : -1 / 2 + 5 / 4 * h ≤ B)
     (hBhi : B ≤ -13 / 50 + 5 / 4 * h) :
     InitialFloorEnergyConditions (3 * C) B h := by
-  have hB0 : -7 / 16 ≤ B := by linarith
-  have hB1 : B ≤ 7 / 16 := by linarith
-  have hdsq : (3 * C) ^ 2 ≤ (219 / 100) ^ 2 := by
-    nlinarith [mul_nonneg (show 0 ≤ 219 / 100 - 3 * C by linarith)
-      (show 0 ≤ 219 / 100 + 3 * C by linarith)]
-  have hBsq : B ^ 2 ≤ (7 / 16) ^ 2 := by
-    nlinarith [mul_nonneg (show 0 ≤ B + 7 / 16 by linarith)
+  constructor
+  · linarith [mul_nonneg (show 0 ≤ 219 / 100 - 3 * C by linarith)
+      (show 0 ≤ 219 / 100 + 3 * C by linarith), mul_nonneg (show 0 ≤ B + 7 / 16 by linarith)
       (show 0 ≤ 7 / 16 - B by linarith)]
-  have htop : initialFloorTest (219 / 100) (-13 / 50 + 5 / 4 * h) h ≤ 4 :=
-    initialFloorTest_affine_le_of_endpoint_bounds
-      (l := 1 / 20) (r := 21 / 100) (sl := 31 / 100) (sr := 61 / 100)
-      (by norm_num) (by norm_num) (by norm_num) (by norm_num) ⟨hh0, hh1⟩
-      (by norm_num) (by norm_num) (by norm_num) (by norm_num)
-  refine ⟨by nlinarith, ?_⟩
   exact (initialFloorTest_mono_B hBhi (by linarith)).trans
-    ((initialFloorTest_mono_d (by linarith) (by linarith)
-      (by linarith) (show 3 * C ≤ 219 / 100 by linarith)).trans htop)
+    ((initialFloorTest_mono_d (by linarith) (by linarith) (by linarith)
+      (show 3 * C ≤ 219 / 100 by linarith)).trans
+      (initialFloorTest_affine_le_of_endpoint_bounds
+        (l := 1 / 20) (r := 21 / 100) (sl := 31 / 100) (sr := 61 / 100)
+        (by norm_num) (by norm_num) (by norm_num) (by norm_num) ⟨hh0, hh1⟩
+        (by norm_num) (by norm_num) (by norm_num) (by norm_num)))
 
 theorem initialFloorEnergyConditions_high_tilt_of_endpoint_box
     {C h z w : ℝ} (hC0 : 2 / 3 ≤ C) (hC : C ≤ 37 / 50)
@@ -218,7 +140,8 @@ theorem initialFloorEnergyConditions_middle_tilt_low_width_of_endpoint_box
     (hh0 : 1 / 20 ≤ h) (hh1 : h ≤ 21 / 100)
     (hz0 : 0 ≤ z) (hz : z ≤ tiltedBoxHeight C) :
     InitialFloorEnergyConditions (3 * C) (tiltedEndpointMomentum h z 0) h := by
-  have hH := tiltedBoxHeight_lt_eight_twenty_fifths (by linarith) hC
+  have hH : tiltedBoxHeight C < 8 / 25 :=
+    tiltedBoxHeight_lt_of_width_bound (by linarith) hC (by norm_num)
   apply initialFloorEnergyConditions_middle_tilt_low_width hC0 hC hh0 hh1 <;>
     unfold tiltedEndpointMomentum <;> linarith
 

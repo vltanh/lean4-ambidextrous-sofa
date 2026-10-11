@@ -25,26 +25,18 @@ def boxedCaps (B : Set Plane) : Set CompactCap := {U | U.carrier ⊆ B}
 
 theorem isCompact_boxedCaps {B : Set Plane} (hB : IsCompact B) :
     IsCompact (boxedCaps B) := by
-  apply IsSeqCompact.isCompact
-  intro U hU
+  refine IsSeqCompact.isCompact fun U hU => ?_
   obtain ⟨K, hK, hKB, φ, hφ, hlim⟩ := exists_cap_hausdorff_subsequence
     (fun n => (U n).isCap) hB hU
-  refine ⟨hK.toCompactCap, hKB, φ, hφ, ?_⟩
-  exact CompactCap.tendsto_iff_hausdorff.mpr hlim
-
-theorem continuous_capScore_on_box {B : Set Plane} (hB : IsCompact B) :
-    Continuous (fun U : boxedCaps B => capScore U.val.carrier (Real.pi / 2)) := by
-  apply continuous_iff_seqContinuous.mpr
-  intro U K hlim
-  have hc : Tendsto (fun n => (U n).val) atTop (𝓝 K.val) :=
-    (continuous_subtype_val.tendsto K).comp hlim
-  have hh := CompactCap.tendsto_iff_hausdorff.mp hc
-  exact hh.capScore_pi_div_two_tendsto (fun n => (U n).val.isCap) K.val.isCap hB
-    (fun n => (U n).property)
+  exact ⟨hK.toCompactCap, hKB, φ, hφ, CompactCap.tendsto_iff_hausdorff.mpr hlim⟩
 
 theorem continuousOn_capScore_box {B : Set Plane} (hB : IsCompact B) :
-    ContinuousOn (fun U : CompactCap => capScore U.carrier (Real.pi / 2)) (boxedCaps B) :=
-  continuousOn_iff_continuous_restrict.mpr (continuous_capScore_on_box hB)
+    ContinuousOn (fun U : CompactCap => capScore U.carrier (Real.pi / 2)) (boxedCaps B) := by
+  refine continuousOn_iff_continuous_domRestrict.mpr (continuous_iff_seqContinuous.mpr ?_)
+  intro U K hlim
+  have hh := CompactCap.tendsto_iff_hausdorff.mp ((continuous_subtype_val.tendsto K).comp hlim)
+  exact hh.capScore_pi_div_two_tendsto (fun n => (U n).val.isCap) K.val.isCap hB
+    fun n => (U n).property
 
 /-- A continuous objective has a maximum in the actual boxed cap domain.
 This general extreme-value form also applies to finite support penalties. -/

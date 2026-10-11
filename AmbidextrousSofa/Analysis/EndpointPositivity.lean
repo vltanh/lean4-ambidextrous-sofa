@@ -23,60 +23,40 @@ open scoped Topology
 
 namespace AmbidextrousSofa
 
-theorem IsFullCapMaximizer.endpoint_pressures_pos_of_middle_gt_half
-    {U : Set Plane} (hU : IsFullCapMaximizer U)
-    (hleft : 1 / 2 < capRoof U
-      (horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4))
-    (hright : 1 / 2 < capRoof U
-      (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4)) :
-    0 < capRightEndpointPressure U ∧ 0 < capLeftEndpointPressure U := by
-  have hR : capRightEndpointPressure U ≤ 1 := calc
-    _ ≤ max (capRightEndpointPressure U) 0 := le_max_left _ _
-    _ = capRoof U (horizontalRight U) := hU.right_endpoint_complementarity.symm
-    _ ≤ 1 := capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _
-  have hL : capLeftEndpointPressure U ≤ 1 := calc
-    _ ≤ max (capLeftEndpointPressure U) 0 := le_max_left _ _
-    _ = capRoof U (horizontalLeft U) := hU.left_endpoint_complementarity.symm
-    _ ≤ 1 := capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _
-  have hnL := sweptNiche_nonneg U (Real.pi / 2)
-    (horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4)
-  have hnR := sweptNiche_nonneg U (Real.pi / 2)
-    (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4)
-  unfold capRightEndpointPressure rightEndpointPressure at hR ⊢
-  unfold capLeftEndpointPressure leftEndpointPressure at hL ⊢
-  constructor <;> linarith
+section
 
-theorem IsFullCapMaximizer.endpoint_pressures_pos_of_affine
-    {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1)
-    (haffine : ∃ m c : ℝ, ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
+variable {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1)
+  (haffine : ∃ m c : ℝ, ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+    capRoof U x = m * x + c)
+include hU hheight haffine
+
+theorem IsFullCapMaximizer.endpoint_pressures_pos_of_affine :
     0 < capRightEndpointPressure U ∧ 0 < capLeftEndpointPressure U := by
   have hmid := hU.middle_endpoints_gt_half_of_affine hheight haffine
-  exact hU.endpoint_pressures_pos_of_middle_gt_half hmid.1 hmid.2
+  have hR := capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip (horizontalRight U)
+  have hL := capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip (horizontalLeft U)
+  rw [hU.right_endpoint_complementarity, max_le_iff] at hR
+  rw [hU.left_endpoint_complementarity, max_le_iff] at hL
+  have := sweptNiche_nonneg U (Real.pi / 2)
+    (horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4)
+  have := sweptNiche_nonneg U (Real.pi / 2)
+    (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4)
+  simp only [capRightEndpointPressure, rightEndpointPressure, capLeftEndpointPressure,
+    leftEndpointPressure] at hR hL ⊢
+  constructor <;> linarith [hR.1, hL.1]
 
-theorem IsFullCapMaximizer.endpoint_heights_eq_pressures_of_affine
-    {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1)
-    (haffine : ∃ m c : ℝ, ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
+theorem IsFullCapMaximizer.endpoint_heights_eq_pressures_of_affine :
     capRoof U (horizontalRight U) = capRightEndpointPressure U ∧
       capRoof U (horizontalLeft U) = capLeftEndpointPressure U := by
-  have hpos := hU.endpoint_pressures_pos_of_affine hheight haffine
-  simpa only [max_eq_left hpos.1.le, max_eq_left hpos.2.le] using
-    hU.endpoint_complementarity
+  obtain ⟨h1, h2⟩ := hU.endpoint_pressures_pos_of_affine hheight haffine
+  simpa only [max_eq_left h1.le, max_eq_left h2.le] using hU.endpoint_complementarity
 
-theorem IsFullCapMaximizer.endpoint_heights_pos_of_affine
-    {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1)
-    (haffine : ∃ m c : ℝ, ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
+theorem IsFullCapMaximizer.endpoint_heights_pos_of_affine :
     0 < capRoof U (horizontalRight U) ∧ 0 < capRoof U (horizontalLeft U) := by
-  have heq := hU.endpoint_heights_eq_pressures_of_affine hheight haffine
-  rw [heq.1, heq.2]
-  exact hU.endpoint_pressures_pos_of_affine hheight haffine
+  obtain ⟨h1, h2⟩ := hU.endpoint_heights_eq_pressures_of_affine hheight haffine
+  exact h1 ▸ h2 ▸ hU.endpoint_pressures_pos_of_affine hheight haffine
 
-theorem IsFullCapMaximizer.endpoint_height_sum_of_affine
-    {U : Set Plane} (hU : IsFullCapMaximizer U) (hheight : capHeight U = 1)
-    (haffine : ∃ m c : ℝ, ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
+theorem IsFullCapMaximizer.endpoint_height_sum_of_affine :
     capRoof U (horizontalRight U) + capRoof U (horizontalLeft U) =
       ((capRoof U (horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4) +
         sweptNiche U (Real.pi / 2)
@@ -84,9 +64,10 @@ theorem IsFullCapMaximizer.endpoint_height_sum_of_affine
        (capRoof U (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4) +
         sweptNiche U (Real.pi / 2)
           (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4))) / 2 := by
-  have heq := hU.endpoint_heights_eq_pressures_of_affine hheight haffine
-  rw [heq.1, heq.2]
-  exact capEndpointPressure_sum U
+  obtain ⟨h1, h2⟩ := hU.endpoint_heights_eq_pressures_of_affine hheight haffine
+  exact h1 ▸ h2 ▸ capEndpointPressure_sum U
+
+end
 
 namespace AngularGrid
 
@@ -110,12 +91,10 @@ theorem erosionMoments_tendsto_zero_of_canonical_maximum
       (pairList (dyadic (level n))) none) atTop (𝓝 0) ∧
     Tendsto (fun n => finiteLeftMoment (U n) (normal (dyadic (level n)))
       (pairList (dyadic (level n))) none) atTop (𝓝 0) := by
-  have hpos := hTarget.endpoint_pressures_pos_of_affine hheight haffine
-  have hwidth : 1 < capWidth target := one_lt_M.trans_le hTarget.width_bounds.1
-  simpa only [max_eq_right (neg_nonpos.mpr hpos.1.le),
-    max_eq_right (neg_nonpos.mpr hpos.2.le)] using
+  obtain ⟨h1, h2⟩ := hTarget.endpoint_pressures_pos_of_affine hheight haffine
+  simpa only [max_eq_right (neg_nonpos.mpr h1.le), max_eq_right (neg_nonpos.mpr h2.le)] using
     erosionMoments_tendsto hTarget.isCap hTargetBox hU hHausdorff hlevel hc hrate
-      hwidth hleft hright
+      (one_lt_M.trans_le hTarget.width_bounds.1) hleft hright
 
 end AngularGrid
 

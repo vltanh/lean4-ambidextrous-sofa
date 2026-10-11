@@ -47,9 +47,7 @@ theorem horizontalSourceDensity_bounds [DecidableEq ι] (e : WallExpr (Option ι
     0 ≤ e.horizontalSourceDensity a b F x ∧
       e.horizontalSourceDensity a b F x ≤ 1 := by
   unfold horizontalSourceDensity sourceDensity
-  cases e.source (fun i => a i * x + b i) with
-  | none => norm_num
-  | some j => by_cases hj : j ∈ F <;> simp [hj]
+  cases e.source (fun i => a i * x + b i) <;> simp [ite_le_one, ite_nonneg]
 
 theorem measurable_horizontalSourceDensity [DecidableEq ι]
     (e : WallExpr (Option ι)) (a b : Option ι → ℝ) (F : Finset ι) :
@@ -66,38 +64,12 @@ theorem integral_horizontalSourceDensity [Fintype ι] [DecidableEq ι]
     {l r : ℝ} (hlr : l ≤ r) :
     (∫ x in l..r, e.horizontalSourceDensity a b F x) =
       ∑ j ∈ F, e.sourceMass a b l r (some j) := by
-  unfold horizontalSourceDensity
-  rw [e.integral_sourceDensity_eq_sum a b _ hlr]
-  simp only [Fintype.sum_option, mul_zero, zero_add]
-  simp
+  simp [horizontalSourceDensity, e.integral_sourceDensity_eq_sum a b _ hlr, Fintype.sum_option]
 
 /-- The floor is the only affine leaf that can vanish on a set of
-positive measure. No pointwise convention at the finitely many ties is
+positive measure, so the nonfloor sources fill exactly the region where the
+expression is positive. No pointwise convention at the finitely many ties is
 needed for the physical length identity. -/
-theorem horizontalSourceDensity_ae_eq_positive [Fintype ι]
-    (e : WallExpr (Option ι)) (a b : Option ι → ℝ)
-    (ha : Function.Injective a) (ha0 : a none = 0) (hb0 : b none = 0)
-    (he : ∀ x, 0 ≤ e.eval (fun i => a i * x + b i)) :
-    e.sourceDensity a b horizontalSourceWeight =ᵐ[volume]
-      {x : ℝ | 0 < e.eval (fun i => a i * x + b i)}.indicator (fun _ => 1) := by
-  classical
-  filter_upwards [ae_injective_affine (b := b) ha] with x hx
-  have hvalue := e.eval_eq_source (fun i => a i * x + b i)
-  cases hsource : e.source (fun i => a i * x + b i) with
-  | none =>
-    have hz : e.eval (fun i => a i * x + b i) = 0 := by
-      simpa only [hsource, ha0, hb0, zero_mul, zero_add] using hvalue
-    simp [sourceDensity, hsource, horizontalSourceWeight, hz]
-  | some j =>
-    have hne : e.eval (fun i => a i * x + b i) ≠ 0 := by
-      intro hz
-      have heq : a (some j) * x + b (some j) = a none * x + b none := by
-        simpa only [hsource, ha0, hb0, zero_mul, zero_add, hz] using hvalue.symm
-      exact Option.some_ne_none j (hx heq)
-    have hpos : 0 < e.eval (fun i => a i * x + b i) :=
-      lt_of_le_of_ne (he x) (Ne.symm hne)
-    simp [sourceDensity, hsource, horizontalSourceWeight, hpos]
-
 theorem sum_nonfloor_sourceMass_eq_positive_measure [Fintype ι]
     (e : WallExpr (Option ι)) (a b : Option ι → ℝ)
     (ha : Function.Injective a) (ha0 : a none = 0) (hb0 : b none = 0)
@@ -105,14 +77,19 @@ theorem sum_nonfloor_sourceMass_eq_positive_measure [Fintype ι]
     {l r : ℝ} (hlr : l ≤ r) :
     (∑ j : ι, e.sourceMass a b l r (some j)) =
       volume.real (Ioc l r ∩ {x : ℝ | 0 < e.eval (fun i => a i * x + b i)}) := by
-  classical
+  have hae : e.sourceDensity a b horizontalSourceWeight =ᵐ[volume]
+      {x : ℝ | 0 < e.eval (fun i => a i * x + b i)}.indicator (fun _ => 1) := by
+    filter_upwards [ae_injective_affine (b := b) ha] with x hx
+    have hvalue := e.eval_eq_source (fun i => a i * x + b i)
+    rcases hsource : e.source (fun i => a i * x + b i) with _ | j <;>
+      simp only [hsource, ha0, hb0, zero_mul, zero_add] at hvalue
+    · simp [sourceDensity, hsource, horizontalSourceWeight, hvalue]
+    · simp [sourceDensity, hsource, horizontalSourceWeight, (he x).lt_of_ne' fun hz =>
+        Option.some_ne_none j (hx (by simpa [ha0, hb0, hz] using hvalue.symm))]
   have h := e.integral_sourceDensity_eq_sum a b horizontalSourceWeight hlr
   simp only [Fintype.sum_option, horizontalSourceWeight, mul_zero, zero_add, mul_one] at h
-  rw [← h, intervalIntegral.integral_congr_ae (by
-    filter_upwards [e.horizontalSourceDensity_ae_eq_positive a b ha ha0 hb0 he]
-      with x hx _ using hx)]
-  rw [intervalIntegral.integral_of_le hlr,
-    setIntegral_indicator (measurableSet_lt measurable_const
+  rw [← h, intervalIntegral.integral_congr_ae (hae.mono fun x hx _ => hx),
+    intervalIntegral.integral_of_le hlr, setIntegral_indicator (measurableSet_lt measurable_const
       (e.continuous_eval (fun _ => by fun_prop)).measurable),
     setIntegral_const, smul_eq_mul, mul_one]
 
@@ -139,23 +116,6 @@ theorem finitePositiveLength_eq_sum [Fintype ι] (U : Set Plane)
     hslope rfl rfl (fun x => by rw [← heq]; exact finiteBarrier_nonneg _ _ _ _ _) hlr
   simpa only [finitePositiveLength, ← heq] using h.symm
 
-theorem sum_finiteWingMass [Fintype ι] {U : Set Plane} (hU : IsDownwardCap U)
-    (normal : ι → Plane) :
-    (∑ i : Option ι, finiteWingMass U normal i) = capWidth U / 2 := by
-  have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
-  have hL := (roofExpr (ι := ι)).sum_sourceMass (wallSlope normal)
-    (roofIntercept normal (fun i => support U (normal i)))
-    (show horizontalLeft U ≤ horizontalLeft U +
-      (horizontalRight U - horizontalLeft U) / 4 by linarith)
-  have hR := (roofExpr (ι := ι)).sum_sourceMass (wallSlope normal)
-    (roofIntercept normal (fun i => support U (normal i)))
-    (show horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 ≤
-      horizontalRight U by linarith)
-  simp only [finiteWingMass, Finset.sum_add_distrib]
-  rw [hL, hR]
-  unfold capWidth
-  ring
-
 /-- Exact physical horizontal balance, with the top leaf and both moving
 exterior intervals retained. This holds for arbitrary paired corners and
 for a whole proper-terminal first wall. -/
@@ -168,25 +128,15 @@ theorem finite_horizontal_source_balance [Fintype ι] {U : Set Plane}
         (horizontalLeft U + capWidth U / 4) (horizontalRight U - capWidth U / 4) -
       (capWidth U / 2 - finiteWingMass U normal none) := by
   have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
-  have hpos := finitePositiveLength_eq_sum U normal corners terminal hslope
-    (show horizontalLeft U + capWidth U / 4 ≤ horizontalRight U - capWidth U / 4 by
-      unfold capWidth; linarith)
-  have houter := sum_finiteWingMass hU normal
-  rw [Fintype.sum_option] at houter
-  unfold finiteExposureDefect
-  rw [Finset.sum_sub_distrib, Finset.sum_sub_distrib]
-  change _ - _ - _ = _
-  have hw : (∑ j : ι, finiteWingMass U normal (some j)) =
-      (∑ j : ι, (roofExpr (ι := ι)).sourceMass (wallSlope normal)
-        (roofIntercept normal (fun i => support U (normal i))) (horizontalLeft U)
-        (horizontalLeft U + capWidth U / 4) (some j)) +
-      ∑ j : ι, (roofExpr (ι := ι)).sourceMass (wallSlope normal)
-        (roofIntercept normal (fun i => support U (normal i)))
-        (horizontalRight U - capWidth U / 4) (horizontalRight U) (some j) := by
-    simp only [finiteWingMass, capWidth, Finset.sum_add_distrib]
-  rw [hpos]
-  change _ - _ - _ = _
-  simp only [capWidth] at hpos hw houter ⊢
+  rw [finitePositiveLength_eq_sum U normal corners terminal hslope (by unfold capWidth; linarith)]
+  have hL := (roofExpr (ι := ι)).sum_sourceMass (wallSlope normal)
+    (roofIntercept normal (fun i => support U (normal i)))
+    (show horizontalLeft U ≤ horizontalLeft U + capWidth U / 4 by unfold capWidth; linarith)
+  have hR := (roofExpr (ι := ι)).sum_sourceMass (wallSlope normal)
+    (roofIntercept normal (fun i => support U (normal i)))
+    (show horizontalRight U - capWidth U / 4 ≤ horizontalRight U by unfold capWidth; linarith)
+  simp only [Fintype.sum_option, finiteExposureDefect, finiteWingMass, capWidth,
+    Finset.sum_sub_distrib] at hL hR ⊢
   linarith
 
 end FinitePolygon
@@ -203,16 +153,12 @@ theorem sum_sin_innerSourceMass_eq_positiveLength {U : Set Plane}
     (∑ j : SourceIndex grid, (normal grid j).2 * innerSourceMass U grid j) =
       finitePositiveLength U (normal grid) (pairList grid) none
         (horizontalLeft U + capWidth U / 4) (horizontalRight U - capWidth U / 4) := by
-  classical
   have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
-  rw [finitePositiveLength_eq_sum _ _ _ _ (wallSlopes_injective grid) (by
-    unfold capWidth; linarith)]
-  apply Finset.sum_congr rfl
-  intro j _
-  unfold innerSourceMass innerDensity capWidth
+  unfold capWidth innerSourceMass innerDensity
+  rw [finitePositiveLength_eq_sum _ _ _ _ (wallSlopes_injective grid) (by linarith)]
+  refine Finset.sum_congr rfl fun j _ => ?_
   rw [integral_sourceDensity_outward _ _ _ _ (by linarith)]
-  unfold WallExpr.sourceMass
-  field_simp [(normal_snd_pos grid j).ne']
+  exact mul_div_cancel₀ _ (normal_snd_pos grid j).ne'
 
 theorem sum_sin_normalizedExposureDefect_eq_horizontal_balance {U : Set Plane}
     (hU : IsDownwardCap U) (grid : Finset QuarterAngle) :
@@ -220,13 +166,8 @@ theorem sum_sin_normalizedExposureDefect_eq_horizontal_balance {U : Set Plane}
       finitePositiveLength U (normal grid) (pairList grid) none
         (horizontalLeft U + capWidth U / 4) (horizontalRight U - capWidth U / 4) -
       (capWidth U / 2 - finiteWingMass U (normal grid) none) := by
-  have hterm (j : SourceIndex grid) :
-      (normal grid j).2 * normalizedExposureDefect U grid j =
-        finiteExposureDefect U (normal grid) (pairList grid) none j := by
-    unfold normalizedExposureDefect
-    field_simp [(normal_snd_pos grid j).ne']
-  simp only [hterm]
-  exact finite_horizontal_source_balance hU _ _ _ (wallSlopes_injective grid)
+  rw [← finite_horizontal_source_balance hU _ _ _ (wallSlopes_injective grid)]
+  exact Finset.sum_congr rfl fun j _ => mul_div_cancel₀ _ (normal_snd_pos grid j).ne'
 
 end AngularGrid
 

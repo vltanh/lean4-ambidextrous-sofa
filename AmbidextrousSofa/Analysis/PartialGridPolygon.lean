@@ -39,19 +39,16 @@ def outerGrid (α : TerminalAngle) (grid : Finset AngularGrid.QuarterAngle) :
   exact insert (terminalQuarterAngle α) (grid ∪ grid.image (scaleAngle α))
 
 theorem subset_outerGrid (α : TerminalAngle) (grid : Finset AngularGrid.QuarterAngle) :
-    grid ⊆ outerGrid α grid := by
-  classical
-  exact Finset.subset_union_left.trans (Finset.subset_insert _ _)
+    grid ⊆ outerGrid α grid :=
+  Finset.subset_union_left.trans (Finset.subset_insert _ _)
 
 theorem scaled_mem_outerGrid (α : TerminalAngle) {grid : Finset AngularGrid.QuarterAngle}
-    {t : AngularGrid.QuarterAngle} (ht : t ∈ grid) : scaleAngle α t ∈ outerGrid α grid := by
-  classical
-  exact Finset.mem_insert_of_mem (Finset.mem_union_right _ (Finset.mem_image.mpr ⟨t, ht, rfl⟩))
+    {t : AngularGrid.QuarterAngle} (ht : t ∈ grid) : scaleAngle α t ∈ outerGrid α grid :=
+  Finset.mem_insert_of_mem (Finset.mem_union_right _ (Finset.mem_image_of_mem _ ht))
 
 theorem terminal_mem_outerGrid (α : TerminalAngle) (grid : Finset AngularGrid.QuarterAngle) :
-    terminalQuarterAngle α ∈ outerGrid α grid := by
-  classical
-  exact Finset.mem_insert_self _ _
+    terminalQuarterAngle α ∈ outerGrid α grid :=
+  Finset.mem_insert_self _ _
 
 abbrev SourceIndex (α : TerminalAngle) (grid : Finset AngularGrid.QuarterAngle) :=
   AngularGrid.SourceIndex (outerGrid α grid)
@@ -84,9 +81,8 @@ def pairList (α : TerminalAngle) (grid : Finset AngularGrid.QuarterAngle) :
 
 theorem pair_mem_pairList (α : TerminalAngle) (grid : Finset AngularGrid.QuarterAngle)
     (t : AngularGrid.InteriorPoint grid) :
-    (Sum.inl (scaledInterior α grid t), Sum.inr (scaledInterior α grid t)) ∈ pairList α grid := by
-  classical
-  exact List.mem_map.mpr ⟨t, by simp, rfl⟩
+    (Sum.inl (scaledInterior α grid t), Sum.inr (scaledInterior α grid t)) ∈ pairList α grid :=
+  List.mem_map.mpr ⟨t, by simp, rfl⟩
 
 theorem normal_eq_unitNormal (α : TerminalAngle) (grid : Finset AngularGrid.QuarterAngle)
     (i : SourceIndex α grid) : normal α grid i = unitNormal (fullAngle α grid i) :=
@@ -108,64 +104,31 @@ theorem wallSlopes_injective (α : TerminalAngle) (grid : Finset AngularGrid.Qua
     Function.Injective (wallSlope (normal α grid)) :=
   AngularGrid.wallSlopes_injective (outerGrid α grid)
 
-theorem normal_terminalIndex (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2)
-    (grid : Finset AngularGrid.QuarterAngle) :
-    normal α grid (terminalIndex α hαL grid) = unitNormal α := rfl
-
-theorem scaleAngle_of_top (α : TerminalAngle) {t : AngularGrid.QuarterAngle}
-    (ht : (t : ℝ) = Real.pi / 2) : (scaleAngle α t : ℝ) = (α : ℝ) := by
-  simp only [scaleAngle, unitParameter, ht,
-    div_self (by linarith [Real.pi_pos] : Real.pi / 2 ≠ 0), mul_one]
-
 theorem finiteBarrier_eq_barrier (U : Set Plane) (α : TerminalAngle)
     (hαL : (α : ℝ) < Real.pi / 2) (grid : Finset AngularGrid.QuarterAngle) (x : ℝ) :
     finiteBarrier U (normal α grid) (pairList α grid)
       (some (terminalIndex α hαL grid)) x = barrier U α grid x := by
-  classical
-  change max (finiteNiche U (normal α grid) (pairList α grid) x)
-    (supportWall U (normal α grid (terminalIndex α hαL grid)) x) = _
-  rw [normal_terminalIndex, supportWall_unitNormal]
-  change max (finiteNiche U (normal α grid) (pairList α grid) x) (firstWall U α x) =
-    max (niche U α grid x) (firstWall U α x)
-  apply le_antisymm
-  · apply max_le _ (le_max_right _ _)
-    apply (finiteNiche_le_iff U (normal α grid) (pairList α grid) x _).mpr
-    refine ⟨(niche_nonneg U α grid x).trans (le_max_left _ _), ?_⟩
-    intro ij hij
+  have hwall (θ : ℝ) : min (supportWall U (unitNormal θ) x)
+      (supportWall U (companionNormal θ) x) = cornerWall U θ x := by
+    rw [supportWall_unitNormal, supportWall_companionNormal, cornerWall]
+  have h0 := (finiteNiche_nonneg U (normal α grid) (pairList α grid) x).trans
+    (le_max_left _ (firstWall U α x))
+  refine le_antisymm (max_le_max ?_ le_rfl) (max_le ?_ (le_max_right _ _))
+  · refine (finiteNiche_le_iff _ _ _ x _).2 ⟨niche_nonneg U α grid x, fun ij hij => ?_⟩
     obtain ⟨t, _, rfl⟩ := List.mem_map.mp hij
-    change min (supportWall U (unitNormal (scaleAngle α t.val)) x)
-      (supportWall U (companionNormal (scaleAngle α t.val)) x) ≤ _
-    rw [supportWall_unitNormal, supportWall_companionNormal]
-    exact (le_max_left _ _).trans ((clip_le_niche U α grid x
-      (AngularGrid.interiorPoint_mem_grid grid t)).trans (le_max_left _ _))
-  · apply max_le _ (le_max_right _ _)
-    apply (niche_le_iff U α grid x _).mpr
-    refine ⟨(finiteNiche_nonneg _ _ _ _).trans (le_max_left _ _), ?_⟩
-    intro t ht
-    by_cases ht0 : (t : ℝ) = 0
-    · have hscale : (scaleAngle α t : ℝ) = 0 := by
-        simp only [scaleAngle, unitParameter, ht0, zero_div, mul_zero]
-      rw [hscale]
-      have hfirst : firstWall U 0 x = 0 := by simp [firstWall]
-      exact max_le (((min_le_left _ _).trans hfirst.le).trans
-        ((finiteNiche_nonneg _ _ _ _).trans (le_max_left _ _)))
-        ((finiteNiche_nonneg _ _ _ _).trans (le_max_left _ _))
-    by_cases htL : (t : ℝ) = Real.pi / 2
-    · rw [scaleAngle_of_top α htL]
-      exact max_le ((min_le_left _ _).trans (le_max_right _ _))
-        ((finiteNiche_nonneg _ _ _ _).trans (le_max_left _ _))
-    · have htopen : 0 < (t : ℝ) ∧ (t : ℝ) < Real.pi / 2 :=
-        ⟨lt_of_le_of_ne t.property.1 (Ne.symm ht0), lt_of_le_of_ne t.property.2 htL⟩
-      let s : AngularGrid.InteriorPoint grid := ⟨t, Finset.mem_filter.mpr ⟨ht, htopen⟩⟩
-      have hsource := ((finiteNiche_le_iff U (normal α grid) (pairList α grid) x _).mp
-        (le_refl (finiteNiche U (normal α grid) (pairList α grid) x))).2
-          (Sum.inl (scaledInterior α grid s), Sum.inr (scaledInterior α grid s))
-          (pair_mem_pairList α grid s)
-      change min (supportWall U (unitNormal (scaleAngle α t)) x)
-        (supportWall U (companionNormal (scaleAngle α t)) x) ≤ _ at hsource
-      rw [supportWall_unitNormal, supportWall_companionNormal] at hsource
-      exact max_le (hsource.trans (le_max_left _ _))
-        ((finiteNiche_nonneg _ _ _ _).trans (le_max_left _ _))
+    exact (hwall _).trans_le ((le_max_left _ _).trans
+      (clip_le_niche U α grid x (AngularGrid.interiorPoint_mem_grid grid t)))
+  refine (niche_le_iff U α grid x _).2 ⟨h0, fun t ht => max_le ?_ h0⟩
+  rcases t.property.1.eq_or_lt with ht0 | ht0
+  · refine (min_le_left _ _).trans (le_trans (le_of_eq ?_) h0)
+    simp [scaleAngle, unitParameter, ← ht0, firstWall]
+  rcases t.property.2.lt_or_eq with htL | htL
+  · rw [← hwall]
+    exact (((finiteNiche_le_iff U (normal α grid) (pairList α grid) x _).1 le_rfl).2 _
+      (pair_mem_pairList α grid ⟨t, Finset.mem_filter.mpr ⟨ht, ht0, htL⟩⟩)).trans
+      (le_max_left _ _)
+  · have : (scaleAngle α t : ℝ) = α := by simp [scaleAngle, unitParameter, htL]
+    exact this ▸ (min_le_left _ _).trans (le_max_right _ _)
 
 def stageWeight (α : TerminalAngle) (n : ℕ) : SourceIndex α (AngularGrid.dyadic n) → ℝ := by
   classical
@@ -173,15 +136,12 @@ def stageWeight (α : TerminalAngle) (n : ℕ) : SourceIndex α (AngularGrid.dya
     (AngularGrid.stageWeight n)
 
 theorem stageWeight_nonneg (α : TerminalAngle) (n : ℕ)
-    (i : SourceIndex α (AngularGrid.dyadic n)) : 0 ≤ stageWeight α n i := by
-  classical
-  exact aggregateWeight_nonneg _ _ (AngularGrid.stageWeight_nonneg n) i
+    (i : SourceIndex α (AngularGrid.dyadic n)) : 0 ≤ stageWeight α n i :=
+  aggregateWeight_nonneg _ _ (AngularGrid.stageWeight_nonneg n) i
 
 theorem sum_stageWeight_le_one (α : TerminalAngle) (n : ℕ) :
-    (∑ i, stageWeight α n i) ≤ 1 := by
-  classical
-  rw [stageWeight, sum_aggregateWeight]
-  exact AngularGrid.sum_stageWeight_le_one n
+    (∑ i, stageWeight α n i) ≤ 1 :=
+  (sum_aggregateWeight _ _).trans_le (AngularGrid.sum_stageWeight_le_one n)
 
 /-- Adding the actual terminal and rescaled normals changes the index
 type, but leaves the old support-separating penalty exactly unchanged. -/
@@ -190,10 +150,8 @@ theorem sampledPenalty_eq_stagePenalty (α : TerminalAngle) (n : ℕ)
     sampledPenalty U (normal α (AngularGrid.dyadic n)) (stageWeight α n)
       (fun i => support target (normal α (AngularGrid.dyadic n) i)) =
         AngularGrid.stagePenalty n target U := by
-  classical
-  unfold sampledPenalty stageWeight
-  rw [heightPenalty_aggregate]
-  simp only [normal, AngularGrid.normal_liftSource]
+  simp only [sampledPenalty, stageWeight, heightPenalty_aggregate, normal,
+    AngularGrid.normal_liftSource]
   rfl
 
 end PartialGrid

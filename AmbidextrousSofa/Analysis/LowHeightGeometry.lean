@@ -26,13 +26,11 @@ namespace AmbidextrousSofa
 
 def lowCeiling (C x : ℝ) : ℝ := 3 / 4 + x / (4 * C)
 
-theorem continuous_lowCeiling (C : ℝ) : Continuous (lowCeiling C) := by
-  unfold lowCeiling
-  fun_prop
+theorem continuous_lowCeiling (C : ℝ) : Continuous (lowCeiling C) :=
+  continuous_const.add (continuous_id.div_const _)
 
 theorem eqOn_roofChord_of_affine {f : ℝ → ℝ} {a b m c : ℝ} (hab : a < b)
-    (hf : ∀ x ∈ Icc a b, f x = m * x + c) : EqOn f (roofChord f a b) (Icc a b) := by
-  intro x hx
+    (hf : ∀ x ∈ Icc a b, f x = m * x + c) : EqOn f (roofChord f a b) (Icc a b) := fun x hx => by
   rw [roofChord, hf a ⟨le_rfl, hab.le⟩, hf b ⟨hab.le, le_rfl⟩, hf x hx]
   field_simp [(sub_pos.mpr hab).ne']
   ring
@@ -46,56 +44,30 @@ theorem IsDownwardCap.capRoof_le_lowCeiling_of_affine_middle
   obtain ⟨m, c, haffine⟩ := haffine
   have hproj : horizontalProjection U = Icc (-2 * C) (2 * C) := by
     rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hleft, hright]
-  have hneg : -C < C := by linarith
-  have hcentral := eqOn_roofChord_of_affine hneg haffine
   intro x hx
-  have hxU : x ∈ horizontalProjection U := by
-    rw [hproj]
-    exact ⟨hx.1, by linarith [hx.2]⟩
-  have hCmem : C ∈ horizontalProjection U := by rw [hproj]; constructor <;> linarith
+  -- The roof lies below its chord through `-C` and `C`: by concavity left of `-C`,
+  -- and with equality on the affine middle.
   have hchord : capRoof U x ≤ roofChord (capRoof U) (-C) C x := by
-    by_cases hxc : x ≤ -C
-    · exact ConcaveOn.le_roofChord_of_le hU.concaveOn_capRoof hxU hCmem hneg hxc
-    · exact (hcentral ⟨le_of_not_ge hxc, hx.2⟩).le
-  let t : ℝ := (x + C) / (2 * C)
-  have ht : t ≤ 1 := by
-    dsimp [t]
-    apply (div_le_iff₀ (by positivity : 0 < 2 * C)).mpr
-    linarith [hx.2]
-  have hproduct := mul_nonneg (sub_nonneg.mpr hlow) (sub_nonneg.mpr ht)
-  have hchord_eq : roofChord (capRoof U) (-C) C x =
-      capRoof U (-C) + (1 - capRoof U (-C)) * t := by
-    unfold roofChord
-    rw [hhigh]
-    dsimp [t]
-    simp only [sub_neg_eq_add]
-    rw [show C + C = 2 * C by ring]
-    ring
-  have hceiling : lowCeiling C x = 1 / 2 + t / 2 := by
-    unfold lowCeiling
-    dsimp [t]
-    field_simp [hC.ne']
-    ring
-  rw [hchord_eq] at hchord
-  rw [hceiling]
-  nlinarith
+    rcases le_or_gt x (-C) with hxc | hxc
+    · exact ConcaveOn.le_roofChord_of_le hU.concaveOn_capRoof
+        (hproj ▸ ⟨hx.1, by linarith [hx.2]⟩) (hproj ▸ ⟨by linarith, by linarith⟩) (by linarith) hxc
+    · exact (eqOn_roofChord_of_affine (by linarith) haffine ⟨hxc.le, hx.2⟩).le
+  have ht : (x + C) / (2 * C) ≤ 1 := (div_le_one (by positivity)).2 (by linarith [hx.2])
+  calc capRoof U x ≤ capRoof U (-C) + (1 - capRoof U (-C)) * ((x + C) / (2 * C)) :=
+        hchord.trans_eq (by rw [roofChord, hhigh]; ring)
+    _ ≤ 1 / 2 + (x + C) / (2 * C) / 2 := by
+        linarith [mul_nonneg (sub_nonneg.mpr hlow) (sub_nonneg.mpr ht)]
+    _ = lowCeiling C x := by rw [lowCeiling]; field_simp; ring
 
 theorem integral_lowCeiling_left {C : ℝ} (hC : 0 < C) :
     (∫ x in (-2 * C)..(-C), lowCeiling C x) = 3 * C / 8 := by
-  unfold lowCeiling
-  rw [intervalIntegral.integral_add (f := fun _ => (3 / 4 : ℝ)) (g := fun x => x / (4 * C))
-    (continuous_const.intervalIntegrable _ _)
-    ((continuous_id.div_const (4 * C)).intervalIntegrable _ _),
-    intervalIntegral.integral_const, intervalIntegral.integral_div, integral_id]
-  simp only [smul_eq_mul]
-  field_simp [hC.ne']
+  simp [lowCeiling, intervalIntegral.integral_add, intervalIntegral.integral_div, integral_id]
+  field_simp
   ring
 
 theorem lowCeiling_eq_quarter_add {C : ℝ} (hC : C ≠ 0) (x : ℝ) :
     lowCeiling C x = 1 / 4 + (x + 2 * C) / (4 * C) := by
-  unfold lowCeiling
-  field_simp [hC]
-  ring
+  rw [lowCeiling]; field_simp; ring
 
 /-- The excesses are defined from the true diagonal supports, rather than
 introduced as independent relaxed support parameters. -/
@@ -107,34 +79,24 @@ theorem IsDownwardCap.lowHeight_diagonal_excess_bounds
     0 ≤ diagonalRight U - 2 * C ∧ 1 - C ≤ diagonalRight U - 2 * C ∧
       diagonalRight U - 2 * C ≤ 1 ∧
       0 ≤ diagonalLeft U - 2 * C ∧ diagonalLeft U - 2 * C ≤ 1 / 4 := by
-  have hCpos : 0 < C := by linarith
   have hproj : horizontalProjection U = Icc (-2 * C) (2 * C) := by
     rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hleft, hright]
   have hr := hU.diagonalRight_ge hU.right_baseline_mem
   have hl := hU.diagonalLeft_ge hU.left_baseline_mem
-  rw [hright] at hr
-  rw [hleft] at hl
-  have hCmem : C ∈ horizontalProjection U := by rw [hproj]; constructor <;> linarith
-  have hhighmem : (C, 1) ∈ U := by simpa only [hhigh] using capRoof_mem hU.isCompact hCmem
-  have hhighSupport := hU.diagonalRight_ge hhighmem
+  have hhighSupport := hU.diagonalRight_ge (p := (C, 1))
+    (hhigh ▸ capRoof_mem hU.isCompact (hproj ▸ ⟨by linarith, by linarith⟩))
   have hrUpper := hU.diagonalRight_le
-  rw [hright] at hrUpper
-  have hlUpper : diagonalLeft U ≤ 2 * C + 1 / 4 := by
-    apply support_le_of_forall hU.nonempty
-    intro p hp
-    have hx : p.1 ∈ Icc (-2 * C) (2 * C) := by
-      rw [← hproj]
-      exact ⟨p, hp, rfl⟩
-    have hy := le_capRoof hU.isCompact (show (p.1, p.2) ∈ U by simpa only [Prod.mk.eta] using hp)
+  have hlUpper : diagonalLeft U ≤ 2 * C + 1 / 4 := support_le_of_forall hU.nonempty fun p hp => by
+    have hx : p.1 ∈ Icc (-2 * C) (2 * C) := hproj ▸ ⟨p, hp, rfl⟩
+    have hy := le_capRoof hU.isCompact (show (p.1, p.2) ∈ U from hp)
     simp only [coordDot, mul_neg_one, mul_one]
-    by_cases hxc : p.1 ≤ C
+    rcases le_or_gt p.1 C with hxc | hxc
     · have hroof := hceiling p.1 ⟨hx.1, hxc⟩
-      rw [lowCeiling_eq_quarter_add hCpos.ne'] at hroof
-      have hdiv : (p.1 + 2 * C) / (4 * C) ≤ p.1 + 2 * C :=
-        div_le_self (by linarith [hx.1]) (by linarith)
-      linarith
-    · have hstrip := (hU.inStrip hp).2
-      linarith
+      rw [lowCeiling_eq_quarter_add (by linarith)] at hroof
+      linarith [div_le_self (by linarith [hx.1] : 0 ≤ p.1 + 2 * C) (by linarith : (1 : ℝ) ≤ 4 * C)]
+    · linarith [(hU.inStrip hp).2]
+  rw [hright] at hr hrUpper
+  rw [hleft] at hl
   refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> linarith
 
 /-- The unrefined two-wing reward bound used at small and large widths. -/
@@ -143,18 +105,14 @@ theorem IsDownwardCap.lowHeight_reward_le
     (hceiling : ∀ x ∈ Icc (-2 * C) C, capRoof U x ≤ lowCeiling C x) :
     (∫ x in (-2 * C)..(-C), capRoof U x) +
       (∫ x in C..(2 * C), capRoof U x) ≤ 11 * C / 8 := by
-  have hleft : (∫ x in (-2 * C)..(-C), capRoof U x) ≤ 3 * C / 8 := by
-    rw [← integral_lowCeiling_left hC]
-    apply intervalIntegral.integral_mono_on (by linarith)
-      (hU.intervalIntegrable_capRoof _ _) ((continuous_lowCeiling C).intervalIntegrable _ _)
-    intro x hx
-    exact hceiling x ⟨hx.1, by linarith [hx.2]⟩
-  have hright : (∫ x in C..(2 * C), capRoof U x) ≤ C := by
-    have h := intervalIntegral.integral_mono_on (by linarith : C ≤ 2 * C)
-      (hU.intervalIntegrable_capRoof C (2 * C)) (continuous_const.intervalIntegrable _ _)
-      (fun x _ => capRoof_le_one hU.isCompact hU.inStrip x)
-    simpa only [intervalIntegral.integral_const, smul_eq_mul, mul_one,
-      show 2 * C - C = C by ring] using h
+  have hleft := intervalIntegral.integral_mono_on (by linarith : -2 * C ≤ -C)
+    (hU.intervalIntegrable_capRoof _ _) ((continuous_lowCeiling C).intervalIntegrable _ _)
+    fun x hx => hceiling x ⟨hx.1, by linarith [hx.2]⟩
+  have hright := intervalIntegral.integral_mono_on (by linarith : C ≤ 2 * C)
+    (hU.intervalIntegrable_capRoof C (2 * C)) (continuous_const.intervalIntegrable _ _)
+    fun x _ => capRoof_le_one hU.isCompact hU.inStrip x
+  rw [integral_lowCeiling_left hC] at hleft
+  rw [intervalIntegral.integral_const, smul_eq_mul, mul_one] at hright
   linarith
 
 end AmbidextrousSofa

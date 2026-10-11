@@ -13,10 +13,7 @@ support limits. In particular, equality at the threshold does not need
 an interior starting point with strictly smaller energy.
 -/
 
-noncomputable section
-
-open Set Filter MeasureTheory
-open scoped Topology
+open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
@@ -32,13 +29,11 @@ theorem clippedCornerEnergy_le_max_initial
       0 < p t → 0 < q t → u t = 0 ∧ v t ≤ 1 / 2)
     {t : ℝ} (ht : t ∈ Icc a b) :
     clippedCornerEnergy p q t ≤ max (17 / 4) (clippedCornerEnergy p q a) := by
-  apply absolutelyContinuousOnInterval_le_of_ae_deriv_nonpos_above
-    (absolutelyContinuousOnInterval_clippedCornerEnergy hp hq) hab (le_max_right _ _) _ ht
+  refine absolutelyContinuousOnInterval_le_of_ae_deriv_nonpos_above
+    (absolutelyContinuousOnInterval_clippedCornerEnergy hp hq) hab (le_max_right _ _) ?_ ht
   filter_upwards [ae_hasDerivAt_clippedCornerEnergy hp hab hode, hbound, hκ, hshadow]
-    with x hd hb hk hs
-  intro hE
-  rw [hd.deriv]
-  exact clippedCornerEnergy_derivative_nonpos_above hb.1 hb.2 hk hs
+    with x hd hb hk hs hE
+  exact hd.deriv ▸ clippedCornerEnergy_derivative_nonpos_above hb.1 hb.2 hk hs
     ((le_max_left _ _).trans_lt hE)
 
 end AmbidextrousSofa

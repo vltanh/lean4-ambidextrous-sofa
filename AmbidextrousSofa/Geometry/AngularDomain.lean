@@ -43,33 +43,31 @@ theorem AngularConstraints.partialBarrier_le {S K : Set Plane} {α : ℝ}
 theorem AngularConstraints.upperCap {S K : Set Plane} {α : ℝ}
     (h : AngularConstraints S K α) (hK : IsCompact K) (hne : K.Nonempty)
     (hK0 : ∀ p ∈ K, 0 ≤ p.2) : AngularConstraints S (AmbidextrousSofa.upperCap K) α := by
-  refine ⟨h.angle_pos, h.angle_le, ?_, ?_⟩
-  · intro θ hθ p hp
-    have hs : 0 ≤ Real.sin θ := (Real.sin_pos_of_pos_of_lt_pi hθ.1
-      (by linarith [hθ.2, h.angle_le, Real.pi_pos])).le
-    have hc : 0 ≤ Real.cos θ := (Real.cos_pos_of_mem_Ioo
-      ⟨by linarith [hθ.1, Real.pi_pos], hθ.2.trans_le h.angle_le⟩).le
-    have hu : support (AmbidextrousSofa.upperCap K) (unitNormal θ) = support K (unitNormal θ) :=
-      support_upperCap hK hne hK0 hs
-    have hv : support (AmbidextrousSofa.upperCap K) (companionNormal θ) = support K (companionNormal θ) :=
-      support_upperCap hK hne hK0 hc
-    simpa only [canonicalHall, hu, hv] using h.inside θ hθ hp
-  · intro p hp
-    have hs : 0 ≤ Real.sin α := (Real.sin_pos_of_pos_of_lt_pi h.angle_pos
-      (by linarith [h.angle_le, Real.pi_pos])).le
-    rw [support_upperCap hK hne hK0 hs]
-    exact h.terminal p hp
+  have hsin {θ : ℝ} (h0 : 0 < θ) (hθ : θ ≤ α) : 0 ≤ Real.sin θ :=
+    Real.sin_nonneg_of_nonneg_of_le_pi h0.le (by linarith [h.angle_le, Real.pi_pos])
+  refine ⟨h.angle_pos, h.angle_le, fun θ hθ p hp => ?_, fun p hp => ?_⟩
+  · have hc : 0 ≤ Real.cos θ := Real.cos_nonneg_of_mem_Icc
+      ⟨by linarith [hθ.1, Real.pi_pos], by linarith [hθ.2, h.angle_le]⟩
+    simpa only [canonicalHall, support_upperCap (v := unitNormal θ) hK hne hK0 (hsin hθ.1 hθ.2.le),
+      support_upperCap (v := companionNormal θ) hK hne hK0 hc] using h.inside θ hθ hp
+  · rw [support_upperCap hK hne hK0 (hsin h.angle_pos le_rfl)]; exact h.terminal p hp
+
+/-- A visited quarter turn supplies all earlier frames, even when the motion later reverses. -/
+theorem RigidMotionPath.exists_frameAngle_of_reaches {path : RigidMotionPath}
+    (hstart : path.angle 0 = 0) {τ α θ : ℝ} (hτ : τ ∈ motionInterval)
+    (hreach : -path.angle τ = α) (hθ : θ ∈ Icc 0 α) :
+    ∃ t ∈ motionInterval, -path.angle t = θ := by
+  have hsub : Icc (0 : ℝ) τ ⊆ motionInterval := Icc_subset_Icc_right hτ.2
+  obtain ⟨t, ht, heq⟩ := intermediate_value_Icc hτ.1 (path.continuous_angle.neg.mono hsub)
+    (show θ ∈ Icc (-path.angle 0) (-path.angle τ) by simpa only [hstart, neg_zero, hreach] using hθ)
+  exact ⟨t, hsub ht, heq⟩
 
 /-- A continuous lifted angle visits every value between its initial and terminal values. -/
 theorem RigidMotionPath.exists_frameAngle_of_terminal {path : RigidMotionPath}
     (hstart : path.angle 0 = 0) {α θ : ℝ} (hend : -path.angle 1 = α)
     (hθ : θ ∈ Icc 0 α) :
-    ∃ t ∈ motionInterval, -path.angle t = θ := by
-  have hcont : ContinuousOn (fun t => -path.angle t) (Icc 0 1) :=
-    path.continuous_angle.neg
-  have hbetween : θ ∈ Icc (-path.angle 0) (-path.angle 1) := by
-    simpa only [hstart, neg_zero, hend] using hθ
-  exact intermediate_value_Icc (by norm_num : (0 : ℝ) ≤ 1) hcont hbetween
+    ∃ t ∈ motionInterval, -path.angle t = θ :=
+  exists_frameAngle_of_reaches hstart ⟨zero_le_one, le_rfl⟩ hend hθ
 
 /-- A normalized genuine proper-terminal passage supplies every angular constraint.
 Backtracking of the original angle is unrestricted. -/
@@ -78,42 +76,11 @@ theorem Passage.angularConstraints_of_terminal {S : Set Plane} {path : RigidMoti
     (hS : IsCompact S) (hne : S.Nonempty) (hstart : path.angle 0 = 0)
     {α : ℝ} (hend : -path.angle 1 = α) (hα0 : 0 < α) (hαL : α ≤ Real.pi / 2) :
     AngularConstraints S (actualHull S) α := by
-  refine ⟨hα0, hαL, ?_, ?_⟩
-  · intro θ hθ
-    obtain ⟨t, ht, hangle⟩ := RigidMotionPath.exists_frameAngle_of_terminal
+  refine ⟨hα0, hαL, fun θ hθ => ?_, fun p hp => ?_⟩
+  · obtain ⟨t, ht, hangle⟩ := RigidMotionPath.exists_frameAngle_of_terminal
       hstart hend ⟨hθ.1.le, hθ.2.le⟩
     simpa only [hangle] using h.subset_canonicalHall_at hS hne ht
-  · intro p hp
-    have hwall := h.terminal_support_lower hne hp
-    rw [hend] at hwall
-    simpa only [support_actualHull hS hne] using hwall
-
-/-- A visited quarter turn supplies all earlier frames, even when the motion later reverses. -/
-theorem RigidMotionPath.exists_frameAngle_of_reaches {path : RigidMotionPath}
-    (hstart : path.angle 0 = 0) {τ α θ : ℝ} (hτ : τ ∈ motionInterval)
-    (hreach : -path.angle τ = α) (hθ : θ ∈ Icc 0 α) :
-    ∃ t ∈ motionInterval, -path.angle t = θ := by
-  have hsub : Icc (0 : ℝ) τ ⊆ motionInterval := by
-    intro t ht
-    exact ⟨ht.1, ht.2.trans hτ.2⟩
-  have hcont := path.continuous_angle.neg.mono hsub
-  have hbetween : θ ∈ Icc (-path.angle 0) (-path.angle τ) := by
-    simpa only [hstart, neg_zero, hreach] using hθ
-  obtain ⟨t, ht, heq⟩ := intermediate_value_Icc hτ.1 hcont hbetween
-  exact ⟨t, hsub ht, heq⟩
-
-/-- At a full turn the top-support wall follows from the actual incoming strip. -/
-theorem support_terminal_pi_div_two_of_strip {S K : Set Plane} (hne : K.Nonempty)
-    (hKstrip : K ⊆ unitStrip) (hSstrip : S ⊆ unitStrip) {p : Plane} (hp : p ∈ S) :
-    support K (unitNormal (Real.pi / 2)) - 1 ≤
-      coordDot p (unitNormal (Real.pi / 2)) := by
-  have htop : support K (0, 1) ≤ 1 := by
-    apply support_le_of_forall hne
-    intro q hq
-    simpa only [coordDot, mul_zero, mul_one, zero_add] using (hKstrip hq).2
-  simp only [unitNormal, Real.cos_pi_div_two, Real.sin_pi_div_two, coordDot,
-    mul_zero, mul_one, zero_add]
-  linarith [(hSstrip hp).1]
+  · simpa only [support_actualHull hS hne, hend] using h.terminal_support_lower hne hp
 
 theorem Passage.angularConstraints_of_reaches_pi_div_two
     {S : Set Plane} {path : RigidMotionPath}
@@ -122,14 +89,16 @@ theorem Passage.angularConstraints_of_reaches_pi_div_two
     (hstart : path.angle 0 = 0) {τ : ℝ} (hτ : τ ∈ motionInterval)
     (hreach : -path.angle τ = Real.pi / 2) :
     AngularConstraints S (actualHull S) (Real.pi / 2) := by
-  refine ⟨by linarith [Real.pi_pos], le_rfl, ?_, ?_⟩
-  · intro θ hθ
-    obtain ⟨t, ht, hangle⟩ := RigidMotionPath.exists_frameAngle_of_reaches
+  refine ⟨by positivity, le_rfl, fun θ hθ => ?_, fun p hp => ?_⟩
+  · obtain ⟨t, ht, hangle⟩ := RigidMotionPath.exists_frameAngle_of_reaches
       hstart hτ hreach ⟨hθ.1.le, hθ.2.le⟩
     simpa only [hangle] using h.subset_canonicalHall_at hS hne ht
-  · intro p hp
-    exact support_terminal_pi_div_two_of_strip (actualHull_nonempty hne)
-      (actualHull_subset_unitStrip hstrip) hstrip hp
+  · -- at a full turn the top-support wall follows from the actual incoming strip
+    have htop : support S (0, 1) ≤ 1 :=
+      support_le_of_forall hne fun q hq => by simpa [coordDot] using (hstrip hq).2
+    simp only [support_actualHull hS hne, unitNormal, Real.cos_pi_div_two, Real.sin_pi_div_two,
+      coordDot, mul_zero, mul_one, zero_add]
+    linarith [(hstrip hp).1]
 
 /-- Reflect both the body and its placements across the strip center line. -/
 def RigidMotionPath.reflected (path : RigidMotionPath) : RigidMotionPath where
@@ -153,16 +122,10 @@ theorem RigidMotionPath.reflected_placement (path : RigidMotionPath) (t : ℝ) (
 theorem Passage.reflected {S : Set Plane} {path : RigidMotionPath}
     (h : Passage S upperHall incomingArm upperOutgoingArm path) :
     Passage (reflect '' S) lowerHall incomingArm lowerOutgoingArm path.reflected := by
-  refine ⟨?_, ?_, ?_⟩
-  · intro t ht
-    rintro _ ⟨_, ⟨p, hp, rfl⟩, rfl⟩
+  refine ⟨fun t ht => ?_, ?_, ?_⟩ <;> rintro _ ⟨_, ⟨p, hp, rfl⟩, rfl⟩ <;>
     rw [RigidMotionPath.reflected_placement]
-    exact (reflect_mem_lowerHall _).mpr (h.inside t ht (mem_image_of_mem _ hp))
-  · rintro _ ⟨_, ⟨p, hp, rfl⟩, rfl⟩
-    rw [RigidMotionPath.reflected_placement]
-    exact (reflect_mem_incomingArm _).mpr (h.start (mem_image_of_mem _ hp))
-  · rintro _ ⟨_, ⟨p, hp, rfl⟩, rfl⟩
-    rw [RigidMotionPath.reflected_placement]
-    exact (reflect_mem_lowerOutgoingArm _).mpr (h.finish (mem_image_of_mem _ hp))
+  exacts [(reflect_mem_lowerHall _).2 (h.inside t ht (mem_image_of_mem _ hp)),
+    (reflect_mem_incomingArm _).2 (h.start (mem_image_of_mem _ hp)),
+    (reflect_mem_lowerOutgoingArm _).2 (h.finish (mem_image_of_mem _ hp))]
 
 end AmbidextrousSofa

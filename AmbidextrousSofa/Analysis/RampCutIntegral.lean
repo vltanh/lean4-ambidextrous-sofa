@@ -21,13 +21,10 @@ namespace AmbidextrousSofa
 theorem integral_affine_scalar (s t p k δ : ℝ) :
     (∫ x in s..t, δ + k * (x - p)) =
       δ * (t - s) + k * ((t ^ 2 - s ^ 2) / 2 - p * (t - s)) := by
-  have hfun (x : ℝ) : δ + k * (x - p) = k * x + (δ - k * p) := by ring
-  simp_rw [hfun]
-  rw [intervalIntegral.integral_add
-      ((show Continuous (fun x : ℝ => k * x) by fun_prop).intervalIntegrable _ _)
-      (continuous_const.intervalIntegrable _ _),
-    intervalIntegral.integral_const_mul, integral_id, intervalIntegral.integral_const]
-  simp only [smul_eq_mul]
+  simp_rw [show ∀ x, δ + k * (x - p) = k * x + (δ - k * p) from fun x => by ring]
+  rw [intervalIntegral.integral_add ((continuous_const_mul k).intervalIntegrable _ _)
+    intervalIntegrable_const, intervalIntegral.integral_const_mul, integral_id,
+    intervalIntegral.integral_const, smul_eq_mul]
   ring
 
 theorem integral_gap_ge_left_ramp {f : ℝ → ℝ} {A B p k δ : ℝ}
@@ -38,23 +35,14 @@ theorem integral_gap_ge_left_ramp {f : ℝ → ℝ} {A B p k δ : ℝ}
     (hcut : ∀ x ∈ Icc (p - δ / k) p, δ + k * (x - p) ≤ f x) :
     δ ^ 2 / (2 * k) ≤ ∫ x in A..B, f x := by
   have hδk : 0 ≤ δ / k := div_nonneg hδ hk.le
-  have hA : A ≤ p - δ / k := by
-    have h := (div_le_iff₀' hk).mpr hfit
-    linarith only [h]
-  have hlocal := intervalIntegral.integral_mono_on
-    (show p - δ / k ≤ p by linarith only [hδk])
-    ((show Continuous (fun x : ℝ => δ + k * (x - p)) by fun_prop).intervalIntegrable _ _)
-    (hf _ _) hcut
-  have harea : (∫ x in (p - δ / k)..p, δ + k * (x - p)) = δ ^ 2 / (2 * k) := by
-    rw [integral_affine_scalar]
-    field_simp [hk.ne']
-    ring
-  rw [harea] at hlocal
-  apply hlocal.trans
-  apply intervalIntegral.integral_mono_interval hA
-    (show p - δ / k ≤ p by linarith only [hδk]) hp.2 _ (hf A B)
-  filter_upwards [ae_restrict_mem measurableSet_Ioc] with x hx
-  exact hf0 x (Ioc_subset_Icc_self hx)
+  calc δ ^ 2 / (2 * k) = ∫ x in (p - δ / k)..p, δ + k * (x - p) := by
+        rw [integral_affine_scalar]; field_simp; ring
+    _ ≤ ∫ x in (p - δ / k)..p, f x := intervalIntegral.integral_mono_on (by linarith)
+        (Continuous.intervalIntegrable (by fun_prop) _ _) (hf _ _) hcut
+    _ ≤ ∫ x in A..B, f x := intervalIntegral.integral_mono_interval
+        (by linarith [(div_le_iff₀' hk).mpr hfit]) (by linarith) hp.2
+        ((ae_restrict_mem measurableSet_Ioc).mono fun x hx => hf0 x (Ioc_subset_Icc_self hx))
+        (hf A B)
 
 theorem integral_gap_ge_right_ramp {f : ℝ → ℝ} {A B p k δ : ℝ}
     (hf : ∀ l r, IntervalIntegrable f volume l r)
@@ -63,25 +51,12 @@ theorem integral_gap_ge_right_ramp {f : ℝ → ℝ} {A B p k δ : ℝ}
     (hf0 : ∀ x ∈ Icc A B, 0 ≤ f x)
     (hcut : ∀ x ∈ Icc p (p + δ / k), δ - k * (x - p) ≤ f x) :
     δ ^ 2 / (2 * k) ≤ ∫ x in A..B, f x := by
-  have hδk : 0 ≤ δ / k := div_nonneg hδ hk.le
-  have hB : p + δ / k ≤ B := by
-    have h := (div_le_iff₀' hk).mpr hfit
-    linarith only [h]
-  have hlocal := intervalIntegral.integral_mono_on
-    (show p ≤ p + δ / k by linarith only [hδk])
-    ((show Continuous (fun x : ℝ => δ - k * (x - p)) by fun_prop).intervalIntegrable _ _)
-    (hf _ _) hcut
-  have harea : (∫ x in p..(p + δ / k), δ - k * (x - p)) = δ ^ 2 / (2 * k) := by
-    have hfun (x : ℝ) : δ - k * (x - p) = δ + (-k) * (x - p) := by ring
-    simp_rw [hfun]
-    rw [integral_affine_scalar]
-    field_simp [hk.ne']
-    ring
-  rw [harea] at hlocal
-  apply hlocal.trans
-  apply intervalIntegral.integral_mono_interval hp.1
-    (show p ≤ p + δ / k by linarith only [hδk]) hB _ (hf A B)
-  filter_upwards [ae_restrict_mem measurableSet_Ioc] with x hx
-  exact hf0 x (Ioc_subset_Icc_self hx)
+  -- Reflect `x ↦ -x` and apply the left ramp.
+  have h := integral_gap_ge_left_ramp (f := fun x => f (-x)) (A := -B) (B := -A) (p := -p)
+    (fun l r => by simpa using (IntervalIntegrable.iff_comp_neg).mp (hf (-l) (-r))) hk hδ
+    ⟨neg_le_neg hp.2, neg_le_neg hp.1⟩ (by linarith)
+    (fun x hx => hf0 _ ⟨by linarith [hx.2], by linarith [hx.1]⟩)
+    (fun x hx => by linarith [hcut (-x) ⟨by linarith [hx.2], by linarith [hx.1]⟩])
+  simpa [intervalIntegral.integral_comp_neg] using h
 
 end AmbidextrousSofa

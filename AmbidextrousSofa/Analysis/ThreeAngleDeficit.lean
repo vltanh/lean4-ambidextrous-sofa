@@ -28,11 +28,10 @@ theorem IsDownwardCap.threeAngle_diagonal_integral_le {U : Set Plane}
       (max (v - h - k - a / 2) 0) ^ 2 / 2 ≤
         ∫ x in (-a / 2)..(a / 2), threeAngleBarrier U x := by
   rw [← integral_tilted_diagonal_tent k hd]
-  apply intervalIntegral.integral_mono_on (hd.1.trans hd.2)
-    ((show Continuous (fun x : ℝ => max (min (u - k - x) (v - h - k + x)) 0)
-      by fun_prop).intervalIntegrable _ _)
+  exact intervalIntegral.integral_mono_on (hd.1.trans hd.2)
+    (Continuous.intervalIntegrable (by fun_prop) _ _)
     ((continuous_threeAngleBarrier U).intervalIntegrable _ _)
-  exact fun x _ => hU.threeAngle_diagonal_floor hk hu hv x
+    fun x _ => hU.threeAngle_diagonal_floor hk hu hv x
 
 theorem IsDownwardCap.threeAngleScore_add_diagonalRoofDeficit_le {U : Set Plane}
     (hU : IsDownwardCap U) {a h : ℝ} (ha : 0 < a) (hh0 : 0 ≤ h) (hh1 : h ≤ a / 2)
@@ -43,32 +42,11 @@ theorem IsDownwardCap.threeAngleScore_add_diagonalRoofDeficit_le {U : Set Plane}
       diagonalRelaxation a h (Real.sqrt 2 - 1)
         (diagonalRight U - 1) (diagonalLeft U - 1 + h) := by
   have huv := hU.tilted_diagonal_parameters_mem ha hh0 hh1 hl hr hleft hright
-  have hD := hU.diagonalRoofDeficit_eq h huv.1 huv.2
-  have hN := hU.threeAngle_diagonal_integral_le rfl
-    (show diagonalRight U = 1 + (diagonalRight U - 1) by ring)
-    (show diagonalLeft U = 1 - h + (diagonalLeft U - 1 + h) by ring)
+  have hN := hU.threeAngle_diagonal_integral_le rfl (by ring) (by ring)
     (tilted_diagonal_apex_mem ha.le hh0 hh1 huv.1 huv.2)
-  rw [threeAngleComparisonScore_centered hl hr]
-  unfold diagonalRelaxation
-  linarith only [hD, hN]
-
-theorem IsDownwardCap.threeAngleScore_le_tilted_charged_rectangle {U : Set Plane}
-    (hU : IsDownwardCap U) {a h : ℝ} (ha : 0 < a) (hh : 0 ≤ h)
-    (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
-    (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1) :
-    threeAngleComparisonScore U ≤ a * (1 - h / 2) := by
-  have hL := intervalIntegral.integral_mono_on (by linarith only [ha] : -a ≤ -a / 2)
-    (hU.intervalIntegrable_capRoof _ _) (continuous_const.intervalIntegrable _ _)
-    (hU.left_roof_le_middle_height ha hh hl hr hleft hright)
-  have hR := intervalIntegral.integral_mono_on (by linarith only [ha] : a / 2 ≤ a)
-    (hU.intervalIntegrable_capRoof _ _) (continuous_const.intervalIntegrable _ _)
-    (fun x (_ : x ∈ Icc (a / 2) a) => capRoof_le_one hU.isCompact hU.inStrip x)
-  have hN := intervalIntegral.integral_nonneg_of_forall (μ := volume)
-    (by linarith only [ha] : -a / 2 ≤ a / 2) (threeAngleBarrier_nonneg U)
-  rw [intervalIntegral.integral_const] at hL hR
-  simp only [smul_eq_mul] at hL hR
-  rw [threeAngleComparisonScore_centered hl hr]
-  nlinarith only [hL, hR, hN]
+  rw [threeAngleComparisonScore_centered hl hr, hU.diagonalRoofDeficit_eq h huv.1 huv.2,
+    diagonalRelaxation]
+  linarith only [hN]
 
 theorem IsDownwardCap.threeAngle_short_diagonal_geometry {U : Set Plane}
     (hU : IsDownwardCap U) {a h : ℝ} (ha : 0 < a) (ha1 : a ≤ 1001 / 1000)
@@ -85,63 +63,36 @@ theorem IsDownwardCap.threeAngle_short_diagonal_geometry {U : Set Plane}
       u - k - a / 2 < 0 ∧ v - h - k - a / 2 < 0 ∧
       23 / 200 < a - u ∧ 23 / 200 < a - v ∧
       0 ≤ diagonalRoofDeficit U a h u v ∧ diagonalRoofDeficit U a h u v < 9 / 1000 := by
-  let u := diagonalRight U - 1
-  let v := diagonalLeft U - 1 + h
-  let k := Real.sqrt 2 - 1
-  have hrect := hU.threeAngleScore_le_tilted_charged_rectangle ha hh hl hr hleft hright
-  have ha0 : 41 / 50 ≤ a := by nlinarith [mul_nonneg ha.le hh]
-  have hh37 : h ≤ 37 / 100 := by
-    by_contra hbad
-    have hprod := mul_nonneg ha.le (sub_nonneg.mpr (le_of_not_ge hbad))
-    nlinarith
+  have hk := sqrt_two_sub_one_strict_bounds
+  -- The score is at most that of the charged rectangle.
+  have hrect : threeAngleComparisonScore U ≤ a * (1 - h / 2) := by
+    have hL := intervalIntegral.integral_mono_on (by linarith only [ha] : -a ≤ -a / 2)
+      (hU.intervalIntegrable_capRoof _ _) (continuous_const.intervalIntegrable _ _)
+      (hU.left_roof_le_middle_height ha hh hl hr hleft hright)
+    have hR := intervalIntegral.integral_mono_on (by linarith only [ha] : a / 2 ≤ a)
+      (hU.intervalIntegrable_capRoof _ _) (continuous_const.intervalIntegrable _ _)
+      fun x _ => capRoof_le_one hU.isCompact hU.inStrip x
+    have hN := intervalIntegral.integral_nonneg_of_forall (μ := volume)
+      (by linarith only [ha] : -a / 2 ≤ a / 2) (threeAngleBarrier_nonneg U)
+    simp only [intervalIntegral.integral_const, smul_eq_mul] at hL hR
+    linarith only [threeAngleComparisonScore_centered hl hr, hL, hR, hN]
+  have ha0 : 41 / 50 ≤ a := by nlinarith only [hrect, hscore, mul_nonneg ha.le hh]
+  have hh37 : h ≤ 37 / 100 := by nlinarith only [hrect, hscore, ha, ha1]
   have hhhalf : h ≤ a / 2 := by linarith only [ha0, hh37]
   have huv := hU.tilted_diagonal_parameters_mem ha hh hhhalf hl hr hleft hright
   have hbound := hU.threeAngleScore_add_diagonalRoofDeficit_le ha hh hhhalf hl hr hleft hright
   have hD0 := hU.diagonalRoofDeficit_nonneg ha hh hl hr hleft hright
-  have hk := sqrt_two_sub_one_strict_bounds
-  have hksq := sqrt_two_sub_one_quadratic
   obtain ⟨ha9, hh23, hu323, hv323, hm, hq, hclipR, hclipL⟩ :=
-    short_diagonal_stability ha0 ha1 hh hh37 hk.1 hk.2.1 hk.2.2 hksq
-      huv.1 huv.2 (by linarith : 41 / 50 ≤ diagonalRelaxation a h k u v)
-  have hcritical := diagonalRelaxation_le_critical a h k u v
-    (by dsimp [k]; linarith [hk.2.1]) (by dsimp [k]; linarith [hk.1])
-    (by dsimp [k]; linarith [hk.1])
+    short_diagonal_stability ha0 ha1 hh hh37 hk.1 hk.2.1 hk.2.2 sqrt_two_sub_one_quadratic
+      huv.1 huv.2 (by linarith only [hbound, hD0, hscore])
+  have hcrit := hbound.trans (diagonalRelaxation_le_critical _ _ _ _ _
+    (by linarith only [hk.2.1, ha0, hh37]) (by linarith only [hk.1, hh])
+    (by linarith only [hk.1, hh23]))
   have hwidth := diagonal_critical_width_mono ha1
-    (by dsimp [k]; linarith [hk.1] : (1001 / 1000 : ℝ) ≤ 1 + k)
-  have hD1 : diagonalRoofDeficit U a h u v < 9 / 1000 := by
-    have hkh : 0 ≤ k * h := mul_nonneg (by dsimp [k]; linarith [hk.1]) hh
-    dsimp [k] at hcritical hwidth hkh
-    dsimp [u, v] at hcritical ⊢
-    nlinarith [sq_nonneg h]
+    (by linarith only [hk.1] : (1001 / 1000 : ℝ) ≤ 1 + (Real.sqrt 2 - 1))
   exact ⟨ha9, hh23, huv.1, huv.2, hu323, hv323, hm, hq, hclipR, hclipL,
-    by linarith, by linarith, hD0, hD1⟩
-
-theorem IsDownwardCap.threeAngleScore_add_wideRoofDeficit_le {U : Set Plane}
-    (hU : IsDownwardCap U) {a h : ℝ} (ha : 0 < a) (hh : 0 ≤ h) (hh1 : h ≤ a / 2)
-    (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
-    (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1)
-    (haffine : ∃ m c : ℝ, ∀ x ∈ Icc (-a / 2) (a / 2), capRoof U x = m * x + c)
-    (hm : Real.sqrt 2 - 1 ≤ ((diagonalRight U - 1) + (diagonalLeft U - 1)) / 2) :
-    threeAngleComparisonScore U + wideRoofDeficit U a h (diagonalRight U - 1) (diagonalLeft U - 1) ≤
-      wideDiagonalMajorant a h (Real.sqrt 2 - 1) (diagonalRight U - 1) (diagonalLeft U - 1) := by
-  have hp := hU.wide_diagonal_parameters ha hh hh1 hl hr hleft hright haffine
-  have hD := hU.wideRoofDeficit_eq ha (by linarith only [ha, hh1]) hp.1 hp.2.1
-  have huv := hU.tilted_diagonal_parameters_mem ha hh hh1 hl hr hleft hright
-  have hN := hU.threeAngle_diagonal_integral_le rfl
-    (show diagonalRight U = 1 + (diagonalRight U - 1) by ring)
-    (show diagonalLeft U = 1 - h + (diagonalLeft U - 1 + h) by ring)
-    (tilted_diagonal_apex_mem ha.le hh hh1 huv.1 huv.2)
-  rw [show ((diagonalRight U - 1) + (diagonalLeft U - 1 + h) - h) / 2 -
-      (Real.sqrt 2 - 1) = ((diagonalRight U - 1) + (diagonalLeft U - 1)) / 2 -
-      (Real.sqrt 2 - 1) by ring,
-    max_eq_left (sub_nonneg.mpr hm)] at hN
-  rw [threeAngleComparisonScore_centered hl hr]
-  unfold wideExteriorMajorant at hD
-  unfold wideDiagonalMajorant
-  have htail : diagonalLeft U - 1 + h - h - (Real.sqrt 2 - 1) - a / 2 =
-      diagonalLeft U - 1 - (Real.sqrt 2 - 1) - a / 2 := by ring
-  rw [htail] at hN
-  linarith only [hD, hN]
+    by linarith only [hu323, ha9, hh23], by linarith only [hv323, ha9, hh23], hD0,
+    by nlinarith only [hcrit, hwidth, hscore, hk.1, hk.2.1, hh]⟩
 
 theorem IsDownwardCap.threeAngle_wide_high_score_box {U : Set Plane}
     (hU : IsDownwardCap U) {a h : ℝ} (ha0 : 8 / 5 ≤ a) (ha1 : a < 3)
@@ -154,34 +105,21 @@ theorem IsDownwardCap.threeAngle_wide_high_score_box {U : Set Plane}
     a < 9 / 5 ∧ h < 1 / 4 ∧ a + h < 37 / 20 := by
   have ha : 0 < a := by linarith only [ha0]
   have hhhalf : h ≤ a / 2 := by linarith only [ha0, hh1]
+  have hk := sqrt_two_sub_one_strict_bounds
   have hm := hU.wide_diagonal_midpoint_ge ha hh hhhalf hl hr hleft hright haffine hEP
-  have hbound := hU.threeAngleScore_add_wideRoofDeficit_le ha hh hhhalf hl hr hleft hright haffine
-    (by linarith only [hm, ha0, hh1, sqrt_two_sub_one_strict_bounds.2.2])
-  have hdef := hU.wideRoofDeficit_nonneg ha hl hr hleft hright haffine
-  exact wide_diagonal_high_score_box ha0 ha1 hh hh1 sqrt_two_sub_one_strict_bounds.1
-    sqrt_two_sub_one_strict_bounds.2.2 sqrt_two_sub_one_quadratic hm (by linarith only [hscore, hbound, hdef])
-
-theorem IsDownwardCap.threeAngleScore_le_tiltedDiagonalBound {U : Set Plane}
-    (hU : IsDownwardCap U) {a h : ℝ}
-    (ha : 1 ≤ a) (hh0 : 0 ≤ h) (hh1 : h < 1 / 2)
-    (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
-    (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1)
-    (haffine : ∃ m c : ℝ, ∀ x ∈ Icc (-a / 2) (a / 2), capRoof U x = m * x + c) :
-    threeAngleComparisonScore U ≤ tiltedDiagonalBound a h (Real.sqrt 2 - 1) := by
-  have ha0 : 0 < a := by linarith only [ha]
-  have hhhalf : h ≤ a / 2 := by linarith only [ha, hh1]
-  have hha : h < a := by linarith only [ha, hh1]
-  let u := diagonalRight U - 1
-  let v := diagonalLeft U - 1 + h
-  have huv := hU.tilted_diagonal_parameters_mem ha0 hh0 hhhalf hl hr hleft hright
-  have hD := hU.diagonalRoofDeficit_ge_tilt_loss ha0 hha hl hr hleft hright haffine
-    (show diagonalRight U = 1 + u by dsimp [u]; ring)
-    (show diagonalLeft U = 1 - h + v by dsimp [v]; ring) huv.1 huv.2
-  have hP := hU.threeAngleScore_add_diagonalRoofDeficit_le ha0 hh0 hhhalf hl hr hleft hright
-  have hscalar := tiltedDiagonalRelaxation_le_bound ha hh0 hh1
-    sqrt_two_sub_one_strict_bounds.1 sqrt_two_sub_one_strict_bounds.2.1 u v
-  unfold tiltedDiagonalRelaxation at hscalar
-  linarith only [hD, hP, hscalar]
+  have hp := hU.wide_diagonal_parameters ha hh hhhalf hl hr hleft hright haffine
+  have hD := hU.wideRoofDeficit_eq ha (by linarith only [ha, hhhalf]) hp.1 hp.2.1
+  have hN := hU.threeAngle_diagonal_integral_le (a := a) (h := 0) (u := diagonalRight U - 1)
+    (v := diagonalLeft U - 1) rfl (by ring) (by ring)
+    ⟨by linarith only [hp.1.1, hp.2.1.2, hh, ha], by linarith only [hp.1.2, hp.2.1.1, hhhalf]⟩
+  have hm' : Real.sqrt 2 - 1 ≤ (diagonalRight U - 1 + (diagonalLeft U - 1)) / 2 := by
+    linarith only [hm, ha0, hh1, hk.2.2]
+  simp only [sub_zero, max_eq_left (sub_nonneg.mpr hm')] at hN
+  rw [threeAngleComparisonScore_centered hl hr] at hscore
+  refine wide_diagonal_high_score_box ha0 ha1 hh hh1 hk.1 hk.2.2 sqrt_two_sub_one_quadratic hm ?_
+  rw [wideDiagonalMajorant]
+  rw [wideExteriorMajorant] at hD
+  linarith only [hscore, hD, hN, hU.wideRoofDeficit_nonneg ha hl hr hleft hright haffine]
 
 theorem IsDownwardCap.threeAngle_intermediate_width_tilt_bound {U : Set Plane}
     (hU : IsDownwardCap U) {a h : ℝ}
@@ -192,18 +130,24 @@ theorem IsDownwardCap.threeAngle_intermediate_width_tilt_bound {U : Set Plane}
     (hscore : 41 / 50 ≤ threeAngleComparisonScore U) :
     h < 17 / 50 ∧ (a - Real.sqrt 2) ^ 2 +
       (4 * a / (4 * a - h)) * (Real.sqrt 2 - 1 + h / 2) ^ 2 ≤ 9 / 25 := by
-  have hP := hU.threeAngleScore_le_tiltedDiagonalBound ha0 hh0 hh1 hl hr hleft hright haffine
-  have h4 : 0 < 4 * a - h := by linarith only [ha0, hh1]
+  have ha : 0 < a := by linarith only [ha0]
+  have hhhalf : h ≤ a / 2 := by linarith only [ha0, hh1]
+  have hk := sqrt_two_sub_one_strict_bounds
   have hksq := sqrt_two_sub_one_quadratic
-  have htilt : h < 17 / 50 := by
-    by_contra h
-    exact (not_lt_of_ge hscore) (hP.trans_lt
-      (tiltedDiagonalBound_lt_of_large_tilt ha0 ha1 (le_of_not_gt h) hh1
-        (by linarith only [sqrt_two_sub_one_strict_bounds.1]) hksq))
-  refine ⟨htilt, ?_⟩
-  rw [tiltedDiagonalBound_eq_width_tilt h4.ne' hksq,
-    show (Real.sqrt 2 - 1) + 1 = Real.sqrt 2 by ring] at hP
+  have huv := hU.tilted_diagonal_parameters_mem ha hh0 hhhalf hl hr hleft hright
+  have hD := hU.diagonalRoofDeficit_ge_tilt_loss ha (by linarith only [ha0, hh1]) hl hr hleft
+    hright haffine (by ring) (by ring) huv.1 huv.2
+  have hP := hU.threeAngleScore_add_diagonalRoofDeficit_le ha hh0 hhhalf hl hr hleft hright
+  have hscalar := tiltedDiagonalRelaxation_le_bound ha0 hh0 hh1 hk.1 hk.2.1
+    (diagonalRight U - 1) (diagonalLeft U - 1 + h)
+  rw [tiltedDiagonalRelaxation] at hscalar
+  have hB : threeAngleComparisonScore U ≤ tiltedDiagonalBound a h (Real.sqrt 2 - 1) := by
+    linarith only [hD, hP, hscalar]
+  refine ⟨lt_of_not_ge fun h' => not_lt_of_ge hscore (hB.trans_lt
+    (tiltedDiagonalBound_lt_of_large_tilt ha0 ha1 h' hh1 (by linarith only [hk.1]) hksq)), ?_⟩
+  rw [tiltedDiagonalBound_eq_width_tilt (by linarith only [ha0, hh1]) hksq,
+    show Real.sqrt 2 - 1 + 1 = Real.sqrt 2 by ring] at hB
   rw [show 4 * a / (4 * a - h) = 2 * (2 * a / (4 * a - h)) by ring]
-  nlinarith only [hP, hscore]
+  linarith only [hB, hscore]
 
 end AmbidextrousSofa
