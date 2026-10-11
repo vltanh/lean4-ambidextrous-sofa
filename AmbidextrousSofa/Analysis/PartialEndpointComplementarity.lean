@@ -1,18 +1,16 @@
 module
 
-public import AmbidextrousSofa.Analysis.PartialAxisHeightLimit
 public import AmbidextrousSofa.Analysis.PartialEndpointPositivity
 
 @[expose] public section
 
 /-!
-# Endpoint complementarity for actual proper maxima
+# Endpoint laws for actual proper maxima
 
-The literal proper selected sequence is constructed inside the proof.
-Both endpoint heights converge to the target heights by the punctured
-axis estimates, and to the positive parts of the actual partial pressures
-by the finite endpoint variations. For a height-one affine-middle maximum
-both pressures are positive, giving the exact partial endpoint identities.
+Endpoint complementarity identifies both endpoint heights with the positive
+parts of the actual partial pressures. For a height-one affine-middle
+maximum both pressures are positive, giving the exact partial endpoint
+identities, and in centered coordinates explicit laws for both heights.
 -/
 
 noncomputable section
@@ -29,24 +27,9 @@ theorem IsJointCapMaximizer.partial_endpoint_heights_eq_pressures_of_affine
       capRoof U x = m * x + c) :
     capRoof U (horizontalRight U) = partialRightEndpointPressure U α ∧
       capRoof U (horizontalLeft U) = partialLeftEndpointPressure U α := by
-  have hbox : U ⊆ Icc (horizontalLeft U - 1) (horizontalRight U + 1) ×ˢ Icc (0 : ℝ) 1 :=
-    fun p hp => ⟨⟨by linarith only [(hU.isCap.fst_mem_Icc hp).1],
-      by linarith only [(hU.isCap.fst_mem_Icc hp).2]⟩, hU.isCap.inStrip hp⟩
-  obtain ⟨level, coefficient, V, hlevel, hc, hrate, hV, _, hHausdorff⟩ :=
-    PartialGrid.exists_selected_sequence ⟨α, hU.angle_mem⟩ hproper hU
-      (by linarith [horizontalLeft_le_horizontalRight hU.isCap.nonempty hU.isCap.isCompact]) hbox
-  have hlevelTop : Tendsto level atTop atTop := tendsto_atTop_mono hlevel tendsto_id
-  have hc0 : ∀ n, 0 ≤ coefficient n := fun n => (hc n).le
-  have hwidth : 1 < capWidth U := one_lt_M.trans_le hU.width_bounds.1
-  have hpos := hU.partial_endpoint_pressures_pos_of_affine hproper hheight haffine
-  exact ⟨(PartialGrid.right_complementarity_of_height_tendsto hU.isCap hbox hV hHausdorff
-      hlevelTop hc0 hrate hwidth (lt_add_one _) (PartialGrid.selected_right_height_tendsto_actual
-        hU.isCap hbox hV hHausdorff hlevelTop hc0 hrate hwidth (lt_add_one _))).trans
-      (max_eq_left hpos.1.le),
-    (PartialGrid.left_complementarity_of_height_tendsto hU.isCap hbox hV hHausdorff
-      hlevelTop hc0 hrate hwidth (sub_one_lt _) (PartialGrid.selected_left_height_tendsto_actual
-        hU.isCap hbox hV hHausdorff hlevelTop hc0 hrate hwidth (sub_one_lt _))).trans
-      (max_eq_left hpos.2.le)⟩
+  obtain ⟨h1, h2⟩ := hU.partial_endpoint_pressures_pos_of_affine hproper hheight haffine
+  simpa only [max_eq_left h1.le, max_eq_left h2.le] using
+    hU.partial_endpoint_complementarity hproper
 
 /-- These are the actual proper endpoint laws, with the complete
 terminal first wall included in both values of `partialBarrier`. -/

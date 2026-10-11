@@ -64,23 +64,17 @@ theorem clip_le_niche (U : Set Plane) (α : TerminalAngle)
   Finset.le_sup' (fun t => max (cornerWall U (scaleAngle α t) x) 0)
     (Finset.mem_insert_of_mem ht)
 
-theorem niche_nonneg (U : Set Plane) (α : TerminalAngle)
-    (grid : Finset QuarterAngle) (x : ℝ) : 0 ≤ niche U α grid x := by
-  classical
-  exact (le_max_right _ _).trans
-    (Finset.le_sup' (fun t => max (cornerWall U (scaleAngle α t) x) 0)
-      (Finset.mem_insert_self zeroAngle grid))
-
 theorem niche_le_iff (U : Set Plane) (α : TerminalAngle)
     (grid : Finset QuarterAngle) (x b : ℝ) :
     niche U α grid x ≤ b ↔ 0 ≤ b ∧
       ∀ t ∈ grid, max (cornerWall U (scaleAngle α t) x) 0 ≤ b := by
-  classical
-  refine ⟨fun h => ⟨(niche_nonneg U α grid x).trans h,
-    fun t ht => (clip_le_niche U α grid x ht).trans h⟩, fun ⟨hb, hgrid⟩ => ?_⟩
-  refine Finset.sup'_le _ _ ((Finset.forall_mem_insert _ _ _).2
-    ⟨max_le ((min_le_left _ _).trans ?_) hb, hgrid⟩)
-  simp [scaleAngle, unitParameter, zeroAngle, firstWall, hb]
+  have h0 : cornerWall U (scaleAngle α zeroAngle) x ≤ 0 :=
+    (min_le_left _ _).trans (by simp [scaleAngle, unitParameter, zeroAngle, firstWall])
+  simp only [niche, Finset.sup'_le_iff, Finset.forall_mem_insert, max_eq_right h0]
+
+theorem niche_nonneg (U : Set Plane) (α : TerminalAngle)
+    (grid : Finset QuarterAngle) (x : ℝ) : 0 ≤ niche U α grid x :=
+  ((niche_le_iff U α grid x _).mp le_rfl).1
 
 theorem niche_mono (U : Set Plane) (α : TerminalAngle)
     {grid other : Finset QuarterAngle} (h : grid ⊆ other) (x : ℝ) :

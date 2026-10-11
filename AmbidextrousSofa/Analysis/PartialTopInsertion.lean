@@ -8,13 +8,13 @@ public import AmbidextrousSofa.Analysis.RoofGain
 /-!
 # Top insertion for both orientations at a proper angle
 
-An existing top point on the right protects every first-wall support. An
-existing top point on the left protects every second-wall support, while
+An existing top point on the left protects every second-wall support, while
 each changed first wall, including the whole outgoing terminal wall, is
-nonpositive on the middle interval. These are two direct set variations.
+nonpositive on the middle interval. Together with the insertion from the
+right, these are two direct set variations.
 
-The whole partial barrier is unchanged on that interval, and the actual
-charged roof gains strictly whenever the inserted endpoint was below one.
+In both the whole partial barrier is unchanged on that interval, and the
+actual charged roof gains strictly whenever the inserted endpoint was below one.
 Thus a height-one joint maximum has a top point in its middle interval.
 The high endpoint of any affine middle roof is consequently at height one,
 for either sign of its slope.
@@ -30,14 +30,9 @@ theorem sweptNiche_eq_of_clippedCorner_eq {U V : Set Plane}
     (hU : IsCompact U) (hV : IsCompact V) {α x : ℝ}
     (hα0 : 0 < α) (hα : α ≤ Real.pi / 2)
     (heq : ∀ θ ∈ Ioo 0 α, max (cornerWall U θ x) 0 = max (cornerWall V θ x) 0) :
-    sweptNiche U α x = sweptNiche V α x := by
-  have key {U V : Set Plane} (hV : IsCompact V)
-      (heq : ∀ θ ∈ Ioo 0 α, max (cornerWall U θ x) 0 = max (cornerWall V θ x) 0) :
-      sweptNiche U α x ≤ sweptNiche V α x :=
-    sweptNiche_le_of_forall hα0 (sweptNiche_nonneg _ _ _) fun θ hθ =>
-      (le_max_left _ _).trans <| (heq θ hθ).trans_le <| max_le
-        (cornerWall_le_sweptNiche (sweptWallValues_bddAbove hV hα x) hθ) (sweptNiche_nonneg _ _ _)
-  exact le_antisymm (key hV heq) (key hU fun θ hθ => (heq θ hθ).symm)
+    sweptNiche U α x = sweptNiche V α x :=
+  le_antisymm (sweptNiche_le_of_clippedCorner_le hV hα0 hα fun θ hθ => (heq θ hθ).le)
+    (sweptNiche_le_of_clippedCorner_le hU hα0 hα fun θ hθ => (heq θ hθ).ge)
 
 /-- A first wall changed by a top insertion left of `x` is nonpositive at `x`, before and
 after the insertion. -/
@@ -54,22 +49,6 @@ private theorem IsDownwardCap.firstWall_inserted_top_left {U : Set Plane} (hU : 
     linarith [Real.sin_le_one θ, mul_nonneg (sub_nonneg.mpr hax) hc]
   exact .inr ⟨hfirst, (firstWall_mono (hU.subset_insertedCap hp) hU.nonempty
     (hU.isDownwardCap_insertedCap hp).isCompact hs x).trans hfirst⟩
-
-/-- Insertion from the right preserves the swept family and the entire
-first terminal wall separately. -/
-theorem IsDownwardCap.partialBarrier_inserted_top_of_top_right {U : Set Plane}
-    (hU : IsDownwardCap U) {a t α x : ℝ} (ht : (t, 1) ∈ U) (hat : a ≤ t)
-    (hα0 : 0 < α) (hα : α ≤ Real.pi / 2) (hxa : x ≤ a) :
-    partialBarrier (insertedCap U (a, 1)) α x = partialBarrier U α x := by
-  have hp : (a, (1 : ℝ)) ∈ unitStrip := ⟨zero_le_one, le_rfl⟩
-  have hs := Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [Real.pi_pos])
-  have hc := Real.cos_nonneg_of_mem_Icc ⟨by linarith [Real.pi_pos], hα⟩
-  rw [partialBarrier, partialBarrier, sweptNiche_eq_of_clippedCorner_eq
-    (hU.isDownwardCap_insertedCap hp).isCompact hU.isCompact hα0 hα fun θ hθ =>
-      hU.clippedCorner_inserted_top ht hat ⟨hθ.1, hθ.2.trans_le hα⟩ hxa,
-    firstWall, firstWall, hU.support_insertedCap_eq_of_dominated hp hs.le (le_trans (by
-      simp only [coordDot, unitNormal]; linarith [mul_nonneg (sub_nonneg.mpr hat) hc])
-      (coordDot_le_support hU.isCompact ht _))]
 
 /-- Insertion from the left treats a changed whole terminal first wall
 explicitly: its new and old heights are both nonpositive on this side. -/

@@ -56,14 +56,8 @@ theorem IsFullCapMaximizer.sweptNiche_le_half_endpoint_height_sum_of_affine
       sweptNiche U (Real.pi / 2) x ≤
         (capRoof U (horizontalRight U) + capRoof U (horizontalLeft U)) / 2 := by
   intro x hx
-  have hlr := horizontalLeft_le_horizontalRight hU.isCap.nonempty hU.isCap.isCompact
-  have hbox : U ⊆ Icc (horizontalLeft U - 1) (horizontalRight U + 1) ×ˢ Icc (0 : ℝ) 1 :=
-    fun p hp => ⟨⟨by linarith [(hU.isCap.fst_mem_Icc hp).1],
-      by linarith [(hU.isCap.fst_mem_Icc hp).2]⟩, hU.isCap.inStrip hp⟩
-  obtain ⟨level, coefficient, V, hlevel, hc, hrate, hV, -, hHausdorff⟩ :=
-    exists_selected_sequence hU (by linarith) hbox
-  replace hlevel := tendsto_atTop_mono hlevel tendsto_id
-  replace hc := fun n => (hc n).le
+  have hbox := hU.isCap.subset_slack_box
+  obtain ⟨level, coefficient, V, hlevel, hc, hrate, hV, hHausdorff⟩ := hU.exists_selected_polygons
   have hcap : ∀ n, IsDownwardCap (V n) := fun n => (hV n).isCap
   have hW : 1 < capWidth U := one_lt_M.trans_le hU.width_bounds.1
   have hlr' : horizontalLeft U < horizontalRight U := sub_pos.1 (zero_lt_one.trans hW)

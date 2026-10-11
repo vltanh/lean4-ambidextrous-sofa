@@ -14,8 +14,9 @@ an actual polygon. Its objective is the finite physical spatial score
 minus a small persistent support penalty. Choosing the angular error below
 the square of the penalty coefficient makes the unscaled penalty vanish.
 Every Hausdorff cluster point then has all the prescribed sampled supports
-and is the intended cap. No approximation, selection, or limit property is
-assumed as a certificate.
+and is the intended cap; this subsequence argument is shared with proper
+angles. No approximation, selection, or limit property is assumed as a
+certificate.
 -/
 
 noncomputable section
@@ -64,33 +65,6 @@ theorem exists_selected_polygon {target : Set Plane} (hTarget : IsDownwardCap ta
       (fun i => support target (normal (dyadic level) i)) (pairList (dyadic level)) none
       hTarget hTargetBox
 
-/-- The selected maximum's actual penalty is at most the selection
-coefficient when the finite spatial error is at most its square. -/
-theorem IsSelectedPolygon.penalty_le {target U : Set Plane} {a b coefficient : ℝ}
-    {level : ℕ} (hU : IsSelectedPolygon target a b level coefficient U)
-    (hTarget : IsFullCapMaximizer target)
-    (hTargetBox : target ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1)
-    (hcoefficient : 0 < coefficient)
-    (herror : score U (dyadic level) - capScore U (Real.pi / 2) ≤ coefficient ^ 2) :
-    stagePenalty level target U ≤ coefficient := by
-  have hselected := hU.maximizes target hTarget.isCap hTargetBox
-  rw [stagePenalty_self, mul_zero, sub_zero] at hselected
-  nlinarith [capScore_le_score hTarget.isCap (dyadic level), hTarget.2 U hU.isCap]
-
-theorem exists_selected_approximations {target : Set Plane}
-    (hTarget : IsFullCapMaximizer target) {a b : ℝ} (hab : a ≤ b)
-    (hTargetBox : target ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1) :
-    ∃ level : ℕ → ℕ, ∃ U : ℕ → Set Plane,
-      (∀ n, n ≤ level n) ∧
-      (∀ n, IsSelectedPolygon target a b (level n) (selectionRate n) (U n)) ∧
-      ∀ n, stagePenalty (level n) target (U n) ≤ selectionRate n := by
-  choose level hlevel herror using fun n =>
-    exists_level_score_error_le hab (sq_pos_of_pos (selectionRate_pos n)) n
-  choose U hU using fun n =>
-    exists_selected_polygon hTarget.isCap hTargetBox (level n) (selectionRate n)
-  exact ⟨level, U, hlevel, hU, fun n => (hU n).penalty_le hTarget hTargetBox (selectionRate_pos n)
-    (herror n (U n) (hU n).isCap (hU n).inBox).2⟩
-
 /-- A vanishing persistent penalty identifies every actual Hausdorff
 cluster point. The cap need not be smooth or have positive endpoint faces. -/
 theorem eq_of_penalty_tendsto {target K : Set Plane} {U : ℕ → Set Plane}
@@ -109,10 +83,33 @@ theorem eq_of_penalty_tendsto {target K : Set Plane} {U : ℕ → Set Plane}
     nlinarith [levelWeight_pos m]
   nlinarith
 
+/-- Boxed caps with a property `P` at arbitrarily deep levels and selection rates, whose
+penalties are at most those rates, have a subsequence converging to the target. -/
+theorem exists_selected_sequence_of {target : Set Plane} (hTarget : IsDownwardCap target)
+    {a b : ℝ} {P : ℕ → ℝ → Set Plane → Prop}
+    (hP : ∀ n, ∃ level ≥ n, ∃ U, P level (selectionRate n) U ∧ IsDownwardCap U ∧
+      U ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1 ∧ stagePenalty level target U ≤ selectionRate n) :
+    ∃ level : ℕ → ℕ, ∃ coefficient : ℕ → ℝ, ∃ U : ℕ → Set Plane,
+      (∀ n, n ≤ level n) ∧ (∀ n, 0 < coefficient n) ∧
+      Tendsto coefficient atTop (𝓝 0) ∧ (∀ n, P (level n) (coefficient n) (U n)) ∧
+      (∀ n, stagePenalty (level n) target (U n) ≤ coefficient n) ∧
+      CapHausdorffTendsto U target := by
+  choose level hlevel U hU hcap hbox hpenalty using hP
+  obtain ⟨K, hK, -, φ, hφ, hHausdorff⟩ :=
+    exists_cap_hausdorff_subsequence hcap (isCompact_Icc.prod isCompact_Icc) hbox
+  obtain rfl : K = target := eq_of_penalty_tendsto hTarget hK (fun n => hcap (φ n)) hHausdorff
+    ((tendsto_atTop_mono hlevel tendsto_id).comp hφ.tendsto_atTop)
+    (selectionRate_tendsto.comp hφ.tendsto_atTop) fun n => hpenalty (φ n)
+  exact ⟨level ∘ φ, selectionRate ∘ φ, U ∘ φ, fun n => hφ.le_apply.trans (hlevel (φ n)),
+    fun n => selectionRate_pos (φ n), selectionRate_tendsto.comp hφ.tendsto_atTop,
+    fun n => hU (φ n), fun n => hpenalty (φ n), hHausdorff⟩
+
 /-- Every prescribed global spatial cap maximum is the Hausdorff limit
 of actual selected dyadic polygon maxima in any containing fixed box.
 The grid depth tends to infinity and the actual support-penalty coefficient
-tends to zero. All endpoint degeneracies remain in this sequence. -/
+tends to zero. All endpoint degeneracies remain in this sequence. Choosing
+the angular error below the square of the selection rate makes the
+penalty at most that rate. -/
 theorem exists_selected_sequence {target : Set Plane}
     (hTarget : IsFullCapMaximizer target) {a b : ℝ} (hab : a ≤ b)
     (hTargetBox : target ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1) :
@@ -122,17 +119,37 @@ theorem exists_selected_sequence {target : Set Plane}
       (∀ n, IsSelectedPolygon target a b (level n) (coefficient n) (U n)) ∧
       (∀ n, stagePenalty (level n) target (U n) ≤ coefficient n) ∧
       CapHausdorffTendsto U target := by
-  obtain ⟨level, U, hlevel, hU, hpenalty⟩ := exists_selected_approximations hTarget hab hTargetBox
-  obtain ⟨K, hK, _, φ, hφ, hHausdorff⟩ := exists_cap_hausdorff_subsequence
-    (fun n => (hU n).isCap) (isCompact_Icc.prod isCompact_Icc) (fun n => (hU n).inBox)
-  obtain rfl : K = target := eq_of_penalty_tendsto hTarget.isCap hK
-    (fun n => (hU (φ n)).isCap) hHausdorff
-    ((tendsto_atTop_mono hlevel tendsto_id).comp hφ.tendsto_atTop)
-    (selectionRate_tendsto.comp hφ.tendsto_atTop) (fun n => hpenalty (φ n))
-  exact ⟨level ∘ φ, selectionRate ∘ φ, U ∘ φ, fun n => hφ.le_apply.trans (hlevel (φ n)),
-    fun n => selectionRate_pos (φ n), selectionRate_tendsto.comp hφ.tendsto_atTop,
-    fun n => hU (φ n), fun n => hpenalty (φ n), hHausdorff⟩
+  refine exists_selected_sequence_of (a := a) (b := b) hTarget.isCap fun n => ?_
+  obtain ⟨level, hlevel, herror⟩ :=
+    exists_level_score_error_le hab (sq_pos_of_pos (selectionRate_pos n)) n
+  obtain ⟨U, hU⟩ := exists_selected_polygon hTarget.isCap hTargetBox level (selectionRate n)
+  have hselected := hU.maximizes target hTarget.isCap hTargetBox
+  rw [stagePenalty_self, mul_zero, sub_zero] at hselected
+  exact ⟨level, hlevel, U, hU, hU.isCap, hU.inBox, by
+    nlinarith [(herror target hTarget.isCap hTargetBox).1, hTarget.2 U hU.isCap,
+      (herror U hU.isCap hU.inBox).2, selectionRate_pos n]⟩
 
 end AngularGrid
+
+/-- A cap lies in the box with unit slack around its horizontal projection. -/
+theorem IsDownwardCap.subset_slack_box {U : Set Plane} (hU : IsDownwardCap U) :
+    U ⊆ Icc (horizontalLeft U - 1) (horizontalRight U + 1) ×ˢ Icc (0 : ℝ) 1 := fun p hp => by
+  have hx : p.1 ∈ Icc (horizontalLeft U) (horizontalRight U) :=
+    horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex ▸ ⟨p, hp, rfl⟩
+  exact ⟨⟨by linarith [hx.1], by linarith [hx.2]⟩, hU.inStrip hp⟩
+
+/-- A full maximizer is the Hausdorff limit of selected dyadic polygons in its box with unit
+slack, with levels tending to infinity and coefficients tending to zero. -/
+theorem IsFullCapMaximizer.exists_selected_polygons {U : Set Plane}
+    (hU : IsFullCapMaximizer U) :
+    ∃ level : ℕ → ℕ, ∃ coefficient : ℕ → ℝ, ∃ V : ℕ → Set Plane,
+      Tendsto level atTop atTop ∧ (∀ n, 0 ≤ coefficient n) ∧ Tendsto coefficient atTop (𝓝 0) ∧
+      (∀ n, AngularGrid.IsSelectedPolygon U (horizontalLeft U - 1) (horizontalRight U + 1)
+        (level n) (coefficient n) (V n)) ∧ CapHausdorffTendsto V U := by
+  have hlr := horizontalLeft_le_horizontalRight hU.isCap.nonempty hU.isCap.isCompact
+  obtain ⟨level, coefficient, V, hlevel, hc, hrate, hV, -, hH⟩ :=
+    AngularGrid.exists_selected_sequence hU (by linarith) hU.isCap.subset_slack_box
+  exact ⟨level, coefficient, V, tendsto_atTop_mono hlevel tendsto_id, fun n => (hc n).le, hrate,
+    hV, hH⟩
 
 end AmbidextrousSofa

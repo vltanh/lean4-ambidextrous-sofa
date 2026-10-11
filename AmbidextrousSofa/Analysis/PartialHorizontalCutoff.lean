@@ -37,12 +37,9 @@ theorem sum_abs_defect_on_set_le_cos_sum
     (hδ : 0 < δ) (hE : ∀ t ∈ E, δ ≤ |Real.cos t|) :
     (∑ j ∈ Finset.univ.filter (fun j : SourceIndex α grid => fullAngle α grid j ∈ E),
       |normalizedExposureDefect U α hαL grid j|) ≤
-      (∑ j : SourceIndex α grid, |(normal α grid j).1| * |normalizedExposureDefect U α hαL grid j|) / δ := by
-  rw [le_div_iff₀ hδ, Finset.sum_mul]
-  refine (Finset.sum_le_sum fun j hj => ?_).trans (Finset.sum_le_sum_of_subset_of_nonneg
-    (Finset.filter_subset _ _) fun j _ _ => by positivity)
-  rw [mul_comm, normal_eq_unitNormal]
-  exact mul_le_mul_of_nonneg_right (hE _ (Finset.mem_filter.mp hj).2) (abs_nonneg _)
+      (∑ j : SourceIndex α grid,
+        |(normal α grid j).1| * |normalizedExposureDefect U α hαL grid j|) / δ :=
+  AngularGrid.sum_abs_on_set_le_cos_sum (outerGrid α grid) _ hδ hE
 
 theorem normal_snd_mul_innerSourceMass {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (j : SourceIndex α grid) :
@@ -76,52 +73,22 @@ theorem normal_snd_mul_innerSourceMass_eq {U : Set Plane} (hU : IsDownwardCap U)
   unfold finiteExposureDefect finiteWingMass capWidth
   ring
 
-open Classical in
-theorem finitePositiveLength_le_horizontalOuterMass_add_cutoff {U : Set Plane}
-    (hU : IsDownwardCap U) (grid : Finset QuarterAngle) {E : Set ℝ} {δ : ℝ}
-    (hδ : 0 < δ) (hE : ∀ t ∈ E, δ ≤ |Real.cos t|) :
-    finitePositiveLength U (normal α grid) (pairList α grid) (some (terminalIndex α hαL grid))
-        (horizontalLeft U + capWidth U / 4) (horizontalRight U - capWidth U / 4) ≤
-      AngularGrid.horizontalOuterMass U (outerGrid α grid) E +
-        (∑ j : SourceIndex α grid, |(normal α grid j).1| *
-          |normalizedExposureDefect U α hαL grid j|) / δ +
-        ∑ j ∈ Finset.univ.filter (fun j : SourceIndex α grid => fullAngle α grid j ∉ E),
-          innerSourceMass U α hαL grid j := by
-  have hs (j : SourceIndex α grid) : (normal α grid j).2 ≤ 1 :=
-    normal_eq_unitNormal α grid j ▸ Real.sin_le_one _
-  rw [← sum_sin_innerSourceMass_eq_positiveLength hU grid,
-    ← Finset.sum_filter_add_sum_filter_not Finset.univ (fun j => fullAngle α grid j ∈ E)]
-  refine add_le_add (le_trans ?_ (add_le_add_right
-    (sum_abs_defect_on_set_le_cos_sum (hαL := hαL) U grid hδ hE) _)) (Finset.sum_le_sum fun j _ =>
-      mul_le_of_le_one_left (innerSourceMass_nonneg hU α hαL grid j) (hs j))
-  refine (Finset.sum_le_sum fun j _ => ?_).trans_eq Finset.sum_add_distrib
-  rw [normal_snd_mul_innerSourceMass_eq hU]
-  exact add_le_add_right ((mul_le_mul_of_nonneg_left (le_abs_self _)
-    (normal_snd_pos α grid j).le).trans (mul_le_of_le_one_left (abs_nonneg _) (hs j))) _
-
 theorem finitePositiveLength_le_horizontalOuterMass_away_top {U : Set Plane}
     (hU : IsDownwardCap U) {R η : ℝ} (hR : 0 ≤ R)
     (hbox : U ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1) (level : ℕ)
     (hη : η ∈ Ioo (0 : ℝ) (Real.pi / 2)) (hterminal : η < Real.pi / 2 - α) :
-    finitePositiveLength U (normal α (dyadic level)) (pairList α (dyadic level)) (some (terminalIndex α hαL (dyadic level)))
+    finitePositiveLength U (normal α (dyadic level)) (pairList α (dyadic level))
+        (some (terminalIndex α hαL (dyadic level)))
         (horizontalLeft U + capWidth U / 4) (horizontalRight U - capWidth U / 4) ≤
       AngularGrid.horizontalOuterMass U (outerGrid α (dyadic level))
         (Ioo (0 : ℝ) Real.pi \ Icc (Real.pi / 2 - η) (Real.pi / 2 + η)) +
         (∑ j : SourceIndex α (dyadic level), |(normal α (dyadic level) j).1| *
           |normalizedExposureDefect U α hαL (dyadic level) j|) / Real.sin η +
         (8 * R + 24) * (2 * η + mesh α level) := by
-  classical
-  have h := finitePositiveLength_le_horizontalOuterMass_add_cutoff (hαL := hαL) hU
-    (dyadic level) (E := Ioo (0 : ℝ) Real.pi \ Icc (Real.pi / 2 - η) (Real.pi / 2 + η))
-    (Real.sin_pos_of_pos_of_lt_pi hη.1 (by linarith [hη.2, Real.pi_pos]))
-    (fun t ht => abs_cos_ge_sin_of_outside_top_interval hη ht.1 ht.2)
-  have hsmall := innerSourceMass_sum_interval_le hU α hαL hR hbox level
-    (show Real.pi / 2 - η ≤ Real.pi / 2 + η by linarith [hη.1]) (fun ht => by linarith [ht.1])
-  refine h.trans (add_le_add_right ((Finset.sum_congr ?_ fun _ _ => rfl).trans_le
-    (hsmall.trans_eq (by ring))) _)
-  -- the two filters agree: a source angle lies in `(0, π)`
-  ext j
-  simp only [Finset.mem_filter, Finset.mem_univ, true_and, Set.mem_sdiff, fullAngle_mem, not_not]
+  rw [← sum_sin_innerSourceMass_eq_positiveLength hU]
+  exact sum_le_horizontalOuterMass_away_top (innerSourceMass_nonneg hU α hαL _)
+    (normal_snd_mul_innerSourceMass_eq hU _) hη ((innerSourceMass_sum_interval_le hU α hαL hR hbox
+      level (by linarith [hη.1]) fun ht => by linarith [ht.1]).trans_eq (by ring))
 
 end PartialGrid
 end AmbidextrousSofa

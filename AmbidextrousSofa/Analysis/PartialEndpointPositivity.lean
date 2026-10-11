@@ -1,5 +1,6 @@
 module
 
+public import AmbidextrousSofa.Analysis.PartialAxisHeightLimit
 public import AmbidextrousSofa.Analysis.PartialErosionMoments
 public import AmbidextrousSofa.Analysis.PartialLowHeight
 
@@ -8,11 +9,12 @@ public import AmbidextrousSofa.Analysis.PartialLowHeight
 /-!
 # Positive actual proper endpoint pressures and vanishing erosion
 
-The actual selected endpoint heights lie in the unit strip, so their
-proved limits bound both proper pressures by one. The diagonal low-height
-exclusion then makes both pressures positive. Consequently both actual
-selected erosion moments tend to zero, with the terminal wall retained.
-No endpoint-height continuity is needed for this conclusion.
+The literal proper selected sequence is constructed inside the proof.
+Both endpoint heights converge to the target heights by the punctured
+axis estimates, and to the positive parts of the actual partial pressures
+by the finite endpoint variations. The diagonal low-height exclusion then
+makes both pressures positive. Consequently both actual selected erosion
+moments tend to zero, with the terminal wall retained.
 -/
 
 noncomputable section
@@ -22,36 +24,33 @@ open scoped Topology
 
 namespace AmbidextrousSofa
 
+theorem IsJointCapMaximizer.partial_endpoint_complementarity {U : Set Plane} {α : ℝ}
+    (hU : IsJointCapMaximizer U α) (hproper : α < Real.pi / 2) :
+    capRoof U (horizontalRight U) = max (partialRightEndpointPressure U α) 0 ∧
+      capRoof U (horizontalLeft U) = max (partialLeftEndpointPressure U α) 0 := by
+  obtain ⟨level, coefficient, V, hlevel, hc, hrate, hV, hH⟩ :=
+    hU.exists_selected_polygons hproper
+  have hwidth : 1 < capWidth U := one_lt_M.trans_le hU.width_bounds.1
+  have hS := PartialGrid.selectedLimit hU.isCap hU.isCap.subset_slack_box hV hH hlevel hc hrate
+    hwidth
+  exact ⟨tendsto_nhds_unique (PartialGrid.selected_right_height_tendsto_actual hU.isCap
+      hU.isCap.subset_slack_box hV hH hlevel hc hrate hwidth (lt_add_one _))
+      (hS.right_height_tendsto (lt_add_one _)),
+    tendsto_nhds_unique (PartialGrid.selected_left_height_tendsto_actual hU.isCap
+      hU.isCap.subset_slack_box hV hH hlevel hc hrate hwidth (sub_one_lt _))
+      (hS.left_height_tendsto (sub_one_lt _))⟩
+
 theorem IsJointCapMaximizer.partial_endpoint_pressures_pos_of_affine
     {U : Set Plane} {α : ℝ} (hU : IsJointCapMaximizer U α)
     (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∃ m c : ℝ, ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    0 < partialRightEndpointPressure U α ∧ 0 < partialLeftEndpointPressure U α := by
-  -- Both pressures are at most one: they bound limits of selected heights in the unit strip.
-  have hbox : U ⊆ Icc (horizontalLeft U - 1) (horizontalRight U + 1) ×ˢ Icc (0 : ℝ) 1 :=
-    fun p hp => ⟨⟨by linarith only [(hU.isCap.fst_mem_Icc hp).1],
-      by linarith only [(hU.isCap.fst_mem_Icc hp).2]⟩, hU.isCap.inStrip hp⟩
-  obtain ⟨level, coefficient, V, hlevel, hc, hrate, hV, _, hHausdorff⟩ :=
-    PartialGrid.exists_selected_sequence ⟨α, hU.angle_mem⟩ hproper hU
-      (by linarith [horizontalLeft_le_horizontalRight hU.isCap.nonempty hU.isCap.isCompact]) hbox
-  have hlevelTop : Tendsto level atTop atTop := tendsto_atTop_mono hlevel tendsto_id
-  have hc0 : ∀ n, 0 ≤ coefficient n := fun n => (hc n).le
-  have hwidth : 1 < capWidth U := one_lt_M.trans_le hU.width_bounds.1
-  have hone (n : ℕ) (x : ℝ) : capRoof (V n) x ≤ 1 :=
-    capRoof_le_one (hV n).isCap.isCompact (hV n).isCap.inStrip x
-  have hR := le_of_tendsto (PartialGrid.selected_right_height_tendsto hU.isCap hbox hV hHausdorff
-    hlevelTop hc0 hrate hwidth (lt_add_one _)) (.of_forall fun n => hone n _)
-  have hL := le_of_tendsto (PartialGrid.selected_left_height_tendsto hU.isCap hbox hV hHausdorff
-    hlevelTop hc0 hrate hwidth (sub_one_lt _)) (.of_forall fun n => hone n _)
-  rw [max_le_iff] at hR hL
-  -- The diagonal low-height exclusion then makes both pressures positive.
-  have hmid := hU.middle_endpoints_gt_half_of_affine hheight haffine
-  simp only [partialRightEndpointPressure, rightEndpointPressure, partialLeftEndpointPressure,
-    leftEndpointPressure] at hR hL ⊢
-  constructor <;> linarith [hR.1, hL.1, hmid.1, hmid.2,
-    partialBarrier_nonneg U α (horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4),
-    partialBarrier_nonneg U α (horizontalRight U - (horizontalRight U - horizontalLeft U) / 4)]
+    0 < partialRightEndpointPressure U α ∧ 0 < partialLeftEndpointPressure U α :=
+  endpointPressures_pos (partialBarrier_nonneg U α) (hU.middle_endpoints_gt_half_of_affine hheight
+    haffine) ((hU.partial_endpoint_complementarity hproper).1 ▸
+      capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _)
+    ((hU.partial_endpoint_complementarity hproper).2 ▸
+      capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _)
 
 namespace PartialGrid
 
@@ -77,9 +76,14 @@ theorem erosionMoments_tendsto_zero_of_canonical_maximum
       (pairList α (dyadic (level n))) (some (terminalIndex α hαL (dyadic (level n)))))
         atTop (𝓝 0) := by
   obtain ⟨h1, h2⟩ := hTarget.partial_endpoint_pressures_pos_of_affine hαL hheight haffine
+  simp only [partialRightEndpointPressure, partialLeftEndpointPressure] at h1 h2
   simpa only [max_eq_right (neg_nonpos.mpr h1.le), max_eq_right (neg_nonpos.mpr h2.le)] using
-    erosionMoments_tendsto hTarget.isCap hTargetBox hU hHausdorff hlevel hc hrate
-      (one_lt_M.trans_le hTarget.width_bounds.1) hleft hright
+    (selectedLimit hTarget.isCap hTargetBox hU hHausdorff hlevel hc hrate
+      (one_lt_M.trans_le hTarget.width_bounds.1)).erosionMoments_tendsto
+      (partialBarrier_nonneg _ _) (fun n => selectionDefect_nonneg target (U n) α (level n) (hc n))
+      (fun n => (hU n).exposure_defect_div_ge (hc n))
+      (selectionDefect_sum_tendsto hTarget.isCap (fun n => (hU n).isCap) hc hrate hHausdorff)
+      hleft hright
 
 end PartialGrid
 end AmbidextrousSofa

@@ -196,62 +196,6 @@ theorem selected_erosion_moment [Fintype ι] [Fintype κ] {U : Set Plane}
   unfold finiteSpatialScore at hcomparison hmax
   linarith [hmax _ hcap hsub]
 
-/-- A selected polygon only uses contained competitors here, so the same
-theorem applies inside the artificial compact box used for selection. -/
-theorem selected_right_erosion_moment [Fintype ι] [Fintype κ] {U : Set Plane}
-    (hU : IsDownwardCap U) (hW : 1 ≤ capWidth U)
-    (normal : ι → Plane) (hnormal : ∀ i, 0 < (normal i).2)
-    (hslope : Function.Injective (wallSlope normal)) (hpoly : U = circumscription U normal)
-    (corners : List (ι × ι)) (terminal : Option ι)
-    (penaltyNormal : κ → Plane) (weight target : κ → ℝ) {B : ℝ} (hB : 0 ≤ B)
-    (hweight : ∀ i, 0 ≤ weight i)
-    (hpoints : ∀ p ∈ U, ∀ i, |coordDot p (penaltyNormal i)| ≤ B)
-    (htarget : ∀ i, |target i| ≤ B)
-    (hmax : ∀ V : Set Plane, IsDownwardCap V → V ⊆ U →
-      finiteSpatialScore V normal corners terminal - sampledPenalty V penaltyNormal weight target ≤
-        finiteSpatialScore U normal corners terminal - sampledPenalty U penaltyNormal weight target) :
-    finiteRightMoment U normal corners terminal ≤
-      capRoof U (horizontalRight U) -
-        rightEndpointPressure (capRoof U) (finiteBarrier U normal corners terminal)
-          (horizontalLeft U) (horizontalRight U) + supportPenaltyLipschitz B penaltyNormal weight := by
-  have := selected_erosion_moment hU hW normal hnormal hslope hpoly corners terminal
-    penaltyNormal weight target hB hweight hpoints htarget hmax (rightErosion U) 0 (-1)
-    (fun i => -max (normal i).1 0) fun ε h0 hε => ⟨hU.rightErosion h0 hε,
-      rightErosion_subset U ε, abs_support_rightErosion_sub_le hU hW h0 hε,
-      by rw [horizontalLeft_rightErosion hU h0 hε]; ring,
-      by rw [horizontalRight_rightErosion hU h0 hε]; ring, by
-        simpa only [mul_zero, add_zero, mul_neg, mul_one, ← sub_eq_add_neg] using
-          (congrArg (rightErosion · ε) hpoly).trans (rightErosion_upperPolygon normal _ h0)⟩
-  rw [finiteRightMoment, rightErosionVelocity]
-  linarith
-
-theorem selected_left_erosion_moment [Fintype ι] [Fintype κ] {U : Set Plane}
-    (hU : IsDownwardCap U) (hW : 1 ≤ capWidth U)
-    (normal : ι → Plane) (hnormal : ∀ i, 0 < (normal i).2)
-    (hslope : Function.Injective (wallSlope normal)) (hpoly : U = circumscription U normal)
-    (corners : List (ι × ι)) (terminal : Option ι)
-    (penaltyNormal : κ → Plane) (weight target : κ → ℝ) {B : ℝ} (hB : 0 ≤ B)
-    (hweight : ∀ i, 0 ≤ weight i)
-    (hpoints : ∀ p ∈ U, ∀ i, |coordDot p (penaltyNormal i)| ≤ B)
-    (htarget : ∀ i, |target i| ≤ B)
-    (hmax : ∀ V : Set Plane, IsDownwardCap V → V ⊆ U →
-      finiteSpatialScore V normal corners terminal - sampledPenalty V penaltyNormal weight target ≤
-        finiteSpatialScore U normal corners terminal - sampledPenalty U penaltyNormal weight target) :
-    finiteLeftMoment U normal corners terminal ≤
-      capRoof U (horizontalLeft U) -
-        leftEndpointPressure (capRoof U) (finiteBarrier U normal corners terminal)
-          (horizontalLeft U) (horizontalRight U) + supportPenaltyLipschitz B penaltyNormal weight := by
-  have := selected_erosion_moment hU hW normal hnormal hslope hpoly corners terminal
-    penaltyNormal weight target hB hweight hpoints htarget hmax (leftErosion U) 1 0
-    (fun i => -max (-(normal i).1) 0) fun ε h0 hε => ⟨hU.leftErosion h0 hε,
-      leftErosion_subset U ε, abs_support_leftErosion_sub_le hU hW h0 hε,
-      by rw [horizontalLeft_leftErosion hU h0 hε]; ring,
-      by rw [horizontalRight_leftErosion hU h0 hε]; ring, by
-        simpa only [mul_zero, add_zero, mul_neg, mul_one, ← sub_eq_add_neg] using
-          (congrArg (leftErosion · ε) hpoly).trans (leftErosion_upperPolygon normal _ h0)⟩
-  rw [finiteLeftMoment, leftErosionVelocity]
-  linarith
-
 /-- Central horizontal source length minus both charged exterior source
 lengths, at the same supporting normal. -/
 def finiteExposureDefect [Fintype ι] (U : Set Plane) (normal : ι → Plane)
