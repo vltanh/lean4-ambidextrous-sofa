@@ -10,8 +10,8 @@ public import AmbidextrousSofa.Analysis.WideCap
 
 At the exact angle pi/4 the two inner walls use the actual support maxima
 of x+y and -x+y. Their minimum is a tent. Clipping its negative part gives
-a pointwise lower bound for every full or partial barrier whose visited
-range reaches pi/4, including the terminal endpoint case.
+the diagonal barrier, a pointwise lower bound for every full or partial
+barrier whose visited range reaches pi/4, including the terminal endpoint case.
 -/
 
 noncomputable section
@@ -23,6 +23,10 @@ namespace AmbidextrousSofa
 def diagonalRight (U : Set Plane) : ℝ := support U (1, 1)
 
 def diagonalLeft (U : Set Plane) : ℝ := support U (-1, 1)
+
+/-- The positive part of the corner at `π / 4`. -/
+def diagonalBarrier (U : Set Plane) (x : ℝ) : ℝ :=
+  max (cornerWall U (Real.pi / 4) x) 0
 
 theorem firstWall_pi_div_four_eq_diagonal {U : Set Plane}
     (hU : IsDownwardCap U) (x : ℝ) :
@@ -42,22 +46,25 @@ theorem secondWall_pi_div_four_eq_diagonal {U : Set Plane}
     Real.sin_pi_div_four, Real.cos_pi_div_four, div_eq_iff (by positivity), diagonalLeft]
   linarith [Real.sq_sqrt (show (0 : ℝ) ≤ 2 by norm_num)]
 
-theorem cornerWall_pi_div_four_eq_tent {U : Set Plane}
-    (hU : IsDownwardCap U) (x : ℝ) :
-    cornerWall U (Real.pi / 4) x =
-      (diagonalRight U + diagonalLeft U) / 2 - Real.sqrt 2 -
-        |x - (diagonalRight U - diagonalLeft U) / 2| := by
-  rw [cornerWall, firstWall_pi_div_four_eq_diagonal hU,
+theorem diagonalBarrier_nonneg (U : Set Plane) (x : ℝ) : 0 ≤ diagonalBarrier U x :=
+  le_max_right _ _
+
+theorem continuous_diagonalBarrier (U : Set Plane) : Continuous (diagonalBarrier U) := by
+  unfold diagonalBarrier cornerWall firstWall secondWall
+  fun_prop
+
+theorem IsDownwardCap.diagonalBarrier_eq_tent {U : Set Plane} (hU : IsDownwardCap U) (x : ℝ) :
+    diagonalBarrier U x = max ((diagonalRight U + diagonalLeft U) / 2 - Real.sqrt 2 -
+      |x - (diagonalRight U - diagonalLeft U) / 2|) 0 := by
+  rw [diagonalBarrier, cornerWall, firstWall_pi_div_four_eq_diagonal hU,
     secondWall_pi_div_four_eq_diagonal hU, ← min_symmetric_lines]
   ring_nf
 
-theorem IsDownwardCap.diagonal_tent_le_partialBarrier {U : Set Plane}
+theorem IsDownwardCap.diagonalBarrier_le_partialBarrier {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hα0 : Real.pi / 4 ≤ α)
-    (hαL : α ≤ Real.pi / 2) (x : ℝ) :
-    max ((diagonalRight U + diagonalLeft U) / 2 - Real.sqrt 2 -
-      |x - (diagonalRight U - diagonalLeft U) / 2|) 0 ≤ partialBarrier U α x :=
-  cornerWall_pi_div_four_eq_tent hU x ▸ max_le
-    (cornerWall_pi_div_four_le_partialBarrier hU.isCompact hα0 hαL x) (partialBarrier_nonneg _ _ _)
+    (hαL : α ≤ Real.pi / 2) (x : ℝ) : diagonalBarrier U x ≤ partialBarrier U α x :=
+  max_le (cornerWall_pi_div_four_le_partialBarrier hU.isCompact hα0 hαL x)
+    (partialBarrier_nonneg _ _ _)
 
 theorem IsDownwardCap.diagonalRight_ge {U : Set Plane} (hU : IsDownwardCap U)
     {p : Plane} (hp : p ∈ U) : p.1 + p.2 ≤ diagonalRight U := by

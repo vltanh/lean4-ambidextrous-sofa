@@ -26,9 +26,10 @@ def shortWidthPaidEnvelope (k h : ℝ) : ℝ :=
     nearTriangleCoefficient k / 2 * (((2 / 25) - (1 - k) * h) ^ 2 + (2 / 25) ^ 2) +
       k * (shortOuterTipAllowance k + h / 4) ^ 2
 
-theorem diagonal_offset_inv {k : ℝ} (hk : 0 < k) (hksq : k ^ 2 + 2 * k = 1) :
-    1 / k = k + 2 :=
-  (div_eq_iff hk.ne').mpr (by linear_combination -hksq)
+/-- Division by the diagonal offset, using `k ^ 2 + 2 * k = 1`. -/
+theorem div_diagonal_offset {k : ℝ} (hk : 0 < k) (hksq : k ^ 2 + 2 * k = 1) (x : ℝ) :
+    x / k = x * (k + 2) :=
+  (div_eq_iff hk.ne').mpr (by linear_combination -x * hksq)
 
 theorem diagonal_complement_inv {k : ℝ} (hk1 : k < 1) (hksq : k ^ 2 + 2 * k = 1) :
     1 / (1 - k) = (3 + k) / 2 :=
@@ -41,7 +42,7 @@ theorem nearTriangleCoefficient_eq {k : ℝ} (hk : 0 < k) (hk1 : k < 1)
 
 theorem shortOuterTipAllowance_eq {k : ℝ} (hk : 0 < k) (hksq : k ^ 2 + 2 * k = 1) :
     shortOuterTipAllowance k = (483 - 920 * k) / 1000 := by
-  rw [shortOuterTipAllowance, div_eq_mul_one_div (2 / 25 : ℝ) k, diagonal_offset_inv hk hksq]
+  rw [shortOuterTipAllowance, div_diagonal_offset hk hksq]
   ring
 
 theorem short_nearDiagonal_constants {k : ℝ}
@@ -55,9 +56,8 @@ theorem short_nearDiagonal_constants {k : ℝ}
   have hbsq := nearDiagonalNorm_sq k
   have hk7 : 7 / 17 < k := by nlinarith
   have hb2 : nearDiagonalNorm k < (28 - 2 * k) / 25 := by nlinarith
-  rw [div_eq_mul_one_div (2 / 25 : ℝ) k, div_eq_mul_one_div (2 / 25 : ℝ) (1 - k),
-    diagonal_offset_inv hk hksq, diagonal_complement_inv (by linarith) hksq,
-    shortOuterTipAllowance_eq hk hksq]
+  rw [div_diagonal_offset hk hksq, div_eq_mul_one_div (2 / 25 : ℝ) (1 - k),
+    diagonal_complement_inv (by linarith) hksq, shortOuterTipAllowance_eq hk hksq]
   refine ⟨?_, ?_, ?_, ?_⟩ <;> linarith
 
 theorem shortWidthPaidEnvelope_lt {k h : ℝ}

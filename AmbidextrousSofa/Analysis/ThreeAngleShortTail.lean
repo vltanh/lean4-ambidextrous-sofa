@@ -1,15 +1,17 @@
 module
 
-public import AmbidextrousSofa.Analysis.ThreeAngleDeficit
+public import AmbidextrousSofa.Analysis.NearDiagonalTail
 
 @[expose] public section
 
 /-!
 # Both short-width tails in the literal three-angle barrier
 
-The two nearby corners pay the same actual support-cut triangles as in
-the short-width comparison. Their disjointness at the diagonal apex and
-their outer-tip corrections are proved before integration.
+The two nearby corners pay the actual support-cut triangles of the
+short-width comparison on top of the diagonal niche floor. Their inner tips
+lie on their own side of the diagonal apex, so the two triangles are
+disjoint. Only the outer tips can leave the middle window, and their
+omitted areas are retained in the integral bound.
 -/
 
 noncomputable section
@@ -18,28 +20,8 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-theorem IsDownwardCap.threeAngle_left_competitor_le {U : Set Plane}
-    (hU : IsDownwardCap U) {h k u v : ℝ} (hk : 0 < k)
-    (hkoffset : k = Real.sqrt 2 - 1) (hcomp : u + k ≤ support U (1, k)) (x : ℝ) :
-    min ((u + k - nearDiagonalNorm k - x) / k)
-      (1 - h + k * v - nearDiagonalLeftDeficit U h k v - nearDiagonalNorm k + k * x) ≤
-        threeAngleBarrier U x := by
-  refine le_trans ?_ (hkoffset ▸ first_corner_le_threeAngleBarrier U x)
-  rw [cornerWall, hU.firstWall_arctan hk.ne', hU.secondWall_arctan, nearDiagonalLeftDeficit]
-  exact min_le_min (div_le_div_of_nonneg_right (by linarith only [hcomp]) hk.le) (by linarith)
-
-theorem IsDownwardCap.threeAngle_right_competitor_le {U : Set Plane}
-    (hU : IsDownwardCap U) {h k u v : ℝ} (hk : 0 < k)
-    (hkoffset : k = Real.sqrt 2 - 1)
-    (hcomp : v + k * (1 - h) ≤ support U (-1, k)) (x : ℝ) :
-    min ((v + k * (1 - h) - nearDiagonalNorm k + x) / k)
-      (1 + k * u - nearDiagonalRightDeficit U k u - nearDiagonalNorm k - k * x) ≤
-        threeAngleBarrier U x := by
-  refine le_trans ?_ (hkoffset ▸ last_corner_le_threeAngleBarrier U x)
-  rw [cornerWall, hU.firstWall_complement_arctan, hU.secondWall_complement_arctan hk.ne',
-    min_comm (support U (k, 1) - nearDiagonalNorm k - k * x), nearDiagonalRightDeficit]
-  exact min_le_min (div_le_div_of_nonneg_right (by linarith only [hcomp]) hk.le) (by linarith)
-
+/-- Exact integration of both actual extra tails, including the two
+possible omitted outer tips. -/
 theorem IsDownwardCap.threeAngle_integral_ge_diagonal_two_tails {U : Set Plane}
     (hU : IsDownwardCap U) {a h k u v L : ℝ}
     (ha : 0 < a) (hk : 0 < k) (hk1 : k < 1) (hksq : k ^ 2 + 2 * k = 1)
@@ -76,19 +58,23 @@ theorem IsDownwardCap.threeAngle_integral_ge_diagonal_two_tails {U : Set Plane}
   have hpt (x : ℝ) : max (min (u - k - x) (v - h - k + x)) 0 +
       affineCutTriangle k EL (k - v + h) x + affineCutTriangle k ER (k - u) (-x) ≤
         threeAngleBarrier U x := by
-    have hfloor := hU.threeAngle_diagonal_floor hkoffset hu hv x
+    have hfloor := (hU.diagonalBarrier_eq_tilted hkoffset hu hv x).ge.trans
+      (le_max_left _ _ : diagonalBarrier U x ≤ threeAngleBarrier U x)
     rcases le_or_gt x ((u - v + h) / 2) with hx | hx
     · rw [min_eq_right (by linarith only [hx]), show v - h - k + x = x - (k - v + h) by ring]
         at hfloor ⊢
       rw [affineCutTriangle_eq_zero_of_right hk1 (hendR.trans (by linarith only [hx])), add_zero]
       exact near_tail_add_floor_le hk hk1 hksq hfloor (by linarith only [hL])
-        (shortLeftTailHeight_peak hη) (hU.threeAngle_left_competitor_le hk hkoffset hcompR x)
+        (shortLeftTailHeight_peak hη) (hU.threeAngleBarrier_ge_first hkoffset hcompR
+          (le_of_eq (by rw [nearDiagonalLeftDeficit]; ring)) x)
     · rw [min_eq_left (by linarith only [hx]), show u - k - x = -x - (k - u) by ring] at hfloor ⊢
       rw [affineCutTriangle_eq_zero_of_right hk1 (hendL.trans hx.le), add_zero]
+      have hwall := (min_comm _ _).trans_le (hU.threeAngleBarrier_ge_last hkoffset
+        (le_of_eq (by rw [nearDiagonalRightDeficit]; ring) :
+          1 + k * u - nearDiagonalRightDeficit U k u ≤ _) hcompL x)
       exact near_tail_add_floor_le (A := v + k * (1 - h) - nearDiagonalNorm k) hk hk1 hksq hfloor
         (by linarith only [hR]) (shortRightTailHeight_peak hη)
-        (by simpa only [sub_neg_eq_add, mul_neg, ← sub_eq_add_neg] using
-          hU.threeAngle_right_competitor_le hk hkoffset hcompL x)
+        (by simpa only [sub_neg_eq_add, mul_neg, ← sub_eq_add_neg] using hwall)
   have hj : 0 < 1 - k := sub_pos.mpr hk1
   have hIL := integral_affineCutTriangle_ge_of_outer_tip_bound hk hk1
     (show 0 ≤ EL from le_max_right _ _) hpL.1 hpL.2

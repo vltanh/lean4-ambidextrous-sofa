@@ -31,25 +31,32 @@ theorem fullTriangleCos_bounds {k : ℝ}
   rw [fullTriangleCos, lt_div_iff₀ hN, div_lt_iff₀ hN]
   constructor <;> nlinarith
 
+/-- The diagonal offset `k = √2 - 1` and the cosine of its nearby angle. -/
+theorem fullTriangle_offset_bounds :
+    41 / 99 < Real.sqrt 2 - 1 ∧ Real.sqrt 2 - 1 < 29 / 70 ∧
+      (Real.sqrt 2 - 1) ^ 2 + 2 * (Real.sqrt 2 - 1) = 1 ∧
+      923 / 1000 < fullTriangleCos (Real.sqrt 2 - 1) ∧
+      fullTriangleCos (Real.sqrt 2 - 1) < 231 / 250 := by
+  have hk0 := diagonal_offset_gt_forty_one_ninety_ninths
+    (by linarith [sqrt_two_sub_one_strict_bounds.1]) sqrt_two_sub_one_quadratic
+  exact ⟨hk0, sqrt_two_sub_one_strict_bounds.2.2, sqrt_two_sub_one_quadratic,
+    fullTriangleCos_bounds hk0 sqrt_two_sub_one_strict_bounds.2.2 sqrt_two_sub_one_quadratic⟩
+
 theorem fullTriangle_norm_identities {k : ℝ} (hk : 0 < k)
     (hksq : k ^ 2 + 2 * k = 1) :
-    1 / k = k + 2 ∧
-      nearDiagonalNorm k / k = 2 * (1 + k) * fullTriangleCos k ∧
+    nearDiagonalNorm k / k = 2 * (1 + k) * fullTriangleCos k ∧
       nearDiagonalNorm k * (k + 3) = 4 * fullTriangleCos k := by
   have hN := (nearDiagonalNorm_pos k).ne'
   have hN2 := nearDiagonalNorm_sq k
-  rw [fullTriangleCos, mul_one_div, mul_one_div, div_eq_iff hk.ne', div_eq_div_iff hk.ne' hN,
-    eq_div_iff hN]
-  exact ⟨by linear_combination -hksq, by linear_combination hN2 - hksq,
-    by linear_combination (k + 3) * hN2 + (k + 1) * hksq⟩
+  rw [fullTriangleCos, mul_one_div, mul_one_div, div_eq_div_iff hk.ne' hN, eq_div_iff hN]
+  exact ⟨by linear_combination hN2 - hksq, by linear_combination (k + 3) * hN2 + (k + 1) * hksq⟩
 
 theorem fullTriangle_outer_zero_le {a e k u : ℝ} (hk : 0 < k)
     (hksq : k ^ 2 + 2 * k = 1) (he : e ≤ 1 - (a - u)) :
     fullTriangleRightZero k u (wideEndpointIntercept a e k) ≤
       1 + a - 2 * fullTriangleCos k := by
-  have hi := fullTriangle_norm_identities hk hksq
   rw [fullTriangleRightZero, wideEndpointIntercept, div_le_iff₀ (by linarith), sub_div,
-    div_eq_mul_one_div a k, hi.1, hi.2.1]
+    div_diagonal_offset hk hksq a, (fullTriangle_norm_identities hk hksq).1]
   linarith only [he]
 
 theorem fullTriangle_floor_loss_le_endpoint {a e k u : ℝ} (hk : 0 < k)
@@ -58,45 +65,15 @@ theorem fullTriangle_floor_loss_le_endpoint {a e k u : ℝ} (hk : 0 < k)
       max (a - u - (2 * fullTriangleCos k - (1 + k))) 0 :=
   max_le_max (by linarith only [fullTriangle_outer_zero_le hk hksq he]) le_rfl
 
-theorem fullTriangle_crossing_after_apex {u v h k b : ℝ}
-    (hk0 : 41 / 99 < k) (hk1 : k < 29 / 70)
-    (hh : 0 ≤ h) (hM : 179 / 200 ≤ (u + v - h) / 2)
-    (hb : b ≤ 1 - nearDiagonalNorm k + k * v - h) :
-    (u - v + h) / 2 < wideCrossing k u b := by
-  have hN := (wide_norm_rational_bounds (by linarith only [hk0]) hk1).1
-  rw [wideCrossing, lt_div_iff₀ (by linarith only [hk0])]
-  linarith only [mul_nonneg (by linarith only [hk1] : (0 : ℝ) ≤ 1 - k)
-    (by linarith only [hM, hh] : 0 ≤ (u + v + h) / 2 - 179 / 200), hb, hN, hk1]
-
-theorem fullTriangle_reflected_crossing_after_apex {u v h k b : ℝ}
-    (hk0 : 41 / 99 < k) (hk1 : k < 29 / 70)
-    (hM : 179 / 200 ≤ (u + v - h) / 2)
-    (hb : b ≤ 1 - nearDiagonalNorm k + k * u) :
-    (v - h - u) / 2 < wideCrossing k (v - h) b := by
-  have hN := (wide_norm_rational_bounds (by linarith only [hk0]) hk1).1
-  rw [wideCrossing, lt_div_iff₀ (by linarith only [hk0])]
-  linarith only [mul_nonneg (by linarith only [hk1] : (0 : ℝ) ≤ 1 - k) (sub_nonneg.mpr hM),
-    hb, hN, hk1]
-
-theorem fullTriangle_loss_sum_le {a eR eL h k u v : ℝ}
-    (hk0 : 41 / 99 < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1)
-    (hh0 : 0 ≤ h) (hh1 : h ≤ 17 / 50)
-    (heR : eR ≤ 1 - (a - u)) (heL : eL ≤ 1 - (a - v + h))
-    (hwR : a - u ≤ 3 / 5 - h / 4) (hwL : a - v + h ≤ 3 / 5 + 3 * h / 4) :
-    fullTriangleFloorCoefficient k *
-      ((max (fullTriangleRightZero k u (wideEndpointIntercept a eR k) - (u - k)) 0) ^ 2 +
-        (max (fullTriangleRightZero k (v - h) (wideEndpointIntercept a eL k) -
-          (v - h - k)) 0) ^ 2) ≤ fullTriangleLoss h k (fullTriangleCos k) := by
-  have hk : 0 < k := by linarith only [hk0]
-  have hc := fullTriangleCos_bounds hk0 hk1 hksq
-  have hR := fullTriangle_floor_loss_le_endpoint hk hksq heR
-  have hL := fullTriangle_floor_loss_le_endpoint (a := a) (e := eL) (u := v - h) hk hksq
-    (by linarith only [heL])
-  rw [fullTriangleFloorCoefficient_eq hk hksq, fullTriangleLoss]
+/-- The floor losses of two endpoint deficits `wR ≤ bR` and `wL ≤ bL` above the threshold `t`. -/
+theorem floor_loss_le_of_bounds {k t wR wL bR bL : ℝ} (hk : k ≤ 1) (hR : wR ≤ bR)
+    (hL : wL ≤ bL) (htR : t ≤ bR) (htL : t ≤ bL) :
+    (1 - k) / 2 * ((max (wR - t) 0) ^ 2 + (max (wL - t) 0) ^ 2) ≤
+      (1 - k) / 2 * ((bR - t) ^ 2 + (bL - t) ^ 2) := by
+  have : 0 ≤ (1 - k) / 2 := by linarith only [hk]
   gcongr
-  · linarith only [hk1]
-  · exact hR.trans (max_le (by linarith only [hwR]) (by linarith only [hc.2, hk0, hh1]))
-  · exact hL.trans (max_le (by linarith only [hwL]) (by linarith only [hc.2, hk0, hh0]))
+  · exact max_le (by linarith only [hR]) (by linarith only [htR])
+  · exact max_le (by linarith only [hL]) (by linarith only [htL])
 
 theorem fullTriangle_gain_sum {a eR eL h k u v bR bL δR δL : ℝ}
     (hk : 0 < k) (hksq : k ^ 2 + 2 * k = 1)
@@ -106,9 +83,8 @@ theorem fullTriangle_gain_sum {a eR eL h k u v bR bL δR δL : ℝ}
     fullTriangleDemand a ((u + v) / 2) h k (fullTriangleCos k) ≤
       wideGain k u bR (wideEndpointIntercept a eR k) +
         wideGain k (v - h) bL (wideEndpointIntercept a eL k) + (δR + δL) / 2 := by
-  have hi := fullTriangle_norm_identities hk hksq
   rw [fullTriangleDemand, wideGain, wideGain, wideEndpointIntercept, wideEndpointIntercept,
-    div_eq_mul_one_div (a - _), hi.1, hbR, hbL]
-  linarith only [hi.2.2, hEP]
+    div_diagonal_offset hk hksq, hbR, hbL]
+  linarith only [(fullTriangle_norm_identities hk hksq).2, hEP]
 
 end AmbidextrousSofa

@@ -77,12 +77,8 @@ theorem short_diagonal_stability {a h k u v : ℝ}
     (hksq : k ^ 2 + 2 * k = 1)
     (hu : u ∈ Icc (a / 2) a) (hv : v ∈ Icc (a / 2) a)
     (hscore : 41 / 50 ≤ diagonalRelaxation a h k u v) :
-    9 / 10 < a ∧ h < 1 / 23 ∧
-      u - a / 2 < 323 / 1000 + h / 4 ∧
-      v - a / 2 < 323 / 1000 + h / 4 ∧
-      16 / 25 < (u + v) / 2 - h / 4 ∧
-      0 < (u + v - h) / 2 - k ∧
-      u - k - a / 2 < 0 ∧ v - h - k - a / 2 < 0 := by
+    9 / 10 < a ∧ h < 1 / 23 ∧ u - a / 2 < 323 / 1000 + h / 4 ∧
+      v - a / 2 < 323 / 1000 + h / 4 ∧ 16 / 25 < (u + v) / 2 - h / 4 := by
   have hcritical := diagonalRelaxation_le_critical a h k u v
     (by linarith) (by linarith) (by linarith)
   have hwidth := diagonal_critical_width_mono ha1
@@ -112,7 +108,7 @@ theorem short_diagonal_stability {a h k u v : ℝ}
   have hq : 0 < (u + v - h) / 2 - k := by linarith [hu.1, hv.1]
   have hclipR : u - k - a / 2 < 0 := by linarith
   have hclipL : v - h - k - a / 2 < 0 := by linarith
-  refine ⟨ha, hh, hright, hleft, ?_, hq, hclipR, hclipL⟩
+  refine ⟨ha, hh, hright, hleft, ?_⟩
   by_contra! hm
   unfold diagonalRelaxation at hscore
   rw [max_eq_left hq.le, max_eq_right hclipR.le, max_eq_right hclipL.le] at hscore

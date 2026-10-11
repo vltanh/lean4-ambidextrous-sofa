@@ -63,8 +63,9 @@ theorem fullTriangleRelaxation_add_partial_loss_lt {a h k c u v : ℝ}
     (hc0 : 923 / 1000 < c) (hc1 : c < 231 / 250)
     (hq : 0 ≤ (u + v - h) / 2 - k) :
     fullTriangleRelaxation a h k c u v + partialTriangleLoss h k c < (41 / 50 : ℝ) := by
-  have hbound := fullTriangleRelaxation_le_bound ha hh0 hh1 hk0 hk1 hksq hc0 hc1 hq
   obtain ⟨hs0, hs1⟩ := fullTriangle_stationary_offset_bounds hk0 hk1 hc0 hc1
+  have hbound := fullTriangleRelaxation_le_bound ha (by norm_num) hh0 hh1 hk0 hk1 hksq
+    (by linarith only [hs0]) hs1 hq
   rw [fullTriangleBound] at hbound
   rw [partialTriangleLoss]
   generalize fullTriangleStationaryOffset (37 / 25) k c = s at hs0 hs1 hbound

@@ -50,7 +50,7 @@ theorem IsDownwardCap.nearDiagonalRightDeficit_mem {U : Set Plane}
     simp only [coordDot, mul_one]
     linarith [mul_le_mul_of_nonneg_left ((hU.diagonalRight_ge hp).trans_eq hu) hk0,
       mul_le_mul_of_nonneg_left (hU.inStrip hp).2 (sub_nonneg.mpr hk1)]
-  have hproj := hl ▸ hr ▸ horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex
+  have hproj := hU.horizontalProjection_eq_of hl hr
   have hlower := hU.capRoof_le_nearDiagonalRight k u
     (hproj ▸ ⟨by linarith, by linarith⟩ : a / 2 ∈ horizontalProjection U)
   rw [hright] at hlower
@@ -75,7 +75,7 @@ theorem IsDownwardCap.nearDiagonalLeftDeficit_mem {U : Set Plane}
   obtain ⟨m, c, hm⟩ := haffine
   obtain ⟨hma, hmc⟩ := tilted_middle_slope ha hm hleft hright
   have hmk : m ≤ k := le_of_mul_le_mul_right (hma.trans_le hhk) ha
-  have hproj := hl ▸ hr ▸ horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex
+  have hproj := hU.horizontalProjection_eq_of hl hr
   have hupper : support U (-k, 1) ≤ 1 - h + k * v := support_le_of_forall hU.nonempty fun p hp => by
     have hx : p.1 ∈ Icc (-a) a := hproj ▸ ⟨p, hp, rfl⟩
     have hy := le_capRoof hU.isCompact (show (p.1, p.2) ∈ U from hp)
@@ -95,9 +95,8 @@ theorem IsDownwardCap.nearDiagonalLeftDeficit_mem {U : Set Plane}
   exact ⟨by unfold nearDiagonalLeftDeficit; linarith, by linarith⟩
 
 theorem IsDownwardCap.diagonalRight_companion_support_ge {U : Set Plane}
-    (hU : IsDownwardCap U) {k u : ℝ} (hk0 : 0 ≤ k) (hk1 : k ≤ 1)
+    (hU : IsDownwardCap U) {k u : ℝ} (hk1 : k ≤ 1)
     (hu : diagonalRight U = 1 + u) : u + k ≤ support U (1, k) := by
-  have _ := hk0 -- not needed by the proof; it stays in the statement for the callers
   obtain ⟨p, hp, hpd⟩ := exists_coordDot_eq_support hU.isCompact hU.nonempty (1, 1)
   have hs := coordDot_le_support hU.isCompact hp (1, k)
   simp only [coordDot, mul_one] at hpd hs
@@ -110,16 +109,15 @@ point on the actual lower wing, or, when the maximizer lies elsewhere, at
 the lower middle endpoint, which then attains the same diagonal support. -/
 theorem IsDownwardCap.diagonalLeft_companion_support_ge {U : Set Plane}
     (hU : IsDownwardCap U) {a h k v : ℝ} (ha : 0 < a)
-    (hh : 0 ≤ h) (hha : h ≤ a) (hk0 : 0 ≤ k) (hk1 : k ≤ 1)
+    (hh : 0 ≤ h) (hha : h ≤ a) (hk1 : k ≤ 1)
     (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
     (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1)
     (haffine : ∃ m c : ℝ, ∀ x ∈ Icc (-a / 2) (a / 2), capRoof U x = m * x + c)
     (hv : diagonalLeft U = 1 - h + v) :
     v + k * (1 - h) ≤ support U (-1, k) := by
-  have _ := hk0 -- not needed by the proof; it stays in the statement for the callers
   obtain ⟨m, c, hm⟩ := haffine
   obtain ⟨hma, hmc⟩ := tilted_middle_slope ha hm hleft hright
-  have hproj := hl ▸ hr ▸ horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex
+  have hproj := hU.horizontalProjection_eq_of hl hr
   obtain ⟨p, hp, hpd⟩ := exists_coordDot_eq_support hU.isCompact hU.nonempty (-1, 1)
   have hs := coordDot_le_support hU.isCompact hp (-1, k)
   simp only [coordDot, mul_neg_one, mul_one] at hpd hs

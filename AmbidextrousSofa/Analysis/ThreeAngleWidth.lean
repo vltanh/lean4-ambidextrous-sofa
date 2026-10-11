@@ -1,5 +1,6 @@
 module
 
+public import AmbidextrousSofa.Analysis.ThreeAngleComparison
 public import AmbidextrousSofa.Analysis.ThreeAngleShortWidth
 public import AmbidextrousSofa.Analysis.ThreeAngleWideWidth
 public import AmbidextrousSofa.Analysis.ThreeAngleTriangleWidth
@@ -33,9 +34,8 @@ theorem IsDownwardCap.threeAngle_width_bounds_of_endpoint_laws {U : Set Plane}
     (hscore : 41 / 50 ≤ threeAngleComparisonScore U) :
     1001 / 1000 < a ∧ a < 37 / 25 ∧ h < 17 / 50 := by
   -- The endpoint laws give lower bounds on the two endpoint heights.
-  have hceiling := hU.capRoof_le_tiltedAffineCeiling ha0 hl hr hleft hright haffine (-a) (by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hl, hr]
-    exact ⟨le_rfl, by linarith only [ha0]⟩)
+  have hceiling := hU.capRoof_le_tiltedAffineCeiling ha0 hl hr hleft hright haffine (-a)
+    (hU.horizontalProjection_eq_of hl hr ▸ ⟨le_rfl, by linarith only [ha0]⟩)
   rw [tiltedAffineCeiling, mul_neg, div_mul_cancel₀ h ha0.ne'] at hceiling
   obtain ⟨hER, hEL, hEP⟩ := partialTriangle_endpoint_lower_bounds hqR hqL hEPR hEPL
     (capRoof_le_one hU.isCompact hU.inStrip a) (by linarith only [hceiling])

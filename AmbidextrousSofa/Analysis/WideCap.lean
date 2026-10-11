@@ -7,8 +7,9 @@ public import AmbidextrousSofa.Measure.CapScore
 /-!
 # A coercive bound for the actual cap score
 
-The two baseline endpoints supply support witnesses at angle `π / 4`.
-Their two attached inner walls give a tent below the actual barrier. The
+Every corner at a visited angle lies below the actual barrier. The two
+baseline endpoints supply support witnesses at angle `π / 4`, and their
+two attached inner walls give a tent below the actual barrier. The
 signed tent integral on the middle half is evaluated exactly. This proves
 the large-width exclusion on the full cap domain, including subunit height,
 nonsmooth boundaries, and a terminal angle equal to `π / 4`.
@@ -52,24 +53,20 @@ theorem IsDownwardCap.secondWall_pi_div_four_lower {U : Set Plane}
   rw [le_div_iff₀ (by positivity)]
   linarith [Real.sq_sqrt (show (0 : ℝ) ≤ 2 by norm_num)]
 
-/-- The endpoint case uses the actual whole terminal wall. -/
+/-- The corner at a visited angle lies below the barrier. At the terminal angle the corner
+uses the actual whole outgoing wall. -/
+theorem cornerWall_le_partialBarrier {U : Set Plane} (hU : IsCompact U) {t α : ℝ} (ht0 : 0 < t)
+    (htα : t ≤ α) (hαL : α ≤ Real.pi / 2) (x : ℝ) : cornerWall U t x ≤ partialBarrier U α x := by
+  rcases htα.lt_or_eq with hlt | rfl
+  · exact (cornerWall_le_sweptNiche (sweptWallValues_bddAbove hU hαL x) ⟨ht0, hlt⟩).trans
+      (le_max_left _ _)
+  · exact (min_le_left _ _).trans (le_max_right _ _)
+
 theorem cornerWall_pi_div_four_le_partialBarrier {U : Set Plane}
     (hU : IsCompact U) {α : ℝ} (hα0 : Real.pi / 4 ≤ α)
     (hαL : α ≤ Real.pi / 2) (x : ℝ) :
-    cornerWall U (Real.pi / 4) x ≤ partialBarrier U α x := by
-  rcases eq_or_lt_of_le hα0 with rfl | hlt
-  · exact (min_le_left _ _).trans (le_max_right _ _)
-  · exact (cornerWall_le_sweptNiche (sweptWallValues_bddAbove hU hαL x)
-      ⟨by linarith [Real.pi_pos], hlt⟩).trans (le_max_left _ _)
-
-/-- The lower tent is obtained from real support witnesses in the cap. -/
-theorem IsDownwardCap.baseline_tent_le_partialBarrier {U : Set Plane}
-    (hU : IsDownwardCap U) {α : ℝ} (hα0 : Real.pi / 4 ≤ α)
-    (hαL : α ≤ Real.pi / 2) (x : ℝ) :
-    min (horizontalRight U - Real.sqrt 2 - x)
-      (x - horizontalLeft U - Real.sqrt 2) ≤ partialBarrier U α x :=
-  (min_le_min (hU.firstWall_pi_div_four_lower x) (hU.secondWall_pi_div_four_lower x)).trans
-    (cornerWall_pi_div_four_le_partialBarrier hU.isCompact hα0 hαL x)
+    cornerWall U (Real.pi / 4) x ≤ partialBarrier U α x :=
+  cornerWall_le_partialBarrier hU (by positivity) hα0 hαL x
 
 /-- Exact integral of the signed tent on the moving middle half. The formula
 does not replace negative fibers by their positive part. -/
@@ -101,7 +98,7 @@ theorem IsDownwardCap.capScore_lt_half_M_of_six_le_width {U : Set Plane}
   rw [capWidth] at hwidth
   set l := horizontalLeft U
   set r := horizontalRight U
-  -- The roof is at most one on the outer half, and the tent lies below the barrier.
+  -- The roof is at most one on the outer half, and the baseline tent lies below the barrier.
   have hroof := setIntegral_mono (s := Icc l r \ middleHalfInterval l r)
     ((hU.integrableOn_capRoof_Icc l r).mono_set sdiff_subset)
     (continuous_const.integrableOn_Icc.mono_set sdiff_subset)
@@ -111,7 +108,9 @@ theorem IsDownwardCap.capScore_lt_half_M_of_six_le_width {U : Set Plane}
     ((show Continuous fun x => min (r - Real.sqrt 2 - x) (x - l - Real.sqrt 2) by
       fun_prop).continuousOn.integrableOn_compact isCompact_Icc)
     ((integrableOn_partialBarrier_Icc hU.isCompact (by linarith [Real.pi_pos]) hαL l r).mono_set
-      (middleHalfInterval_subset hlr)) (hU.baseline_tent_le_partialBarrier hα0 hαL)
+      (middleHalfInterval_subset hlr)) fun x => (min_le_min (hU.firstWall_pi_div_four_lower x)
+        (hU.secondWall_pi_div_four_lower x)).trans
+          (cornerWall_pi_div_four_le_partialBarrier hU.isCompact hα0 hαL x)
   rw [integral_middleHalf_baseline_tent hlr] at hniche
   have hsqrt : Real.sqrt 2 < 17 / 12 := (Real.sqrt_lt (by norm_num) (by norm_num)).2 (by norm_num)
   linarith [one_lt_M, sq_nonneg (r - l - 6),

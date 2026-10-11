@@ -11,7 +11,8 @@ public import AmbidextrousSofa.Measure.GraphIntegral
 /-!
 # Actual roofs below the low-middle-height ceiling
 
-The projection is centered as [-2C,2C]. An affine middle roof joining a
+A cap's projection is the interval between its two horizontal endpoints;
+here it is centered as [-2C,2C]. An affine middle roof joining a
 value at most one half to height one lies below the displayed affine
 ceiling through the first three quarters. Concavity extends that bound
 to the charged left wing. The diagonal support excesses are then bounded
@@ -23,6 +24,10 @@ noncomputable section
 open Set MeasureTheory
 
 namespace AmbidextrousSofa
+
+theorem IsDownwardCap.horizontalProjection_eq_of {U : Set Plane} (hU : IsDownwardCap U) {l r : ℝ}
+    (hl : horizontalLeft U = l) (hr : horizontalRight U = r) : horizontalProjection U = Icc l r := by
+  rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hl, hr]
 
 def lowCeiling (C x : ℝ) : ℝ := 3 / 4 + x / (4 * C)
 
@@ -42,8 +47,7 @@ theorem IsDownwardCap.capRoof_le_lowCeiling_of_affine_middle
     (haffine : ∃ m c : ℝ, ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c) :
     ∀ x ∈ Icc (-2 * C) C, capRoof U x ≤ lowCeiling C x := by
   obtain ⟨m, c, haffine⟩ := haffine
-  have hproj : horizontalProjection U = Icc (-2 * C) (2 * C) := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hleft, hright]
+  have hproj := hU.horizontalProjection_eq_of hleft hright
   intro x hx
   -- The roof lies below its chord through `-C` and `C`: by concavity left of `-C`,
   -- and with equality on the affine middle.
@@ -79,8 +83,7 @@ theorem IsDownwardCap.lowHeight_diagonal_excess_bounds
     0 ≤ diagonalRight U - 2 * C ∧ 1 - C ≤ diagonalRight U - 2 * C ∧
       diagonalRight U - 2 * C ≤ 1 ∧
       0 ≤ diagonalLeft U - 2 * C ∧ diagonalLeft U - 2 * C ≤ 1 / 4 := by
-  have hproj : horizontalProjection U = Icc (-2 * C) (2 * C) := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hleft, hright]
+  have hproj := hU.horizontalProjection_eq_of hleft hright
   have hr := hU.diagonalRight_ge hU.right_baseline_mem
   have hl := hU.diagonalLeft_ge hU.left_baseline_mem
   have hhighSupport := hU.diagonalRight_ge (p := (C, 1))

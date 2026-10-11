@@ -22,30 +22,9 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-def diagonalBarrier (U : Set Plane) (x : ℝ) : ℝ :=
-  max (cornerWall U (Real.pi / 4) x) 0
-
 def diagonalComparisonScore (U : Set Plane) : ℝ :=
   intervalSpatialScore (capRoof U) (diagonalBarrier U)
     (horizontalLeft U) (horizontalRight U)
-
-theorem diagonalBarrier_nonneg (U : Set Plane) (x : ℝ) : 0 ≤ diagonalBarrier U x :=
-  le_max_right _ _
-
-theorem continuous_diagonalBarrier (U : Set Plane) : Continuous (diagonalBarrier U) := by
-  unfold diagonalBarrier cornerWall firstWall secondWall
-  fun_prop
-
-theorem IsDownwardCap.diagonalBarrier_eq_tent {U : Set Plane} (hU : IsDownwardCap U) (x : ℝ) :
-    diagonalBarrier U x = max ((diagonalRight U + diagonalLeft U) / 2 - Real.sqrt 2 -
-      |x - (diagonalRight U - diagonalLeft U) / 2|) 0 := by
-  rw [diagonalBarrier, cornerWall_pi_div_four_eq_tent hU]
-
-theorem IsDownwardCap.diagonalBarrier_le_partialBarrier {U : Set Plane}
-    (hU : IsDownwardCap U) {α : ℝ} (hα0 : Real.pi / 4 ≤ α)
-    (hαL : α ≤ Real.pi / 2) (x : ℝ) : diagonalBarrier U x ≤ partialBarrier U α x :=
-  max_le (cornerWall_pi_div_four_le_partialBarrier hU.isCompact hα0 hαL x)
-    (partialBarrier_nonneg _ _ _)
 
 theorem IsDownwardCap.capScore_le_diagonalComparisonScore {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hα0 : Real.pi / 4 ≤ α)

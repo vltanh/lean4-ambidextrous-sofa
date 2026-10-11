@@ -1,6 +1,6 @@
 module
 
-public import AmbidextrousSofa.Analysis.ThreeAngleComparison
+public import AmbidextrousSofa.Analysis.FullTriangleFloor
 
 @[expose] public section
 
@@ -10,7 +10,9 @@ public import AmbidextrousSofa.Analysis.ThreeAngleComparison
 The nearby support lines below belong to the original cap. Their corner
 minima are bounded by the literal three-angle barrier. A common integral
 splice adds the two disjoint contributions to the complete diagonal
-floor, retaining every positive-floor and window correction.
+floor, retaining every positive-floor and window correction. This gives
+both the retained wide pieces and the complete niche triangles with their
+floor losses.
 -/
 
 noncomputable section
@@ -19,22 +21,14 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-theorem IsDownwardCap.threeAngle_diagonal_floor {U : Set Plane}
-    (hU : IsDownwardCap U) {h k u v : ℝ} (hk : k = Real.sqrt 2 - 1)
-    (hu : diagonalRight U = 1 + u) (hv : diagonalLeft U = 1 - h + v) (x : ℝ) :
-    max (min (u - k - x) (v - h - k + x)) 0 ≤ threeAngleBarrier U x := by
-  have hbound := diagonalBarrier_le_threeAngleBarrier U x
-  rw [diagonalBarrier, cornerWall, firstWall_pi_div_four_eq_diagonal hU,
-    secondWall_pi_div_four_eq_diagonal hU, hu, hv] at hbound
-  convert hbound using 3 <;> linarith
-
 /-- The diagonal floor below the three-angle barrier, and its reflection. -/
 private theorem IsDownwardCap.threeAngle_floors {U : Set Plane} (hU : IsDownwardCap U)
     {k u v : ℝ} (hkoffset : k = Real.sqrt 2 - 1) (hu : diagonalRight U = 1 + u)
     (hv : diagonalLeft U = 1 + v) (x : ℝ) :
     max (min (u - k - x) (v - k + x)) 0 ≤ threeAngleBarrier U x ∧
       max (min (v - k - x) (u - k + x)) 0 ≤ threeAngleBarrier U (-x) := by
-  have h (y : ℝ) := hU.threeAngle_diagonal_floor (h := 0) hkoffset hu (by rwa [sub_zero]) y
+  have h (y : ℝ) : max (min (u - k - y) (v - 0 - k + y)) 0 ≤ threeAngleBarrier U y :=
+    (hU.diagonalBarrier_eq_tilted hkoffset hu (by rwa [sub_zero]) y).ge.trans (le_max_left _ _)
   exact ⟨by simpa using h x, by simpa [min_comm, sub_eq_add_neg] using h (-x)⟩
 
 theorem IsDownwardCap.wide_near_right_le_threeAngleBarrier {U : Set Plane}
@@ -44,12 +38,10 @@ theorem IsDownwardCap.wide_near_right_le_threeAngleBarrier {U : Set Plane}
       (wideEndpointIntercept a (capRoof U a) k - x / k) ≤ threeAngleBarrier U x := by
   have hs := coordDot_le_support hU.isCompact
     (capRoof_mem hU.isCompact (hr ▸ horizontalRight_mem hU.nonempty hU.isCompact)) (1, k)
-  simp only [coordDot] at hs
-  refine le_trans ?_ (hkoffset ▸ first_corner_le_threeAngleBarrier U x)
-  rw [cornerWall, min_comm (firstWall _ _ _)]
-  refine min_le_min (hU.secondWall_arctan k x).ge ?_
-  rw [hU.firstWall_arctan hk.ne', wideEndpointIntercept, le_div_iff₀ hk, sub_mul, add_mul,
-    div_mul_cancel₀ _ hk.ne', div_mul_cancel₀ _ hk.ne']
+  refine (min_comm _ _).trans_le ((min_le_min ?_ le_rfl).trans
+    (hU.threeAngleBarrier_ge_first hkoffset hs le_rfl x))
+  rw [wideEndpointIntercept, coordDot, le_div_iff₀ hk, sub_mul, add_mul, div_mul_cancel₀ _ hk.ne',
+    div_mul_cancel₀ _ hk.ne']
   linarith
 
 theorem IsDownwardCap.wide_near_left_le_threeAngleBarrier {U : Set Plane}
@@ -59,11 +51,9 @@ theorem IsDownwardCap.wide_near_left_le_threeAngleBarrier {U : Set Plane}
       (wideEndpointIntercept a (capRoof U (-a)) k - x / k) ≤ threeAngleBarrier U (-x) := by
   have hs := coordDot_le_support hU.isCompact
     (capRoof_mem hU.isCompact (hl ▸ horizontalLeft_mem hU.nonempty hU.isCompact)) (-1, k)
-  simp only [coordDot] at hs
-  refine le_trans ?_ (hkoffset ▸ last_corner_le_threeAngleBarrier U (-x))
-  rw [cornerWall, hU.firstWall_complement_arctan, hU.secondWall_complement_arctan hk.ne']
-  refine min_le_min (le_of_eq (by rw [wideNearLeftIntercept]; ring)) ?_
-  rw [wideEndpointIntercept, le_div_iff₀ hk, sub_mul, add_mul, div_mul_cancel₀ _ hk.ne',
+  refine (min_le_min (le_of_eq ?_) ?_).trans (hU.threeAngleBarrier_ge_last hkoffset le_rfl hs (-x))
+  · rw [wideNearLeftIntercept]; ring
+  rw [wideEndpointIntercept, coordDot, le_div_iff₀ hk, sub_mul, add_mul, div_mul_cancel₀ _ hk.ne',
     div_mul_cancel₀ _ hk.ne']
   linarith
 
@@ -91,6 +81,17 @@ theorem symmetric_barrier_gain_integral {n : ℝ → ℝ} {a k u v gR gL : ℝ}
     hdiag] at hadd
   simp only [min_comm] at hL
   linarith
+
+def fullTriangleNicheGain (U : Set Plane) (a k u v : ℝ) : ℝ :=
+  ((max (wideGain k u (wideNearRightIntercept U k)
+      (wideEndpointIntercept a (capRoof U a) k)) 0) ^ 2 +
+    (max (wideGain k v (wideNearLeftIntercept U k)
+      (wideEndpointIntercept a (capRoof U (-a)) k)) 0) ^ 2) / (1 + k)
+
+def fullTriangleNicheFloorLoss (U : Set Plane) (a k u v : ℝ) : ℝ :=
+  fullTriangleFloorCoefficient k *
+    ((max (fullTriangleRightZero k u (wideEndpointIntercept a (capRoof U a) k) - (u - k)) 0) ^ 2 +
+      (max (fullTriangleRightZero k v (wideEndpointIntercept a (capRoof U (-a)) k) - (v - k)) 0) ^ 2)
 
 theorem IsDownwardCap.threeAngle_integral_ge_full_triangles {U : Set Plane}
     (hU : IsDownwardCap U) {a k u v : ℝ}

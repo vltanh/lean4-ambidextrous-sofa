@@ -9,8 +9,9 @@ public import AmbidextrousSofa.Analysis.ThreeAngleShortTail
 
 The charged roof cuts and both additional niche tails belong to the
 actual cap. The objective uses only the diagonal and its two nearby
-corners, so the resulting strict comparison can be reflected without
-introducing an outgoing wall on the opposite side.
+corners, so the resulting strict comparison bounds every barrier above
+them, and it can be reflected without introducing an outgoing wall on the
+opposite side.
 -/
 
 noncomputable section
@@ -19,17 +20,23 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
+/-- Every actual cap in this centered, height-one canonical form and short-width range has
+three-angle score strictly below the reference comparison level. -/
 theorem IsDownwardCap.threeAngleScore_lt_of_short_width
     {U : Set Plane} (hU : IsDownwardCap U) {a h : ℝ}
     (ha : 0 < a) (ha1 : a ≤ 1001 / 1000) (hh : 0 ≤ h)
     (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
     (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1)
     (haffine : ∃ m c : ℝ, ∀ x ∈ Icc (-a / 2) (a / 2), capRoof U x = m * x + c) :
-    threeAngleComparisonScore U < 41 / 50 := by
+    intervalSpatialScore (capRoof U) (threeAngleBarrier U) (horizontalLeft U)
+      (horizontalRight U) < 41 / 50 := by
+  rw [hl, hr]
   by_contra! hscore
-  obtain ⟨ha9, hh23, hu, hv, hu323, hv323, hm, -, -, -, huout, hvout, -, hD9⟩ :=
-    hU.threeAngle_short_diagonal_geometry ha ha1 hh hl hr hleft hright hscore
-  generalize hkdef : Real.sqrt 2 - 1 = k at huout hvout
+  obtain ⟨ha9, hh23, hu, hv, hu323, hv323, hm, huout, hvout, hD9⟩ :=
+    hU.short_diagonal_geometry (continuous_threeAngleBarrier U).intervalIntegrable
+      (fun x => le_max_left _ _) ha ha1 hh hl hr hleft hright hscore
+  rw [intervalSpatialScore_centered] at hscore
+  generalize hkdef : Real.sqrt 2 - 1 = k
   obtain ⟨hk0, hk1, -⟩ := hkdef ▸ sqrt_two_sub_one_strict_bounds
   have hksq : k ^ 2 + 2 * k = 1 := hkdef ▸ sqrt_two_sub_one_quadratic
   have hk : 0 < k := by linarith only [hk0]
@@ -51,8 +58,8 @@ theorem IsDownwardCap.threeAngleScore_lt_of_short_width
     short_right_tail_geometry hk0 hk1 hksq hh hh23 hδR.1 hu323 hm hd
   obtain ⟨hη, -, -, hLbase⟩ := short_nearDiagonal_constants hk0 hk1 hksq
   have hN := hU.threeAngle_integral_ge_diagonal_two_tails ha hk hklt hksq hkdef.symm
-    huactual hvactual (hU.diagonalRight_companion_support_ge hk.le hklt.le huactual)
-    (hU.diagonalLeft_companion_support_ge ha hh (by linarith only [ha9, hh23]) hk.le hklt.le hl hr
+    huactual hvactual (hU.diagonalRight_companion_support_ge hklt.le huactual)
+    (hU.diagonalLeft_companion_support_ge ha hh (by linarith only [ha9, hh23]) hklt.le hl hr
       hleft hright haffine hvactual) hη.le hd hpL hpR hendL.le hendR.le hcompEL hcompER
     (by linarith only [hLbase, hh]) hclipL hclipR
   -- The squared deficits pay for the two tails.
@@ -75,7 +82,6 @@ theorem IsDownwardCap.threeAngleScore_lt_of_short_width
   unfold diagonalRelaxation at hrelax
   unfold shortWidthPaidEnvelope at henv
   unfold shortLeftTailHeight shortRightTailHeight at hN
-  linarith only [hscore, threeAngleComparisonScore_centered hl hr, hD, hN, hcut, hpayL, hpayR,
-    hrelax, hwidth, hksq, henv]
+  linarith only [hscore, hD, hN, hcut, hpayL, hpayR, hrelax, hwidth, hksq, henv]
 
 end AmbidextrousSofa

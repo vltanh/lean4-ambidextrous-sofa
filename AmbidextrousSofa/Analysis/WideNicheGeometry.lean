@@ -61,8 +61,7 @@ theorem IsDownwardCap.wide_near_intercepts_lower {U : Set Plane}
     (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1) :
     1 - h - nearDiagonalNorm k + k * a / 2 ≤ wideNearRightIntercept U k ∧
       1 - nearDiagonalNorm k + k * a / 2 ≤ wideNearLeftIntercept U k := by
-  have hproj : Icc (-a) a ⊆ horizontalProjection U := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hl, hr]
+  have hproj := (hU.horizontalProjection_eq_of hl hr).superset
   have hL := coordDot_le_support hU.isCompact (capRoof_mem hU.isCompact (x := -a / 2)
     (hproj ⟨by linarith only [ha], by linarith only [ha]⟩)) (-k, 1)
   have hR := coordDot_le_support hU.isCompact (capRoof_mem hU.isCompact (x := a / 2)
@@ -91,7 +90,6 @@ theorem IsDownwardCap.wide_piece_fitting {U : Set Plane}
   have hk : 0 < k := by linarith only [hk0]
   have hha : h < a := by linarith only [ha, hh1]
   have hNorm := wide_norm_rational_bounds hk0 hk1
-  have hN1 : 1 ≤ nearDiagonalNorm k := by linarith only [hNorm.1]
   have hδR := hU.nearDiagonalRightDeficit_mem ha0 hk.le (by linarith only [hk1]) hl hr hright hu
   have hδL := hU.wideLeftSupportDeficit_mem ha0 hha (by linarith only [hk1])
     ((div_le_iff₀ ha0).mpr (by linarith only [mul_nonneg (sub_nonneg.2 ha) hk.le, hk0, hh1]))
@@ -99,16 +97,17 @@ theorem IsDownwardCap.wide_piece_fitting {U : Set Plane}
   have hτ := wideLeftTiltPenalty_bounds ha0 hh (by linarith only [hk1])
     (wideLeftIntersection_mem ha0 hha hvv.1 hvv.2)
   have hmid : 1 ≤ (u + v) / 2 := by linarith only [hm, ha, hh1]
-  have hcrossL := wide_crossing_ge_apex (u := v) (v := u) (b := wideNearLeftIntercept U k) hk
-    (by linarith only [hk1]) hN1 (by linarith only [hmid])
+  have hcrossR := wide_crossing_after_apex (u := u) (w := v) (h := 0)
+    (b := wideNearRightIntercept U k) hk hk1 hNorm.1 le_rfl (by linarith only [hmid])
+    (by linarith only [wideNearRightIntercept_eq (U := U) ha0 hha k v, hδL.1, hτ.1])
+  have hcrossL := wide_crossing_after_apex (u := v) (w := u) (h := 0)
+    (b := wideNearLeftIntercept U k) hk hk1 hNorm.1 le_rfl (by linarith only [hmid])
     (by linarith only [wideNearLeftIntercept_eq U k u, hδR.1])
   have hpoints := hU.wide_near_intercepts_lower ha0 hl hr hleft hright (k := k)
-  exact ⟨wide_crossing_ge_apex hk (by linarith only [hk1]) hN1 hmid
-      (by linarith only [wideNearRightIntercept_eq (U := U) ha0 hha k v, hδL.1, hτ.1]),
-    by linarith only [hcrossL],
-    wide_peak_fits hk0 hk1 hksq hNorm.1.le hh hh1.le hah.le
+  exact ⟨hcrossR.le, by linarith only [hcrossL],
+    wide_peak_fits hk0 hk1 hksq hNorm.1.le hh1.le hah.le
       (capRoof_le_one hU.isCompact hU.inStrip a) hpoints.1,
-    wide_peak_fits hk0 hk1 hksq hNorm.1.le hh hh1.le hah.le
+    wide_peak_fits hk0 hk1 hksq hNorm.1.le hh1.le hah.le
       (capRoof_le_one hU.isCompact hU.inStrip (-a)) (by linarith only [hpoints.2, hh])⟩
 
 end AmbidextrousSofa

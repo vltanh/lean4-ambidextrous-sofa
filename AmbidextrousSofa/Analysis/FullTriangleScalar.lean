@@ -10,7 +10,8 @@ public import AmbidextrousSofa.Analysis.IntermediateTilt
 
 Every clipping term is retained. At an unclipped comparison point the
 two tail squares are bounded by their displacement squares; the remaining
-quadratic form is nonpositive even when the width varies. A separate
+quadratic form is nonpositive even when the width varies, so the stationary
+value at a comparison width bounds every larger width. A separate
 positive-square payment combines the actual two exterior cuts and the
 two complete niche gains.
 -/
@@ -60,9 +61,7 @@ theorem fullTriangle_square_payment {k S ZR ZL δR δL : ℝ}
     sq_nonneg (k * y - (1 + k) * δR), sq_nonneg (k * y - (1 + k) * δL)]
 
 theorem fullTriangleRelaxation_le_joint_tangent {a h k c u v a0 u0 v0 : ℝ}
-    (hk : 0 < k)
-    (hq : 0 ≤ (u + v - h) / 2 - k)
-    (hq0 : 0 ≤ (u0 + v0 - h) / 2 - k)
+    (hk : 0 < k) (hq : 0 ≤ (u + v - h) / 2 - k)
     (hu0 : u0 ≤ k + a0 / 2) (hv0 : v0 ≤ h + k + a0 / 2)
     (hS0 : 0 ≤ fullTriangleDemand a0 ((u0 + v0) / 2) h k c) :
     let S0 := fullTriangleDemand a0 ((u0 + v0) / 2) h k c
@@ -72,7 +71,6 @@ theorem fullTriangleRelaxation_le_joint_tangent {a h k c u v a0 u0 v0 : ℝ}
       (1 - h / 2 - (2 * a0 - u0 - v0) - 2 * S0 * (k + 2) / (2 + 3 * k)) * (a - a0) +
       (a0 - u0 - ((u0 + v0 - h) / 2 - k) - S0 * (k - 2) / (2 + 3 * k)) * (u - u0) +
       (a0 - v0 - ((u0 + v0 - h) / 2 - k) - S0 * (k - 2) / (2 + 3 * k)) * (v - v0) := by
-  have _ := hq0 -- not needed by the proof; it stays in the statement for the callers
   have hclipR := shifted_positive_square_le_displacement (u - a / 2)
     (show u0 - a0 / 2 ≤ k by linarith only [hu0])
   have hclipL := shifted_positive_square_le_displacement (v - a / 2)
@@ -95,16 +93,18 @@ theorem fullTriangle_stationary_offset_bounds {k c : ℝ}
   rw [fullTriangleStationaryOffset]
   constructor <;> linarith only [hk0, hk1, hc0, hc1]
 
-theorem fullTriangleRelaxation_le_bound {a h k c u v : ℝ}
-    (ha : 37 / 25 ≤ a) (hh0 : 0 ≤ h) (hh1 : h ≤ 17 / 50)
+/-- At an unclipped point and every width `a ≥ a0`, the relaxation is at most its value at the
+stationary comparison point of width `a0`. -/
+theorem fullTriangleRelaxation_le_bound {a a0 h k c u v : ℝ}
+    (ha : a0 ≤ a) (ha0 : 73 / 50 ≤ a0) (hh0 : 0 ≤ h) (hh1 : h ≤ 17 / 50)
     (hk0 : 41 / 99 < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1)
-    (hc0 : 923 / 1000 < c) (hc1 : c < 231 / 250)
+    (hs0 : 2 / 3 < fullTriangleStationaryOffset a0 k c)
+    (hs1 : fullTriangleStationaryOffset a0 k c < 71 / 100)
     (hq : 0 ≤ (u + v - h) / 2 - k) :
-    fullTriangleRelaxation a h k c u v ≤ fullTriangleBound (37 / 25) h k c := by
-  obtain ⟨hs0, hs1⟩ := fullTriangle_stationary_offset_bounds hk0 hk1 hc0 hc1
+    fullTriangleRelaxation a h k c u v ≤ fullTriangleBound a0 h k c := by
   have hd : 0 < 2 + 3 * k := by linarith only [hk0]
   rw [fullTriangleBound]
-  generalize hz : fullTriangleStationaryOffset (37 / 25) k c - (1 - k) * h / 4 = z
+  generalize hz : fullTriangleStationaryOffset a0 k c - (1 - k) * h / 4 = z
   have hz0 : 0 < z := by
     linarith only [hz, hs0, hh0, hh1, mul_le_mul_of_nonneg_right hk0.le hh0]
   have hzb : (2 - k) * z < 8 / 5 * (71 / 100) - 3 / 4 * h / 4 := by
@@ -112,14 +112,13 @@ theorem fullTriangleRelaxation_le_bound {a h k c u v : ℝ}
     linarith only [mul_le_mul_of_nonneg_right
       (show 3 / 4 ≤ (2 - k) * (1 - k) by linarith only [hksq, hk1]) hh0,
       mul_pos (sub_pos.2 hk0) (sub_pos.2 hs0), hs1, hk0]
-  obtain ⟨m, hm⟩ : ∃ m, m = (37 / 25 + k) / 2 + (2 - k) * z / 9 + h / 4 := ⟨_, rfl⟩
-  have hS : fullTriangleDemand (37 / 25) ((m + m) / 2) h k c = 2 * (2 + 3 * k) * z / 9 := by
+  obtain ⟨m, hm⟩ : ∃ m, m = (a0 + k) / 2 + (2 - k) * z / 9 + h / 4 := ⟨_, rfl⟩
+  have hS : fullTriangleDemand a0 ((m + m) / 2) h k c = 2 * (2 + 3 * k) * z / 9 := by
     rw [fullTriangleDemand, hm]
     rw [fullTriangleStationaryOffset] at hz
     linear_combination hz + (1 / 2 - z / 9) * hksq
-  have htan := fullTriangleRelaxation_le_joint_tangent (a := a) (c := c) (a0 := 37 / 25)
+  have htan := fullTriangleRelaxation_le_joint_tangent (a := a) (c := c) (a0 := a0)
     (u0 := m) (v0 := m) (by linarith only [hk0]) hq
-    (by linarith only [hm, mul_pos (by linarith only [hk1] : (0 : ℝ) < 2 - k) hz0, hk1, hh1])
     (by linarith only [hm, hzb, hk0, hh1]) (by linarith only [hm, hzb, hk0, hh0, hh1])
     (by rw [hS]; positivity)
   dsimp only at htan
@@ -133,7 +132,7 @@ theorem fullTriangleRelaxation_le_bound {a h k c u v : ℝ}
     field_simp
   rw [e1, e2, e3, hm]
   linear_combination (-2 / 81 * z ^ 2) * hksq + mul_nonpos_of_nonpos_of_nonneg
-    (by linarith only [mul_pos hd hz0, hk1] : 1 + k - 37 / 25 - 2 * (2 + 3 * k) * z / 9 ≤ 0)
+    (by linarith only [mul_pos hd hz0, hk1, ha0] : 1 + k - a0 - 2 * (2 + 3 * k) * z / 9 ≤ 0)
     (sub_nonneg.2 ha)
 
 theorem fullTriangleRelaxation_add_loss_lt {a h k c u v : ℝ}
@@ -142,8 +141,9 @@ theorem fullTriangleRelaxation_add_loss_lt {a h k c u v : ℝ}
     (hc0 : 923 / 1000 < c) (hc1 : c < 231 / 250)
     (hq : 0 ≤ (u + v - h) / 2 - k) :
     fullTriangleRelaxation a h k c u v + fullTriangleLoss h k c < (41 / 50 : ℝ) := by
-  have hbound := fullTriangleRelaxation_le_bound ha hh0 hh1 hk0 hk1 hksq hc0 hc1 hq
   obtain ⟨hs0, hs1⟩ := fullTriangle_stationary_offset_bounds hk0 hk1 hc0 hc1
+  have hbound := fullTriangleRelaxation_le_bound ha (by norm_num) hh0 hh1 hk0 hk1 hksq
+    (by linarith only [hs0]) hs1 hq
   rw [fullTriangleBound] at hbound
   rw [fullTriangleLoss]
   generalize fullTriangleStationaryOffset (37 / 25) k c = s at hs0 hs1 hbound

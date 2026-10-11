@@ -11,7 +11,8 @@ public import AmbidextrousSofa.Analysis.RampCutIntegral
 The left cut is measured from the true tilted ceiling/diagonal
 intersection. Only the inner half of each cut triangle is used, so no
 outer-endpoint clipping assumption is required. Both deficits are literal
-support values of the original cap.
+support values of the original cap. The right cut is the same as for a
+narrower cap.
 -/
 
 noncomputable section
@@ -50,9 +51,8 @@ theorem IsDownwardCap.wideLeftSupportDeficit_mem {U : Set Plane}
         (hU.capRoof_le_tiltedAffineCeiling ha hl hr hleft hright haffine p.1 ⟨p, hp, rfl⟩)
       unfold tiltedAffineCeiling at this
       linarith only [this, mul_nonneg (sub_nonneg.mpr hzk) (neg_lt_iff_pos_add.mp hx).le]
-  have hx : -a / 2 ∈ horizontalProjection U := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hl, hr]
-    constructor <;> linarith only [ha]
+  have hx : -a / 2 ∈ horizontalProjection U :=
+    hU.horizontalProjection_eq_of hl hr ▸ ⟨by linarith only [ha], by linarith only [ha]⟩
   have hlow := coordDot_le_support hU.isCompact (capRoof_mem hU.isCompact hx) (-k, 1)
   simp only [coordDot, hleft] at hlow
   have hza : h / a * a = h := div_mul_cancel₀ h ha.ne'
@@ -75,6 +75,25 @@ theorem wideLeftTiltPenalty_bounds {a h k v : ℝ} (ha : 0 < a) (hh : 0 ≤ h)
   exact ⟨mul_nonneg hcoef (by linarith only [hq0]),
     by linarith only [mul_nonneg hcoef (sub_nonneg.mpr ((div_le_one ha).mpr hq.2))]⟩
 
+/-- The inner half of the right near-diagonal support cut lies in the right roof gap. -/
+theorem IsDownwardCap.right_roof_gap_ge_cut {U : Set Plane} (hU : IsDownwardCap U) {a k u : ℝ}
+    (ha : 0 < a) (hk : 0 < k) (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
+    (hu : diagonalRight U = 1 + u) (huv : u ∈ Icc (a / 2) a)
+    (hδR : nearDiagonalRightDeficit U k u ∈ Icc 0 (k * (u - a / 2))) :
+    nearDiagonalRightDeficit U k u ^ 2 / (2 * k) ≤
+      ∫ x in (a / 2)..a, min 1 (1 + u - x) - capRoof U x := by
+  have hproj := hU.horizontalProjection_eq_of hl hr
+  refine integral_gap_ge_left_ramp (fun l r =>
+    ((Continuous.intervalIntegrable (by fun_prop) l r).sub (hU.intervalIntegrable_capRoof l r)))
+    hk hδR.1 huv hδR.2 (fun x hx => ?_) fun x hx => ?_
+  · have hxU : x ∈ horizontalProjection U := hproj ▸ ⟨by linarith only [hx.1, ha], hx.2⟩
+    exact sub_nonneg.mpr (le_min (capRoof_le_one hU.isCompact hU.inStrip x)
+      (by linarith only [hU.capRoof_le_diagonalRight hxU, hu]))
+  · have hxU : x ∈ horizontalProjection U :=
+      hproj ▸ ⟨by linarith only [hx.1, (div_le_iff₀' hk).mpr hδR.2, ha], hx.2.trans huv.2⟩
+    rw [min_eq_left (by linarith only [hx.2])]
+    linarith only [hU.capRoof_le_nearDiagonalRight k u hxU]
+
 theorem IsDownwardCap.wideRoofDeficit_ge_support_cuts {U : Set Plane}
     (hU : IsDownwardCap U) {a h k u v : ℝ} (ha : 0 < a) (hh : 0 ≤ h)
     (hha : h < a) (hk : 0 < k) (hk1 : k ≤ 1) (hzk : h / a < k)
@@ -94,19 +113,8 @@ theorem IsDownwardCap.wideRoofDeficit_ge_support_cuts {U : Set Plane}
   set δR := nearDiagonalRightDeficit U k u
   set δL := wideLeftSupportDeficit U a h k v with hδLdef
   have hkp : 0 < k - h / a := sub_pos.mpr hzk
-  have hproj : horizontalProjection U = Icc (-a) a := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hl, hr]
-  have hR : δR ^ 2 / (2 * k) ≤ ∫ x in (a / 2)..a, min 1 (1 + u - x) - capRoof U x := by
-    refine integral_gap_ge_left_ramp (fun l r =>
-      ((Continuous.intervalIntegrable (by fun_prop) l r).sub (hU.intervalIntegrable_capRoof l r)))
-      hk hδR.1 huv hδR.2 (fun x hx => ?_) fun x hx => ?_
-    · have hxU : x ∈ horizontalProjection U := hproj ▸ ⟨by linarith only [hx.1, ha], hx.2⟩
-      exact sub_nonneg.mpr (le_min (capRoof_le_one hU.isCompact hU.inStrip x)
-        (by linarith only [hU.capRoof_le_diagonalRight hxU, hu]))
-    · have hxU : x ∈ horizontalProjection U :=
-        hproj ▸ ⟨by linarith only [hx.1, (div_le_iff₀' hk).mpr hδR.2, ha], hx.2.trans huv.2⟩
-      rw [min_eq_left (by linarith only [hx.2])]
-      linarith only [hU.capRoof_le_nearDiagonalRight k u hxU]
+  have hproj := hU.horizontalProjection_eq_of hl hr
+  have hR := hU.right_roof_gap_ge_cut ha hk hl hr hu huv hδR
   have hL : δL ^ 2 / (2 * (k - h / a)) ≤
       ∫ x in (-a)..(-a / 2), min (tiltedAffineCeiling a h x) (1 + v + x) - capRoof U x := by
     refine integral_gap_ge_right_ramp (fun l r =>

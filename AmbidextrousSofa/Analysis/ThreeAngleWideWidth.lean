@@ -1,6 +1,8 @@
 module
 
 public import AmbidextrousSofa.Analysis.ThreeAngleDeficit
+public import AmbidextrousSofa.Analysis.ThreeAngleNiche
+public import AmbidextrousSofa.Analysis.WideNicheGeometry
 
 @[expose] public section
 
@@ -28,7 +30,8 @@ theorem IsDownwardCap.threeAngleScore_lt_of_wide_width_and_endpoint_bounds
     (hEP : 1 - h / 2 ≤ capRoof U a + capRoof U (-a))
     (hER : 1 / 3 + h / 4 ≤ capRoof U a)
     (hEL : 1 / 3 - 3 * h / 4 ≤ capRoof U (-a)) :
-    threeAngleComparisonScore U < 41 / 50 := by
+    intervalSpatialScore (capRoof U) (threeAngleBarrier U) (horizontalLeft U)
+      (horizontalRight U) < 41 / 50 := by
   by_contra! hscore
   obtain ⟨hk2, -, hk1⟩ := sqrt_two_sub_one_strict_bounds
   have hksq := sqrt_two_sub_one_quadratic
@@ -78,7 +81,8 @@ theorem IsDownwardCap.threeAngleScore_lt_of_wide_width_and_endpoint_bounds
   have hpaid := widePaidBound_lt ha0 hh0 hm hk41 hk1 hksq
   simp only [wideDiagonalMajorant, wideHalfBound, wideExteriorMajorant,
     widePaidBound] at hF hD hpaid
-  linarith only [threeAngleComparisonScore_centered hl hr, hD, hN, hF, hpaid, hpayment, hcut,
-    hscore, mul_le_mul_of_nonneg_right (wide_tilt_coefficient_ge ha0) hh0]
+  rw [hl, hr, intervalSpatialScore_centered] at hscore
+  linarith only [hD, hN, hF, hpaid, hpayment, hcut, hscore,
+    mul_le_mul_of_nonneg_right (wide_tilt_coefficient_ge ha0) hh0]
 
 end AmbidextrousSofa

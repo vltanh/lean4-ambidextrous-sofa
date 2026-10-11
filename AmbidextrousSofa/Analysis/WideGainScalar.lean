@@ -17,12 +17,6 @@ noncomputable section
 
 namespace AmbidextrousSofa
 
-/-- Division by the diagonal offset, using `k ^ 2 + 2 * k = 1`. -/
-theorem wide_div_offset {k : ℝ} (hk : 0 < k) (hksq : k ^ 2 + 2 * k = 1) (x : ℝ) :
-    x / k = x * (k + 2) := by
-  rw [div_eq_iff hk.ne']
-  linear_combination -x * hksq
-
 theorem wide_norm_rational_bounds {k : ℝ} (hk0 : 41 / 100 < k) (hk1 : k < 29 / 70) :
     27 / 25 < nearDiagonalNorm k ∧ nearDiagonalNorm k < 13 / 12 ∧
       3 / 2 < (1 + k) * nearDiagonalNorm k := by
@@ -30,23 +24,23 @@ theorem wide_norm_rational_bounds {k : ℝ} (hk0 : 41 / 100 < k) (hk1 : k < 29 /
   exact ⟨hlo, (Real.sqrt_lt' (by norm_num)).2 (by nlinarith),
     by linarith [mul_pos (sub_pos.2 hk0) (sub_pos.2 hlo)]⟩
 
-theorem wide_crossing_ge_apex {k u v b N : ℝ}
-    (hk : 0 < k) (hk1 : k < 1 / 2) (hN : 1 ≤ N)
-    (hm : 1 ≤ (u + v) / 2) (hb : b ≤ 1 - N + k * v) :
-    (u - v) / 2 ≤ wideCrossing k u b := by
-  rw [wideCrossing, le_div_iff₀ (by linarith only [hk])]
-  linarith only [hb, hN, hk1,
-    mul_nonneg (show 0 ≤ 1 - k by linarith only [hk1]) (sub_nonneg.mpr hm)]
+/-- A support line at most `1 - N + k w - (1 - k) h` crosses the diagonal floor after its apex
+once the diagonal midpoint is large enough. -/
+theorem wide_crossing_after_apex {k u w h b N : ℝ} (hk : 0 < k) (hk1 : k < 29 / 70)
+    (hN : 27 / 25 < N) (hh : 0 ≤ h) (hm : 179 / 200 ≤ (u + w) / 2)
+    (hb : b ≤ 1 - N + k * w - (1 - k) * h) : (u - w) / 2 < wideCrossing k u b := by
+  rw [wideCrossing, lt_div_iff₀ (by linarith only [hk])]
+  linarith only [mul_nonneg (by linarith only [hk1] : (0 : ℝ) ≤ 1 - k) (sub_nonneg.mpr hm),
+    mul_nonneg (by linarith only [hk1] : (0 : ℝ) ≤ 1 - k) hh, hb, hN, hk1]
 
 theorem wide_peak_fits {a h k N e b : ℝ}
     (hk0 : 41 / 100 < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1)
-    (hN : 27 / 25 ≤ N) (hh0 : 0 ≤ h) (hh1 : h ≤ 1 / 4)
+    (hN : 27 / 25 ≤ N) (hh1 : h ≤ 1 / 4)
     (hah : a + h ≤ 37 / 20) (he : e ≤ 1)
     (hb : 1 - h - N + k * a / 2 ≤ b) :
     widePeak k b (e + (a - N) / k) ≤ a / 2 := by
-  have _ := hh0 -- not needed by the proof; it stays in the statement for the callers
   rw [widePeak, div_le_iff₀ (by linarith only [hk0])]
-  linarith only [wide_div_offset (by linarith only [hk0]) hksq (a - N), hk0, he, hb,
+  linarith only [div_diagonal_offset (by linarith only [hk0]) hksq (a - N), hk0, he, hb,
     mul_le_mul_of_nonneg_left hah (show 0 ≤ 1 - k / 2 by linarith only [hk1]),
     mul_le_mul_of_nonneg_left hh1 (by linarith only [hk0] : 0 ≤ k / 2),
     mul_le_mul_of_nonneg_left hN (by linarith only [hk0] : 0 ≤ 1 + k)]
@@ -68,7 +62,7 @@ theorem wide_truncation_loss_sum_le {a h k N u v eR eL bR bL : ℝ}
       max (wideGain k v bL (eL + (a - N) / k) - wideBaselineGain k v bL) 0 ≤ h := by
   have hk : 0 < k := by linarith only [hk0]
   have hc : 0 ≤ 2 * (1 + k) - 1 := by linarith only [hk0]
-  have hdiv := wide_div_offset hk hksq (a - N)
+  have hdiv := div_diagonal_offset hk hksq (a - N)
   have hK : (2 * (1 + k) - 1) * (2 / 3) - (12 / 5) * k - (1 + k) * N + 2 * (1 + k) * k < 0 := by
     nlinarith only [hk0, hksq, hN]
   have hwa := mul_le_mul_of_nonneg_left ha (by positivity : 0 ≤ 3 * k / 2)
@@ -93,7 +87,7 @@ theorem wide_gain_sum_ge_demand {a h k N u v eR eL bR bL δR δL τ : ℝ}
     wideGainDemand a ((u + v) / 2) h - (δR + δL) / 2 ≤
       wideTruncatedGain k u bR (eR + (a - N) / k) +
       wideTruncatedGain k v bL (eL + (a - N) / k) := by
-  have hdiv := wide_div_offset (by linarith only [hk0]) hksq (a - N)
+  have hdiv := div_diagonal_offset (by linarith only [hk0]) hksq (a - N)
   rw [wideTruncatedGain_eq_sub_loss, wideTruncatedGain_eq_sub_loss, wideGainDemand]
   unfold wideGain at hloss ⊢
   subst hbR hbL

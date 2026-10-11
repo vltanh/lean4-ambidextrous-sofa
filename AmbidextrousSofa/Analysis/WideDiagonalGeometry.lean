@@ -48,8 +48,7 @@ theorem IsDownwardCap.wide_diagonal_parameters {U : Set Plane}
       capRoof U (-a) ≤ 1 - (a - (diagonalLeft U - 1)) := by
   have hp := hU.tilted_diagonal_parameters_mem ha hh hh1 hl hr hleft hright
   have hv := hU.tilted_diagonalLeft_le ha (by linarith only [hh1, ha]) hl hr hleft hright haffine
-  have hproj : Icc (-a) a ⊆ horizontalProjection U := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hl, hr]
+  have hproj := (hU.horizontalProjection_eq_of hl hr).superset
   refine ⟨hp.1, ⟨by linarith only [hp.2.1], by linarith only [hv]⟩, ?_, ?_⟩
   · linarith only [hU.capRoof_le_diagonalRight (hproj ⟨by linarith only [ha], le_rfl⟩)]
   · linarith only [hU.capRoof_le_diagonalLeft (hproj ⟨le_rfl, by linarith only [ha]⟩)]
@@ -87,8 +86,7 @@ theorem IsDownwardCap.wideRoofDeficit_nonneg {U : Set Plane}
     (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1)
     (haffine : ∃ m c : ℝ, ∀ x ∈ Icc (-a / 2) (a / 2), capRoof U x = m * x + c) :
     0 ≤ wideRoofDeficit U a h (diagonalRight U - 1) (diagonalLeft U - 1) := by
-  have hproj : Icc (-a) a ⊆ horizontalProjection U := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hl, hr]
+  have hproj := (hU.horizontalProjection_eq_of hl hr).superset
   refine add_nonneg (intervalIntegral.integral_nonneg (by linarith only [ha]) fun x hx => ?_)
     (intervalIntegral.integral_nonneg (by linarith only [ha]) fun x hx => ?_)
   · have hxU := hproj ⟨hx.1, by linarith only [hx.2, ha]⟩
@@ -97,34 +95,5 @@ theorem IsDownwardCap.wideRoofDeficit_nonneg {U : Set Plane}
   · have hxU := hproj ⟨by linarith only [hx.1, ha], hx.2⟩
     exact sub_nonneg.mpr (le_min (capRoof_le_one hU.isCompact hU.inStrip x)
       (by linarith only [hU.capRoof_le_diagonalRight hxU]))
-
-/-- The preliminary wide box is a consequence of the literal cap score,
-its actual affine middle, and its endpoint height sum. -/
-theorem IsDownwardCap.wide_high_score_box {U : Set Plane}
-    (hU : IsDownwardCap U) {a h α : ℝ} (ha0 : 8 / 5 ≤ a) (ha1 : a < 3)
-    (hh : 0 ≤ h) (hh1 : h < 1 / 2)
-    (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
-    (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1)
-    (haffine : ∃ m c : ℝ, ∀ x ∈ Icc (-a / 2) (a / 2), capRoof U x = m * x + c)
-    (hEP : 1 - h / 2 ≤ capRoof U a + capRoof U (-a))
-    (hα0 : Real.pi / 4 ≤ α) (hαL : α ≤ Real.pi / 2)
-    (hscore : 41 / 50 ≤ capScore U α) :
-    a < 9 / 5 ∧ h < 1 / 4 ∧ a + h < 37 / 20 := by
-  have ha : 0 < a := by linarith only [ha0]
-  have hhhalf : h ≤ a / 2 := by linarith only [ha0, hh1]
-  have hm := hU.wide_diagonal_midpoint_ge ha hh hhhalf hl hr hleft hright haffine hEP
-  have hp := hU.wide_diagonal_parameters ha hh hhhalf hl hr hleft hright haffine
-  have hD := hU.wideRoofDeficit_eq ha (by linarith only [ha0, hh1]) hp.1 hp.2.1
-  have hdef := hU.wideRoofDeficit_nonneg ha hl hr hleft hright haffine
-  have hN := hU.tilted_diagonal_tent_integral_le ha hh hhhalf hl hr hleft hright hα0 hαL
-  have hP := hU.capScore_eq_intervalSpatialScore α
-  rw [hl, hr, intervalSpatialScore, show -a + (a - -a) / 4 = -a / 2 by ring,
-    show a - (a - -a) / 4 = a / 2 by ring] at hP
-  simp only [← add_assoc, add_sub_cancel_right] at hN
-  rw [max_eq_left (by linarith only [hm, ha0, hh1, sqrt_two_sub_one_strict_bounds.2.2])] at hN
-  refine wide_diagonal_high_score_box ha0 ha1 hh hh1 sqrt_two_sub_one_strict_bounds.1
-    sqrt_two_sub_one_strict_bounds.2.2 sqrt_two_sub_one_quadratic hm ?_
-  simp only [wideExteriorMajorant, wideDiagonalMajorant] at hD ⊢
-  linarith only [hscore, hP, hD, hN, hdef]
 
 end AmbidextrousSofa

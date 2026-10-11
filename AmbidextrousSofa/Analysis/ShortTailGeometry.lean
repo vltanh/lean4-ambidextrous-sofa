@@ -85,7 +85,7 @@ theorem near_tail_companion_bound {k E z A : ℝ} (hk : 0 < k) (hk1 : k < 1)
   have hshort : (1 - k) * z ≤ E := by
     have h := (le_div_iff₀ (sub_pos.mpr hk1)).mp hz
     nlinarith only [h]
-  rw [div_eq_mul_one_div, diagonal_offset_inv hk hksq] at hA
+  rw [div_diagonal_offset hk hksq] at hA
   rw [le_div_iff₀ hk]
   nlinarith only [hA, hshort, congrArg (· * z) hksq]
 
