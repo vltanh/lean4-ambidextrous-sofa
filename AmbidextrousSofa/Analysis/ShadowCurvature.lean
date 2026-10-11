@@ -189,7 +189,7 @@ theorem ae_curvature_same_sign_quadrants_of_local_bound {K : Set Plane} {D : Set
       0 < sameSignVelocityMargin positive K t →
         ρ t ≤ (if positive then 0 else 1 / 2) ∧
           ρ (t + Real.pi / 2) ≤ (if positive then 1 / 2 else 0) := by
-    have h := ae_density_le_of_conditional_local_bound hD hρ hρ0 hρC heq
+    have h := ae_density_le_of_local_bound hD hρ hρ0 hρC heq
       (f := sameSignCoefficient positive) (P := fun t => sourceQuarterAngle t ∈ P ∧
         0 < sameSignVelocityMargin positive K (sourceQuarterAngle t)) fun t ht hP ε hε => by
       obtain ⟨δ, hδ, hle⟩ := hlocal positive t ε ht hP.1 hP.2 hε

@@ -44,7 +44,7 @@ theorem IsDownwardCap.diagonalComparisonScore_lt_lowHeightBound_of_affine_middle
   have hceiling := hU.capRoof_le_lowCeiling_of_affine_middle hC hleft hright hlow hhigh haffine
   have hscore := diagonalComparisonScore_centered_quarters hleft hright
   have hreward := hU.lowHeight_reward_le hC hceiling
-  have hs := lowHeight_sqrt_bounds
+  have hs := sqrt_two_sub_one_bounds
   rcases le_or_gt C (1 / 2) with hsmall | hCmin
   · linarith [lowHeight_small_width_bound hsmall, intervalIntegral.integral_nonneg_of_forall
       (μ := volume) (by linarith : -C ≤ C) (diagonalBarrier_nonneg U)]
@@ -53,7 +53,7 @@ theorem IsDownwardCap.diagonalComparisonScore_lt_lowHeightBound_of_affine_middle
     obtain ⟨hu0, -, hu1, hv0, hv1⟩ :=
       hU.lowHeight_diagonal_excess_bounds hCmin.le hleft hright hhigh hceiling
     have hrefined := hU.lowHeight_refined_reward_le hCmin.le hleft hright hhigh hceiling
-    have hbound := lowHeight_surrogate_bound hCmin.le hu1 hv0
+    have hbound := lowHeight_surrogate_bound (u := diagonalRight U - 2 * C) hCmin.le hv0
     generalize hu : diagonalRight U - 2 * C = u at hu0 hu1 hrefined hbound
     generalize hv : diagonalLeft U - 2 * C = v at hv0 hv1 hrefined hbound
     have hniche := diagonalBarrier_integral_ge_tent (U := U) (t := 2 * C + (u + v) / 2 -

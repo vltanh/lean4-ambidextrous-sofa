@@ -41,10 +41,10 @@ theorem absolutelyContinuousOnInterval_momentumQuadraticEnergy
     (hp : AbsolutelyContinuousOnInterval p a b)
     (hq : AbsolutelyContinuousOnInterval q a b) (A B K : ℝ) :
     AbsolutelyContinuousOnInterval (fun t => momentumQuadraticEnergy A B K (p t) (q t)) a b := by
-  have hp' := hp.fun_sub (absolutelyContinuousOnInterval_const_real A a b)
-  have hq' := hq.fun_sub (absolutelyContinuousOnInterval_const_real B a b)
+  have hp' := hp.fun_sub (absolutelyContinuousOnInterval_const A a b)
+  have hq' := hq.fun_sub (absolutelyContinuousOnInterval_const B a b)
   simpa only [momentumQuadraticEnergy, pow_two] using ((hp'.fun_mul hp').fun_add
-    (hq'.fun_mul hq')).fun_add (absolutelyContinuousOnInterval_const_real K a b)
+    (hq'.fun_mul hq')).fun_add (absolutelyContinuousOnInterval_const K a b)
 
 theorem hasDerivAt_momentumQuadraticEnergy
     {p q : ℝ → ℝ} {p' q' t : ℝ}

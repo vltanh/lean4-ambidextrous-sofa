@@ -9,7 +9,8 @@ public import Mathlib.Topology.MetricSpace.Lipschitz
 /-!
 # Absolutely continuous barriers with a clipped variable
 
-Taking the maximum with a constant preserves absolute continuity. At
+Constant functions are absolutely continuous, and taking the maximum with
+a constant preserves absolute continuity. At
 the clipping level the derivative vanishes almost everywhere, by the
 actual level-set derivative theorem. This supplies a barrier principle
 which only needs a derivative sign above the barrier; no differentiable
@@ -22,6 +23,10 @@ open Set Filter MeasureTheory
 open scoped Topology
 
 namespace AmbidextrousSofa
+
+theorem absolutelyContinuousOnInterval_const (c a b : ℝ) :
+    AbsolutelyContinuousOnInterval (fun _ : ℝ => c) a b :=
+  (LipschitzWith.const c).lipschitzOnWith.absolutelyContinuousOnInterval
 
 theorem absolutelyContinuousOnInterval_max_const
     {f : ℝ → ℝ} {a b : ℝ} (hf : AbsolutelyContinuousOnInterval f a b) (c : ℝ) :

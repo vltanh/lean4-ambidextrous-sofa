@@ -1,6 +1,7 @@
 module
 
 public import AmbidextrousSofa.Analysis.ExactEstimates
+public import AmbidextrousSofa.Analysis.PositivePartCalculus
 
 @[expose] public section
 
@@ -98,10 +99,6 @@ theorem initialFloor_stopped_energy_le {d B h τ : ℝ}
   rcases hstop with hp | rfl
   · rw [initialFloorCircle_energy, hp]; linarith
   · rw [initialFloorCircle_energy_at_floor h0 h2]; linarith
-
-theorem absolutelyContinuousOnInterval_const_real (c a b : ℝ) :
-    AbsolutelyContinuousOnInterval (fun _ : ℝ => c) a b :=
-  (LipschitzWith.lipschitzOnWith (LipschitzWith.const c)).absolutelyContinuousOnInterval
 
 /-- Uniqueness of the zero-density circle follows from the actual AC
 momentum equations and zero initial difference energy. -/

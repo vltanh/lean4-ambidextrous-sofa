@@ -302,8 +302,7 @@ theorem supportQuarterPair_corner_calculus
   intro F
   obtain ⟨hf, hg, hfD, hgD⟩ :=
     supportQuarterPair_absolutelyContinuous hU hV hρ hρ0 hρK hσ hσ0 hσJ hfirst hsecond
-  have hc : AbsolutelyContinuousOnInterval (fun _ : ℝ => (1 : ℝ)) 0 (Real.pi / 2) :=
-    (LipschitzWith.const (1 : ℝ)).lipschitzOnWith.absolutelyContinuousOnInterval
+  have hc := absolutelyContinuousOnInterval_const 1 0 (Real.pi / 2)
   refine ⟨(hfD.sub hg).add hc, (hgD.add hf).sub hc, ?_⟩
   filter_upwards [supportQuarterPair_ae_derivatives hU hV hρ hρ0 hρK hσ hσ0 hσJ hfirst hsecond]
     with t ⟨hdf, hdg, hdfD, hdgD⟩

@@ -28,18 +28,6 @@ def terminalWeightedExcess (v : ℝ → ℝ) (θ : ℝ) : ℝ :=
   ∫ t in 0..θ, max (v t - 1) 0 *
     (Real.tan θ * Real.cos t - Real.sin t)
 
-theorem integral_quadratic_tail_kernel (a b : ℝ) :
-    (∫ t in a..b, (t - a) * (b - t)) = (b - a) ^ 3 / 6 := by
-  have hd (x : ℝ) : HasDerivAt (fun t : ℝ => (b - a) * (t - a) ^ 2 / 2 - (t - a) ^ 3 / 3)
-      ((x - a) * (b - x)) x := by
-    have hx := (hasDerivAt_id' x).sub_const a
-    convert (((hx.pow 2).const_mul (b - a)).div_const 2).sub ((hx.pow 3).div_const 3) using 1
-    push_cast
-    ring
-  rw [intervalIntegral.integral_eq_sub_of_hasDerivAt (fun x _ => hd x)
-    ((by fun_prop : Continuous fun t : ℝ => (t - a) * (b - t)).intervalIntegrable a b)]
-  ring
-
 /-- The positive part makes the formula valid even when the excess has
 not begun before the prefix ends. -/
 theorem integral_positive_quadratic_tail_kernel {θ t₀ : ℝ}
@@ -59,7 +47,7 @@ theorem integral_positive_quadratic_tail_kernel {θ t₀ : ℝ}
     norm_num
   rw [← intervalIntegral.integral_add_adjacent_intervals (hc.intervalIntegrable 0 t₀)
     (hc.intervalIntegrable t₀ θ), hzero t₀ ht₀ le_rfl, zero_add, max_eq_left (sub_nonneg.mpr htθ),
-    ← integral_quadratic_tail_kernel]
+    ← Analysis.integral_quadratic_tail_kernel]
   refine intervalIntegral.integral_congr fun t ht => ?_
   rw [uIcc_of_le htθ] at ht
   simp [max_eq_left (sub_nonneg.mpr ht.1)]

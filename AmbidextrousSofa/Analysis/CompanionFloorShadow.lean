@@ -192,7 +192,7 @@ theorem IsFullCapMaximizer.ae_companion_density_zero_of_positive_first_below_flo
   obtain ⟨level, coefficient, U, hlevel, hc, hrate, hU, -, hHausdorff⟩ :=
     AngularGrid.exists_selected_sequence hK (neg_le_self hR) (subset_symmetricBox_of_horizontalBox
       fun p hp => ⟨hK.isCap.fst_mem_Icc hp, hK.isCap.inStrip hp⟩)
-  have h := ae_density_le_of_conditional_local_bound (isOpen_Ioo.sdiff (toFinite _).isClosed)
+  have h := ae_density_le_of_local_bound (isOpen_Ioo.sdiff (toFinite _).isClosed)
     hρ hρ0 hρC heq (f := fun _ => 0)
     (P := fun t => Real.pi / 2 < t ∧ sourceQuarterAngle t ∈ regularCornerDomain m ∧
       secondCornerVelocity K (sourceQuarterAngle t) < 0 ∧

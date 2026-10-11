@@ -178,8 +178,7 @@ theorem IsDownwardCap.absolutelyContinuousOnInterval_cornerVelocities_of_density
     (hshift : Icc (a + Real.pi / 2) (b + Real.pi / 2) ⊆ S) :
     AbsolutelyContinuousOnInterval (firstCornerVelocity U) a b ∧
       AbsolutelyContinuousOnInterval (secondCornerVelocity U) a b := by
-  have hc : AbsolutelyContinuousOnInterval (fun _ : ℝ => (1 : ℝ)) a b :=
-    (LipschitzWith.const (1 : ℝ)).lipschitzOnWith.absolutelyContinuousOnInterval
+  have hc := absolutelyContinuousOnInterval_const 1 a b
   exact ⟨((hU.absolutelyContinuousOnInterval_angleSupport a b).add
       (hU.absolutelyContinuousOnInterval_supportTangent_shift_of_density hρ hρ0 hρC heq hab
         hshift)).sub hc,

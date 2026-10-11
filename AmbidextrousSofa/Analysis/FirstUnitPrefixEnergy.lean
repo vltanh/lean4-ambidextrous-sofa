@@ -61,11 +61,11 @@ theorem uncharged_prefix_quantity_le_initial {a b : ℝ}
     ∀ t ∈ Icc a b,
       q t + (p t - 1) ^ 2 / 4 ≤ q a + (p a - 1) ^ 2 / 4 := by
   let E : ℝ → ℝ := fun t => q t + (p t - 1) ^ 2 / 4
-  have hp' := D.first_ac.sub (Analysis.absolutelyContinuousOnInterval_const_real 1 a b)
+  have hp' := D.first_ac.sub (absolutelyContinuousOnInterval_const 1 a b)
   have hE : AbsolutelyContinuousOnInterval E a b := by
     simpa only [E, pow_two, Pi.add_def, Pi.sub_def, Pi.mul_def, div_eq_mul_inv] using
       D.second_ac.add ((hp'.mul hp').mul
-        (Analysis.absolutelyContinuousOnInterval_const_real ((4 : ℝ)⁻¹) a b))
+        (absolutelyContinuousOnInterval_const ((4 : ℝ)⁻¹) a b))
   refine fun t ht => absolutelyContinuousOnInterval_le_initial_of_ae_deriv_nonpos
     hE D.ordered ?_ ht
   filter_upwards [ae_restrict_mem measurableSet_Ioo, D.ode, D.source, hlower]

@@ -78,8 +78,8 @@ theorem momentum_reconstruction
         momentumRotY p q b - momentumRotY p q a := by
     have hc := Real.contDiff_cos.contDiffOn.absolutelyContinuousOnInterval (a := a) (b := b)
     have hs := Real.contDiff_sin.contDiffOn.absolutelyContinuousOnInterval (a := a) (b := b)
-    have hp1 := hp.sub (absolutelyContinuousOnInterval_const_real 1 a b)
-    have hq1 := hq.add (absolutelyContinuousOnInterval_const_real 1 a b)
+    have hp1 := hp.sub (absolutelyContinuousOnInterval_const 1 a b)
+    have hq1 := hq.add (absolutelyContinuousOnInterval_const 1 a b)
     have hd : ∀ᵐ t, t ∈ uIcc a b →
         HasDerivAt p (u t - 1 - q t) t ∧ HasDerivAt q (v t - 1 + p t) t := by
       filter_upwards [(ae_restrict_iff' measurableSet_Icc).1 hode] with t ht hmem

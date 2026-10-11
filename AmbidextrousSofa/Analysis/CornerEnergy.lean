@@ -31,8 +31,7 @@ theorem absolutelyContinuousOnInterval_clippedCornerEnergy
     (hp : AbsolutelyContinuousOnInterval p a b)
     (hq : AbsolutelyContinuousOnInterval q a b) :
     AbsolutelyContinuousOnInterval (clippedCornerEnergy p q) a b := by
-  have hc (c : ℝ) : AbsolutelyContinuousOnInterval (fun _ : ℝ => c) a b :=
-    (LipschitzWith.const c).lipschitzOnWith.absolutelyContinuousOnInterval
+  have hc (c : ℝ) := absolutelyContinuousOnInterval_const c a b
   have hp' := (absolutelyContinuousOnInterval_max_const hp 0).fun_sub (hc (1 / 2))
   have hq' := hq.fun_add (hc 1)
   convert (hp'.fun_mul hp').fun_add (hq'.fun_mul hq') using 2

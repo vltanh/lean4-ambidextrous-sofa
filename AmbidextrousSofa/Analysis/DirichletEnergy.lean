@@ -44,12 +44,16 @@ theorem square_integral_le_length_mul_integral_square {a b : ℝ} {f : ℝ → �
   nlinarith [sub_pos.2 hab]
 
 /-- The exact polynomial weight appearing in the two-endpoint estimate. -/
-theorem integral_dirichlet_weight (L : ℝ) :
-    (∫ t in (0 : ℝ)..L, t * (L - t)) = L ^ 3 / 6 := by
-  simp only [mul_sub, ← sq]
-  rw [intervalIntegral.integral_sub (Continuous.intervalIntegrable (by fun_prop) _ _)
-    (Continuous.intervalIntegrable (by fun_prop) _ _),
-    intervalIntegral.integral_mul_const, integral_id, integral_pow]
+theorem integral_quadratic_tail_kernel (a b : ℝ) :
+    (∫ t in a..b, (t - a) * (b - t)) = (b - a) ^ 3 / 6 := by
+  have hd (x : ℝ) : HasDerivAt (fun t : ℝ => (b - a) * (t - a) ^ 2 / 2 - (t - a) ^ 3 / 3)
+      ((x - a) * (b - x)) x := by
+    have hx := (hasDerivAt_id' x).sub_const a
+    convert (((hx.pow 2).const_mul (b - a)).div_const 2).sub ((hx.pow 3).div_const 3) using 1
+    push_cast
+    ring
+  rw [intervalIntegral.integral_eq_sub_of_hasDerivAt (fun x _ => hd x)
+    ((by fun_prop : Continuous fun t : ℝ => (t - a) * (b - t)).intervalIntegrable a b)]
   ring
 
 /-- Both endpoint conditions are used. Multiplying the two subinterval
@@ -92,7 +96,8 @@ theorem dirichlet_integral_square_le {f fD : ℝ → ℝ} {L : ℝ}
     (Continuous.intervalIntegrable (μ := volume) (by fun_prop) 0 L)
     (fun t ht => dirichlet_pointwise hf hderiv hfD hfD2 hzero hend ht)
   rw [intervalIntegral.integral_const_mul, intervalIntegral.integral_mul_const,
-    integral_dirichlet_weight] at hbound
+    show (∫ t in (0 : ℝ)..L, t * (L - t)) = L ^ 3 / 6 by
+      simpa using integral_quadratic_tail_kernel 0 L] at hbound
   exact le_of_mul_le_mul_left (hbound.trans_eq (by ring)) hL
 
 theorem quarter_dirichlet_integral_square_le {f fD : ℝ → ℝ}

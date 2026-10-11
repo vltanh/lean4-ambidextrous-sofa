@@ -1,6 +1,7 @@
 module
 
 public import AmbidextrousSofa.Analysis.ThreeAngleWideWidth
+public import AmbidextrousSofa.Analysis.NicheBoxBounds
 
 @[expose] public section
 
@@ -41,9 +42,9 @@ theorem IsDownwardCap.capScore_lt_of_wide_width_and_endpoint_laws
     (sub_le_self _ (Real.arctan_pos.mpr (by linarith [sqrt_two_sub_one_bounds.1])).le) le_rfl)
   obtain ⟨ha9, -, -⟩ :=
     hU.threeAngle_wide_high_score_box ha0 ha1 hh0 hh1 hl hr hleft hright haffine hEP h3
-  have hNbox := hU.middle_niche_le_two_thirds_of_box
-    (hU.subset_centeredBox_of_endpoints (by rw [hl]; ring) (by rw [hr]; ring)) (C := a / 2)
-    (by linarith only [ha9])
+  have hNbox := hU.middle_niche_le_of_endpoints (C := a / 2) (A := 9 / 10) (N := 2 / 3)
+    (by rw [hl]; ring) (by rw [hr]; ring) (by linarith only [ha9]) (by norm_num) fun s c _ => by
+      nlinarith [sq_nonneg (c / 3 - (9 / 10) * s), sq_nonneg ((9 / 10) * c + s / 3 - 1)]
   rw [← neg_div] at hNbox
   exact (hU.threeAngleScore_lt_of_wide_width_and_endpoint_bounds ha0 ha1 hh0 hh1 hl hr hleft hright
     haffine hEP (by linarith only [hNbox.1, hEPR, hnR0])

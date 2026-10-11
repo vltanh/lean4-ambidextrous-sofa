@@ -1,7 +1,6 @@
 module
 
 public import AmbidextrousSofa.Analysis.WideGainScalar
-public import AmbidextrousSofa.Analysis.NicheBoxBounds
 
 @[expose] public section
 
@@ -11,7 +10,7 @@ public import AmbidextrousSofa.Analysis.NicheBoxBounds
 The middle endpoint support points place both two-wall peaks inside the
 middle window. Nonnegative actual support deficits place their crossovers
 on opposite sides of the diagonal apex. The endpoint pressure identities
-and a unit-box bound pay for both baseline truncation losses.
+pay for both baseline truncation losses.
 -/
 
 noncomputable section
@@ -19,28 +18,6 @@ noncomputable section
 open Set
 
 namespace AmbidextrousSofa
-
-theorem nine_tenths_one_third_circle {s c : ℝ} (hcircle : c ^ 2 + s ^ 2 = 1) :
-    (9 / 10) * c + s / 3 ≤ 1 := by
-  linarith [sq_nonneg (c / 3 - (9 / 10) * s), sq_nonneg ((9 / 10) * c + s / 3 - 1)]
-
-theorem IsDownwardCap.middle_niche_le_two_thirds_of_box
-    {U : Set Plane} (hU : IsDownwardCap U) {C : ℝ}
-    (hbox : U ⊆ Icc (-2 * C) (2 * C) ×ˢ Icc (0 : ℝ) 1) (hC : C ≤ 9 / 10) :
-    sweptNiche U (Real.pi / 2) (-C) ≤ 2 / 3 ∧
-      sweptNiche U (Real.pi / 2) C ≤ 2 / 3 := by
-  constructor <;> refine sweptNiche_le_of_forall (by linarith [Real.pi_pos]) (by norm_num)
-    fun t ht => ?_
-  all_goals
-    obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
-  · rw [cornerWall, secondWall, min_le_iff, div_le_iff₀ hc]
-    right
-    linarith [hU.support_companionNormal_le_centeredBox hbox hs.le hc.le,
-      mul_le_mul_of_nonneg_right hC hs.le, nine_tenths_one_third_circle (Real.sin_sq_add_cos_sq t)]
-  · rw [cornerWall, firstWall, min_le_iff, div_le_iff₀ hs]
-    left
-    linarith [hU.support_unitNormal_le_centeredBox hbox hs.le hc.le,
-      mul_le_mul_of_nonneg_right hC hc.le, nine_tenths_one_third_circle (Real.cos_sq_add_sin_sq t)]
 
 theorem wideNearRightIntercept_eq {U : Set Plane} {a h : ℝ}
     (ha : 0 < a) (hha : h < a) (k v : ℝ) :

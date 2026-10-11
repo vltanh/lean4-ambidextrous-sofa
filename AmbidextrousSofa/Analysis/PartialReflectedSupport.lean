@@ -78,8 +78,7 @@ theorem IsJointCapMaximizer.properReflected_momenta_absolutelyContinuous :
     AbsolutelyContinuousOnInterval (properReflectedP U m ρ) (Real.pi / 2 - α) (Real.pi / 2) ∧
       AbsolutelyContinuousOnInterval (properReflectedQ U ρ) (Real.pi / 2 - α) (Real.pi / 2) := by
   have hV := hU.isCap_properLeftCompanion
-  have hc : AbsolutelyContinuousOnInterval (fun _ : ℝ => (1 : ℝ)) 0 α :=
-    (LipschitzWith.const (1 : ℝ)).lipschitzOnWith.absolutelyContinuousOnInterval
+  have hc := absolutelyContinuousOnInterval_const 1 0 α
   have hP : AbsolutelyContinuousOnInterval (properUsedP U ρ) 0 α :=
     ((hU.isCap.absolutelyContinuousOnInterval_closedSupportDerivative hρ hρ0 hρK 0 α 0).sub
       (hV.absolutelyContinuousOnInterval_angleSupport_shift 0 α (Real.pi / 2))).add hc

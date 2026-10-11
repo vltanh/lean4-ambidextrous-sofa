@@ -1,6 +1,7 @@
 module
 
 public import AmbidextrousSofa.Measure.CapScore
+public import AmbidextrousSofa.Analysis.PositivePartCalculus
 
 @[expose] public section
 
@@ -73,7 +74,7 @@ theorem absolutelyContinuousOnInterval_of_integral_sub
     {f g : ℝ → ℝ} {a b : ℝ} (hg : IntervalIntegrable g volume a b)
     (heq : ∀ x ∈ uIcc a b, f x - f a = ∫ t in a..x, g t) :
     AbsolutelyContinuousOnInterval f a b :=
-  ((LipschitzWith.const (f a)).lipschitzOnWith.absolutelyContinuousOnInterval.add
+  ((absolutelyContinuousOnInterval_const (f a) a b).add
     (hg.absolutelyContinuousOnInterval_intervalIntegral left_mem_uIcc)).congr
     fun x hx => by simp [← heq x hx]
 

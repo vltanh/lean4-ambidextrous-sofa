@@ -5,14 +5,12 @@ public import AmbidextrousSofa.Analysis.NonpositiveCornerCurvature
 @[expose] public section
 
 /-!
-# From actual selected atoms to local density inequalities
+# From actual selected atoms to interval curvature bounds
 
 Summing an eventual finite atom bound retains the actual middle-face and
 support-selection errors. Their proved vanishing limits then give an
-interval bound for the actual target curvature. A conditional local bound
-is transferred to any bounded density of that measure by the global
-Lebesgue differentiation theorem, in the form used for the sharp
-densities.
+interval bound for the actual target curvature. Where the curvature has a
+density it has no atoms.
 -/
 
 noncomputable section
@@ -31,15 +29,6 @@ theorem sigmaAt_eq_zero_of_density {U : Set Plane} {S : Set ℝ} {ρ : ℝ → �
   rw [measureReal_eq_integral_of_restrict_withDensity hρ hρ0 heq (measurableSet_singleton t)
     (singleton_subset_iff.mpr ht)]
   simp
-
-theorem ae_density_le_of_conditional_local_bound
-    {μ : Measure ℝ} {ρ f : ℝ → ℝ} {S : Set ℝ} {P : ℝ → Prop} {C : ℝ}
-    (hS : IsOpen S) (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρC : ∀ t, ρ t ≤ C)
-    (heq : μ.restrict S = (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
-    (hlocal : ∀ t ∈ S, P t → ∀ ε > 0,
-      ∃ δ > 0, ∀ d : ℝ, 0 < d → d < δ → μ.real (Ioc t (t + d)) ≤ (f t + ε) * d) :
-    ∀ᵐ t : ℝ ∂volume, t ∈ S → P t → ρ t ≤ f t :=
-  ae_density_le_of_local_bound hS hρ hρ0 hρC heq hlocal
 
 namespace AngularGrid
 

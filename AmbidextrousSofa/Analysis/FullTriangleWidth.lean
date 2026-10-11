@@ -33,9 +33,8 @@ theorem IsDownwardCap.capScore_lt_of_full_triangles_and_endpoint_laws
       (3 * sweptNiche U (Real.pi / 2) (-a / 2) - sweptNiche U (Real.pi / 2) (a / 2)) / 4) :
     capScore U (Real.pi / 2) < 41 / 50 := by
   obtain ⟨hk0, hk1, hksq, hc0, hc1⟩ := fullTriangle_offset_bounds
-  obtain ⟨hnL, hnR⟩ := hU.middle_niche_le_two_fifths_of_box
-    (hU.subset_centeredBox_of_endpoints (C := a / 2) (by rw [hl]; ring) (by rw [hr]; ring))
-    (by linarith only [ha1])
+  obtain ⟨hnL, hnR⟩ := hU.middle_niche_le_two_fifths_of_endpoints (C := a / 2)
+    (by rw [hl]; ring) (by rw [hr]; ring) (by linarith only [ha1])
   rw [← neg_div] at hnL
   have hn0 := sweptNiche_nonneg U (Real.pi / 2) (a / 2)
   have hn1 := sweptNiche_nonneg U (Real.pi / 2) (-a / 2)

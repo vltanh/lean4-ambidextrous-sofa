@@ -63,8 +63,7 @@ theorem signedRoof_integral_of_graphs_ac
   have hderivD := ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo le_rfl hdL) hderiv
   have hderivC := ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hb0 hdL) hderiv
   have hderivB := ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo hb0 le_rfl) hderiv
-  have hconst : AbsolutelyContinuousOnInterval (fun _ : ℝ => (1 : ℝ)) 0 (Real.pi / 2) :=
-    (LipschitzWith.const (1 : ℝ)).lipschitzOnWith.absolutelyContinuousOnInterval
+  have hconst := absolutelyContinuousOnInterval_const 1 0 (Real.pi / 2)
   have hsin : AbsolutelyContinuousOnInterval Real.sin 0 (Real.pi / 2) :=
     Real.contDiff_sin.contDiffOn.absolutelyContinuousOnInterval
   have hcos : AbsolutelyContinuousOnInterval Real.cos 0 (Real.pi / 2) :=

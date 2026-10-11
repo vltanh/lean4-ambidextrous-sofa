@@ -51,8 +51,7 @@ theorem corner_first_descent_contradiction
       filter_upwards [ae_restrict_mem measurableSet_Ioo, hflux, hv] with t ht hf hv
       linarith [hf (hqpos t ⟨ht.1.le, ht.2⟩) (hrpos t (Ioo_subset_Icc_self ht))])
   -- The squared distance `(1 + r)^2 + (1 + q)^2` cannot decrease.
-  have hconst : AbsolutelyContinuousOnInterval (fun _ : ℝ => (1 : ℝ)) a b :=
-    (LipschitzWith.const (1 : ℝ)).lipschitzOnWith.absolutelyContinuousOnInterval
+  have hconst := absolutelyContinuousOnInterval_const 1 a b
   have := absolutelyContinuousOnInterval_linear_lower_bound (k := 0)
     (((hconst.add hr).mul (hconst.add hr)).add ((hconst.add hq).mul (hconst.add hq))) hab.le (by
       filter_upwards [ae_restrict_mem measurableSet_Ioo, hode, hκ, hflux] with t ht hd hk hf

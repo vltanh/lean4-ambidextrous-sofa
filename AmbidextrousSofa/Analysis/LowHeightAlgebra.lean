@@ -28,11 +28,6 @@ def lowHeightSurrogate (C u v : ℝ) : ℝ :=
 theorem lowHeightBound_lt_half_M : lowHeightBound < M / 2 := by
   unfold lowHeightBound; linarith [eight_fifths_lt_M]
 
-theorem lowHeight_sqrt_bounds :
-    (7 / 5 : ℝ) < Real.sqrt 2 ∧ Real.sqrt 2 < 99 / 70 ∧ Real.sqrt 2 < 10 / 7 :=
-  ⟨(Real.lt_sqrt (by norm_num)).2 (by norm_num), (Real.sqrt_lt' (by norm_num)).2 (by norm_num),
-    (Real.sqrt_lt' (by norm_num)).2 (by norm_num)⟩
-
 theorem positivePart_square_pair_bound {H w : ℝ} (hH : 0 ≤ H) :
     H ^ 2 / 2 ≤ w ^ 2 + (max (H - w) 0) ^ 2 := by
   rcases le_total 0 (H - w) with h | h
@@ -42,7 +37,7 @@ theorem positivePart_square_pair_bound {H w : ℝ} (hH : 0 ≤ H) :
 /-- The branch whose right tent tail has not crossed the middle endpoint. -/
 theorem lowHeight_unclipped_bound {C u v : ℝ} (hC : 1 / 2 ≤ C)
     (hz : C + u - Real.sqrt 2 ≤ 0) : lowHeightSurrogate C u v < lowHeightBound := by
-  have hsqrt := lowHeight_sqrt_bounds.2.2
+  have hsqrt := sqrt_two_sub_one_bounds.2.2
   have hp := positivePart_square_pair_bound (w := ((1 - u) + (1 / 4 - v)) / 2)
     (show 0 ≤ 2 * C + 5 / 8 - Real.sqrt 2 by linarith)
   rw [show 2 * C + 5 / 8 - Real.sqrt 2 - ((1 - u) + (1 / 4 - v)) / 2 =
@@ -52,11 +47,11 @@ theorem lowHeight_unclipped_bound {C u v : ℝ} (hC : 1 / 2 ≤ C)
 
 /-- The one-tail expression has a uniform strict rational bound. Its
 clipped branch is an explicit concave quadratic in the right excess. -/
-theorem lowHeight_surrogate_bound {C u v : ℝ} (hC : 1 / 2 ≤ C)
-    (hu : u ≤ 1) (hv : 0 ≤ v) : lowHeightSurrogate C u v < lowHeightBound := by
+theorem lowHeight_surrogate_bound {C u v : ℝ} (hC : 1 / 2 ≤ C) (hv : 0 ≤ v) :
+    lowHeightSurrogate C u v < lowHeightBound := by
   rcases le_or_gt (C + u - Real.sqrt 2) 0 with hz | hz
   · exact lowHeight_unclipped_bound hC hz
-  obtain ⟨hs1, -, hs2⟩ := lowHeight_sqrt_bounds
+  obtain ⟨hs1, -, hs2⟩ := sqrt_two_sub_one_bounds
   have hh : 0 < 2 * C + (u + v) / 2 - Real.sqrt 2 := by linarith
   -- On the clipped branch the surrogate is concave in `u`, with vertex `s = 2 - 2C - v`.
   rcases le_or_gt (2 - 2 * C - v) (Real.sqrt 2 - C) with hs | hs
@@ -78,7 +73,7 @@ theorem lowHeight_surrogate_bound {C u v : ℝ} (hC : 1 / 2 ≤ C)
 /-- At larger quarter-widths the baseline tent alone suffices. -/
 theorem lowHeight_large_width_unclipped_bound {C : ℝ} (hC : 23 / 20 ≤ C) :
     11 * C / 8 - (2 * C - Real.sqrt 2) ^ 2 < lowHeightBound := by
-  have hsqrt := lowHeight_sqrt_bounds.2.1
+  have hsqrt := sqrt_two_sub_one_bounds.2.2
   unfold lowHeightBound
   linarith [mul_nonpos_of_nonneg_of_nonpos (sub_nonneg.2 hC)
       (show 11 / 8 - 4 * (C + 23 / 20 - Real.sqrt 2) ≤ 0 by linarith),
@@ -87,7 +82,7 @@ theorem lowHeight_large_width_unclipped_bound {C : ℝ} (hC : 23 / 20 ≤ C) :
 
 theorem lowHeight_large_width_clipped_bound {C : ℝ} (hC : Real.sqrt 2 ≤ C) :
     (11 / 8 + 2 * Real.sqrt 2) * C - 3 * C ^ 2 < lowHeightBound := by
-  have hsqrt := lowHeight_sqrt_bounds
+  have hsqrt := sqrt_two_sub_one_bounds
   unfold lowHeightBound
   linarith [mul_nonpos_of_nonneg_of_nonpos (sub_nonneg.2 hC)
       (show 11 / 8 + 2 * Real.sqrt 2 - 3 * (C + Real.sqrt 2) ≤ 0 by linarith),

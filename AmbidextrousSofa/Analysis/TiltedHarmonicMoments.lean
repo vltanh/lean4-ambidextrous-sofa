@@ -32,7 +32,7 @@ theorem integral_mul_forwardCosineConvolution {r : ℝ → ℝ} {a b c : ℝ}
   have hsin := hr.mul_continuousOn Real.continuous_sin.continuousOn
   have hA := hcos.absolutelyContinuousOnInterval_intervalIntegral hc
   have hB := hsin.absolutelyContinuousOnInterval_intervalIntegral hc
-  rw [ac_intervalIntegral_eq_sub_of_ae_hasDerivAt ((absolutelyContinuousOnInterval_const_real
+  rw [ac_intervalIntegral_eq_sub_of_ae_hasDerivAt ((absolutelyContinuousOnInterval_const
     (1 / 2) a b).fun_mul ((hA.fun_mul hA).fun_add (hB.fun_mul hB))) ?_]
   · ring
   filter_upwards [hcos.ae_hasDerivAt_integral, hsin.ae_hasDerivAt_integral] with t hct hst ht

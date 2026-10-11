@@ -64,7 +64,7 @@ theorem fullTiltedSupportQuarterPair_tangent_calculus :
           ((1 - leftCompanionWingDensity m ρ (t + Real.pi / 2)) * Real.sin t) t := by
   obtain ⟨hf, hg, hfD, hgD⟩ :=
     fullTiltedSupportQuarterPair_absolutelyContinuous hU hm haffine hρ hρ0 hρK heq
-  have h1 := Analysis.absolutelyContinuousOnInterval_const_real 1 0 (Real.pi / 2)
+  have h1 := absolutelyContinuousOnInterval_const 1 0 (Real.pi / 2)
   obtain ⟨hBx, hBy⟩ := absolutelyContinuousOnInterval_supportPoint (hf.sub h1) hfD
   obtain ⟨hDx, hDy⟩ := absolutelyContinuousOnInterval_companionSupportPoint (hg.sub h1) hgD
   refine ⟨hBx, hBy, hDx, hDy, ?_⟩

@@ -88,8 +88,7 @@ theorem IsDownwardCap.absolutelyContinuousOnInterval_tangency_coordinates_of_den
       AbsolutelyContinuousOnInterval (fun t => (firstTangency U t).2) a b ∧
       AbsolutelyContinuousOnInterval (fun t => (secondTangency U t).1) a b ∧
       AbsolutelyContinuousOnInterval (fun t => (secondTangency U t).2) a b := by
-  have h1 := (LipschitzWith.const (1 : ℝ)).lipschitzOnWith.absolutelyContinuousOnInterval (a := a)
-    (b := b)
+  have h1 := absolutelyContinuousOnInterval_const 1 a b
   have hf := (hU.absolutelyContinuousOnInterval_angleSupport a b).sub h1
   have hg := (hU.absolutelyContinuousOnInterval_angleSupport_shift a b (Real.pi / 2)).sub h1
   have hft := hU.absolutelyContinuousOnInterval_supportTangent_of_density hρ hρ0 hρC heq hab hbase

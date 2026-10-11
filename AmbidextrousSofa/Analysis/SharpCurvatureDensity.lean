@@ -24,15 +24,25 @@ open scoped Topology
 
 namespace AmbidextrousSofa
 
+theorem setIntegral_eq_density_mul_of_restrict_withDensity
+    {μ : Measure ℝ} {ρ : ℝ → ℝ} {S s : Set ℝ}
+    (hρ : Measurable ρ) (hρ0 : ∀ r, 0 ≤ ρ r)
+    (heq : μ.restrict S = (volume.restrict S).withDensity (fun r => ENNReal.ofReal (ρ r)))
+    (hs : MeasurableSet s) (hsub : s ⊆ S) (f : ℝ → ℝ) :
+    (∫ r in s, f r ∂μ) = ∫ r in s, ρ r * f r := by
+  have h := congrArg (fun ν : Measure ℝ => ν.restrict s) heq
+  simp only [Measure.restrict_restrict_of_subset hsub, restrict_withDensity hs] at h
+  rw [h, integral_withDensity_eq_integral_toReal_smul hρ.ennreal_ofReal
+    (ae_of_all _ fun _ => ENNReal.ofReal_lt_top)]
+  simp only [ENNReal.toReal_ofReal (hρ0 _), smul_eq_mul]
+
 theorem measureReal_eq_integral_of_restrict_withDensity
     {μ : Measure ℝ} {ρ : ℝ → ℝ} {S s : Set ℝ}
     (hρ : Measurable ρ) (hρ0 : ∀ x, 0 ≤ ρ x)
     (heq : μ.restrict S = (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
     (hs : MeasurableSet s) (hsub : s ⊆ S) :
     μ.real s = ∫ t in s, ρ t := by
-  have h : μ s = μ.restrict S s := by rw [Measure.restrict_apply hs, inter_eq_left.mpr hsub]
-  rw [measureReal_def, h, heq, withDensity_apply _ hs, Measure.restrict_restrict_of_subset hsub,
-    integral_eq_lintegral_of_nonneg_ae (.of_forall hρ0) hρ.aestronglyMeasurable]
+  simpa using setIntegral_eq_density_mul_of_restrict_withDensity hρ hρ0 heq hs hsub fun _ => 1
 
 /-- A local interval bound at the points of an open set where it is proved bounds a bounded
 density of the measure at almost every such point. -/
