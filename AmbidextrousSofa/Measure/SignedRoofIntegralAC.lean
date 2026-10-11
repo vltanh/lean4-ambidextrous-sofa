@@ -183,25 +183,12 @@ theorem sweptNiche_integral_eq_signed_formula
       -(∫ t in (0 : ℝ)..(Real.pi / 2), cornerDensity f g fD gD t) +
       (∫ t in b..(Real.pi / 2), supportP fD g t ^ 2) +
       ∫ t in (0 : ℝ)..d, supportQ gD f t ^ 2 := by
-  -- With an integrable right derivative a continuous function is absolutely continuous, and
-  -- where it is differentiable its derivative is the right derivative.
-  have hAC {F F' : ℝ → ℝ} (hF : Continuous F) (hF' : ∀ t, HasDerivWithinAt F (F' t) (Ioi t) t)
-      (hi : IntervalIntegrable F' volume 0 (Real.pi / 2)) :
-      AbsolutelyContinuousOnInterval F 0 (Real.pi / 2) :=
-    absolutelyContinuousOnInterval_of_integral_sub hi fun x hx =>
-      (intervalIntegral.integral_eq_sub_of_hasDeriv_right hF.continuousOn
-        (fun t _ => hF' t) (hi.mono_set (uIcc_subset_uIcc_left hx))).symm
-  have hderiv {F F' : ℝ → ℝ} (hF : AbsolutelyContinuousOnInterval F 0 (Real.pi / 2))
-      (hF' : ∀ t, HasDerivWithinAt F (F' t) (Ioi t) t) :
-      ∀ᵐ t ∂volume.restrict (Ioo 0 (Real.pi / 2)), HasDerivAt F (F' t) t := by
-    filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hF.ae_differentiableAt]
-      with t ht hd
-    have h := (hd (Icc_subset_uIcc (Ioo_subset_Icc_self ht))).hasDerivAt
-    rwa [(uniqueDiffWithinAt_Ioi t).eq_deriv _ h.hasDerivWithinAt (hF' t)] at h
-  have hfAC := hAC hf hderivF (hfD.intervalIntegrable _ _)
-  have hgAC := hAC hg hderivG (hgD.intervalIntegrable _ _)
-  have hfDAC := hAC hfD hsecondF hfDD
-  have hgDAC := hAC hgD hsecondG hgDD
+  have hfAC := absolutelyContinuousOnInterval_of_hasDerivWithinAt_Ioi hf hderivF
+    (hfD.intervalIntegrable 0 (Real.pi / 2))
+  have hgAC := absolutelyContinuousOnInterval_of_hasDerivWithinAt_Ioi hg hderivG
+    (hgD.intervalIntegrable 0 (Real.pi / 2))
+  have hfDAC := absolutelyContinuousOnInterval_of_hasDerivWithinAt_Ioi hfD hsecondF hfDD
+  have hgDAC := absolutelyContinuousOnInterval_of_hasDerivWithinAt_Ioi hgD hsecondG hgDD
   have hB : ∀ t ∈ Ioo 0 (Real.pi / 2), ∀ s ∈ Icc 0 (Real.pi / 2),
       f s - 1 ≤ coordDot (firstTangentPoint f fD t) (unitNormal s) := fun t ht s hs =>
     firstTangent_dominates_support hf hfD hderivF hsecondF hFcurv (Ioo_subset_Icc_self ht) hs
@@ -209,8 +196,11 @@ theorem sweptNiche_integral_eq_signed_formula
       g s - 1 ≤ coordDot (secondTangentPoint g gD t) (companionNormal s) := fun t ht s hs =>
     secondTangent_dominates_support hg hgD hderivG hsecondG hGcurv (Ioo_subset_Icc_self ht) hs
   refine signedRoof_integral_of_graphs_ac hb0 hbd hdL hN hf hg hfD hgD hfAC hgAC hfDAC hgDAC
-    (by filter_upwards [hderiv hfAC hderivF, hderiv hgAC hderivG, hderiv hfDAC hsecondF,
-          hderiv hgDAC hsecondG] with t h1 h2 h3 h4 using ⟨h1, h2, h3, h4⟩)
+    (by filter_upwards [ae_hasDerivAt_of_hasDerivWithinAt_Ioi hfAC hderivF,
+          ae_hasDerivAt_of_hasDerivWithinAt_Ioi hgAC hderivG,
+          ae_hasDerivAt_of_hasDerivWithinAt_Ioi hfDAC hsecondF,
+          ae_hasDerivAt_of_hasDerivWithinAt_Ioi hgDAC hsecondG] with t h1 h2 h3 h4
+        using ⟨h1, h2, h3, h4⟩)
     hfDD hgDD hFtop hGtop hpzero hqzero (fun t ht => ?_) (fun t ht => ?_) (fun t ht => ?_)
   · have htL : t ∈ Ioo 0 (Real.pi / 2) := ⟨ht.1, ht.2.trans_le hdL⟩
     exact sweptNiche_secondTangent hU hFsupport hGsupport hGtop htL (hq t ⟨ht.1.le, ht.2.le⟩)

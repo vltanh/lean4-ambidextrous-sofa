@@ -5,13 +5,14 @@ public import AmbidextrousSofa.Measure.CapScore
 @[expose] public section
 
 /-!
-# Actual graph area and oriented parameter integrals
+# Actual cap area and absolutely continuous primitives
 
-The graph identities below allow right derivatives and integrable derivative
-functions, so piecewise smooth curves with curvature jumps are covered. The
-graph value is an explicit pointwise hypothesis; the integral conclusion is
-proved by change of variables and integration by parts. Reversing a graph
-arc changes its oriented contribution automatically.
+A cap is the region under its attained roof, so Cavalieri gives its area,
+which splits into two curved wings and a horizontal top face. A function
+with an exact integral representation is absolutely continuous; this covers
+continuous functions with an integrable right derivative, such as piecewise
+smooth support derivatives with curvature jumps, and almost everywhere their
+right derivative is their derivative.
 -/
 
 noncomputable section
@@ -21,41 +22,6 @@ open Set MeasureTheory
 namespace AmbidextrousSofa
 
 def coordDet (p q : Plane) : ℝ := p.1 * q.2 - p.2 * q.1
-
-/-- The line-integral form of oriented graph area. All endpoint products are
-retained; they are the terms needed for vertical faces and joining arcs. -/
-theorem twice_integral_graph_parametrization
-    {a b : ℝ} {F X Y XD YD : ℝ → ℝ}
-    (hab : a ≤ b) (hX : ContinuousOn X (Icc a b)) (hY : ContinuousOn Y (Icc a b))
-    (hXD : ∀ t ∈ Ioo a b, HasDerivWithinAt X (XD t) (Ioi t) t)
-    (hYD : ∀ t ∈ Ioo a b, HasDerivWithinAt Y (YD t) (Ioi t) t)
-    (hXDi : IntervalIntegrable XD volume a b) (hYDi : IntervalIntegrable YD volume a b)
-    (hF : ContinuousOn F (X '' Icc a b))
-    (hgraph : ∀ t ∈ Ioo a b, F (X t) = Y t) :
-    2 * (∫ x in X a..X b, F x) = X b * Y b - X a * Y a -
-      ∫ t in a..b, coordDet (X t, Y t) (XD t, YD t) := by
-  have hXu : ContinuousOn X (uIcc a b) := by rwa [uIcc_of_le hab]
-  have hYu : ContinuousOn Y (uIcc a b) := by rwa [uIcc_of_le hab]
-  have hFu : ContinuousOn F (X '' uIcc a b) := by rwa [uIcc_of_le hab]
-  have hXD' : ∀ t ∈ Ioo (min a b) (max a b), HasDerivWithinAt X (XD t) (Ioi t) t := by
-    rwa [min_eq_left hab, max_eq_right hab]
-  -- Parameter substitution for the graph, including orientation; no injectivity is needed.
-  have hsubst : (∫ x in X a..X b, F x) = ∫ t in a..b, Y t * XD t := by
-    rw [← intervalIntegral.integral_comp_mul_deriv''' hXu hXD'
-      (by simpa only [min_eq_left hab, max_eq_right hab] using
-        hF.mono (image_mono Ioo_subset_Icc_self))
-      (hFu.integrableOn_compact (isCompact_uIcc.image_of_continuousOn hXu))
-      ((intervalIntegrable_iff').mp (hXDi.continuousOn_mul (hFu.comp hXu (mapsTo_image X _))))]
-    exact intervalIntegral.integral_congr_Ioo_of_le hab fun t ht =>
-      congrArg (· * XD t) (hgraph t ht)
-  have hparts := intervalIntegral.integral_mul_deriv_eq_deriv_mul_of_hasDeriv_right hXu hYu hXD'
-    (by simpa only [min_eq_left hab, max_eq_right hab] using hYD) hXDi hYDi
-  have hcomm : (∫ t in a..b, XD t * Y t) = ∫ t in a..b, Y t * XD t :=
-    intervalIntegral.integral_congr fun t _ => mul_comm (XD t) (Y t)
-  simp only [coordDet]
-  rw [hsubst,
-    intervalIntegral.integral_sub (hYDi.continuousOn_mul hXu) (hXDi.continuousOn_mul hYu)]
-  linarith
 
 /-- A cap is the actual region under its attained roof, including endpoint fibers. -/
 theorem IsDownwardCap.eq_verticalIntervalRegion {U : Set Plane} (hU : IsDownwardCap U) :
@@ -110,5 +76,24 @@ theorem absolutelyContinuousOnInterval_of_integral_sub
   ((LipschitzWith.const (f a)).lipschitzOnWith.absolutelyContinuousOnInterval.add
     (hg.absolutelyContinuousOnInterval_intervalIntegral left_mem_uIcc)).congr
     fun x hx => by simp [← heq x hx]
+
+/-- A continuous function with an integrable right derivative is absolutely continuous. -/
+theorem absolutelyContinuousOnInterval_of_hasDerivWithinAt_Ioi {f f' : ℝ → ℝ} {a b : ℝ}
+    (hf : Continuous f) (hf' : ∀ t, HasDerivWithinAt f (f' t) (Ioi t) t)
+    (hi : IntervalIntegrable f' volume a b) : AbsolutelyContinuousOnInterval f a b :=
+  absolutelyContinuousOnInterval_of_integral_sub hi fun _ hx =>
+    (intervalIntegral.integral_eq_sub_of_hasDeriv_right hf.continuousOn
+      (fun t _ => hf' t) (hi.mono_set (uIcc_subset_uIcc_left hx))).symm
+
+/-- Almost everywhere, the right derivative of an absolutely continuous function is its
+derivative. -/
+theorem ae_hasDerivAt_of_hasDerivWithinAt_Ioi {f f' : ℝ → ℝ} {a b : ℝ}
+    (hf : AbsolutelyContinuousOnInterval f a b)
+    (hf' : ∀ t, HasDerivWithinAt f (f' t) (Ioi t) t) :
+    ∀ᵐ t ∂volume.restrict (Ioo a b), HasDerivAt f (f' t) t := by
+  filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hf.ae_differentiableAt]
+    with t ht hd
+  have h := (hd (Ioo_subset_Icc_self.trans Icc_subset_uIcc ht)).hasDerivAt
+  rwa [(uniqueDiffWithinAt_Ioi t).eq_deriv _ h.hasDerivWithinAt (hf' t)] at h
 
 end AmbidextrousSofa

@@ -156,11 +156,18 @@ theorem adaptiveFunctional_reference_eq_cap_area_sub_niche :
   have hGs : IntervalIntegrable referenceGSecond volume 0 (Real.pi / 2) :=
     intervalIntegrable_if_lt (hI (by fun_prop)) (intervalIntegrable_if_lt (hI (by fun_prop))
       (hI (by fun_prop)))
-  have harea := isDownwardCap_referenceCap.volumeReal_eq_support_energy hF hG hFD hGD
-    (fun t _ => (hasDerivAt_referenceF t).hasDerivWithinAt)
-    (fun t _ => (hasDerivAt_referenceG t).hasDerivWithinAt)
-    (fun t _ => hasDerivWithinAt_referenceFD_right t)
-    (fun t _ => hasDerivWithinAt_referenceGD_right t) hFs hGs
+  have hFDac := absolutelyContinuousOnInterval_of_hasDerivWithinAt_Ioi hFD
+    hasDerivWithinAt_referenceFD_right hFs
+  have hGDac := absolutelyContinuousOnInterval_of_hasDerivWithinAt_Ioi hGD
+    hasDerivWithinAt_referenceGD_right hGs
+  have harea := isDownwardCap_referenceCap.volumeReal_eq_support_energy_ac
+    (absolutelyContinuousOnInterval_of_hasDerivWithinAt_Ioi hF
+      (fun t => (hasDerivAt_referenceF t).hasDerivWithinAt) (hI hFD))
+    (absolutelyContinuousOnInterval_of_hasDerivWithinAt_Ioi hG
+      (fun t => (hasDerivAt_referenceG t).hasDerivWithinAt) (hI hGD)) hFDac hGDac
+    (.of_forall hasDerivAt_referenceF) (.of_forall hasDerivAt_referenceG)
+    (ae_hasDerivAt_of_hasDerivWithinAt_Ioi hFDac hasDerivWithinAt_referenceFD_right)
+    (ae_hasDerivAt_of_hasDerivWithinAt_Ioi hGDac hasDerivWithinAt_referenceGD_right) hFs hGs
     (fun _ ht => referenceHull_subset_referenceCap (fBoundary_mem_referenceHull ht))
     (fun _ ht => referenceHull_subset_referenceCap (gBoundary_mem_referenceHull ht))
     (fun _ ht => angleSupport_referenceCap_eq_f ⟨ht.1.le, ht.2.le⟩)
