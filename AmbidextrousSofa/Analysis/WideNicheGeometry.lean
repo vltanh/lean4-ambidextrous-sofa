@@ -74,7 +74,7 @@ The compact box comes from the earlier actual wide-score estimate. -/
 theorem IsDownwardCap.wide_piece_fitting {U : Set Plane}
     (hU : IsDownwardCap U) {a h k u v : ℝ}
     (ha : 8 / 5 ≤ a) (hh : 0 ≤ h) (hh1 : h < 1 / 4) (hah : a + h < 37 / 20)
-    (hk0 : 41 / 100 < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1)
+    (hk0 : 41 / 99 < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1)
     (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
     (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1)
     (haffine : ∃ m c : ℝ, ∀ x ∈ Icc (-a / 2) (a / 2), capRoof U x = m * x + c)

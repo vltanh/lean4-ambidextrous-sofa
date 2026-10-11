@@ -78,7 +78,7 @@ theorem IsFullCapMaximizer.centered_half_projection_width_gt_of_affine_nonneg
     (by linarith [hU.width_bounds.1, one_lt_M]) ha1
     (sub_nonneg.mpr (capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _)) hl hr
     (sub_sub_cancel 1 _).symm hright hAff
-    (sub_le_self _ (Real.arctan_pos.mpr (by linarith [sqrt_two_sub_one_strict_bounds.1])).le)
+    (sub_le_self _ (Real.arctan_pos.mpr (by linarith [sqrt_two_sub_one_bounds.1])).le)
     le_rfl).trans forty_one_fiftieths_lt_half_M)
 
 theorem IsFullCapMaximizer.two_lt_width {U : Set Plane} (hU : IsFullCapMaximizer U) :

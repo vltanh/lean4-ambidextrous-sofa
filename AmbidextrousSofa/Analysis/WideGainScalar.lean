@@ -17,7 +17,7 @@ noncomputable section
 
 namespace AmbidextrousSofa
 
-theorem wide_norm_rational_bounds {k : ℝ} (hk0 : 41 / 100 < k) (hk1 : k < 29 / 70) :
+theorem wide_norm_rational_bounds {k : ℝ} (hk0 : 41 / 99 < k) (hk1 : k < 29 / 70) :
     27 / 25 < nearDiagonalNorm k ∧ nearDiagonalNorm k < 13 / 12 ∧
       3 / 2 < (1 + k) * nearDiagonalNorm k := by
   have hlo : 27 / 25 < nearDiagonalNorm k := Real.lt_sqrt_of_sq_lt (by nlinarith)
@@ -34,7 +34,7 @@ theorem wide_crossing_after_apex {k u w h b N : ℝ} (hk : 0 < k) (hk1 : k < 29 
     mul_nonneg (by linarith only [hk1] : (0 : ℝ) ≤ 1 - k) hh, hb, hN, hk1]
 
 theorem wide_peak_fits {a h k N e b : ℝ}
-    (hk0 : 41 / 100 < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1)
+    (hk0 : 41 / 99 < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1)
     (hN : 27 / 25 ≤ N) (hh1 : h ≤ 1 / 4)
     (hah : a + h ≤ 37 / 20) (he : e ≤ 1)
     (hb : 1 - h - N + k * a / 2 ≤ b) :
@@ -53,7 +53,7 @@ private theorem wide_loss_twice {k : ℝ} (hk : 0 < k) (u b B : ℝ) :
 
 theorem wide_truncation_loss_sum_le {a h k N u v eR eL bR bL : ℝ}
     (ha : 8 / 5 ≤ a) (hh : 0 ≤ h)
-    (hk0 : 2 / 5 < k) (hk1 : k < 1 / 2) (hksq : k ^ 2 + 2 * k = 1)
+    (hk0 : 41 / 99 < k) (hk1 : k < 1 / 2) (hksq : k ^ 2 + 2 * k = 1)
     (hN : 3 / 2 < (1 + k) * N)
     (hbR : 1 - h - N + k * a / 2 ≤ bR) (hbL : 1 - N + k * a / 2 ≤ bL)
     (heR : eR ≤ 1 - (a - u)) (heL : eL ≤ 1 - (a - v))
@@ -78,7 +78,7 @@ def wideGainDemand (a m h : ℝ) : ℝ := 12 * a / 5 - 8 * m / 5 - 11 / 8 - 17 *
 
 theorem wide_gain_sum_ge_demand {a h k N u v eR eL bR bL δR δL τ : ℝ}
     (ha : 0 ≤ a) (hh : 0 ≤ h) (hm : 0 ≤ (u + v) / 2)
-    (hk0 : 41 / 100 < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1)
+    (hk0 : 41 / 99 < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1)
     (hN : N ≤ 13 / 12) (hE : 1 - h / 2 ≤ eR + eL)
     (hbR : bR = 1 - N + k * v - δL - τ) (hbL : bL = 1 - N + k * u - δR)
     (hτ : τ ≤ 3 * (1 - k) * h / 2)
@@ -121,7 +121,7 @@ def widePaidBound (a m h k : ℝ) : ℝ :=
 
 theorem widePaidBound_lt {a m h k : ℝ}
     (ha : 8 / 5 ≤ a) (hh : 0 ≤ h) (hm : a - 1 / 2 - h / 4 ≤ m)
-    (hk0 : 41 / 100 < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1) :
+    (hk0 : 41 / 99 < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1) :
     widePaidBound a m h k < (41 / 50 : ℝ) := by
   have hQ := positive_square_ge_tangent (wideGainDemand a m h)
     (by norm_num : (0 : ℝ) ≤ 141 / 200)

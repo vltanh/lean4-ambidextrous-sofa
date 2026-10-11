@@ -56,21 +56,13 @@ theorem diagonal_critical_width_mono {a A k : ℝ} (ha : a ≤ A)
     (hA : A ≤ 1 + k) : a - (a - k) ^ 2 / 2 ≤ A - (A - k) ^ 2 / 2 := by
   linarith [mul_nonneg (sub_nonneg.mpr ha) (show 0 ≤ 1 + k - (A + a) / 2 by linarith)]
 
-theorem sqrt_two_sub_one_strict_bounds :
-    (2 / 5 : ℝ) < Real.sqrt 2 - 1 ∧ Real.sqrt 2 - 1 < 169 / 408 ∧
-      Real.sqrt 2 - 1 < 29 / 70 := by
-  have hsq := Real.sq_sqrt (show (0 : ℝ) ≤ 2 by norm_num)
-  have hroot := Real.sqrt_nonneg (2 : ℝ)
-  exact ⟨by nlinarith, by nlinarith, by nlinarith⟩
-
 /-- The high-score short-width region is forced into a small, unclipped
 neighborhood. All constants are rational apart from the exact diagonal
 offset relation. The conclusion is used by the actual extra-tail proof. -/
 theorem short_diagonal_stability {a h k u v : ℝ}
     (ha0 : 41 / 50 ≤ a) (ha1 : a ≤ 1001 / 1000)
     (hh0 : 0 ≤ h) (hh1 : h ≤ 37 / 100)
-    (hk0 : 2 / 5 < k) (hk1 : k < 169 / 408) (hk2 : k < 29 / 70)
-    (hksq : k ^ 2 + 2 * k = 1)
+    (hk0 : 41 / 99 < k) (hk1 : k < 169 / 408) (hksq : k ^ 2 + 2 * k = 1)
     (hu : u ∈ Icc (a / 2) a) (hv : v ∈ Icc (a / 2) a)
     (hscore : 41 / 50 ≤ diagonalRelaxation a h k u v) :
     9 / 10 < a ∧ h < 1 / 23 ∧ u - a / 2 < 323 / 1000 + h / 4 ∧

@@ -149,7 +149,7 @@ theorem IsJointCapMaximizer.properUsed_momenta_eq_actual_after_affine_of_tail_re
     (Ioo_subset_Ioo le_rfl (add_halves _).le) ht.1 (ht.2.trans hproper)
   rw [properUsedP, properUsedQ, supportP, supportQ, hfd, hgd, hmatch.1, hmatch.2]
   simp only [angleSupport_eq_imported_supp, supportTangent, secondCornerVelocity,
-    firstCornerVelocity]
+    firstCornerVelocity, add_zero]
   constructor <;> ring
 
 /-- Both initial reflected values are computed at actual supporting

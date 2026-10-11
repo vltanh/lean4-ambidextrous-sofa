@@ -34,7 +34,7 @@ theorem initialAngle_inset_bounds {k d s : ℝ} (hk0 : 0 < k) (hk1 : k < 1) (hs0
   have hd : 0 < d := pos_of_mul_pos_right (by nlinarith : 0 < k * d) hk0.le
   have hparam : k * (1 - d ^ 2) = 2 * d :=
     mul_left_cancel₀ hk0.ne' (by linear_combination -hs2 - (k * d + 1 + s) * hkd)
-  have hK0 := initialAngle_offset_bounds.1
+  have hK0 := sqrt_two_sub_one_bounds.1
   have hK := sqrt_two_sub_one_quadratic
   have hden : 0 < 1 - d ^ 2 := by nlinarith
   exact ⟨hd, by nlinarith [mul_pos (sub_pos.2 hk1) hden]⟩

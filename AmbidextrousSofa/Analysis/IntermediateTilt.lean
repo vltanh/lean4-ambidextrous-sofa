@@ -45,7 +45,7 @@ theorem tiltedDiagonalRelaxation_le_tangent {a h : ℝ} (ha : h < a) (hh : 0 ≤
 
 theorem tiltedDiagonalRelaxation_le_bound {a h k : ℝ}
     (ha : 1 ≤ a) (hh0 : 0 ≤ h) (hh1 : h < 1 / 2)
-    (hk0 : 2 / 5 < k) (hk1 : k < 169 / 408) (u v : ℝ) :
+    (hk0 : 41 / 99 < k) (hk1 : k < 169 / 408) (u v : ℝ) :
     tiltedDiagonalRelaxation a h k u v ≤ tiltedDiagonalBound a h k := by
   have hha : h < a := by linarith only [hh1, ha]
   have h4 : 0 < 4 * a - h := by linarith only [ha, hh1]
@@ -75,20 +75,16 @@ theorem tiltedDiagonalBound_eq_width_tilt {a h k : ℝ} (h4 : 4 * a - h ≠ 0)
   field_simp
   linear_combination 128 * (a * 4 - h) * hksq
 
-theorem diagonal_offset_gt_forty_one_ninety_ninths {k : ℝ} (hk : 0 < k)
-    (hksq : k ^ 2 + 2 * k = 1) : (41 / 99 : ℝ) < k := by
-  nlinarith
-
 theorem tiltedDiagonalBound_lt_of_large_tilt {a h k : ℝ}
     (ha0 : 1 ≤ a) (ha1 : a ≤ 8 / 5) (hh0 : 17 / 50 ≤ h) (hh1 : h < 1 / 2)
-    (hk : 0 < k) (hksq : k ^ 2 + 2 * k = 1) :
+    (hk : 41 / 99 < k) (hksq : k ^ 2 + 2 * k = 1) :
     tiltedDiagonalBound a h k < (41 / 50 : ℝ) := by
   have h4 : 0 < 4 * a - h := by linarith only [ha0, hh1]
   have hcoef : (160 / 303 : ℝ) ≤ 2 * a / (4 * a - h) := by
     rw [le_div_iff₀ h4]
     linarith only [ha1, hh0]
   have hq : (41 / 99 + 17 / 100 : ℝ) < k + h / 2 := by
-    linarith only [diagonal_offset_gt_forty_one_ninety_ninths hk hksq, hh0]
+    linarith only [hk, hh0]
   rw [tiltedDiagonalBound_eq_width_tilt h4.ne' hksq]
   nlinarith only [mul_pos (sub_pos.mpr hq) (by linarith only [hk, hh0] :
     0 < k + h / 2 + (41 / 99 + 17 / 100 : ℝ)), mul_nonneg (sub_nonneg.mpr hcoef)
@@ -110,7 +106,7 @@ theorem IsDownwardCap.capScore_le_tiltedDiagonalBound
   have hD := hU.diagonalRoofDeficit_ge_tilt_loss ha0 (by linarith only [ha, hh1]) hl hr hleft
     hright haffine (by ring) (by ring) huv.1 huv.2
   have hscalar := tiltedDiagonalRelaxation_le_bound ha hh0 hh1
-    sqrt_two_sub_one_strict_bounds.1 sqrt_two_sub_one_strict_bounds.2.1
+    sqrt_two_sub_one_bounds.1 sqrt_two_sub_one_bounds.2.1
     (diagonalRight U - 1) (diagonalLeft U - 1 + h)
   unfold tiltedDiagonalRelaxation at hscalar
   linarith only [hD, hscalar,
@@ -129,7 +125,7 @@ theorem IsDownwardCap.intermediate_width_tilt_bound
   have hP := hU.capScore_le_tiltedDiagonalBound ha0 hh0 hh1 hl hr hleft hright haffine hα0 hαL
   have hksq := sqrt_two_sub_one_quadratic
   refine ⟨lt_of_not_ge fun h' => (hP.trans_lt (tiltedDiagonalBound_lt_of_large_tilt ha0 ha1 h'
-    hh1 (by linarith [sqrt_two_sub_one_strict_bounds.1]) hksq)).not_ge hscore, ?_⟩
+    hh1 sqrt_two_sub_one_bounds.1 hksq)).not_ge hscore, ?_⟩
   rw [tiltedDiagonalBound_eq_width_tilt (by linarith only [ha0, hh1]) hksq,
     show Real.sqrt 2 - 1 + 1 = Real.sqrt 2 by ring] at hP
   rw [show 4 * a / (4 * a - h) = 2 * (2 * a / (4 * a - h)) by ring]

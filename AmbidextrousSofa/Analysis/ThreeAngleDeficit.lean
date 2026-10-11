@@ -33,7 +33,7 @@ theorem IsDownwardCap.threeAngle_wide_high_score_box {U : Set Plane}
     a < 9 / 5 ∧ h < 1 / 4 ∧ a + h < 37 / 20 := by
   have ha : 0 < a := by linarith only [ha0]
   have hhhalf : h ≤ a / 2 := by linarith only [ha0, hh1]
-  have hk := sqrt_two_sub_one_strict_bounds
+  have hk := sqrt_two_sub_one_bounds
   have hm := hU.wide_diagonal_midpoint_ge ha hh hhhalf hl hr hleft hright haffine hEP
   have hp := hU.wide_diagonal_parameters ha hh hhhalf hl hr hleft hright haffine
   have hD := hU.wideRoofDeficit_eq ha (by linarith only [ha, hhhalf]) hp.1 hp.2.1
@@ -62,7 +62,7 @@ theorem IsDownwardCap.threeAngle_intermediate_width_tilt_bound {U : Set Plane}
       (4 * a / (4 * a - h)) * (Real.sqrt 2 - 1 + h / 2) ^ 2 ≤ 9 / 25 := by
   have ha : 0 < a := by linarith only [ha0]
   have hhhalf : h ≤ a / 2 := by linarith only [ha0, hh1]
-  have hk := sqrt_two_sub_one_strict_bounds
+  have hk := sqrt_two_sub_one_bounds
   have hksq := sqrt_two_sub_one_quadratic
   have huv := hU.tilted_diagonal_parameters_mem ha hh0 hhhalf hl hr hleft hright
   have hD := hU.diagonalRoofDeficit_ge_tilt_loss ha (by linarith only [ha0, hh1]) hl hr hleft
@@ -77,7 +77,7 @@ theorem IsDownwardCap.threeAngle_intermediate_width_tilt_bound {U : Set Plane}
       tiltedDiagonalBound a h (Real.sqrt 2 - 1) := by
     linarith only [hD, hP, hscalar]
   refine ⟨lt_of_not_ge fun h' => not_lt_of_ge hscore (hB.trans_lt
-    (tiltedDiagonalBound_lt_of_large_tilt ha0 ha1 h' hh1 (by linarith only [hk.1]) hksq)), ?_⟩
+    (tiltedDiagonalBound_lt_of_large_tilt ha0 ha1 h' hh1 hk.1 hksq)), ?_⟩
   rw [tiltedDiagonalBound_eq_width_tilt (by linarith only [ha0, hh1]) hksq,
     show Real.sqrt 2 - 1 + 1 = Real.sqrt 2 by ring] at hB
   rw [show 4 * a / (4 * a - h) = 2 * (2 * a / (4 * a - h)) by ring]

@@ -79,7 +79,7 @@ theorem wide_tilt_coefficient_ge {a : ℝ} (ha : 8 / 5 ≤ a) :
 nearby-angle payment, a high score forces this compact small-tilt box. -/
 theorem wide_diagonal_high_score_box {a h k u v : ℝ}
     (ha0 : 8 / 5 ≤ a) (ha1 : a < 3) (hh0 : 0 ≤ h) (hh1 : h < 1 / 2)
-    (hk0 : 2 / 5 < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1)
+    (hk0 : 41 / 99 < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1)
     (hm : a - 1 / 2 - h / 4 ≤ (u + v) / 2)
     (hscore : 41 / 50 ≤ wideDiagonalMajorant a h k u v) :
     a < 9 / 5 ∧ h < 1 / 4 ∧ a + h < 37 / 20 := by

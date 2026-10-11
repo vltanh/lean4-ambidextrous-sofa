@@ -97,7 +97,7 @@ theorem IsDownwardCap.diagonalRoofDeficit_ge_near_cuts {U : Set Plane}
       (le_min (capRoof_le_one hU.isCompact hU.inStrip x) (by linarith)) (by linarith)
   exact (add_div _ _ _).trans_le (add_le_add hL hR)
 
-theorem short_outer_cut_area_gt {k z : ℝ} (hk0 : 2 / 5 < k) (hk1 : k < 1)
+theorem short_outer_cut_area_gt {k z : ℝ} (hk0 : 41 / 99 < k) (hk1 : k < 1)
     (hksq : k ^ 2 + 2 * k = 1) (hz : 23 / 200 < z) :
     (9 / 1000 : ℝ) < ((1 - k) * z) ^ 2 / (2 * k * (1 - k)) := by
   have hk : 0 < k := by linarith
@@ -112,7 +112,7 @@ theorem short_outer_cut_area_gt {k z : ℝ} (hk0 : 2 / 5 < k) (hk1 : k < 1)
 wing. The two complete literal triangles then add without overlap. -/
 theorem IsDownwardCap.short_diagonal_cut_payment {U : Set Plane}
     (hU : IsDownwardCap U) {a h k u v : ℝ} (ha : 0 < a) (hh : 0 ≤ h)
-    (hk0 : 2 / 5 < k) (hk1 : k < 1) (hksq : k ^ 2 + 2 * k = 1)
+    (hk0 : 41 / 99 < k) (hk1 : k < 1) (hksq : k ^ 2 + 2 * k = 1)
     (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
     (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1)
     (hu : diagonalRight U = 1 + u) (hv : diagonalLeft U = 1 - h + v)

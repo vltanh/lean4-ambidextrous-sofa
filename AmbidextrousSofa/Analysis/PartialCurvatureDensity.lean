@@ -46,9 +46,6 @@ theorem IsJointCapMaximizer.curvature_restrict_le_on_proper_open_wing
 def regularCompanionDomain (m : ℝ) : Set ℝ :=
   Ioo (Real.pi / 2) Real.pi \ {affineNormalAngle m}
 
-theorem measurableSet_regularCompanionDomain (m : ℝ) : MeasurableSet (regularCompanionDomain m) :=
-  measurableSet_Ioo.diff (measurableSet_singleton _)
-
 theorem regularCompanionDomain_subset_regularCurvatureDomain (m : ℝ) :
     regularCompanionDomain m ⊆ regularCurvatureDomain m :=
   fun t ht => ⟨⟨by linarith [ht.1.1, Real.pi_pos], ht.1.2⟩, by

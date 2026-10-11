@@ -89,7 +89,7 @@ theorem IsDownwardCap.threeAngleBarrier_ge_first {U : Set Plane} (hU : IsDownwar
     min ((A - nearDiagonalNorm k - x) / k) (B - nearDiagonalNorm k + k * x) ≤
       threeAngleBarrier U x := by
   subst hk
-  have hk0 : 0 < Real.sqrt 2 - 1 := by linarith [sqrt_two_sub_one_strict_bounds.1]
+  have hk0 : 0 < Real.sqrt 2 - 1 := by linarith [sqrt_two_sub_one_bounds.1]
   refine le_trans ?_ ((le_max_left _ _).trans (le_max_right _ _))
   rw [cornerWall, hU.firstWall_arctan hk0.ne', hU.secondWall_arctan]
   exact min_le_min (div_le_div_of_nonneg_right (by linarith) hk0.le) (by linarith)
@@ -101,7 +101,7 @@ theorem IsDownwardCap.threeAngleBarrier_ge_last {U : Set Plane} (hU : IsDownward
     min (A - nearDiagonalNorm k - k * x) ((B - nearDiagonalNorm k + x) / k) ≤
       threeAngleBarrier U x := by
   subst hk
-  have hk0 : 0 < Real.sqrt 2 - 1 := by linarith [sqrt_two_sub_one_strict_bounds.1]
+  have hk0 : 0 < Real.sqrt 2 - 1 := by linarith [sqrt_two_sub_one_bounds.1]
   refine le_trans ?_ ((le_max_right _ _).trans (le_max_right _ _))
   rw [cornerWall, hU.firstWall_complement_arctan, hU.secondWall_complement_arctan hk0.ne']
   exact min_le_min (by linarith) (div_le_div_of_nonneg_right (by linarith) hk0.le)
@@ -109,7 +109,7 @@ theorem IsDownwardCap.threeAngleBarrier_ge_last {U : Set Plane} (hU : IsDownward
 theorem IsDownwardCap.threeAngleBarrier_le_partialBarrier {U : Set Plane} (hU : IsDownwardCap U)
     {α : ℝ} (hnear : Real.pi / 2 - Real.arctan (Real.sqrt 2 - 1) ≤ α)
     (hαL : α ≤ Real.pi / 2) (x : ℝ) : threeAngleBarrier U x ≤ partialBarrier U α x := by
-  have hk := sqrt_two_sub_one_strict_bounds
+  have hk := sqrt_two_sub_one_bounds
   have hc := arctan_le_complement_arctan (k := Real.sqrt 2 - 1) (by linarith only [hk.2.2])
   exact max_le (hU.diagonalBarrier_le_partialBarrier (by linarith only [hc, hnear]) hαL x)
     (max_le (cornerWall_le_partialBarrier hU.isCompact

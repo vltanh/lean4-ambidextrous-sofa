@@ -137,7 +137,7 @@ theorem initialAngleRelaxation_complement_lt {C k d s u v b : ℝ}
     (hu : C + (Real.sqrt 2 - 1) < u)
     (hY : (1 + k) * C + (Real.sqrt 2 - 1) - v + k * (b - d) < 0) :
     initialAngleRelaxation (Real.sqrt 2 - 1) C k d u v b < (319 / 400 : ℝ) := by
-  have hK0 := initialAngle_offset_bounds.1
+  have hK0 := sqrt_two_sub_one_bounds.1
   have hs : s < 13 / 10 := by nlinarith
   have hCk := mul_nonneg (by linarith : 0 ≤ 3 * k - 1) hC
   have hv : C + (Real.sqrt 2 - 1) < v := by linarith

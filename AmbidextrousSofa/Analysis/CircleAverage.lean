@@ -27,8 +27,6 @@ def circleSlope (x : ℝ) : ℝ := x / circleHeight x
 def circleAverage (q y : ℝ) : ℝ :=
   ∫ t in (-1 / 2 : ℝ)..(1 / 2 : ℝ), circleSlope (y + q * t)
 
-theorem circleHeight_nonneg (x : ℝ) : 0 ≤ circleHeight x := Real.sqrt_nonneg _
-
 theorem circleHeight_pos {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) 1) : 0 < circleHeight x :=
   Real.sqrt_pos.mpr (by nlinarith [hx.1, hx.2])
 

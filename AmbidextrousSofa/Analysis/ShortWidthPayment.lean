@@ -46,7 +46,7 @@ theorem shortOuterTipAllowance_eq {k : ℝ} (hk : 0 < k) (hksq : k ^ 2 + 2 * k =
   ring
 
 theorem short_nearDiagonal_constants {k : ℝ}
-    (hk0 : 2 / 5 < k) (hk1 : k < 169 / 408) (hksq : k ^ 2 + 2 * k = 1) :
+    (hk0 : 41 / 99 < k) (hk1 : k < 169 / 408) (hksq : k ^ 2 + 2 * k = 1) :
     (2 / 25 : ℝ) < 1 - nearDiagonalNorm k + k ^ 2 ∧
       nearDiagonalNorm k + (2 / 25) / k < 32 / 25 ∧
       k + (2 / 25) / (1 - k) < 3 / 5 ∧
@@ -61,7 +61,7 @@ theorem short_nearDiagonal_constants {k : ℝ}
   refine ⟨?_, ?_, ?_, ?_⟩ <;> linarith
 
 theorem shortWidthPaidEnvelope_lt {k h : ℝ}
-    (hk0 : 2 / 5 < k) (hk1 : k < 169 / 408) (hksq : k ^ 2 + 2 * k = 1)
+    (hk0 : 41 / 99 < k) (hk1 : k < 169 / 408) (hksq : k ^ 2 + 2 * k = 1)
     (hh : 0 ≤ h) : shortWidthPaidEnvelope k h < (41 / 50 : ℝ) := by
   have hk : 0 < k := by linarith
   -- The coefficients of `h` and of `h ^ 2` in the envelope are nonpositive.

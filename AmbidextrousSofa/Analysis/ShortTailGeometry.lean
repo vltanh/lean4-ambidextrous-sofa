@@ -23,12 +23,12 @@ def shortLeftTailHeight (k h δ : ℝ) : ℝ := max ((2 / 25) - (1 - k) * h - δ
 
 def shortRightTailHeight (δ : ℝ) : ℝ := max ((2 / 25) - δ) 0
 
-theorem short_left_peak_height_nonneg {k h : ℝ} (hk : 2 / 5 < k)
+theorem short_left_peak_height_nonneg {k h : ℝ} (hk : 41 / 99 < k)
     (hh0 : 0 ≤ h) (hh1 : h < 1 / 23) : 0 ≤ (2 / 25 : ℝ) - (1 - k) * h := by
   nlinarith [mul_nonneg (sub_nonneg.2 hk.le) hh0]
 
 theorem short_left_tail_geometry {a h k u v δ : ℝ}
-    (hk0 : 2 / 5 < k) (hk1 : k < 169 / 408) (hksq : k ^ 2 + 2 * k = 1)
+    (hk0 : 41 / 99 < k) (hk1 : k < 169 / 408) (hksq : k ^ 2 + 2 * k = 1)
     (hh0 : 0 ≤ h) (hh1 : h < 1 / 23) (hδ : 0 ≤ δ)
     (hv : v - a / 2 < 323 / 1000 + h / 4)
     (hm : 16 / 25 < (u + v) / 2 - h / 4)
@@ -56,7 +56,7 @@ theorem short_left_tail_geometry {a h k u v δ : ℝ}
   linarith [div_le_div_of_nonneg_right (hE.trans (sub_le_self _ (mul_nonneg hj.le hh0))) hk.le]
 
 theorem short_right_tail_geometry {a h k u v δ : ℝ}
-    (hk0 : 2 / 5 < k) (hk1 : k < 169 / 408) (hksq : k ^ 2 + 2 * k = 1)
+    (hk0 : 41 / 99 < k) (hk1 : k < 169 / 408) (hksq : k ^ 2 + 2 * k = 1)
     (hh0 : 0 ≤ h) (hh1 : h < 1 / 23) (hδ : 0 ≤ δ)
     (hu : u - a / 2 < 323 / 1000 + h / 4)
     (hm : 16 / 25 < (u + v) / 2 - h / 4)

@@ -72,7 +72,7 @@ theorem initialAngleRelaxation_diagonal_small_width {C u v : ℝ}
     (hu1 : u ≤ 2 * C) (hv0 : C ≤ v) (hv1 : v ≤ 2 * C) :
     initialAngleRelaxation (Real.sqrt 2 - 1) C 0 0 u v 0 < (41 / 50 : ℝ) := by
   have hsmall := initialAngle_diagonal_small_width hC1
-  obtain ⟨hK0, hK1⟩ := initialAngle_offset_bounds
+  obtain ⟨hK0, -, hK1⟩ := sqrt_two_sub_one_bounds
   have hK := sqrt_two_sub_one_quadratic
   generalize Real.sqrt 2 - 1 = K at *
   rcases lt_or_ge (2 * C) K with hK2 | hK2
@@ -110,7 +110,7 @@ theorem initialAngleRelaxation_left_domain_lt {C k d s u v b : ℝ}
     (hbu : b ≤ u) (hu1 : u ≤ 2 * C) (hv0 : C ≤ v) (hv1 : v ≤ 2 * C)
     (hb1 : b ≤ 2 * C) (hcompat : u ≤ 2 * (1 - k) * C + k * b) :
     initialAngleRelaxation (Real.sqrt 2 - 1) C k d u v b < (5259 / 6400 : ℝ) := by
-  obtain ⟨hK0, hK1⟩ := initialAngle_offset_bounds
+  obtain ⟨hK0, -, hK1⟩ := sqrt_two_sub_one_bounds
   obtain ⟨hdpos, hdK⟩ := initialAngle_inset_bounds (by linarith) (by linarith) hs0 hs2 hkd
   have hstation := initialAngle_stationary_lt_rational (C := C) hk0 hk1 hs0 hs2 hkd
   rcases le_total (u + v) (2 * (Real.sqrt 2 - 1)) with hsum | hsum
@@ -140,7 +140,7 @@ theorem initialAngleRelaxation_all_width_lt {C k d s u v b : ℝ}
   rcases le_or_gt C (49 / 100) with hsmall | hsmall
   · exact (initialAngleRelaxation_small_width hC hsmall hu1 hv1
       (hhigh.imp_right fun hb => hb.trans hbu) k d b).trans (by norm_num)
-  have hKC : Real.sqrt 2 - 1 ≤ C := by linarith [initialAngle_offset_bounds.2]
+  have hKC : Real.sqrt 2 - 1 ≤ C := by linarith [sqrt_two_sub_one_bounds.2.2]
   rcases le_or_gt C v with hv0 | hv0
   · exact initialAngleRelaxation_left_domain_lt hKC hk0 hk1 hs0 hs2 hkd hbu hu1 hv0 hv1 hb1 hcompat
   obtain ⟨hdpos, hdK⟩ := initialAngle_inset_bounds (by linarith) (by linarith) hs0 hs2 hkd

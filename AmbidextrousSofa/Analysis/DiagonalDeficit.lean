@@ -121,7 +121,7 @@ theorem IsDownwardCap.short_diagonal_geometry {U : Set Plane} (hU : IsDownwardCa
       u - a / 2 < 323 / 1000 + h / 4 ∧ v - a / 2 < 323 / 1000 + h / 4 ∧
       16 / 25 < (u + v) / 2 - h / 4 ∧ 23 / 200 < a - u ∧ 23 / 200 < a - v ∧
       diagonalRoofDeficit U a h u v < 9 / 1000 := by
-  have hk := sqrt_two_sub_one_strict_bounds
+  have hk := sqrt_two_sub_one_bounds
   -- The score is at most that of the charged rectangle.
   have hrect : intervalSpatialScore (capRoof U) n (-a) a ≤ a * (1 - h / 2) := by
     have hL := intervalIntegral.integral_mono_on (by linarith only [ha] : -a ≤ -a / 2)
@@ -142,7 +142,7 @@ theorem IsDownwardCap.short_diagonal_geometry {U : Set Plane} (hU : IsDownwardCa
   have hbound := hU.score_add_diagonalRoofDeficit_le hn hdiag ha hh hhhalf hl hr hleft hright
   have hD0 := hU.diagonalRoofDeficit_nonneg ha hh hl hr hleft hright
   obtain ⟨ha9, hh23, hu323, hv323, hm⟩ :=
-    short_diagonal_stability ha0 ha1 hh hh37 hk.1 hk.2.1 hk.2.2 sqrt_two_sub_one_quadratic
+    short_diagonal_stability ha0 ha1 hh hh37 hk.1 hk.2.1 sqrt_two_sub_one_quadratic
       huv.1 huv.2 (by linarith only [hbound, hD0, hscore])
   have hcrit := hbound.trans (diagonalRelaxation_le_critical _ _ _ _ _
     (by linarith only [hk.2.1, ha0, hh37]) (by linarith only [hk.1, hh])

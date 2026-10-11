@@ -38,7 +38,7 @@ theorem IsDownwardCap.capScore_lt_of_wide_width_and_endpoint_laws
   have hnL0 := sweptNiche_nonneg U (Real.pi / 2) (-a / 2)
   have hEP : 1 - h / 2 ≤ capRoof U a + capRoof U (-a) := by linarith only [hEPR, hEPL, hnR0, hnL0]
   have h3 := hscore.trans (hU.capScore_le_threeAngleScore
-    (sub_le_self _ (Real.arctan_pos.mpr (by linarith [sqrt_two_sub_one_strict_bounds.1])).le) le_rfl)
+    (sub_le_self _ (Real.arctan_pos.mpr (by linarith [sqrt_two_sub_one_bounds.1])).le) le_rfl)
   obtain ⟨ha9, -, -⟩ :=
     hU.threeAngle_wide_high_score_box ha0 ha1 hh0 hh1 hl hr hleft hright haffine hEP h3
   have hNbox := hU.middle_niche_le_two_thirds_of_box

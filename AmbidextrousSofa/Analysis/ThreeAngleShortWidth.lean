@@ -37,7 +37,7 @@ theorem IsDownwardCap.threeAngleScore_lt_of_short_width
       (fun x => le_max_left _ _) ha ha1 hh hl hr hleft hright hscore
   rw [intervalSpatialScore_centered] at hscore
   generalize hkdef : Real.sqrt 2 - 1 = k
-  obtain ⟨hk0, hk1, -⟩ := hkdef ▸ sqrt_two_sub_one_strict_bounds
+  obtain ⟨hk0, hk1, -⟩ := hkdef ▸ sqrt_two_sub_one_bounds
   have hksq : k ^ 2 + 2 * k = 1 := hkdef ▸ sqrt_two_sub_one_quadratic
   have hk : 0 < k := by linarith only [hk0]
   have hklt : k < 1 := by linarith only [hk1]

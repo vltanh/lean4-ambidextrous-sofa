@@ -36,6 +36,13 @@ theorem eight_fifths_lt_M : (8 / 5 : ℝ) < M := by
 theorem sqrt_two_lt_M : Real.sqrt 2 < M :=
   ((Real.sqrt_lt (by norm_num) (by norm_num)).2 (by norm_num)).trans eight_fifths_lt_M
 
+theorem sqrt_two_sub_one_bounds :
+    (41 / 99 : ℝ) < Real.sqrt 2 - 1 ∧ Real.sqrt 2 - 1 < 169 / 408 ∧
+      Real.sqrt 2 - 1 < 29 / 70 := by
+  have hsq := Real.sq_sqrt (show (0 : ℝ) ≤ 2 by norm_num)
+  have hroot := Real.sqrt_nonneg (2 : ℝ)
+  exact ⟨by nlinarith, by nlinarith, by nlinarith⟩
+
 theorem sqrt_two_sub_one_quadratic :
     (Real.sqrt 2 - 1) ^ 2 + 2 * (Real.sqrt 2 - 1) = (1 : ℝ) := by
   linear_combination Real.sq_sqrt (show (0 : ℝ) ≤ 2 by norm_num)

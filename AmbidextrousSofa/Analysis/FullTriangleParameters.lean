@@ -37,10 +37,9 @@ theorem fullTriangle_offset_bounds :
       (Real.sqrt 2 - 1) ^ 2 + 2 * (Real.sqrt 2 - 1) = 1 ∧
       923 / 1000 < fullTriangleCos (Real.sqrt 2 - 1) ∧
       fullTriangleCos (Real.sqrt 2 - 1) < 231 / 250 := by
-  have hk0 := diagonal_offset_gt_forty_one_ninety_ninths
-    (by linarith [sqrt_two_sub_one_strict_bounds.1]) sqrt_two_sub_one_quadratic
-  exact ⟨hk0, sqrt_two_sub_one_strict_bounds.2.2, sqrt_two_sub_one_quadratic,
-    fullTriangleCos_bounds hk0 sqrt_two_sub_one_strict_bounds.2.2 sqrt_two_sub_one_quadratic⟩
+  obtain ⟨hk0, -, hk1⟩ := sqrt_two_sub_one_bounds
+  have hksq := sqrt_two_sub_one_quadratic
+  exact ⟨hk0, hk1, hksq, fullTriangleCos_bounds hk0 hk1 hksq⟩
 
 theorem fullTriangle_norm_identities {k : ℝ} (hk : 0 < k)
     (hksq : k ^ 2 + 2 * k = 1) :
