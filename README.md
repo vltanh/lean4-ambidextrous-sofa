@@ -147,15 +147,20 @@ Romik's sofa reproduce his Table 2.
 
 ## Prior work
 
-More, with references: [docs/prior-work.md](docs/prior-work.md).
+More, with references: [docs/prior-work.md](docs/prior-work.md), which also covers computer-assisted bounds and
+their certificates, formally verified computations, and AI-assisted proofs.
 
 Leo Moser posed the moving sofa problem in 1966; John Conway, G. C. Shephard and others considered the
 ambidextrous variant soon after, and Maruyama (1973) and Gibbs (2014) computed approximate solutions. Romik
 derived his ambidextrous sofa from differential equations (*Experimental Mathematics*, 2018) and asked to prove
-that it is locally optimal; Kallus and Romik (2018) noted that the upper bound 2.37 for the ordinary problem
-bounds the ambidextrous one too. Baek proved in 2024 that Gerver's sofa is optimal for the ordinary problem
-(arXiv:2411.19826). In December 2025, Georgiev, Gómez-Serrano, Tao and Wagner listed the ambidextrous problem as
-open (arXiv:2511.02864, Problem 6.63).
+that it is locally optimal. Kallus and Romik (2018) proved the upper bound 2.37 for the ordinary problem with a
+computer search in exact arithmetic, and noted that it bounds the ambidextrous one too. Baek proved in 2024 that
+Gerver's sofa is optimal for the ordinary problem (arXiv:2411.19826, a preprint), and three Lean formalizations
+of his theorem appeared in September and October 2026, lean4-moving-sofa among them. In December 2025,
+Georgiev, Gómez-Serrano, Tao and Wagner listed the ambidextrous problem as open (arXiv:2511.02864, Problem 6.63).
+In September 2026 a pull request to Google DeepMind's formal-conjectures stated it in Lean, and Devin O'Keefe
+proved the upper bound 353/200 for it with a certificate that a compiled checker, proved sound in Lean,
+accepted.
 
 ## What's next
 
