@@ -38,27 +38,8 @@ theorem first_source_neighbor_feasible {U : Set Plane} (hU : IsDownwardCap U)
         (support U (unitNormal ((scaleAngle α t.val : ℝ) - δ)))
         (support U (unitNormal ((scaleAngle α t.val : ℝ) + δ)))
         (support U (companionNormal ((scaleAngle α t.val : ℝ) - δ)))
-        (support U (companionNormal ((scaleAngle α t.val : ℝ) + δ))) δ := by
-  have hy := innerSource_height U α hαL grid (scaledSource α grid (Sum.inl t)) hx
-  have hn := normal_snd_pos α grid (scaledSource α grid (Sum.inl t))
-  set y := supportWall U (normal α grid (scaledSource α grid (Sum.inl t))) x
-  have hp := point_eq_wallPoint (U := U) (t := scaleAngle α t.val)
-    (le_antisymm ((le_supportWall_iff hn x y).mp le_rfl) ((supportWall_le_iff hn x y).mp le_rfl))
-  have h0 := (finiteBarrier_nonneg _ _ _ _ x).trans_eq hy
-  obtain ⟨sm, hsm, hsmval⟩ := hminus
-  obtain ⟨sp, hsp, hspval⟩ := hplus
-  have hm := above_barrier_wall_alternative (p := (x, y)) hU α hαL grid h0 hy.le hsm
-  have hp' := above_barrier_wall_alternative (p := (x, y)) hU α hαL grid h0 hy.le hsp
-  rw [hsmval, hp, dot_wallPoint_first, dot_wallPoint_companion, sub_sub_cancel_left,
-    sub_sub_cancel, Real.cos_neg, Real.sin_neg] at hm
-  rw [hspval, hp, dot_wallPoint_first, dot_wallPoint_companion, add_sub_cancel_left,
-    sub_add_cancel_left, Real.cos_neg, Real.sin_neg] at hp'
-  exact ⟨coordDot (x, y) (companionNormal (scaleAngle α t.val)),
-    by simpa only [wallPoint_fst] using congrArg Prod.fst hp,
-    (le_supportWall_iff (normal_snd_pos α grid (scaledSource α grid (Sum.inr t))) x _).mp
-      (first_source_le_companion U α hαL grid t hx),
-    hm.imp (fun h => by linarith) fun h => by linarith,
-    hp'.imp (fun h => by linarith) fun h => by linarith⟩
+        (support U (companionNormal ((scaleAngle α t.val : ℝ) + δ))) δ :=
+  first_source_wall_constraints hU α hαL grid t hminus hplus hx
 
 theorem second_source_neighbor_feasible {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (t : InteriorPoint grid) {δ : ℝ}
@@ -72,27 +53,8 @@ theorem second_source_neighbor_feasible {U : Set Plane} (hU : IsDownwardCap U)
         (support U (companionNormal ((scaleAngle α t.val : ℝ) + δ)))
         (support U (companionNormal ((scaleAngle α t.val : ℝ) - δ)))
         (support U (unitNormal ((scaleAngle α t.val : ℝ) + δ)))
-        (support U (unitNormal ((scaleAngle α t.val : ℝ) - δ))) δ := by
-  have hy := innerSource_height U α hαL grid (scaledSource α grid (Sum.inr t)) hx
-  have hn := normal_snd_pos α grid (scaledSource α grid (Sum.inr t))
-  set y := supportWall U (normal α grid (scaledSource α grid (Sum.inr t))) x
-  have hp := point_eq_companionPoint (U := U) (t := scaleAngle α t.val)
-    (le_antisymm ((le_supportWall_iff hn x y).mp le_rfl) ((supportWall_le_iff hn x y).mp le_rfl))
-  have h0 := (finiteBarrier_nonneg _ _ _ _ x).trans_eq hy
-  obtain ⟨sm, hsm, hsmval⟩ := hminus
-  obtain ⟨sp, hsp, hspval⟩ := hplus
-  have hm := above_barrier_wall_alternative (p := (x, y)) hU α hαL grid h0 hy.le hsm
-  have hp' := above_barrier_wall_alternative (p := (x, y)) hU α hαL grid h0 hy.le hsp
-  rw [hsmval, hp, dot_companionPoint_first, dot_companionPoint_companion, sub_sub_cancel_left,
-    sub_sub_cancel, Real.cos_neg, Real.sin_neg] at hm
-  rw [hspval, hp, dot_companionPoint_first, dot_companionPoint_companion, add_sub_cancel_left,
-    sub_add_cancel_left, Real.cos_neg, Real.sin_neg] at hp'
-  exact ⟨coordDot (x, y) (unitNormal (scaleAngle α t.val)),
-    by simpa only [companionPoint_fst] using congrArg Prod.fst hp,
-    (le_supportWall_iff (normal_snd_pos α grid (scaledSource α grid (Sum.inl t))) x _).mp
-      (second_source_le_first U α hαL grid t hx),
-    hp'.symm.imp (fun h => by linarith) fun h => by linarith,
-    hm.symm.imp (fun h => by linarith) fun h => by linarith⟩
+        (support U (unitNormal ((scaleAngle α t.val : ℝ) - δ))) δ :=
+  second_source_wall_constraints hU α hαL grid t hminus hplus hx
 
 theorem innerDensity_eq_zero_of_source_empty (U : Set Plane) (grid : Finset QuarterAngle)
     (j : SourceIndex α grid) (hempty : innerSourceSet U α hαL grid j = ∅) :

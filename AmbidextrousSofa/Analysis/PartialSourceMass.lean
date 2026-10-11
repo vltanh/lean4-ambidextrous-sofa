@@ -9,10 +9,11 @@ public import AmbidextrousSofa.Analysis.GridCounting
 /-!
 # Vanishing-mesh bounds for actual proper-history source mass
 
-The rescaled dyadic mesh is positive and tends to zero. Each sampled
-visited source has both endpoint-inclusive neighbors. Every other
-nonterminal source has zero inner mass. This gives a uniform coarse
-source bound while keeping the genuine terminal source separate.
+The middle window of a cap is ordered, and the rescaled dyadic mesh is
+positive and tends to zero. Each sampled visited source has both
+endpoint-inclusive neighbors. Every other nonterminal source has zero
+inner mass. This gives a uniform coarse source bound while keeping the
+genuine terminal source separate.
 -/
 
 noncomputable section
@@ -21,6 +22,11 @@ open Set Filter MeasureTheory
 open scoped Topology
 
 namespace AmbidextrousSofa
+
+/-- The middle window of a cap is ordered. -/
+theorem IsDownwardCap.quarter_le {U : Set Plane} (hU : IsDownwardCap U) :
+    horizontalLeft U + capWidth U / 4 ≤ horizontalRight U - capWidth U / 4 := by
+  linarith [hU.capWidth_nonneg, show capWidth U = horizontalRight U - horizontalLeft U from rfl]
 
 namespace PartialGrid
 
@@ -112,10 +118,8 @@ def middleOuterMass (U : Set Plane) (α : TerminalAngle) (grid : Finset QuarterA
 theorem innerSourceMass_nonneg {U : Set Plane} (hU : IsDownwardCap U)
     (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2)
     (grid : Finset QuarterAngle) (j : SourceIndex α grid) :
-    0 ≤ innerSourceMass U α hαL grid j := by
-  refine intervalIntegral.integral_nonneg_of_forall ?_ (innerDensity_nonneg U α hαL grid j)
-  unfold capWidth
-  linarith [horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact]
+    0 ≤ innerSourceMass U α hαL grid j :=
+  intervalIntegral.integral_nonneg_of_forall hU.quarter_le (innerDensity_nonneg U α hαL grid j)
 
 theorem middleOuterMass_nonneg {U : Set Plane} (hU : IsDownwardCap U)
     (α : TerminalAngle) (grid : Finset QuarterAngle) (j : SourceIndex α grid) :
@@ -127,12 +131,10 @@ theorem innerSourceMass_scaled_le {U : Set Plane} (hU : IsDownwardCap U)
     {R : ℝ} (hR : 0 ≤ R) (hbox : U ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1)
     (n : ℕ) (j : AngularGrid.SourceIndex (dyadic n)) :
     innerSourceMass U α hαL (dyadic n) (scaledSource α (dyadic n) j) ≤
-      (4 * R + 12) * mesh α n := by
-  refine (integral_scaled_innerDensity_le hU α hαL n j ?_).trans
+      (4 * R + 12) * mesh α n :=
+  (integral_scaled_innerDensity_le hU α hαL n j hU.quarter_le).trans
     (raw_inner_bound_le_coarse hR (abs_cornerSecant_le_box hU hbox α n j)
       ENNReal.toReal_nonneg ⟨(mesh_pos α n).le, mesh_le_pi_div_four α n⟩)
-  unfold capWidth
-  linarith [horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact]
 
 theorem innerSourceMass_eq_zero_of_not_scaled (U : Set Plane)
     (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2) (grid : Finset QuarterAngle)

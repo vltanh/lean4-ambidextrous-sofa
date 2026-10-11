@@ -43,11 +43,10 @@ theorem IsJointCapMaximizer.properReflected_cornerArcDynamics_of_tail_regime
   have hsource := ae_restrict_of_ae_restrict_of_subset hsub
     (hU.properReflected_source_controls_of_tail_regime hregime hproper hl hr hheight haffine hρ
       hρ0 hρK hκ heq)
-  have harms := hU.properReflected_arm_bounds_of_tail_regime hregime hproper hheight haffine hρ
-    hρ0 hρK heq
+  have harms := hU.properReflected_arm_bounds_of_tail_regime hregime hproper haffine hρ hρ0 hρK heq
   exact ⟨hends.1.le, hac.1.mono hsubcc, hac.2.mono hsubcc, ae_restrict_of_ae_restrict_of_subset hsub
-    (hU.properReflected_momenta_ae_derivatives_of_tail_regime hregime hproper hheight haffine hρ
-      hρ0 hρK heq), hsource.mono fun _ ht => ⟨ht.2.2.1, ht.2.2.2.1⟩,
+    (hU.properReflected_momenta_ae_derivatives_of_tail_regime hregime hproper haffine hρ hρ0 hρK
+      heq), hsource.mono fun _ ht => ⟨ht.2.2.1, ht.2.2.2.1⟩,
     hsource.mono fun _ ht => ht.2.1, fun t ht => (harms t ht).2,
     (ae_restrict_mem measurableSet_Ioo).mono fun t ht => .inl (harms t (Ioo_subset_Icc_self ht)).1,
     hsource.mono fun _ ht => ht.2.2.2.2.1⟩

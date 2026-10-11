@@ -123,20 +123,16 @@ theorem properDecayLength_lt_of_energy {d e δ ell : ℝ} (hell : 0 ≤ ell)
   unfold properDecayLength
   linarith
 
--- `hδ0` is not needed for this upper bound; it stays in the statement for the callers.
-set_option linter.unusedVariables false in
 theorem properDecayLength_lt_fifty_two_hundredths {d e δ : ℝ}
     (hd0 : 199 / 100 ≤ d) (hd1 : d ≤ 2311 / 1000)
-    (he0 : 0 ≤ e) (he1 : e ≤ 1) (hδ0 : 0 ≤ δ) (hδ1 : δ ≤ 1 / 30) :
+    (he0 : 0 ≤ e) (he1 : e ≤ 1) (hδ1 : δ ≤ 1 / 30) :
     properDecayLength d e δ < 13 / 25 := by
   refine properDecayLength_lt_of_energy (by norm_num) ?_
   linarith [mul_nonneg he0 (sub_nonneg.2 he1), pow_le_pow_left₀ (by linarith) hd1 2]
 
--- `hδ0` is not needed for this upper bound; it stays in the statement for the callers.
-set_option linter.unusedVariables false in
 theorem properDecayLength_lt_near_full {d e δ : ℝ}
     (hd0 : 199 / 100 ≤ d) (hd1 : d ≤ 563 / 250)
-    (he0 : 0 ≤ e) (he1 : e ≤ 1) (hδ0 : 0 ≤ δ) (hδ1 : δ ≤ 1 / 480) :
+    (he0 : 0 ≤ e) (he1 : e ≤ 1) (hδ1 : δ ≤ 1 / 480) :
     properDecayLength d e δ < 43 / 100 := by
   refine properDecayLength_lt_of_energy (by norm_num) ?_
   linarith [mul_nonneg he0 (sub_nonneg.2 he1), pow_le_pow_left₀ (by linarith) hd1 2]
@@ -154,8 +150,7 @@ theorem properExcessEnd_lt_of_corner {d e δ D E T L B : ℝ}
   rcases le_or_gt e (3 / 10) with hsmall | hlarge
   · have ht := properFirstZeroTime_lt_of_quadratic (d := d) (e := e) (T := 17 / 100)
       (by linarith) (by linarith) (by linarith)
-    have hl := properDecayLength_lt_fifty_two_hundredths hd0 (hdD.trans hD) he0 (by linarith)
-      hδ0 hδ1
+    have hl := properDecayLength_lt_fifty_two_hundredths hd0 (hdD.trans hD) he0 (by linarith) hδ1
     unfold properExcessEnd
     linarith
   · have ht := properFirstZeroTime_lt_of_quadratic (by linarith) hTD hT
@@ -173,20 +168,16 @@ theorem properExcessEnd_lt_near_full {d e δ : ℝ}
     (by norm_num) hδ0 (by linarith) (by norm_num) (by norm_num) (by norm_num) (by linarith)
     (by norm_num) (by norm_num)
 
-theorem properExcessEnd_lt_nonnegative_middle {d e δ : ℝ}
-    (hd0 : 199 / 100 ≤ d) (hd1 : d ≤ 2311 / 1000)
-    (he0 : 0 ≤ e) (he1 : e ≤ 179 / 200) (hδ0 : 0 ≤ δ) (hδ1 : δ ≤ 1 / 30) :
-    properExcessEnd d e δ < 91 / 100 :=
-  properExcessEnd_lt_of_corner (T := 107 / 250) (L := 241 / 500) hd0 hd1 le_rfl he0 he1
-    (by norm_num) hδ0 hδ1 (by norm_num) (by norm_num) (by norm_num) (by linarith)
-    (by norm_num) (by norm_num)
-
-theorem properExcessEnd_lt_negative_middle {d e δ : ℝ}
-    (hd0 : 199 / 100 ≤ d) (hd1 : d ≤ 111 / 50)
-    (he0 : 0 ≤ e) (he1 : e ≤ 1) (hδ0 : 0 ≤ δ) (hδ1 : δ ≤ 1 / 30) :
-    properExcessEnd d e δ < 9 / 10 :=
-  properExcessEnd_lt_of_corner (T := 51 / 100) (L := 39 / 100) hd0 hd1 (by norm_num) he0 he1
-    le_rfl hδ0 hδ1 (by norm_num) (by norm_num) (by norm_num) (by linarith)
-    (by norm_num) (by norm_num)
+/-- In the late range the excess ends before `91/100`, for either orientation of the middle. -/
+theorem properExcessEnd_lt_late {d e δ : ℝ} (hd0 : 199 / 100 ≤ d) (he0 : 0 ≤ e)
+    (hde : (d < 111 / 50 ∧ e < 1) ∨ (d < 2311 / 1000 ∧ e < 179 / 200))
+    (hδ0 : 0 ≤ δ) (hδ1 : δ ≤ 1 / 30) : properExcessEnd d e δ < 91 / 100 := by
+  rcases hde with ⟨hd1, he1⟩ | ⟨hd1, he1⟩
+  · exact properExcessEnd_lt_of_corner (T := 51 / 100) (L := 39 / 100) hd0 hd1.le (by norm_num)
+      he0 he1.le le_rfl hδ0 hδ1 (by norm_num) (by norm_num) (by norm_num) (by linarith)
+      (by norm_num) (by norm_num)
+  · exact properExcessEnd_lt_of_corner (T := 107 / 250) (L := 241 / 500) hd0 hd1.le le_rfl he0
+      he1.le (by norm_num) hδ0 hδ1 (by norm_num) (by norm_num) (by norm_num) (by linarith)
+      (by norm_num) (by norm_num)
 
 end AmbidextrousSofa.Analysis

@@ -61,7 +61,7 @@ theorem IsJointCapMaximizer.proper_wing_densities_zero_before_affine :
   · filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ht
     exact absurd (Real.arctan_pos.mp (ht.1.trans ht.2)).le hm
 
-include hU hregime hproper hheight haffine hρ hρ0 hρK heq in
+include hU hregime hproper haffine hρ hρ0 hρK heq in
 theorem IsJointCapMaximizer.properReflected_arm_bounds_of_tail_regime :
     ∀ r ∈ Icc (Real.pi / 2 - α) (properReflectedActiveEnd m),
       properReflectedP U m ρ r ≤ 1 ∧ -1 ≤ properReflectedQ U m ρ r := by
@@ -72,7 +72,7 @@ theorem IsJointCapMaximizer.properReflected_arm_bounds_of_tail_regime :
     have hrt : max 0 (Real.arctan m) < Real.pi / 2 - r := by
       unfold properReflectedActiveEnd at hr; linarith [hr.2]
     have hmatch := hU.properUsed_momenta_eq_actual_after_affine_of_tail_regime hregime hproper
-      hheight haffine hρ hρ0 hρK heq ⟨(le_max_left _ _).trans hrt.le, by linarith [hr.1]⟩
+      haffine hρ hρ0 hρK heq ⟨(le_max_left _ _).trans hrt.le, by linarith [hr.1]⟩
       ((le_max_right _ _).trans hrt.le)
     rw [properReflectedP, properReflectedQ, hmatch.1, hmatch.2, neg_neg]
     exact ⟨by linarith [hU.isCap.firstCornerVelocity_ge_neg_one (Real.pi / 2 - r)],
@@ -107,9 +107,8 @@ theorem IsJointCapMaximizer.properUsed_source_controls_of_tail_regime :
   · obtain ⟨h1, h2⟩ := hz ⟨ht.1, hpre⟩
     simp [h1, h2, sourceKappa_nonneg]
   obtain ⟨hP, hQ⟩ := hU.properUsed_momenta_eq_actual_after_affine_of_tail_regime hregime hproper
-    hheight haffine hρ hρ0 hρK heq ⟨ht.1.le, ht.2⟩ hpost.le
-  have hsource := hs ⟨⟨ht.1, ht.2.trans hproper⟩,
-    hU.proper_first_arc_subset_regular_of_tail_regime hregime hproper hheight haffine ht,
+    haffine hρ hρ0 hρK heq ⟨ht.1.le, ht.2⟩ hpost.le
+  have hsource := hs ⟨⟨ht.1, ht.2.trans hproper⟩, hregime.first_arc_subset_regular hproper ht,
     regularCompanionDomain_subset_regularProperCurvatureDomain hproper ⟨⟨by linarith [ht.1],
       by linarith [ht.2]⟩, fun h => hne (by simpa [affineNormalAngle] using h)⟩⟩
   have hbounds := upperCorner_density_bounds_on_quarter hκ ⟨ht.1, ht.2.trans hproper⟩

@@ -70,39 +70,29 @@ theorem IsSelectedPolygon.curvature_Ioc_le_of_sampled_density
         fullAngle α (dyadic level) j ∈ Icc a b), middleOuterMass U α (dyadic level) j) +
       ∑ j, selectionDefect target U α level coefficient j := by
   classical
-  set G := Finset.univ.filter (fun j : SourceIndex α (dyadic level) =>
-    fullAngle α (dyadic level) j ∈ Icc a b)
   have hδ := (mesh_pos α level).le
   -- The sharp mesh term of `j`: present exactly when `j` is a sampled source.
   have hw (j : SourceIndex α (dyadic level)) (k : AngularGrid.SourceIndex (dyadic level)) :
       0 ≤ if scaledSource α (dyadic level) k = j then C * mesh α level else 0 := by positivity
-  have hatom (j : SourceIndex α (dyadic level)) (hj : j ∈ G) :
-      (upperCurvature U {fullAngle α (dyadic level) j}).toReal ≤
-        (∑ k, if scaledSource α (dyadic level) k = j then C * mesh α level else 0) +
-        middleOuterMass U α (dyadic level) j + selectionDefect target U α level coefficient j := by
-    by_cases hscaled : ∃ k : AngularGrid.SourceIndex (dyadic level),
+  refine (hU.curvature_set_le_of_atoms hc (Ioc_subset_Icc_self.trans hupper)
+    (fun ht => htop (Ioc_subset_Icc_self ht)) Ioc_subset_Icc_self
+    (fun j => Finset.sum_nonneg fun k (_ : k ∈ Finset.univ) => hw j k) fun j hj => ?_).trans ?_
+  · by_cases hscaled : ∃ k : AngularGrid.SourceIndex (dyadic level),
         j = scaledSource α (dyadic level) k
     · obtain ⟨k, rfl⟩ := hscaled
       have hk := Finset.single_le_sum (fun q _ => hw (scaledSource α (dyadic level) k) q)
         (Finset.mem_univ k)
       simp only [↓reduceIte] at hk
-      linarith [hU.curvature_scaled_atom_refined hc k, hdensity k (Finset.mem_filter.mp hj).2]
+      linarith [hU.curvature_scaled_atom_refined hc k, hdensity k (Ioc_subset_Icc_self hj)]
     · have h := hU.curvature_atom_le_mass hc j
       rw [innerSourceMass_eq_zero_of_not_scaled U α hαL (dyadic level) j
-        (fun h => hterminal (by subst h; exact (Finset.mem_filter.mp hj).2)) hscaled] at h
+        (fun h => hterminal (by subst h; exact Ioc_subset_Icc_self hj)) hscaled] at h
       linarith [Finset.sum_nonneg fun k (_ : k ∈ Finset.univ) => hw j k]
-  rw [AngularGrid.upperCurvature_real_eq_sum_sources hU.isCap (outerGrid α (dyadic level))
-    hU.polygon_eq (Ioc_subset_Icc_self.trans hupper) (fun ht => htop (Ioc_subset_Icc_self ht))]
-  refine (Finset.sum_le_sum_of_subset_of_nonneg
-    (Finset.monotone_filter_right _ fun _ _ h => Ioc_subset_Icc_self h)
-    fun _ _ _ => ENNReal.toReal_nonneg).trans ((Finset.sum_le_sum hatom).trans ?_)
-  rw [Finset.sum_add_distrib, Finset.sum_add_distrib, Finset.sum_comm]
-  gcongr ?_ + _ + ?_
-  · simpa only [Finset.sum_ite_eq, G, Finset.mem_filter, Finset.mem_univ, true_and,
-      Finset.mul_sum, mul_ite, mul_zero] using
-      mul_le_mul_of_nonneg_left (sum_mesh_scaled_sources_interval_le_of_no_top α level hab htop) hC
-  · exact Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _)
-      fun j _ _ => selectionDefect_nonneg target U α level hc j
+  rw [Finset.sum_comm]
+  gcongr ?_ + _ + _
+  simpa only [Finset.sum_ite_eq, Finset.mem_filter, Finset.mem_univ, true_and,
+    Finset.mul_sum, mul_ite, mul_zero] using
+    mul_le_mul_of_nonneg_left (sum_mesh_scaled_sources_interval_le_of_no_top α level hab htop) hC
 
 theorem curvature_Ioc_le_of_eventual_sampled_density
     {target : Set Plane} {U : ℕ → Set Plane}

@@ -37,33 +37,18 @@ theorem IsSelectedPolygon.curvature_set_near_axes_le {target U : Set Plane}
     (hc : 0 ≤ coefficient) (hR : 0 ≤ R) (hbox : U ⊆ Icc (-R) R ×ˢ Icc (0 : ℝ) 1)
     (hw : 0 < w) (hW : w ≤ capWidth U) {s : Set ℝ} (hs : s ⊆ Ioo 0 Real.pi)
     (htop : Real.pi / 2 ∉ s) (hab : a ≤ b) (hsab : s ⊆ Icc a b) (hterminal : (α : ℝ) ∉ Icc a b)
-    (haxis : ∀ t ∈ s, t ≤ axisCutoff w ∨ Real.pi - t ≤ axisCutoff w) :
+    (haxis : ∀ t ∈ Icc a b, t ≤ axisCutoff w ∨ Real.pi - t ≤ axisCutoff w) :
     (upperCurvature U).real s ≤ (8 * R + 24) * (b - a + mesh α level) +
       ∑ j, selectionDefect target U α level coefficient j := by
   classical
-  calc
-    (upperCurvature U).real s =
-        ∑ j ∈ Finset.univ.filter (fun j => fullAngle α (dyadic level) j ∈ s),
-          (upperCurvature U {fullAngle α (dyadic level) j}).toReal :=
-      AngularGrid.upperCurvature_real_eq_sum_sources hU.isCap (outerGrid α (dyadic level))
-        hU.polygon_eq hs htop
-    _ ≤ ∑ j ∈ Finset.univ.filter (fun j => fullAngle α (dyadic level) j ∈ s),
-        (innerSourceMass U α hαL (dyadic level) j +
-          selectionDefect target U α level coefficient j) :=
-      Finset.sum_le_sum fun j hj => by
-        -- no middle facet near an axis
-        have hmid : middleOuterMass U α (dyadic level) j = 0 :=
-          AngularGrid.middleOuterMass_eq_zero_near_axes hU.isCap (outerGrid α (dyadic level))
-            hU.polygon_eq hw hW j (haxis _ (Finset.mem_filter.mp hj).2)
-        simpa only [hmid, add_zero] using hU.curvature_atom_le_mass hc j
-    _ ≤ _ := by
-      rw [Finset.sum_add_distrib]
-      exact add_le_add ((Finset.sum_le_sum_of_subset_of_nonneg
-        (Finset.monotone_filter_right _ fun _ _ h => hsab h)
-        fun j _ _ => innerSourceMass_nonneg hU.isCap α hαL _ j).trans
-          (innerSourceMass_sum_interval_le hU.isCap α hαL hR hbox level hab hterminal))
-        (Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _)
-          fun j _ _ => selectionDefect_nonneg target U α level hc j)
+  -- No middle facet is near an axis.
+  have hmid : ∑ j ∈ Finset.univ.filter (fun j => fullAngle α (dyadic level) j ∈ Icc a b),
+      middleOuterMass U α (dyadic level) j = 0 :=
+    Finset.sum_eq_zero fun j hj => AngularGrid.middleOuterMass_eq_zero_near_axes hU.isCap
+      (outerGrid α (dyadic level)) hU.polygon_eq hw hW j (haxis _ (Finset.mem_filter.mp hj).2)
+  have h := hU.curvature_set_le_of_atoms hc hs htop hsab (innerSourceMass_nonneg hU.isCap α hαL _)
+    fun j _ => hU.curvature_atom_le_mass hc j
+  linarith [innerSourceMass_sum_interval_le hU.isCap α hαL hR hbox level hab hterminal]
 
 theorem IsSelectedPolygon.curvature_right_axis_bound {target U : Set Plane}
     {a b coefficient R w ε : ℝ} {level : ℕ}

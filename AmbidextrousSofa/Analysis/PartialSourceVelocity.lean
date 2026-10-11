@@ -40,9 +40,7 @@ theorem IsSelectedPolygon.curvature_scaled_atom_refined
       finiteCurvatureDensity (cornerSecant U α level j) (mesh α level) +
         middleOuterMass U α (dyadic level) (scaledSource α (dyadic level) j) +
         selectionDefect target U α level coefficient (scaledSource α (dyadic level) j) := by
-  have horder : horizontalLeft U + capWidth U / 4 ≤ horizontalRight U - capWidth U / 4 := by
-    have := hU.isCap.capWidth_nonneg; unfold capWidth at *; linarith
-  have hsource := integral_scaled_innerDensity_le hU.isCap α hαL level j horder
+  have hsource := integral_scaled_innerDensity_le hU.isCap α hαL level j hU.isCap.quarter_le
   have hatom := hU.curvature_atom_le_mass hc (scaledSource α (dyadic level) j)
   rw [add_assoc]
   exact solve_curvature_self_bound (add_nonneg (middleOuterMass_nonneg hU.isCap α _ _)

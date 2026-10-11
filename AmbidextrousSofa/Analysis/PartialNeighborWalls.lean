@@ -10,9 +10,9 @@ public import AmbidextrousSofa.Analysis.NeighborCompanion
 
 Every nonterminal source comes from one of the sampled visited corners.
 The same two neighboring-wall alternatives constrain its tangent
-parameter. The rescaled endpoint at the terminal angle is allowed in
-those alternatives because the complete terminal first wall dominates
-the terminal corner.
+parameter, for the first and for the companion wall. The rescaled endpoint
+at the terminal angle is allowed in those alternatives because the
+complete terminal first wall dominates the terminal corner.
 -/
 
 noncomputable section
@@ -130,6 +130,78 @@ theorem above_barrier_wall_alternative {U : Set Plane} (hU : IsDownwardCap U)
   · rw [← supportWall_companionNormal] at h
     exact (supportWall_le_iff (Real.cos_pos_of_mem_Ioo ⟨by linarith, hsL⟩) p.1 p.2).mp h
 
+/-- The tangent parameter `v` of a first-wall source point satisfies the companion bound and
+the two neighboring wall alternatives. -/
+theorem first_source_wall_constraints {U : Set Plane} (hU : IsDownwardCap U)
+    (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2)
+    (grid : Finset QuarterAngle) (t : InteriorPoint grid) {δ : ℝ}
+    (hminus : ∃ s ∈ grid, (scaleAngle α s : ℝ) = (scaleAngle α t.val : ℝ) - δ)
+    (hplus : ∃ s ∈ grid, (scaleAngle α s : ℝ) = (scaleAngle α t.val : ℝ) + δ)
+    {x : ℝ} (hx : x ∈ innerSourceSet U α hαL grid (scaledSource α grid (Sum.inl t))) :
+    let τ : ℝ := scaleAngle α t.val
+    let f := support U (unitNormal τ)
+    ∃ v : ℝ, x = (f - 1) * Real.cos τ - v * Real.sin τ ∧ v ≤ support U (companionNormal τ) - 1 ∧
+      (support U (unitNormal (τ - δ)) - 1 ≤ (f - 1) * Real.cos δ - v * Real.sin δ ∨
+        support U (companionNormal (τ - δ)) - 1 ≤ (f - 1) * Real.sin δ + v * Real.cos δ) ∧
+      (support U (unitNormal (τ + δ)) - 1 ≤ (f - 1) * Real.cos δ + v * Real.sin δ ∨
+        support U (companionNormal (τ + δ)) - 1 ≤ -(f - 1) * Real.sin δ + v * Real.cos δ) := by
+  have hy := innerSource_height U α hαL grid (scaledSource α grid (Sum.inl t)) hx
+  have hn := normal_snd_pos α grid (scaledSource α grid (Sum.inl t))
+  set y := supportWall U (normal α grid (scaledSource α grid (Sum.inl t))) x
+  have hp := point_eq_wallPoint (U := U) (t := scaleAngle α t.val)
+    (le_antisymm ((le_supportWall_iff hn x y).mp le_rfl) ((supportWall_le_iff hn x y).mp le_rfl))
+  have h0 := (finiteBarrier_nonneg _ _ _ _ x).trans_eq hy
+  obtain ⟨sm, hsm, hsmval⟩ := hminus
+  obtain ⟨sp, hsp, hspval⟩ := hplus
+  have hm := above_barrier_wall_alternative (p := (x, y)) hU α hαL grid h0 hy.le hsm
+  have hp' := above_barrier_wall_alternative (p := (x, y)) hU α hαL grid h0 hy.le hsp
+  rw [hsmval, hp, dot_wallPoint_first, dot_wallPoint_companion, sub_sub_cancel_left,
+    sub_sub_cancel, Real.cos_neg, Real.sin_neg] at hm
+  rw [hspval, hp, dot_wallPoint_first, dot_wallPoint_companion, add_sub_cancel_left,
+    sub_add_cancel_left, Real.cos_neg, Real.sin_neg] at hp'
+  exact ⟨coordDot (x, y) (companionNormal (scaleAngle α t.val)),
+    by simpa only [wallPoint_fst] using congrArg Prod.fst hp,
+    (le_supportWall_iff (normal_snd_pos α grid (scaledSource α grid (Sum.inr t))) x _).mp
+      (first_source_le_companion U α hαL grid t hx),
+    hm.imp (fun h => by linarith) fun h => by linarith,
+    hp'.imp (fun h => by linarith) fun h => by linarith⟩
+
+/-- The companion-wall version of `first_source_wall_constraints`, with the angle order
+reversed. -/
+theorem second_source_wall_constraints {U : Set Plane} (hU : IsDownwardCap U)
+    (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2)
+    (grid : Finset QuarterAngle) (t : InteriorPoint grid) {δ : ℝ}
+    (hminus : ∃ s ∈ grid, (scaleAngle α s : ℝ) = (scaleAngle α t.val : ℝ) - δ)
+    (hplus : ∃ s ∈ grid, (scaleAngle α s : ℝ) = (scaleAngle α t.val : ℝ) + δ)
+    {x : ℝ} (hx : x ∈ innerSourceSet U α hαL grid (scaledSource α grid (Sum.inr t))) :
+    let τ : ℝ := scaleAngle α t.val
+    let g := support U (companionNormal τ)
+    ∃ v : ℝ, x = -(g - 1) * Real.sin τ + v * Real.cos τ ∧ v ≤ support U (unitNormal τ) - 1 ∧
+      (support U (companionNormal (τ + δ)) - 1 ≤ (g - 1) * Real.cos δ - v * Real.sin δ ∨
+        support U (unitNormal (τ + δ)) - 1 ≤ (g - 1) * Real.sin δ + v * Real.cos δ) ∧
+      (support U (companionNormal (τ - δ)) - 1 ≤ (g - 1) * Real.cos δ + v * Real.sin δ ∨
+        support U (unitNormal (τ - δ)) - 1 ≤ -(g - 1) * Real.sin δ + v * Real.cos δ) := by
+  have hy := innerSource_height U α hαL grid (scaledSource α grid (Sum.inr t)) hx
+  have hn := normal_snd_pos α grid (scaledSource α grid (Sum.inr t))
+  set y := supportWall U (normal α grid (scaledSource α grid (Sum.inr t))) x
+  have hp := point_eq_companionPoint (U := U) (t := scaleAngle α t.val)
+    (le_antisymm ((le_supportWall_iff hn x y).mp le_rfl) ((supportWall_le_iff hn x y).mp le_rfl))
+  have h0 := (finiteBarrier_nonneg _ _ _ _ x).trans_eq hy
+  obtain ⟨sm, hsm, hsmval⟩ := hminus
+  obtain ⟨sp, hsp, hspval⟩ := hplus
+  have hm := above_barrier_wall_alternative (p := (x, y)) hU α hαL grid h0 hy.le hsm
+  have hp' := above_barrier_wall_alternative (p := (x, y)) hU α hαL grid h0 hy.le hsp
+  rw [hsmval, hp, dot_companionPoint_first, dot_companionPoint_companion, sub_sub_cancel_left,
+    sub_sub_cancel, Real.cos_neg, Real.sin_neg] at hm
+  rw [hspval, hp, dot_companionPoint_first, dot_companionPoint_companion, add_sub_cancel_left,
+    sub_add_cancel_left, Real.cos_neg, Real.sin_neg] at hp'
+  exact ⟨coordDot (x, y) (unitNormal (scaleAngle α t.val)),
+    by simpa only [companionPoint_fst] using congrArg Prod.fst hp,
+    (le_supportWall_iff (normal_snd_pos α grid (scaledSource α grid (Sum.inl t))) x _).mp
+      (second_source_le_first U α hαL grid t hx),
+    hp'.symm.imp (fun h => by linarith) fun h => by linarith,
+    hm.symm.imp (fun h => by linarith) fun h => by linarith⟩
+
 theorem first_source_neighbor_parameters {U : Set Plane} (hU : IsDownwardCap U)
     (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2)
     (grid : Finset QuarterAngle) (t : InteriorPoint grid) {δ : ℝ}
@@ -142,23 +214,8 @@ theorem first_source_neighbor_parameters {U : Set Plane} (hU : IsDownwardCap U)
         (support U (unitNormal ((scaleAngle α t.val : ℝ) - δ))) (support U (unitNormal ((scaleAngle α t.val : ℝ) + δ)))
         (support U (companionNormal ((scaleAngle α t.val : ℝ) - δ)))
         (support U (companionNormal ((scaleAngle α t.val : ℝ) + δ))) δ := by
-  let y := supportWall U (unitNormal (scaleAngle α t.val)) x
-  let v := coordDot (x, y) (companionNormal (scaleAngle α t.val))
-  have hy := innerSource_height U α hαL grid _ hx
-  have hy0 : 0 ≤ y := (finiteBarrier_nonneg _ _ _ _ _).trans_eq hy
-  have hn := normal_snd_pos α grid (scaledSource α grid (Sum.inl t))
-  have hp : ((x, y) : Plane) = wallPoint U (scaleAngle α t.val) v := point_eq_wallPoint
-    (((le_supportWall_iff hn x y).mp le_rfl).antisymm ((supportWall_le_iff hn x y).mp le_rfl))
-  obtain ⟨sm, hsm, hsmval⟩ := hminus
-  obtain ⟨sp, hsp, hspval⟩ := hplus
-  have hm := above_barrier_wall_alternative hU α hαL grid (p := (x, y)) hy0 hy.le hsm
-  have hp' := above_barrier_wall_alternative hU α hαL grid (p := (x, y)) hy0 hy.le hsp
-  simp only [hsmval, hspval, hp, dot_wallPoint_first, dot_wallPoint_companion, sub_sub_cancel_left,
-    sub_sub_cancel, add_sub_cancel_left, sub_add_cancel_left, Real.cos_neg, Real.sin_neg] at hm hp'
-  refine ⟨v, by simpa only [wallPoint_fst] using congrArg Prod.fst hp, mem_neighborParameters hc hs
-    ((le_supportWall_iff (normal_snd_pos α grid (scaledSource α grid (Sum.inr t))) x y).mp
-      (first_source_le_companion U α hαL grid t hx)) (hm.imp_left fun h => by linarith)
-    (hp'.imp_right fun h => by linarith)⟩
+  obtain ⟨v, hxv, hv, hm, hp⟩ := first_source_wall_constraints hU α hαL grid t hminus hplus hx
+  exact ⟨v, hxv, mem_neighborParameters hc hs hv hm hp⟩
 
 theorem second_source_neighbor_parameters {U : Set Plane} (hU : IsDownwardCap U)
     (α : TerminalAngle) (hαL : (α : ℝ) < Real.pi / 2)
@@ -174,25 +231,8 @@ theorem second_source_neighbor_parameters {U : Set Plane} (hU : IsDownwardCap U)
         (support U (companionNormal ((scaleAngle α t.val : ℝ) - δ)))
         (support U (unitNormal ((scaleAngle α t.val : ℝ) + δ)))
         (support U (unitNormal ((scaleAngle α t.val : ℝ) - δ))) δ := by
-  let y := supportWall U (companionNormal (scaleAngle α t.val)) x
-  let v := coordDot (x, y) (unitNormal (scaleAngle α t.val))
-  have hy := innerSource_height U α hαL grid _ hx
-  have hy0 : 0 ≤ y := (finiteBarrier_nonneg _ _ _ _ _).trans_eq hy
-  have hn := normal_snd_pos α grid (scaledSource α grid (Sum.inr t))
-  have hp : ((x, y) : Plane) = companionPoint U (scaleAngle α t.val) v := point_eq_companionPoint
-    (((le_supportWall_iff hn x y).mp le_rfl).antisymm ((supportWall_le_iff hn x y).mp le_rfl))
-  obtain ⟨sm, hsm, hsmval⟩ := hminus
-  obtain ⟨sp, hsp, hspval⟩ := hplus
-  have hm := above_barrier_wall_alternative hU α hαL grid (p := (x, y)) hy0 hy.le hsm
-  have hp' := above_barrier_wall_alternative hU α hαL grid (p := (x, y)) hy0 hy.le hsp
-  simp only [hsmval, hspval, hp, dot_companionPoint_first, dot_companionPoint_companion, sub_sub_cancel_left,
-    sub_sub_cancel, add_sub_cancel_left, sub_add_cancel_left, Real.cos_neg, Real.sin_neg] at hm hp'
-  refine ⟨v, by simpa only [companionPoint_fst] using congrArg Prod.fst hp,
-    mem_neighborParameters hc hs
-      ((le_supportWall_iff (normal_snd_pos α grid (scaledSource α grid (Sum.inl t))) x y).mp
-        (second_source_le_first U α hαL grid t hx))
-      (hp'.symm.imp (fun h => by linarith) fun h => by linarith)
-      (hm.symm.imp (fun h => by linarith) fun h => by linarith)⟩
+  obtain ⟨v, hxv, hv, hm, hp⟩ := second_source_wall_constraints hU α hαL grid t hminus hplus hx
+  exact ⟨v, hxv, mem_neighborParameters hc hs hv hm hp⟩
 
 end PartialGrid
 

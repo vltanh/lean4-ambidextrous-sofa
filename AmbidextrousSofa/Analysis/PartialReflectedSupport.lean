@@ -26,8 +26,8 @@ open scoped Topology
 
 namespace AmbidextrousSofa
 
-set_option linter.unusedVariables false in
-def properUsedP (U : Set Plane) (m : ℝ) (ρ : ℝ → ℝ) : ℝ → ℝ :=
+/-- The first used momentum. Its slope argument is unused; it matches `properUsedQ`. -/
+def properUsedP (U : Set Plane) (_m : ℝ) (ρ : ℝ → ℝ) : ℝ → ℝ :=
   supportP (closedSupportDerivative U ρ 0)
     (fun t => angleSupport (leftCompanionCap U (horizontalLeft U + capWidth U / 4))
       (t + Real.pi / 2))
@@ -73,62 +73,58 @@ variable {U : Set Plane} {α m c K t : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapM
       (fun t => ENNReal.ofReal (ρ t)))
 include hU hρ hρ0 hρK
 
-theorem IsJointCapMaximizer.properUsed_momenta_absolutelyContinuous :
-    AbsolutelyContinuousOnInterval (properUsedP U m ρ) 0 α ∧
-      AbsolutelyContinuousOnInterval (properUsedQ U m ρ) 0 α := by
+/-- The used momenta are absolutely continuous on `[0, α]`; reflecting by `r ↦ π / 2 - r`
+gives the reflected momenta on `[π / 2 - α, π / 2]`. -/
+theorem IsJointCapMaximizer.properReflected_momenta_absolutelyContinuous :
+    AbsolutelyContinuousOnInterval (properReflectedP U m ρ) (Real.pi / 2 - α) (Real.pi / 2) ∧
+      AbsolutelyContinuousOnInterval (properReflectedQ U m ρ) (Real.pi / 2 - α) (Real.pi / 2) := by
   have hV := hU.isCap_properLeftCompanion
   have hc : AbsolutelyContinuousOnInterval (fun _ : ℝ => (1 : ℝ)) 0 α :=
     (LipschitzWith.const (1 : ℝ)).lipschitzOnWith.absolutelyContinuousOnInterval
-  exact ⟨((hU.isCap.absolutelyContinuousOnInterval_closedSupportDerivative hρ hρ0 hρK 0 α 0).sub
-      (hV.absolutelyContinuousOnInterval_angleSupport_shift 0 α (Real.pi / 2))).add hc,
+  have hP : AbsolutelyContinuousOnInterval (properUsedP U m ρ) 0 α :=
+    ((hU.isCap.absolutelyContinuousOnInterval_closedSupportDerivative hρ hρ0 hρK 0 α 0).sub
+      (hV.absolutelyContinuousOnInterval_angleSupport_shift 0 α (Real.pi / 2))).add hc
+  have hQ : AbsolutelyContinuousOnInterval (properUsedQ U m ρ) 0 α :=
     ((hV.absolutelyContinuousOnInterval_closedSupportDerivative
       (measurable_leftCompanionWingDensity hρ m)
       (fun t => (leftCompanionWingDensity_bounds hρ0 hρK t).1)
       (fun t => (leftCompanionWingDensity_bounds hρ0 hρK t).2) 0 α (Real.pi / 2)).add
-        (hU.isCap.absolutelyContinuousOnInterval_angleSupport 0 α)).sub hc⟩
-
-theorem IsJointCapMaximizer.properReflected_momenta_absolutelyContinuous :
-    AbsolutelyContinuousOnInterval (properReflectedP U m ρ) (Real.pi / 2 - α) (Real.pi / 2) ∧
-      AbsolutelyContinuousOnInterval (properReflectedQ U m ρ) (Real.pi / 2 - α) (Real.pi / 2) := by
-  have h := hU.properUsed_momenta_absolutelyContinuous (m := m) hρ hρ0 hρK
-  have hP := (absolutelyContinuousOnInterval_comp_const_sub h.2 hU.angle_pos.le (Real.pi / 2)).neg
-  have hQ := (absolutelyContinuousOnInterval_comp_const_sub h.1 hU.angle_pos.le (Real.pi / 2)).neg
+        (hU.isCap.absolutelyContinuousOnInterval_angleSupport 0 α)).sub hc
+  replace hP := (absolutelyContinuousOnInterval_comp_const_sub hP hU.angle_pos.le (Real.pi / 2)).neg
+  replace hQ := (absolutelyContinuousOnInterval_comp_const_sub hQ hU.angle_pos.le (Real.pi / 2)).neg
   rw [sub_zero] at hP hQ
-  exact ⟨hP, hQ⟩
+  exact ⟨hQ, hP⟩
 
-include hregime hproper hheight haffine heq
+include hregime hproper haffine heq
 
-theorem IsJointCapMaximizer.properUsed_momenta_ae_derivatives_of_tail_regime :
-    ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) α),
-      HasDerivAt (properUsedP U m ρ) (ρ t - 1 - properUsedQ U m ρ t) t ∧
-      HasDerivAt (properUsedQ U m ρ)
-        (leftCompanionWingDensity m ρ (t + Real.pi / 2) - 1 + properUsedP U m ρ t) t := by
-  have hV := hU.isCap_properLeftCompanion
-  have hσ := measurable_leftCompanionWingDensity hρ m
-  have hσ0 := fun t => (leftCompanionWingDensity_bounds (m := m) hρ0 hρK t).1
-  have hσK := fun t => (leftCompanionWingDensity_bounds (m := m) hρ0 hρK t).2
-  filter_upwards [ae_restrict_mem measurableSet_Ioo,
-    hU.isCap.ae_hasDerivAt_closedSupportDerivative hρ hρ0 hρK hU.angle_pos.le 0,
-    hV.ae_hasDerivAt_closedSupportDerivative hσ hσ0 hσK hU.angle_pos.le (Real.pi / 2)]
-    with t ht hfDD hgDD
-  have hdf := hU.isCap.hasDerivAt_angleSupport_of_open_arc hρ hρ0 hρK
-    (hU.proper_first_density_of_regular_of_tail_regime hregime hproper hheight haffine heq)
-    Subset.rfl ht
-  have hdg := hV.hasDerivAt_shiftedSupport_of_open_density hσ hσ0 hσK
-    (hU.proper_leftCompanion_density_of_regular hproper haffine heq) (d := Real.pi / 2)
-    (Ioo_subset_Ioo le_rfl (add_halves _).le) ⟨ht.1, ht.2.trans hproper⟩
-  rw [add_zero] at hfDD
-  exact ⟨((hfDD.sub hdg).add_const 1).congr_deriv (by simp only [properUsedQ, supportQ]; ring),
-    ((hgDD.add hdf).sub_const 1).congr_deriv (by simp only [properUsedP, supportP]; ring)⟩
-
+/-- The used momenta satisfy the support system almost everywhere on `(0, α)`; reflecting by
+`r ↦ π / 2 - r` gives the reflected system. -/
 theorem IsJointCapMaximizer.properReflected_momenta_ae_derivatives_of_tail_regime :
     ∀ᵐ r ∂volume.restrict (Ioo (Real.pi / 2 - α) (Real.pi / 2)),
       HasDerivAt (properReflectedP U m ρ)
         (properReflectedFirstDensity m ρ r - 1 - properReflectedQ U m ρ r) r ∧
       HasDerivAt (properReflectedQ U m ρ)
         (properReflectedSecondDensity ρ r - 1 + properReflectedP U m ρ r) r := by
-  have h := hU.properUsed_momenta_ae_derivatives_of_tail_regime
-    hregime hproper hheight haffine hρ hρ0 hρK heq
+  have hV := hU.isCap_properLeftCompanion
+  have hσ := measurable_leftCompanionWingDensity hρ m
+  have hσ0 := fun t => (leftCompanionWingDensity_bounds (m := m) hρ0 hρK t).1
+  have hσK := fun t => (leftCompanionWingDensity_bounds (m := m) hρ0 hρK t).2
+  have h : ∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) α),
+      HasDerivAt (properUsedP U m ρ) (ρ t - 1 - properUsedQ U m ρ t) t ∧
+      HasDerivAt (properUsedQ U m ρ)
+        (leftCompanionWingDensity m ρ (t + Real.pi / 2) - 1 + properUsedP U m ρ t) t := by
+    filter_upwards [ae_restrict_mem measurableSet_Ioo,
+      hU.isCap.ae_hasDerivAt_closedSupportDerivative hρ hρ0 hρK hU.angle_pos.le 0,
+      hV.ae_hasDerivAt_closedSupportDerivative hσ hσ0 hσK hU.angle_pos.le (Real.pi / 2)]
+      with t ht hfDD hgDD
+    have hdf := hU.isCap.hasDerivAt_angleSupport_of_open_arc hρ hρ0 hρK
+      (hregime.first_density_of_regular hproper heq) Subset.rfl ht
+    have hdg := hV.hasDerivAt_shiftedSupport_of_open_density hσ hσ0 hσK
+      (hU.proper_leftCompanion_density_of_regular hproper haffine heq) (d := Real.pi / 2)
+      (Ioo_subset_Ioo le_rfl (add_halves _).le) ⟨ht.1, ht.2.trans hproper⟩
+    rw [add_zero] at hfDD
+    exact ⟨((hfDD.sub hdg).add_const 1).congr_deriv (by simp only [properUsedQ, supportQ]; ring),
+      ((hgDD.add hdf).sub_const 1).congr_deriv (by simp only [properUsedP, supportP]; ring)⟩
   have hp := ae_hasDerivAt_comp_const_sub (c := Real.pi / 2) (h.mono fun _ ht => ht.1)
   have hq := ae_hasDerivAt_comp_const_sub (c := Real.pi / 2) (h.mono fun _ ht => ht.2)
   rw [sub_zero] at hp hq
@@ -145,8 +141,7 @@ theorem IsJointCapMaximizer.properUsed_momenta_eq_actual_after_affine_of_tail_re
   have hmatch := hU.isCap.companionSupport_and_tangent_leftCut_after_affine
     ha hb hab haffine hmt ht.1 (ht.2.trans hproper)
   have hfd := hU.isCap.closedSupportDerivative_eq_supportTangent_on_arc hρ hρ0 hρK
-    (hU.proper_first_density_of_regular_of_tail_regime hregime hproper hheight haffine heq)
-    Subset.rfl ht.1 ht.2
+    (hregime.first_density_of_regular hproper heq) Subset.rfl ht.1 ht.2
   have hgd := hU.isCap_properLeftCompanion.closedSupportDerivative_eq_supportTangent
     (measurable_leftCompanionWingDensity hρ m)
     (fun s => (leftCompanionWingDensity_bounds hρ0 hρK s).1)
@@ -158,6 +153,9 @@ theorem IsJointCapMaximizer.properUsed_momenta_eq_actual_after_affine_of_tail_re
     firstCornerVelocity]
   constructor <;> ring
 
+-- `hheight` is not needed here; it stays in the statement for the callers.
+set_option linter.unusedSectionVars false in
+include hheight in
 /-- Both initial reflected values are computed at actual supporting
 endpoints. The second value contains the whole terminal atom. -/
 theorem IsJointCapMaximizer.properReflected_terminal_impulse_of_tail_regime :
@@ -173,8 +171,7 @@ theorem IsJointCapMaximizer.properReflected_terminal_impulse_of_tail_regime :
     (by simpa [affineNormalAngle] using (hU.middle_normal_lt_terminal_companion haffine).le)
     hU.angle_pos.le hproper
   have hfd := hU.isCap.closedSupportDerivative_at_arc_end hρ hρ0 hρK
-    (hU.proper_first_density_of_regular_of_tail_regime hregime hproper hheight haffine heq)
-    hU.angle_pos Subset.rfl
+    (hregime.first_density_of_regular hproper heq) hU.angle_pos Subset.rfl
   have hgd := hU.isCap_properLeftCompanion.closedSupportDerivative_eq_supportTangent
     (measurable_leftCompanionWingDensity hρ m)
     (fun s => (leftCompanionWingDensity_bounds hρ0 hρK s).1)

@@ -12,6 +12,8 @@ Only the two rescaled visited families contribute nonterminal inner mass.
 Each is an equally spaced family and has one mesh cell of interval
 rounding error. The outer-only samples have zero inner mass; their actual
 curvature remains bounded by the retained middle mass and support defect.
+The curvature on any set of angles is summed once over its source atoms,
+for any bound on the atoms beyond their middle and selection errors.
 -/
 
 noncomputable section
@@ -91,6 +93,37 @@ theorem innerSourceMass_sum_interval_le {U : Set Plane} (hU : IsDownwardCap U)
       (sum_mesh_scaled_sources_interval_le α n hab) (by positivity : (0 : ℝ) ≤ 4 * R + 12)
 
 open Classical in
+/-- The curvature on a set `s` of angles in `[a, b]`, when each source atom in `s` exceeds its
+middle mass and selection error by at most `f j`; the terms are summed over `[a, b]`. -/
+theorem IsSelectedPolygon.curvature_set_le_of_atoms {target U : Set Plane}
+    {α : TerminalAngle} {hαL : (α : ℝ) < Real.pi / 2}
+    {boxLeft boxRight coefficient a b : ℝ} {level : ℕ} {s : Set ℝ}
+    (hU : IsSelectedPolygon target α hαL boxLeft boxRight level coefficient U)
+    (hc : 0 ≤ coefficient) (hs : s ⊆ Ioo 0 Real.pi) (htop : Real.pi / 2 ∉ s) (hsab : s ⊆ Icc a b)
+    {f : SourceIndex α (dyadic level) → ℝ} (hf : ∀ j, 0 ≤ f j)
+    (hatom : ∀ j, fullAngle α (dyadic level) j ∈ s →
+      (upperCurvature U {fullAngle α (dyadic level) j}).toReal ≤ f j +
+        middleOuterMass U α (dyadic level) j + selectionDefect target U α level coefficient j) :
+    (upperCurvature U).real s ≤
+      (∑ j ∈ Finset.univ.filter (fun j => fullAngle α (dyadic level) j ∈ Icc a b), f j) +
+      (∑ j ∈ Finset.univ.filter (fun j => fullAngle α (dyadic level) j ∈ Icc a b),
+        middleOuterMass U α (dyadic level) j) +
+      ∑ j, selectionDefect target U α level coefficient j := by
+  classical
+  rw [AngularGrid.upperCurvature_real_eq_sum_sources hU.isCap (outerGrid α (dyadic level))
+    hU.polygon_eq hs htop]
+  refine (Finset.sum_le_sum fun j hj => hatom j (Finset.mem_filter.mp hj).2).trans ?_
+  rw [Finset.sum_add_distrib, Finset.sum_add_distrib]
+  have hsub := Finset.monotone_filter_right (Finset.univ : Finset (SourceIndex α (dyadic level)))
+    (p := fun j => fullAngle α (dyadic level) j ∈ s) fun _ _ h => hsab h
+  gcongr ?_ + ?_ + ?_
+  · exact Finset.sum_le_sum_of_subset_of_nonneg hsub fun j _ _ => hf j
+  · exact Finset.sum_le_sum_of_subset_of_nonneg hsub fun j _ _ =>
+      middleOuterMass_nonneg hU.isCap α _ j
+  · exact Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _) fun j _ _ =>
+      selectionDefect_nonneg target U α level hc j
+
+open Classical in
 theorem IsSelectedPolygon.curvature_Ioc_le {target U : Set Plane}
     {α : TerminalAngle} {hαL : (α : ℝ) < Real.pi / 2}
     {boxLeft boxRight coefficient R a b : ℝ} {level : ℕ}
@@ -105,21 +138,11 @@ theorem IsSelectedPolygon.curvature_Ioc_le {target U : Set Plane}
         fullAngle α (dyadic level) j ∈ Icc a b), middleOuterMass U α (dyadic level) j) +
       ∑ j, selectionDefect target U α level coefficient j := by
   classical
-  have hFG := Finset.monotone_filter_right Finset.univ
-    (p := fun j : SourceIndex α (dyadic level) => fullAngle α (dyadic level) j ∈ Ioc a b)
-    (q := fun j => fullAngle α (dyadic level) j ∈ Icc a b) fun _ _ h => Ioc_subset_Icc_self h
-  rw [AngularGrid.upperCurvature_real_eq_sum_sources hU.isCap (outerGrid α (dyadic level))
-    hU.polygon_eq (Ioc_subset_Icc_self.trans hupper) (fun ht => htop (Ioc_subset_Icc_self ht))]
-  refine (Finset.sum_le_sum fun j _ => hU.curvature_atom_le_mass hc j).trans ?_
-  rw [Finset.sum_add_distrib, Finset.sum_add_distrib]
-  gcongr ?_ + ?_ + ?_
-  · exact (Finset.sum_le_sum_of_subset_of_nonneg hFG fun j _ _ =>
-      innerSourceMass_nonneg hU.isCap α hαL (dyadic level) j).trans
-      (innerSourceMass_sum_interval_le hU.isCap α hαL hR hbox level hab hterminal)
-  · exact Finset.sum_le_sum_of_subset_of_nonneg hFG fun j _ _ =>
-      middleOuterMass_nonneg hU.isCap α (dyadic level) j
-  · exact Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _) fun j _ _ =>
-      selectionDefect_nonneg target U α level hc j
+  refine (hU.curvature_set_le_of_atoms hc (Ioc_subset_Icc_self.trans hupper)
+    (fun ht => htop (Ioc_subset_Icc_self ht)) Ioc_subset_Icc_self
+    (innerSourceMass_nonneg hU.isCap α hαL _) fun j _ => hU.curvature_atom_le_mass hc j).trans ?_
+  gcongr ?_ + _ + _
+  exact innerSourceMass_sum_interval_le hU.isCap α hαL hR hbox level hab hterminal
 
 end PartialGrid
 

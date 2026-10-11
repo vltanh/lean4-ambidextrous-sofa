@@ -13,7 +13,8 @@ is the maximum of the unused gap and the first-zero root, followed by
 the quadratic decay length. The exact scalar bounds control both terms
 of that maximum. The actual affine cutoff is then spliced to the proved
 zero-source region, with its single endpoint discarded only as a
-Lebesgue null set.
+Lebesgue null set. The envelope is stated for any terminal payment and
+any deadline and decay length that bound the scalar roots.
 -/
 
 noncomputable section
@@ -64,7 +65,7 @@ theorem ae_linear_excess_of_proper_scalar_bounds
   obtain ⟨⟨-, -, hx2⟩, ⟨-, -, hy2⟩, ⟨-, -, hz2⟩⟩ := properExcess_roots_bounds hd hd1 he0 he1 hδ0 hδ1
   have hY : 2 < properEnergyRoot d e δ := (Real.lt_sqrt (by norm_num)).2 (by linarith)
   have hell0 : 0 ≤ properDecayLength d e δ := sub_nonneg.2 (Real.le_sqrt_of_sq_le (by linarith))
-  have hell := properDecayLength_lt_fifty_two_hundredths hd hd1 he0 he1 hδ0 hδ1
+  have hell := properDecayLength_lt_fifty_two_hundredths hd hd1 he0 he1 hδ1
   have hτ : properFirstZeroTime d e ≤ d := sub_le_self _ (Real.sqrt_nonneg _)
   have hquad := properFirstZeroTime_quadratic (hx2 ▸ sq_nonneg _)
   -- The first zero `τ` and the quadratic deadline `max a τ + ell` of the excess.
@@ -86,41 +87,8 @@ theorem ae_linear_excess_of_proper_scalar_bounds
 
 end CornerArcDynamics
 
-theorem IsJointCapMaximizer.properReflected_ae_near_full_excess_bound_of_tail_regime
-    {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hregime : ProperTailRegime U α m)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
-    (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
-    (hsharp : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
-    (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
-      (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) (hκ : terminalSlope α ≤ 1 / 8) :
-    ∀ᵐ r ∂volume.restrict (Ioo (Real.pi / 2 - α) (Real.pi / 2)),
-      max (properReflectedFirstDensity m ρ r - 1) 0 ≤
-        (19 / 25 : ℝ) * max (73 / 100 - r) 0 := by
-  obtain ⟨hd0, hd1, he0, he1⟩ := hU.centered_terminal_reflected_near_full_parameters_of_tail_regime
-    hregime hproper hl hr hheight haffine hκ
-  have hgap := (terminal_near_full_bounds hU.angle_pos hproper hκ).2.2.1
-  have harms := hU.properReflected_arm_bounds_of_tail_regime hregime hproper hheight haffine hρ
-    hρ0 hρK heq
-  have hentry := hU.properReflected_entry_quadratic_of_tail_regime hregime hproper hl hr hheight
-    haffine hρ hρ0 hρK heq
-  exact (hU.properReflected_cornerArcDynamics_of_tail_regime hregime hproper hl hr hheight haffine
-    hρ hρ0 hρK hsharp heq).ae_linear_excess_of_proper_scalar_bounds (δ := 1 / 480)
-    (ellMax := 43 / 100) (fun t ht => (harms t ht).1) (fun hp => (hentry hp).1)
-    (fun hp => (hentry hp).2) ((hU.properReflected_densities_zero_after_active hproper hl hr
-      hheight haffine hρ hρ0 heq).mono fun _ h => h.1) hd0 (by linarith) he0 (by linarith)
-    (by norm_num) (by norm_num) (by linarith)
-    (hU.properReflected_initial_energy_lt_near_full_payment_of_tail_regime hregime hproper hl hr
-      hheight haffine hρ hρ0 hρK heq hκ).le
-    (fun hd => (properExcessEnd_lt_near_full hd hd1.le he0 he1.le (by norm_num) le_rfl).le)
-    (fun hd => (properDecayLength_lt_near_full hd hd1.le he0 (by linarith) (by norm_num)
-      le_rfl).le) (by linarith)
-
+/-- The reflected excess envelope of an actual proper tail, for any terminal payment `δ` and any
+deadline `B` and decay length `ellMax` that bound the exact scalar roots. -/
 theorem IsJointCapMaximizer.properReflected_ae_excess_bound_of_tail_regime
     {U : Set Plane} {α C m c K : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
     (hregime : ProperTailRegime U α m)
@@ -133,36 +101,33 @@ theorem IsJointCapMaximizer.properReflected_ae_excess_bound_of_tail_regime
     (hsharp : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))
     (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
       (volume.restrict (regularProperCurvatureDomain α m)).withDensity
-        (fun t => ENNReal.ofReal (ρ t))) :
+        (fun t => ENNReal.ofReal (ρ t)))
+    (δ B ellMax : ℝ) (hδ0 : 0 ≤ δ) (hδ1 : δ ≤ 1 / 30) (hgap : Real.pi / 2 - α + ellMax ≤ B)
+    (hpay : terminalImpulseEnergyChange (terminalReflectedSpan U α) (terminalReflectedHeight U α)
+      α (MovingSofaOptimality.sigmaAt U α) < δ)
+    (hstop : 199 / 100 ≤ terminalReflectedSpan U α →
+      properExcessEnd (terminalReflectedSpan U α) (terminalReflectedHeight U α) δ ≤ B)
+    (hdecay : 199 / 100 ≤ terminalReflectedSpan U α →
+      properDecayLength (terminalReflectedSpan U α) (terminalReflectedHeight U α) δ ≤ ellMax) :
     ∀ᵐ r ∂volume.restrict (Ioo (Real.pi / 2 - α) (Real.pi / 2)),
-      max (properReflectedFirstDensity m ρ r - 1) 0 ≤
-        (19 / 25 : ℝ) * max (91 / 100 - r) 0 := by
+      max (properReflectedFirstDensity m ρ r - 1) 0 ≤ (19 / 25 : ℝ) * max (B - r) 0 := by
   obtain ⟨hd0, he0, hcase⟩ := hU.centered_terminal_reflected_parameters_of_tail_regime hregime
     hproper hl hr hheight haffine
-  have hd1 : terminalReflectedSpan U α ≤ 2311 / 1000 := by rcases hcase with h | h <;> linarith
-  have he1 : terminalReflectedHeight U α ≤ 1 := by rcases hcase with h | h <;> linarith
-  have hgap : Real.pi / 2 - α < 3 / 8 := by
-    rw [terminal_gap_eq_arctan_slope hU.angle_pos hproper]
-    exact (Real.arctan_lt_self (terminalSlope_pos hU.angle_pos hproper)).trans
-      (hU.proper_terminalSlope_lt_three_eighths hproper)
-  have harms := hU.properReflected_arm_bounds_of_tail_regime hregime hproper hheight haffine hρ
-    hρ0 hρK heq
+  have harms := hU.properReflected_arm_bounds_of_tail_regime hregime hproper haffine hρ hρ0 hρK heq
   have hentry := hU.properReflected_entry_quadratic_of_tail_regime hregime hproper hl hr hheight
     haffine hρ hρ0 hρK heq
+  -- The clipped energy after the terminal impulse is the free-circle energy plus its change.
+  have henergy := (clippedCornerEnergy_le_initialFloorEnergy (properReflectedP U m ρ)
+    (properReflectedQ U m ρ) (Real.pi / 2 - α)).trans_eq
+      (hU.properReflected_initial_energy_of_tail_regime hregime hproper hheight haffine hρ hρ0 hρK
+        heq)
   exact (hU.properReflected_cornerArcDynamics_of_tail_regime hregime hproper hl hr hheight haffine
-    hρ hρ0 hρK hsharp heq).ae_linear_excess_of_proper_scalar_bounds (δ := 1 / 30)
-    (ellMax := 13 / 25) (fun t ht => (harms t ht).1) (fun hp => (hentry hp).1)
-    (fun hp => (hentry hp).2) ((hU.properReflected_densities_zero_after_active hproper hl hr
-      hheight haffine hρ hρ0 heq).mono fun _ h => h.1) hd0 hd1 he0 he1 (by norm_num) le_rfl
-    (by linarith) (hU.properReflected_initial_energy_lt_payment_of_tail_regime hregime hproper hl
-      hr hheight haffine hρ hρ0 hρK heq).le
-    (fun hd => by
-      rcases hcase with h | h
-      · exact (properExcessEnd_lt_negative_middle hd h.2.1.le he0 h.2.2.le (by norm_num)
-          le_rfl).le.trans (by norm_num)
-      · exact (properExcessEnd_lt_nonnegative_middle hd h.2.1.le he0 h.2.2.le (by norm_num)
-          le_rfl).le)
-    (fun hd => (properDecayLength_lt_fifty_two_hundredths hd hd1 he0 he1 (by norm_num)
-      le_rfl).le) (by linarith)
+    hρ hρ0 hρK hsharp heq).ae_linear_excess_of_proper_scalar_bounds (fun t ht => (harms t ht).1)
+    (fun hp => (hentry hp).1) (fun hp => (hentry hp).2)
+    ((hU.properReflected_densities_zero_after_active hproper hl hr hheight haffine hρ hρ0
+      heq).mono fun _ h => h.1) hd0 (hcase.elim (fun h => by linarith only [h.2.1]) (·.2.1.le))
+    he0 (hcase.elim (·.2.2.le) fun h => by linarith only [h.2.2]) hδ0 hδ1
+    (by linarith only [hU.angle_mem.1, Real.pi_le_four, hd0]) (by linarith only [henergy, hpay])
+    hstop hdecay hgap
 
 end AmbidextrousSofa

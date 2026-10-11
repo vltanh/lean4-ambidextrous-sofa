@@ -9,10 +9,11 @@ public import AmbidextrousSofa.Analysis.NegativeCompletion
 
 The terminal comparison needs only the two geometric conclusions left
 after same-cap negative completion: a negative middle normal remains
-unvisited, and the right middle height exceeds the terminal sine. A
-largest-angle selection supplies these conclusions for the value
-reduction. Full-cap affine rigidity supplies the same conclusions for
-an individual equality cap, without an extremal-angle selection.
+unvisited, and the right middle height exceeds the terminal sine. They
+hold as soon as the full-angle joint maximum produced by completion is
+excluded. A largest-angle selection excludes it for the value reduction.
+Full-cap affine rigidity excludes it for an individual equality cap,
+without an extremal-angle selection.
 -/
 
 noncomputable section
@@ -32,13 +33,25 @@ theorem ProperTailRegime.terminal_lt_affineNormal
   · exact (h.negative hm).1
   · unfold affineNormalAngle; linarith [Real.arctan_nonneg.mpr hm]
 
+/-- Same-cap completion of a negative middle produces a joint maximum at the full angle, so the
+tail regime holds whenever that maximum is excluded. -/
+theorem IsJointCapMaximizer.properTailRegime_of_not_full
+    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
+    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = m * x + c)
+    (hfull : m < 0 → ¬ IsJointCapMaximizer U (Real.pi / 2)) : ProperTailRegime U α m :=
+  ⟨fun hm => (not_or.mp fun hcomplete => hfull hm (hU.full_jointMaximizer_of_negative_completion
+    hproper hheight hm haffine hcomplete)).imp not_le.mp not_le.mp⟩
+
 theorem IsJointCapMaximizer.properTailRegime_of_largest
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
     (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
     (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) : ProperTailRegime U α m :=
-  ⟨fun hm => hU.negative_remaining_tail_geometry hLargest hproper hheight hm haffine⟩
+  hU.properTailRegime_of_not_full hproper hheight haffine fun _ hfull =>
+    hproper.not_ge (hLargest U _ hfull)
 
 -- Only `hregime` and `hm` are used; the other hypotheses stay in the statement for the callers.
 set_option linter.unusedVariables false in
@@ -59,9 +72,8 @@ theorem IsJointCapMaximizer.properTailRegime_of_full_affine_rigidity
     (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c)
-    (hrigid : IsFullCapMaximizer U → m = 0) : ProperTailRegime U α m := by
-  refine ⟨fun hm => (not_or.mp fun hcomplete => hm.ne (hrigid ?_)).imp not_le.mp not_le.mp⟩
-  have hfull := hU.full_jointMaximizer_of_negative_completion hproper hheight hm haffine hcomplete
-  exact ⟨hfull.isCap, fun V hV => hfull.score_le hV ⟨by linarith [Real.pi_pos], le_rfl⟩⟩
+    (hrigid : IsFullCapMaximizer U → m = 0) : ProperTailRegime U α m :=
+  hU.properTailRegime_of_not_full hproper hheight haffine fun hm hfull => hm.ne
+    (hrigid ⟨hfull.isCap, fun V hV => hfull.score_le hV ⟨by linarith [Real.pi_pos], le_rfl⟩⟩)
 
 end AmbidextrousSofa

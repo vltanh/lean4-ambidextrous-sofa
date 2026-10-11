@@ -24,14 +24,8 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
--- Only `hregime` and `hproper` are used; the other hypotheses stay in the statement for callers.
-set_option linter.unusedVariables false in
-theorem IsJointCapMaximizer.proper_first_arc_subset_regular_of_tail_regime
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hregime : ProperTailRegime U α m)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
+theorem ProperTailRegime.first_arc_subset_regular {U : Set Plane} {α m : ℝ}
+    (hregime : ProperTailRegime U α m) (hproper : α < Real.pi / 2) :
     Ioo (0 : ℝ) α ⊆ regularProperCurvatureDomain α m := fun t ht =>
   ⟨mem_regularCurvatureDomain_iff.mpr ⟨ht.1, by linarith [ht.2, Real.pi_pos],
     (ht.2.trans hproper).ne, (affineNormal_coefficient_pos_before ht.1.le
@@ -42,19 +36,14 @@ theorem regularCompanionDomain_subset_regularProperCurvatureDomain
     regularCompanionDomain m ⊆ regularProperCurvatureDomain α m := fun _ ht =>
   ⟨regularCompanionDomain_subset_regularCurvatureDomain m ht, (hproper.trans ht.1.1).ne'⟩
 
-theorem IsJointCapMaximizer.proper_first_density_of_regular_of_tail_regime
-    {U : Set Plane} {α m c : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
-    (hregime : ProperTailRegime U α m)
-    (hproper : α < Real.pi / 2) (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c)
+theorem ProperTailRegime.first_density_of_regular {U : Set Plane} {α m : ℝ} {ρ : ℝ → ℝ}
+    (hregime : ProperTailRegime U α m) (hproper : α < Real.pi / 2)
     (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
       (volume.restrict (regularProperCurvatureDomain α m)).withDensity
         (fun t => ENNReal.ofReal (ρ t))) :
     (upperCurvature U).restrict (Ioo (0 : ℝ) α) =
       (volume.restrict (Ioo (0 : ℝ) α)).withDensity (fun t => ENNReal.ofReal (ρ t)) :=
-  restrict_withDensity_of_subset heq measurableSet_Ioo
-    (hU.proper_first_arc_subset_regular_of_tail_regime hregime hproper hheight haffine)
+  restrict_withDensity_of_subset heq measurableSet_Ioo (hregime.first_arc_subset_regular hproper)
 
 theorem IsJointCapMaximizer.proper_leftCompanion_density_of_regular
     {U : Set Plane} {α m c : ℝ} {ρ : ℝ → ℝ} (hU : IsJointCapMaximizer U α)
@@ -80,8 +69,8 @@ theorem IsJointCapMaximizer.proper_first_wing_initial_curvature_zero
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
     upperCurvature U (Ioo (0 : ℝ) (Real.arctan m)) = 0 := by
-  have hb := hU.centered_proper_half_width_bounds_of_affine_nonneg hproper
-    (hl.trans (neg_mul _ _)) hr hheight hm haffine
+  have hb :=
+    hU.centered_proper_half_width_bounds hproper (hl.trans (neg_mul _ _)) hr hheight haffine
   have hmid : middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
     rw [middleHalfInterval, hl, hr]; congr 1 <;> ring
   have haff := hmid ▸ haffine
@@ -94,7 +83,7 @@ theorem IsJointCapMaximizer.proper_first_wing_initial_curvature_zero
       rw [eq_div_iff (by linarith)]
       linarith [haff (-C) ⟨le_rfl, by linarith⟩, haff C ⟨by linarith, le_rfl⟩]
     exact hmC ▸ canonical_width_add_slope_lt_one (by linarith) (by linarith)
-      (by simpa only [show -(2 * C) / 2 = -C by ring] using hb.2.2)
+      (by simpa only [show -(2 * C) / 2 = -C by ring] using hb.2.2 hm)
   have hmα : Real.arctan m < α := by
     simpa [affineNormalAngle] using hU.middle_normal_lt_terminal_companion haffine
   refine le_antisymm ((measure_mono fun t ht => ?_).trans_eq

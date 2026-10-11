@@ -9,8 +9,9 @@ public import AmbidextrousSofa.Geometry.BarrierAnalysis
 # Exact integrals of positive tents and ramps
 
 Squaring the positive part removes the derivative corner at zero. Its
-ordinary derivative gives exact formulas for clipped affine ramps and for
-the two-ray tent on any interval containing its apex. These formulas retain
+ordinary derivative gives exact formulas for clipped affine ramps; the
+falling ramp is the reflection of the rising one. Together they give the
+two-ray tent on any interval containing its apex. These formulas retain
 both tails; an absent tail is removed only after its sign is proved.
 -/
 
@@ -38,12 +39,8 @@ theorem integral_positive_ramp_add (h a b : ℝ) :
 
 theorem integral_positive_ramp_sub (h a b : ℝ) :
     (∫ x in a..b, max (h - x) 0) = ((max (h - a) 0) ^ 2 - (max (h - b) 0) ^ 2) / 2 := by
-  have hderiv (x : ℝ) : HasDerivAt (fun t : ℝ => -(max (h - t) 0) ^ 2 / 2) (max (h - x) 0) x := by
-    convert ((hasDerivAt_positivePart_square (h - x)).comp x
-      ((hasDerivAt_id x).const_sub h)).neg.div_const 2 using 1 <;> norm_num
-  rw [intervalIntegral.integral_eq_sub_of_hasDerivAt (fun x _ => hderiv x)
-    (Continuous.intervalIntegrable (by fun_prop) a b)]
-  ring
+  simpa only [← sub_eq_add_neg] using (intervalIntegral.integral_comp_neg (a := a) (b := b)
+    (f := fun x => max (h + x) 0)).trans (integral_positive_ramp_add h (-b) (-a))
 
 theorem integral_positive_tent {a b d : ℝ} (had : a ≤ d) (hdb : d ≤ b) (h : ℝ) :
     (∫ x in a..b, max (h - |x - d|) 0) =

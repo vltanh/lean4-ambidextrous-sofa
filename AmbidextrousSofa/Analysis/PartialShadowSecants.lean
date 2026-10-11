@@ -75,10 +75,6 @@ theorem mesh_half_tan_nonneg (α : TerminalAngle) (n : ℕ) :
   rw [MovingSofaOptimality.tan_half_mul_sin (mesh_half_cos_ne α n)]
   linarith [Real.cos_le_one (mesh α n)]
 
-private theorem quarter_le {U : Set Plane} (hU : IsDownwardCap U) :
-    horizontalLeft U + capWidth U / 4 ≤ horizontalRight U - capWidth U / 4 := by
-  linarith [hU.capWidth_nonneg, show capWidth U = horizontalRight U - horizontalLeft U from rfl]
-
 theorem IsSelectedPolygon.positive_shadow_atoms {target U : Set Plane}
     {a b coefficient : ℝ} {level : ℕ}
     (hU : IsSelectedPolygon target α hαL a b level coefficient U) (hc : 0 ≤ coefficient)
@@ -93,7 +89,7 @@ theorem IsSelectedPolygon.positive_shadow_atoms {target U : Set Plane}
         selectionDefect target U α level coefficient (scaledSource α (dyadic level) (Sum.inr t)) :=
   have h := positive_shadow_source_bounds (hαL := hαL) hU.isCap (dyadic level) t
     (mesh_cos_pos α level) (mesh_sin_pos α level) (mesh_half_cos_ne α level)
-    (quarter_le hU.isCap) (dyadic_neighbors α level t).1 (dyadic_neighbors α level t).2 hmargin
+    hU.isCap.quarter_le (dyadic_neighbors α level t).1 (dyadic_neighbors α level t).2 hmargin
   ⟨hU.curvature_atom_le_error_of_source_empty hc _ h.1,
     hU.curvature_atom_le_half_of_self_interval hc _ (mesh_half_tan_nonneg α level) h.2⟩
 
@@ -110,7 +106,7 @@ theorem IsSelectedPolygon.negative_shadow_atoms {target U : Set Plane}
         selectionDefect target U α level coefficient (scaledSource α (dyadic level) (Sum.inl t)) :=
   have h := negative_shadow_source_bounds (hαL := hαL) hU.isCap (dyadic level) t
     (mesh_cos_pos α level) (mesh_sin_pos α level) (mesh_half_cos_ne α level)
-    (quarter_le hU.isCap) (dyadic_neighbors α level t).1 (dyadic_neighbors α level t).2 hmargin
+    hU.isCap.quarter_le (dyadic_neighbors α level t).1 (dyadic_neighbors α level t).2 hmargin
   ⟨hU.curvature_atom_le_error_of_source_empty hc _ h.1,
     hU.curvature_atom_le_half_of_self_interval hc _ (mesh_half_tan_nonneg α level) h.2⟩
 

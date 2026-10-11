@@ -12,11 +12,9 @@ actual endpoints. Their first walls are dominated by the old terminal
 wall or by zero whenever the middle normal has already been visited, or
 the lower middle endpoint is at most the terminal sine.
 
-This compares the full and partial scalar objectives on the same cap.
-For a joint maximizer selected with largest terminal angle, completion
-would produce another joint maximizer at the full angle. Thus the two
-remaining strict negative-tilt conditions follow directly from the actual
-selection property, without presupposing the global full-cap value bound.
+This compares the full and partial scalar objectives on the same cap:
+completion of a joint maximizer produces another joint maximizer at the
+full angle, without presupposing the global full-cap value bound.
 -/
 
 noncomputable section
@@ -122,21 +120,5 @@ theorem IsJointCapMaximizer.full_jointMaximizer_of_negative_completion
     (integrableOn_partialBarrier_Icc hU.isCap.isCompact hU.angle_pos hαL.le _ _) ?_) _
   filter_upwards [ae_restrict_mem (measurableSet_middleHalfInterval _ _)] with x hx
   exact hU.full_niche_le_partial_of_negative_completion hαL hheight hm haffine hcomplete hx
-
-/-- A largest-angle joint maximizer in the remaining negative-tilt branch
-has not yet visited its middle normal and has lower middle height strictly
-above the terminal sine. Both conclusions follow from proved same-cap
-completion, not from a presumed terminal differential law. -/
-theorem IsJointCapMaximizer.negative_remaining_tail_geometry
-    {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hLargest : ∀ V : Set Plane, ∀ β : ℝ, IsJointCapMaximizer V β → β ≤ α)
-    (hαL : α < Real.pi / 2) (hheight : capHeight U = 1) (hm : m < 0)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    α < affineNormalAngle m ∧
-      Real.sin α < capRoof U (horizontalRight U - capWidth U / 4) := by
-  rw [← not_le, ← not_le, ← not_or]
-  exact fun hcomplete => hαL.not_ge (hLargest U _
-    (hU.full_jointMaximizer_of_negative_completion hαL hheight hm haffine hcomplete))
 
 end AmbidextrousSofa
