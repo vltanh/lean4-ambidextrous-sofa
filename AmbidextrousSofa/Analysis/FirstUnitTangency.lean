@@ -64,7 +64,7 @@ theorem quarter_sin_cos_pos {t : ℝ} (ht : t ∈ Ioo 0 (Real.pi / 2)) :
     Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩⟩
 
 /-- The quarter points and the middle half of the horizontal projection `[-2C, 2C]`. -/
-theorem centered_quarter_points {U : Set Plane} {C : ℝ}
+theorem centered_capWidth_quarter_points {U : Set Plane} {C : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C) :
     horizontalLeft U + capWidth U / 4 = -C ∧ horizontalRight U - capWidth U / 4 = C ∧
       middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
@@ -87,7 +87,7 @@ theorem IsFullCapMaximizer.low_wing_cut {U : Set Plane} (hU : IsFullCapMaximizer
   have ha : -C ∈ horizontalProjection U := by rw [hP, hl, hr]; constructor <;> linarith only [hC]
   have hb : C ∈ horizontalProjection U := by rw [hP, hl, hr]; constructor <;> linarith only [hC]
   have htop := hU.isCap.top_leftCompanionCap_of_positive_affine ha hb (by linarith only [hC])
-    hmpos ((centered_quarter_points hl hr).2.2 ▸ haffine)
+    hmpos ((centered_capWidth_quarter_points hl hr).2.2 ▸ haffine)
   rw [hlow] at htop
   refine ⟨ha, hb, hU.isCap.leftCompanionCap ha, htop.1, htop.2, ?_⟩
   have hab : horizontalLeft U ≤ -C := by rw [hl]; linarith only [hC]
@@ -123,13 +123,13 @@ include P
 theorem C_pos : 0 < C := by linarith only [P.hC0]
 
 theorem left_quarter : horizontalLeft U + capWidth U / 4 = -C :=
-  (centered_quarter_points P.hl P.hr).1
+  (centered_capWidth_quarter_points P.hl P.hr).1
 
 theorem right_quarter : horizontalRight U - capWidth U / 4 = C :=
-  (centered_quarter_points P.hl P.hr).2.1
+  (centered_capWidth_quarter_points P.hl P.hr).2.1
 
 theorem middle : middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C :=
-  (centered_quarter_points P.hl P.hr).2.2
+  (centered_capWidth_quarter_points P.hl P.hr).2.2
 
 end FirstUnitSetting
 
@@ -176,7 +176,7 @@ theorem fullTiltedSupportQuarterPair_tangent_traces {C h : ℝ}
       q (Real.pi / 2) = -capRoof U (horizontalLeft U) := by
   obtain ⟨hf0, hg0, hfL, hgL, hfD0, hgD0, hfDL, hgDL⟩ :=
     fullTiltedSupportQuarterPair_traces hU hm haffine hρ hρ0 hρK heq hmpos
-  rw [(centered_quarter_points hl hr).1] at hg0 hgD0
+  rw [(centered_capWidth_quarter_points hl hr).1] at hg0 hgD0
   simp only [firstTangentPoint, secondTangentPoint, Reference.supportPoint,
     companionSupportPoint_coordinates, supportP, supportQ, hf0, hg0, hfL, hgL, hfD0, hgD0, hfDL,
     hgDL, hlow, hl, hr, hheight, Real.cos_zero, Real.sin_zero, Real.cos_pi_div_two,

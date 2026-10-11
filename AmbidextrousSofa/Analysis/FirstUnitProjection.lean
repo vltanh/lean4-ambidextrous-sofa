@@ -73,7 +73,7 @@ theorem fullTiltedSupportQuarterPair_positive_middle_iff {C h x : ℝ}
     hU.low_wing_cut hl hr (by linarith only [hC]) hmpos hheight hlow haffine
   refine ⟨fun hpos => not_le.mp fun hz => hpos.ne'
     (hU.isCap.sweptNiche_eq_zero_of_le_low_wing_zero ha hb (by linarith only [hC])
-      ((centered_quarter_points hl hr).2.2 ▸ haffine) hx.2.le hz),
+      ((centered_capWidth_quarter_points hl hr).2.2 ▸ haffine) hx.2.le hz),
     fun hz => ?_⟩
   by_cases hsplit : x ≤ 1 - 2 * C
   · obtain ⟨t, ht, hsecond⟩ :=

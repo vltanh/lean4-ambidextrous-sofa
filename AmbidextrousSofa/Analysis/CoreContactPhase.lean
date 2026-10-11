@@ -69,7 +69,7 @@ theorem fullTiltedSupportQuarterPair_positive_attachedCorner_contact_mem_closed_
     hU.centered_positive_tilt_parameters hl hr hheight hmpos haffine
   have hmt : Real.arctan m ≤ t := le_of_not_gt fun h => hy.not_gt
     (hU.isCap.attachedCorner_neg_before_positive_affine hl hr (by linarith) hsmall
-      ((centered_quarter_points hl hr).2.2 ▸ haffine) hhigh ⟨ht.1, h⟩)
+      ((centered_capWidth_quarter_points hl hr).2.2 ▸ haffine) hhigh ⟨ht.1, h⟩)
   exact ⟨hmt, mem_Icc_of_not_same_sign hphase ht
     (fullTiltedSupportQuarterPair_not_same_sign_at_attachedCorner_contact_after_affine
       hU hm haffine hρ hρ0 hρK heq ht hmt hderiv hcontact)⟩
