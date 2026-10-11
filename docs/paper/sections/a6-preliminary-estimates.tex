@@ -1,0 +1,497 @@
+\section{Preliminary width and tilt estimates}\label{app:preliminary-estimates}
+
+The estimates here use only the tents at $\pi/8,\pi/4,3\pi/8$.
+They apply to a full niche and to any larger partial barrier. In a
+partial-turn comparison a horizontal reflection also reflects the
+actual barrier; it need not produce another partial-turn objective.
+
+Throughout this appendix put
+\[
+ r=\sqrt2,\quad k=r-1,\quad c=\cos(\pi/8),\quad s=\sin(\pi/8).
+\]
+Useful exact identities and bounds are
+\begin{equation}\label{eq:preliminary-constants}
+ \begin{gathered}
+ k^2=1-2k,\quad s/c=k,\quad k+1/k=2r,\quad
+ 1/s+1/c=4c,\quad 1/s-1/c=4s,\\
+ \frac25<k<\frac{29}{70},\quad k<\frac{169}{408},\quad s>\frac38.
+ \end{gathered}
+\end{equation}
+The rational square-root comparisons follow by squaring positive
+sides; for example $577^2-2\cdot408^2=1$ proves the last upper
+bound for $k$.
+
+\subsection{Short caps, including a positive width gap}
+
+\begin{lemma}[Short three-tent bound]\label{lem:preliminary-short}
+Let $U$ have height one and projection $[-a,a]$, with
+$0<a\le1001/1000$. Suppose its roof $A$ is affine on
+$J=[-a/2,a/2]$, with $A(-a/2)=1-h$, $A(a/2)=1$, $0\le h<1$.
+If a nonnegative barrier $B$ dominates the three actual tents, then
+\[
+ \int_{[-a,a]\setminus J}A-\int_JB<\frac{41}{50}.
+\]
+\end{lemma}
+\begin{proof}
+Raise the left exterior roof by $h$, put the middle roof at height
+one, and retain the right roof. The resulting roof $\widehat A$ is
+concave: its left slopes are nonnegative and its right slopes are
+nonpositive. It defines a height-one cap $\widehat U$, and its
+exterior area exceeds the original by $ah/2$.
+
+The first-quarter supports are unchanged, since the old point
+$(a/2,1)$ dominates every raised left point in those directions.
+If $\widehat G(t)=h_{\widehat U}(t+\pi/2)$, then
+\[
+ h_U(t+\pi/2)=
+ \max\{\widehat G(t)-h\cos t,\ \cos t-(a/2)\sin t\}.
+\]
+The wall of the second term is nonpositive on $J$. Thus the
+positive two-wall tent of $U$ is obtained from that of $\widehat U$
+by lowering its companion wall by $h$.
+
+Put
+\[
+ u=rh_{\widehat U}(\pi/4)-1,\quad
+ v=rh_{\widehat U}(3\pi/4)-1,\quad M_0=(u+v)/2.
+\]
+The two middle points give $a/2\le u,v\le a$. The lifted cap is
+below $A_0(x)=\min(1,1+u-x,1+v+x)$. Write
+$D=\int_{[-a,a]\setminus J}(A_0-\widehat A)\ge0$.
+The diagonal tent is $(\min(u-k-x,v-h-k+x))_+$.
+If the proposed score is at least $41/50$, its exterior area
+already gives $a\ge41/50$ and $h\le362/1001<a/2$, so the tent's
+apex lies in $J$. Exact integration then gives
+\begin{equation}\label{eq:short-relaxation}
+ \begin{split}
+ P\le F_h(a,u,v)-D,\qquad
+ F_h={}&a-\frac{(a-u)^2+(a-v)^2}{2}-\frac{ah}{2}\\
+ &-(M_0-h/2-k)_+^2\\
+ &+\frac{(u-k-a/2)_+^2+(v-h-k-a/2)_+^2}{2}.
+ \end{split}
+\end{equation}
+The preliminary restrictions also give $a-h>k$. For fixed $a,h$
+in this competitive range, $F_h$ is concave on $[a/2,a]^2$. In the
+positive-apex region its Hessian has diagonal entries $-3/2$
+plus the corresponding clipping indicator, and off-diagonal
+entries $-1/2$. In the other region the clipping terms vanish
+and the Hessian is $-\operatorname{Id}$. The first derivatives
+agree across the interfaces. Its unclipped interior critical point
+is $u=v=(a+k+h/2)/2$. Therefore, with
+$B_0(a)=a-(a-k)^2/2$,
+\begin{equation}\label{eq:short-diagonal-maximum}
+ F_h\le B_0(a)-kh/2-h^2/8.
+\end{equation}
+Here $B_0$ increases up to $a=1+k$. Since $B_0(9/10)<41/50$,
+the hypothetical high score forces $a>9/10$. Also
+\[
+ B_0(1001/1000)=\frac{2001}{1000}k-\frac1{2000000}.
+\]
+At $h=1/23$, using $k<29/70$, the right side of
+\cref{eq:short-diagonal-maximum} is less than
+\[
+ \frac{6071014497}{7406000000}<\frac{41}{50}.
+\]
+Consequently
+\begin{equation}\label{eq:short-stability}
+ a>9/10,\qquad h<1/23,\qquad D<9/1000.
+\end{equation}
+
+Set $t_0=323/1000$. Maximizing \cref{eq:short-relaxation}
+under $u\ge a/2+t_0+h/4$ gives the constrained critical point
+\[
+ u=a/2+t_0+h/4,\qquad
+ v=a/2+(2k-t_0)/3+h/4.
+\]
+Both clips vanish there. The $v$ derivative is zero and the $u$
+derivative is $(2k-4t_0)/3<0$, so concavity proves this is the
+constrained maximum. Its value is at most
+\[
+ B_0(1001/1000)-\frac23(t_0-k/2)^2
+ =\frac{7649}{3000}k-\frac{1417319}{6000000}<\frac{41}{50}.
+\]
+The same calculation with the two coordinates exchanged gives
+\[
+ u-a/2<t_0+h/4,\qquad v-a/2<t_0+h/4.
+\]
+The KKT points lie in the square because $a>9/10$ and $h<1/23$.
+These inequalities remove both clips in the actual diagonal tent.
+The bounds $a>9/10$ and $h<1/23$ also make its apex positive.
+
+Put $m=M_0-h/4$. In this regime
+\[
+ F_h=a-(a-m)^2-(m-k)^2-\frac{(u-v)^2}{4}-kh/2-h^2/8.
+\]
+The completion $a-(a-m)^2\le m+1/4$ excludes $m\le11/20$.
+For $11/20<m\le16/25$, the symmetric part increases with both
+$a\le1001/1000$ and $m\le16/25$, and its upper value is
+\[
+ \frac{82}{25}k-\frac{538921}{1000000}
+ <\frac{5739553}{7000000}<\frac{41}{50}.
+\]
+Thus $m>16/25$.
+
+We now pay for two genuine extra tents. Define the lifted support
+deficits
+\[
+ \delta_L=c+sv-h_{\widehat U}(5\pi/8),\qquad
+ \delta_R=c+su-h_{\widehat U}(3\pi/8).
+\]
+They are nonnegative and at most $s(v-a/2),s(u-a/2)$.
+A support cut at $(-v,1)$ has horizontal legs
+$\delta_L/s$ and $\delta_L/(c-s)$. Its whole charged triangle
+has area $K\delta_L^2$, where $K=1/k$.
+If the latter leg exceeded $a-v$, the cut with
+$\delta_0=(c-s)(a-v)$ would already give
+$D\ge(a-v)^2/r$. But
+\[
+ a-v>a/2-t_0-h/4>23/200,
+ \qquad (23/200)^2/r>3703/400000>9/1000,
+\]
+contradicting \cref{eq:short-stability}. The right cut is identical.
+They lie in separate wings, so
+\begin{equation}\label{eq:short-cut-payment}
+ D\ge K(\delta_L^2+\delta_R^2).
+\end{equation}
+
+Put
+\[
+ \begin{gathered}
+ \eta=2/25,\quad \Gamma=Kc^2=\frac{4+3r}{4},\quad
+ \eta_L=\eta-(1-k)h,\\
+ E_L=(\eta_L-\delta_L/c)_+,\quad E_R=(\eta-\delta_R/c)_+.
+ \end{gathered}
+\]
+The identities in \cref{eq:preliminary-constants} imply
+\[
+ 1-1/c+k^2>\eta,\qquad 1/c+K\eta<32/25.
+\]
+At the left zero $x_0=k-v+h$ of the diagonal tent, the actual
+$\pi/8$ companion wall has height at least $E_L$.
+A point attaining $u$ has $x+y=1+u$ and $y\le1$, and lies on
+the unchanged right wing. Its first-wall lower bound is
+$1-1/s+(u-x)/k$. This dominates the additional ascending wall
+up to $x_0+E_L/(1-k)$, because
+\[
+ 2M_0-h>32/25-h/2>1/c+KE_L.
+\]
+That endpoint is before the diagonal apex: use
+$k+\eta/(1-k)<99/175$ and $m>16/25$.
+In the reflected coordinate, an attaining point for $v$ lowered
+by $h$ supplies the other companion wall. The corresponding
+condition is $2M_0-kh>32/25>1/c+KE_R$.
+This gives two disjoint additional triangles, with full areas
+$\Gamma E_L^2,\Gamma E_R^2$. Only their exterior tips can leave
+$J$. Each omitted horizontal length is at most
+$L_0+h/4$, where
+\[
+ L_0=t_0-k+\eta/k=\frac{483-920k}{1000}.
+\]
+The two omitted areas sum to at most $k(L_0+h/4)^2$. Hence
+\[
+ \int_J B\ge N_{45}+\Gamma(E_L^2+E_R^2)-k(L_0+h/4)^2,
+\]
+where $N_{45}$ is the diagonal-tent integral used above.
+This inequality remains valid when one of the peaks is zero.
+
+For $\eta_i,\delta\ge0$, completing a square gives
+\[
+ K\delta^2+\Gamma(\eta_i-\delta/c)_+^2\ge\Gamma\eta_i^2/2.
+\]
+Combine this with \cref{eq:short-cut-payment} to obtain
+\[
+ P\le B_0(1001/1000)-kh/2-h^2/8
+       -\frac\Gamma2\bigl[(\eta-(1-k)h)^2+\eta^2\bigr]
+       +k(L_0+h/4)^2.
+\]
+Its coefficient of $h$ is $(1403/2000)k-19/50<0$, and its
+quadratic coefficient is $-1/8-\Gamma(1-k)^2/2+k/16<0$.
+Its largest value for $h\ge0$ is consequently at zero, and equals
+\[
+ \frac{8238929}{1000000}k-\frac{5185441}{2000000}
+ <\frac{334549037}{408000000}<\frac{41}{50}.
+\]
+The final gap is $10963/408000000>0$, contradicting the high
+score and proving the lemma.
+\end{proof}
+
+\subsection{Wide caps and the endpoint equations}
+
+\begin{lemma}[Wide three-tent bound]\label{lem:preliminary-wide}
+Let $8/5\le a<3$, $0\le h<1/2$, and let $U,A,J,B$ satisfy the
+geometric hypotheses of \cref{lem:preliminary-short}, without its
+upper width restriction. Put $q_\pm=B(\pm a/2)$,
+$e_R=A(a)$, and $e_L=A(-a)$. Suppose
+\begin{equation}\label{eq:preliminary-endpoint-laws}
+ e_R=\tfrac12+\tfrac h4+\tfrac{3q_+-q_-}{4},\qquad
+ e_L=\tfrac12-\tfrac{3h}{4}+\tfrac{3q_--q_+}{4}.
+\end{equation}
+Then the score is less than $41/50$.
+\end{lemma}
+\begin{proof}
+Here use the original supports
+$u=rh_U(\pi/4)-1$, $v=rh_U(3\pi/4)-1$,
+$m=(u+v)/2$, $w_R=a-u$, and $w_L=a-v$.
+The affine roof extension is $L_h(x)=1-h/2+(h/a)x$.
+Concavity and the height bound imply
+\[
+ a/2\le u\le a,\quad a/2-h\le v\le a-3h/2,\quad
+ u\ge a+e_R-1,\quad v\ge a+e_L-1.
+\]
+The majorant $\min(1,L_h,1+u-x,1+v+x)$ has exterior area
+\[
+ O_0=a-\frac58ah-\frac12
+       \left[w_R^2+\frac{(w_L-3h/2)^2}{1-h/a}\right].
+\]
+The endpoint equations give
+$e_R+e_L=1-h/2+(q_++q_-)/2\ge1-h/2$. Thus
+\begin{equation}\label{eq:wide-endpoint-budget}
+ w_R+w_L\le1+h/2,\qquad m\ge a-1/2-h/4.
+\end{equation}
+The diagonal tent has its apex in $J$, and its integral is
+\[
+ N_{45}=(m-k)^2-\tfrac12
+       [(a/2-k-w_R)_+^2+(a/2-k-w_L)_+^2].
+\]
+
+Write $b_0=a/2-k$. For $t\ge b_0$ with $3/2-t/a\ge0$,
+\[
+ w^2-(b_0-w)_+^2\ge2tw-t^2,
+\]
+\[
+ \frac{(w-3h/2)^2}{1-h/a}-(b_0-w)_+^2
+ \ge2tw-t^2+(-3t+t^2/a)h.
+\]
+The second follows from the exact remainder
+$[w-t-h(3/2-t/a)]^2/(1-h/a)$; if $w<b_0$, this remainder
+is at least $(b_0-w)^2$. Hence
+\begin{equation}\label{eq:wide-relaxation}
+ P\le a-2t(a-m)+t^2-(m-k)^2
+       -\left[\tfrac58a-\tfrac32t+\frac{t^2}{2a}\right]h.
+\end{equation}
+For $a\le1+2k$ take $t=1/2$. This yields
+\[
+ P\le m+1/4-(m-k)^2-D(a)h,\qquad
+ D(a)=5a/8-3/4+1/(8a)\ge21/64.
+\]
+A hypothetical score at least $41/50$ forces
+\begin{equation}\label{eq:wide-stability}
+ a<9/5,\qquad h<1/4,\qquad a+h<37/20.
+\end{equation}
+Here are the scalar checks, retaining all width ranges.
+For $9/5\le a\le1+2k$, substitute
+$m\ge a-1/2-h/4$; the expression decreases in $h$, and its
+value at $h=0$ decreases in $a$, giving
+$P\le(23/5)k-57/50<41/50$.
+For $a\ge1+2k$, take $t=b_0$ in
+\cref{eq:wide-relaxation}; the same substitution gives
+$P\le(5/2)k-1/4<41/50$.
+For $a<9/5$ and $h\ge1/4$, the first relaxation gives
+$P\le(163/40)k-2787/3200<41/50$.
+Finally, if $a+h\ge37/20$ and $h<1/4$, substituting
+$m\ge27/20-5h/4$ and completing the square gives
+$P\le7529/25600+(101/80)k<41/50$.
+Each strict comparison follows from $k<29/70$.
+
+Put $z=h/a$ and $q=(v+h/2)/(1-z)$, so $a/2\le q\le a$.
+The near-vertical deficits of the majorant are
+\[
+ \delta_L=c(1-h/2)+(s-cz)q-h_U(5\pi/8),\qquad
+ \delta_R=c+su-h_U(3\pi/8).
+\]
+The middle points show $\delta_L\le(s-cz)(q-a/2)$ and
+$\delta_R\le s(u-a/2)$, so cutting the two affine or flat
+pieces removes whole charged triangles. Their total exterior
+payment is at least $r(\delta_L^2+\delta_R^2)$.
+The extra left deficit from tilt is
+\[
+ \tau=(c+sv-c(1-h/2)-(s-cz)q)/c
+      =(1-k)h(1/2+q/a)\le\tfrac32(1-k)h.
+\]
+
+The $\pi/8$ tent has ascending wall
+$b_R+kx$ and descending companion lower bound $B_R-x/k$, where
+\[
+ b_R=1-1/c+kv-\delta_L/c-\tau,\qquad
+ B_R=e_R+a/k-1/s.
+\]
+In the reflected coordinate the corresponding $\pi/8$-type tent
+at $3\pi/8$ has
+$b_L=1-1/c+ku-\delta_R/c$ and $B_L=e_L+a/k-1/s$.
+Their crossovers with the descending diagonal baselines are
+\[
+ x_L^R=(u-k-b_R)/r,\quad x_L^L=(v-k-b_L)/r,
+\]
+and their additional peaks are
+\[
+ Z_R=(B_R+b_R)/2-u+k,\qquad
+ Z_L=(B_L+b_L)/2-v+k.
+\]
+The crossover offsets from the two diagonal apices are
+$km+2s-1+(\delta_L/c+\tau)/r$ and
+$km+2s-1+\delta_R/(rc)$, which are positive by
+\cref{eq:wide-endpoint-budget,eq:wide-stability}.
+The tentative peaks lie in $J$:
+the middle support bounds reduce this to
+$e_R+h+(3-r)a/2\le1+4s$ and
+$e_L+(3-r)a/2\le1+4s$.
+For the first use $a+h<37/20$, $h<1/4$, and
+\[
+ 16s^2-(53/20-4r/5)^2=(-121+96r)/400>0;
+\]
+the second follows from $a<9/5$, $e_L\le1$, and $4s>3/2$.
+
+Truncate each half-triangle at its diagonal baseline zero.
+Set
+\[
+ \begin{gathered}
+ F_R=r(u-k-x_L^R),\quad F_L=r(v-k-x_L^L),\\
+ \widehat Z_Q=\min(Z_Q,F_Q),\quad
+ \ell_Q=(Z_Q-F_Q)_+\quad(Q=R,L).
+ \end{gathered}
+\]
+The two retained triangles are disjoint, lie in $J$, and add niche
+area at least $[(\widehat Z_R)_+^2+(\widehat Z_L)_+^2]/(2r)$.
+Their truncation lengths obey
+\[
+ \begin{split}
+ 2\ell_R&\le[e_R+2rw_R+h-(3k/2)a-1-4s+2rk]_+,\\
+ 2\ell_L&\le[e_L+2rw_L-(3k/2)a-1-4s+2rk]_+.
+ \end{split}
+\]
+To bound these expressions we need no box estimate for a partial
+niche. Solving \cref{eq:preliminary-endpoint-laws} using
+$e_R\le1$, $e_L\le1-3h/2$, and $q_\pm\ge0$ gives directly
+\[
+ e_R\ge1/3+h/2+(2/3)q_+,\qquad
+ e_L\ge1/3-2h/3+(2/3)q_-.
+\]
+In particular $w_R\le2/3-h/4$ and $w_L\le2/3+3h/4$.
+Using also $e_Q\le1-w_Q$, $a\ge8/5$, and
+\[
+ (2r-1)\tfrac23-\tfrac{12}{5}k-4s+2rk<0
+\]
+in the displayed truncation bounds gives
+\[
+ \ell_R\le(5-2r)h/8,\quad
+ \ell_L\le3(2r-1)h/8,\quad \ell_R+\ell_L\le h.
+\]
+The constant's sign follows from $r<10/7$, $k<3/7$, $s>3/8$.
+
+Adding the two peak formulas, using $e_R+e_L\ge1-h/2$,
+$\tau\le3(1-k)h/2$, and the last truncation bound, gives
+\[
+ \widehat Z_R+\widehat Z_L
+ \ge Q(a,m,h)-(\delta_L+\delta_R)/(2c),\qquad
+ Q=\tfrac{12}{5}a-\tfrac85m-\tfrac{11}{8}-\tfrac{17}{10}h.
+\]
+If $D_0=r(\delta_L^2+\delta_R^2)$ and
+$G_0=[(\widehat Z_R)_+^2+(\widehat Z_L)_+^2]/(2r)$,
+Cauchy--Schwarz gives $Q_+^2\le8(D_0+G_0)$.
+The geometric payments therefore yield
+\[
+ P\le\widetilde G(a,m,h)
+ =m+1/4-(m-k)^2-\tfrac{21}{64}h-\tfrac18Q_+^2.
+\]
+This is jointly concave. At $(a_0,m_0,h_0)=(8/5,11/10,0)$,
+its gradient is
+\[
+ G_a=-423/1000,\qquad G_m=2k-459/500,\qquad G_h=-57/2000.
+\]
+By \cref{eq:wide-endpoint-budget}, a feasible displacement is
+\[
+ (a-a_0)(1,1,0)
+ +(m-a+1/2+h/4)(0,1,0)+h(0,-1/4,1).
+\]
+All coefficients are nonnegative. All three directional derivatives
+are negative; the last is $201/1000-k/2<0$, since $k>41/100$.
+The supporting plane gives
+\[
+ P\le\widetilde G(a_0,m_0,0)
+   =\frac{21}{5}k-\frac{295081}{320000}
+   <\frac{261719}{320000}<\frac{41}{50}.
+\]
+This contradiction proves the lemma.
+\end{proof}
+
+\subsection{The intermediate tilt bound}
+
+\begin{lemma}[One-angle tilt estimate]\label{lem:preliminary-tilt}
+For $1\le a\le8/5$, $0\le h<1/2$, and the same middle roof,
+a barrier dominating the actual diagonal tent gives
+\begin{equation}\label{eq:intermediate-tilt}
+ P\le a-\tfrac58ah-\frac{2(a-3h/4-k)^2}{4-h/a}
+  =1-\frac{(a-r)^2}{2}
+       -\frac{2a}{4a-h}(k+h/2)^2.
+\end{equation}
+A score at least $41/50$ consequently forces $h<17/50$.
+\end{lemma}
+\begin{proof}
+Use the lifted cap and its diagonal supports $u,v$ from the short
+proof. Concavity of the original roof imposes $v\le a-h/2$.
+In addition to the horizontal majorant, the lifted left wing lies
+below $1+h/2+(h/a)x$. Its cut removes exterior area
+\[
+ D_{\rm tilt}=\frac{h(v-a/2)^2}{2(a-h)}.
+\]
+Indeed the first triangle has area
+$(h/a)(v-a/2)^2/2$, and the second has this value times
+$(h/a)/(1-h/a)$; both are charged because $v\le a-h/2$.
+The score is therefore bounded by
+$F_h(a,u,v)-D_{\rm tilt}$, a concave function on the entire
+square $[a/2,a]^2$.
+
+Put
+\[
+ D_*=\frac{2(a-3h/4-k)}{4-h/a},\quad
+ u_*=a-D_*,\quad v_*=a-h/2-(1-h/a)D_*.
+\]
+This is its unclipped stationary point. Its two coordinates are
+strictly inside the square, since $0<D_*<a/2$.
+Its diagonal apex has height $D_*>0$. The right clip vanishes since
+\[
+D_*-(a/2-k)=\frac{2k-h(1+k/a)}{4-h/a}>0,
+\]
+using $h<1/2$, $a\ge1$, and $r>4/3$.
+The left clip is smaller still. Substituting this global critical
+point proves the first formula in \cref{eq:intermediate-tilt}.
+The second is its expansion using $k^2=1-2k$.
+
+The bound decreases with $h$. Dropping the nonpositive width square
+and using $a\le8/5$ gives
+\[
+ P\le1-\frac{16/5}{32/5-h}(k+h/2)^2.
+\]
+For $h\ge17/50$, the right side is at most its value at $17/50$.
+Since $k>41/99$, this is strictly below
+\[
+ 1-\frac{16/5}{32/5-17/50}(41/99+17/100)^2
+ =\frac{304326697}{371212875}<\frac{41}{50}.
+\]
+The final rational gap is $135721/742425750>0$.
+\end{proof}
+
+\begin{corollary}[Canonical range]\label{lem:canonical-range}\label{lem:preliminary-cuts}
+Every canonical full maximum satisfies
+\[
+ \frac{1001}{2000}<C<\frac45,\qquad
+ |f_U(C)-f_U(-C)|<\frac{17}{50},
+ \quad I_U=[-2C,2C].
+\]
+The same conclusions hold for every canonical proper joint maximum
+whose angle exceeds $\arctan(8/3)$.
+\end{corollary}
+\begin{proof}
+The reference competitor and \cref{lem:constant-bounds} give
+score $M/2>41/50$. Width coercivity gives $a=2C<3$.
+The positive-pressure and top-localization results give height one,
+an affine middle roof, and lower middle height greater than $1/2$.
+Orient its higher middle endpoint to the right. In the proper case
+reflect the actual barrier as well. It remains nonnegative and
+dominates all three tents, since
+$\arctan(8/3)>3\pi/8$. The endpoint equations are precisely
+\cref{eq:preliminary-endpoint-laws} after relabeling.
+Apply \cref{lem:preliminary-short,lem:preliminary-wide} to obtain
+$1001/1000<a<8/5$, then \cref{lem:preliminary-tilt} to obtain
+the height-drop bound.
+\end{proof}

@@ -1,0 +1,163 @@
+\section{The full-turn cap problem}\label{sec:full-turn}
+
+We first determine the geometry of a maximizing cap. The support
+functional in the next section will then identify its value and its
+shape. Throughout this section $L=\pi/2$ and $P=P_L$.
+
+\subsection{The two charged wings}
+
+Let $U$ be a prescribed canonical full maximum. Translate its
+projection to $[-2C,2C]$, so $J_U=[-C,C]$. If the affine middle
+roof has positive slope, put
+\[
+ f_U(-C)=1-h,\qquad f_U(C)=1,\qquad
+ \operatorname{top}(U)=[C,C+T]\times\{1\}.
+\]
+The higher endpoint is one by \cref{lem:selection-top}, and the
+middle facet ends at $C$ by \cref{lem:variation-middle-junctions}.
+The lower endpoint is greater than $1/2$ by
+\cref{lem:variation-endpoint-pressure}. Thus $0<h<1/2$.
+The width and height estimates of \cref{lem:preliminary-cuts},
+followed by \cref{cor:full-three-tent-cut}, sharpen this to
+\begin{equation}\label{eq:tilted-parameter-range}
+ 1/2<C<37/50,\qquad 0<h<17/50.
+\end{equation}
+The strict width cut applies with $a=2C$: a cap with
+$C\ge37/50$ would have $P<41/50$, whereas a maximum has
+$P\ge\Mc/2>41/50$.
+
+We use the actual support of the high wing and the support of the
+low wing alone:
+\begin{equation}\label{eq:tilted-wing-supports}
+ F(t)=h_U(t),\qquad
+ G(t)=\max_{-2C\le x\le-C}
+                 \{-x\sin t+f_U(x)\cos t\},\quad 0\le t\le L.
+\end{equation}
+In this section $G$ omits the middle facet. Its endpoint values
+and derivatives are
+\begin{equation}\label{eq:tilted-wing-traces}
+ \begin{gathered}
+ F(0)=G(L)=2C,\quad F(L)=1,\quad G(0)=1-h,\\
+ F'(0)=e_R,\quad F'(L)=-C-T,\quad
+ G'(0)=C,\quad G'(L)=-e_L,
+ \end{gathered}
+\end{equation}
+where $e_R=f_U(2C)$ and $e_L=f_U(-2C)$.
+Let
+\begin{equation}\label{eq:tilted-contact-data}
+ \begin{gathered}
+ u=F''+F,\quad v=G''+G,\qquad p=F'-G+1,\quad q=G'+F-1,\\
+ z=(F-1)u(t)+(G-1)u^\perp(t),\\
+ B=z+p u^\perp(t),\qquad D=z-q u(t).
+ \end{gathered}
+\end{equation}
+Here $u$ and $v$ on the first line are scalar curvature densities;
+$u(t)$ and $u^\perp(t)$ on the second line are the normal vectors
+defined earlier. To distinguish the niche endpoint value from the
+corner vector, below we write $z_+=N_L(U)(C)$.
+Differentiation gives, almost everywhere,
+\begin{equation}\label{eq:tilted-contact-kinematics}
+ p'=u-1-q,\quad q'=v-1+p,\qquad
+ B'=(u-1)u^\perp(t),\quad D'=(1-v)u(t).
+\end{equation}
+The tangent endpoints are
+\begin{equation}\label{eq:tilted-tangent-endpoints}
+ \begin{gathered}
+ B(0)=(2C-1,e_R),\qquad B(L)=(C+T,0),\\
+ D(0)=(-C,-h),\qquad D(L)=(1-2C,e_L).
+ \end{gathered}
+\end{equation}
+
+\begin{lemma}[Removing the middle facet]\label{lem:tilted-surrogate}
+The supports in \cref{eq:tilted-wing-supports} belong to
+$W^{2,\infty}(0,L)\cap C^1[0,L]$. Their curvature densities are
+the charged wing densities of \cref{thm:variation-curvature}.
+The positive niche on $J_U$ is unchanged if the actual companion
+support $h_U(t+L)$ is replaced by $G(t)$.
+For $0<t<\delta:=\arctan(h/(2C))$ one has $u=v=0$.
+\end{lemma}
+\begin{proof}
+Concavity of the roof and the pinned middle facet give
+\[
+ h_U(t+L)=\max\{G(t),-C\sin t+\cos t\}.
+\]
+The added support term has inner-wall height
+$1-\sec t+(x-C)\tan t\le0$ for $x\in J_U$.
+Distribute the two-wall minimum over this maximum and take the
+positive part; this proves the niche assertion angle by angle.
+The support $G$ starts with the point $(-C,1-h)$ and contains no
+middle-facet atom. For $t\le\delta$ that point dominates every
+point of the low wing, by the supporting middle line. The actual
+companion is instead attained at $(C,1)$, whose wall is
+nonpositive on $J_U$. Thus no positive inner graph can carry
+either source at these angles. The exact source identity of
+\cref{lem:variation-sources} gives $u=v=0$ there. For
+$t>\delta$, the low wing gives the actual companion support.
+The regularity and density bounds of
+\cref{thm:variation-curvature} therefore apply to $G$; matching
+the zero-density initial interval introduces no atom, because
+the middle-junction inequalities are strict. The traces are the
+coordinates of the extremal support points, giving
+\cref{eq:tilted-wing-traces}.
+\end{proof}
+
+\subsection{Excluding an inclined middle}
+
+The essential estimate is that a first wing with curvature at
+most one cannot support an inclined maximum. The companion wing
+may have curvature greater than one and may have tangencies
+below the floor. The proof uses one joint source measure to keep
+track of the fraction of a corner assigned to each wall.
+
+\begin{proposition}[First-wing exclusion]
+\label{lem:tilted-first-unit-exclusion}
+A canonical full maximum with positive middle slope and
+$1/2<C<4/5$, $0<h<1/2$ cannot have $u\le1$ almost everywhere.
+\end{proposition}
+\begin{proof}
+The contact geometry and the joint source decomposition are proved
+in \cref{lem:tilted-first-unit-geometry,lem:variation-joint-occupation}.
+If the companion density is also at most one, the two clipped
+strip moments give the contradiction
+$6CT\le4T/3<3T$ in \cref{lem:tilted-two-unit}.
+Otherwise \cref{lem:tilted-fold-energy} proves
+\[
+ T>0,\qquad 6CT\le\frac{97}{48}T<3T,
+\]
+contradicting $C>1/2$. The fractional source equations used there
+allow measurable ties, folds, and later floor crossings.
+\end{proof}
+
+\begin{lemma}[Horizontal middle rigidity]\label{lem:full-affine-rigidity}
+Every canonical full maximum has middle slope zero.
+\end{lemma}
+\begin{proof}
+Suppose first that its middle slope is positive. The parameter
+range is \cref{eq:tilted-parameter-range}. For $C\le2/3$, or
+for $h\ge21/100$, \cref{lem:tilted-unit-regions} gives $u\le1$,
+contradicting \cref{lem:tilted-first-unit-exclusion}.
+
+It remains that $2/3<C<37/50$ and $h<21/100$.
+The endpoint geometry in \cref{lem:tilted-dry-endpoint} gives
+$N_L(U)(-C)=0$. If $h\ge1/20$ and $C\le73/100$, the last
+case of \cref{lem:tilted-unit-regions} again gives $u\le1$.
+If $h\ge1/20$ and $C\ge73/100$, the improved three-angle
+estimate \cref{lem:tilted-medium-width} gives $P<41/50$,
+contradicting maximality.
+
+The remaining interval is $0<h<1/20<509/10000$.
+By \cref{lem:tilted-small-height}, failure of either initial-floor
+energy test contradicts the ordinary one-turn area bound.
+When both tests hold, \cref{lem:tilted-initial-energy} gives
+$u\le1$ and the first-wing exclusion applies. These alternatives
+exhaust all positive slopes.
+Horizontal reflection preserves the full-angle cap score and
+changes the sign of the middle slope. Apply the positive-slope
+conclusion to the reflection to exclude negative slopes.
+\end{proof}
+
+The horizontal estimates of \cref{lem:full-horizontal-unit} now
+place every canonical full maximum in the class with both wing
+curvatures at most one, top face exactly $J_U$, and ordered
+contact switches. We next evaluate the resulting support functional
+and recover every original equality cap.

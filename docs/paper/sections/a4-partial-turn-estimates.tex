@@ -1,0 +1,965 @@
+\section{Estimates for the terminal tail}\label{app:partial-turn-estimates}
+
+\subsection{The initial-angle exclusion}
+
+\begin{proposition}\label{app:partial-initial}
+For every downward cap $U$ and $\pi/4\le\alpha\le\arctan(8/3)$,
+\[
+ P_\alpha(U)<\frac{5259}{6400}<\frac{411}{500}<\frac\Mc2.
+\]
+\end{proposition}
+\begin{proof}
+First put $\kappa=\cot\alpha$ and center the projection as
+$I=[-2C,2C]$. Write $A=f_U$ and
+$H=h_U(\alpha)/\sin\alpha$. The roof satisfies $A(x)\le H-\kappa x$
+and the whole terminal wall is $H-\csc\alpha-\kappa x$.
+The left exterior roof is at most one; integrate the support bound
+on $[C,2C]$ and the terminal lower bound on $[-C,0]$, even where
+that affine bound is negative. This gives
+\[
+ P_\alpha\le(1+\sqrt{1+\kappa^2})C-2\kappa C^2
+ \le\frac{(1+\sqrt{1+\kappa^2})^2}{8\kappa}.
+\]
+On $4/5\le\kappa\le1$ the last expression decreases: its derivative
+has the sign of $(\sqrt{1+\kappa^2}-2)(\sqrt{1+\kappa^2}+1)$.
+Its largest value is $(33+5\sqrt{41})/80<1301/1600<41/50$.
+This handles $\alpha\le\arctan(5/4)$.
+
+\paragraph{Reduction and the three actual supports}
+
+\Cref{lem:selection-canonical,lem:selection-maximum} supplies height extrusion, middle-chord reduction, coercivity, attainment, and top insertion. The attainment proof also applies with
+\(\alpha\) fixed: if a cap has score greater than \(41/50\), the
+fixed-angle maximum is attained inside the same compact width interval.
+Indeed the width-six calculation in \cref{lem:selection-width}
+is below $3/4$, so every cap with score above $41/50$ has
+width below six. A maximizing sequence at this fixed angle can
+therefore be centered in the same compact box; score continuity
+and Blaschke compactness give its maximum.
+Its canonical representative has height one, an affine middle roof, and
+a top face meeting the middle window. Thus, a hypothetical cap with score
+at least \(5259/6400\) yields such a canonical fixed-angle maximizer
+with at least the same score. It suffices to rule out that maximizer.
+
+
+Center the projection and introduce the parameters
+
+\begin{equation}\label{eq:partial-at-2}
+\begin{gathered}
+I=[-2C,2C],\quad J=[-C,C],\\
+K=\sqrt2-1,\quad \kappa=\cot\alpha,\quad
+d=\frac{\kappa}{1+\sqrt{1+\kappa^2}}.
+\end{gathered}
+\end{equation}
+
+The outgoing-wall estimate above handles
+\(\alpha\le\arctan(5/4)\). For the new interval it suffices to take
+
+\begin{equation}\label{eq:partial-at-3}
+\begin{gathered}
+\frac38\le\kappa\le\frac45,\qquad
+\kappa d=\sqrt{1+\kappa^2}-1,\\
+\kappa=\frac{2d}{1-d^2},\qquad 0<d<K.
+\end{gathered}
+\end{equation}
+
+Use the actual supports to define
+
+\begin{equation}\label{eq:partial-at-4}
+u=\max_U(x+y)-1,\quad v=\max_U(-x+y)-1,\quad
+b=\max_U\left(x+\frac{y-1}{\kappa}\right).
+\end{equation}
+
+The three outer support lines are
+\(1+u-x\), \(1+v+x\), and \(1-\kappa(x-b)\). The actual outgoing
+inner wall is \(\kappa(b-d-x)\). Consequently
+
+\begin{equation}\label{eq:partial-at-5}
+\begin{aligned}
+A(x)&\le \min\{1,1+u-x,1+v+x,1-\kappa(x-b)\},\\
+N_\alpha(U)(x)&\ge
+\max\{0,\min(u-K-x,v-K+x),\kappa(b-d-x)\}.
+\end{aligned}
+\end{equation}
+
+The 45-degree angle is genuinely visited throughout the new interval.
+Only the displayed lower bound on the true niche is used.
+
+There is an essential compatibility condition between the two first
+supports:
+
+\begin{equation}\label{eq:partial-at-6}
+\boxed{b\le u\le 2(1-\kappa)C+\kappa b,
+\qquad u,v,b\le2C.}
+\end{equation}
+
+Indeed, \(y\le1\) and \(\kappa<1\) give
+\(x+(y-1)/\kappa\le x+y-1\), hence \(b\le u\). At a point attaining
+\(u\),
+
+\[
+\kappa b\ge\kappa x+y-1=u-(1-\kappa)x
+\ge u-2(1-\kappa)C.
+\]
+
+The remaining upper bounds follow directly from the containing box.
+
+Since the middle is affine and its top meets \(J\), either
+\(A(-C)=1\) or \(A(C)=1\). The first alternative gives
+\(v\ge C\) and \(u,b\ge-C\); the second gives \(u,b\ge C\) and
+\(v\ge-C\). These alternatives will be handled directly.
+
+\paragraph{Two preliminary width cuts}
+
+\paragraph{The 45-degree relaxation alone handles \(C\le49/100\)}
+
+Put
+
+\[
+g_C(z)=\int_C^{2C}(x-z)_+\,dx
+=\frac{(2C-z)_+^2-(C-z)_+^2}{2}.
+\]
+
+For this paragraph only, the 45-degree relaxation is reflection
+invariant, so label the high endpoint as the left one. Then
+\(v\in[C,2C]\), \(u\in[-C,2C]\), and the support bounds give
+
+\begin{equation}\label{eq:partial-at-7}
+P_{45}\le F_{45}(u,v):=2C-g_C(u)-g_C(v)
+-\int_{-C}^C[\min(u-K-x,v-K+x)]_+\,dx.
+\end{equation}
+
+This function is concave on that rectangle. Here is a clipping-inclusive
+verification which will also be used below. For an integrated maximum of
+two affine lines with different spatial slopes, the moving intersection
+contributes the nonnegative second variation
+
+\begin{equation}\label{eq:partial-at-8}
+\frac{(\hbox{difference of varied intercepts})^2}
+{|\hbox{difference of spatial slopes}|}.
+\end{equation}
+
+An integrated minimum has the opposite sign. These formulas follow by
+integrating the triangle swept out by the moving intersection. A switch
+outside the integration interval contributes zero. The resulting
+integrals are continuously differentiable and piecewise quadratic in
+the intercepts, so checking their quadratic second variations on the
+open pieces also checks concavity across all clipping boundaries.
+
+For the loss \(2C-F_{45}\), the sole negative term can occur at an
+exposed tent apex inside \(J\); it is
+\(- (\xi-\eta)^2/2\), for variations \((\xi,\eta)\) of \((u,v)\).
+The left outer switch supplies \(\eta^2\). If \(u>C\), the right
+outer switch supplies \(\xi^2\). If \(u\le C\) and the apex is
+positively exposed, its falling side meets the floor at
+\(u-K\in(-C,C)\), supplying \(\xi^2\) instead. Thus the loss has
+nonnegative second variation; cases without an exposed interior apex
+already have only nonnegative terms. Boundary parameters follow by
+continuity.
+
+For \(C\ge K/2\), the common critical point
+\(u=v=C+K/2\) lies in the rectangle. Its positive tent is contained in
+\(J\), and \eqref{eq:partial-at-7} is at most
+
+\begin{equation}\label{eq:partial-at-9}
+2C-2(C-K/2)^2.
+\end{equation}
+
+For \(C<K/2\), the trivial bound \(P_{45}\le2C<K\) suffices. The
+right side of \eqref{eq:partial-at-9} increases up to \(C=49/100\), and
+
+\begin{equation}\label{eq:partial-at-10}
+\frac{49}{50}-\frac12\left(\frac{49}{50}-K\right)^2
+<\frac{41}{50}.
+\end{equation}
+
+For an exact check, \(\sqrt2<99/70\) gives
+\(49/50-K=99/50-\sqrt2>2\sqrt2/5\). Hence every remaining
+canonical cap has \(C>49/100\).
+
+\paragraph{For \(\kappa\ge3/5\), the outgoing wall handles \(C\le1/2\)}
+
+The outgoing-wall calculation at the start of this proof gives, for every cap,
+
+\begin{equation}\label{eq:partial-at-11}
+P_\alpha\le(1+\sqrt{1+\kappa^2})C-2\kappa C^2.
+\end{equation}
+
+For \(C\le1/2\) and \(3/5\le\kappa\le4/5\), this expression
+increases with \(C\); at \(C=1/2\) it decreases with \(\kappa\).
+Therefore it is at most
+
+\begin{equation}\label{eq:partial-at-12}
+\frac{2+\sqrt{34}}{10}<\frac45.
+\end{equation}
+
+It remains to consider
+
+\begin{equation}\label{eq:partial-at-13}
+\begin{cases}
+C>49/100,&3/8\le\kappa\le3/5,\\
+C>1/2,&3/5\le\kappa\le4/5.
+\end{cases}
+\end{equation}
+
+\paragraph{The exact finite-support relaxation and the high-right case}
+
+For \(b\le u\), write
+
+\begin{equation}\label{eq:partial-at-14}
+\begin{gathered}
+x_0=\frac{u-\kappa b}{1-\kappa},\\
+\begin{aligned}
+Q_C(u,b)&=\int_C^{2C}\max\{0,x-u,\kappa(x-b)\}\,dx\\
+&=\kappa g_C(b)+(1-\kappa)g_C(x_0).
+\end{aligned}
+\end{gathered}
+\end{equation}
+
+The identity follows from \(b\le u\le x_0\): the three successive
+active pieces are zero, \(\kappa(x-b)\), and \(x-u\), with any
+pieces outside \([C,2C]\) automatically clipped by \(g_C\).
+
+Define
+
+\begin{equation}\label{eq:partial-at-15}
+\begin{aligned}
+N(u,v,b)&=\int_{-C}^C
+\max\{0,\min(u-K-x,v-K+x),\kappa(b-d-x)\}\,dx,\\
+F(u,v,b)&=2C-g_C(v)-Q_C(u,b)-N(u,v,b).
+\end{aligned}
+\end{equation}
+
+In either high-endpoint alternative the left exterior majorant in \eqref{eq:partial-at-5}
+is \(\min(1,1+v+x)\), and the right exterior majorant is
+\(1-\max(0,x-u,\kappa(x-b))\). Thus
+\(P_\alpha\le F\).
+
+Suppose first that the high endpoint is on the right and \(v<C\).
+Increase \(v\) to \(C\), keeping \(u,b\) fixed. This is a variation
+of the relaxation; it need not preserve realizability by a cap. The
+charged left exterior reward increases at rate \(C\). The derivative
+of \(N\) is the length of the interval on which the rising tent line
+\(v-K+x\) is exposed. Put
+
+\begin{equation}\label{eq:partial-at-16}
+p=\frac{u-v}{2},\quad e=b-d,\quad
+x_L=\frac{\kappa e-v+K}{1+\kappa}.
+\end{equation}
+
+Every such exposed point lies between \(x_L\) and \(p\), so its
+length is at most \((p-x_L)_+\). Since \(u\le2C\), \(v\le C\),
+and \(b\ge C\),
+
+\begin{equation}\label{eq:partial-at-17}
+p-x_L\le
+\frac{(3-\kappa)C+2\kappa d-2K}{2(1+\kappa)}<C.
+\end{equation}
+
+The strict inequality uses \(\kappa>1/3\) and \(\kappa d<K\).
+Hence \(F\) strictly increases until \(v=C\). All of \eqref{eq:partial-at-6} is
+preserved. It is therefore enough to bound \(F\) on the convex domain
+
+\begin{equation}\label{eq:partial-at-18}
+\boxed{D_C=\{C\le v\le2C,\ -C\le b\le2C,
+\ b\le u\le2(1-\kappa)C+\kappa b\}.}
+\end{equation}
+
+This also contains the original high-left alternative. No reflection of
+the partial objective has been used.
+
+\paragraph{Two convex domains cover the useful part of the relaxation}
+
+Put
+
+\begin{equation}\label{eq:partial-at-19}
+a=u-K,\quad c=v-K,\quad e=b-d,\quad
+Y_0=(1+\kappa)C+K-v+\kappa(b-d).
+\end{equation}
+
+Thus \(Y_0\ge0\) means \(x_L\ge-C\). Define the two convex sets
+
+\begin{equation}\label{eq:partial-at-20}
+D_1=D_C\cap\{a\le C\},\qquad
+D_2=D_C\cap\{Y_0\ge0\}.
+\end{equation}
+
+\emph{Concavity claim.} The function $F$ is concave on each of $D_1,D_2$.
+
+ Work at generic parameters in the relative interiors of the
+finite quadratic pieces, and use variations \((\xi,\eta,\zeta)\)
+of \((u,v,b)\). As in \eqref{eq:partial-at-8}, all switches of the positive niche
+contribute nonnegative second variations except an exposed tent apex
+\(p=(u-v)/2\) inside \(J\). If there is no such apex, the loss
+\(2C-F=g_C(v)+Q_C+N\) is already convex on that piece. Otherwise the
+only negative term is
+
+\begin{equation}\label{eq:partial-at-21}
+-\frac{(\xi-\eta)^2}{2}.
+\end{equation}
+
+Throughout the interior of \(D_C\), the left outer switch contributes
+\(\eta^2\). The complete compensation is as follows.
+
+\emph{On \(D_1\).} If \(a\ge e\), the exposed falling tent meets the
+floor at \(x=a\in(-C,C)\). This contributes \(\xi^2\).
+If \(a<e\), it instead meets the terminal wall at
+
+\[
+x_R=\frac{a-\kappa e}{1-\kappa}\in(p,C),
+\]
+
+which contributes \((\xi-\kappa\zeta)^2/(1-\kappa)\).
+For \(e<C\), the subsequently exposed terminal wall meets the floor
+at \(e\in(-C,C)\), contributing \(\kappa\zeta^2\). For
+\(e>C\), instead \(b=e+d\in(C,2C)\), and the outer right
+height/terminal switch at \(b\) supplies the same contribution.
+In both cases
+
+\begin{equation}\label{eq:partial-at-22}
+\frac{(\xi-\kappa\zeta)^2}{1-\kappa}
++\kappa\zeta^2\ge\xi^2.
+\end{equation}
+
+Thus the positive contributions include \(\xi^2+\eta^2\), which
+dominate \eqref{eq:partial-at-21}.
+
+\emph{On \(D_2\), outside \(D_1\).} Now \(u>C+K\). Consequently
+\(C<x_0<2C\), so the outer terminal/45-degree switch contributes
+\((\xi-\kappa\zeta)^2/(1-\kappa)\).
+If \(c+e>0\), the rising tent meets the terminal wall at
+\(x_L\in(-C,p)\); this contributes
+\((\eta-\kappa\zeta)^2/(1+\kappa)\). The inequality
+
+\begin{equation}\label{eq:partial-at-23}
+\frac{(\xi-\kappa\zeta)^2}{1-\kappa}
++\frac{(\eta-\kappa\zeta)^2}{1+\kappa}
+\ge\frac{(\xi-\eta)^2}{2}
+\end{equation}
+
+cancels \eqref{eq:partial-at-21}.
+
+If \(c+e<0\), the rising tent instead emerges from the floor at
+\(-c>e\). The support compatibility and \(u>C+K\) give
+
+\begin{equation}\label{eq:partial-at-24}
+\kappa(e+C)\ge u-(2-3\kappa)C-\kappa d
+>(3\kappa-1)C+K-\kappa d>0.
+\end{equation}
+
+Hence \(-C<e<-c<p\). The terminal/floor switch at \(e\) supplies
+\(\kappa\zeta^2\), and the rising-tent/floor switch at \(-c\)
+supplies \(\eta^2\). \eqref{eq:partial-at-22} again supplies \(\xi^2\), cancelling
+the only negative term.
+
+All remaining switch terms are nonnegative. The affine spatial slopes
+\(0,1,-1,-\kappa\) are distinct, so ties have zero spatial measure;
+the integrals in \eqref{eq:partial-at-15} are continuously differentiable and piecewise
+quadratic in the parameters. The verified nonnegative second variations
+therefore prove convexity of the loss on each convex set, including all
+degenerate switch and window boundary cases by continuity. This proves the concavity claim.
+
+\paragraph{A common critical point, with all its clipping checked}
+
+Define
+
+\begin{equation}\label{eq:partial-at-25}
+\begin{aligned}
+b_*&=\frac{K+d}{2},\\
+u_*&=(1-\kappa)C+\frac K2+\frac{\kappa d}{2},\\
+v_*&=(1+\kappa)C+\frac K2-\frac{\kappa d}{2}.
+\end{aligned}
+\end{equation}
+
+Its relevant switch positions are
+
+\begin{equation}\label{eq:partial-at-26}
+\begin{aligned}
+x_{0,*}&=C+K/2,&x_{L,*}&=K/2-C,\\
+p_*&=-\kappa(C-d/2),&e_*&=(K-d)/2,\\
+a_*&=u_*-K.&&
+\end{aligned}
+\end{equation}
+
+The only potentially delicate clipping condition is \(a_*\ge e_*\).
+The exact identities in \eqref{eq:partial-at-3} and \(K^2=1-2K\) give
+
+\begin{equation}\label{eq:partial-at-27}
+a_*-e_*=(1-\kappa)(C-1/2)
++\frac{(K-d)^2}{2(1+d)}.
+\end{equation}
+
+This is positive for \(C\ge1/2\). For
+\(C>49/100\), \(3/8\le\kappa\le3/5\), use
+\(K>41/100\), \(d<7/25\), and \(1-\kappa\le5/8\). They give
+
+\begin{equation}\label{eq:partial-at-28}
+a_*-e_*>-\frac1{160}+\frac{169}{25600}
+=\frac9{25600}>0.
+\end{equation}
+
+Here \(d\le(\sqrt{34}-5)/3<7/25\), because
+\(\sqrt{34}<146/25\). Thus \eqref{eq:partial-at-13} proves the required clipping in
+every remaining case.
+
+We have \(b_*<C\), \(C<x_{0,*}<2C\), and
+
+\begin{equation}\label{eq:partial-at-29}
+-C<x_{L,*}<p_*<0<e_*<a_*<C.
+\end{equation}
+
+For example \(p_*-x_{L,*}=a_*>0\),
+\(a_*-p_*=C-K/2>0\), and \(C>d/2\); these identities check the
+displayed ordering. Also \(2C-v_*=a_*>0\),
+\(v_*-C=\kappa(C-d/2)+K/2>0\), and
+\(u_*-b_*=(1-\kappa)(C-d/2)>0\). Together with the value of
+\(x_{0,*}\), these show that the point is in the interior of
+\(D_C\). It lies in both \(D_1,D_2\), since
+\(a_*<C\) and \(Y_{0,*}=(1+\kappa)K/2>0\).
+
+The outer first-45-degree, second-45-degree, and terminal horizontal
+exposure lengths are respectively
+
+\[
+C-K/2,\qquad a_*,\qquad K/2.
+\]
+
+By \eqref{eq:partial-at-29} the corresponding niche exposure lengths are exactly the same:
+\(a_*-p_*\), \(p_*-x_{L,*}\), and \(x_{L,*}+C\).
+Consequently all three first derivatives of \(F\) vanish at \eqref{eq:partial-at-25}.
+The concavity claim proves that this point maximizes \(F\) on each of
+\(D_1,D_2\).
+
+For the value, put \(z=C-K/2\), \(s=\kappa(C-d/2)\). Direct
+integration over the displayed intervals gives
+
+\[
+\begin{aligned}
+g_C(v_*)&=(z-s)^2/2,\\
+Q_C(u_*,b_*)&=\kappa(3C^2/2-Cb_*)+(1-\kappa)z^2/2,\\
+N(u_*,v_*,b_*)&=z^2-s^2/2+Ks/2+\kappa K^2/8.
+\end{aligned}
+\]
+
+Their sum is \(2z^2+Ks\). Thus on \(D_1\cup D_2\),
+
+\begin{equation}\label{eq:partial-at-30}
+\boxed{F\le F_*:=2C-2(C-K/2)^2-\kappa K(C-d/2).}
+\end{equation}
+
+\paragraph{The complement is strictly below \(319/400\)}
+
+Suppose \((u,v,b)\in D_C\setminus(D_1\cup D_2)\). Then
+\(u>C+K\) and \(Y_0<0\). Combining the latter with \eqref{eq:partial-at-6} gives
+
+\begin{equation}\label{eq:partial-at-31}
+v-u>(3\kappa-1)C+K-\kappa d>0.
+\end{equation}
+
+In particular \(u,v>C+K\), so both ends of the 45-degree tent are
+strictly positive. Its apex belongs to \((-C,C)\), since
+\(u,v\in(C+K,2C]\). Dropping the outgoing support and charge only
+enlarges the relaxation. With \(h=(u+v)/2\), exact 45-degree
+integration therefore gives
+
+\begin{equation}\label{eq:partial-at-32}
+F\le 2C-2C^2+2KC-(h-C)^2.
+\end{equation}
+
+Moreover, \eqref{eq:partial-at-31} implies
+
+\begin{equation}\label{eq:partial-at-33}
+h-C>\frac{3K}{2}-\frac{\kappa d}{2}>\frac9{20},
+\end{equation}
+
+using \(K>2/5\) and
+\(\kappa d\le\sqrt{41}/5-1<3/10\). Finally
+\(1+K=\sqrt2\), so
+
+\[
+2(1+K)C-2C^2\le1.
+\]
+
+Equations \eqref{eq:partial-at-32}–\eqref{eq:partial-at-33} prove
+
+\begin{equation}\label{eq:partial-at-34}
+\boxed{F<1-(9/20)^2=319/400.}
+\end{equation}
+
+This completes all parameter and clipping cases in \(D_C\).
+
+\paragraph{Exact optimization in width and angle}
+
+Completing the square in \(C\) in \eqref{eq:partial-at-30} gives the unrestricted bound
+
+\begin{equation}\label{eq:partial-at-35}
+F_*\le B(\kappa):=
+\frac12+\frac K2+\frac K2\sqrt{1+\kappa^2}
+-\frac{\kappa(1-K)}2+\frac{\kappa^2K^2}{8}.
+\end{equation}
+
+The maximizing width for this quadratic is
+\(C=1/2+K(2-\kappa)/4\); no assumption that a cap realizes the
+critical supports or this width is required for the upper bound.
+On \([3/8,4/5]\),
+
+\begin{equation}\label{eq:partial-at-36}
+\begin{aligned}
+B'(\kappa)
+&=\frac{K\kappa}{2\sqrt{1+\kappa^2}}
+-\frac{1-K}{2}+\frac{\kappa K^2}{4}\\
+&\le\frac{2K}{5}-\frac{1-K}{2}+\frac{K^2}{5}
+=\frac{5K-3}{10}<0.
+\end{aligned}
+\end{equation}
+
+Hence the largest value occurs at \(\kappa=3/8\), where
+
+\begin{equation}\label{eq:partial-at-37}
+B(3/8)=\frac{169}{512}
++\frac{K(167+16\sqrt{73})}{256}.
+\end{equation}
+
+The exact rational bounds \(K<29/70\) and
+\(\sqrt{73}<171/20\) now give
+
+\begin{equation}\label{eq:partial-at-38}
+B(3/8)<\frac{169}{512}
++\frac{29(167+16\cdot171/20)}{70\cdot256}
+=\frac{5259}{6400}
+=\frac{411}{500}-\frac9{32000}.
+\end{equation}
+
+All other cases were bounded strictly below \(41/50\), \(4/5\),
+or \(319/400\), each smaller than \(5259/6400\). The earlier
+outgoing-only theorem covers the initial interval
+\([\pi/4,\arctan(5/4)]\) by a value below \(41/50\).
+Fixed-angle attainment and the canonical reduction therefore prove the asserted universal inequality.
+
+For the exact reference comparison, the inequality $\arctan x\ge x-x^3/3$ for $x\ge0$, with
+\(a=149/500\), gives
+
+\begin{equation}\label{eq:partial-at-39}
+\begin{gathered}
+4a^3+3a-1=-\frac{4551}{31250000}<0,\\
+\frac\Mc2>\frac{1+4a^2+a-a^3/3}{2}
+=\frac{616648051}{750000000}>
+\frac{411}{500}.
+\end{gathered}
+\end{equation}
+
+
+
+\end{proof}
+
+\subsection{A width cut with the actual partial barrier}
+
+\begin{proposition}\label{app:partial-width}
+A canonical proper joint maximum has $C<37/50$.
+\end{proposition}
+\begin{proof}
+By \cref{lem:preliminary-cuts}, it suffices to exclude
+$37/50\le C<4/5$ and $0\le h=h_L+h_R<17/50$.
+Relabel the high middle endpoint as the right one, reflecting both
+the cap and its actual barrier if necessary. Put $a=2C$ and let
+$q_\pm$ be the values of this relabeled barrier at $\pm a/2$.
+The endpoint equations and roof concavity give
+\[
+ e_R=\tfrac12+\tfrac h4+(3q_+-q_-)/4\le1,\qquad
+ e_L=\tfrac12-\tfrac{3h}4+(3q_--q_+)/4\le1-3h/2.
+\]
+Use the upper bound on $e_L$ in the first equation, and the upper
+bound on $e_R$ in the second, to obtain
+\[
+ e_R\ge\tfrac13+\tfrac h2+\tfrac23q_+,\qquad
+ e_L\ge\tfrac13-\tfrac{2h}3+\tfrac23q_-.
+\]
+Lift the low wing by $h$, and use the diagonal parameters $u,v$
+and the functions $F_h,S,G_h$ of \eqref{eq:three-tent-objective}.
+Write $r=\sqrt2$, $k=r-1$, $c_8=\cos(\pi/8)$,
+$\gamma=1-r/2$ and $t=2c_8-r$. The outer deficits
+$w_R=a-u$, $w_L=a-v+h$ consequently satisfy
+\[
+ 0\le w_R\le\tfrac23-\tfrac h2,\quad
+ 0\le w_L\le\tfrac23+\tfrac{2h}3,\quad
+ w_R+w_L\le1+\tfrac h2.
+\]
+The last inequality uses $e_R+e_L\ge1-h/2$.
+
+Here the three-angle calculation must retain the floor. The exterior
+support triangles and the two extra tent triangles are exactly those
+in the proof of \cref{lem:full-three-tent-score}: all their angles
+are visited, and the actual barrier dominates their tents. A triangle
+whose signed peak is $Z$ loses, when clipped by the zero floor, at
+most $Z_-^2/r$. Completing the same two squares in the exterior
+support deficits therefore gives
+\[
+ P_\alpha(U)\le G_h(a,u,v)+
+ \gamma\bigl[(w_R-t)_+^2+(w_L-t)_+^2\bigr].
+\]
+This derivation uses no upper bound on $q_\pm$ and applies to the
+relabeled actual barrier. The convex function in brackets attains
+its maximum over the displayed polygon on the sum boundary.
+Its endpoints are
+$(2/3-h/2,1/3+h)$ and $(1/3-h/6,2/3+2h/3)$.
+The second pair is more spread out and has the larger value;
+since $1/3-h/6<t$, that value is $(D+2h/3)^2$, where
+$D=2/3-t$.
+
+Set $a_0=37/25$, $A=1-k$ and
+$\sigma_0=(3r-1)a_0/2-(4c_8-2)$.
+The supporting-plane estimate of \cref{lem:full-three-tent-critical}
+now gives
+\[
+ \begin{gathered}
+ P_\alpha(U)\le B(a_0)-kh/2-h^2/8
+       -\tfrac29(\sigma_0-Ah/4)^2+\gamma(D+2h/3)^2,
+ \\
+ B(a)=a-(a-k)^2/2.
+ \end{gathered}
+\]
+The derivative of the right side with respect to $h$ is
+\[
+ -k/2+A\sigma_0/9+4\gamma D/3
+  +h(-1/4-A^2/36+8\gamma/9).
+\]
+The rational bounds $k>2/5$, $A<3/5$, $\gamma<3/10$,
+$703/1000<\sigma_0<71/100$ and $D<47/200$ show that the
+constant term is less than $-22/375$ and the coefficient of $h$
+is less than $1/60$. Thus this derivative is less than
+$-53/1000$ on $[0,17/50]$. Its maximum is at $h=0$.
+As $k<29/70$ and $\gamma D^2<17/1000$,
+\[
+ P_\alpha(U)<\frac{62}{25}\frac{29}{70}-\frac{72}{625}
+ -\frac29\left(\frac{703}{1000}\right)^2+\frac{17}{1000}
+ =\frac{25811237}{31500000}<\frac{41}{50}<\frac\Mc2.
+\]
+This contradicts the reference competitor.
+\end{proof}
+
+\subsection{A strict circle margin}
+
+\begin{proposition}\label{app:partial-circle}
+For the residual data of \eqref{eq:partial-tail-data}, and
+$0\le z\le w$,
+\[
+ a_\alpha(-C+z)-
+ \left[\sqrt{1-(C-T_L)^2}-\sqrt{1-(C+z)^2}\right]
+ >39c/4400.
+\]
+\end{proposition}
+\begin{proof}
+Write $g(x)=\sqrt{1-x^2}$ and $K(x)=x/g(x)$.
+The wall decreases with $z$ and the circle difference increases,
+so it suffices to take $z=w=c-d$. Since $T_R\ge0$ and
+$T_L\le d$, the gap there is at least
+\[
+ \frac cs(2C-c)-[g(C-d)-g(C+c-d)].
+\]
+Also $d\ge\delta=c/(1+s)$, since $H\le1$.
+The bracket decreases with $d$. Put
+\[
+ \eta=\delta-c/2=\frac{c^3}{2(1+s)^2}\ge c^3/8,
+ \qquad \mathcal A_q(y)=\frac1q
+       \int_{y-q/2}^{y+q/2}K(x)\,\dd x.
+\]
+The gap divided by $c$ is at least
+$(2C-c)/s-\mathcal A_c(C-\eta)$.
+On all these intervals $K$ is increasing and convex. Hence the
+average increases with its center and width and is convex in its
+center. For width monotonicity, pair the positive and negative
+integration variables after rescaling to $[-1/2,1/2]$; their
+derivative has the sign of $K'$ increasing. A linear function of
+$C$ minus a fixed-width average is concave, so its minimum on
+$[1/2,37/50]$ occurs at an endpoint.
+
+If $c\le1/3$, then
+$\mathcal A_c(C-\eta)\le\mathcal A_{1/3}(C)$.
+The derivative of $(2C-c)/\sqrt{1-c^2}$ with respect to $c$ is
+$(2Cc-1)/(1-c^2)^{3/2}<0$. Using $\sqrt2<99/70$ gives
+\[
+ (2C-c)/s>\tfrac{35}{33}(2C-1/3).
+\]
+At $C=1/2$, the average is $2\sqrt2-\sqrt5<23/35<2/3$;
+at $C=37/50$ it is $(8\sqrt{59}-\sqrt{1001})/25<6/5$.
+The respective gaps exceed $4/99$ and $8/495$.
+The radical comparisons follow by squaring
+$\sqrt2<10/7$, $\sqrt5>11/5$, $\sqrt{59}<77/10$ and
+$\sqrt{1001}>158/5$. Concavity proves a gap greater than
+$8/495>39/4400$ throughout.
+
+If $1/3\le c<3/\sqrt{73}$, take $q=44/125$.
+Then $\eta\ge1/216$, $c<q$ and
+$s\le2\sqrt2/3<33/35$, so
+\[
+ \mathcal A_c(C-\eta)\le\mathcal A_q(C-1/216),\qquad
+ (2C-c)/s>\tfrac{35}{33}(2C-44/125).
+\]
+At $C=1/2$ the integration endpoints are $8623/27000$ and
+$18127/27000$. Their $g$ values are respectively below $19/20$
+and above $37/50$, so the average is below $105/176<2/3$.
+The resulting gap exceeds $17/825$.
+At $C=37/50$ the endpoints are $15103/27000$ and $24607/27000$.
+Their $g$ values are below $829/1000$ and above $411/1000$:
+the exact squared comparisons are
+\[
+ 15103^2=228100609>228001311
+       =27000^2[1-(829/1000)^2],
+\]
+\[
+ 24607^2=605504449<605856591
+       =27000^2[1-(411/1000)^2].
+\]
+Thus the average is below $19/16$, and its gap exceeds
+$329/275-19/16=39/4400$. Concavity proves this strict lower
+bound throughout the second interval, proving the proposition.
+\end{proof}
+
+\subsection{Reflected supports and the terminal impulse}
+
+\begin{proposition}\label{app:partial-reflection}
+For a residual canonical proper joint maximum, the error in
+\eqref{eq:partial-weighted-error} satisfies
+\[
+ \mathcal E_\theta=0\quad(0<\cot\alpha\le1/8),\qquad
+ \mathcal E_\theta<6517/6400000
+       \quad(1/8\le\cot\alpha<3/8).
+\]
+\end{proposition}
+\begin{proof}
+For a rising middle use the left-wing companion surrogate of
+\cref{lem:partial-moment}. For a descending middle use the
+right-wing first-support surrogate: it equals the actual first
+support on every visited angle and removes the unused middle atom.
+Saturation gives its unused tail at $(C,1-h_R)$.
+In every case the companion unused tail is
+$G(t)=2C\sin t+e_L\cos t$ for $\alpha<t<L$.
+Set $\varepsilon=L-\alpha$, $\delta=c/(1+s)$ and reflect the
+support equations, without reflecting their spatial objective:
+\[
+ P(r)=-q(L-r),\quad Q(r)=-p(L-r),\quad
+ U(r)=v(L-r),\quad V(r)=u(L-r).
+\]
+The curvature and shadow laws give
+\begin{equation}\label{eq:partial-reflected-controls}
+ \begin{gathered}
+ P'=U-1-Q,\quad Q'=V-1+P,\quad P\le1,\ Q\ge-1,\\
+ 0\le U\le\kappa(Q),\quad0\le V\le\kappa(P),\\
+ P,Q>0\Rightarrow U=0,\ V\le1/2,\qquad
+ P,Q<0\Rightarrow V=0,\ U\le1/2.
+ \end{gathered}
+\end{equation}
+In the final removed interval of the rising surrogate both
+curvatures are zero directly; no arm law is needed there.
+The initial values are $(P(0),Q(0))=(e,D-1)$, where
+\[
+ \begin{aligned}
+ (e,D)=(e_L,3C+T_R)\quad\hbox{for rising or horizontal middle},
+ \\
+ (e,D)=(e_L+h_R,3C)\quad\hbox{for descending middle}.
+ \end{aligned}
+\]
+Both densities vanish on $(0,\varepsilon)$.
+At $\varepsilon$, $P$ is continuous and $Q$ jumps upwards by
+$j=\tau/s\le\delta$. There is no companion terminal atom or
+later visited atom. The free initial trajectory is
+\[
+ P=1+(e-1)\cos r-D\sin r,\qquad
+ Q+1=D\cos r+(e-1)\sin r.
+\]
+
+We first record a common energy and duration calculation.
+Put $\mathcal H=(P-1/2)^2+(Q+1)^2$.
+Expansion at the impulse gives
+\[
+ \mathcal H(\varepsilon+)-\mathcal H(0)
+ =(1-e)(1-s)-Dc+2j[Ds-(1-e)c]+j^2.
+\]
+In the parameter boxes below $Ds-(1-e)c>1$; this expression
+increases with $j\ge0$. At $j=\delta$ it equals
+\begin{equation}\label{eq:partial-impulse-energy}
+ \delta^2\left[\frac{2e-1+\delta^2}{1+\delta^2}-Dc\right].
+\end{equation}
+After the impulse, in the initial $P,Q>0$ sector,
+$\mathcal H'=2(Q+1)(V-1/2)\le0$.
+If the impulse cost is at most $\eta_0$, then at the first
+$P$-zero, or at $\varepsilon$ if that zero occurred earlier,
+\[
+ Q+1\le\sqrt Z,\qquad Z=D^2-e(1-e)+\eta_0.
+\]
+The initial $Q$ component remains positive across the unused gap.
+Every later positive $Q$ component has amplitude at most $1/8$:
+it starts at $Q=0,P\le1$; while $P>0$, the shadow laws give
+$P'\le-1$, $Q'\le P-1/2$, so its total positive increase is
+at most $\int_0^{1/2}(1/2-r)\,\dd r=1/8$.
+Once $P\le1/2$, $Q'$ is nonpositive, and once $P\le0$ it is
+strictly negative. $P$ cannot rise while $Q>0$.
+Thus only the initial component can have $U>1$, since that
+requires $Q>1$ by \eqref{eq:partial-reflected-controls}.
+
+After $P\le0$ and while $Q>1$, write $\rho$ for elapsed time.
+Then $P'\le-1$, hence $P\le-\rho$ and, for $\rho\le1$,
+$Q'\le-1/2-\rho/2$. For $-1\le P\le0$ use
+$V\le(1-P)/2$; for $P<-1$ use $V\le-P$, giving $Q'\le-1$.
+Consequently
+\begin{equation}\label{eq:partial-excess-decay}
+ Q-1\le\sqrt Z-2-\rho/2-\rho^2/4,
+ \qquad D_0(Z)=\sqrt{1+4(\sqrt Z-2)_+}-1.
+\end{equation}
+All the ensuing bounds on $D_0$ are less than one, closing this
+comparison. Once $0<Q\le1$, one has $P'\le-(1+Q)/2$ and
+$Q'\le-1/2$, so this component cannot return to $Q>1$.
+While $P,Q>0$, $Q'\ge-1$ and the impulse is upward;
+therefore $P(r)\le e-Dr+r^2/2$. Its first zero, if the
+$Q$ component has not already ended, occurs no later than
+\[
+ \tau_0(D,e)=D-\sqrt{D^2-2e}.
+\]
+The last possible excess time is thus at most
+$\max(\varepsilon,\tau_0)+D_0(Z)$.
+
+\paragraph{The near-full range.}
+If $\cot\alpha\le1/8$, then
+$\varepsilon<1/8$, $\delta<1/16$, and $s>124/125$.
+The ordinary visited niche has endpoint box
+$H_0(C)=1-\sqrt{1-C^2}<1/3$.
+The outgoing endpoint is nonpositive at $C$ by top projection,
+and at $-C$ is at most $2C\cot\alpha<H_0(C)$:
+$H_0(C)\ge C^2/2>C/4$. Thus the actual barrier endpoints
+are also below $1/3$. Endpoint pressure gives
+\[
+ \begin{array}{c|cc}
+ &e&D\\\hline
+ \text{rising/horizontal}&0\le e<3/4&3/2<D<1801/800\\
+ \text{descending}&0\le e<19/25&3/2<D<111/50.
+ \end{array}
+\]
+For the second row use $h_R<1-s<1/125$; for the first use
+$T_R\le\delta/2<1/32$.
+Also $Ds-(1-e)c>(3/2)(124/125)-1/8>1$.
+The bracket in \eqref{eq:partial-impulse-energy} is below
+$53/100$, so its cost is below $1/480$.
+Take $\eta_0=1/480$.
+
+If $e\le3/10$ and $Z>4$, then $D>1999/1000$, and
+$\tau_0<4/25$, since
+$2(1999/1000)(4/25)-(4/25)^2-3/5=44/3125>0$.
+Uniformly $\sqrt Z<451/200$ and $D_0<17/40$.
+Thus the last excess precedes $117/200<18/25$.
+If $Z\le4$ there is no excess after the zero or impulse.
+
+If $e\ge3/10$, then $P(\varepsilon)\ge e-Dc>0$.
+The zero follows the impulse and the last excess is bounded by
+$W=\tau_0+D_0(Z)$. On $Z>4$ put
+$A=\sqrt{D^2-2e}$, $S=\sqrt Z$, $Q_0=\sqrt{4S-7}$.
+Then
+\begin{equation}\label{eq:partial-duration-derivatives}
+ W_e=1/A+(2e-1)/(Q_0S),\qquad
+ W_D=1-D/A+2D/(Q_0S).
+\end{equation}
+Here $D>2$, $D/A<4/3$, $S<9/4$, $Q_0<3/2$.
+When $e<1/2$, the negative term in $W_e$ is at most $1/5$,
+whereas $1/A>11/25$; when $e\ge1/2$ positivity is immediate.
+Also $W_D>-1/3+32/27>0$.
+The expression clipped by $D_0=0$ remains increasing in $e$
+across $Z=4$. If increasing $e$ to its upper endpoint gives
+$Z\le4$, its value is below $9/20$. Otherwise increase also
+$D$ and check the two endpoint pairs:
+\[
+ \begin{array}{c|ccc}
+ (D,e)&\tau_0&\sqrt Z&D_0\\\hline
+ (1801/800,3/4)&<109/300&<221/100&<107/300\\
+ (111/50,19/25)&<3/8&<109/50&<5/16.
+ \end{array}
+\]
+All entries follow by squaring positive rationals. For the first
+row the squared margins are $1403/360000$, $2669/1920000$
+and $49/90000$; the second row gives $259/60000$ for the
+middle entry and $4(109/50)-7=43/25<(21/16)^2$ for the last.
+The sums are below $18/25$ and $11/16$ respectively.
+It follows that $U(r)\le1$ for almost every $r\ge18/25$.
+The Taylor bound $\cos x\ge1-x^2/2+x^4/25$ on $[0,1]$
+gives $\cos(18/25)>37/50$. Therefore
+$v(t)\le1$ on $[0,\arcsin C]$, which contains $[0,\theta]$.
+This proves $\mathcal E_\theta=0$ in the near-full range.
+
+\paragraph{The complementary range.}
+Now $1/8\le\cot\alpha<3/8$. Then $c<3/8$, $s>14/15$,
+$\delta<2/11$ and $\varepsilon<9/25$.
+The last inequality follows from
+$\arctan(3/8)<3/8-(3/8)^3/3+(3/8)^5/5<9/25$.
+For rising or horizontal middle, top projection bounds the actual
+left outgoing endpoint by
+\[
+ \cot\alpha(2C-\delta/2)
+ =2C\cot\alpha-(\sqrt{1+\cot^2\alpha}-1)/2<419/800.
+\]
+This expression increases with both $C$ and $\cot\alpha$;
+evaluate at $37/50,3/8$ and use $\sqrt{73}>17/2$.
+For descending middle it is below $2C\cot\alpha<111/200$,
+and $h_R<1/15$. With the ordinary endpoint box below $1/3$,
+the actual pressure equations yield
+\[
+ \begin{array}{c|cc}
+ &e&D\\\hline
+ \text{rising/horizontal}&0\le e<179/200&3/2<D<2311/1000\\
+ \text{descending}&0\le e<1&3/2<D<111/50.
+ \end{array}
+\]
+Indeed the first pressure is below $2857/3200$, and
+$3C+T_R<111/50+1/11=1271/550<2311/1000$.
+The second pressure is below $1/2+1/12+333/800=2399/2400$.
+Now $Ds-(1-e)c>(3/2)(14/15)-3/8>1$.
+The energy cost is below $\delta^2<1/30$, so take
+$\eta_0=1/30$.
+Uniformly $\sqrt Z<58/25$ and $D_0(Z)<13/25$.
+If the first zero precedes the impulse, the episode ends before
+$9/25+13/25=22/25<91/100$.
+Otherwise use $W=\tau_0+D_0$ and
+\eqref{eq:partial-duration-derivatives} on $Z>4$.
+Both derivatives are positive for $0\le e\le1$:
+$S^2-A^2=e+e^2+1/30>0$ and $Q_0\ge1$ control the possible
+negative term in $W_e$; also $D^2>119/30$,
+$D/A<\sqrt{119/59}<3/2$, $S<7/3$, $Q_0<31/20$, so
+$W_D>-1/2+180/217>0$.
+Across $Z=4$ the clipped expression remains increasing in $e$.
+If its upper-$e$ value has $Z\le4$, then $\tau_0(D,1)<3/5$
+because $D^2>119/30>(59/30)^2$. Otherwise increase $D$ too.
+The two endpoint certificates are
+\[
+ \begin{array}{c|ccc}
+ (D,e)&\tau_0&\sqrt Z&D_0\\\hline
+ (2311/1000,179/200)&<107/250&<2299/1000&<241/500\\
+ (111/50,1)&<51/100&<223/100&<39/100.
+ \end{array}
+\]
+For the first row the three squared margins are $629/125000$,
+$3193/600000$ and $81/250000$; for the second they are
+$43/10000$, $67/6000$ and $121/10000$.
+The sums are below $91/100$ and $9/10$ respectively.
+
+On an excess episode the polynomial in
+\eqref{eq:partial-excess-decay} factors as
+$(D_0-\rho)(1/2+(D_0+\rho)/4)$.
+For $0\le\rho\le D_0<13/25$ its second factor is below $19/25$.
+Since $U-1\le Q-1$ whenever $U>1$, we conclude
+\[
+ (U(r)-1)_+\le\tfrac{19}{25}(91/100-r)_+,
+ \quad (v(t)-1)_+\le\tfrac{19}{25}(t-t_0)_+,
+ \quad t_0=L-91/100.
+\]
+Finally $\cos\theta>2/3$ and
+$\theta-t_0<7/40$. The latter follows from
+$\cos(147/200)>37/50$ using the same Taylor lower bound;
+its rational margin is $62448881/40000000000$.
+If $\theta\le t_0$ the error is zero. Otherwise
+\[
+ \mathcal E_\theta\le
+ \frac{19}{25\cos\theta}\int_{t_0}^{\theta}
+          (t-t_0)(\theta-t)\,\dd t
+ <\frac{19}{100}(7/40)^3=\frac{6517}{6400000},
+\]
+because its exact kernel is
+$\lambda\cos t-\sin t=\sin(\theta-t)/\cos\theta$.
+As $c\ge1/\sqrt{65}>3/25$, this is less than
+$117/110000<39c/4400$, as required.
+\end{proof}

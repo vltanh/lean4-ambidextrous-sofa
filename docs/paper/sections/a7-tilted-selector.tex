@@ -1,0 +1,760 @@
+\section{Excluding a tilted full-turn selector}\label{app:tilted-selector}
+
+Throughout this appendix $U$ is a canonical full-turn maximum.
+Reflect horizontally when necessary, and write
+\[
+ I=[-2C,2C],\quad J=[-C,C],\quad
+ f_U(-C)=1-h,\quad f_U(C)=1,\quad h>0.
+\]
+The preliminary cuts and \cref{cor:full-three-tent-cut} give
+$1/2<C<37/50$ and $0<h<17/50$.
+Write $n=n_L(U)$, $n_\pm=n(\pm C)$ and $e_R=f_U(2C)$,
+$e_L=f_U(-2C)$. The actual endpoint and wing identities are
+\begin{equation}\label{eq:tilted-endpoints}
+ \begin{gathered}
+ e_R=\tfrac12+\tfrac h4+(3n_+-n_-)/4,\quad
+ e_L=\tfrac12-\tfrac{3h}4+(3n_--n_+)/4,\\
+ E=e_R+e_L=1-h/2+(n_++n_-)/2,\quad
+ \max_Jn\le E/2,\quad 2P_L(U)=L_{\rm w}.
+ \end{gathered}
+\end{equation}
+Let $F$ be the first support and $G$ the low-left-wing companion
+support, with the uncharged middle facet removed, as in the tilted
+support construction. Use $p,q,u,v$ for their velocities and regular
+densities in \eqref{eq:variation-velocities}.
+
+\subsection{A connected ordinary survivor}
+
+\begin{lemma}\label{lem:tilted-box-confinement}
+Every attached quadrant with positive apex height has its apex
+abscissa in $(-C,C)$. The full niche is convex on each exterior
+wing, and $n\le f_U$ on $I$. Consequently the survivor
+$S=\{(x,y):x\in I,\ n(x)\le y\le f_U(x)\}$ is an ordinary sofa.
+\end{lemma}
+\begin{proof}
+Lift the low wing by $h$ and make the middle roof one, obtaining
+$\widehat U$. Write $s=\sin t$, $c=\cos t$ and let
+$\widehat F,\widehat G$ be its two supports.
+For a horizontal-middle cap the box and top endpoints imply
+\[
+ \widehat F\le2Cc+s,\quad\widehat G\ge Cs+c,
+ \quad\widehat z_x\le C(2-3s^2)-c+s.
+\]
+Here $C(1-3s^2)\le c-s$ for $1/2\le C\le13/15$.
+For $s^2\le1/3$ use $c\ge1-3s^2/5$; the margin is at least
+$2s^2-s+2/15=2(s-1/4)^2+1/120$.
+For $1/3\le s^2\le1/2$ the two sides have opposite signs.
+For $s^2\ge1/2$ use
+$2(s-c)=2(2s^2-1)/(s+c)\le4s^2-2\le3s^2-1$.
+Reflection gives $-C\le\widehat z_x\le C$.
+
+Put $\delta=\arctan(h/(2C))$. For $t\ge\delta$ the actual
+second support is on the low wing, and
+$F=\widehat F$, $G=\widehat G-hc$.
+Thus $z_x=\widehat z_x+hsc>-C$ in the open angular interval.
+To prove its upper bound it suffices to show
+\begin{equation}\label{eq:tilted-corner-margin}
+ c-s-C(1-3s^2)-hsc>0.
+\end{equation}
+For $s^2\le1/3$, its margin is at least
+$[c(50-17s)-(37+50s-111s^2)]/50$.
+Enlarge to $0\le s\le3/5$. The two compared terms are positive;
+their squared difference is
+\[
+ Q(s)=1131-5400s+3503s^2+12800s^3-12610s^4.
+\]
+With $z=s-3/8\in[-3/8,9/40]$ this is
+\[
+ Q=49647/2048-(2091/64)z
+       +z^2(116213/16-6115z-12610z^2).
+\]
+The bracket is concave and its endpoint values are $249061/32$
+and $839849/160$, both above $5000$.
+Hence $Q>24-33|z|+5000z^2\ge24-1089/20000>0$.
+For $s^2\ge1/3$ put $C=1/2$, enlarge $h$ to $2/5$ and factor
+its lower bound as
+\[
+ c\left[1-2s/5-\frac{c(3s+1)}{2(1+s)}\right].
+\]
+Squaring the nonnegative compared terms reduces positivity to
+$R(s)=75-105s-139s^2+241s^3>0$.
+For $z=2s-1\in[0,1]$,
+$8R=143-253z+445z^2+241z^3\ge143-253^2/(4\cdot445)>0$.
+This proves \eqref{eq:tilted-corner-margin}.
+For $0<t<\delta$ the actual second support is $(C,1)$, and the
+apex height is at most
+$1-c-s+Csc=sc[C-2/(1+c+s)]<0$.
+Such quadrants have no positive roof.
+
+Every positive quadrant uses its descending first wall on the right
+wing and its increasing second wall on the left wing.
+The niche is therefore a maximum of affine functions and zero on
+each wing, hence convex there; the box gives $n(\pm2C)=0$.
+The endpoint box gives $n_\pm\le2/5$.
+By \eqref{eq:tilted-endpoints},
+$\max_J n\le7/10-h/4<1-h\le f_U$.
+On a wing $f_U-n$ is concave and nonnegative at both endpoints,
+so the same inequality holds throughout $I$.
+Apply \cref{lem:ordinary-survivor}.
+\end{proof}
+
+In particular, with $G_0=22199/10000$, convexity of the wing niche
+and the stationary chord bounds give
+\begin{equation}\label{eq:tilted-ordinary-bound}
+ P_L(U)+C(3-E-3h/2)\le |S|\le G_0,\qquad
+ P_L(U)\ge\sqrt{C^2+(1-h/2-E/2)^2}.
+\end{equation}
+Indeed the middle cap area is $2C-Ch$, while the exterior niche
+is at most $C(n_++n_-)/2=C(E-1+h/2)$.
+The two wing chords have vectors $(C,1-e_R)$ and
+$(C,1-h-e_L)$; their average length is at least the length of
+their average vector.
+
+\subsection{The forward excess ends before endpoint tangency}
+
+\begin{lemma}\label{lem:tilted-late-unit}
+If $2/3<C<37/50$, then $u(t)\le1$ for almost every $t\ge11/15$.
+Moreover, if the top face is $[C,C+T]\times\{1\}$, then
+\begin{equation}\label{eq:tilted-endpoint-leakage}
+ \begin{gathered}
+ n_+\le\frac{CT}{\sqrt{1-C^2}},\qquad
+ J_F:=\int_0^L(u-1)_+\sin t\,\dd t<1/40,\\
+ \int_C^{2C}n\le(T+J_F)n_+/2.
+ \end{gathered}
+\end{equation}
+\end{lemma}
+\begin{proof}
+Write $D=3C$, $B=e_R-1+h$ and $\gamma_0=\arccos(1-h)$.
+The endpoint box $H(C)=1-\sqrt{1-C^2}<1/3$ and the sharper
+low-wing box $n_-\le(H(C)-h)_+$ imply
+\[
+ -1/2+5h/4-(1/3-h)_+/4\le B\le-1/4+5h/4,
+ \qquad -7/12<B<7/40.
+\]
+Only the initial positive-$q$ component can have $u>1$.
+As in the reflected calculation in \cref{app:partial-reflection},
+later positive components have $q\le1/8$.
+Before its first $p$-zero $\beta$ the same-sign law gives $u=0$.
+If $q(\beta)\le1$ no excess occurs. Otherwise put
+$\eta=q(\beta)-1>0$.
+On its only possible excess episode, at elapsed time $r\le1$,
+\[
+ p\le-r,\quad q'\le-(1+r)/2,\quad
+ (u(\beta+r)-1)_+\le(\eta-r/2-r^2/4)_+.
+\]
+The duration is at most $\ell(\eta)=\sqrt{1+4\eta}-1$.
+All bounds below give $\ell<1$, as required.
+
+If $\beta\le\gamma_0$, the initial-floor solution in
+\eqref{eq:initial-floor-solution} gives
+$(q(\beta)+1)^2=D^2+B^2-1>4$.
+Thus $B<0$, since $(111/50)^2+(7/40)^2<5$.
+Also $D\sin\beta=1+B\cos\beta\le1$, so
+$\beta<\pi/6<8/15$.
+Finally $(q(\beta)+1)^2<(111/50)^2+(7/12)^2-1<(207/100)^2$,
+so $\eta<7/100$, $\ell<2/15$, and the episode ends before $2/3$.
+
+If $\gamma_0<\beta$, then
+$1+B(1-h)-D\sqrt{h(2-h)}>0$.
+This forces $h<1/8$. Indeed its upper bound
+\[
+ V(h)=1+[-1/4+5h/4](1-h)-2\sqrt{h(2-h)}
+\]
+is convex on $[1/8,17/50]$ and negative at both endpoints:
+$V(1/8)=235/256-\sqrt{15}/4<0$ and
+$V(17/50)=1+231/2000-\sqrt{1411}/25<0$.
+For $h<1/8$ the sharper interval is
+$-7/12+3h/2\le B\le-1/4+5h/4<-3/32$.
+The energy used in \cref{lem:tilted-initial-energy} gives
+\[
+ (q(\beta)+1)^2\le
+ Q(D,B,h)=D^2+B^2+B(1-h)-D\sqrt{h(2-h)}.
+\]
+For $1/25\le h<1/8$, $Q$ increases with $D$, is convex in
+$B$, and is convex in $h$ at either affine $B$ endpoint.
+It suffices to evaluate $D=111/50$ and $h=1/25,1/8$.
+At $h=1/25$ the larger endpoint is $B=-1/5$, giving
+$Q=10387/2500<(51/25)^2$.
+At $h=1/8$, $B^2+B(1-h)<0$ and
+$\sqrt{h(2-h)}>15/32$ give a smaller value.
+Hence $\eta<1/25$, $\ell<2/25$.
+While $p,q>0$, $p(t)\le29/32-Dt+t^2/2$, negative at $t=3/5$;
+therefore the episode ends before $17/25$.
+For $0<h<1/25$, one has $-7/12<B<-1/5$, and
+\[
+ \beta\le D-\sqrt{D^2-8/5},\qquad
+ \eta\le(\sqrt{D^2-4/25}-2)_+.
+\]
+The second inequality uses $B(1-h)-D\sqrt{h(2-h)}\le B$
+and $B^2+B\le-4/25$.
+On the range $D\ge\sqrt{104}/5$, the sum
+\[
+ W(D)=D-\sqrt{D^2-8/5}+\sqrt{4\sqrt{D^2-4/25}-7}-1
+\]
+increases: the first two terms have derivative above $-1/3$,
+and the last term has derivative above $10/7$.
+At $D=111/50$ the first part is below $2/5$ and the duration
+below $1/3$, since $\sqrt{D^2-4/25}<219/100$.
+Thus every episode ends before $11/15$.
+
+The alternating Taylor bound gives
+\[
+ \cos(11/15)\ge6093080189/8201250000>37/50.
+\]
+At a positive endpoint-active angle at $x=C$, confinement gives
+strict companion slack, so stationarity has $B_x(t)=C$.
+The outer first-support abscissa is at most $2C$, hence
+$\cos t\le C$ and $t\ge\arccos C>11/15$.
+The backward support formula then gives
+\[
+ a_t(C)=T\cot t+\frac1{\sin t}
+       \int_t^L\sin(r-t)(u(r)-1)\,\dd r
+       \le T\cot t\le\frac{CT}{\sqrt{1-C^2}}.
+\]
+Also $(F(t)-1)/\cos t\le C+T+J_F$.
+Thus the convex right-wing niche vanishes by $C+T+J_F$ and has
+area at most $(T+J_F)n_+/2$.
+In every excess case above $\eta<19/100$ and $\ell<1/3$.
+The quadratic envelope has integral less than $11/324$,
+and occurs below $11/15$. Consequently
+$J_F<(11/15)(11/324)=121/4860<1/40$.
+\end{proof}
+
+\subsection{The low endpoint is dry and the top overhang is positive}
+
+\begin{lemma}\label{lem:tilted-dry-endpoint}
+For $2/3<C<37/50$, the top overhang satisfies $T>0$ and
+\[
+ n_-=0,\qquad T\le\sqrt{h(2-h)},\qquad
+ T\le\sqrt{1-e_L^2}-C,\qquad T<1-C.
+\]
+The late-unit and leakage conclusions of
+\cref{lem:tilted-late-unit} hold as well.
+\end{lemma}
+\begin{proof}
+Let $x_1=1-2C$ and consider the second-wall envelope
+$\Psi(x)=\sup_{0<t<L}(G(t)-1+x\sin t)/\cos t$ for $x<x_1$.
+It is finite, convex and nondecreasing. Its endpoint-angle limits
+are $-h$ and $-\infty$. It is negative for $x\le-2C$ and
+approaches a positive value at $x_1$, since the outer endpoint
+$(-2C,e_L)$ has $e_L>0$.
+It has a unique zero $x_0<x_1$: a zero maximum is attained at
+an interior angle with strictly positive affine slope, which gives
+strictly negative values to its left and positive values to its right.
+For $x\le x_1$, the pinned top point $(C,1)$ gives
+\[
+ F(t)-1-x\cos t\ge(3C-1)\cos t+\sin t-1
+             \ge\cos t+\sin t-1>0.
+\]
+For $x_1<x<C$, angles near $L$ have first wall
+$(C+T-x)(L-t)+o(L-t)>0$ and second wall tending to $+\infty$.
+The extra high-wing companion walls are nonpositive on $J$.
+Hence $\{x\in(-C,C):n(x)>0\}=(\max(-C,x_0),C)$.
+
+In this geometry the finite source projection identity has an exact
+limit. On a compact interval to the left of $x_0$, all surrogate
+second walls have a uniform negative gap. The high-point second
+walls also have a negative gap outside arbitrarily small endpoint
+angle neighborhoods. The coarse source bounds make their remaining
+mass and horizontal projection $O(\delta)+o_i(1)$ for an angle
+cutoff $\delta$. On compact subsets of the positive interval,
+uniform barrier convergence gives the opposite inclusion.
+Let the approximation index tend to infinity and then $\delta\to0$.
+The finite projection identity and source balance yield
+\[
+ 2C-T=C-\max(-C,x_0),\qquad T=(C+x_0)_+.
+\]
+This argument controls shallow finite graph pieces explicitly.
+
+Suppose $T=0$. Reflect the local support equations as
+$P=-q(L-r)$, $Q=-p(L-r)$, $U=v(L-r)$, $V=u(L-r)$.
+Before the removed middle normal they have initial data
+$(P(0),Q(0))=(e_L,3C-1)$ and the same arm and shadow laws.
+Beyond that normal $U=0$ directly.
+The box and endpoint equations give $3/20<e_L<3/4$.
+Let $D=3C$ and $e=e_L$.
+At the first $P$-zero, the energy calculation without an impulse
+gives $(Q+1)^2\le D^2-e(1-e)$ and a crossing time at most
+$D-\sqrt{D^2-2e}$.
+The same quadratic excess envelope then applies.
+For $e\le2/3$, $e(1-e)\ge51/400$, so the excess height is
+below $1/5$, its duration below $7/20$, and the crossing time
+below $2-\sqrt{8/3}<3/8$.
+For $2/3\le e<3/4$, $e(1-e)\ge3/16$, so these bounds are
+$9/50$, $5/16$ and $2-\sqrt{5/2}<21/50$.
+The sums are $29/40$ and $293/400$, both below $11/15$.
+Later positive-$Q$ components have amplitude at most $1/8$.
+Thus $v(t)\le1$ whenever $L-t\ge11/15$.
+
+If $\Psi(-C)\ge0$, its maximum is attained at a proper angle
+$t$ and has shifted companion abscissa $D_x(t)=-C$.
+The outer supporting abscissa is $D_x-\sin t\ge-2C$,
+so $\sin t\le C$ and $L-t\ge\arccos C>11/15$.
+The entire prefix $[0,t]$ then has $v\le1$; its support formula
+from $G(0)=1-h$, $G'(0)=C$ gives
+\[
+ \frac{G(t)-1-C\sin t}{\cos t}
+ =1-h-\sec t+\frac1{\cos t}\int_0^t v(r)\sin(t-r)\,\dd r
+ \le-h<0.
+\]
+This contradiction shows $\Psi(-C)<0$, hence $x_0>-C$,
+contrary to $T=(C+x_0)_+=0$.
+Therefore $T>0$, $x_0=-C+T$ and $n_-=0$.
+
+The outer endpoint supplies a nonnegative second wall at
+$x=-2C+\sqrt{1-e_L^2}$; the low middle point supplies one at
+$x=-C+\sqrt{h(2-h)}$.
+Comparing each with the unique zero $x_0$ gives the two square-root
+bounds (if the test point is at least $x_1$, use $x_0<x_1$).
+Finally $x_0<x_1$ implies $T<1-C$.
+\end{proof}
+
+\subsection{A sharper triangle payment for moderate tilt}
+
+\begin{lemma}\label{lem:tilted-medium-width}
+No canonical full-turn maximum has
+$73/100\le C<37/50$ and $1/20\le h\le21/100$.
+\end{lemma}
+\begin{proof}
+By \cref{lem:tilted-dry-endpoint}, put $z=n_+$ and $n_-=0$.
+Then $e_R=1/2+h/4+3z/4$ and $e_L=1/2-3h/4-z/4$,
+with $z<1/3$.
+Use the lifted three-angle parameters in
+\eqref{eq:three-tent-objective}. Put $r=\sqrt2$, $k=r-1$,
+$c_8=\cos(\pi/8)$, $A=1-k$, $b=2-k$,
+$d_0=3r-1$, $\gamma=1-r/2$, $t=2c_8-r$.
+The outer deficits satisfy
+$w_R\le1/2-h/4$ and $w_L<7/12+3h/4$.
+The signed triangle and positive-floor calculation gives
+\[
+ \begin{gathered}
+ P_L(U)\le G_h(a,u,v)+L_{\rm a}(h),\quad a=2C,
+ \\
+ L_{\rm a}=\gamma[(D-h/4)_+^2+(D+1/12+3h/4)_+^2],
+ \quad D=1/2-t.
+ \end{gathered}
+\]
+The geometric checks from \cref{lem:full-three-tent-score} remain
+valid down to $C=73/100$: the diagonal apex is positive since
+$C-h/2-k>0$; the endpoint sum gives
+$m-h/2\ge a-1/2-h/4\ge363/400>179/200$; and the extra
+gain triangles' outer zeros remain inside $J$ since $C<4/5$.
+Thus the same clipped $G_h$ applies.
+
+Set $a_*=73/50$, $B_0(a)=a-(a-k)^2/2$ and
+$s_0(a)=d_0a/2-(4c_8-2)$.
+The common support critical point at $a_*$ is
+\[
+ u_*=v_*=(a_*+k)/2+(b/9)[s_0(a_*)-Ah/4]+h/4.
+\]
+It is interior, unclipped and has positive $S$.
+Indeed $140/99<r<99/70$, $923/1000<c_8<231/250$ imply
+$2/3<s_0(a_*)<7/10$ and $s_0-Ah/4>0$.
+Its right clipping quantity is
+$-k/2+(b/9)s_0+(1/4-bA/36)h<0$ by the same bounds;
+the left one is smaller by $h$.
+The value and width derivative are
+\[
+ K(a_*,h)=B_0(a_*)-kh/2-h^2/8-\tfrac29[s_0(a_*)-Ah/4]^2,
+\]
+\[
+ \partial_aG_h(a_*,u_*,v_*)
+ =r-a_*-(2d_0/9)[s_0(a_*)-Ah/4]<0.
+\]
+Joint concavity and its supporting plane give $G_h(a,u,v)\le K$
+for every $a\ge a_*$, including every clipping pattern.
+
+Both positive parts in $L_{\rm a}$ are positive on this interval:
+$1/2-2(231/250)+140/99<D<239/3500$, and the lower bound
+exceeds $21/400$.
+The linear coefficient of $K+L_{\rm a}$ is
+$-k/2+As_0/9+\gamma(D+1/8)<-9/100$.
+Its quadratic coefficient is $-1/8-A^2/72+5\gamma/8<1/16$.
+Thus the derivative is below $-9/100+h/8<0$ and the largest
+bound occurs at $h=1/20$.
+There $s_0-A/80>43789/66000>53/80$ and
+\[
+ L_{\rm a}(1/20)<\tfrac3{10}[(7/125)^2+(19/100)^2]<3/250.
+\]
+As $B_0(a_*)=(123/50)k-529/5000$, we get
+\[
+ \begin{aligned}
+ P_L(U)&<\frac{123}{50}\frac{29}{70}-\frac{529}{5000}
+ -\frac{41}{3960}-\frac1{3200}\\
+ &\hspace{5mm}-\frac29(53/80)^2+\frac3{250}
+ =\frac{7550393}{9240000}<\frac{41}{50}<\frac\Mc2.
+ \end{aligned}
+\]
+This contradicts the reference competitor.
+\end{proof}
+
+\subsection{The last small-height alternative}
+
+\begin{lemma}\label{lem:tilted-small-height}
+No canonical full-turn maximum has $2/3<C<37/50$ and
+$0<h\le509/10000$.
+\end{lemma}
+\begin{proof}
+Put $P=P_L(U)$ and $\mathcal S=S$, the ordinary survivor of
+\cref{lem:tilted-box-confinement}. By \cref{thm:ordinary-sofa-bound},
+\begin{equation}\label{eq:tilted-sh-2}
+ |\mathcal S|\le G_0:=22199/10000.
+\end{equation}
+\paragraph{Exact endpoint and leakage information}
+
+Write the top face as \([C,C+T]\times\{1\}\), and put
+
+\[
+\begin{gathered}
+z=n(C),\qquad s=\sqrt{h(2-h)},\quad
+K=\frac{C}{\sqrt{1-C^2}},\\
+J_F=\int_0^{\pi/2}(u(t)-1)_+\sin t\,\dd t.
+\end{gathered}
+\]
+
+\Cref{lem:tilted-dry-endpoint} and the actual pressure equations give
+
+\[
+T>0,\quad n(-C)=0,
+\]
+
+\begin{equation}\label{eq:tilted-sh-3}
+e_R=\frac12+\frac h4+\frac{3z}{4},\qquad
+e_L=\frac12-\frac{3h}{4}-\frac z4.
+\end{equation}
+
+The pinned low middle point and the endpoint estimate \eqref{eq:tilted-endpoint-leakage} imply
+
+\begin{equation}\label{eq:tilted-sh-4}
+T\le s,\qquad 0\le z\le KT,\qquad K<\frac{10}{9}.
+\end{equation}
+
+For completeness, the first inequality follows from the signed second
+wall envelope at its zero \(x_{\rm zero}=-C+T\). The low middle point
+\((-C,1-h)\) gives the lower wall
+\(1-h-\sec t+T\tan t\). Its value at \(\sin t=T\) is
+\(1-h-\sqrt{1-T^2}\), and cannot be positive at an envelope zero.
+Thus \(T^2\le h(2-h)\). We have \(T\le C<1\), so this angle is
+proper. The bound on K follows by squaring and using
+\(81\cdot1369<100\cdot1131\).
+
+The ordinary box estimate also gives
+
+\begin{equation}\label{eq:tilted-sh-5}
+z\le1-\sqrt{1-C^2}<\frac{33}{100}.
+\end{equation}
+
+The early-end proof bounds all possible first-source excess by one
+initial envelope
+
+\[
+(u(\alpha+\tau)-1)_+
+\le\left(\varepsilon-\frac\tau2-\frac{\tau^2}{4}\right)_+,
+\qquad \varepsilon<\frac{19}{100}<\frac7{36}.
+\]
+
+Its duration is less than \(1/3\), and all excess occurs at angles
+less than \(11/15\). Since the parabola with initial value \(7/36\)
+vanishes at \(1/3\),
+
+\[
+\int(u-1)_+\,dt
+<\int_0^{1/3}\left(\frac7{36}-\frac\tau2-\frac{\tau^2}{4}\right)d\tau
+=\frac{11}{324}.
+\]
+
+Consequently
+
+\begin{equation}\label{eq:tilted-sh-6}
+J_F<\frac{11}{15}\frac{11}{324}
+=\frac{121}{4860}<\frac1{40};
+\qquad \frac1{40}-\frac{121}{4860}=\frac1{9720}.
+\end{equation}
+
+\Cref{lem:tilted-late-unit} and convexity of the actual niche on the right wing give
+
+\begin{equation}\label{eq:tilted-sh-7}
+N_{\rm out}\le\frac{(T+J_F)z}{2}.
+\end{equation}
+
+The left wing contributes no outside niche: its niche roof is convex
+with zero values at both endpoints. The middle cap area is \(2C-Ch\).
+Thus
+
+\begin{equation}\label{eq:tilted-sh-8}
+|\mathcal S|\ge P+C(2-h)-\frac{(T+J_F)z}{2}.
+\end{equation}
+
+\paragraph{A common tangent lower bound for the wing lengths}
+
+Define the fixed constants
+
+\[
+C_0=\frac{\sqrt{17}}6,\quad
+R_0=\frac{\sqrt{26}}6,\quad
+S_0=2C_0+R_0,
+\]
+
+\begin{equation}\label{eq:tilted-sh-9}
+\lambda=\sqrt{\frac{17}{26}},\qquad
+m=\frac{3}{4\sqrt{26}},\qquad
+a=\frac{1-\lambda}{2}.
+\end{equation}
+
+The two charged-wing vertical drops are
+
+\[
+r_R=1-e_R=\frac12-\frac h4-\frac{3z}{4},\qquad
+r_L=1-h-e_L=\frac12-\frac h4+\frac z4.
+\]
+
+They are nonnegative by the actual cap geometry. The top overhang has
+length T, while the nonhorizontal right wing has horizontal displacement
+\(C-T\). The stationary length identity and the two chord bounds yield
+
+\begin{equation}\label{eq:tilted-sh-10}
+P\ge\frac12\left[T+
+\sqrt{(C-T)^2+r_R^2}+\sqrt{C^2+r_L^2}\right].
+\end{equation}
+
+The tangent inequality for the Euclidean norm at \((C_0,1/2)\) is
+
+\[
+\sqrt{x^2+y^2}\ge\lambda x+\frac{3}{\sqrt{26}}y.
+\]
+
+Apply it to the two chords in \eqref{eq:tilted-sh-10}, and use
+\(\lambda C_0+3/(2\sqrt{26})=R_0\). Combining with \eqref{eq:tilted-sh-8} gives
+
+\begin{equation}\label{eq:tilted-sh-11}
+|\mathcal S|\ge S_0+(2+\lambda)(C-C_0)
+-Ch-m(h+z)+aT-\frac{(T+J_F)z}{2}.
+\end{equation}
+
+The following rational enclosures follow by squaring positive numbers:
+
+\begin{equation}\label{eq:tilted-sh-12}
+\frac{8086}{10000}<\lambda<\frac{8087}{10000},\qquad
+m<\frac{1471}{10000},\qquad a>\frac{956}{10000}.
+\end{equation}
+
+Since \eqref{eq:tilted-sh-4} implies \(T\ge9z/10\), \eqref{eq:tilted-sh-6} and \eqref{eq:tilted-sh-12} imply
+
+\[
+-mz+aT-\frac{J_Fz}{2}\ge-\frac{1839}{25000}z.
+\]
+
+Here
+
+\[
+\frac{1471}{10000}+\frac1{80}
+-\frac{956}{10000}\frac9{10}
+=\frac{1839}{25000}.
+\]
+
+In particular the useful common lower bound is
+
+\begin{equation}\label{eq:tilted-sh-13}
+|\mathcal S|\ge S_0+(2+\lambda)(C-C_0)
+-\frac{8871}{10000}h-\frac{1839}{25000}z-\frac{Tz}{2}.
+\end{equation}
+
+Finally
+
+\begin{equation}\label{eq:tilted-sh-14}
+S_0>\frac{2\cdot4123+5099}{6000}
+=\frac{2669}{1200}>G_0,
+\quad \frac{2669}{1200}-G_0=\frac{16}{3750}.
+\end{equation}
+
+The radical comparisons here are
+\((4123/1000)^2<17\) and \((5099/1000)^2<26\).
+
+\paragraph{Failure of the second initial-energy inequality is impossible}
+
+Put
+
+\[
+d=3C,\qquad B=e_R-1+h=-\frac12+\frac{5h+3z}{4}.
+\]
+
+The second condition of \cref{lem:tilted-initial-energy} is
+
+\[
+Q:=d^2+B^2+B(1-h)-ds\le4.
+\]
+
+Suppose it fails. The exact square completion is
+
+\[
+Q=\left(3C-\frac s2\right)^2
++\frac9{16}(h+z)^2-\frac14,
+\]
+
+so
+
+\begin{equation}\label{eq:tilted-sh-15}
+\left(3C-\frac s2\right)^2
++\frac9{16}(h+z)^2>\frac{17}{4}.
+\end{equation}
+
+Write \(w=h+z\). the stated height range and \eqref{eq:tilted-sh-5} give \(w<2/3\), and
+\(3C-s/2>0\). Rationalizing the difference of the two positive
+square roots gives
+
+\[
+\frac{\sqrt{17}}2-
+\sqrt{\frac{17}{4}-\frac9{16}w^2}
+=\frac{9w^2/16}{\sqrt{17}/2+
+\sqrt{17/4-9w^2/16}}
+<\frac9{64}w^2.
+\]
+
+The denominator exceeds four because \(w<2/3\). Therefore \eqref{eq:tilted-sh-15}
+implies
+
+\begin{equation}\label{eq:tilted-sh-16}
+C-C_0>\frac s6-\frac3{64}(h+z)^2.
+\end{equation}
+
+Insert \eqref{eq:tilted-sh-16} into \eqref{eq:tilted-sh-13}. Use the lower enclosure for \(\lambda\) on
+the positive s term, its upper enclosure on the negative squared term,
+and \eqref{eq:tilted-sh-4} on all occurrences of z and T. The result is
+
+\begin{equation}\label{eq:tilted-sh-17}
+|\mathcal S|-S_0\ge
+\frac{57955}{150000}s
+-\frac{8871}{10000}h-\frac59s^2
+-\frac{84261}{640000}
+\left(h+\frac{10}{9}s\right)^2.
+\end{equation}
+
+The linear coefficient is exactly
+
+\[
+\frac{2+8086/10000}{6}
+-\left(\frac{1471}{10000}+\frac1{80}
+-\frac{956}{10000}\frac9{10}\right)\frac{10}{9}
+=\frac{11591}{30000}=\frac{57955}{150000}.
+\]
+
+Here is a complete rational positivity certificate for \eqref{eq:tilted-sh-17}. Set
+
+\[
+A=\frac{11591}{30000},\quad
+D=\frac{8871}{10000},\quad
+Q_0=\frac{84261}{640000},\quad
+k=\frac{10000}{19491},\quad s_* =\frac{63}{200}.
+\]
+
+Since \(h\le509/10000\),
+
+\[
+h\le ks^2,\qquad 0<s<s_*.
+\]
+
+Indeed \(s^2=h(2-h)\ge(19491/10000)h\), and
+
+\[
+s_*^2-\frac{509}{10000}\frac{19491}{10000}
+=\frac{1581}{100000000}>0.
+\]
+
+The right side of \eqref{eq:tilted-sh-17} is consequently at least
+
+\[
+s\left[A-\left(Dk+\frac59\right)s
+-Q_0s\left(\frac{10}{9}+ks\right)^2\right].
+\]
+
+The bracket decreases for \(s\ge0\). Its value at \(s_*\) is
+exactly
+
+\begin{equation}\label{eq:tilted-sh-18}
+A-\left(Dk+\frac59\right)s_*
+-Q_0s_*\left(\frac{10}{9}+ks_*\right)^2
+=\frac{11102231813}{13507522880000}>0.
+\end{equation}
+
+Thus \(|\mathcal S|>S_0>G_0\), contradicting \eqref{eq:tilted-sh-2}. The second energy condition cannot fail in the stated range.
+
+\paragraph{Failure of the first initial-energy inequality is impossible}
+
+Suppose instead that
+
+\begin{equation}\label{eq:tilted-sh-19}
+9C^2+B^2>5.
+\end{equation}
+
+Write \(\xi=(5h+3z)/4\), so \(B=-1/2+\xi\).
+the stated height range and \eqref{eq:tilted-sh-5} imply \(0<\xi<1/2\), hence \(-1/2<B<0\).
+It follows from \eqref{eq:tilted-sh-19} that
+
+\begin{equation}\label{eq:tilted-sh-20}
+C>\frac{\sqrt{19}}6>\frac{29}{40}.
+\end{equation}
+
+Also
+
+\[
+B^2>5-9\left(\frac{37}{50}\right)^2
+=\frac{179}{2500}>\frac{16}{225}.
+\]
+
+The last gap is \(11/22500\). Since B is negative,
+
+\begin{equation}\label{eq:tilted-sh-21}
+B<-\frac4{15},\qquad \xi<\frac7{30}.
+\end{equation}
+
+These inequalities give a useful improved endpoint bound
+
+\begin{equation}\label{eq:tilted-sh-22}
+z<\frac{27}{100}.
+\end{equation}
+
+To verify it, if \(h\le1/40\), then
+\(s<9/40\) and \eqref{eq:tilted-sh-4} gives \(z<1/4\).
+If \(h\ge1/40\), then
+\(\xi\ge1/32+3z/4\); \eqref{eq:tilted-sh-21} therefore gives
+\(z<97/360<27/100\).
+
+Use \eqref{eq:tilted-sh-20} together with \(C_0<11/16\),
+\(2+\lambda>14/5\), and \eqref{eq:tilted-sh-14}. Since the width difference is positive,
+
+\[
+S_0+(2+\lambda)(C-C_0)
+>\frac{2669}{1200}+\frac{14}{5}
+\left(\frac{29}{40}-\frac{11}{16}\right)
+=\frac{559}{240}.
+\]
+
+Finally \(T\le s<63/200\). Substituting this, the stated height range and \eqref{eq:tilted-sh-22} into
+\eqref{eq:tilted-sh-13} gives
+
+\begin{equation}\label{eq:tilted-sh-23}
+\begin{aligned}
+|\mathcal S|
+&>\frac{559}{240}
+-\frac{8871}{10000}\frac{509}{10000}
+-\left(\frac{1839}{25000}+\frac{63}{400}\right)
+\frac{27}{100}\\
+&=\frac{666488123}{300000000}.
+\end{aligned}
+\end{equation}
+
+Its exact margin over the ordinary bound is
+
+\begin{equation}\label{eq:tilted-sh-24}
+\frac{666488123}{300000000}-G_0
+=\frac{518123}{300000000}>0.
+\end{equation}
+
+This contradicts \eqref{eq:tilted-sh-2} and excludes failure of the
+first energy condition throughout the stated height range.
+
+
+Both energy conditions in \cref{lem:tilted-initial-energy} therefore
+hold. That lemma gives $u\le1$ on the whole first quarter, and
+\cref{lem:tilted-first-unit-exclusion} excludes this tilted maximum.
+\end{proof}

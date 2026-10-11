@@ -1,0 +1,292 @@
+\section{Selecting polygons near a prescribed maximum}\label{sec:selection}
+
+Put $L=\pi/2$. A \emph{full maximum} is a cap maximizing $P_L$ over
+all downward caps. A \emph{joint maximum} is a pair $(U,\alpha)$
+maximizing $P_\alpha(U)$ over all caps and all $\alpha\in[L/2,L]$.
+We shall construct polygons converging to any prescribed maximum.
+This quantifier will also be needed in the equality argument.
+
+\subsection{Compactness and continuity}
+
+\begin{lemma}[Width bounds]\label{lem:selection-width}
+If $P_\alpha(U)\ge M/2$ and $L/2\le\alpha\le L$, then
+$M\le w_U<6$. After horizontal translation, $U$ lies in
+$[-3,3]\times[0,1]$.
+\end{lemma}
+
+\begin{proof}
+Since $f_U\le1$ and $N_\alpha(U)\ge0$, $P_\alpha(U)\le w_U/2$.
+Center the projection and write $w=w_U$. The baseline endpoints give
+$\sqrt2 h_U(L/2),\sqrt2 h_U(3L/2)\ge w/2$.
+The two walls at $L/2$ therefore give
+\[
+ N_\alpha(U)(x)\ge(w/2-\sqrt2-|x|)_+.
+\]
+For $\alpha=L/2$ the terminal first wall dominates this minimum;
+for larger $\alpha$ it is one of the visited two-wall minima.
+If $w\ge6$, the displayed tent is positive on $[-w/4,w/4]$, and
+\[
+ P_\alpha(U)\le\frac{(1+\sqrt2)w}{2}-\frac{3w^2}{16}.
+\]
+This quadratic decreases for $w\ge6$. Its value at six is
+$3\sqrt2-15/4<3/4<M/2$, a contradiction. Centering a cap of
+width less than six gives the asserted box.
+\end{proof}
+
+\begin{lemma}[Continuity of the score]\label{lem:selection-continuity}
+On the space of nonempty downward caps in a fixed bounded box,
+$P_\alpha(U)$ is jointly continuous in Hausdorff distance and in
+$\alpha\in[L/2,L]$.
+\end{lemma}
+
+\begin{proof}
+Take the box $[-B,B]\times[0,1]$. Its support functions are uniformly
+bounded and uniformly Lipschitz in angle. For $x\in[-B,B]$,
+\begin{equation}\label{eq:selection-tails}
+ (\min(a_t(x),b_t(x)))_+\le2B\min(\tan t,\cot t),\qquad
+ (a_\alpha(x))_+\le2B\cot\alpha.
+\end{equation}
+For example $h_U(t+L)\le B\sin t+\cos t$, so
+$b_t(x)\le(B+x)\tan t+1-\sec t\le2B\tan t$.
+The first wall gives the other tail bound and the terminal bound.
+
+If two cap supports differ by at most $\eta$, their walls differ by
+at most $\eta/\sin\delta$ on $[\delta,L-\delta]$.
+The omitted positive tails are at most $2B\tan\delta$. Taking
+maxima and minima preserves these estimates. Thus the full niche
+changes by at most
+\[
+ 4B\tan\delta+\frac{\eta}{\sin\delta}.
+\]
+For a varying endpoint below $L$, first restrict to a closed angular
+interval away from the axes. Uniform continuity there controls both
+the support change and the change of its upper limit. At $\alpha=L$
+the second estimate in \eqref{eq:selection-tails} makes the positive
+terminal wall tend uniformly to zero. Hence the complete barriers
+converge uniformly on the horizontal box.
+
+Projection endpoints converge because they are horizontal supports.
+The roofs converge in $L^1$: Hausdorff convergence of bounded convex
+sets gives convergence of their indicators almost everywhere away
+from the limiting boundary, and integrating the vertical fibers gives
+the roof assertion. If the limit is degenerate, the approximating
+convex-set areas tend to zero and the same conclusion follows.
+The symmetric difference of the moving middle intervals has length
+tending to zero. Bounded roofs and barriers now give convergence of
+both integrals defining the score.
+\end{proof}
+
+\begin{proposition}[Attainment]\label{lem:selection-maximum}
+Full and joint maxima exist. A joint maximum can be chosen with its
+angle largest among all joint maximizing angles.
+\end{proposition}
+
+\begin{proof}
+The reference cap has $P_L(\KR)=M/2$. By
+\cref{lem:selection-width}, every competitor at least this good can
+be centered in $[-3,3]\times[0,1]$. Blaschke's compactness theorem
+applies to the nonempty compact convex subsets of this box. Their
+downward closure is preserved under Hausdorff limits: approximate
+$(x,y)$ by $(x_n,y_n)$ and lower its ordinate to
+$\min(y',y_n)$ for $0\le y'\le y$.
+The score continuity lemma therefore gives a maximum in the box,
+both with $\alpha=L$ fixed and with $\alpha\in[L/2,L]$ variable.
+Width bounds remove the box restriction from the conclusion.
+The joint maximizing level set is compact; maximize its angle
+coordinate to obtain the final assertion.
+\end{proof}
+
+\subsection{Canonicalization and used supports}
+
+\begin{lemma}[Chord and height reduction]\label{lem:selection-canonical}
+For any positive-width cap $U$ and fixed $0<\alpha\le L$, there
+is a cap $U^\sharp$ with the same projection, height one, and an
+affine roof on $J_U$, such that $P_\alpha(U^\sharp)\ge P_\alpha(U)$.
+Applied to a full or joint maximum, the construction preserves its
+score and its angle.
+\end{lemma}
+
+\begin{proof}
+Let $q$ join the roof values at the endpoints $j_-,j_+$ of $J_U$.
+Concavity gives $f_U\ge q$ on $J_U$ and $f_U\le q$ outside it.
+For the latter assertion, write $j_-$ as a convex combination of
+$x<j_-$ and $j_+$ and solve the concavity inequality for $f_U(x)$;
+the right side follows by exchanging endpoints. In particular
+$q\ge0$ throughout the projection.
+The cap $U^{\rm c}=U\cap\{y\le q(x)\}$ therefore has the same
+projection and exterior roof. Inclusion decreases every support,
+hence every visited wall and the terminal first wall. Its barrier
+decreases, so its score increases.
+
+If $H$ is the height of $U^{\rm c}$, put $\varepsilon=1-H$ and
+$U^\sharp=U^{\rm c}+[0,\varepsilon]e_y$.
+Its roof rises by $\varepsilon$. Supports in the two visited
+families rise by $\varepsilon\sin t$ and $\varepsilon\cos t$;
+both raw walls, including the terminal wall, rise by exactly
+$\varepsilon$. The maximum with the floor gives
+\[
+ 0\le N_\alpha(U^\sharp)-N_\alpha(U^{\rm c})\le\varepsilon.
+\]
+The exterior and middle intervals have equal length, so the exterior
+gain pays this middle penalty. The projection stays fixed, the
+middle roof stays affine, and the height becomes one. Maximality
+forces equality of scores when the starting cap is a maximum.
+\end{proof}
+
+We call a height-one cap with affine middle roof \emph{canonical}.
+Write $f_U(x)=mx+c$ on its middle interval and let $\theta_c$ be
+the normal angle of this facet, so $\cot\theta_c=-m$.
+
+\begin{lemma}[Top localization]\label{lem:selection-top}
+At every positive full or joint maximum the top face meets $J_U$.
+For a canonical maximum the higher middle endpoint has height one.
+\end{lemma}
+
+\begin{proof}
+Suppose the top face starts at $a>j_+$. Adjoin $(j_+,H)$ and its
+downward segment, and take the convex hull. A changed upward support
+must have negative horizontal component, because the old top point
+$(a,H)$ dominates the new point in all other directions. Its new
+support is $\ip{(j_+,H)}{n}$; for $x\in J_U$ and $y\ge0$,
+\[
+ \ip{(j_+,H)-(x,y)}{n}-1
+ =(j_+-x)n_x+(H-y)n_y-1\le0.
+\]
+Thus changed second walls contribute no positive niche on $J_U$;
+first walls and the terminal wall are unchanged. The barrier is
+unchanged, whereas the exterior roof strictly increases on
+$(j_+,a)$. If the top lies left of $J_U$, insert $(j_-,H)$.
+Changed supports then have positive horizontal component and the
+same inequality makes their first walls, including the terminal
+wall, nonpositive on $J_U$. Both cases contradict maximality.
+\end{proof}
+
+\begin{lemma}[Saturation]\label{lem:selection-saturation}
+For a canonical joint maximum $(U,\alpha)$,
+\begin{equation}\label{eq:selection-saturation}
+ \begin{gathered}
+ U=U^{\rm sat}\cap\{y\le mx+c\},\\
+ U^{\rm sat}=(I_U\times[0,1])\cap
+ \bigcap_{0\le t\le\alpha} H_t,\\
+ H_t=\{z:\ip z{u(t)}\le h_U(t),\
+             \ip z{u^\perp(t)}\le h_U(t+L)\}.
+ \end{gathered}
+\end{equation}
+On either unused open normal arc $(\alpha,L)$ or $(L+\alpha,\pi)$,
+the upper curvature measure is zero except possibly at $\theta_c$.
+Thus the support is harmonic on the unused arcs away from that normal.
+\end{lemma}
+
+\begin{proof}
+The saturated cap contains $U$, retains its baseline, and has the
+same support in each used direction: its defining inequalities give
+one bound and inclusion gives the opposite bound. In particular it
+has the same height and complete barrier. Maximality makes its
+exterior roof equal to $f_U$, since a strict increase at an interior
+exterior point would increase an area integral. Continuity gives
+equality at $j_\pm$; cutting to their chord now proves
+\eqref{eq:selection-saturation}.
+Every boundary point of $U^{\rm sat}$ has an active constraint from
+the compact family of defining normals. At arclength almost every
+boundary point its outer normal is unique, so equals an active
+normal. There is consequently no surface-area measure on unused
+open arcs. The chord cut only adds its facet normal $\theta_c$.
+The distributional identity $h''+h=0$ on the remaining arcs is the
+stated harmonicity.
+\end{proof}
+
+\subsection{A penalty that retains any chosen maximum}
+
+Fix a full maximum $U_*$, or a joint maximum $(U_*,\alpha)$ and
+keep this angle fixed. Choose a horizontal box with unit slack
+beyond both projection endpoints. For $n=2^k$ set
+$t_j=j\alpha/n$ and use the sampled barrier
+\[
+ N_{k,\alpha}(V)=\max\{0,
+       \max_{0<j<n}\min(a_{t_j},b_{t_j}),a_\alpha\}.
+\]
+For $\alpha=L$ the last wall is redundant. Let $P_{k,\alpha}$ be
+the corresponding score. Sample outer normals on the two source
+grids and on an independent dyadic grid of the whole upper semicircle:
+\[
+ \Gamma_k=\{jL/n:0\le j\le2n\}
+       \cup\{t_j,L+t_j:0\le j\le n\}.
+\]
+These sets are nested, contain the axes and top, and have dense union.
+
+\begin{lemma}[Uniform grid error and circumscription]\label{lem:selection-grid}
+On the fixed boxed cap domain,
+\[
+ 0\le P_{k,\alpha}(V)-P_\alpha(V)\le e_k,
+ \qquad e_k\longrightarrow0.
+\]
+Circumscription by the normals $\Gamma_k$ preserves every sampled
+support, projection, and sampled barrier, and increases the exterior
+roof. It therefore increases $P_{k,\alpha}$.
+\end{lemma}
+
+\begin{proof}
+On $[\delta,L-\delta]$ the wall functions have a common modulus of
+continuity in angle. A mesh of size $\alpha/2^k$ approximates their
+maximum uniformly there. Equation \eqref{eq:selection-tails} makes
+the omitted endpoint contributions uniformly small. The terminal
+wall is already included exactly. First choose $\delta$ and then
+the mesh; this gives uniform barrier approximation. Multiplying
+its error by the bounded middle length proves the score estimate.
+The circumscribed intersection contains the original cap and retains
+each sampled support: an old attaining point remains in it, and the
+corresponding defining halfplane gives the upper bound. The axis
+supports preserve the projection, and all barrier supports are sampled.
+\end{proof}
+
+For $s\in\Gamma_m$ give its level-$m$ sample weight
+$\nu_m=2^{-m-1}/|\Gamma_m|$, and define the persistent penalty
+\begin{equation}\label{eq:selection-penalty}
+ D_k(V,U_*)=\sum_{m=0}^k\nu_m\sum_{s\in\Gamma_m}
+                   (h_V(s)-h_{U_*}(s))^2.
+\end{equation}
+The total weight is at most one. A normal first sampled at an early
+level keeps that positive weight at every later level. In particular
+\begin{equation}\label{eq:selection-persistence}
+ \nu_m(h_V(s)-h_{U_*}(s))^2\le D_k(V,U_*)
+ \quad(s\in\Gamma_m,\ m\le k).
+\end{equation}
+
+\begin{theorem}[Selection at a prescribed maximum]\label{thm:selection-prescribed}
+There are levels $k_i\to\infty$, coefficients $\eta_i\downarrow0$,
+and grid polygons $U_i$ converging in Hausdorff distance to the
+specified cap $U_*$, such that $U_i$ maximizes
+\[
+ P_{k_i,\alpha}(V)-\eta_iD_{k_i}(V,U_*)
+\]
+over every cap in the slack box. No middle affinity or regularity
+is required of the selected polygons.
+\end{theorem}
+
+\begin{proof}
+Choose $\eta_i=1/(i+1)$ and $k_i\ge i$ so that $e_{k_i}\le\eta_i^2$.
+Compactness and continuity give a boxed maximum of the penalized
+objective. Circumscription increases its score and preserves its
+penalty, so a maximizing cap can be taken to be a grid polygon.
+The circumscription of $U_*$ has zero penalty and sampled score at
+least $P_\alpha(U_*)$. Hence
+\[
+ P_\alpha(U_*)\le P_{k_i,\alpha}(U_i)-\eta_iD_{k_i}(U_i,U_*)
+ \le P_\alpha(U_*)+e_{k_i}-\eta_iD_{k_i}(U_i,U_*),
+\]
+where the second inequality uses the maximality of $U_*$ at its
+fixed angle. Thus $D_{k_i}(U_i,U_*)\le\eta_i\to0$.
+Any Hausdorff cluster cap has, by \eqref{eq:selection-persistence},
+the same support as $U_*$ at every sampled normal. Density gives
+equality on the upper semicircle. For a downward cap, downward
+supports are determined by its baseline and horizontal endpoints;
+the upper supports consequently determine the entire cap. Every
+cluster cap is $U_*$, which proves convergence of the whole sequence.
+Its artificial box sides are inactive for all sufficiently large $i$.
+\end{proof}
+
+If all support values have absolute value at most $B$, changing
+sampled supports by at most $r$ changes the penalty by at most
+$4Br+r^2$. If only one normal changes, multiply this bound by its
+total persistent weight. These bounds tend to zero after multiplication
+by $\eta_i$ and will account for the error in the polygon variations.

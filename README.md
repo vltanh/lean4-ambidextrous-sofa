@@ -17,6 +17,9 @@ ordinary problem; its Lean formalization comes from
 [lean4-moving-sofa](https://github.com/vltanh/lean4-moving-sofa) and is included here. No person has checked the
 proofs; Lean's kernel checks all of them.
 
+The [draft paper](docs/paper/main.pdf) presents the pen-and-paper proof of optimality and uniqueness.
+[Build instructions and review notes](docs/paper/README.md) accompany its source.
+
 ![Romik's ambidextrous sofa sliding along a hallway, turning right at the first corner, sliding down, and turning left at the second corner](docs/figures/ambidextrous-moving.gif)
 
 Each motion of Romik's sofa turns it by exactly a quarter turn, so it can also travel along one hallway that

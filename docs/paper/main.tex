@@ -1,0 +1,106 @@
+\pdfoutput=1
+\documentclass[11pt,reqno]{amsart}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[final]{microtype}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{aliascnt}
+\usepackage{xcolor}
+\usepackage[hyphens]{url}
+\usepackage{xurl}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black,pdftitle={Optimality and uniqueness of Romik's ambidextrous sofa},pdfauthor={The-Anh Vu-Le}]{hyperref}
+\usepackage[capitalize,noabbrev]{cleveref}
+
+\input{macros}
+
+% ---------------------------------------------------------------- theorem environments
+% All environments share one counter (numbered within sections); the alias counters let cleveref
+% recover the type of each label.
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newcommand{\shared}[3]{%
+  \newaliascnt{#1}{theorem}\newtheorem{#1}[#1]{#2}\aliascntresetthe{#1}\crefname{#1}{#2}{#3}}
+\shared{proposition}{Proposition}{Propositions}
+\shared{lemma}{Lemma}{Lemmas}
+\shared{corollary}{Corollary}{Corollaries}
+\theoremstyle{definition}
+\shared{definition}{Definition}{Definitions}
+\theoremstyle{remark}
+\shared{remark}{Remark}{Remarks}
+
+\emergencystretch=1.5em
+\setlist[enumerate]{leftmargin=*,itemsep=2pt,topsep=3pt}
+\setlist[itemize]{leftmargin=*,itemsep=2pt,topsep=3pt}
+\numberwithin{equation}{section}
+
+% ---------------------------------------------------------------- title
+\title{Optimality and uniqueness of Romik's ambidextrous sofa}
+
+\author{The-Anh Vu-Le}
+% Affiliation and e-mail are the author's to fill in before submission:
+\address{Siebel School of Computing and Data Science, University of Illinois
+Urbana-Champaign, Urbana, IL 61801, USA} \email{vltanh@illinois.edu}
+
+\date{October 2026}
+\subjclass[2020]{Primary 52A38, 52A40; Secondary 52A10, 49Q10}
+\keywords{moving sofa problem, ambidextrous sofa, Romik's sofa, extremal shapes, uniqueness, convex
+bodies, support functions, variational methods}
+
+\begin{document}
+
+\begin{abstract}
+  The ambidextrous moving sofa problem asks for the largest area of a compact
+  connected planar shape that can be moved around the right-angled corner of a
+  hallway of unit width that turns right, and also, from the same starting
+  orientation, around one that turns left. Romik constructed in 2016 a shape of
+  area $\Mc = 1 + 4Y^2 + \arctan Y = 1.64495\ldots$, where $Y$ is the positive
+  root of $4Y^3 + 3Y = 1$, and proposed it as a possible solution. We prove that
+  Romik's sofa is optimal: every ambidextrous sofa has area at most $\Mc$. It is
+  also the only optimal shape: an ambidextrous sofa of area $\Mc$ is a rotated
+  and translated copy of Romik's sofa, and each of the two motions that move it
+  reaches a full quarter turn in the appropriate direction at some time. The proof reduces a sofa to two convex
+  caps, one for each hallway, bounds a score of each cap by $\Mc/2$, and
+  classifies the caps of score $\Mc/2$. It uses one result from the
+  literature, Baek's theorem that Gerver's sofa is optimal for the ordinary
+  problem.
+\end{abstract}
+
+\maketitle
+
+\input{sections/01-introduction}
+\input{sections/02-setting}
+\input{sections/03-reduction}
+\input{sections/04-selection}
+\input{sections/05-variations}
+\input{sections/06-full-turn}
+\input{sections/07-calibration}
+\input{sections/08-partial-turn}
+\input{sections/09-equality}
+\input{sections/10-recovery}
+\input{sections/11-questions}
+
+\appendix
+\crefalias{section}{appendix}
+\crefalias{subsection}{appendix}
+\crefname{appendix}{Appendix}{Appendices}
+\Crefname{appendix}{Appendix}{Appendices}
+\input{sections/a0-ordinary-sofa}
+\input{sections/a1-romik}
+\input{sections/a2-full-turn-estimates}
+\input{sections/a3-variation-estimates}
+\input{sections/a4-partial-turn-estimates}
+\input{sections/a5-horizontal-estimates}
+\input{sections/a6-preliminary-estimates}
+\input{sections/a7-tilted-selector}
+
+\bibliographystyle{amsplain}
+\bibliography{refs}
+
+\end{document}

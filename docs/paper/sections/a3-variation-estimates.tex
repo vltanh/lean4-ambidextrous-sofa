@@ -1,0 +1,115 @@
+\section{The low middle-height estimate}\label{sec:variation-estimates}
+
+\begin{lemma}\label{lem:variation-low-height}
+Let $U$ be a height-one downward cap with affine middle roof.
+If its higher middle endpoint has height one and its lower middle
+endpoint has height at most $1/2$, then, for every
+$\alpha\in[\pi/4,\pi/2]$,
+\[
+ P_\alpha(U)<\frac{31233}{39200}<\frac45.
+\]
+\end{lemma}
+
+\begin{proof}
+The barrier dominates the positive two-wall tent at $\pi/4$.
+The resulting one-angle upper comparison is invariant under
+horizontal reflection, since reflection exchanges its two diagonal
+supports. We may therefore center the projection and put
+\[
+ I=[-2C,2C],\quad J=[-C,C],\quad A(C)=1,\quad A(-C)=a\le1/2.
+\]
+For $x=-2C+z$, $0\le z\le C$, concavity below the middle chord gives
+\[
+ A(x)\le(3a-1)/2+(1-a)z/(2C)\le1/4+z/(4C).
+\]
+The exterior reward is consequently at most $11C/8$.
+For $C\le1/2$ this is at most $11/16$, proving the claim in
+that range. Suppose $C\ge1/2$, and write
+\[
+ \max_U(x+y)=2C+u,\qquad\max_U(-x+y)=2C+v.
+\]
+The baseline endpoints, $(C,1)$, and the preceding roof bound give
+\[
+ \max(0,1-C)\le u\le1,\qquad0\le v\le1/4.
+\]
+For the last upper bound, on the left wing
+$-x+A(x)\le2C+1/4-(1-1/(4C))z$.
+On the middle chord it is at most $C+1/2\le2C+1/4$,
+and the right wing gives an even smaller bound.
+
+On the right wing set $z=2C-x$; then
+$A(x)\le\min(1,u+z)$. Since $1-u\le C$, its integral is at most
+$C-(1-u)^2/2$. On the left wing compare $v+z$ with
+$1/4+z/(4C)$. Their crossing is
+$z_0=(1/4-v)/(1-1/(4C))\le C$. The missing triangle gives
+\[
+ R\le\frac{11C}{8}-\frac{(1-u)^2}{2}-\frac{(1/4-v)^2}{2}.
+\]
+The actual diagonal tent is $(h-|x-d|)_+$, where
+\[
+ h=2C+(u+v)/2-\sqrt2,\qquad d=(u-v)/2.
+\]
+Its apex lies in $J$. If $1/2\le C\le23/20$, its left tail
+cannot reach the left endpoint, since
+$h-C-d=C+v-\sqrt2\le7/5-\sqrt2<0$.
+Writing $z=C+u-\sqrt2$, exact integration therefore gives the
+upper comparison
+\begin{equation}\label{eq:variation-low-function}
+ P_\alpha(U)\le F(C,u,v):=\frac{11C}{8}
+  -\frac{(1-u)^2}{2}-\frac{(1/4-v)^2}{2}-h_+^2+\frac{z_+^2}{2}.
+\end{equation}
+
+If $z\le0$, put $x_0=1-u$, $y_0=1/4-v$ and
+$H=2C+5/8-\sqrt2>0$. With $w=(x_0+y_0)/2$,
+\[
+ \frac{x_0^2+y_0^2}{2}+(H-w)_+^2
+ \ge w^2+(H-w)_+^2\ge H^2/2.
+\]
+The second inequality follows by completing the square for $w\le H$,
+and by $w^2\ge H^2$ for $w\ge H$.
+Completing the square in $C$ now yields
+\[
+ F\le\frac{11\sqrt2}{16}-\frac{99}{512}
+   <\frac{2827}{3584}<\frac{31233}{39200},
+\]
+using $\sqrt2<10/7$.
+
+For $z>0$, the allowed interval in $u$ starts at $u_0=\sqrt2-C$.
+Here $h>0$, and direct differentiation gives
+\[
+ F_u=1-C-(u+v)/2,\qquad F_{uu}=-1/2.
+\]
+Its maximum is either at $u_0$, already covered, or at
+$u_*=2-2C-v$. The upper endpoint introduces no extra case,
+since $C\ge1/2$ implies $u_*\le1$.
+An interior stationary point in the clipped range satisfies
+$C+v\le2-\sqrt2$. Hence
+$1/4-v\ge\sqrt2-5/4>0$.
+Discard the other nonnegative losses in
+\eqref{eq:variation-low-function} to get
+\[
+ F(C,u_*,v)\le\frac{11(2-\sqrt2)}8
+                     -\frac12(\sqrt2-5/4)^2
+  =\frac{31}{32}-\frac{\sqrt2}{8}
+  <\frac{127}{160}<\frac{31233}{39200},
+\]
+using $\sqrt2>7/5$.
+
+Finally, for $C\ge23/20$ the baseline diagonal tent alone gives
+\[
+ P_\alpha(U)\le
+ \begin{cases}
+  11C/8-(2C-\sqrt2)^2,&23/20\le C\le\sqrt2,\\
+  (11/8+2\sqrt2)C-3C^2,&C\ge\sqrt2.
+ \end{cases}
+\]
+Both expressions decrease on their stated ranges and agree at
+$C=\sqrt2$. Their largest value is therefore at $C=23/20$.
+Using $\sqrt2<99/70$ gives
+\[
+ P_\alpha(U)\le\frac{253}{160}-(23/10-\sqrt2)^2
+  <\frac{253}{160}-(31/35)^2=\frac{31233}{39200}.
+\]
+Every rational comparison is strict; in particular
+$4/5-31233/39200=127/39200>0$.
+\end{proof}

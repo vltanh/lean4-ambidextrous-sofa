@@ -13,7 +13,7 @@ How this formalization was made, from the run log and the session transcripts. T
     #3), ending with a manuscript ([archive](archive/README.md)).
   - On 10 October it wrote the draft, uncompiled, in 13 commits of this repository's pull request #1 (`4f2a3f6` to
     `a609db1`): 514 modules, 51 of them copies of lean4-moving-sofa's library, about 132,000 lines.
-- Claude Opus 5.5 (Anthropic, model `claude-opus-5-5`), in Claude Code 2.1.296, did the rest in two sessions. The
+- Claude Opus 5.5 (Anthropic, model `claude-opus-5-5`), in Claude Code 2.1.296, compiled and simplified the proof in two sessions. The
   first followed the [formalize-math-paper](https://github.com/vltanh/formalize-math-paper) skill (its version of 7
   October 2026) for an existing uncompiled draft; the second, on 10 and 11 October, simplified the proof.
 - No person has reviewed the proofs or the statements; Lean's kernel checks every proof.
@@ -124,6 +124,17 @@ How this formalization was made, from the run log and the session transcripts. T
     explicitly, and the limit of `tan x / x` is again proved from the derivative of `tan`, since
     `Real.tendsto_tan_div_nhdsNE_zero` is newer than `v4.35.0-rc3`.
 - At the owner's request the README was shortened and no longer tells how the work was done; this page does.
+
+## The paper (11 October 2026)
+
+- The owner asked for a paper like lean4-moving-sofa's, then for a simple first draft as Claude's credit ran low.
+- Claude Opus 5.5 prepared the LaTeX scaffold, bibliography, six figures, and notation and caption notes. Its session reached the weekly usage limit before writing the sections.
+- Codex, based on GPT-6, recovered those notes and first completed a 27-page outline. The owner then asked for the complete pen-and-paper proof and for the reference paper's structure, especially its introduction and appendices.
+- The resulting [107-page paper](paper/main.pdf) has eleven main sections, separate optimality and uniqueness strategies, an organization subsection, and eight mathematical appendices. The [source and build instructions](paper/README.md) and [review record](paper/REVIEW.md) accompany it.
+- Three sub-agents worked on the cap argument, selection and variations, and terminal-angle estimates. Each reviewed sections written by another; the coordinating agent wrote the introduction, setting, reduction, reference construction, preliminary estimates, and body recovery, and integrated the reviews. At most three sub-agents ran at once.
+- The first round's recorded clock readings run from 08:52 CDT to about 09:07 CDT. The rewrite finished at 09:51 CDT; its exact starting time was not recorded. Exact model variant, token totals, sub-agent working times, and costs were not available and are not estimated.
+- The initial round checked the existing proof library and figures. The revised PDF passes reference, bibliography, and overflow checks; its 31-entry source archive compiles separately with `pdflatex` alone. Representative pages were inspected visually.
+- The reviews found no unresolved substantive mathematical error. The proof library and archived research manuscript are unchanged; human mathematical review remains outstanding.
 
 ## Figures
 

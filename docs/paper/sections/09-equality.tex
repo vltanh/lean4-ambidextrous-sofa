@@ -1,0 +1,85 @@
+\section{Optimality and the equality caps}\label{sec:equality}
+
+The cap theorem now applies separately to the two caps of the
+original body. Its equality statement also forces both effective
+angles to be full quarter turns. The following section uses these caps to recover the hull and the
+body itself, including every boundary point.
+
+\begin{theorem}[Optimality]\label{thm:optimality}
+Every ambidextrous sofa has area at most $\Mc$. The value $\Mc$ is
+attained by $\SR$.
+\end{theorem}
+
+\begin{proof}
+The small-area branch of \cref{prop:reduction} is strictly below
+$\Mc$. This comparison uses exact inequalities:
+\[
+ \sqrt2<\frac85<\Mc.
+\]
+For example, $Y>2/7$, the cubic equation, and
+$\arctan Y\ge Y-Y^3/3$ give
+\[
+ \Mc\ge\frac{11}{12}+4Y^2+\frac54Y
+       >\frac{11}{12}+\frac{16}{49}+\frac5{14}
+       =\frac{941}{588}>\frac85.
+\]
+The arctangent estimate follows by differentiating
+$\arctan y-y+y^3/3$ on $[0,\infty)$; its derivative is
+$y^4/(1+y^2)\ge0$.
+
+In the remaining branch, the reduction gives
+\[
+ |S|\le P_\alpha(U)+P_\gamma(V).
+\]
+Both caps satisfy the hypotheses of \cref{thm:cap-bound}, so each
+score is at most $\Mc/2$. This proves the upper bound. The explicit
+construction in \cref{thm:reference} supplies an ambidextrous sofa
+$\SR$ of area $\Mc$.
+\end{proof}
+
+\begin{proposition}[The two original equality caps]\label{prop:equality-caps}
+If an ambidextrous sofa has area $\Mc$, then in the normalization
+of \cref{sec:reduction} its two caps satisfy
+\[
+ \alpha=\gamma=\frac\pi2,\qquad
+ U=\KR+(a,0),\qquad V=\KR+(b,0)
+ \quad\text{for some }a,b\in\R.
+\]
+All four terms in the deficit identity \eqref{eq:four-term-deficit}
+vanish for $c=\Mc$.
+\end{proposition}
+\begin{proof}
+
+Suppose $|S|=\Mc$. In the normalization of \cref{sec:reduction},
+$|T|=\Mc>\sqrt2$. Apply the exact deficit
+\eqref{eq:four-term-deficit} with $c=\Mc$. Every term on its
+right-hand side is nonnegative: two by the scalar cap theorem,
+one by the positive-part formula \eqref{eq:partition-defect}, and
+one because it is the area of a set. Hence all four vanish:
+\begin{equation}\label{eq:equality-deficits}
+ P_\alpha(U)=P_\gamma(V)=\frac\Mc2,\qquad
+ D_{\rm part}=0,\qquad |E\setminus T|=0.
+\end{equation}
+In particular, \cref{thm:cap-equality} gives
+\begin{equation}\label{eq:original-equality-caps}
+ \alpha=\gamma=\frac\pi2,\qquad
+ U=\KR+(a,0),\qquad V=\KR+(b,0)
+ \quad\text{for some }a,b\in\R.
+\end{equation}
+These are the caps defined from $\conv T$ in
+\eqref{eq:actual-caps}.
+
+For completeness, vanishing of the partition defect gives the
+following pointwise relations almost everywhere:
+\[
+ \begin{array}{ll}
+ d_V\le N_\alpha(U),\quad d_U\le N_\gamma(V),& x\in J,\\
+ N_\alpha(U)\le d_V,\quad N_\gamma(V)\le d_U,&x\in I\setminus J.
+ \end{array}
+\]
+The vanishing filling defect says that the physical envelope differs
+from $T$ by a null set. Exact recovery requires the additional
+topological argument below.
+
+
+\end{proof}

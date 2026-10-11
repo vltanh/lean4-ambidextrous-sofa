@@ -1,0 +1,376 @@
+\section{Partial turns and the terminal wall}\label{sec:partial-turn}
+
+Put $L=\pi/2$. In this section the whole terminal wall is retained:
+\[
+ \begin{aligned}
+ N_\alpha(U)(x)&=\max\{n_\alpha(U)(x),a_\alpha(x)\},\\
+ n_\alpha(U)(x)&=\max\{0,\sup_{0<t<\alpha}\min(a_t(x),b_t(x))\}.
+ \end{aligned}
+\]
+The two functions agree at $\alpha=L$, because $a_L\le0$.
+Horizontal reflection exchanges the two wall families. At a proper
+angle it does not preserve the objective with its first terminal wall.
+All changes of orientation below concern a symmetric finite-angle
+comparison or the support equations, and keep this distinction.
+
+\subsection{The remaining geometry of a proper maximum}
+
+Fix a joint maximizing pair $(U,\alpha)$, with $\alpha<L$.
+The canonical reductions of \cref{lem:selection-canonical} keep its
+own angle and score. Center its projection and write
+\[
+ \begin{gathered}
+ I_U=[-2C,2C],\quad J_U=[-C,C],\\
+ f_U(-C)=1-h_L,\quad f_U(C)=1-h_R,\\
+ h_L,h_R\ge0,\quad\min(h_L,h_R)=0.
+ \end{gathered}
+\]
+The saturated description in \cref{lem:selection-saturation} is used
+throughout. In particular an unused normal interval has zero charged
+curvature, apart from a possible uncharged middle facet.
+
+\begin{lemma}[Angle and width cuts]\label{lem:partial-cuts}
+For a canonical joint maximum at a proper angle,
+\[
+ \alpha>\arctan(8/3),\qquad
+ \frac{1001}{2000}<C<\frac{37}{50},\qquad
+ h_L+h_R<\frac{17}{50}.
+\]
+\end{lemma}
+\begin{proof}
+The reference cap is a competitor, so the maximizing score is at
+least $\Mc/2$. The initial-angle estimate in
+\cref{app:partial-initial} is strictly below $\Mc/2$ for
+$\pi/4\le\alpha\le\arctan(8/3)$. All three angles
+$\pi/8,\pi/4,3\pi/8$ have therefore been visited.
+The finite-angle roof and triangle estimates in
+\cref{lem:preliminary-cuts} give $1001/2000<C<4/5$ and
+$h_L+h_R<17/50$.
+They apply to the partial barrier because it dominates the same
+three tents. If the high middle endpoint is on the left, reflect
+the cap and its actual barrier together in this comparison.
+The endpoint-pressure equations are merely relabeled; the outgoing
+wall is not changed to the wall of another variational problem.
+The revised floor-loss calculation in \cref{app:partial-width}
+then excludes $C\ge37/50$.
+\end{proof}
+
+\begin{lemma}[Completion of a descending middle]\label{lem:partial-completion}
+Suppose $h_R=h>0$ and put
+$\theta_0=L-\arctan(h/(2C))$. If
+$\alpha\ge\theta_0$ or $h\ge1-\sin\alpha$, then
+$N_\alpha(U)\ge n_L(U)$ on $J_U$ and
+$P_\alpha(U)\le P_L(U)$.
+Otherwise $0<h<1-\sin\alpha$ and $\alpha<\theta_0$.
+\end{lemma}
+\begin{proof}
+The negative affine middle has its top endpoint at $(-C,1)$.
+Saturation gives, on the missing first-normal arc,
+\[
+ h_U(t)=
+ \begin{cases}
+ C\cos t+(1-h)\sin t,&\alpha<t<\theta_0,\\
+ -C\cos t+\sin t,&\theta_0<t<L.
+ \end{cases}
+\]
+The first case is omitted when $\alpha\ge\theta_0$.
+No charged extension of the middle facet into an unused normal arc
+is possible. The second branch has first wall
+$(-C-x)\cot t+1-\csc t\le0$ on $J_U$.
+On the first branch put $z=C-x\in[0,2C]$; its wall is
+\[
+ A_z(t)=1-h+\frac{z\cos t-1}{\sin t},\qquad
+ A_z'(t)=\frac{\cos t-z}{\sin^2t}.
+\]
+For $z\ge\cos\alpha$ it decreases after $\alpha$, and is at
+most the retained terminal wall. For $0\le z<\cos\alpha$ its
+maximum on $[\alpha,L]$ is
+$1-h-\sqrt{1-z^2}\le1-h-\sin\alpha$.
+Under the asserted height condition this is nonpositive. Every
+missing two-wall minimum is consequently bounded by
+$\max(0,a_\alpha)$, proving the pointwise comparison and the
+score inequality.
+\end{proof}
+
+Discard the completed descending branch for the moment. In every
+other case set
+\begin{equation}\label{eq:partial-tail-data}
+ c=\cos\alpha,\quad s=\sin\alpha,\quad H=1-h_R,
+ \quad d=\frac{1-Hs}{c},\quad w=c-d.
+\end{equation}
+Then $s<H\le1$, $0<d<c$ and $0<w<c/2$.
+For a horizontal or rising middle $H=1$; for a descending one
+these inequalities follow from the residual alternative in
+\cref{lem:partial-completion}.
+Let $T_L,T_R$ be the height-one top overhangs outside $J_U$.
+They vanish on a strictly lower middle side. Immediately after
+$\alpha$ the first support is the point $(b,H)$, where
+$b=C+T_R$; in the descending case this remains true up to
+$\theta_0$. The companion support after $\alpha$ is the left
+endpoint $(-2C,e_L)$, and has no terminal atom.
+If $\tau$ is the horizontal length of the first terminal facet,
+its endpoints and shifted endpoints are
+\begin{equation}\label{eq:partial-terminal-facet}
+ (b,H),\ (b+\tau,H-\tau c/s),\qquad
+ B_+=(b-c,H-s),\quad B_-=B_++(\tau,-\tau c/s).
+\end{equation}
+In particular
+\begin{equation}\label{eq:partial-terminal-wall}
+ a_\alpha(-C+z)=\frac cs(2C+T_R-d-z),\qquad
+ r_0=b-d
+\end{equation}
+is the terminal wall and its zero.
+
+\begin{lemma}[Top projection]\label{lem:partial-top-projection}
+For the residual geometry above, $T_L+2T_R\le d$ and $T_R<d$.
+\end{lemma}
+\begin{proof}
+By \cref{cor:variation-projection},
+\[
+ 2C-T_L-T_R\ge|\{x\in J_U:N_\alpha(U)(x)>0\}|
+       \ge|J_U\cap(-\infty,r_0)|.
+\]
+If $T_R\ge d$, the last interval has length $2C$, forcing
+$T_L=T_R=0$, contrary to $T_R\ge d>0$.
+Thus $T_R<d$. Also $r_0>C-c>0$, and the last interval has
+length $2C+T_R-d$. Rearrangement proves the result.
+\end{proof}
+
+\subsection{One-sided angle variations and the terminal facet}
+
+\begin{lemma}[The angle derivative with ties]\label{lem:partial-angle-derivative}
+Let $E=\{x\in J_U:a_\alpha(x)>n_\alpha(U)(x)\}$ and
+$Z=\{x\in J_U:a_\alpha(x)=n_\alpha(U)(x)\}$.
+At a proper angle the right derivative, with the cap fixed, is
+\[
+ \partial_+P_\alpha(U)
+ =-\frac1{s^2}\left[
+       \int_E(x-(B_+)_x)\,\dd x
+       +\int_Z(x-(B_+)_x)_+\,\dd x\right].
+\]
+At a joint maximum the bracket is nonnegative.
+\end{lemma}
+\begin{proof}
+The right support derivative chooses the upper/left endpoint of
+the supporting face. Uniformly on $J_U$,
+$a_{\alpha+\varepsilon}(x)=a_\alpha(x)
++\varepsilon(x-(B_+)_x)/s^2+o(\varepsilon)$.
+If $a_\alpha>n_\alpha$, the terminal companion wall is strictly
+lower, since otherwise its limit from earlier angles would already
+give $n_\alpha\ge a_\alpha$. Newly visited corners therefore
+cannot alter the first-order terminal derivative.
+If $a_\alpha<n_\alpha$, the old history supplies a strict gap,
+giving derivative zero. On a tie,
+\[
+ \max(n_\alpha,a_{\alpha+\varepsilon})\le
+ N_{\alpha+\varepsilon}\le
+ \max(n_\alpha,\sup_{0\le t\le\varepsilon}a_{\alpha+t});
+\]
+both bounds have derivative $((x-(B_+)_x)/s^2)_+$.
+The supports have locally bounded one-sided derivatives, and the
+angle denominators are bounded away from zero. The quotients are
+uniformly bounded on $J_U$, so dominated convergence gives the
+integrated formula. Its sign follows from maximality.
+\end{proof}
+
+\begin{lemma}[A short facet for each prescribed maximum]\label{lem:partial-facet}
+Every residual canonical proper-angle joint maximum satisfies
+$\tau\le w$. No largest-angle choice is required.
+\end{lemma}
+\begin{proof}
+The terminal corner $z_\alpha$ satisfies
+\[
+ (z_\alpha)_x-(B_+)_x
+ =s[1-(b+2C)s+(H-e_L)c]<0.
+\]
+Indeed $b\ge C>1/2$, $H\le1$, $e_L\ge0$, and
+$s>12/13,c<5/13$, so $3Cs-c>1$.
+Suppose $\tau>w$. Then $(B_-)_x>r_0$.
+For $(z_\alpha)_x<x<(B_-)_x$, the companion terminal wall
+exceeds the first one, while
+$\partial_-a_\alpha(x)=(x-(B_-)_x)/s^2<0$.
+The companion has no terminal atom. Sufficiently close earlier
+angles have both walls above $a_\alpha(x)$, and hence
+$n_\alpha(U)(x)>a_\alpha(x)$ on this interval.
+For $x\ge(B_-)_x$ the first wall is negative.
+Thus strict terminal exposure and relevant ties lie to the left
+of $(z_\alpha)_x<(B_+)_x$.
+\Cref{lem:partial-angle-derivative} forces $|E|=0$.
+Continuity then gives $N_\alpha=n_\alpha$ on $J_U$.
+
+Choose
+\[
+ \max(-C,(z_\alpha)_x)<\zeta<(B_+)_x<r_0
+       <r_*<\min(C,(B_-)_x).
+\]
+Immediately after $\alpha$ the same cap has first support $(b,H)$,
+so $\partial_ta_t(x)=(x-b+\cos t)/\sin^2t$.
+For $x\le\zeta$ its first walls decrease for a small angle
+increment. On $[\zeta,r_*]$ the old history has a uniformly
+positive gap above $a_\alpha$; uniform convergence covers the
+new walls there. The new zero
+$b-(1-H\sin t)/\cos t$ remains below $r_*$, so the new first
+walls are nonpositive to its right. Choose the increment below
+$\theta_0-\alpha$ when the middle descends.
+For some $\beta>\alpha$, all new first walls are consequently
+below $n_\alpha$ on $J_U$. Their two-wall minima are below the
+same bound. The old history remains present, and
+$N_\beta=N_\alpha$, so $(U,\beta)$ is another joint maximum.
+
+The cap and its window have remained fixed. Its saturation persists:
+$U\subseteq U^{\mathrm{sat}}_\beta\cap\{y\le\ell_U\}
+\subseteq U^{\mathrm{sat}}_\alpha\cap\{y\le\ell_U\}=U$.
+The original terminal facet has positive charged length and normal
+$\alpha\in(0,\beta)$, away from the middle normal.
+\Cref{thm:variation-curvature} for this prescribed new maximizing
+pair excludes such an interior charged atom, a contradiction.
+\end{proof}
+
+\begin{lemma}[Strict terminal exposure]\label{lem:partial-exposure}
+For a canonical proper-angle maximum, $|E|\le\tau$.
+\end{lemma}
+\begin{proof}
+Move its terminal supporting line inward by $\varepsilon$.
+The endpoint baseline points remain present, so the projection and
+the window do not change. The exterior area lost to first order is
+$\varepsilon\tau/s$: the charged facet has length $\tau/s$.
+At every strict terminal contact the barrier drops to first order
+by $\varepsilon/s$. Every other used support can only decrease,
+which can only improve the score. Restrict first to a compact subset
+of $E$ with a positive contact gap and then exhaust $E$.
+The inward derivative of the score is at least
+$(|E|-\tau)/s$. Maximality makes it nonpositive, proving the
+inequality. At a zero-length facet the exterior loss is
+$o(\varepsilon)$ and gives the same conclusion.
+\end{proof}
+
+\subsection{A weighted companion comparison}
+
+For a rising middle use the left charged-wing support $G$ alone.
+The omitted right-wing points have $X\ge C,Y\le1$, and their
+companion walls on $J_U$ are at most
+$1-\sec t+(x-C)\tan t\le0$. The middle segment is controlled
+by its endpoints. This replacement therefore preserves positive
+niche contacts. For the other signs use the actual companion
+support. In all cases
+$G(0)=1-h_L$, $G'(0+)=C+T_L$ and $v=G''+G\ge0$.
+Put
+\begin{equation}\label{eq:partial-weighted-error}
+ \begin{gathered}
+ A_0=C-T_L,\quad\theta=\arcsin A_0,\quad\lambda=\tan\theta,\\
+ \mathcal E_\theta=\int_0^\theta(v(t)-1)_+
+                 (\lambda\cos t-\sin t)\,\dd t.
+ \end{gathered}
+\end{equation}
+
+\begin{lemma}[Localized companion moment]\label{lem:partial-moment}
+For $0\le z\le w$,
+\[
+ n_\alpha(U)(-C+z)\le
+ \sqrt{1-(C-T_L)^2}-\sqrt{1-(C+z)^2}+\mathcal E_\theta.
+\]
+\end{lemma}
+\begin{proof}
+Write the shifted companion support point as
+$D=(G-1)u^\perp-G'u$. Then
+\[
+ D_x'=(1-v)\cos t,\quad D_y'=(1-v)\sin t,\quad
+ b_t'(x)=\frac{x-D_x(t)}{\cos^2t}.
+\]
+Its outer abscissa is $D_x-\sin t\ge-2C$.
+Also $0<A_0<C+w<C+c/2<s$; the final inequality follows from
+$C<37/50,c<3/\sqrt{73}$ by squaring
+$37/50+3/(2\sqrt{73})<8/\sqrt{73}$.
+A positive maximum of the companion-wall family on $[0,\alpha]$
+is interior: its value at zero is $-h_L$, and its derivative is
+negative once $\sin t>C+z$. At a maximizing angle
+$D_x=-C+z$, $b_t=D_y$ and $t\le\arcsin(C+z)$.
+Absolute continuity of the regular support gives
+\[
+ D_y(t)+h_L-\lambda(T_L+z)
+   =\int_0^t(1-v(r))(\sin r-\lambda\cos r)\,\dd r.
+\]
+Before $\theta$ its integrand is bounded above by the weighted
+excess. After $\theta$ it is at most
+$\sin r-\lambda\cos r$ because $v\ge0$.
+For $t\ge\theta$, integration bounds $D_y+h_L$ by
+\[
+ \sqrt{1-A_0^2}-\cos t
+       +\lambda(C+z-\sin t)+\mathcal E_\theta.
+\]
+The part preceding the excess increases with $t\ge\theta$,
+and its maximum at $t=\arcsin(C+z)$ is the asserted circle
+difference. For $t<\theta$, use instead
+$D_y+h_L\le\lambda(T_L+z)+\mathcal E_\theta$ and
+\[
+ \lambda(T_L+z)\le
+ \int_{A_0}^{C+z}\frac{x}{\sqrt{1-x^2}}\,\dd x.
+\]
+Finally the niche is bounded by the positive part of the largest
+companion wall. The asserted right side is nonnegative, and
+discarding $-h_L$ proves the result even when there is no positive
+wall maximum.
+\end{proof}
+
+\begin{lemma}[The terminal contradiction]\label{lem:partial-tail-contradiction}
+No canonical joint maximum has proper angle and residual tail geometry.
+\end{lemma}
+\begin{proof}
+The exact circle comparison in \cref{app:partial-circle} gives
+\[
+ a_\alpha(-C+z)-
+ \left[\sqrt{1-(C-T_L)^2}-\sqrt{1-(C+z)^2}\right]
+       >\frac{39}{4400}c\qquad(0\le z\le w).
+\]
+The reflected support and terminal-impulse estimates in
+\cref{app:partial-reflection} give $\mathcal E_\theta=0$ for
+$0<\cot\alpha\le1/8$, and
+\[
+ \mathcal E_\theta<\frac{6517}{6400000}
+       <\frac{117}{110000}<\frac{39}{4400}c
+\]
+for $1/8\le\cot\alpha<3/8$.
+Together with \cref{lem:partial-moment} these inequalities make
+the entire interval $[-C,-C+w]$ strictly terminal-exposed.
+Its right endpoint is interior to $J_U$, so continuity extends
+exposure a positive distance farther right. Thus
+$|E|>w\ge\tau$, contradicting \cref{lem:partial-exposure}.
+\end{proof}
+
+\subsection{The sharp theorem for every cap and its own angle}
+
+\begin{theorem}[Sharp cap theorem]\label{thm:cap-bound}\label{thm:cap-equality}
+Every downward cap $U$ and every $\alpha\in[\pi/4,L]$ satisfy
+\[
+ P_\alpha(U)\le\Mc/2.
+\]
+Equality holds if and only if $\alpha=L$ and
+$U=\KR+(t,0)$ for some $t\in\R$.
+\end{theorem}
+\begin{proof}
+Choose a joint maximum with largest terminal angle, whose existence
+is given by compactness. Canonicalization retains that angle.
+If it is proper, \cref{lem:partial-cuts} applies. In a completed
+descending branch, \cref{lem:partial-completion} gives
+$P_\alpha(U)\le P_L(U)\le\Mc/2$ by
+\cref{thm:full-cap-bound}. Since the reference is a competitor,
+both inequalities are equalities and the same cap at $L$ is a
+joint maximum, contrary to the largest-angle choice. Every other
+proper branch is excluded by \cref{lem:partial-tail-contradiction}.
+Thus the joint value is the full-angle value $\Mc/2$, proving
+the universal bound.
+
+Now let the \emph{prescribed} original pair $(U,\alpha)$ have score
+$\Mc/2$. The bound makes this pair a joint maximum.
+Its canonical replacement keeps its own angle and score.
+If its angle is proper, the completed descending branch would make
+that replacement a full maximum. Full-angle affine rigidity forces
+its middle slope to vanish, contradicting descent.
+Every residual branch is excluded by the same terminal contradiction;
+\cref{lem:partial-facet} applies to this individual pair, without
+any largest-angle selection. Hence its angle is $L$.
+The original full-angle equality classification in
+\cref{thm:full-cap-bound} then identifies $U$ itself as a
+horizontal reference translate. The converse follows from the
+reference full score and horizontal translation invariance.
+\end{proof}

@@ -1,0 +1,74 @@
+\section{The ordinary-sofa bound used in the proof}\label{app:ordinary-sofa}
+
+An ordinary moving sofa is a nonempty compact connected planar set
+with a passage through $\Lm$ as in \cref{def:passage}. Baek's
+optimality theorem for Gerver's sofa supplies the following bound.
+
+\begin{theorem}[Baek \cite{Baek}]\label{thm:ordinary-sofa-bound}
+Every ordinary moving sofa $A$ satisfies
+\[
+ |A|\le |S_{\rm G}|\le\frac{22199}{10000},
+\]
+where $S_{\rm G}$ is Gerver's sofa.
+\end{theorem}
+
+The exact value of $|S_{\rm G}|$ is immaterial here. We use the
+rational relaxation $G_0=22199/10000$ in two strict estimates for
+full-turn caps. No classification of ordinary equality cases enters
+the argument.
+
+\subsection{Why a cap survivor is an ordinary sofa}
+
+For a height-one downward cap $U$, let
+\[
+ A_U=\{(x,y)\in U:n_{\pi/2}(U)(x)\le y\}.
+\]
+An arbitrary cap need not leave a connected survivor: its niche can
+reach above its roof. The proof therefore establishes the following
+geometric condition before applying the ordinary bound.
+
+\begin{lemma}\label{lem:ordinary-survivor}
+Suppose $U$ is a downward cap of height one and
+\[
+ n_{\pi/2}(U)(x)\le f_U(x)\quad(x\in I_U).
+\]
+Then $A_U$ is a nonempty compact connected ordinary moving sofa.
+Its area is
+\[
+ |A_U|=|U|-\int_{I_U}n_{\pi/2}(U)(x)\,\dd x.
+\]
+\end{lemma}
+\begin{proof}
+The niche is continuous by \cref{lem:barrier-continuity}, so the
+survivor is closed in $U$ and compact. Each of its fibers is the
+nonempty interval $[n_{\pi/2}(U)(x),f_U(x)]$. The concave roof
+is continuous on the interior of $I_U$, and is continuous at its
+endpoints as well: concavity gives the lower limit there, while
+compactness gives the upper limit. Its graph is consequently
+connected. Every point of $A_U$ joins this graph by a vertical
+segment in $A_U$, proving connectedness. The area formula follows
+by integrating these fiber lengths.
+
+Translate $U$ horizontally so that its right endpoint is $1$.
+Write $F(t)=h_U(t)$ and $G(t)=h_U(t+\pi/2)$, and use
+\[
+ p\longmapsto R_{-t}p+(1-F(t),1-G(t)),\qquad
+                 0\le t\le\pi/2.
+\]
+The outer walls contain $U$ by definition of the support function.
+At every interior angle, the inequality $y\ge n_{\pi/2}(U)(x)$
+places every survivor point on or above at least one of the two
+inner walls. Thus the placement lies in $\Lm$. At $t=0$,
+$F(0)=G(0)=1$, so the initial placement is the identity and lies
+in $\Hin$. At $t=\pi/2$, its first coordinate is $y$, in $[0,1]$,
+and its second is $1-h_U(\pi)-x\le1$. Hence it lies in $\Vm$.
+The support function is continuous, so this is a continuous passage.
+\end{proof}
+
+The full-turn estimates verify the displayed roof inequality for
+the caps at which $G_0$ is used. They retain the complete niche,
+including any part outside the middle half. This distinguishes the
+area in \cref{lem:ordinary-survivor} from the spatial score
+$P_{\pi/2}$, which charges only the exterior roof and the middle
+barrier. The proof converts between them by explicit exterior and
+niche terms before applying \cref{thm:ordinary-sofa-bound}.

@@ -1,0 +1,1140 @@
+\section{Full-turn integral and contact estimates}\label{app:full-turn-estimates}
+
+\subsection{Cap area and the signed niche integral}
+
+For vectors $z,z'\in\R^2$, write $\det(z,z')$ for their determinant.
+All oriented integrals below retain their sign when endpoints are
+reversed.
+
+\begin{lemma}[Cap support area]\label{lem:cap-support-area}
+Let $U$ be a downward cap of height one, with quarter supports
+$F(t)=h_U(t)$ and $G(t)=h_U(t+L)$. Suppose $F,G\in C^1[0,L]$
+and their first derivatives are absolutely continuous. Then
+\begin{equation}\label{eq:cap-support-area}
+ 2|U|=\int_0^L(F^2-F'^2+G^2-G'^2)\,\dd t.
+\end{equation}
+\end{lemma}
+\begin{proof}
+The upper boundary, oriented from right to left, has support
+parametrization $z(\theta)=h(\theta)u(\theta)+h'(\theta)u^\perp(\theta)$.
+On regular arcs
+$\det(z,z')=h(h+h'')$ almost everywhere.
+At the top normal $L$, the parametrization jumps along the top
+segment. Its determinant integral is its horizontal length, because
+its height is one. Put its endpoints at $x=x_{\rm tl},x_{\rm tr}$.
+The one-sided support derivatives are
+$h'(L-)=-x_{\rm tr}$ and $h'(L+)=-x_{\rm tl}$.
+Integration by parts on the two quarter arcs therefore subtracts
+exactly $x_{\rm tr}-x_{\rm tl}$, cancelling the top segment's
+contribution.
+
+At the right axis normal the derivative is the right end height
+$e_R$; at the left normal it is $-e_L$. The remaining boundary
+terms are $l_Ue_L-r_Ue_R$. The two vertical end faces contribute
+$r_Ue_R-l_Ue_L$, and the baseline contributes zero.
+Green's area formula now gives \cref{eq:cap-support-area}.
+The absolutely continuous integration by parts is valid without
+pointwise second derivatives. Approximation by polygonal boundary
+arcs, or by smooth convex caps, justifies the same Green formula
+when a curvature density vanishes on an interval.
+\end{proof}
+For two supports with top traces $F(L)=G(0)=1$, define
+\[
+ \begin{gathered}
+ z=(F-1)u+(G-1)u^\perp,\\
+ B=(F-1)u+F'u^\perp=z+pu^\perp,\\
+ D=(G-1)u^\perp-G'u=z-qu.
+ \end{gathered}
+\]
+Then
+\begin{equation}\label{eq:corner-determinant}
+ \det(z,z')=(F-1)^2+(G-1)^2+(F-1)G'-(G-1)F'.
+\end{equation}
+
+\begin{lemma}[Global contact from unit curvature]\label{lem:unit-global-contact}
+Suppose the actual support densities satisfy $0\le F''+F\le1$
+and $0\le G''+G\le1$ almost everywhere. At every interior angle $s$,
+the following points lie on the graph of the complete positive niche:
+\[
+ B(s)\quad\text{if }p(s)\le0,\qquad
+ D(s)\quad\text{if }q(s)\ge0,\qquad
+ z(s)\quad\text{if }p(s)\le0\le q(s).
+\]
+\end{lemma}
+\begin{proof}
+The complementary profile $k=1-F$ has $k''+k\ge0$.
+Variation of constants, or two integrations by parts, gives
+\[
+ k(t)-k(s)\cos(t-s)-k'(s)\sin(t-s)
+ =\int_s^t(k''+k)(r)\sin(t-r)\,\dd r\ge0
+\]
+for $s,t\in[0,L]$, with the integral interpreted as oriented.
+Thus $F(t)-1\le\ip{B(s)}{u(t)}$ for every $t$.
+The analogous inequality is
+$G(t)-1\le\ip{D(s)}{u^\perp(t)}$.
+In particular $B_y,D_y\ge0$, by using $t=L$ and $t=0$.
+
+At $B(s)$ the first-wall equality holds; the second-wall height is
+at least $B_y$ precisely when $p(s)\le0$.
+At all other angles the first-wall height is at most $B_y$.
+Taking the supremum of the two-wall minima proves its niche contact.
+The proof for $D(s)$ is the same.
+For a corner $z(s)$ use the identities
+\[
+ \ip{z(s)}{u(t)}=\ip{B(s)}{u(t)}-p(s)\sin(t-s),
+\]
+\[
+ \ip{z(s)}{u^\perp(t)}=\ip{D(s)}{u^\perp(t)}+q(s)\sin(s-t).
+\]
+For $t\ge s$ the first gives the required wall alternative, and
+for $t\le s$ the second does. Both equalities hold at $s$.
+Also $z_y=B_y-p\cos s\ge0$. These facts prove global contact
+with the whole angular supremum, not only with neighboring angles.
+\end{proof}
+
+\begin{lemma}[Signed-roof integral]\label{lem:signed-roof}
+Suppose $F,G\in C^1[0,L]$ have absolutely continuous first derivatives,
+$F(L)=G(0)=1$, and $0\le b\le d\le L$ satisfy $p(b)=q(d)=0$.
+Let $N$ be continuous, and suppose
+\[
+ \begin{aligned}
+ N(D_x(t))&=D_y(t)&& (0<t<d),\\
+ N(z_x(t))&=z_y(t)&& (b<t<d),\\
+ N(B_x(t))&=B_y(t)&& (b<t<L).
+ \end{aligned}
+\]
+Then
+\begin{equation}\label{eq:signed-roof}
+ 2\int_{-G'(0)}^{-F'(L)}N(x)\,\dd x
+ =-\int_0^L\det(z,z')\,\dd t
+         +\int_b^L p^2\,\dd t+\int_0^d q^2\,\dd t.
+\end{equation}
+In particular, if $p\ge0$ before $b$, $p\le0$ after $b$,
+$q\ge0$ before $d$, and $q\le0$ after $d$, the last two integrals
+are $\int_0^L p_-^2$ and $\int_0^L q_+^2$.
+\end{lemma}
+\begin{proof}
+For an absolutely continuous graph parametrization $Z=(X,Y)$ with
+$Y=N(X)$, the chain rule applied to $\int^X N$ gives
+$\int_X^{X'}N=\int YX'$. Also
+\[
+ 2YX'=(XY)'-\det(Z,Z').
+\]
+This calculation needs no monotonicity of $X$.
+Join the three oriented graph arcs $D:0\to d$, $z:d\to b$,
+and $B:b\to L$. The joins agree because $p(b)=q(d)=0$.
+Their outer endpoints have height zero and abscissae $-G'(0)$ and
+$-F'(L)$. The $XY$ terms cancel, giving
+\[
+ 2\int N=-\int_0^d\det(D,D')
+                  +\int_b^d\det(z,z')-\int_b^L\det(B,B').
+\]
+Direct differentiation gives
+\[
+ \begin{aligned}
+ \det(B,B')&=\det(z,z')-p^2+[(F-1)p]',\\
+ \det(D,D')&=\det(z,z')-q^2+[(G-1)q]'.
+ \end{aligned}
+\]
+Their endpoint terms vanish by the contact and top equations.
+Combining the remaining corner integrals proves
+\cref{eq:signed-roof}. The sign assumptions give the final assertion.
+\end{proof}
+
+\begin{corollary}[Actual horizontal score]\label{cor:horizontal-score-identity}
+Suppose a height-one horizontal canonical cap has unit curvature
+on both quarters, its top face is precisely $J_U$, and there are
+ordered contact switches $b,d$ with the signs in
+\cref{lem:signed-roof}. Then
+\[
+ P_L(U)=\mathcal A(F,G)-w_U/2.
+\]
+\end{corollary}
+\begin{proof}
+By \cref{lem:unit-global-contact}, all three graph identities hold
+for $N=n_L(U)$. The top face gives
+$-G'(0)=l_U+w_U/4$ and $-F'(L)=r_U-w_U/4$.
+Subtract \cref{eq:signed-roof} from \cref{eq:cap-support-area}
+and use \cref{eq:corner-determinant}. Since $f_U=1$ on $J_U$,
+the score is $|U|-w_U/2-\int_{J_U}N$.
+\end{proof}
+
+\subsection{The three-tent estimate}
+
+The following estimate uses only three visited angles and the
+endpoint laws. Put
+\[
+ \begin{gathered}
+ r=\sqrt2,\quad k=r-1,\quad c=\cos(\pi/8),\quad s=\sin(\pi/8),\\
+ A=1-k,\quad b=2-k,\quad d=3r-1,\quad \gamma=1-r/2.
+ \end{gathered}
+\]
+These letters are local to this subsection. In particular $c,s$ do
+not refer to a terminal angle, and $A$ is not the reference parameter.
+Useful identities are
+\begin{equation}\label{eq:three-tent-constants}
+ \frac sc=k,\quad k^2=1-2k,\quad \frac1s+\frac1c=4c,
+ \quad \frac r{4c^2}=k,\quad 2d+b^2=9.
+\end{equation}
+Let a cap have projection $[-a,a]$, middle half $[-a/2,a/2]$,
+and affine middle roof rising from $1-h$ to one. Lift the left wing
+by $h$ and put the middle roof at one; retain the right wing.
+Concavity is preserved, because the left slopes are at least $h/a$
+and the right slopes are nonpositive. Denote the lifted cap by
+$\widehat U$, and define
+$u=rh_{\widehat U}(\pi/4)-1$ and
+$v=rh_{\widehat U}(3\pi/4)-1$.
+Then $a/2\le u,v\le a$. Put $m=(u+v)/2$ and define
+\begin{align}\label{eq:three-tent-objective}
+ F_h(a,u,v)&=a-\frac{(a-u)^2+(a-v)^2}{2}-\frac{ah}{2}
+ -(m-h/2-k)^2\notag\\
+ &\hspace{12mm}+\frac{(u-k-a/2)_+^2+(v-h-k-a/2)_+^2}{2},\\
+ S(a,m,h)&=a/k+(k-2)m+3/2+2k-4c+h/4,\notag\\
+ G_h(a,u,v)&=F_h(a,u,v)-S(a,m,h)_+^2/d.\notag
+\end{align}
+
+\begin{lemma}[Full three-tent score]\label{lem:full-three-tent-score}
+Suppose $37/25\le a\le8/5$, $0\le h\le17/50$, and the actual
+endpoint laws are
+\[
+ e_R=\tfrac12+\tfrac h4+(3n_+-n_-)/4,\qquad
+ e_L=\tfrac12-\tfrac{3h}4+(3n_--n_+)/4,
+\]
+where $n_\pm=n_L(U)(\pm a/2)$.
+With $t=2c-r$ and $d_0=3/5-t$,
+\begin{equation}\label{eq:full-three-tent-score}
+ P_L(U)\le G_h(a,u,v)+
+ L(h),\qquad
+ L(h)=\gamma[(d_0-h/4)^2+(d_0+3h/4)^2].
+\end{equation}
+\end{lemma}
+\begin{proof}
+The first diagonal support of $U$ is unchanged by lifting, because
+$(a/2,1)$ dominates all lifted left-wing points. The second diagonal
+parameter is $v-h$. Thus the actual diagonal niche is
+$[\min(u-k-x,v-h-k+x)]_+$.
+Its apex lies in the window and is positive. Its exact integral is
+\[
+ (m-h/2-k)^2
+  -\tfrac12[(u-k-a/2)_+^2+(v-h-k-a/2)_+^2].
+\]
+The lifted roof lies below
+$f_0(x)=\min(1,1+u-x,1+v+x)$.
+Let $D$ be its exterior deficit from this roof. Integrating $f_0$
+and undoing the left lift gives
+$P_L(U)\le F_h-D-(\int_J n_L-\int_Jn_{45})$.
+
+The box-wall bound gives $n_\pm\le1-\sqrt{1-(a/2)^2}\le2/5$.
+The endpoint laws then imply
+\[
+ e_R\ge2/5+h/4,\quad e_L\ge2/5-3h/4,
+ \quad e_R+e_L\ge1-h/2.
+\]
+Writing $w_R=a-u$ and $w_L=a-v+h$, support containment gives
+\[
+ e_R\le1-w_R,\quad e_L\le1-w_L,
+ \quad w_R\le3/5-h/4,\quad w_L\le3/5+3h/4.
+\]
+Let
+$\delta_L=c+sv-h_{\widehat U}(5\pi/8)$ and
+$\delta_R=c+su-h_{\widehat U}(3\pi/8)$.
+Both are nonnegative. On the two flat pieces of $f_0$, the near
+vertical supporting lines cut disjoint triangles of total area
+$D_0=r(\delta_L^2+\delta_R^2)\le D$.
+They fit before the middle window since
+$\delta_L\le s(v-a/2)$ and $\delta_R\le s(u-a/2)$.
+
+The niche at $\pi/8$ dominates the tent
+\[
+ \begin{gathered}
+ f_R(x)=\min(b_R+kx,B_R-x/k),\\
+ b_R=1-1/c+kv-h-\delta_L/c,\qquad B_R=e_R+a/k-1/s.
+ \end{gathered}
+\]
+Against the descending diagonal branch its signed peak is
+$Z_R=(B_R+b_R)/2-u+k$, with crossover endpoints
+\[
+ x_L=(u-k-b_R)/r,\qquad x_R=(B_R-u+k)/r.
+\]
+The reflected construction at $3\pi/8$ gives
+\[
+ \begin{gathered}
+ b_L=1-1/c+ku-\delta_R/c,\quad B_L=e_L+a/k-1/s,\\
+ Z_L=(B_L+b_L)/2-v+h+k.
+ \end{gathered}
+\]
+The two triangles lie on opposite sides of the diagonal apex:
+their crossover displacements from it are
+$k(m\pm h/2)+2s-1+\delta/(rc)>0$.
+Indeed $m-h/2\ge179/200$, $k>2/5$, and $2s>3/4$.
+Their outer endpoints satisfy
+$x_R\le1+a-2c<a/2$, since $a/2\le4/5$ and $c>9/10$;
+the reflected endpoint satisfies the same inequality.
+Thus both complete signed gain triangles fit inside $J$ whenever
+their peaks are positive.
+
+For a signed triangle of height $Z>0$ and slopes $r,-r$, whose
+baseline zero exceeds its right endpoint by $\Delta$, the positive
+floor loses at most $\gamma\Delta_+^2$ from the signed area
+$Z^2/r$. To check this, use the coordinate $q=x_R-x$.
+If $0<\Delta\le rZ$, the loss is
+\[
+ \int_0^{k\Delta}rq\,\dd q+
+ \int_{k\Delta}^{\Delta}(\Delta-q)\,\dd q
+   =\tfrac12[rk^2+(1-k)^2]\Delta^2=\gamma\Delta^2.
+\]
+If $\Delta>rZ$, the remaining positive tent has area
+$r[(1+1/r)Z-\Delta]_+^2$.
+When its bracket is nonnegative, subtracting
+$Z^2/r-\gamma\Delta^2$ leaves
+$(1+r/2)(\Delta-rZ)^2\ge0$.
+When the bracket is negative the latter bound is already
+nonpositive. The case $Z\le0$ needs no positive interval.
+For the two triangles the losses satisfy
+$\Delta_R\le(w_R-t)_+$ and $\Delta_L\le(w_L-t)_+$,
+so their total is at most $L(h)$.
+
+Write $Z_R=Z_R^0-\delta_L/(2c)$ and
+$Z_L=Z_L^0-\delta_R/(2c)$.
+The endpoint-height sum gives $Z_R^0+Z_L^0\ge S(a,m,h)$.
+If $H_0=((Z_R)_+^2+(Z_L)_+^2)/r$, Cauchy--Schwarz gives
+\[
+ S_+\le\sqrt{2rH_0}+\sqrt{rD_0/(4c^2)},\qquad
+ S_+^2\le(2r+r/(4c^2))(H_0+D_0)=d(H_0+D_0).
+\]
+Combining the exterior deficit, diagonal niche, additional two
+triangles, and floor correction proves
+\cref{eq:full-three-tent-score}. Each exterior deficit is charged
+once, and the two niche gain regions are disjoint.
+\end{proof}
+
+\begin{lemma}[Three-tent supporting plane]\label{lem:full-three-tent-critical}
+Fix $0\le h\le17/50$ and put
+\[
+ \begin{gathered}
+ a_0=37/25,\qquad B(a)=a-(a-k)^2/2,\\
+ s_0(a)=da/2-(4c-2),\qquad m_0(a)=(a+k)/2.
+ \end{gathered}
+\]
+On $a\ge a_0$, $a/2\le u,v\le a$, the function $G_h$ is
+jointly concave and
+\begin{equation}\label{eq:three-tent-supporting-plane}
+ G_h(a,u,v)\le
+ K_0(h):=B(a_0)-kh/2-h^2/8
+             -\tfrac29[s_0(a_0)-Ah/4]^2.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Use coordinates $(a,m,\Delta)$, with $\Delta=(u-v)/2$.
+Before the two clipping terms the Hessian of $F_h$ is
+\[
+ \begin{pmatrix}-2&2&0\\2&-4&0\\0&0&-2\end{pmatrix}.
+\]
+Each active clip adds the outer product of $(-1/2,1,1)$ or
+$(-1/2,1,-1)$. With both present the Hessian becomes
+\[
+ \begin{pmatrix}-3/2&1&0\\1&-2&0\\0&0&0\end{pmatrix},
+\]
+which is negative semidefinite. Every other clipping pattern
+subtracts a positive semidefinite matrix. The gradients agree on
+clipping boundaries, and subtracting $S_+^2/d$ preserves concavity.
+
+At $u=v=m$ in the unclipped region put $m'=m-h/4$.
+Completion of squares gives
+\[
+ G_h=B(a)-kh/2-h^2/8-2(m'-m_0(a))^2
+       -[s_0(a)-b(m'-m_0(a))-Ah/4]^2/d.
+\]
+Since $2d+b^2=9$, its support critical point at $a=a_0$ is
+\[
+ u_*=v_*=m_0(a_0)+\frac b9[s_0(a_0)-Ah/4]+h/4.
+\]
+It is genuinely unclipped. The bounds
+\[
+ \begin{gathered}
+ 140/99<r<99/70,\qquad 923/1000<c<231/250,\\
+ 703/1000<s_0(a_0)<71/100.
+ \end{gathered}
+\]
+follow by squaring the radical bounds and substituting $a_0$.
+Thus $s_0(a_0)-Ah/4>0$, and its larger clip obeys
+\[
+ \begin{aligned}
+ u_*-k-a_0/2&<-41/198+(8/5)(71/100)/9+(11/48)(17/50)\\
+            &=-129/44000<0.
+ \end{aligned}
+\]
+Here $k>41/99$, $b<8/5$, and $bA>3/4$ were used.
+The other clip is smaller by $h$.
+Also $a_0/2<u_*<a_0$, and $S>0$ there.
+Its value is $K_0(h)$, while its partial derivative in $a$ is
+\[
+ r-a_0-\frac{2d}{9}[s_0(a_0)-Ah/4]<0.
+\]
+The supporting plane of the jointly concave function therefore
+bounds all $a\ge a_0$, including the clipped configurations, by
+the value $K_0(h)$.
+\end{proof}
+
+\begin{corollary}[Full width cut]\label{cor:full-three-tent-cut}
+Every cap satisfying the hypotheses of
+\cref{lem:full-three-tent-score} has
+\[
+ P_L(U)<25811237/31500000<41/50.
+\]
+\end{corollary}
+\begin{proof}
+Expand $K_0(h)+L(h)$ as a quadratic. Its linear and quadratic
+coefficients are
+\[
+ \ell=-k/2+As_0(a_0)/9+\gamma d_0,
+ \qquad q=-1/8-A^2/72+5\gamma/8.
+\]
+The same radical bounds give
+$d_0<589/3500$, $\ell<-1/10$, and $q<1/16$.
+Indeed the positive terms in $\ell$ are less than
+$(3/5)(71/100)/9+(3/10)(589/3500)=10271/105000<1/10$.
+Thus $\ell+2qh<-1/10+h/8<0$ throughout $[0,17/50]$.
+The largest bound occurs at $h=0$.
+Using $k<29/70$, $s_0(a_0)>703/1000$, and
+$2\gamma d_0^2<17/1000$ gives
+\[
+ P_L(U)<\frac{62}{25}\frac{29}{70}-\frac{72}{625}
+       -\frac29\left(\frac{703}{1000}\right)^2+\frac{17}{1000}
+       =\frac{25811237}{31500000}<\frac{41}{50}.
+\]
+\end{proof}
+
+\subsection{The first-wing energy test}
+\label{app:first-wing-energy}
+
+The following estimates use the tilted notation of
+\cref{sec:full-turn}. In particular $I=[-2C,2C]$, $J=[-C,C]$,
+the middle roof rises from $1-h$ to $1$, and $F,G$ are the
+high-wing and low-wing supports. Write
+\[
+ d=3C,\qquad B=e_R-1+h,\qquad
+ s_h=\sqrt{h(2-h)},\qquad H(C)=1-\sqrt{1-C^2}.
+\]
+
+\begin{lemma}[Initial-floor test]\label{lem:tilted-initial-energy}
+Suppose $1/2<C<4/5$ and $0<h<17/50$. At a canonical full
+maximum, the two inequalities
+\begin{equation}\label{eq:tilted-initial-energy}
+ d^2+B^2\le5,\qquad
+ d^2+B^2+B(1-h)-d s_h\le4
+\end{equation}
+imply $u\le1$ almost everywhere on $(0,L)$.
+\end{lemma}
+\begin{proof}
+On the initial component where $p,q>0$ and $D_y<0$, both source
+densities vanish. The first vanishes by same-sign shadowing.
+A positive second-source contact with companion slack would have
+to be the stationary second-wall contact $D$, whose height is
+negative. A corner is shadowed because both its walls increase
+with the angle. The source identity therefore makes the second
+density zero as well. This reasoning also excludes a floor
+contact: a nonstationary one with slack is raised by a nearby
+angle, and a same-sign floor corner is raised on both walls.
+Compact exhaustion in angle justifies the statement at the
+level of the limiting source measures.
+
+Consequently, until this component meets the floor or $p=0$,
+\begin{equation}\label{eq:initial-floor-solution}
+ \begin{gathered}
+ F=2C\cos t+e_R\sin t,\qquad
+ G=C\sin t+(1-h)\cos t,\\
+ D_y=1-h-\cos t,\\
+ p-1=B\cos t-d\sin t,\qquad
+ q+1=d\cos t+B\sin t.
+ \end{gathered}
+\end{equation}
+Put $\gamma_0=\arccos(1-h)$ and let $\alpha$ be the first
+$p$-zero on the initial positive-$q$ component. Stop at
+$\min(\alpha,\gamma_0)$. The rotating vector in
+\cref{eq:initial-floor-solution} has squared norm $R^2=d^2+B^2$.
+Thus
+\[
+ \begin{aligned}
+ E_{++}:=(p-1/2)^2+(q+1)^2&=R^2+p-3/4\\
+ &\le R^2+1/4+\max\{B(1-h)-ds_h,-1\}
+ \end{aligned}
+\]
+at the stopping time. The $-1$ alternative is the value when
+$p=0$; the other alternative is the value at the floor.
+Both tests in \cref{eq:tilted-initial-energy} say that this upper
+bound is at most $17/4$.
+
+If the floor is reached first, the same-sign bounds $u=0$,
+$v\le1/2$ give
+\[
+ E_{++}'=2(p-1/2)(-1-q)+2(q+1)(v-1+p)
+        =2(q+1)(v-1/2)\le0.
+\]
+At the first $p$-zero, $1/4+(q+1)^2\le17/4$, hence $q\le1$.
+While $p<0$ and $q>0$, the arm estimate gives $q'\le-1/2$:
+for $-1\le p\le0$ use $v\le(1-p)/2$, and for $p<-1$
+use $v\le-p$. The positive-$q$ component therefore has $q\le1$
+after this zero.
+
+Any later positive-$q$ component starts at $q=0$ with $0<p\le1$;
+entry with $p\le0$ is excluded by the preceding derivative bound.
+While $p,q>0$, $u=0$, $p'\le-1$ and $q'\le p-1/2$.
+Its maximum $q$ is at most
+$\int_{1/2}^1(x-1/2)\,\dd x=1/8$. Once $p$ is negative,
+$q$ decreases again. If the initial positive-$q$ component ends
+before the stopping time, only these later components need be
+considered. Finally $q\ge-1$ everywhere, and
+$u\le\kappa(q)$, with $u=0$ in the positive-positive sector.
+The proved bounds $-1\le q\le1$ on all remaining sectors give
+$u\le1$.
+\end{proof}
+
+\begin{lemma}[Short widths and large tilt]\label{lem:tilted-unit-regions}
+The first density of a canonical full maximum is at most one if
+either $C\le2/3$, or
+$C\le37/50$ and $21/100\le h<17/50$.
+If moreover $N_L(U)(-C)=0$, the same conclusion holds on
+$C\le73/100$, $1/20\le h\le21/100$.
+\end{lemma}
+\begin{proof}
+For $C\le2/3$, write $e=e_R\in[0,1]$.
+Then $d^2\le4$, $|B|=|e-1+h|\le1$ and $s_h\ge h$.
+The first test follows at once. The second follows from
+\[
+ B^2+B(1-h)=e(e-1+h),\qquad
+ e(e-1+h)-ds_h\le h(e-d)\le0.
+\]
+Here $d>3/2\ge e$. This proves the short-width case.
+
+The endpoint pressures and the two rectangular wall bounds give
+\begin{equation}\label{eq:tilted-energy-endpoint-box}
+ -\tfrac12+\tfrac54h-\tfrac14(H(C)-h)_+
+ \le B\le-\tfrac12+\tfrac54h+\tfrac34H(C).
+\end{equation}
+Indeed $N_L(U)(C)\le H(C)$ and
+$N_L(U)(-C)\le(H(C)-h)_+$, by maximizing respectively
+$1-\sec t+C\tan t$ and $1-h-\sec t+C\tan t$.
+Substitute these bounds in the pressure for $e_R$.
+
+For $C\le37/50$ one has $H(C)<33/100$. On the high-tilt
+strip, \cref{eq:tilted-energy-endpoint-box} gives
+$-107/400\le B\le69/400$. Thus
+\[
+ d^2+B^2\le(111/50)^2+(107/400)^2
+           =799993/160000<5.
+\]
+The expression $Q=d^2+B^2+B(1-h)-ds_h$ increases with $d$
+for $d\ge2$, and with $B$ on this rectangle, since
+$2B+1-h\ge1/8$. Use $d=111/50$ and
+$B=-101/400+5h/4$. The resulting expression is convex in $h$:
+its polynomial quadratic coefficient is $5/16$ and $-ds_h$
+is convex. At $h=21/100$, $s_h>61/100$ gives
+$Q<17911/5000<4$; at $h=17/50$, $s_h>3/4$ gives
+$Q<545121/160000<4$. Convexity proves the second test throughout.
+
+For the final strip assume the left niche value is zero. The
+pressure reads $B=-1/2+5h/4+3z/4$, where
+$z=N_L(U)(C)\le H(C)<32/100$ when $C\le73/100$.
+Enlarge this to the interval
+$-7/16\le B\le1/400$ for $1/20\le h\le21/100$.
+It gives
+\[
+ d^2+B^2\le(219/100)^2+(7/16)^2
+             =798001/160000<5.
+\]
+For $Q$, convexity in $B$ permits the two affine endpoints
+$B=-1/2+5h/4$ and $B=-13/50+5h/4$; convexity in $h$
+then permits its two endpoints. At $h=1/20$, use
+$s_h>31/100$, and at $h=21/100$ use $s_h>61/100$.
+The larger upper bounds at these endpoints are, respectively,
+$634973/160000$ and $553949/160000$, both less than four.
+All square-root comparisons follow by squaring positive rationals.
+Apply \cref{lem:tilted-initial-energy} in each case.
+\end{proof}
+
+
+\subsection{Ordered contact geometry}
+
+Here $F,G,u,v,p,q,z,B,D,C,h,T$ have the tilted meanings in
+\cref{eq:tilted-wing-supports,eq:tilted-contact-data}. In
+particular $G(0)=1-h$; it is the low-wing support, not the
+support containing the middle facet.
+
+\begin{lemma}[Contact signs]\label{lem:tilted-contact-signs}
+If $1/2<C<4/5$, $0<h<1/2$ and $u\le1$ almost everywhere,
+there are $0<\alpha<\eta<L$ such that
+\[
+ \begin{array}{c|ccc}
+ t&(0,\alpha)&(\alpha,\eta)&(\eta,L)\\ \hline
+ p&>0&<0&<0\\
+ q&>0&>0&<0.
+ \end{array}
+\]
+Moreover $p(\alpha)=q(\eta)=0$.
+\end{lemma}
+\begin{proof}
+Initially $p(0)=e_R+h>0$, $q(0)=3C-1>0$, whereas
+$p(L)=1-3C-T<0$ and $q(L)=-e_L<0$.
+Before $\delta=\arctan(h/(2C))$, the zero-density solution
+gives $q'\ge-1$ while $p$ is positive. Since
+$\delta<h<1/2<q(0)$, $q$ cannot reach zero there.
+After $\delta$, the arm bound gives $p\le1$.
+On the positive-positive sector, $u=0$, and
+\[
+ [(p-1)^2+(q+1)^2]'=2(q+1)v\ge0.
+\]
+Its initial value is at least $9C^2>2$. A first exit through
+$q=0$ would instead have $0\le p\le1$ and energy at most two.
+Thus the first exit is $p=0$, at a time $\alpha$, with $q>0$.
+
+For $q\ge0$, the arm bound gives
+$p'=u-1-q\le\kappa(q)-1-q\le-1/2$.
+For $p\le0$, the companion bound similarly gives $q'\le-1/2$.
+Consequently $p$ stays negative while $q>0$, and $q$ reaches
+zero at some $\eta>\alpha$ with $p(\eta)<0$.
+In the ensuing negative-negative sector $v=0$, $u\le1/2$ and
+\[
+ [(p-1)^2+(q+1/2)^2]'=2(p-1)(u-1/2)\ge0.
+\]
+At $\eta$ this energy is strictly greater than $5/4$.
+A return through $p=0$ would have $-1\le q\le0$ and energy
+at most $5/4$, since the lower arm bound is $q\ge-1$.
+Such a return is impossible. As long as $p<0$, the preceding
+$q'\le-1/2$ bound also prohibits a return through $q=0$.
+This proves all the signs, including strictness at the ends of
+the open sectors. The argument uses first crossing times of
+continuous functions and integrated almost-everywhere derivative
+bounds, so it covers zero-density intervals.
+\end{proof}
+
+\begin{lemma}[First-unit contact geometry]
+\label{lem:tilted-first-unit-geometry}
+Under the hypotheses of \cref{lem:tilted-contact-signs},
+$B_x$ is nondecreasing and $B_y$ is nonincreasing. Let $\beta$
+be its first crossing of $C$ (use $\beta=L$ when $T=0$).
+Then
+\begin{equation}\label{eq:tilted-crossing-box}
+ \alpha<\beta,\qquad \beta\ge\arccos C,\qquad
+ \sin\beta\ge3/5,\qquad \cot\beta\le4/3.
+\end{equation}
+The positive niche is precisely $(x_*,C+T)$ for one
+$x_*<1-2C$, and
+\begin{equation}\label{eq:tilted-no-ghost-projection}
+ T=(C+x_*)_+.
+\end{equation}
+If the companion density exceeds one, its first bad entry
+$\tau$ satisfies
+\begin{equation}\label{eq:tilted-first-bad-bound}
+ \alpha<\beta<\tau<\eta,\quad
+ p(\tau)=-1,\quad 0<q(\tau)\le1/4,
+ \qquad v\le1\text{ a.e. on }(0,\tau).
+\end{equation}
+In particular $T=0$ implies $v\le1$ almost everywhere.
+\end{lemma}
+\begin{proof}
+The monotonicity follows from $B'=(u-1)u^\perp$ and $u\le1$.
+If $B_x\ge C$, its associated outer point
+$(X,Y)=B+u(t)$ lies in the cap, so $\cos t\le C$ and
+$X\ge C+\cos t$, $Y\le1$. The low endpoint gives
+$G\ge C\sin t+(1-h)\cos t$, whence
+\[
+ p\le1-(2C+\cos t)\sin t+h\cos t<0.
+\]
+For the last sign put $k=\cos t\in[0,C]$. The upper bound
+$1-(2C+k)\sqrt{1-k^2}+k/2$ is convex in $k$.
+At zero it is $1-2C<0$; at $C$ it is negative because
+\[
+ 9C^2(1-C^2)-(1+C/2)^2>0\quad(1/2\le C\le4/5).
+\]
+This polynomial has derivative
+$(2-3C)(24C^2+16C-1)/2$, hence its minimum is at an
+endpoint; its endpoint values are $1/8$ and $71/625$.
+Thus $B_x(\alpha)<C$, proving the first inequality in
+\cref{eq:tilted-crossing-box}; the outer point at the crossing
+gives the remaining three.
+
+For the positive set write
+\[
+ \begin{gathered}
+ R_t(x)=\frac{F(t)-1-x\cos t}{\sin t},\qquad
+ S_t(x)=\frac{G(t)-1+x\sin t}{\cos t},\\
+ L_0(t)=\frac{1-G(t)}{\sin t}.
+ \end{gathered}
+\]
+On $x<1-2C$, the envelope $\sup_t S_t(x)$ is finite, convex,
+and nondecreasing in $x$. Its endpoint limits are $-h$ at
+zero and $-\infty$ at $L$. It is at most $-h$ for
+$x\le-2C$, by the low-wing box $[-2C,-C]\times[0,1-h]$;
+at $x=1-2C$ its $L$-limit is $e_L>0$.
+There is exactly one zero $x_*\in(-2C,1-2C)$.
+Indeed a zero is attained at an interior angle and that wall
+has positive slope $\tan t$, so all points to its right have
+positive envelope. All points to its left have negative envelope.
+Equivalently $x_*=\inf_t L_0(t)$.
+
+The derivative of $(F-1)/\cos t$ is $B_y/\cos^2t\ge0$.
+Its intercept therefore rises from $2C-1$ to $C+T$.
+Every first wall is positive for $x\le1-2C<2C-1$, and
+every first wall is nonpositive for $x\ge C+T$.
+For $1-2C<x<C+T$, angles approaching $L$ give
+$R_t(x)=(C+T-x)(L-t)+o(L-t)>0$ and $S_t(x)\to+\infty$.
+This proves the positive interval. The additional actual
+high-point wall is nonpositive on $J$ and does not affect it there.
+
+The finite positive graph has horizontal length equal to the
+sine/cosine moment of its two source measures. Source convergence
+and \cref{eq:tilted-wing-traces} give its limiting length as
+\[
+ \int_0^L(u\sin t+v\cos t)\,\dd t=2C-T.
+\]
+Uniform niche convergence gives the lower bound from the positive
+interval. To get the reverse bound, take a compact interval
+strictly left of $x_*$. All surrogate second walls there are strictly
+negative when their angles lie in $[\varepsilon,L-\varepsilon]$.
+The additional actual high-point wall is also strictly negative
+there. The finite positive graph on this compact interval must
+therefore use endpoint-angle sources. Their total mass is
+$O(\varepsilon)+o(1)$ by \cref{eq:variation-coarse}.
+Exhaust the zero interval and then let $\varepsilon\downarrow0$.
+Thus the finite positive lengths converge to
+$C-\max\{-C,x_*\}$. Equating the two lengths proves
+\cref{eq:tilted-no-ghost-projection}.
+
+Let $\tau$ be the first entry into $\{p<-1,q>0\}$.
+Before it, $v\le1$: use $v\le\kappa(p)$ when $p\ge-1$,
+and $v=0$ in the negative-negative sector when $p<-1$.
+On a level set $q=0$, its derivative is zero almost everywhere,
+whereas $p<-1$ would give $q'\le-1$; no exceptional mass remains.
+Entry through $q=0$ is impossible because $q'\le-1/2$ for
+$p\le0$. Thus $p(\tau)=-1$, $q(\tau)>0$.
+
+For $\alpha<t<\tau$, past $D_x$ is nondecreasing, whereas
+future $B_x$ is globally nondecreasing. Hence the positive core
+corner is the unique active angle: earlier second walls and
+later first walls are strictly below it. It lies in $J$, since
+$-C<D_x+q\cos t=z_x=B_x+p\sin t<C$.
+It contributes first-source density $q$. Before $\beta$,
+the disjoint visible $B$ tangency contributes another $1-u$.
+The source identity gives
+$u\ge(1+q)/2$ before $\beta$, and $u\ge q$ after it.
+Plateaus contribute zero tangent length and do not change these
+bounds. If $\tau\le\beta$, the bounds $u\le1$ and
+$u\le\kappa(q)$ make $q\le1$, $u=(1+q)/2$ on the core
+up to $\tau$. There
+$E=(p-1)^2+(q+1)^2$ is nonincreasing and $E(\alpha)\le5$;
+but $E(\tau)=4+(q(\tau)+1)^2>5$, a contradiction.
+The same strict comparison at the crossing excludes equality
+$\tau=\beta$.
+
+On $(\beta,\tau)$, put $K=q+(p-1)^2/4$.
+Since $u\ge q$ and $-1<p<0$, $v\le(1-p)/2$ gives
+$K'\le v+(p-1)/2\le0$.
+At $\beta$, $E\le5$ yields
+\[
+ K(\beta)\le1+q(\beta)/2-q(\beta)^2/4\le5/4.
+\]
+As $K(\tau)=1+q(\tau)$, this proves
+\cref{eq:tilted-first-bad-bound}. If $T=0$, $\beta=L$ and
+the first bad entry is impossible; the arm and same-sign
+bounds then give $v\le1$ everywhere.
+\end{proof}
+
+\subsection{The joint occupation of a corner}
+
+\begin{lemma}[Common source occupation]
+\label{lem:variation-joint-occupation}
+Under the first-unit hypotheses, suppose the companion density
+exceeds one on a set of positive measure, and let the
+ordered contacts and $\beta$ be as above. There are measurable
+$d,\chi\in[0,1]$ such that, almost everywhere,
+\begin{equation}\label{eq:joint-source-equations}
+ \begin{array}{c|cc}
+ &u&v\\ \hline
+ (0,\alpha)&0&(1-v)d\\
+ (\alpha,\eta)&(1-u)b+q\chi&(1-v)d-p\chi\\
+ (\eta,L)&0&0,
+ \end{array}
+ \qquad b=\mathbf1_{\{t<\beta\}}.
+\end{equation}
+The second tangent occupation satisfies $d=0$ where $v>1$ or
+$D_y<0$. Before a first bad entry $\tau$, one has $\chi=1$
+on $(\alpha,\tau)$.
+\end{lemma}
+\begin{proof}
+Keep the source angle and graph abscissa together in the finite
+polygons. Assign to every positive first-source segment its
+arclength measure at $(t,x)$; call this $\mu_{i,F}$, and
+define $\mu_{i,G}$ similarly. Their exact graph-vector identities
+on the window interior are
+\begin{align*}
+ \pi_{x\#}(\sin t\,\mu_{i,F}+\cos t\,\mu_{i,G})
+   &=\mathbf1_{\{N_i>0\}\cap J_i}\,\dd x,\\
+ \pi_{x\#}(-\cos t\,\mu_{i,F}+\sin t\,\mu_{i,G})
+   &=\dd(N_i|_{J_i}).
+\end{align*}
+The second is a distributional identity. Bounded mass gives a
+joint weak subsequence. The no-ghost argument in
+\cref{lem:tilted-first-unit-geometry} passes the first identity
+to Lebesgue measure on $(x_*,C)$. Uniform graph convergence
+passes the second to $N'(x)\,\dd x$ on this positive interval.
+The angular marginals are exactly $u\,\dd t,v\,\dd t$ by
+\cref{lem:variation-sources}. There are no endpoint-angle atoms.
+The graph is locally Lipschitz on its positive interval:
+on a compact positive part, the endpoint-angle walls tend to
+zero or below, so all active angles remain in a compact
+subinterval of $(0,L)$. These identities also exclude extra
+mass at a spatial singleton or at a floor point.
+
+At a regular positive active source with first-wall slack,
+angular stationarity gives $x=B_x(t)$ and height $B_y(t)$;
+this needs $p<0$. The analogous second-wall contact is $D$,
+with $q>0$. A simultaneous contact is $z$.
+A corner with two positive momenta is shadowed by a slightly
+larger angle, and one with two negative momenta by a slightly
+smaller angle. Thus only core corners remain.
+At a second tangent
+\[
+ \partial_t^2 S_t(D_x(t))=-(1-v(t))/\cos t.
+\]
+When $v>1$, it is an angular local minimum with strict companion
+slack, and cannot be an active full-envelope maximum. The same
+conclusion follows at density points from the integrated
+second-derivative inequality. Second-tangent occupation vanishes
+there and when $D_y<0$.
+
+The first-unit bound makes $B$ the global first-wall envelope.
+On $(\alpha,\beta)$ its companion has strict slack. Its graph
+has negative slope and lies to the right of every core corner,
+because $z_x$ strictly decreases from $B_x(\alpha)$.
+An active $D$ tangent has positive slope and cannot coincide on
+a set of positive graph measure. Thus the entire first-tangent
+contribution is $(1-u)\mathbf1_{(\alpha,\beta)}\,\dd t$.
+Plateaus have zero spatial projection and hence zero extra mass.
+
+On the measurable corner contact set $N(z_x(t))=z_y(t)$,
+the chain rule and the derivative-zero property on level sets give
+\[
+ N'(z_x(t))=\frac{p\sin t+q\cos t}{p\cos t-q\sin t}
+ \quad\text{a.e.}
+\]
+On a compact core interval $z_x$ is bi-Lipschitz, so null sets
+in angle and abscissa cause no difficulty. Disintegrate the two
+vector identities at $x=z_x(t)$. Any competing $D$ contact has
+the same tangent $(1,N'(x))$; subtract its parallel flux.
+For the remaining first and second arclength densities $A_F,A_G$
+the vertical identity becomes
+\[
+ (-\cos t-N'\sin t)A_F+(\sin t-N'\cos t)A_G=0.
+\]
+Substitution gives $A_G=(-p/q)A_F$.
+Their nonnegative horizontal share is at most one. Since the
+increasing-abscissa corner displacement is $-z'(t)\,\dd t$,
+one common number $\chi\in[0,1]$ therefore assigns angular
+densities $q\chi$ and $-p\chi$. Exhaust compact core intervals
+to obtain a measurable $\chi$ on the whole core. Strict unique
+corner visibility before $\tau$ makes $\chi=1$ there.
+
+For a visible regular second tangent, $D_x'=(1-v)\cos t$.
+The area formula pulls its horizontal share back to angle as
+$(1-v)d\,\dd t$, for a measurable $d\in[0,1]$.
+At almost every graph abscissa there is at most one visible
+second tangent, since its slope $\tan t$ determines its angle.
+Set $d=0$ on absent or forbidden contacts.
+All positive second tangents and core corners lie in $J$:
+their abscissa exceeds $L_0(t)\ge x_*>-C$, whereas
+$D_x\le1-C<C$ and $z_x\le B_x(\alpha)<C$.
+
+These three classes exhaust the limiting source measure.
+There is no nonnegative remainder, since the weighted spatial
+projection already equals the whole positive graph projection.
+Equating angular marginals gives
+\cref{eq:joint-source-equations}. In the final sector the first
+tangencies are outside $J$, as $\beta<\eta$ whenever this
+occupation is used in the nonunit branch; the second density
+already vanishes by same-sign shadowing.
+\end{proof}
+
+\subsection{The two clipped strip moments}
+
+\begin{lemma}[Two unit wings]\label{lem:tilted-two-unit}
+A canonical full maximum with positive middle slope,
+$1/2<C<4/5$ and $0<h<1/2$ cannot have both $u,v\le1$
+almost everywhere.
+\end{lemma}
+\begin{proof}
+Both $B$ and $D$ have nondecreasing abscissae; $B_y$ decreases
+to zero and $D_y$ increases from $-h$ to $e_L>0$.
+Moreover
+$B_x-D_x=q\cos t-p\sin t\ge4C-2>0$.
+Let $\gamma$ be a floor crossing of $D$, and $\beta$ the
+right-window crossing of $B$. Ordered signs and the exact wall
+derivatives
+\[
+ \partial_tR_t(x)=\frac{x-B_x(t)}{\sin^2t},\qquad
+ \partial_tS_t(x)=\frac{x-D_x(t)}{\cos^2t}
+\]
+show that the positive graph in the window consists of
+$D[\gamma,\eta]$, the reversed core $z[\alpha,\eta]$,
+and $B[\alpha,\beta]$. Indeed at a tangent its sole active
+wall is the global angular maximum with companion slack;
+at a core corner every earlier second wall and later first
+wall is strictly below it. The source-box estimate gives
+$\alpha<\beta$, and positivity of $z_y(\eta)$ gives
+$\gamma<\eta$. No relative order of $\beta$ and $\gamma$
+is needed. Flat tangent parameter intervals have zero projection.
+
+The no-ghost identity now says
+$T=C+D_x(\gamma)>0$. Strict positivity also follows directly
+from $h=\int_0^\gamma(1-v)\sin t>0$.
+Local finite graph-vector flux gives source lower bounds
+\[
+ \begin{split}
+ u\,\dd t&\ge[(1-u)\mathbf1_{(\alpha,\beta)}
+                             +q\mathbf1_{(\alpha,\eta)}]\,\dd t,\\
+ v\,\dd t&\ge[(1-v)\mathbf1_{(\gamma,\eta)}
+                             -p\mathbf1_{(\alpha,\eta)}]\,\dd t.
+ \end{split}
+\]
+For a compact strict corner arc, resolve its increasing-abscissa
+displacement $-z'$ in the two wall directions: it assigns first
+length $q$ and second length $-p$. Strict contact localization
+passes these local bounds from the polygons. The sine/cosine
+weighted sum of their right sides is the actual positive graph
+projection, namely $2C-T$, which is also the weighted source
+total. The nonnegative defects therefore have zero positive
+weighted moment and vanish. This proves equality in both bounds.
+
+Put $z_+=N_L(U)(C)$. Since $N_L(U)(-C)=0$, the endpoint
+pressures and tangent moments are
+\begin{equation}\label{eq:tilted-strip-moments}
+ \begin{gathered}
+ e_R=\tfrac12+\tfrac h4+\tfrac{3z_+}4,\qquad
+ e_L=\tfrac12-\tfrac{3h}4-\tfrac{z_+}4,\\
+ T=\int_0^\gamma(1-v)\cos t\,\dd t,
+ \quad h=\int_0^\gamma(1-v)\sin t\,\dd t,\\
+ T=\int_\beta^L(1-u)\sin t\,\dd t,
+ \quad z_+=\int_\beta^L(1-u)\cos t\,\dd t.
+ \end{gathered}
+\end{equation}
+Use the continuous contact energy
+\begin{equation}\label{eq:tilted-contact-energy}
+ \mathcal H(p,q)=
+ \begin{cases}
+ (p-1/2)^2+(q+1)^2+3/4,&p,q\ge0,\\
+ (p-1)^2+(q+1)^2,&p\le0\le q,\\
+ (p-1)^2+(q+1/2)^2+3/4,&p,q\le0.
+ \end{cases}
+\end{equation}
+The formulas agree on the two switching axes. Substitution of
+the exact source equations gives
+\[
+ \mathcal H'=-(q+1)(1-v)\mathbf1_{(0,\gamma)}
+                  +(1-p)(1-u)\mathbf1_{(\beta,L)}.
+\]
+For example in an unclipped core the equations are
+$u=(1+q)/2$, $v=(1-p)/2$ and the derivative is zero;
+removing floor tangencies replaces the second equation by
+$v=-p$ and adds the first displayed term; removing window
+tangencies replaces the first by $u=q$ and adds the second.
+The same substitution in the outer sign sectors gives the
+same terms. Thus every crossing order is included.
+
+Let
+\begin{equation}\label{eq:tilted-flux-remainders}
+ \begin{gathered}
+ I_D=\int_0^\gamma(q+1)(1-v),\qquad
+ I_B=\int_\beta^L(1-p)(1-u),\\
+ R_D=\int_0^\gamma(1-v(t))\int_0^t u(s)\sin(t-s)\,\dd s\,\dd t,\\
+ R_B=\int_\beta^L(1-u(t))\int_t^L v(s)\sin(s-t)\,\dd s\,\dd t.
+ \end{gathered}
+\end{equation}
+Integration variables on the first line are $t$.
+Endpoint substitution gives
+\[
+ \mathcal H(L)-\mathcal H(0)
+   =6CT+T^2-(h+z_+)(h+z_+/2).
+\]
+Variation of constants in the momentum equations gives
+\begin{align*}
+ q(t)+1&=3C\cos t+(e_R+h)\sin t\\
+   &\quad-\int_0^t(1-v(s))\cos(t-s)\,\dd s
+         +\int_0^t u(s)\sin(t-s)\,\dd s,\\
+ 1-p(t)&=(3C+T)\sin t+e_L\cos t\\
+   &\quad-\int_t^L(1-u(s))\cos(s-t)\,\dd s
+         +\int_t^L v(s)\sin(s-t)\,\dd s.
+\end{align*}
+For any integrable function $a$, symmetry of the cosine kernel gives
+\[
+ \int_\xi^\zeta a(t)\int_\xi^t a(s)\cos(t-s)\,\dd s\,\dd t
+ =\tfrac12\left[(\int_\xi^\zeta a\cos)^2
+                       +(\int_\xi^\zeta a\sin)^2\right].
+\]
+Applying it to $1-v$ and
+$1-u$ yields
+\[
+ \begin{aligned}
+ I_D&=3CT-T^2/2+e_Rh+h^2/2+R_D,\\
+ I_B&=3CT+T^2/2+e_Lz_+-z_+^2/2+R_B.
+ \end{aligned}
+\]
+Since the energy change is $I_B-I_D$, the pressures simplify
+these identities to
+\begin{equation}\label{eq:tilted-two-unit-identity}
+ 6CT=(z_+-h)(2-h-z_+)/4+R_B-R_D.
+\end{equation}
+Here $R_D\ge0$, $h+z_+<2$,
+$z_+\le\cot\beta\,T\le4T/3$, and
+\[
+ R_B\le\int_\beta^L(1-u)(1-\sin t)\,\dd t
+      \le\frac{1-\sin\beta}{\sin\beta}T\le2T/3.
+\]
+The first term in \cref{eq:tilted-two-unit-identity} is at most
+$z_+/2$. Hence $6CT\le4T/3$, contradicting $C>1/2$, $T>0$.
+\end{proof}
+
+\subsection{Paying for a folded companion}
+
+\begin{lemma}[Folded-wing energy]\label{lem:tilted-fold-energy}
+Under the first-unit hypotheses, a companion density exceeding
+one also contradicts maximality.
+\end{lemma}
+\begin{proof}
+Let $\alpha<\beta<\tau<\eta$ be the contacts in
+\cref{lem:tilted-first-unit-geometry}. That lemma forces $T>0$,
+$x_*=-C+T$ and $N_L(U)(-C)=0$.
+Use the common occupations $d,\chi$ of
+\cref{lem:variation-joint-occupation}. On the core they give
+\begin{equation}\label{eq:tilted-fractional-solution}
+ u=\frac{b+q\chi}{1+b},\qquad
+ v=\frac{d-p\chi}{1+d},\qquad b=\mathbf1_{\{t<\beta\}}.
+\end{equation}
+
+Let $\gamma$ be the first zero of $D_y$. We claim $\gamma<\tau$.
+There is a zero before $\eta$, since $D_y(0)=-h$ and
+$D_y(\eta)=z_y(\eta)>0$.
+Suppose $D_y$ has stayed nonpositive until $\tau$.
+Then $L_0'=D_y/\sin^2t\le0$ on this initial interval.
+At a positive core corner, every earlier second wall is
+strictly lower, because
+\[
+ S_r(z_x(t))=\tan r\,[z_x(t)-L_0(r)]
+             <\tan t\,[z_x(t)-L_0(t)]=z_y(t)\quad(r<t).
+\]
+If the earlier bracket is negative the inequality is immediate;
+otherwise both its factors are no greater and the tangent is
+strictly smaller. Every later first wall is strictly lower by
+global $B_x$ monotonicity. Thus this corner is uniquely exposed
+and $\chi=1$ as long as $D_y$ remains nonpositive.
+After $\tau$, while this condition persists, $b=d=0$ and
+\cref{eq:tilted-fractional-solution} gives
+$u=q$, $v=-p$, $p'=q'=-1$. Therefore
+$D_y'=(1+p)\sin t<0$. It cannot leave the nonpositive region
+before $q$ reaches zero, contradicting $D_y(\eta)>0$.
+
+This reasoning includes $D_y(\tau)=0$ by the following
+continuation argument. At $\tau$ the corner is positive and
+inside the window, and its two local angular derivatives have
+opposite strict signs. The remote-angle gaps are strict and
+uniform on compact remote angle sets. Both properties persist
+on a neighborhood, giving $\chi=1$ immediately to the right.
+Then $p'=-1$; for $p<-1$, the fractional formula gives
+$v=(d-p)/(1+d)>1$, forcing $d=0$. Hence $D_y'<0$ there as
+well. This excludes an immediate positive departure from zero.
+The claim follows, including a possible zero plateau.
+
+Put $S=C+D_x(\gamma)$. At this floor crossing
+$D_x(\gamma)=L_0(\gamma)\ge x_*$. The low-wing outer
+point has abscissa at most $-C$, so $D_x\le1-C$.
+Together with $x_*<1-2C$, these facts give
+\begin{equation}\label{eq:tilted-first-floor-moments}
+ \begin{gathered}
+ 0<T\le S\le1,\qquad T\le C,\\
+ S=\int_0^\gamma(1-v)\cos t,\qquad
+ h=\int_0^\gamma(1-v)\sin t,\\
+ T=\int_\beta^L(1-u)\sin t,\qquad
+ z_+=\int_\beta^L(1-u)\cos t.
+ \end{gathered}
+\end{equation}
+All four integrals use $\dd t$. There is no assumption that
+the first floor crossing minimizes $L_0$.
+
+On $(\tau,\eta)$, $b=0$ and $p'=q\chi-1-q\le-1$.
+Thus $p\le-1$ and $0<q\le1/4$ there. For $w=q-p$,
+substitution in the fractional equations gives the exact identity
+\[
+ w'=(1-\chi)\left[p+q+\frac d{1+d}\right]
+             +\frac{\chi d(1+p)}{1+d}\le0.
+\]
+Both terms are nonpositive since $p+q\le-3/4$ and
+$d/(1+d)\le1/2$. As $w(\tau)\le5/4$,
+$v\le-p\le5/4-q$ there. Before $\tau$, $v\le1$;
+after $\eta$, $v=0$. Hence $v\le5/4$ globally.
+Where $v>1$, $d=0$, $v=-p\chi$, $u=q\chi$ and
+\begin{equation}\label{eq:tilted-fold-budget}
+ (v-1)_+\le1/4-q\le(1-u)/4.
+\end{equation}
+
+Use the continuous energy \cref{eq:tilted-contact-energy}.
+Before $\beta$, the source equations and $\chi=1$ give
+$\mathcal H'=-(q+1)(1-v)(1-d)$.
+On the core after $\beta$, direct differentiation gives
+\begin{equation}\label{eq:tilted-fractional-energy}
+ \mathcal H'-(1-p)(1-u)+(q+1)(1-v)(1-d)
+                         =(1-\chi)(p+q).
+\end{equation}
+The residual is zero before $\tau$ and nonpositive afterwards.
+On the final sector $\mathcal H'=1-p$.
+On $[0,\gamma]$, $d=0$ and $v\le1$, so its exact contribution
+is $-I_D$. All later pieces with $v\le1$ are favorable.
+The remaining fold defect is paid by
+\cref{eq:tilted-fold-budget}, since $q+1\le5/4$ there:
+\[
+ \int_{\{v>1\}}(q+1)(v-1)(1-d)
+       \le\tfrac5{16}\int_\beta^L(1-u)
+       \le\frac{5T}{16\sin\beta}.
+\]
+It follows that
+\begin{equation}\label{eq:tilted-energy-defect}
+ \mathcal H(L)-\mathcal H(0)
+             \le I_B-I_D+5T/(16\sin\beta).
+\end{equation}
+
+The endpoint pressures are those in
+\cref{eq:tilted-strip-moments}. The harmonic reconstructions
+used in the two-unit proof remain valid, but the first horizontal
+moment is now $S$ rather than $T$. Thus
+\[
+ \begin{split}
+ \mathcal H(L)-\mathcal H(0)&=6CT+T^2-(h+z_+)(h+z_+/2),\\
+ I_D&=3CS-S^2/2+e_Rh+h^2/2+R_D,\\
+ I_B&=3CT+T^2/2+e_Lz_+-z_+^2/2+R_B.
+ \end{split}
+\]
+The remainders have exactly the definitions in
+\cref{eq:tilted-flux-remainders}; $R_D\ge0$ because
+$v\le1$ before $\gamma$. Substitute these expressions into
+\cref{eq:tilted-energy-defect} and use the endpoint pressures.
+The result is
+\begin{equation}\label{eq:tilted-fold-contradiction}
+ \begin{split}
+ 6CT\le{}&(z_+-h)(2-h-z_+)/4+R_B-R_D\\
+ &+(S-T)[(S+T)/2-3C]+5T/(16\sin\beta).
+ \end{split}
+\end{equation}
+The displacement term is nonpositive:
+$S\ge T$, $(S+T)/2\le(1+C)/2<3C$.
+Using $v\le5/4$ in the backward sine convolution gives
+\[
+ R_B\le\tfrac54\frac{1-\sin\beta}{\sin\beta}T\le5T/6,
+ \qquad z_+\le\cot\beta\,T\le4T/3.
+\]
+Since $h+z_+<2$, the first term is at most $z_+/2$.
+Drop the two nonpositive terms in
+\cref{eq:tilted-fold-contradiction}. Its right side is at most
+\[
+ \left(\frac23+\frac56+\frac{25}{48}\right)T
+                   =\frac{97}{48}T<3T.
+\]
+But $6CT>3T$ for $C>1/2$ and $T>0$, the required contradiction.
+\end{proof}

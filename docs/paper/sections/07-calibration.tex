@@ -1,0 +1,431 @@
+\section{The support functional and its maximum}\label{sec:calibration}
+
+Put $L=\pi/2$. This section concerns pairs of $C^1$ functions on
+$[0,L]$, without a convexity assumption. For such a pair $X=(F,G)$ let
+\[
+ p_X=F'-G+1,\qquad q_X=G'+F-1,
+ \qquad p_-:=\min(p,0),\quad q_+:=\max(q,0),
+\]
+and define
+\begin{equation}\label{eq:support-functional}
+ \begin{split}
+ \mathcal A(X)=\frac12\int_0^L\bigl[&F^2+G^2-F'^2-G'^2
+                  +(F-1)^2+(G-1)^2\\
+       &+(F-1)G'-(G-1)F'-p_{X,-}^2-q_{X,+}^2\bigr]\,\dd t.
+ \end{split}
+\end{equation}
+The admissible traces at half-width $a$ are
+\begin{equation}\label{eq:calibration-traces}
+ F(0)=G(L)=a,\qquad F(L)=G(0)=1.
+\end{equation}
+We first prove strict concavity at these traces, then construct a
+stationary pair at every competitive width, and finally maximize its
+computed value over the width.
+
+\subsection{The fixed-trace remainder}
+
+For a variation $V=(\phi,\psi)$ write
+\[
+ B_0(V)=\frac12\int_0^L
+ \bigl[\phi'^2+\psi'^2-2\phi^2-2\psi^2
+                      -\phi\psi'+\psi\phi'\bigr]\,\dd t.
+\]
+The first variation of \cref{eq:support-functional} is
+\begin{align}\label{eq:calibration-first-variation}
+ D\mathcal A(X)[V]=\int_0^L\bigl[&
+ (2F-1)\phi+(2G-1)\psi-F'\phi'-G'\psi'\notag\\
+ &+\tfrac12\bigl(\phi G'+(F-1)\psi'
+                       -\psi F'-(G-1)\phi'\bigr)\notag\\
+ &-p_{X,-}(\phi'-\psi)-q_{X,+}(\psi'+\phi)\bigr]\,\dd t.
+\end{align}
+These formulas make sense when the first derivatives are continuous;
+the stationary pairs constructed below have piecewise continuous
+second derivatives.
+
+\begin{lemma}[Dirichlet estimate]\label{lem:calibration-dirichlet}
+If $f\in C^1[0,L]$ and $f(0)=f(L)=0$, then
+\[
+ \int_0^L f^2\le\frac{L^2}{6}\int_0^L f'^2
+                 <\frac5{12}\int_0^L f'^2
+\]
+unless $f=0$, in which case both integrals vanish.
+\end{lemma}
+\begin{proof}
+Cauchy--Schwarz applied on $[0,t]$ and $[t,L]$ gives
+\[
+ f(t)^2\le t\int_0^t f'^2,\qquad
+ f(t)^2\le(L-t)\int_t^L f'^2.
+\]
+Multiply the first inequality by $L-t$, the second by $t$, and add.
+The result is
+$Lf(t)^2\le t(L-t)\int_0^L f'^2$. Integration gives the first
+inequality, since $\int_0^L t(L-t)\,\dd t=L^3/6$.
+The strict numerical comparison follows from $\pi^2<10$.
+\end{proof}
+
+\begin{lemma}[Coercive remainder]\label{lem:calibration-coercivity}
+For a variation $V$ vanishing at all four traces, put
+$y(t)=e^{-it/2}(\phi(t)+i\psi(t))$. Then
+\begin{equation}\label{eq:calibration-coercivity}
+ B_0(V)=\frac12\int_0^L
+           (|y'|^2-\tfrac94|y|^2)\,\dd t
+       \ge\frac1{32}\int_0^L|y'|^2\,\dd t.
+\end{equation}
+Equality $B_0(V)=0$ implies $V=0$ on $[0,L]$.
+\end{lemma}
+\begin{proof}
+For $z=\phi+i\psi$,
+$|y'|^2=|z'|^2+|z|^2/4-\operatorname{Im}(\overline z z')$.
+This gives the identity in \cref{eq:calibration-coercivity}.
+Apply \cref{lem:calibration-dirichlet} to the two real components of
+$y$. The resulting coefficient is
+$\tfrac12(1-\tfrac94\cdot\tfrac5{12})=1/32$.
+If $B_0=0$, the derivative integral is zero, so $y$ is constant.
+Its zero traces imply $y=0$ and hence $V=0$.
+\end{proof}
+
+\begin{theorem}[Fixed-trace maximum]\label{thm:fixed-trace-max}
+Suppose $X$ satisfies \cref{eq:calibration-traces} and
+$D\mathcal A(X)[V]=0$ for every zero-trace $C^1$ variation $V$.
+For every pair $\widetilde X$ with the same traces,
+\begin{equation}\label{eq:fixed-trace-max}
+ \mathcal A(\widetilde X)\le\mathcal A(X)-B_0(\widetilde X-X).
+\end{equation}
+Equality of the two functional values implies $\widetilde X=X$.
+\end{theorem}
+\begin{proof}
+The function $s\mapsto s_-^2$ is convex and differentiable, with
+derivative $2s_-$. Its remainder
+\[
+ R_-(s,t)=t_-^2-s_-^2-2s_-(t-s)
+\]
+is nonnegative. Define $R_+(s,t)$ similarly with positive parts.
+Expanding the polynomial terms in
+\cref{eq:support-functional} gives the exact identity
+\begin{align*}
+ \mathcal A(\widetilde X)=\mathcal A(X)
+ &+D\mathcal A(X)[\widetilde X-X]-B_0(\widetilde X-X)\\
+ &-\tfrac12\int_0^L
+  \bigl(R_-(p_X,p_{\widetilde X})+R_+(q_X,q_{\widetilde X})\bigr)\,\dd t.
+\end{align*}
+Stationarity and nonnegativity give \cref{eq:fixed-trace-max}.
+If the values agree, \cref{lem:calibration-coercivity} makes the
+variation zero pointwise.
+\end{proof}
+
+The fluxes and forces associated with the first variation are
+\begin{align*}
+ J_F&=-F'-(G-1)/2-p_-,& K_F&=2F-1+G'/2-q_+,\\
+ J_G&=-G'+(F-1)/2-q_+,& K_G&=2G-1-F'/2+p_-.
+\end{align*}
+Thus $D\mathcal A(X)[V]=\int(K_F\phi+K_G\psi+J_F\phi'+J_G\psi')$.
+If $J_F'=K_F$ and $J_G'=K_G$, integration by parts gives
+\begin{equation}\label{eq:calibration-boundary-flux}
+ D\mathcal A(X)[V]=[J_F\phi+J_G\psi]_0^L.
+\end{equation}
+The equations can hold separately on finitely many subintervals,
+provided the fluxes are continuous at their endpoints.
+For a symmetric pair $G(t)=F(L-t)$ one has
+$J_G(t)=-J_F(L-t)$ and $K_G(t)=K_F(L-t)$.
+It therefore suffices to verify the first flux equation.
+
+\subsection{The stationary family}
+
+For $b\in[0,\pi/4]$ put
+\begin{equation}\label{eq:stationary-family-parameters}
+ \begin{gathered}
+ \gamma=b/2+\pi/8,\qquad k=\cot\gamma,\qquad
+ a=\frac{\sin b+2k\cos b}{3},\\
+ E=\frac12-\frac{\cos b}{2}+k\sin b,\qquad
+ R=\frac{2}{3\sin\gamma},\qquad
+ S=\frac12-\frac{\cos b}{6}+\frac{k\sin b}{3}.
+ \end{gathered}
+\end{equation}
+These letters denote functions of $b$ in this subsection.
+Define
+\begin{equation}\label{eq:stationary-family}
+ F_b(t)=
+ \begin{cases}
+ a\cos t+E\sin t,&0\le t\le b,\\
+ R\cos(t/2+\pi/8)+S\sin t,&b\le t\le L-b,\\
+ \tfrac12+\tfrac12\sin t+\tfrac a2\cos t,&L-b\le t\le L,
+ \end{cases}
+ \qquad G_b(t)=F_b(L-t).
+\end{equation}
+
+\begin{lemma}[Matching and stationarity]\label{lem:stationary-family}
+The pair $X_b=(F_b,G_b)$ is $C^1$, satisfies
+\cref{eq:calibration-traces} at width $a(b)$, and is stationary.
+Its contact signs are $p,q\ge0$ on $[0,b]$, $p\le0\le q$ on
+$[b,L-b]$, and $p,q\le0$ on $[L-b,L]$.
+\end{lemma}
+\begin{proof}
+The identities $R\sin\gamma=2/3$ and $R\cos\gamma=2k/3$
+give value and derivative matching at $b$ by substitution in
+\cref{eq:stationary-family}. Reflection gives matching at $L-b$.
+The axis values are $F_b(0)=a$ and $F_b(L)=1$.
+
+On the first phase, direct differentiation gives
+\[
+ p=\tfrac12+(E-\tfrac12)\cos t-\tfrac32a\sin t,
+ \qquad q=-1+\tfrac32a\cos t+(E-\tfrac12)\sin t.
+\]
+Substituting \cref{eq:stationary-family-parameters}, these become
+\[
+ p=\frac{1-\cos(b-t)}2+k\sin(b-t),\qquad
+ q=-1+k\cos(b-t)+\tfrac12\sin(b-t).
+\]
+They are nonnegative: $k\ge1$, $0\le b-t\le\pi/4$, and
+$\cos r+\tfrac12\sin r\ge1$ for $0\le r\le\pi/4$.
+For the last inequality, square the nonnegative sides, or use
+$\sin r\le\cos r$ and $\sin r\le1$ in
+$\cos^2r+\sin^2r=1$.
+On the middle phase, put $\varphi=t/2+\pi/8$.
+Then $p=1-3R\sin\varphi/2$ and $q=3R\cos\varphi/2-1$.
+Since $\gamma\le\varphi\le\pi/2-\gamma$, both sine and cosine
+are at least $\sin\gamma$. This proves the middle signs.
+Reflection, namely $p(t)=-q(L-t)$, proves the last-phase signs.
+
+On the three phases the first flux and force are respectively
+\[
+\begin{array}{c|c|c}
+ &J_F&K_F\\ \hline
+ [0,b]&\frac34a\sin t-(E+\frac14)\cos t+\frac14&
+       \frac34a\cos t+(E+\frac14)\sin t\\[2pt]
+ [b,L-b]&\frac32R\sin\varphi-\frac32S\cos t-\frac12&
+       \frac34R\cos\varphi+\frac32S\sin t\\[2pt]
+ [L-b,L]&\frac32a\sin t+(\frac E2-1)\cos t-\frac12&
+       \frac32a\cos t-(\frac E2-1)\sin t.
+\end{array}
+\]
+Differentiating the middle column gives the last column.
+Matching makes both columns continuous at the switches.
+Reflection gives the second flux equation, and
+\cref{eq:calibration-boundary-flux} gives stationarity.
+\end{proof}
+
+\begin{lemma}[Value of the family]\label{lem:stationary-family-value}
+At the width $a(b)$,
+\begin{equation}\label{eq:stationary-family-score}
+ \mathcal A(X_b)-a(b)=
+ H(b):=\frac{(2E-1)(a+\sin b)+3a\cos b+b-2}{2}.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Write $A_X(t)$ for the density in \cref{eq:support-functional} and
+$D_X(t)$ for its first-variation density evaluated at $V=X$.
+By \cref{eq:calibration-boundary-flux},
+\[
+ \int_0^L D_X=2\bigl(J_F(L)F(L)-J_F(0)F(0)\bigr).
+\]
+On the first phase $2A_X-D_X$ has primitive
+\[
+ V_E(t)=t/2+(E/2+a/4-1/2)\sin t+(a+1/4)\cos t.
+\]
+On the last phase its primitive is
+\[
+ V_W(t)=t/2-(E/2+a/4-1/2)\cos t-(a+1/4)\sin t.
+\]
+On the middle phase $2A_X-D_X=(G'-F')/2$; this follows by
+substituting $p_-=p$ and $q_+=q$ and cancelling the quadratic terms.
+Integrating the three primitives and adding the boundary term,
+using $F(0)=a$, $F(L)=1$, gives
+\[
+ 2\mathcal A(X_b)=(2E-1)(a+\sin b)+3a\cos b+b-2+2a.
+\]
+This is \cref{eq:stationary-family-score}.
+\end{proof}
+
+\begin{lemma}[The unique scalar maximum]\label{lem:calibration-scalar}
+The width $a(b)$ is strictly decreasing from
+$a(0)=\tfrac23\cot(\pi/8)$ to $a(\pi/4)=\sqrt2/2$.
+The function $H$ has a unique maximum at
+$\beta=\arctan Y$, and $H(\beta)=\Mc/2$.
+\end{lemma}
+\begin{proof}
+Differentiating $k$ gives $k'=-(1+k^2)/2$. Hence
+\[
+ a'=-\frac{k(k\cos b+2\sin b)}3<0,
+ \qquad (2E-1)'=k(2\cos b-k\sin b)>0.
+\]
+The second sign uses $k\sin b\le\cos b$, which follows from
+$\gamma\ge b$ and the sine difference formula.
+Differentiating \cref{eq:stationary-family-score} and cancelling
+with $\sin^2b+\cos^2b=1$ gives
+\[
+ H'(b)=(2E(b)-1)a'(b).
+\]
+The equation $E=1/2$ is $2\cot\gamma\sin b=\cos b$.
+To identify its root, set $y=\tan b$. It gives
+$\tan\gamma=2y$. Since $2\gamma=b+\pi/4$,
+the tangent double-angle formula gives
+\[
+ \frac{4y}{1-4y^2}=\frac{1+y}{1-y},\qquad
+ 4y^3+3y-1=0.
+\]
+The zero exists uniquely because $2E-1$ is strictly increasing
+and has opposite signs at $0$ and $\pi/4$; at that zero
+$\tan\gamma=2y<1$, so the denominators used above are positive.
+Thus it is $\beta=\arctan Y$.
+The signs of $a'$ and $2E-1$ make $H$ strictly increase before
+$\beta$ and strictly decrease after it.
+At $\beta$, the equation for $k$ gives
+$a=1/(3\sin\beta)$, and therefore
+\[
+ H(\beta)=\frac{\cot\beta+\beta-2}{2}
+       =\frac{1/Y+\beta-2}{2}=\Mc/2.
+\]
+The last equality uses $1/Y=4Y^2+3$.
+\end{proof}
+
+\subsection{The large-width tail}
+
+Put $\gamma_0=\pi/8$. For $r\sin\gamma_0\ge2/3$, define
+\[
+ F_r(t)=r\cos(t/2+\gamma_0)+(1-r\sin\gamma_0)\sin t,
+ \qquad G_r(t)=F_r(L-t).
+\]
+Its half-width is $a=r\cos\gamma_0$.
+
+\begin{lemma}[Tail comparison]\label{lem:calibration-tail}
+The tail pair is stationary at its traces, and
+\[
+ \mathcal A(F_r,G_r)-a
+       =3r\cos\gamma_0-1-3r^2\sin\gamma_0\cos\gamma_0<2/3.
+\]
+\end{lemma}
+\begin{proof}
+The momenta are $p=1-3r\sin(t/2+\gamma_0)/2\le0$ and
+$q=3r\cos(t/2+\gamma_0)/2-1\ge0$. The middle-phase flux
+calculation of \cref{lem:stationary-family} applies on the whole
+interval and proves stationarity.
+Here $2A_X-D_X=(G'-F')/2$ throughout. Integrating this identity
+and the boundary flux gives
+$\mathcal A=4r\cos\gamma_0-1-3r^2\sin\gamma_0\cos\gamma_0$.
+For $x=r\sin\gamma_0\ge2/3$, one has $x-x^2\le2/9$, so
+the score is at most $\tfrac23\cot\gamma_0-1$.
+Since $\cot(\pi/8)=1+\sqrt2<5/2$, this is strictly less than $2/3$.
+\end{proof}
+
+\begin{theorem}[Global calibration]\label{thm:global-calibration}
+If $X=(F,G)\in C^1[0,L]^2$ satisfies
+\cref{eq:calibration-traces} with $a\ge4/5$, then
+\begin{equation}\label{eq:global-calibration}
+ \mathcal A(X)-a\le\Mc/2.
+\end{equation}
+Equality holds precisely for $a=1/(3\sin\beta)$ and $X=X_\beta$.
+\end{theorem}
+\begin{proof}
+If $a\le a(0)$, \cref{lem:calibration-scalar} and the intermediate
+value theorem give a unique $b\in[0,\pi/4]$ with $a(b)=a$,
+since $\sqrt2/2<4/5$. Apply \cref{thm:fixed-trace-max} to the
+stationary pair $X_b$, followed by \cref{lem:calibration-scalar}.
+Equality forces $b=\beta$ and then $X=X_\beta$ pointwise.
+If $a\ge a(0)$, choose $r=a/\cos\gamma_0$ and apply the same
+fixed-trace theorem to the tail. Its score is less than $2/3<\Mc/2$.
+The common boundary $a=a(0)$ is covered by either construction.
+\end{proof}
+
+\begin{corollary}[Translation mode]\label{cor:calibration-translation}
+Suppose $F(L)=G(0)=1$ and $F(0)+G(L)\ge8/5$. Then
+\[
+ \mathcal A(F,G)-\frac{F(0)+G(L)}2\le\Mc/2.
+\]
+Equality determines the reference support pair up to one horizontal
+translation.
+\end{corollary}
+\begin{proof}
+The transformation $F_t(s)=F(s)+t\cos s$,
+$G_t(s)=G(s)-t\sin s$ preserves $p$ and $q$. Expanding the density
+shows that its change is $t$ times the derivative of
+\[
+ \frac{3(F(s)\sin s+G(s)\cos s)-\cos s-\sin s}{2}.
+\]
+Hence $\mathcal A(F_t,G_t)=\mathcal A(F,G)$ when $F(L)=G(0)$.
+Choose $t=(G(L)-F(0))/2$; the new side traces both equal
+$a=(F(0)+G(L))/2$. Apply \cref{thm:global-calibration}.
+The centered reference pair is exactly $X_\beta$, as substitution
+in its three support phases shows. Undoing the transformation
+gives the claimed translation mode.
+\end{proof}
+
+\subsection{Recovering every full maximum}
+
+\begin{theorem}[Sharp full-angle cap bound]\label{thm:full-cap-bound}
+Every downward cap $U$ satisfies
+\begin{equation}\label{eq:full-cap-bound}
+ P_L(U)\le\Mc/2.
+\end{equation}
+Equality holds if and only if $U$ is a horizontal translate of
+the reference cap $\KR$.
+\end{theorem}
+\begin{proof}
+By \cref{lem:selection-maximum}, a full maximum exists.
+Canonicalization in \cref{lem:selection-canonical} preserves
+its maximizing value. Its middle is horizontal by
+\cref{lem:full-affine-rigidity}; hence its roof is one on $J_U$.
+The horizontal estimates of \cref{lem:full-horizontal-unit}
+give, after horizontal translation, support traces
+$F(0)=G(L)=a=w_U/2>1$, $F(L)=G(0)=1$, both regular curvature
+densities at most one, top face exactly $J_U$, and ordered
+contact switches. The support-area and signed-niche identities
+of \cref{cor:horizontal-score-identity} therefore give
+\[
+ P_L(U)=\mathcal A(F,G)-a\le\Mc/2
+\]
+by \cref{thm:global-calibration}. Since the reference attains
+$\Mc/2$, this is the global maximum and proves
+\cref{eq:full-cap-bound} for every cap.
+
+The same reasoning applies to any prescribed canonical maximum:
+\cref{thm:selection-prescribed} and its limiting laws target that
+cap itself. Equality in \cref{thm:global-calibration} forces
+$a=1/(3\sin\beta)$ and $(F,G)=X_\beta$. By the reference
+support formulas, this is the centered reference cap. A downward
+cap is determined by its supports on the upper semicircle:
+the cap is the intersection of their supporting halfplanes with
+$y\ge0$, and every lower support is already determined by its
+baseline. Thus every canonical maximum is a translate of $\KR$.
+
+For an arbitrary equality cap, let $V$ be its middle-chord cut
+and let $W=V+[0,\varepsilon]e_y$ be its height-one extrusion,
+as in \cref{lem:selection-canonical}. The proved bound makes
+all inequalities in
+\[
+ \Mc/2=P_L(U)\le P_L(V)\le P_L(W)\le\Mc/2
+\]
+equalities. The canonical classification gives $W=\KR+(b,0)$.
+The exact extrusion deficit of \cref{lem:full-extrusion-deficit}
+then forces $\varepsilon=0$, since the reference niche is
+continuous and zero at both endpoints of its middle window.
+Consequently $V=W$ and its roof is one throughout $J_U$.
+Inclusion $V\subset U\subset\R\times[0,1]$ makes the original
+roof one there too. Outside $J_U$ the chord cut preserved that
+roof. Hence $U=V=W$. Translation invariance and the reference
+value prove the converse.
+\end{proof}
+
+\begin{lemma}[Extrusion deficit]\label{lem:full-extrusion-deficit}
+Let $V$ be a positive-width cap and suppose
+$W=V+[0,\varepsilon]e_y$ has height at most one. Then
+\begin{equation}\label{eq:full-extrusion-deficit}
+ N_L(V)=(N_L(W)-\varepsilon)_+,\qquad
+ P_L(W)-P_L(V)=\int_{J_V}(\varepsilon-N_L(W)(x))_+\,\dd x.
+\end{equation}
+If $N_L(W)$ is continuous and vanishes at an endpoint of $J_V$,
+the last integral is positive whenever $\varepsilon>0$.
+\end{lemma}
+\begin{proof}
+Vertical Minkowski addition raises the roof by $\varepsilon$
+and every upward support by $\varepsilon$ times its vertical
+normal coordinate. Both raw inner walls therefore rise by
+exactly $\varepsilon$. If $r$ is their signed angular supremum
+before extrusion, then $N_L(V)=r_+$ and
+$N_L(W)=(r+\varepsilon)_+$. This proves the first identity,
+including points where $r$ is negative.
+The exterior roof gain is $\varepsilon|I_V\setminus J_V|$;
+this equals $\varepsilon|J_V|$. Subtract the niche gain
+$N_L(W)-(N_L(W)-\varepsilon)_+$ to obtain the second identity.
+Continuity next to a zero endpoint gives an interval of positive
+length on which $N_L(W)<\varepsilon/2$, proving strictness.
+\end{proof}

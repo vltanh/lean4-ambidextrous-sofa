@@ -1,0 +1,538 @@
+\section{Facet variations and limiting source laws}\label{sec:variations}
+
+Fix a prescribed canonical full maximum, or a canonical joint maximum
+$(U,\alpha)$ with $\alpha<L$. Use the selections of
+\cref{thm:selection-prescribed}. Write $U_i$ for a selected polygon,
+$h_i$ for its support, $A_i=f_{U_i}$, and $q_i$ for its sampled
+complete barrier. Its projection and middle interval are $I_i,J_i$.
+All supports are bounded by $B$ in absolute value, the mesh tends
+to zero, and the penalty coefficient $\eta_i$ tends to zero.
+We take each polygonal variation first, with $i$ fixed.
+
+\subsection{Moving a floating side and an endpoint}
+
+For a nonaxis, nontop sampled normal $s$, let $\ell_{i,s}$ be the
+outer facet length, $\ell^{\rm w}_{i,s}$ its part over
+$I_i\setminus J_i$, and $\ell^{\rm m}_{i,s}$ its part over $J_i$.
+Let $\tau_{i,s}$ be the length of the positive barrier graph over
+$J_i$ carried by the inner line with this normal. The terminal first
+line is counted when $\alpha<L$; an unused normal has $\tau_{i,s}=0$.
+Distinct source lines have distinct slopes, so their intersection
+points do not create ambiguity in these lengths.
+
+\begin{lemma}[Finite facet variation]\label{lem:variation-finite}
+With $w_{i,s}$ the total persistent weight at $s$, put
+$b_{i,s}=4B\eta_iw_{i,s}$ and $\beta_i=\sum_s b_{i,s}\le4B\eta_i$.
+Then
+\begin{equation}\label{eq:variation-facet}
+ \ell^{\rm w}_{i,s}\le\tau_{i,s}+b_{i,s}.
+\end{equation}
+At a positive vertical end face the outward derivatives of the
+unpenalized score are $e_{i,R}-C_{i,R}$ and $e_{i,L}-C_{i,L}$, where
+\begin{equation}\label{eq:variation-pressures}
+ \begin{gathered}
+ Q_{i,\pm}=A_i(j_{i,\pm})+q_i(j_{i,\pm}),\\
+ C_{i,R}=(3Q_{i,+}-Q_{i,-})/4,\qquad
+ C_{i,L}=(3Q_{i,-}-Q_{i,+})/4,\\
+ e_{i,R}=A_i(r_i),\qquad e_{i,L}=A_i(l_i).
+ \end{gathered}
+\end{equation}
+For all end faces, including zero ones,
+\begin{equation}\label{eq:variation-endpoint-upper}
+ e_{i,R}\le(C_{i,R}+b_{i,0})_+,\qquad
+ e_{i,L}\le(C_{i,L}+b_{i,\pi})_+.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Move the supporting line at $s$ outwards by $\varepsilon>0$, keeping
+all other grid halfplanes. An old attaining point remains for each
+unchanged support, so those supports stay fixed. For a positive
+facet the moved support rises by $\varepsilon$ for sufficiently
+small $\varepsilon$. The projection and $J_i$ are unchanged.
+The gained outer strip has area
+$\varepsilon\ell^{\rm w}_{i,s}+O(\varepsilon^2)$. The gained
+forbidden area has area
+$\varepsilon\tau_{i,s}+O(\varepsilon^2)$: an exposed inner
+segment moves by its normal displacement, and finitely many line
+intersections, floor contacts, and window endpoints contribute
+quadratic errors. Thus the score derivative is
+$\ell^{\rm w}_{i,s}-\tau_{i,s}$. The penalty derivative has absolute
+value at most $b_{i,s}$. Maximality gives
+\eqref{eq:variation-facet}; at zero facet length it is automatic.
+
+Move a positive right end face from $r_i$ to $r_i+\varepsilon$.
+Nonaxis supports and $q_i(x)$ stay fixed, whereas the middle
+endpoints move by $\varepsilon/4,3\varepsilon/4$. Differentiating
+the three integrals gives
+\[
+ e_{i,R}+\tfrac14(A_i+q_i)(j_{i,-})
+          -\tfrac34(A_i+q_i)(j_{i,+})=e_{i,R}-C_{i,R}.
+\]
+Moving the left face outwards moves the middle endpoints by
+$-3\varepsilon/4,-\varepsilon/4$ and gives $e_{i,L}-C_{i,L}$.
+If an end face has height zero, its retained last sloping halfplane
+and the floor already impose the endpoint. Relaxing the axis
+constraint then leaves the body unchanged. This proves precisely
+the positive-part bounds \eqref{eq:variation-endpoint-upper}.
+\end{proof}
+
+\subsection{The four neighboring lines}
+
+\begin{lemma}[Neighbor exposure]\label{lem:variation-neighbors}
+At an interior first source $t$ with source spacing $\delta$, put
+$f=h_i(t)$, $g=h_i(t+L)$, $c=\cos\delta$, $s=\sin\delta$,
+and $T=\tan(\delta/2)$. Let
+\[
+ \ell^{\rm circ}=
+ \frac{h_i(t-\delta)+h_i(t+\delta)-2cf}{s}\ge0.
+\]
+The full exposed first-wall length satisfies
+\begin{equation}\label{eq:variation-neighbor}
+ \tau\le\tan\delta(|q^+|+T)+(2T-\ell^{\rm circ})_+,
+ \qquad q^+=f+\frac{h_i(t+L+\delta)-cg}{s}-1.
+\end{equation}
+The corresponding second-source bound has the roles of the two
+normal families interchanged.
+\end{lemma}
+
+\begin{proof}
+Parameterize the first inner ray by
+$z(v)=(f-1)u(t)+v u^\perp(t)$, $v\le v_0=g-1$.
+To avoid both neighboring open quadrants, an exposed point must lie in
+\[
+ [\min(v_-,v_+),v_0]\ \cup\ [v_{\rm lo},v_{\rm hi}],
+\]
+where solving the four neighboring line inequalities gives
+\[
+ \begin{aligned}
+ v_-&=\frac{h_i(t+L-\delta)-1-(f-1)s}{c},&
+ v_+&=\frac{h_i(t+L+\delta)-1+(f-1)s}{c},\\
+ v_{\rm lo}&=\frac{h_i(t+\delta)-1-(f-1)c}{s},&
+ v_{\rm hi}&=\frac{(f-1)c-h_i(t-\delta)+1}{s}.
+ \end{aligned}
+\]
+Indeed either a neighboring companion alternative holds, putting
+the point in the first interval, or both neighboring first alternatives
+must hold, putting it in the second. At zero the neighboring quadrant
+is below the floor; at a proper terminal endpoint it is dominated
+by the whole terminal first wall. These neighbors remain valid.
+Subtracting gives $v_{\rm hi}-v_{\rm lo}=2T-\ell^{\rm circ}$.
+If $d_-=(gc-h_i(t+L-\delta))/s$ and
+$d_+=(h_i(t+L+\delta)-gc)/s$, then $d_-\le d_+$ and
+\[
+ v_0-v_-=\tan\delta(f+d_--1+T),\qquad
+ v_0-v_+=\tan\delta(-q^++T).
+\]
+The first interval therefore has length at most
+$\tan\delta(|q^+|+T)$. Floor clipping only shortens the exposed
+pieces, proving the bound. The second-source calculation is the
+same calculation in the interchanged orthonormal coordinates.
+\end{proof}
+
+In a full grid $\ell^{\rm circ}=\ell_{i,t}$; with additional
+outer normals $\ell_{i,t}\le\ell^{\rm circ}$. Uniform support
+and support-slope bounds imply, for a fixed constant $K$,
+\begin{equation}\label{eq:variation-coarse}
+ \tau_{i,t},\tau_{i,t+L}\le K\delta,
+ \qquad
+ \ell_{i,s}\le K\delta+b_{i,s}+\ell^{\rm m}_{i,s}
+\end{equation}
+at nonterminal source normals. Normals used only for circumscription
+satisfy $\ell^{\rm w}_{i,s}\le b_{i,s}$.
+The terminal first source instead satisfies
+$\tau_{i,\alpha}\le |J_i|/\sin\alpha$; this mass is retained.
+There is no terminal companion source, since its two-wall minimum
+is dominated by the terminal first wall.
+
+\begin{lemma}[Vanishing middle errors]\label{lem:variation-middle}
+On every compact normal arc separated from $\theta_c$ and $L$,
+$\sum_s\ell^{\rm m}_{i,s}\to0$.
+\end{lemma}
+
+\begin{proof}
+Concavity and the bound $0\le A_i\le1$ give uniform roof-slope
+bounds near $J_U$, because this interval stays a positive distance
+from the projection endpoints. The roofs converge uniformly there.
+On $[j_-+\varepsilon,j_+-\varepsilon]$, their one-sided slopes
+converge uniformly to the middle slope $m$: bound each derivative
+between its two secant slopes to points a fixed distance away and
+then pass to the uniform limit. Thus every middle facet there has
+normal arbitrarily close to $\theta_c$. The two remaining boundary
+strips have total arclength at most a fixed constant times
+$\varepsilon+o(1)$. Let $i\to\infty$ and then
+$\varepsilon\downarrow0$.
+\end{proof}
+
+\begin{lemma}[The tilted middle junctions]\label{lem:variation-middle-junctions}
+If a canonical full or joint maximum has $m\ne0$, then
+$A'_-(j_-)>m>A'_+(j_+)$. Its middle facet has projection exactly $J_U$.
+\end{lemma}
+
+\begin{proof}
+At its normal $n_c=u(\theta_c)=(-m,1)/\sqrt{1+m^2}$ and $x\in J_U$,
+\[
+ \begin{gathered}
+ h_U(\theta_c)-1-\ip{(x,0)}{n_c}
+ =A(x)/\sqrt{1+m^2}-1\le-\delta_m,\\
+ \delta_m=1-(1+m^2)^{-1/2}>0.
+ \end{gathered}
+\]
+There is therefore an open normal arc $\Omega$ around $n_c$ on
+which this deficit is at most $-\delta_m/2$, uniformly for $x\in J_U$.
+Its walls exclude every positive forbidden point above $J_U$.
+Changing only supports in $\Omega$ by less than $\delta_m/4$
+leaves the complete middle barrier unchanged; this also covers
+the terminal wall if its normal belongs to $\Omega$.
+
+If, for example, $A'_+(j_+)=m$, concavity makes all upper normal
+cones at wing points $x\downarrow j_+$ tend to $\{n_c\}$.
+Choose such a point $p=(x,A(x))$ with $A(x)<1$ and its normal cone
+inside $\Omega$, and adjoin $p+\varepsilon e_y$ with its downward
+segment. Taking the convex hull raises the exterior roof near $x$.
+Outside $\Omega$, the positive support gap of $p$ has a positive
+minimum, so a sufficiently small $\varepsilon$ leaves those
+supports unchanged. Inside $\Omega$ the barrier remains unchanged.
+The score strictly increases, a contradiction. A point below height
+one exists: for $m<0$ the roof decreases to the right, and for
+$m>0$ a matching right slope forces $A(j_+)<1$.
+The left junction uses the same argument, with the signs reversed.
+Concavity supplies the nonstrict inequalities initially, so both
+must be strict. A facet extending outside $J_U$ would violate one
+of them.
+\end{proof}
+
+\subsection{Actual curvature densities and corner velocities}
+
+The upper surface-area measure of a convex cap is
+$\sigma=h''+h$ in the distributional sense; for a polygon it is
+$\sum_s\ell_s\delta_s$. Uniform support convergence gives weak
+convergence of these measures, since for a smooth test function
+$\varphi$ their integrals are $\int h(\varphi''+\varphi)$.
+Their total masses are bounded by the perimeter of the fixed box.
+
+\begin{theorem}[Regular curvature and shadow laws]\label{thm:variation-curvature}
+For every prescribed canonical full maximum the upper curvature
+measure has a bounded density away from $\theta_c,L$.
+For a prescribed proper joint maximum, remove also $\alpha$;
+on unused arcs away from $\theta_c$ the density is zero.
+There is no singular continuous curvature, and the only possible
+interior atoms are at these removed normals.
+
+Put $F(t)=h_U(t)$, $G(t)=h_U(t+L)$ and, on their regular intervals,
+\begin{equation}\label{eq:variation-velocities}
+ p=F'-G+1,\qquad q=G'+F-1,\qquad
+ u=F''+F,\qquad v=G''+G.
+\end{equation}
+Then $F,G\in W^{2,\infty}_{\rm loc}$ there and
+\begin{equation}\label{eq:variation-controls}
+ \begin{gathered}
+ p'=u-1-q,\qquad q'=v-1+p,\qquad p\le1,\quad q\ge-1,\\
+ 0\le u\le\kappa(q),\qquad0\le v\le\kappa(p),\qquad
+ \kappa(z)=\max\{|z|,(1+|z|)/2\}.
+ \end{gathered}
+\end{equation}
+At almost every angle where both supports are regular,
+\begin{equation}\label{eq:variation-shadow}
+ \begin{array}{ll}
+ p>0, q>0\ \Longrightarrow\ u=0, v\le1/2,\\
+ p<0, q<0\ \Longrightarrow\ v=0, u\le1/2.
+ \end{array}
+\end{equation}
+If the inner corner has negative height, $u=v=0$; at height zero,
+$u,v<1$ almost everywhere.
+\end{theorem}
+
+\begin{proof}
+Sum \eqref{eq:variation-coarse} on a compact regular normal interval.
+The penalty sum tends to zero and the middle sum tends to zero by
+\cref{lem:variation-middle}. The result bounds its limiting curvature
+by $K$ times its angular length. Testing nonnegative continuous
+functions proves measure domination, hence a bounded density.
+The remaining finite set of normals can carry only atoms.
+Saturation supplies the assertion on unused arcs.
+
+For the sharper bound, combine
+\eqref{eq:variation-neighbor} with
+$\ell_{i,t}\le\tau_{i,t}+b_{i,t}+\ell^{\rm m}_{i,t}$.
+If $\ell_{i,t}\ge2T$, the positive part vanishes; otherwise move
+its $-\ell_{i,t}$ term to the left. Since $\tan\delta=\delta+O(\delta^3)$
+and $2T=\delta+O(\delta^3)$, the two cases give
+\[
+ \ell_{i,t}\le\delta\kappa(q^+_{i,t})+O(\delta^2)
+                 +b_{i,t}+\ell^{\rm m}_{i,t}.
+\]
+The constant is uniform in the boxed polygons. Support functions
+are uniformly semiconvex: $h_i''\ge-h_i\ge-B$.
+Uniform convergence therefore makes nearby one-sided support
+secants converge to the limiting derivative at each differentiability
+point. Their common bound gives convergence in local $L^1$.
+Since $\kappa$ is Lipschitz, summing the last inequality on an
+interval gives $\sigma_F\le\kappa(q)\,\dd t$. Lebesgue
+differentiation yields $u\le\kappa(q)$ almost everywhere.
+The interchanged source families give $v\le\kappa(p)$.
+The bounded-density equation $h''=\rho-h$ gives the stated
+$W^{2,\infty}$ regularity. Differentiating
+\eqref{eq:variation-velocities} gives the two differential equations.
+The support points $Fu+F'u^\perp$ and
+$Gu^\perp-G'u$ lie in $U$; comparison with the companion
+supporting halfplanes gives $F'\le G$ and $-G'\le F$,
+hence $p\le1$ and $q\ge-1$.
+
+Here is the additional finite calculation for shadowing. Put
+$d^+=(h_i(t+\delta)-cf)/s$, $d^-=(cf-h_i(t-\delta))/s$,
+and use the corresponding secants $d_\pm$ at $t+L$.
+Let $p_\pm=d^\pm-g+1$ and $q_\pm=f+d_\pm-1$.
+In a full grid these are its one-sided velocities; additional
+outer normals may shorten the circumscribed facets.
+If $p_+>T,q_+>T$, its whole
+first inner ray lies inside the next quadrant: the two thresholds
+on that ray exceed its endpoint $g-1$ by
+$p_+-T$ and $\tan\delta(q_+-T)$.
+Its exposed first-source length is zero. If also
+$q_-+T\ge\tan\delta(p_-+T)$, the previous and next quadrants
+cover the companion ray outside
+$[-d_--T,T-d_+]$. Its exposed length is at most
+$(2T-(d_+-d_-))_+\le(2T-\ell_{i,t+L})_+$.
+On a compact subset of $\{p>0,q>0\}$ all these inequalities hold
+eventually. The facet variation then gives
+\[
+ \ell_{i,t}\le b_{i,t}+\ell^{\rm m}_{i,t},\qquad
+ \ell_{i,t+L}\le T+b_{i,t+L}+\ell^{\rm m}_{i,t+L}.
+\]
+Sum and pass to the limit as before, using $T/\delta\to1/2$.
+Interchanging the local families and reversing the neighboring
+triple gives the negative-negative assertion. For proper angles
+this argument takes place inside the visited open source interval;
+on unused regular arcs the densities vanish already. It does not
+reflect the partial objective.
+
+Finally set $c=(F-1)u(t)+(G-1)u^\perp(t)$, so
+$c'=pu+qu^\perp$. On a compact negative-height corner interval
+all sampled corners are eventually negative. Their quadrants have
+no positive exposed source; the facet and middle error bounds
+therefore force zero limiting curvature.
+On the level set $c_y=0$, absolute continuity gives
+$c_y'=c_y''=0$ almost everywhere. Put $z=c_x'$, $s=\sin t$,
+$k=\cos t$. Then
+\[
+ p=zk,\quad q=-zs,\quad su+kv=s+k-2z.
+\]
+The sharp bounds and $\kappa(a)\le|a|+1/2$ imply
+$su+kv\le|z|+(s+k)/2$. This excludes $z\le0$.
+Nonnegativity gives $z\le(s+k)/2$, hence
+$|p|,|q|\le(1+\sqrt2)/4$ and
+$u,v\le(5+\sqrt2)/8<1$.
+\end{proof}
+
+\subsection{Endpoint complementarity and source balance}
+
+Define $Q_\pm=A(j_\pm)+N_\alpha(U)(j_\pm)$ and
+$C_R=(3Q_+-Q_-)/4$, $C_L=(3Q_--Q_+)/4$.
+For a full maximum take $\alpha=L$.
+
+\begin{lemma}[Endpoint complementarity]\label{lem:variation-complementarity}
+For every prescribed maximum,
+$e_R=(C_R)_+$ and $e_L=(C_L)_+$.
+\end{lemma}
+
+\begin{proof}
+Trim the right end to $r_i-\varepsilon$. The retained roof is unchanged;
+all supports decrease, so the new barrier is at most the old barrier.
+Keeping the old barrier as an upper comparison on the new window gives
+\[
+ P_{k_i,\alpha}(U_i\cap\{x\le r_i-\varepsilon\})-P_{k_i,\alpha}(U_i)
+ \ge\varepsilon(C_{i,R}-e_{i,R})+o(\varepsilon).
+\]
+Concavity bounds the trimming distance by
+$\varepsilon\sqrt{1+(w_i-\varepsilon)^{-2}}$:
+the possible vertical change is at most the horizontal change divided
+by $w_i-\varepsilon$, using the secant from the opposite endpoint.
+Eventually $w_i\ge1$, so this is at most $\sqrt5\varepsilon$ for
+$\varepsilon\le1/2$. The penalty change is at most
+$4\sqrt5B\eta_i\varepsilon+O(\eta_i\varepsilon^2)$.
+Maximality gives $e_{i,R}\ge C_{i,R}-4\sqrt5B\eta_i$.
+The direct left trim gives the same left inequality. Together with
+\eqref{eq:variation-endpoint-upper} these give
+$e_{i,Q}=(C_{i,Q})_++o(1)$ for $Q=R,L$.
+
+End heights require a separate convergence argument. Roof slopes
+over $J_i$ are between $-4$ and $4$ eventually. Facets in a
+sufficiently short punctured arc of either axis consequently have
+zero middle length. Equation \eqref{eq:variation-coarse} bounds
+their total length by $K(a+\delta_i)+\beta_i$ on an arc of
+length $a$. Weak convergence of the full surface-area measures
+therefore gives
+\[
+ \limsup e_{i,R}\le e_R\le\liminf e_{i,R}+Ka.
+\]
+The first inequality tests the closed axis singleton; the second
+tests its open $a$-neighborhood. Let $a\downarrow0$.
+The left argument is identical. Barriers and interior roof values
+converge uniformly, and the middle endpoints converge, so
+$C_{i,Q}\to C_Q$. Passing to the limit proves the lemma.
+\end{proof}
+
+\begin{lemma}[Positive pressures]\label{lem:variation-endpoint-pressure}
+For every canonical full or joint maximum,
+\[
+ A(j_-)>1/2,\quad A(j_+)>1/2,\qquad
+ e_R=C_R>0,\quad e_L=C_L>0.
+\]
+\end{lemma}
+
+\begin{proof}
+The higher middle endpoint has height one by
+\cref{lem:selection-top}. The exact one-angle estimate proved in
+\cref{lem:variation-low-height} gives $P_\alpha(U)<4/5$ if the
+other endpoint is at most $1/2$, contradicting
+$P_\alpha(U)\ge M/2>4/5$.
+If $Q_+\ge1$ and $C_R\le0$, then $Q_-\ge3Q_+$;
+complementarity gives $e_L=C_L\ge2Q_+\ge2$, impossible.
+If the remaining pressure is nonpositive, then
+$Q_+\ge3Q_-$ and $1\ge e_R=C_R\ge2Q_-$, forcing
+$A(j_-)\le1/2$, again impossible. Exchanging sides proves the
+opposite tilt. Both pressures are positive, so complementarity
+removes their positive parts.
+\end{proof}
+
+\begin{theorem}[The limiting source measures]\label{lem:variation-sources}
+Let $\omega$ be the actual normal-length measure of the upper boundary
+over the exterior quarters, omitting the vertical end faces and the
+horizontal top. The finite source measures
+$\nu_i=\sum_s\tau_{i,s}\delta_s$ have subsequences converging weakly
+to $\omega$. For full maxima this measure has bounded densities
+on both open source quarters. For proper maxima it has bounded
+densities on $(0,\alpha)$ and $(L,L+\alpha)$ and at most one atom,
+at $\alpha$. It has no atom at the companion endpoint $L+\alpha$,
+the axes, or the top, and no mass on unused open arcs.
+\end{theorem}
+
+\begin{proof}
+The mesh bounds and the retained terminal bound give weakly compact
+finite source measures. Equation \eqref{eq:variation-facet} gives
+$\omega\le\nu$ for any joint weak limit of source and outer
+wing measures. To identify the outer limit, test an angular function
+$\varphi$ supported away from the axes and top. Its graph integral is
+\[
+ \int_{I_i\setminus J_i}
+ \varphi\bigl(\arg(-A_i'(x),1)\bigr)\sqrt{1+A_i'(x)^2}\,\dd x.
+\]
+Concave roofs converge uniformly on interior intervals and their
+derivatives converge almost everywhere. The angular cutoff bounds
+the integrand even near steep slopes; dominated convergence and
+shrinking the endpoint strips give the actual wing measure.
+The coarse source bound excludes extra floating atoms at omitted
+normals. The terminal first normal is included, so its facet mass
+is retained in this identification.
+
+For the reverse inequality use right horizontal erosion
+$E^R_\varepsilon=U_i\cap(U_i-\varepsilon e_x)$.
+Its roof is $\min(A_i(x),A_i(x+\varepsilon))$ and
+\[
+ h_{E^R_\varepsilon}(s)\le h_i(s)-\varepsilon(\cos s)_+.
+\]
+The virtual supports on the right dominate the actual eroded
+barrier. Only first-source walls move in this comparison, including
+the whole terminal first wall. Their finite barrier-area derivative
+is $-\sum_{0<s<L}\tau_{i,s}\cos s$.
+The exterior roof derivative is
+$-\sum_{0<s<L}\ell^{\rm w}_{i,s}\cos s$.
+Include the end sliver and the moving-window terms to obtain
+\[
+ \Delta P_i\ge\varepsilon(D_{i,R}-e_{i,R}+C_{i,R})+o(\varepsilon),
+ \qquad D_{i,R}=\sum_{0<s<L}(\tau_{i,s}-\ell^{\rm w}_{i,s})\cos s.
+\]
+For distance control, put $\lambda=\varepsilon/w_i$. For $p\in U_i$,
+both $(1-\lambda)p+\lambda(l_i,0)$ and this point plus
+$\varepsilon e_x$ lie in $U_i$ by convexity. Thus erosion moves
+points by at most $(\diam U_i/w_i)\varepsilon$, uniformly bounded
+by a fixed multiple of $\varepsilon$.
+Penalized maximality now gives
+\[
+ -\beta_i\le D_{i,R}\le e_{i,R}-C_{i,R}+O(\eta_i).
+\]
+Direct left erosion gives the same bound with weight $-\cos s$ on
+the second quarter. Positive endpoint pressure and complementarity
+make both limiting defect moments zero. Their weights are strictly
+positive on their open quarters; at the first terminal atom the
+weight is $\cos\alpha>0$. The source mesh estimates exclude atoms
+at the zero-weight top endpoint. The nonnegative defect $\nu-\omega$
+therefore vanishes on both quarters, proving $\nu=\omega$.
+\end{proof}
+
+\subsection{The stationary length and projection budgets}
+
+Let $T_{\rm w}$ be the length of the height-one top face lying
+outside $J_U$, and set $L_{\rm w}=\omega((0,\pi))+T_{\rm w}$.
+Vertical end faces are excluded from this length.
+
+\begin{corollary}[Stationary wing identity]\label{cor:variation-green}
+Every canonical full or joint maximum satisfies
+\begin{equation}\label{eq:variation-green}
+ 2P_\alpha(U)=L_{\rm w},\qquad
+ \max_{x\in J_U}N_\alpha(U)(x)\le(e_R+e_L)/2.
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+Put $O=\int_{I\setminus J}A$, $N=\int_JN_\alpha(U)$ and denote
+barrier endpoint values by $n_\pm$. On an outer graph segment,
+$h\,\dd s=(A-xA')\,\dd x$. Integration by parts on the two wings gives
+\[
+ 2O=\int h\,\dd\omega+T_{\rm w}+re_R-le_L+j_-A_- -j_+A_+.
+\]
+On each finite positive inner graph segment the support distance is
+$h_i-1$, so the same calculation gives
+\[
+ 2\int_{J_i}q_i=\int(h_i-1)\,\dd\nu_i
+                    -j_{i,-}q_i(j_{i,-})+j_{i,+}q_i(j_{i,+}).
+\]
+Uniform convergence and weak source convergence give this identity
+in the limit. Subtract and use $\nu=\omega$:
+\[
+ 2P_\alpha(U)=L_{\rm w}+re_R-le_L+j_-Q_- -j_+Q_+.
+\]
+The last two terms equal $lC_L-rC_R$; pressure equality cancels
+all boundary terms.
+
+Put $S=A_-+A_+$, $E=e_R+e_L$ and $Z=n_-+n_+$.
+Top localization makes the wings monotone towards their middle
+endpoints, so $\int|\cos s|\,\dd\omega=S-E$.
+For each finite barrier,
+$\operatorname{TV}_{J_i}(q_i)=\int|\cos s|\,\dd\nu_i$.
+Lower semicontinuity of total variation gives
+$\operatorname{TV}_{J}(N_\alpha(U))\le S-E$.
+Continuity gives $2\max_JN_\alpha(U)-Z\le\operatorname{TV}_{J}(N_\alpha(U))$,
+while the endpoint equations give $E=(S+Z)/2$.
+Combining these proves the height bound.
+\end{proof}
+
+\begin{corollary}[Positive-barrier projection]\label{cor:variation-projection}
+Every canonical full or joint maximum satisfies
+\begin{equation}\label{eq:variation-projection}
+ |\{x\in J_U:N_\alpha(U)(x)>0\}|\le w_U/2-T_{\rm w}.
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+The horizontal projection of a finite source segment of length
+$\tau_{i,s}$ is $\tau_{i,s}\sin s$. Their interiors are disjoint
+parts of the barrier graph, so
+\[
+ |\{x\in J_i:q_i(x)>0\}|=\int\sin s\,\dd\nu_i.
+\]
+The outer projection budget similarly gives
+$\int\sin s\,\dd\omega_i=w_i/2-T_{i,\rm w}$.
+The limiting measure $\omega$ therefore has sine moment
+$w_U/2-T_{\rm w}$, also obtained directly from its actual outer graph.
+Uniform barrier convergence gives lower semicontinuity of the
+positive-set length: each compact subset on which the limiting
+barrier is positive is eventually contained in the finite positive
+set. Apply inner regularity and $\nu_i\rightharpoonup\omega$.
+\end{proof}
+
+These identities use weak limits of finite source lengths.
+They do not require those lengths to converge to the ordinary
+arclength of the limiting niche: arbitrarily shallow positive
+pieces may persist in the source measure after their heights vanish.

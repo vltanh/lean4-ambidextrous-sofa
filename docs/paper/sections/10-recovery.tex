@@ -1,0 +1,120 @@
+\section{Recovering the body and its quarter turns}\label{sec:recovery}
+
+The caps in \cref{prop:equality-caps} determine the convex hull.
+The constraints of the two original passages then put the original
+body inside Romik's sofa. We finally use closedness to recover its
+boundary as well as its area.
+
+\begin{lemma}[Closed subsets of a regular closed set]\label{lem:regular-closed-recovery}
+Let $F\subseteq\R^2$ be compact and regular closed, meaning
+$F=\clos(\inter F)$. If a closed set $T$ satisfies $T\subseteq F$
+and $|T|=|F|$, then $T=F$.
+\end{lemma}
+
+\begin{proof}
+Finite equal area gives $|F\setminus T|=0$. The set
+$\inter F\setminus T$ is open and has area zero, so it is empty:
+every nonempty open subset of the plane contains a disk of positive
+area. Thus $\inter F\subseteq T$. Closedness of $T$ gives
+$F=\clos(\inter F)\subseteq T$.
+\end{proof}
+
+\begin{theorem}[Exact uniqueness]\label{thm:uniqueness}
+For an ambidextrous sofa $S$,
+\[
+ |S|=\Mc\quad\Longleftrightarrow\quad
+ S=R_\theta\SR+v\quad\text{for some }\theta\in\R,\ v\in\R^2.
+\]
+The equalities are equalities of compact sets.
+\end{theorem}
+
+\begin{proof}
+Assume $|S|=\Mc$ and use \eqref{eq:original-equality-caps}.
+Both actual caps have the same horizontal projection $I$.
+Comparing the right endpoints of their translated reference
+projections gives $r_{\KR}+a=r_{\KR}+b$, hence $a=b$.
+Reflection commutes with horizontal translation. The hull identity
+\eqref{eq:hull-from-caps} therefore gives
+\begin{equation}\label{eq:original-equality-hull}
+ K=U\cap\refl V
+   =\bigl(\KR\cap\refl\KR\bigr)+(a,0)
+   =\HR+(a,0).
+\end{equation}
+The final equality is the reference hull construction in
+\cref{thm:reference}.
+
+Translate horizontally by $-a$. Every point of $T-(a,0)$ is in
+$\HR$. The full-angle passage constraints also impose
+\[
+ \nR(x)\le y\le1-\nR(x).
+\]
+Indeed the full-angle barriers of the translated caps are the
+translated reference niche. By the definition of $\SR$ this proves
+\begin{equation}\label{eq:reference-body-containment}
+ T\subseteq\SR+(a,0).
+\end{equation}
+This step uses the constraints of the two original passages together
+with their own aligned caps.
+
+The reference body is regular closed. One can see the property
+directly from its continuous niche and the strict bound
+$\nR<1/2$. For $p=(x,y)\in\SR$, move vertically toward
+$(x,1/2)$:
+\[
+ p_t=(x,(1-t)y+t/2),\qquad 0<t\le1.
+\]
+Reflection symmetry and convexity of $\HR$ put $(x,1/2)$ in $\HR$
+whenever $p\in\HR$, so $p_t\in\HR$. Both niche inequalities at $p_t$ are
+strict. The set on which these inequalities are strict is open.
+Since the compact convex hull has nonempty interior,
+$\HR=\clos(\inter\HR)$; every $p_t$ is consequently a limit of
+interior hull points in that open set. Those points are in
+$\inter\SR$. Sending $t$ to zero shows
+\begin{equation}\label{eq:reference-regular-closed}
+ \SR=\clos(\inter\SR).
+\end{equation}
+
+
+Now $T$ is compact, hence closed, and both sets in
+\eqref{eq:reference-body-containment} have finite area $\Mc$.
+Apply \cref{lem:regular-closed-recovery} to obtain
+$T=\SR+(a,0)$. If the normalization was
+$T=R_\eta S+v_0$, inversion gives the explicit equality
+\[
+ S=R_{-\eta}\SR+R_{-\eta}\bigl((a,0)-v_0\bigr).
+\]
+
+
+Conversely, every rotated and translated copy of $\SR$ is
+ambidextrous: compose its two reference passages with the inverse
+rigid map. Rigid maps preserve area, so every such copy has area
+$\Mc$.
+\end{proof}
+
+\begin{theorem}[Quarter turns in every witnessing pair]\label{thm:quarter-turns}
+Let $S$ be compact and connected, and let
+$(\vartheta_-,v_-)$ and $(\vartheta_+,v_+)$ be any pair of
+passages through $\Lm$ and $\Lp$ with the same initial rotation
+map. If $|S|=\Mc$, then there are $t_-,t_+\in[0,1]$ such that
+\[
+ \vartheta_-(t_-)=\vartheta_-(0)-\frac\pi2,\qquad
+ \vartheta_+(t_+)=\vartheta_+(0)+\frac\pi2.
+\]
+\end{theorem}
+
+\begin{proof}
+Apply the effective-angle construction to this particular pair of
+passages, rebasing each lift at its own initial angle. Equality of
+area forces both scalar scores to equal $\Mc/2$, so
+\cref{thm:cap-equality} forces $\alpha=\gamma=\pi/2$.
+For each motion the proper-terminal alternative in
+\cref{lem:effective-angle} has angle strictly below $\pi/2$ and is
+therefore excluded. Each original passage reaches its correctly
+handed quarter turn.
+\end{proof}
+
+The theorem concerns angles reached during a passage. A witnessing
+motion may continue rotating afterwards, reverse direction, or pause;
+its terminal angle and its time parametrization are unrestricted by
+this conclusion. Together, \cref{thm:optimality,thm:uniqueness,thm:quarter-turns}
+prove \cref{thm:main}.
