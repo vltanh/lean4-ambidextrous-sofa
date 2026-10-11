@@ -11,7 +11,10 @@ public import AmbidextrousSofa.Measure.SupportAreaAC
 The three arcs are actual graphs of one continuous function. Their support
 derivatives are absolutely continuous and their second derivatives are only
 specified almost everywhere. The endpoint terms retain the actual one-sided
-face traces until the two contact equations cancel them.
+face traces until the two contact equations cancel them. Supports with
+integrable right derivatives are absolutely continuous, so the formula also
+covers the complete angular niche, through the global exposure theorems in
+`SignedRoof`.
 -/
 
 noncomputable section
@@ -151,5 +154,72 @@ theorem signedRoof_integral_of_graphs_ac
   have hsplitb := intervalIntegral.integral_add_adjacent_intervals
     (hc.intervalIntegrable (μ := volume) b d) (hc.intervalIntegrable d (Real.pi / 2))
   linarith
+
+/-- The signed formula for the actual complete angular niche. The global
+contact assertions are proved from realized supports, curvature at most one,
+and the two momentum sign intervals. The conclusion contains the actual
+integral of `sweptNiche`; no area certificate is an input. -/
+theorem sweptNiche_integral_eq_signed_formula
+    {U : Set Plane} (hU : IsCompact U) {b d : ℝ}
+    {f g fD gD fDD gDD : ℝ → ℝ}
+    (hb0 : 0 ≤ b) (hbd : b ≤ d) (hdL : d ≤ Real.pi / 2)
+    (hN : Continuous (sweptNiche U (Real.pi / 2)))
+    (hf : Continuous f) (hg : Continuous g) (hfD : Continuous fD) (hgD : Continuous gD)
+    (hderivF : ∀ t, HasDerivWithinAt f (fD t) (Ioi t) t)
+    (hderivG : ∀ t, HasDerivWithinAt g (gD t) (Ioi t) t)
+    (hsecondF : ∀ t, HasDerivWithinAt fD (fDD t) (Ioi t) t)
+    (hsecondG : ∀ t, HasDerivWithinAt gD (gDD t) (Ioi t) t)
+    (hfDD : IntervalIntegrable fDD volume 0 (Real.pi / 2))
+    (hgDD : IntervalIntegrable gDD volume 0 (Real.pi / 2))
+    (hFsupport : ∀ t ∈ Icc 0 (Real.pi / 2), support U (unitNormal t) = f t)
+    (hGsupport : ∀ t ∈ Icc 0 (Real.pi / 2), support U (companionNormal t) = g t)
+    (hFtop : f (Real.pi / 2) = 1) (hGtop : g 0 = 1)
+    (hFcurv : ∀ t ∈ Icc 0 (Real.pi / 2), f t + fDD t ≤ 1)
+    (hGcurv : ∀ t ∈ Icc 0 (Real.pi / 2), g t + gDD t ≤ 1)
+    (hpzero : supportP fD g b = 0) (hqzero : supportQ gD f d = 0)
+    (hp : ∀ t ∈ Icc b (Real.pi / 2), supportP fD g t ≤ 0)
+    (hq : ∀ t ∈ Icc 0 d, 0 ≤ supportQ gD f t) :
+    2 * (∫ x in (-gD 0)..(-fD (Real.pi / 2)), sweptNiche U (Real.pi / 2) x) =
+      -(∫ t in (0 : ℝ)..(Real.pi / 2), cornerDensity f g fD gD t) +
+      (∫ t in b..(Real.pi / 2), supportP fD g t ^ 2) +
+      ∫ t in (0 : ℝ)..d, supportQ gD f t ^ 2 := by
+  -- With an integrable right derivative a continuous function is absolutely continuous, and
+  -- where it is differentiable its derivative is the right derivative.
+  have hAC {F F' : ℝ → ℝ} (hF : Continuous F) (hF' : ∀ t, HasDerivWithinAt F (F' t) (Ioi t) t)
+      (hi : IntervalIntegrable F' volume 0 (Real.pi / 2)) :
+      AbsolutelyContinuousOnInterval F 0 (Real.pi / 2) :=
+    absolutelyContinuousOnInterval_of_integral_sub hi fun x hx =>
+      (intervalIntegral.integral_eq_sub_of_hasDeriv_right hF.continuousOn
+        (fun t _ => hF' t) (hi.mono_set (uIcc_subset_uIcc_left hx))).symm
+  have hderiv {F F' : ℝ → ℝ} (hF : AbsolutelyContinuousOnInterval F 0 (Real.pi / 2))
+      (hF' : ∀ t, HasDerivWithinAt F (F' t) (Ioi t) t) :
+      ∀ᵐ t ∂volume.restrict (Ioo 0 (Real.pi / 2)), HasDerivAt F (F' t) t := by
+    filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae hF.ae_differentiableAt]
+      with t ht hd
+    have h := (hd (Icc_subset_uIcc (Ioo_subset_Icc_self ht))).hasDerivAt
+    rwa [(uniqueDiffWithinAt_Ioi t).eq_deriv _ h.hasDerivWithinAt (hF' t)] at h
+  have hfAC := hAC hf hderivF (hfD.intervalIntegrable _ _)
+  have hgAC := hAC hg hderivG (hgD.intervalIntegrable _ _)
+  have hfDAC := hAC hfD hsecondF hfDD
+  have hgDAC := hAC hgD hsecondG hgDD
+  have hB : ∀ t ∈ Ioo 0 (Real.pi / 2), ∀ s ∈ Icc 0 (Real.pi / 2),
+      f s - 1 ≤ coordDot (firstTangentPoint f fD t) (unitNormal s) := fun t ht s hs =>
+    firstTangent_dominates_support hf hfD hderivF hsecondF hFcurv (Ioo_subset_Icc_self ht) hs
+  have hD : ∀ t ∈ Ioo 0 (Real.pi / 2), ∀ s ∈ Icc 0 (Real.pi / 2),
+      g s - 1 ≤ coordDot (secondTangentPoint g gD t) (companionNormal s) := fun t ht s hs =>
+    secondTangent_dominates_support hg hgD hderivG hsecondG hGcurv (Ioo_subset_Icc_self ht) hs
+  refine signedRoof_integral_of_graphs_ac hb0 hbd hdL hN hf hg hfD hgD hfAC hgAC hfDAC hgDAC
+    (by filter_upwards [hderiv hfAC hderivF, hderiv hgAC hderivG, hderiv hfDAC hsecondF,
+          hderiv hgDAC hsecondG] with t h1 h2 h3 h4 using ⟨h1, h2, h3, h4⟩)
+    hfDD hgDD hFtop hGtop hpzero hqzero (fun t ht => ?_) (fun t ht => ?_) (fun t ht => ?_)
+  · have htL : t ∈ Ioo 0 (Real.pi / 2) := ⟨ht.1, ht.2.trans_le hdL⟩
+    exact sweptNiche_secondTangent hU hFsupport hGsupport hGtop htL (hq t ⟨ht.1.le, ht.2.le⟩)
+      (hD t htL)
+  · have htL : t ∈ Ioo 0 (Real.pi / 2) := ⟨hb0.trans_lt ht.1, ht.2.trans_le hdL⟩
+    exact sweptNiche_innerCorner hU hFsupport hGsupport hFtop htL (hp t ⟨ht.1.le, htL.2.le⟩)
+      (hq t ⟨htL.1.le, ht.2.le⟩) (hB t htL) (hD t htL)
+  · have htL : t ∈ Ioo 0 (Real.pi / 2) := ⟨hb0.trans_lt ht.1, ht.2⟩
+    exact sweptNiche_firstTangent hU hFsupport hGsupport hFtop htL (hp t ⟨ht.1.le, ht.2.le⟩)
+      (hB t htL)
 
 end AmbidextrousSofa

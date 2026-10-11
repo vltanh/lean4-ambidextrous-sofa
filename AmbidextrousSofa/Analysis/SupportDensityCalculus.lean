@@ -36,15 +36,6 @@ theorem intervalIntegrable_bounded_real_density
   (IntegrableOn.of_bound isCompact_uIcc.measure_lt_top hρ.aestronglyMeasurable C
     (.of_forall fun t => (Real.norm_of_nonneg (hρ0 t)).trans_le (hρC t))).intervalIntegrable
 
-/-- An exact integral representation supplies absolute continuity. -/
-theorem absolutelyContinuousOnInterval_of_integral_sub
-    {f g : ℝ → ℝ} {a b : ℝ} (hg : IntervalIntegrable g volume a b)
-    (heq : ∀ x ∈ uIcc a b, f x - f a = ∫ t in a..x, g t) :
-    AbsolutelyContinuousOnInterval f a b :=
-  ((LipschitzWith.const (f a)).lipschitzOnWith.absolutelyContinuousOnInterval.add
-    (hg.absolutelyContinuousOnInterval_intervalIntegral left_mem_uIcc)).congr
-    fun x hx => by simp [← heq x hx]
-
 theorem absolutelyContinuousOnInterval_comp_const_sub
     {f : ℝ → ℝ} {a b : ℝ} (hf : AbsolutelyContinuousOnInterval f a b)
     (hab : a ≤ b) (c : ℝ) :

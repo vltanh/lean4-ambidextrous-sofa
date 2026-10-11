@@ -2,7 +2,7 @@ module
 
 public import AmbidextrousSofa.Reference.Stationarity
 public import AmbidextrousSofa.Reference.Body
-public import AmbidextrousSofa.Measure.SignedRoofIntegral
+public import AmbidextrousSofa.Measure.SignedRoofIntegralAC
 public import AmbidextrousSofa.Measure.SymmetricBody
 
 @[expose] public section
