@@ -49,10 +49,8 @@ theorem IsDownwardCap.horizontalMirror {U : Set Plane} (hU : IsDownwardCap U) :
     exact (hU.inStrip hq : q ∈ unitStrip)
 
 theorem capRoof_horizontalMirror (U : Set Plane) (x : ℝ) :
-    capRoof (horizontalMirror U) x = capRoof U (-x) := by
-  have h : verticalFiber (horizontalMirror U) x = verticalFiber U (-x) :=
-    Set.ext fun y => mem_horizontalMirror_iff U (x, y)
-  rw [capRoof, capRoof, ← verticalFiber_nonempty_iff, ← verticalFiber_nonempty_iff, h]
+    capRoof (horizontalMirror U) x = capRoof U (-x) :=
+  capRoof_eq_of_verticalFiber_eq (Set.ext fun y => mem_horizontalMirror_iff U (x, y))
 
 theorem support_horizontalMirror (U : Set Plane) (v : Plane) :
     support (horizontalMirror U) v = support U (horizontalReflection v) := by

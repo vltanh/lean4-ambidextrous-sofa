@@ -24,13 +24,6 @@ namespace AngularGrid
 
 open FinitePolygon
 
-def neighborFeasible (f g fm fp gm gp δ : ℝ) : Set ℝ :=
-  {v | v ≤ g - 1 ∧
-    (fm - 1 ≤ (f - 1) * Real.cos δ - v * Real.sin δ ∨
-      gm - 1 ≤ (f - 1) * Real.sin δ + v * Real.cos δ) ∧
-    (fp - 1 ≤ (f - 1) * Real.cos δ + v * Real.sin δ ∨
-      gp - 1 ≤ -(f - 1) * Real.sin δ + v * Real.cos δ)}
-
 theorem neighborFeasible_eq_empty_of_forward_separation
     {f g fm fp gm gp δ : ℝ} (hc : 0 < Real.cos δ) (hs : 0 < Real.sin δ)
     (hfirst : g - 1 < firstLo f fp δ)
@@ -43,82 +36,25 @@ theorem neighborFeasible_eq_empty_of_forward_separation
   · linarith [mul_le_mul_of_nonneg_right hv hs.le]
   · linarith [mul_le_mul_of_nonneg_right hv hc.le]
 
+theorem neighborFeasible_le_firstHi_of_one_separation
+    {f g fm fp gm gp δ v : ℝ} (hc : 0 < Real.cos δ) (hs : 0 < Real.sin δ)
+    (hminus : g - 1 < companionMinus f gm δ)
+    (hv : v ∈ neighborFeasible f g fm fp gm gp δ) :
+    v ≤ firstHi f fm δ := by
+  have hm : ¬ gm - 1 ≤ (f - 1) * Real.sin δ + v * Real.cos δ := fun h =>
+    hminus.not_ge (((div_le_iff₀ hc).2 (by linarith)).trans hv.1)
+  exact (le_div_iff₀ hs).2 (by linarith [hv.2.1.resolve_right hm])
+
 theorem neighborFeasible_subset_self_interval
     {f g fm fp gm gp δ : ℝ} (hc : 0 < Real.cos δ) (hs : 0 < Real.sin δ)
     (hminus : g - 1 < companionMinus f gm δ)
     (hplus : firstHi f fm δ < companionPlus f gp δ) :
-    neighborFeasible f g fm fp gm gp δ ⊆ Icc (firstLo f fp δ) (firstHi f fm δ) := by
-  rintro v ⟨hv, hm, hp⟩
-  rw [companionMinus, lt_div_iff₀ hc] at hminus
+    neighborFeasible f g fm fp gm gp δ ⊆ Icc (firstLo f fp δ) (firstHi f fm δ) := fun v hv => by
+  have hupper := neighborFeasible_le_firstHi_of_one_separation hc hs hminus hv
   rw [companionPlus, lt_div_iff₀ hc] at hplus
-  have hupper : v ≤ firstHi f fm δ := by
-    rw [firstHi, le_div_iff₀ hs]
-    rcases hm with h | h <;> linarith [mul_le_mul_of_nonneg_right hv hc.le]
   refine ⟨?_, hupper⟩
   rw [firstLo, div_le_iff₀ hs]
-  rcases hp with h | h <;> linarith [mul_le_mul_of_nonneg_right hupper hc.le]
-
-theorem first_source_neighbor_feasible {U : Set Plane} (hU : IsDownwardCap U)
-    (grid : Finset QuarterAngle) (t : InteriorPoint grid) {δ : ℝ}
-    (hminus : ∃ s ∈ grid, (s : ℝ) = (t.val : ℝ) - δ)
-    (hplus : ∃ s ∈ grid, (s : ℝ) = (t.val : ℝ) + δ)
-    {x : ℝ} (hx : x ∈ innerSourceSet U grid (Sum.inl t)) :
-    ∃ v : ℝ, x = (support U (unitNormal t.val) - 1) * Real.cos t.val - v * Real.sin t.val ∧
-      v ∈ neighborFeasible (support U (unitNormal t.val)) (support U (companionNormal t.val))
-        (support U (unitNormal ((t.val : ℝ) - δ))) (support U (unitNormal ((t.val : ℝ) + δ)))
-        (support U (companionNormal ((t.val : ℝ) - δ)))
-        (support U (companionNormal ((t.val : ℝ) + δ))) δ := by
-  let p : Plane := (x, supportWall U (unitNormal t.val) x)
-  have hy : finiteBarrier U (normal grid) (pairList grid) none p.1 = p.2 :=
-    innerSource_height U grid (Sum.inl t) hx
-  have hp : p = wallPoint U t.val (coordDot p (companionNormal t.val)) :=
-    point_eq_wallPoint (le_antisymm
-      ((le_supportWall_iff (normal_snd_pos grid (Sum.inl t)) _ _).mp le_rfl)
-      ((supportWall_le_iff (normal_snd_pos grid (Sum.inl t)) _ _).mp le_rfl))
-  have hv : coordDot p (companionNormal t.val) ≤ support U (companionNormal t.val) - 1 :=
-    (le_supportWall_iff (normal_snd_pos grid (Sum.inr t)) _ _).mp
-      (first_source_le_companion U grid t hx)
-  obtain ⟨sm, hsm, hsmval⟩ := hminus
-  obtain ⟨sp, hsp, hspval⟩ := hplus
-  have hm := above_niche_wall_alternative hU grid (hy ▸ finiteBarrier_nonneg ..) hy.le hsm
-  have hp' := above_niche_wall_alternative hU grid (hy ▸ finiteBarrier_nonneg ..) hy.le hsp
-  rw [hp] at hm hp'
-  simp [hsmval, hspval, dot_wallPoint_first, dot_wallPoint_companion] at hm hp'
-  refine ⟨_, ?_, hv, hm.imp (fun h => by linarith) (fun h => by linarith),
-    hp'.imp (fun h => by linarith) fun h => by linarith⟩
-  simpa only [wallPoint_fst] using congrArg Prod.fst hp
-
-theorem second_source_neighbor_feasible {U : Set Plane} (hU : IsDownwardCap U)
-    (grid : Finset QuarterAngle) (t : InteriorPoint grid) {δ : ℝ}
-    (hminus : ∃ s ∈ grid, (s : ℝ) = (t.val : ℝ) - δ)
-    (hplus : ∃ s ∈ grid, (s : ℝ) = (t.val : ℝ) + δ)
-    {x : ℝ} (hx : x ∈ innerSourceSet U grid (Sum.inr t)) :
-    ∃ v : ℝ, x = -(support U (companionNormal t.val) - 1) * Real.sin t.val +
-        v * Real.cos t.val ∧
-      v ∈ neighborFeasible (support U (companionNormal t.val)) (support U (unitNormal t.val))
-        (support U (companionNormal ((t.val : ℝ) + δ)))
-        (support U (companionNormal ((t.val : ℝ) - δ)))
-        (support U (unitNormal ((t.val : ℝ) + δ)))
-        (support U (unitNormal ((t.val : ℝ) - δ))) δ := by
-  let p : Plane := (x, supportWall U (companionNormal t.val) x)
-  have hy : finiteBarrier U (normal grid) (pairList grid) none p.1 = p.2 :=
-    innerSource_height U grid (Sum.inr t) hx
-  have hp : p = companionPoint U t.val (coordDot p (unitNormal t.val)) :=
-    point_eq_companionPoint (le_antisymm
-      ((le_supportWall_iff (normal_snd_pos grid (Sum.inr t)) _ _).mp le_rfl)
-      ((supportWall_le_iff (normal_snd_pos grid (Sum.inr t)) _ _).mp le_rfl))
-  have hv : coordDot p (unitNormal t.val) ≤ support U (unitNormal t.val) - 1 :=
-    (le_supportWall_iff (normal_snd_pos grid (Sum.inl t)) _ _).mp
-      (second_source_le_first U grid t hx)
-  obtain ⟨sm, hsm, hsmval⟩ := hminus
-  obtain ⟨sp, hsp, hspval⟩ := hplus
-  have hm := above_niche_wall_alternative hU grid (hy ▸ finiteBarrier_nonneg ..) hy.le hsm
-  have hp' := above_niche_wall_alternative hU grid (hy ▸ finiteBarrier_nonneg ..) hy.le hsp
-  rw [hp] at hm hp'
-  simp [hsmval, hspval, dot_companionPoint_first, dot_companionPoint_companion] at hm hp'
-  refine ⟨_, ?_, hv, hp'.symm.imp (fun h => by linarith) fun h => by linarith,
-    hm.symm.imp (fun h => by linarith) fun h => by linarith⟩
-  simpa only [companionPoint_fst] using congrArg Prod.fst hp
+  rcases hv.2.2 with h | h <;> linarith [mul_le_mul_of_nonneg_right hupper hc.le]
 
 theorem innerDensity_eq_zero_of_source_empty (U : Set Plane) (grid : Finset QuarterAngle)
     (j : SourceIndex grid) (hempty : innerSourceSet U grid j = ∅) :

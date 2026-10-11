@@ -1,6 +1,7 @@
 module
 
-public import AmbidextrousSofa.Analysis.CornerArcDynamics
+public import AmbidextrousSofa.Analysis.HorizontalLeakageDynamics
+public import AmbidextrousSofa.Analysis.TiltedInitialCircle
 public import AmbidextrousSofa.Analysis.TiltedLateExcessScalar
 
 @[expose] public section

@@ -158,17 +158,20 @@ theorem mem_neighborParameters {f g fm fp gm gp δ v : ℝ}
     · exact .inl (.inr (by linarith))
   · exact .inl (.inl (by linarith))
 
-/-- Every actual first source lies in the two neighboring-wall parameter
-intervals. This statement applies to every downward cap, independently of
-polygonal maximization. -/
-theorem first_source_neighbor_parameters {U : Set Plane} (hU : IsDownwardCap U)
+def neighborFeasible (f g fm fp gm gp δ : ℝ) : Set ℝ :=
+  {v | v ≤ g - 1 ∧
+    (fm - 1 ≤ (f - 1) * Real.cos δ - v * Real.sin δ ∨
+      gm - 1 ≤ (f - 1) * Real.sin δ + v * Real.cos δ) ∧
+    (fp - 1 ≤ (f - 1) * Real.cos δ + v * Real.sin δ ∨
+      gp - 1 ≤ -(f - 1) * Real.sin δ + v * Real.cos δ)}
+
+theorem first_source_neighbor_feasible {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (t : InteriorPoint grid) {δ : ℝ}
-    (hc : 0 < Real.cos δ) (hs : 0 < Real.sin δ)
     (hminus : ∃ s ∈ grid, (s : ℝ) = (t.val : ℝ) - δ)
     (hplus : ∃ s ∈ grid, (s : ℝ) = (t.val : ℝ) + δ)
     {x : ℝ} (hx : x ∈ innerSourceSet U grid (Sum.inl t)) :
     ∃ v : ℝ, x = (support U (unitNormal t.val) - 1) * Real.cos t.val - v * Real.sin t.val ∧
-      v ∈ neighborParameters (support U (unitNormal t.val)) (support U (companionNormal t.val))
+      v ∈ neighborFeasible (support U (unitNormal t.val)) (support U (companionNormal t.val))
         (support U (unitNormal ((t.val : ℝ) - δ))) (support U (unitNormal ((t.val : ℝ) + δ)))
         (support U (companionNormal ((t.val : ℝ) - δ)))
         (support U (companionNormal ((t.val : ℝ) + δ))) δ := by
@@ -188,9 +191,26 @@ theorem first_source_neighbor_parameters {U : Set Plane} (hU : IsDownwardCap U)
   have hp' := above_niche_wall_alternative hU grid (hy ▸ finiteBarrier_nonneg ..) hy.le hsp
   rw [hp] at hm hp'
   simp [hsmval, hspval, dot_wallPoint_first, dot_wallPoint_companion] at hm hp'
-  refine ⟨_, ?_, mem_neighborParameters hc hs hv (hm.imp (fun h => by linarith) fun h => by linarith)
-    (hp'.imp (fun h => by linarith) fun h => by linarith)⟩
+  refine ⟨_, ?_, hv, hm.imp (fun h => by linarith) (fun h => by linarith),
+    hp'.imp (fun h => by linarith) fun h => by linarith⟩
   simpa only [wallPoint_fst] using congrArg Prod.fst hp
+
+/-- Every actual first source lies in the two neighboring-wall parameter
+intervals. This statement applies to every downward cap, independently of
+polygonal maximization. -/
+theorem first_source_neighbor_parameters {U : Set Plane} (hU : IsDownwardCap U)
+    (grid : Finset QuarterAngle) (t : InteriorPoint grid) {δ : ℝ}
+    (hc : 0 < Real.cos δ) (hs : 0 < Real.sin δ)
+    (hminus : ∃ s ∈ grid, (s : ℝ) = (t.val : ℝ) - δ)
+    (hplus : ∃ s ∈ grid, (s : ℝ) = (t.val : ℝ) + δ)
+    {x : ℝ} (hx : x ∈ innerSourceSet U grid (Sum.inl t)) :
+    ∃ v : ℝ, x = (support U (unitNormal t.val) - 1) * Real.cos t.val - v * Real.sin t.val ∧
+      v ∈ neighborParameters (support U (unitNormal t.val)) (support U (companionNormal t.val))
+        (support U (unitNormal ((t.val : ℝ) - δ))) (support U (unitNormal ((t.val : ℝ) + δ)))
+        (support U (companionNormal ((t.val : ℝ) - δ)))
+        (support U (companionNormal ((t.val : ℝ) + δ))) δ :=
+  let ⟨v, hxv, hv, hm, hp⟩ := first_source_neighbor_feasible hU grid t hminus hplus hx
+  ⟨v, hxv, mem_neighborParameters hc hs hv hm hp⟩
 
 end AngularGrid
 

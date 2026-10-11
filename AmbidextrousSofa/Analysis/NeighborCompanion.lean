@@ -78,6 +78,38 @@ theorem point_eq_companionPoint {U : Set Plane} {p : Plane} {t : ℝ}
     coordDot p (companionNormal t) • companionNormal t at h
   rwa [hline] at h
 
+theorem second_source_neighbor_feasible {U : Set Plane} (hU : IsDownwardCap U)
+    (grid : Finset QuarterAngle) (t : InteriorPoint grid) {δ : ℝ}
+    (hminus : ∃ s ∈ grid, (s : ℝ) = (t.val : ℝ) - δ)
+    (hplus : ∃ s ∈ grid, (s : ℝ) = (t.val : ℝ) + δ)
+    {x : ℝ} (hx : x ∈ innerSourceSet U grid (Sum.inr t)) :
+    ∃ v : ℝ, x = -(support U (companionNormal t.val) - 1) * Real.sin t.val +
+        v * Real.cos t.val ∧
+      v ∈ neighborFeasible (support U (companionNormal t.val)) (support U (unitNormal t.val))
+        (support U (companionNormal ((t.val : ℝ) + δ)))
+        (support U (companionNormal ((t.val : ℝ) - δ)))
+        (support U (unitNormal ((t.val : ℝ) + δ)))
+        (support U (unitNormal ((t.val : ℝ) - δ))) δ := by
+  let p : Plane := (x, supportWall U (companionNormal t.val) x)
+  have hy : finiteBarrier U (normal grid) (pairList grid) none p.1 = p.2 :=
+    innerSource_height U grid (Sum.inr t) hx
+  have hp : p = companionPoint U t.val (coordDot p (unitNormal t.val)) :=
+    point_eq_companionPoint (le_antisymm
+      ((le_supportWall_iff (normal_snd_pos grid (Sum.inr t)) _ _).mp le_rfl)
+      ((supportWall_le_iff (normal_snd_pos grid (Sum.inr t)) _ _).mp le_rfl))
+  have hv : coordDot p (unitNormal t.val) ≤ support U (unitNormal t.val) - 1 :=
+    (le_supportWall_iff (normal_snd_pos grid (Sum.inl t)) _ _).mp
+      (second_source_le_first U grid t hx)
+  obtain ⟨sm, hsm, hsmval⟩ := hminus
+  obtain ⟨sp, hsp, hspval⟩ := hplus
+  have hm := above_niche_wall_alternative hU grid (hy ▸ finiteBarrier_nonneg ..) hy.le hsm
+  have hp' := above_niche_wall_alternative hU grid (hy ▸ finiteBarrier_nonneg ..) hy.le hsp
+  rw [hp] at hm hp'
+  simp [hsmval, hspval, dot_companionPoint_first, dot_companionPoint_companion] at hm hp'
+  refine ⟨_, ?_, hv, hp'.symm.imp (fun h => by linarith) fun h => by linarith,
+    hm.symm.imp (fun h => by linarith) fun h => by linarith⟩
+  simpa only [companionPoint_fst] using congrArg Prod.fst hp
+
 theorem second_source_neighbor_parameters {U : Set Plane} (hU : IsDownwardCap U)
     (grid : Finset QuarterAngle) (t : InteriorPoint grid) {δ : ℝ}
     (hc : 0 < Real.cos δ) (hs : 0 < Real.sin δ)
@@ -90,29 +122,9 @@ theorem second_source_neighbor_parameters {U : Set Plane} (hU : IsDownwardCap U)
         (support U (companionNormal ((t.val : ℝ) + δ)))
         (support U (companionNormal ((t.val : ℝ) - δ)))
         (support U (unitNormal ((t.val : ℝ) + δ)))
-        (support U (unitNormal ((t.val : ℝ) - δ))) δ := by
-  let p : Plane := (x, supportWall U (companionNormal t.val) x)
-  have hy : finiteBarrier U (normal grid) (pairList grid) none p.1 = p.2 :=
-    innerSource_height U grid (Sum.inr t) hx
-  have hy0 : 0 ≤ p.2 := hy ▸ finiteBarrier_nonneg _ _ _ _ _
-  have hp : p = companionPoint U t.val (coordDot p (unitNormal t.val)) :=
-    point_eq_companionPoint (le_antisymm
-      ((le_supportWall_iff (normal_snd_pos grid (Sum.inr t)) _ _).mp le_rfl)
-      ((supportWall_le_iff (normal_snd_pos grid (Sum.inr t)) _ _).mp le_rfl))
-  have hv : coordDot p (unitNormal t.val) ≤ support U (unitNormal t.val) - 1 :=
-    (le_supportWall_iff (normal_snd_pos grid (Sum.inl t)) _ _).mp
-      (second_source_le_first U grid t hx)
-  obtain ⟨sm, hsm, hsmval⟩ := hminus
-  obtain ⟨sp, hsp, hspval⟩ := hplus
-  have hm := above_niche_wall_alternative hU grid hy0 hy.le hsm
-  have hp' := above_niche_wall_alternative hU grid hy0 hy.le hsp
-  rw [hp] at hm hp'
-  simp only [hsmval, hspval, dot_companionPoint_first, dot_companionPoint_companion,
-    sub_sub_cancel_left, sub_sub_cancel, add_sub_cancel_left, sub_add_cancel_left,
-    Real.cos_neg, Real.sin_neg] at hm hp'
-  refine ⟨_, ?_, mem_neighborParameters hc hs hv (hp'.symm.imp (fun h => by linarith)
-    fun h => by linarith) (hm.symm.imp (fun h => by linarith) fun h => by linarith)⟩
-  simpa only [companionPoint_fst] using congrArg Prod.fst hp
+        (support U (unitNormal ((t.val : ℝ) - δ))) δ :=
+  let ⟨v, hxv, hv, hm, hp⟩ := second_source_neighbor_feasible hU grid t hminus hplus hx
+  ⟨v, hxv, mem_neighborParameters hc hs hv hm hp⟩
 
 def secondCornerSecant (U : Set Plane) (t δ : ℝ) : ℝ :=
   support U (companionNormal t) +

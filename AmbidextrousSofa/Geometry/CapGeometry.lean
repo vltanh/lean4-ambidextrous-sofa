@@ -119,6 +119,11 @@ theorem capRoof_eq_zero_of_not_mem {K : Set Plane} {x : ℝ}
     (hx : x ∉ horizontalProjection K) : capRoof K x = 0 := by
   simp only [capRoof, hx, ↓reduceIte]
 
+/-- Two sets with the same vertical fiber over two abscissas have the same roof there. -/
+theorem capRoof_eq_of_verticalFiber_eq {K L : Set Plane} {x y : ℝ}
+    (h : verticalFiber K x = verticalFiber L y) : capRoof K x = capRoof L y := by
+  rw [capRoof, capRoof, ← verticalFiber_nonempty_iff, ← verticalFiber_nonempty_iff, h]
+
 /-- The roof is a point of the original compact fiber, rather than a limiting proxy. -/
 theorem capRoof_mem {K : Set Plane} (hK : IsCompact K) {x : ℝ}
     (hx : x ∈ horizontalProjection K) : (x, capRoof K x) ∈ K := by

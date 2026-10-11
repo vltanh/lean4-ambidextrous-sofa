@@ -57,7 +57,6 @@ import all AmbidextrousSofa.Analysis.CoreContactGeometry
 import all AmbidextrousSofa.Analysis.CoreContactPhase
 import all AmbidextrousSofa.Analysis.CoreSourceLowerBounds
 import all AmbidextrousSofa.Analysis.CornerArcCrossing
-import all AmbidextrousSofa.Analysis.CornerArcDynamics
 import all AmbidextrousSofa.Analysis.CornerArcExcess
 import all AmbidextrousSofa.Analysis.CornerConfinement
 import all AmbidextrousSofa.Analysis.CornerCrossing

@@ -41,10 +41,8 @@ theorem IsDownwardCap.horizontalTranslate {U : Set Plane} (hU : IsDownwardCap U)
     simpa [unitStrip] using hU.inStrip hq
 
 theorem capRoof_horizontalTranslate (U : Set Plane) (c x : ℝ) :
-    capRoof (horizontalTranslate U c) x = capRoof U (x - c) := by
-  have h : verticalFiber (horizontalTranslate U c) x = verticalFiber U (x - c) :=
-    Set.ext fun y => mem_horizontalTranslate_iff U c (x, y)
-  rw [capRoof, capRoof, ← verticalFiber_nonempty_iff, ← verticalFiber_nonempty_iff, h]
+    capRoof (horizontalTranslate U c) x = capRoof U (x - c) :=
+  capRoof_eq_of_verticalFiber_eq (Set.ext fun y => mem_horizontalTranslate_iff U c (x, y))
 
 theorem support_horizontalTranslate {U : Set Plane} (hU : IsDownwardCap U) (c : ℝ) (v : Plane) :
     support (horizontalTranslate U c) v = support U v + c * v.1 := by

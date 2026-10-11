@@ -28,15 +28,6 @@ namespace AngularGrid
 
 open FinitePolygon
 
-theorem neighborFeasible_le_firstHi_of_one_separation
-    {f g fm fp gm gp δ v : ℝ} (hc : 0 < Real.cos δ) (hs : 0 < Real.sin δ)
-    (hminus : g - 1 < companionMinus f gm δ)
-    (hv : v ∈ neighborFeasible f g fm fp gm gp δ) :
-    v ≤ firstHi f fm δ := by
-  have hm : ¬ gm - 1 ≤ (f - 1) * Real.sin δ + v * Real.cos δ := fun h =>
-    hminus.not_ge (((div_le_iff₀ hc).2 (by linarith)).trans hv.1)
-  exact (le_div_iff₀ hs).2 (by linarith [hv.2.1.resolve_right hm])
-
 def secondSelfIntervalTop (U : Set Plane) (t δ : ℝ) : ℝ :=
   (support U (companionNormal t) - 1) * Real.cos t +
     (-forwardAngularSecant U (t + Real.pi / 2) δ + Real.tan (δ / 2)) * Real.sin t
