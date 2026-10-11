@@ -20,11 +20,6 @@ open Set
 
 namespace AmbidextrousSofa
 
-private theorem sin_cos_pos {θ : ℝ} (hθ : θ ∈ Ioo 0 (Real.pi / 2)) :
-    0 < Real.sin θ ∧ 0 < Real.cos θ :=
-  ⟨Real.sin_pos_of_pos_of_lt_pi hθ.1 (by linarith [hθ.2, Real.pi_pos]),
-    Real.cos_pos_of_mem_Ioo ⟨by linarith [hθ.1, Real.pi_pos], hθ.2⟩⟩
-
 /-- Where every inner corner is one affine wall `w θ`, the niche is convex. -/
 private theorem IsDownwardCap.convexOn_sweptNiche_of_walls {U : Set Plane}
     (hU : IsDownwardCap U) {s : Set ℝ} (hs : Convex ℝ s) (w : ℝ → ℝ → ℝ)
@@ -46,8 +41,8 @@ theorem IsDownwardCap.convexOn_sweptNiche_right_of_corners {U : Set Plane}
     (fun θ x y a b hab => by
       simp only [firstWall, smul_eq_mul]
       linear_combination (1 - support U (unitNormal θ)) / Real.sin θ * hab)
-    fun θ hθ _ hx => cornerWall_eq_firstWall_of_corner_le (sin_cos_pos hθ).1 (sin_cos_pos hθ).2
-      ((hcorner θ hθ).trans hx)
+    fun θ hθ _ hx => cornerWall_eq_firstWall_of_corner_le (sin_cos_pos_of_mem_quarter hθ).1
+      (sin_cos_pos_of_mem_quarter hθ).2 ((hcorner θ hθ).trans hx)
 
 theorem IsDownwardCap.convexOn_sweptNiche_left_of_corners {U : Set Plane}
     (hU : IsDownwardCap U) {l : ℝ}
@@ -57,15 +52,15 @@ theorem IsDownwardCap.convexOn_sweptNiche_left_of_corners {U : Set Plane}
     (fun θ x y a b hab => by
       simp only [secondWall, smul_eq_mul]
       linear_combination (1 - support U (companionNormal θ)) / Real.cos θ * hab)
-    fun θ hθ _ hx => cornerWall_eq_secondWall_of_le_corner (sin_cos_pos hθ).1 (sin_cos_pos hθ).2
-      (hx.trans (hcorner θ hθ))
+    fun θ hθ _ hx => cornerWall_eq_secondWall_of_le_corner (sin_cos_pos_of_mem_quarter hθ).1
+      (sin_cos_pos_of_mem_quarter hθ).2 (hx.trans (hcorner θ hθ))
 
 theorem IsDownwardCap.sweptNiche_eq_zero_of_right_le {U : Set Plane}
     (hU : IsDownwardCap U) {x : ℝ} (hx : horizontalRight U ≤ x) :
     sweptNiche U (Real.pi / 2) x = 0 := by
   refine le_antisymm (sweptNiche_le_of_forall (by positivity) le_rfl fun θ hθ => ?_)
     (sweptNiche_nonneg _ _ _)
-  obtain ⟨hs, hc⟩ := sin_cos_pos hθ
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter hθ
   have hf : support U (unitNormal θ) ≤ x * Real.cos θ + 1 :=
     support_le_of_forall hU.nonempty fun p hp => by
       have : p.1 ≤ horizontalRight U :=
@@ -80,7 +75,7 @@ theorem IsDownwardCap.sweptNiche_eq_zero_of_le_left {U : Set Plane}
     sweptNiche U (Real.pi / 2) x = 0 := by
   refine le_antisymm (sweptNiche_le_of_forall (by positivity) le_rfl fun θ hθ => ?_)
     (sweptNiche_nonneg _ _ _)
-  obtain ⟨hs, hc⟩ := sin_cos_pos hθ
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter hθ
   have hg : support U (companionNormal θ) ≤ 1 - x * Real.sin θ :=
     support_le_of_forall hU.nonempty fun p hp => by
       have : horizontalLeft U ≤ p.1 :=

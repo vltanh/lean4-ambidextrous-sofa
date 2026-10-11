@@ -31,8 +31,7 @@ theorem IsDownwardCap.niche_derivative_bounds_at_attachedCorner
     (hcontact : sweptNiche U (Real.pi / 2) (attachedCorner U t).1 =
       (attachedCorner U t).2) :
     -Real.cos t / Real.sin t ≤ g ∧ g ≤ Real.sin t / Real.cos t := by
-  have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   have hN := hasDerivAt_iff_tendsto_slope_left_right.mp hderiv
   have hwall (y : ℝ) :=
     cornerWall_le_sweptNiche (sweptWallValues_bddAbove hU.isCompact le_rfl y) ht
@@ -84,8 +83,7 @@ theorem fullTiltedSupportQuarterPair_not_same_sign_at_attachedCorner_contact_aft
     (hcontact : sweptNiche U (Real.pi / 2) (attachedCorner U t).1 =
       (attachedCorner U t).2) :
     ¬ ((0 < p t ∧ 0 < q t) ∨ (p t < 0 ∧ q t < 0)) := by
-  have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   obtain ⟨h1, h2⟩ := hU.isCap.niche_derivative_bounds_at_attachedCorner ht hderiv hcontact
   -- the two graph residuals have opposite weak signs and never vanish simultaneously
   have hF : 0 ≤ g * Real.sin t + Real.cos t := by linarith [(div_le_iff₀ hs).mp h1]

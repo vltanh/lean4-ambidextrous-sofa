@@ -46,6 +46,15 @@ theorem IsDownwardCap.measurable_roofDeficit {U : Set Plane} (hU : IsDownwardCap
 theorem IsDownwardCap.capWidth_nonneg {U : Set Plane} (hU : IsDownwardCap U) : 0 ≤ capWidth U :=
   sub_nonneg.mpr (horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact)
 
+/-- The quarter points and the middle half of a centered horizontal projection `[-2C, 2C]`. -/
+theorem centered_quarter_points {U : Set Plane} {C : ℝ} (hl : horizontalLeft U = -2 * C)
+    (hr : horizontalRight U = 2 * C) :
+    horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4 = -C ∧
+      horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 = C ∧
+      middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
+  rw [middleHalfInterval, hl, hr]
+  exact ⟨by ring, by ring, by congr 1 <;> ring⟩
+
 /-- The score is an ordinary exterior roof integral minus a middle barrier integral. -/
 theorem capScore_eq_integrals (U : Set Plane) (α : ℝ) :
     capScore U α =

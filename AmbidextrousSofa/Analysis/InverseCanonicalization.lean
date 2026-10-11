@@ -49,7 +49,7 @@ theorem IsDownwardCap.capScore_lt_verticalExtrusion_of_middle_barrier_lt
     capScore U (Real.pi / 2) < capScore (verticalExtrusion U ε) (Real.pi / 2) := by
   have hV := hU.isDownwardCap_verticalExtrusion hε hheight
   have hproj := hU.horizontalProjection_verticalExtrusion hε
-  have hIcc := horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex
+  have hIcc := hU.horizontalProjection_eq_Icc
   have hcU := hU.continuousOn_capRoof_Icc
   set l := horizontalLeft U
   set r := horizontalRight U

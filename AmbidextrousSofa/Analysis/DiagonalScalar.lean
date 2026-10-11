@@ -56,10 +56,6 @@ theorem diagonal_critical_width_mono {a A k : ℝ} (ha : a ≤ A)
     (hA : A ≤ 1 + k) : a - (a - k) ^ 2 / 2 ≤ A - (A - k) ^ 2 / 2 := by
   linarith [mul_nonneg (sub_nonneg.mpr ha) (show 0 ≤ 1 + k - (A + a) / 2 by linarith)]
 
-theorem sqrt_two_sub_one_quadratic :
-    (Real.sqrt 2 - 1) ^ 2 + 2 * (Real.sqrt 2 - 1) = (1 : ℝ) := by
-  linear_combination Real.sq_sqrt (show (0 : ℝ) ≤ 2 by norm_num)
-
 theorem sqrt_two_sub_one_strict_bounds :
     (2 / 5 : ℝ) < Real.sqrt 2 - 1 ∧ Real.sqrt 2 - 1 < 169 / 408 ∧
       Real.sqrt 2 - 1 < 29 / 70 := by

@@ -47,8 +47,9 @@ theorem FirstUnitSetting.core_phase_geometry {C h α η t : ℝ} (P : FirstUnitS
   have hy : 0 < (Z t).2 := by
     rw [innerCorner_snd_eq_firstTangent (F).f (F).g (F).fD]
     exact sub_pos.mpr ((mul_neg_of_neg_of_pos (hphase.first_neg ⟨ht.1, htq.2.le⟩)
-      (quarter_sin_cos_pos htq).2).trans_le (fullTiltedSupportQuarterPair_first_tangent_nonneg
-        hU hm haffine hρ hρ0 hρK heq P.hheight P.hunit (Ioo_subset_Icc_self htq)))
+      (sin_cos_pos_of_mem_quarter htq).2).trans_le
+        (fullTiltedSupportQuarterPair_first_tangent_nonneg hU hm haffine hρ hρ0 hρK heq P.hheight
+          P.hunit (Ioo_subset_Icc_self htq)))
   -- The corner starts at the first tangent point, left of `C`, and moves left.
   have hright : (Z t).1 < C := by
     have hZα : (Z α).1 ≤ C := by
@@ -142,7 +143,7 @@ theorem FirstUnitSetting.first_source_charged_pieces {C h α η τ β s t : ℝ}
   refine ⟨P.first_source_core_piece hU hm haffine hρ hρ0 hρK heq hphase hτη hcompanion hs hst htτ,
     hB (Ioo_subset_Icc_self (hopen s hsI)) (Ioo_subset_Icc_self (hopen t htI)) hst.le,
     by linarith [innerCorner_fst_eq_firstTangent (F).f (F).g (F).fD s,
-      mul_neg_of_neg_of_pos (hp s hsI) (quarter_sin_cos_pos (hopen s hsI)).1],
+      mul_neg_of_neg_of_pos (hp s hsI) (sin_cos_pos_of_mem_quarter (hopen s hsI)).1],
     P.right_quarter ▸ hβx ▸ hB (Ioo_subset_Icc_self (hopen t htI)) hβ
       (ht.le.trans (min_le_left _ _)),
     hcontact s hsI, hcontact t htI, fun x hx => ?_, fun x hx a ha hmax => ?_⟩

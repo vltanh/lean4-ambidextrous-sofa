@@ -76,8 +76,8 @@ theorem IsDownwardCap.oneTurnSurvivor_lowerPassage {U : Set Plane} (hU : IsDownw
     · left; simpa [unitNormal, coordDot] using hy hp
     have hθ : Real.pi / 2 * t ∈ Ioo 0 (Real.pi / 2) :=
       ⟨mul_pos (by positivity) h0, mul_lt_of_lt_one_right (by positivity) h1⟩
-    exact (cornerWall_le_iff (Real.sin_pos_of_pos_of_lt_pi hθ.1 (by linarith [hθ.2, Real.pi_pos]))
-      (Real.cos_pos_of_mem_Ioo ⟨by linarith [hθ.1, Real.pi_pos], hθ.2⟩)).mp
+    exact (cornerWall_le_iff (sin_cos_pos_of_mem_quarter hθ).1
+      (sin_cos_pos_of_mem_quarter hθ).2).mp
       ((cornerWall_le_sweptNiche (sweptWallValues_bddAbove hU.isCompact le_rfl p.1) hθ).trans hn)
   all_goals
     have := hy hp

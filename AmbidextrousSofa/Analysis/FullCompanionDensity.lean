@@ -113,8 +113,7 @@ theorem regularCompanionDomain_subset_regularCurvatureDomain (m : ℝ) :
 theorem firstQuarter_subset_regularCurvatureDomain_of_nonneg {m : ℝ} (hm : 0 ≤ m) :
     Ioo (0 : ℝ) (Real.pi / 2) ⊆ regularCurvatureDomain m := by
   intro t ht
-  have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   exact mem_regularCurvatureDomain_iff.mpr ⟨ht.1, by linarith [ht.2, Real.pi_pos], ht.2.ne,
     (add_pos_of_pos_of_nonneg hc (mul_nonneg hm hs.le)).ne'⟩
 

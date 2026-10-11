@@ -57,7 +57,7 @@ theorem IsDownwardCap.left_roof_le_middle_height
     (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1) :
     ∀ x ∈ Icc (-a) (-a / 2), capRoof U x ≤ 1 - h := by
   intro x hx
-  have hproj := hU.horizontalProjection_eq_of hl hr
+  have hproj := (hl ▸ hr ▸ hU.horizontalProjection_eq_Icc)
   have hchord := ConcaveOn.le_roofChord_of_le hU.concaveOn_capRoof
     (hproj ▸ ⟨hx.1, by linarith [hx.2]⟩ : x ∈ _) (hproj ▸ ⟨by linarith, by linarith⟩ : a / 2 ∈ _)
     (by linarith : -a / 2 < a / 2) hx.2
@@ -72,7 +72,7 @@ theorem IsDownwardCap.tilted_diagonal_parameters_mem
     (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1) :
     diagonalRight U - 1 ∈ Icc (a / 2) a ∧
       diagonalLeft U - 1 + h ∈ Icc (a / 2) a := by
-  have hproj := hU.horizontalProjection_eq_of hl hr
+  have hproj := (hl ▸ hr ▸ hU.horizontalProjection_eq_Icc)
   have hL := hU.diagonalLeft_ge (capRoof_mem hU.isCompact
     (hproj ▸ ⟨by linarith, by linarith⟩ : -a / 2 ∈ horizontalProjection U))
   have hR := hU.diagonalRight_ge (capRoof_mem hU.isCompact

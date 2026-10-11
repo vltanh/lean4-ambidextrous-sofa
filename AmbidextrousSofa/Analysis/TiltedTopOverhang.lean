@@ -48,7 +48,7 @@ theorem IsFullCapMaximizer.tilted_top_overhang_pos
       haffine (-C) ⟨le_rfl, neg_le_self hC.le⟩, haffine C ⟨neg_le_self hC.le, le_rfl⟩,
       mul_le_mul_of_nonneg_left hcm hC.le]
   have haff : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c := (hU.isCap.tilted_centered_middle hl hr hC).2.2 ▸ haffine
+      capRoof U x = m * x + c := (centered_quarter_points hl hr).2.2 ▸ haffine
   obtain ⟨ρ, hρ, hbounds, hcoarse, heq, -⟩ := hU.curvature_density_corner_controls hheight haff
   have hρ0 : ∀ s, 0 ≤ ρ s := fun s => (hbounds s).1
   have hunit := fullTiltedSupportQuarterPair_companion_unit_prefix_of_collapsed_top
@@ -67,7 +67,7 @@ theorem IsFullCapMaximizer.tilted_top_overhang_pos
   have hcut := hU.leftCompanion_density_of_regular_companion haff
     (restrict_withDensity_of_subset heq (measurableSet_regularCompanionDomain m)
       (regularCompanionDomain_subset_regularCurvatureDomain m))
-  rw [show horizontalLeft U + capWidth U / 4 = -C by unfold capWidth; rw [hl, hr]; ring] at hcut
+  rw [show horizontalLeft U + capWidth U / 4 = -C from (centered_quarter_points hl hr).1] at hcut
   have hkernel := hV.secondWall_le_height_sub_one_of_unit_prefix
     (measurable_leftCompanionWingDensity hρ m)
     (fun s => (leftCompanionWingDensity_bounds hρ0 hcoarse s).1)
@@ -77,7 +77,7 @@ theorem IsFullCapMaximizer.tilted_top_overhang_pos
   have hVtop := hU.isCap.top_leftCompanionCap_of_positive_affine ha hb (neg_lt_self hC) hm haffine
   simp only [hVtop.1, hVtop.2, hlow] at hkernel
   -- Then the companion wall at `-C` is both nonnegative and at most `-h`.
-  obtain ⟨hs, hc⟩ := sin_pos_cos_pos_of_mem_quarter ht
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   have hwallle : secondWall (leftCompanionCap U (-C)) t (companionZero (leftCompanionCap U (-C)))
       ≤ secondWall (leftCompanionCap U (-C)) t (-C) :=
     div_le_div_of_nonneg_right (by linarith only [mul_le_mul_of_nonneg_right hz hs.le]) hc.le

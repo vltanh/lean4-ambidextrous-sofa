@@ -94,8 +94,8 @@ theorem continuousAt_fullWallClip {z : (CompactCap × ℝ) × ℝ}
   · refine squeeze _ (by unfold firstWall; fun_prop (disch := simp [h1])) ?_
       fun p => min_le_left _ _
     simpa [h1, firstWall_pi_div_two]
-  have hsin : Real.sin z.2 ≠ 0 := (Real.sin_pos_of_pos_of_lt_pi h0 (by linarith)).ne'
-  have hcos : Real.cos z.2 ≠ 0 := (Real.cos_pos_of_mem_Ioo ⟨by linarith, h1⟩).ne'
+  have hsin := (sin_cos_pos_of_mem_quarter ⟨h0, h1⟩).1.ne'
+  have hcos := (sin_cos_pos_of_mem_quarter ⟨h0, h1⟩).2.ne'
   unfold fullWallClip cornerWall firstWall secondWall
   fun_prop (disch := assumption)
 

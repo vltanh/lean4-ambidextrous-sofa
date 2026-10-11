@@ -24,15 +24,6 @@ open Set
 
 namespace AmbidextrousSofa
 
-/-- The quarter points and the middle half of a centered projection `[-2C, 2C]`. -/
-theorem centered_quarter_points {U : Set Plane} {C : ℝ} (hl : horizontalLeft U = -2 * C)
-    (hr : horizontalRight U = 2 * C) :
-    horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4 = -C ∧
-      horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 = C ∧
-      middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
-  rw [middleHalfInterval, hl, hr]
-  exact ⟨by ring, by ring, by congr 1 <;> ring⟩
-
 /-- The mirror image of a centered cap with a horizontal middle roof is again centered with a
 horizontal middle roof. -/
 theorem IsDownwardCap.horizontalMirror_centered {U V : Set Plane} (hU : IsDownwardCap U)
@@ -68,8 +59,7 @@ theorem IsDownwardCap.middle_niche_le_box_height_of_box
     sub_nonneg.mpr (Real.sqrt_le_one.mpr (by nlinarith [sq_nonneg C]))
   constructor <;> refine sweptNiche_le_of_forall (by positivity) hH fun t ht => ?_
   all_goals
-    have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
-    have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
+    obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   · have := hU.support_companionNormal_le_centeredBox hbox hs.le hc.le
     have := horizontal_box_circle_bound (s := Real.cos t) (c := Real.sin t) hC0 hC1
       (Real.sin_sq_add_cos_sq t)
@@ -154,8 +144,7 @@ theorem IsDownwardCap.firstWall_nonpos_before_horizontal_box_angle
     (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2))
     (htb : t ≤ 2 * Real.arctan ((1 - C) / (1 + C))) :
     firstWall U t C ≤ 0 := by
-  have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   have hsupport := hU.support_unitNormal_le_centeredBox
     (hU.subset_centeredBox_of_endpoints hl hr) hs.le hc.le
   have hcos := Real.cos_le_cos_of_nonneg_of_le_pi ht.1.le

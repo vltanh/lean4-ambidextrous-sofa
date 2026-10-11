@@ -28,7 +28,7 @@ namespace AmbidextrousSofa
 private theorem IsDownwardCap.middleHalfInterval_subset_projection {U : Set Plane}
     (hU : IsDownwardCap U) :
     middleHalfInterval (horizontalLeft U) (horizontalRight U) ⊆ horizontalProjection U := by
-  rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
+  rw [hU.horizontalProjection_eq_Icc]
   exact middleHalfInterval_subset (horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact)
 
 namespace AngularGrid

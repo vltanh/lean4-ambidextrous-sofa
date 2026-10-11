@@ -24,11 +24,6 @@ open scoped Topology
 
 namespace AmbidextrousSofa
 
-theorem sin_cos_pos_of_mem_quarter {t : ℝ} (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) :
-    0 < Real.sin t ∧ 0 < Real.cos t :=
-  ⟨Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos]),
-    Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩⟩
-
 theorem affineNormalAngle_zero (m : ℝ) :
     Real.cos (affineNormalAngle m) + m * Real.sin (affineNormalAngle m) = 0 := by
   simpa only [coordDot, unitNormal, one_mul, mul_one, sub_self, mul_zero] using

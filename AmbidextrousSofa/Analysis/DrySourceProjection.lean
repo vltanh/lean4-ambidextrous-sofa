@@ -87,7 +87,7 @@ theorem finitePositiveLength_le_small_pair_mass
     rw [← innerSource_cornerWall U _ j hx.2] at hcorner
     exact (hcorner.trans (min_le_right _ _)).not_gt (div_neg_of_neg_of_pos
       (hneg x hx.1 _ ⟨not_lt.mp hnot, ht.2.le⟩)
-      (Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩))
+      (sin_cos_pos_of_mem_quarter ht).2)
   rw [sourceQuarterAngle_fullAngle] at hq
   rcases j with t | t <;> have ht := (interiorPoint_mem (dyadic level) t).1
   · exact hjE ⟨ht.le, hq.le⟩

@@ -44,7 +44,7 @@ def shiftedCompanionY (U : Set Plane) (t : ℝ) : ℝ :=
 theorem top_vplus_snd_eq_capHeight (U : Set Plane) :
     (MovingSofaOptimality.vplus U (Real.pi / 2)).2 = capHeight U := by
   rw [← MovingSofaOptimality.dot_uvec_pi_div_two, MovingSofaOptimality.dot_vplus_uvec,
-    supp_pi_div_two_eq_capHeight]
+    imported_supp_pi_div_two]
 
 /-- Distance of the actual left top endpoint from the left projection
 endpoint. In the centered proper-terminal notation this is `C - T_L`. -/

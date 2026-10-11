@@ -53,7 +53,7 @@ theorem IsFullCapMaximizer.false_of_medium_tilt_large_width_zero_left
     (by linarith only [hk0, hc1, hh1]) (by linarith only [hk0, hc1, hh0])
   have hfin := tiltedTriangleRelaxation_add_loss_lt ha0 hh0 hh1 hk0 hk1 hksq hc0 hc1 hq
   rw [tiltedTriangleLoss] at hfin
-  linarith only [hU.reference_le, forty_one_fiftieths_lt_M_div_two, hS, hloss, hfin,
+  linarith only [hU.reference_le, forty_one_fiftieths_lt_half_M, hS, hloss, hfin,
     hU.isCap.capScore_le_threeAngleScore
       (sub_le_self _ (Real.arctan_pos.mpr (by linarith only [hk0])).le) le_rfl]
 

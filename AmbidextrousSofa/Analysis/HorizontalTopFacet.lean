@@ -43,7 +43,7 @@ theorem IsFullCapMaximizer.top_abscissa_mem_middle
   have hpB : (b, 1) ∈ U := hB ▸ capRoof_mem hU.isCap.isCompact hb
   have hpTop : (p.1, 1) ∈ U := hpone ▸ hp
   have hpl : p.1 ∈ Icc (horizontalLeft U) (horizontalRight U) := by
-    rw [← horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact hU.isCap.convex]
+    rw [← hU.isCap.horizontalProjection_eq_Icc]
     exact ⟨p, hp, rfl⟩
   have hAff : ∃ m c : ℝ, ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c := ⟨0, 1, by simpa using hmiddle⟩

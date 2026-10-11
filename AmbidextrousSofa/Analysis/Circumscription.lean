@@ -33,13 +33,13 @@ theorem circumscription_baseline {U : Set Plane} (hU : IsDownwardCap U)
     (normal : ι → Plane) :
     ∀ x ∈ Icc (horizontalLeft U) (horizontalRight U), ∀ i,
       coordDot (x, 0) (normal i) ≤ support U (normal i) := fun x hx i => by
-  obtain ⟨p, hp, rfl⟩ := (horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex).ge hx
+  obtain ⟨p, hp, rfl⟩ := (hU.horizontalProjection_eq_Icc).ge hx
   exact coordDot_le_support hU.isCompact (hU.baseline_mem hp) (normal i)
 
 theorem subset_circumscription {U : Set Plane} (hU : IsDownwardCap U)
     (normal : ι → Plane) : U ⊆ circumscription U normal := fun p hp =>
   (mem_upperPolygon_iff _ _ _ _ _).mpr
-    ⟨(horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex).le ⟨p, hp, rfl⟩,
+    ⟨(hU.horizontalProjection_eq_Icc).le ⟨p, hp, rfl⟩,
       hU.inStrip hp, fun i => coordDot_le_support hU.isCompact hp (normal i)⟩
 
 theorem isDownwardCap_circumscription {U : Set Plane} (hU : IsDownwardCap U)
@@ -52,7 +52,7 @@ theorem isDownwardCap_circumscription {U : Set Plane} (hU : IsDownwardCap U)
 theorem horizontalProjection_circumscription {U : Set Plane} (hU : IsDownwardCap U)
     (normal : ι → Plane) :
     horizontalProjection (circumscription U normal) = horizontalProjection U := by
-  rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
+  rw [hU.horizontalProjection_eq_Icc]
   exact horizontalProjection_upperPolygon _ _ _ _ (circumscription_baseline hU normal)
 
 theorem support_circumscription {U : Set Plane} (hU : IsDownwardCap U)

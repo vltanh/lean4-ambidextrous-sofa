@@ -32,11 +32,6 @@ open Set
 
 namespace AmbidextrousSofa
 
-/-- The support in the upward direction is the cap height. -/
-theorem supp_pi_div_two_eq_capHeight (U : Set Plane) :
-    MovingSofaOptimality.supp U (Real.pi / 2) = capHeight U := by
-  simp [← angleSupport_eq_imported_supp, angleSupport, unitNormal, capHeight]
-
 /-- A cap point at the cap height lies on the top face, between its two endpoints. -/
 theorem IsDownwardCap.fst_mem_top_face {U : Set Plane} (hU : IsDownwardCap U) {p : Plane}
     (hp : p ∈ U) (hpy : p.2 = capHeight U) :
@@ -44,7 +39,7 @@ theorem IsDownwardCap.fst_mem_top_face {U : Set Plane} (hU : IsDownwardCap U) {p
       (MovingSofaOptimality.vminus U (Real.pi / 2)).1 := by
   rw [← hU.horizontalProjection_edge (by simp)]
   exact ⟨p, MovingSofaOptimality.mem_edge_iff.2 ⟨hp, by
-    rw [MovingSofaOptimality.dot_uvec_pi_div_two, hpy, supp_pi_div_two_eq_capHeight]⟩, rfl⟩
+    rw [MovingSofaOptimality.dot_uvec_pi_div_two, hpy, imported_supp_pi_div_two]⟩, rfl⟩
 
 theorem support_vertices_of_halfplane_gap {K : Set Plane}
     (hK : MovingSofaOptimality.IsConvexBody K) {ι : Type*} (angle height : ι → ℝ)
@@ -213,7 +208,7 @@ theorem IsJointCapMaximizer.top_vminus_of_negative_affine_middle
   have := haffine (horizontalLeft U + capWidth U / 4) ⟨le_rfl, hab.le⟩
   have : (MovingSofaOptimality.vminus U (Real.pi / 2)).2 = 1 := by
     rw [← MovingSofaOptimality.dot_uvec_pi_div_two, MovingSofaOptimality.dot_vminus_uvec,
-      supp_pi_div_two_eq_capHeight, hheight]
+      imported_supp_pi_div_two, hheight]
   exact Prod.ext (le_antisymm (by nlinarith) hle) this
 
 /-- The actual negative-tilt missing first supports have exactly two

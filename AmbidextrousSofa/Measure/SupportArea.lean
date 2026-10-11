@@ -178,7 +178,7 @@ theorem IsDownwardCap.volumeReal_eq_support_energy {U : Set Plane} (hU : IsDownw
     (hU.continuousOn_capRoof.mono (image_subset_iff.2 fun t ht =>
       mem_image_of_mem Prod.fst (hFpoints t ht)))
     (fun t ht => hU.capRoof_eq_of_support_eq (hFpoints t (Ioo_subset_Icc_self ht))
-      (Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos]))
+      (sin_cos_pos_of_mem_quarter ht).1
       (by rw [Reference.coordDot_supportPoint, Reference.supportProjection_self, hFsupport t ht]))
     hf hfD hderivF hsecondF hfDD (fun t _ => coordDet_supportPoint f fD fDD t)
   have hGenergy := support_energy_graph_identity hL hGc.fst.continuousOn hGc.snd.continuousOn
@@ -191,7 +191,7 @@ theorem IsDownwardCap.volumeReal_eq_support_energy {U : Set Plane} (hU : IsDownw
     (fun t ht => hU.capRoof_eq_of_support_eq (θ := t + Real.pi / 2)
       (hGpoints t (Ioo_subset_Icc_self ht))
       (Real.sin_add_pi_div_two t ▸
-        Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩)
+        (sin_cos_pos_of_mem_quarter ht).2)
       (by rw [Reference.coordDot_companionSupportPoint, add_sub_cancel_right,
         Reference.supportProjection_self, hGsupport t ht]))
     hg hgD hderivG hsecondG hgDD (fun t _ => coordDet_companionSupportPoint g gD gDD t)

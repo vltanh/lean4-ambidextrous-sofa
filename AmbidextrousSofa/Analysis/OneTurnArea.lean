@@ -25,7 +25,7 @@ theorem IsDownwardCap.volumeReal_oneTurnSurvivor_eq_intervalIntegral {U : Set Pl
     (hfit : ∀ x ∈ horizontalProjection U, sweptNiche U (Real.pi / 2) x ≤ capRoof U x) :
     volume.real (oneTurnSurvivor U) = ∫ x in horizontalLeft U..horizontalRight U,
       capRoof U x - sweptNiche U (Real.pi / 2) x := by
-  have hproj := horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex
+  have hproj := hU.horizontalProjection_eq_Icc
   have hnonneg : ∀ᵐ x ∂volume.restrict (Icc (horizontalLeft U) (horizontalRight U)),
       0 ≤ capRoof U x - sweptNiche U (Real.pi / 2) x := by
     filter_upwards [ae_restrict_mem measurableSet_Icc] with x hx

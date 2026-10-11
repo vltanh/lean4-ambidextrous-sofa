@@ -111,9 +111,8 @@ theorem IsDownwardCap.partialBarrier_verticalExtrusion_le {U : Set Plane}
     partialBarrier (verticalExtrusion U ε) α x ≤ partialBarrier U α x + ε := by
   have hswept : sweptNiche (verticalExtrusion U ε) α x ≤ sweptNiche U α x + ε := by
     refine sweptNiche_le_of_forall hα0 (add_nonneg (sweptNiche_nonneg U α x) hε) fun θ hθ => ?_
-    rw [hU.cornerWall_verticalExtrusion hε (Real.sin_pos_of_pos_of_lt_pi hθ.1
-      (by linarith [hθ.2, Real.pi_pos])) (Real.cos_pos_of_mem_Ioo
-        ⟨by linarith [hθ.1, Real.pi_pos], hθ.2.trans_le hα⟩)]
+    obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hθ.1, hθ.2.trans_le hα⟩
+    rw [hU.cornerWall_verticalExtrusion hε hs hc]
     exact add_le_add_left
       (cornerWall_le_sweptNiche (sweptWallValues_bddAbove hU.isCompact hα x) hθ) ε
   refine max_le (hswept.trans (add_le_add_left (le_max_left _ _) ε)) ?_
@@ -132,7 +131,7 @@ theorem IsDownwardCap.capScore_le_verticalExtrusion {U : Set Plane}
   rw [capScore_eq_integrals, capScore_eq_integrals, show horizontalLeft (verticalExtrusion U ε) =
     horizontalLeft U from congrArg sInf hprojection, show horizontalRight (verticalExtrusion U ε) =
     horizontalRight U from congrArg sSup hprojection]
-  have hproj := horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex
+  have hproj := hU.horizontalProjection_eq_Icc
   set l := horizontalLeft U
   set r := horizontalRight U
   have hlr : l ≤ r := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact

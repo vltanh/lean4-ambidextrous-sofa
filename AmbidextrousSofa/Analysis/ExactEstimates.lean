@@ -36,4 +36,15 @@ theorem eight_fifths_lt_M : (8 / 5 : ℝ) < M := by
 theorem sqrt_two_lt_M : Real.sqrt 2 < M :=
   ((Real.sqrt_lt (by norm_num) (by norm_num)).2 (by norm_num)).trans eight_fifths_lt_M
 
+theorem sqrt_two_sub_one_quadratic :
+    (Real.sqrt 2 - 1) ^ 2 + 2 * (Real.sqrt 2 - 1) = (1 : ℝ) := by
+  linear_combination Real.sq_sqrt (show (0 : ℝ) ≤ 2 by norm_num)
+
+/-- `41/50 < M/2`, the reference comparison level used by the width exclusions. -/
+theorem forty_one_fiftieths_lt_half_M : (41 / 50 : ℝ) < M / 2 := by
+  have hY : (19 / 64 : ℝ) < Y := cubic_strictMono.lt_iff_lt.mp (by rw [Y_cubic]; norm_num [cubic])
+  unfold M beta
+  linarith [Y_equation, self_sub_cube_div_three_le_arctan Y_pos.le,
+    mul_pos (sub_pos.mpr hY) (show 0 < Y + 19 / 64 by linarith [Y_pos])]
+
 end AmbidextrousSofa

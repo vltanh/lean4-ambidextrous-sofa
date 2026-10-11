@@ -29,8 +29,7 @@ theorem terminalSlope_mem_initialAngle_interval {α : ℝ}
     3 / 8 ≤ terminalSlope α ∧ terminalSlope α ≤ 4 / 5 := by
   have hα : 0 < α := (Real.arctan_pos.mpr (by norm_num)).trans_le hα0
   have hαL : α < Real.pi / 2 := hα1.trans_lt (Real.arctan_lt_pi_div_two _)
-  have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi hα (by linarith [Real.pi_pos])
-  have hc : 0 < Real.cos α := Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hαL⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hα, hαL⟩
   rw [← Real.arctan_tan (by linarith [Real.pi_pos]) hαL, Real.arctan_le_arctan_iff,
     Real.tan_eq_sin_div_cos] at hα0 hα1
   rw [le_div_iff₀ hc] at hα0

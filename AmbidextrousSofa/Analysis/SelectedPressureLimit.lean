@@ -58,7 +58,7 @@ theorem endpointPressures_pos {roof N : ℝ → ℝ} {l r : ℝ} (hN : ∀ x, 0 
 theorem IsDownwardCap.projection_subset_Icc_of_box {U : Set Plane}
     (hU : IsDownwardCap U) {a b : ℝ} (hbox : U ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1) :
     Icc (horizontalLeft U) (horizontalRight U) ⊆ Icc a b := by
-  rw [← horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
+  rw [← hU.horizontalProjection_eq_Icc]
   exact image_subset_iff.2 fun p hp => (hbox hp).1
 
 theorem CapHausdorffTendsto.capWidth_tendsto

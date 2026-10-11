@@ -58,19 +58,6 @@ theorem firstUnit_source_box_margin_of_half_lt {C h k s : ℝ}
 
 end Analysis
 
-theorem quarter_sin_cos_pos {t : ℝ} (ht : t ∈ Ioo 0 (Real.pi / 2)) :
-    0 < Real.sin t ∧ 0 < Real.cos t :=
-  ⟨Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos]),
-    Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩⟩
-
-/-- The quarter points and the middle half of the horizontal projection `[-2C, 2C]`. -/
-theorem centered_capWidth_quarter_points {U : Set Plane} {C : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C) :
-    horizontalLeft U + capWidth U / 4 = -C ∧ horizontalRight U - capWidth U / 4 = C ∧
-      middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
-  simp only [capWidth, middleHalfInterval, hl, hr]
-  exact ⟨by ring, by ring, by congr 1 <;> ring⟩
-
 /-- The low-wing cut at `-C` of a positively tilted full maximum with horizontal projection
 `[-2C, 2C]`: both middle endpoints lie in the projection, the cut is a cap of height `1 - h`
 with top point `(-C, 1 - h)`, and its left endpoint lies strictly above the floor. -/
@@ -83,11 +70,11 @@ theorem IsFullCapMaximizer.low_wing_cut {U : Set Plane} (hU : IsFullCapMaximizer
       IsDownwardCap (leftCompanionCap U (-C)) ∧ capHeight (leftCompanionCap U (-C)) = 1 - h ∧
       MovingSofaOptimality.vplus (leftCompanionCap U (-C)) (Real.pi / 2) = (-C, 1 - h) ∧
       0 < capRoof (leftCompanionCap U (-C)) (horizontalLeft (leftCompanionCap U (-C))) := by
-  have hP := horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact hU.isCap.convex
+  have hP := hU.isCap.horizontalProjection_eq_Icc
   have ha : -C ∈ horizontalProjection U := by rw [hP, hl, hr]; constructor <;> linarith only [hC]
   have hb : C ∈ horizontalProjection U := by rw [hP, hl, hr]; constructor <;> linarith only [hC]
   have htop := hU.isCap.top_leftCompanionCap_of_positive_affine ha hb (by linarith only [hC])
-    hmpos ((centered_capWidth_quarter_points hl hr).2.2 ▸ haffine)
+    hmpos ((centered_quarter_points hl hr).2.2 ▸ haffine)
   rw [hlow] at htop
   refine ⟨ha, hb, hU.isCap.leftCompanionCap ha, htop.1, htop.2, ?_⟩
   have hab : horizontalLeft U ≤ -C := by rw [hl]; linarith only [hC]
@@ -123,13 +110,13 @@ include P
 theorem C_pos : 0 < C := by linarith only [P.hC0]
 
 theorem left_quarter : horizontalLeft U + capWidth U / 4 = -C :=
-  (centered_capWidth_quarter_points P.hl P.hr).1
+  (centered_quarter_points P.hl P.hr).1
 
 theorem right_quarter : horizontalRight U - capWidth U / 4 = C :=
-  (centered_capWidth_quarter_points P.hl P.hr).2.1
+  (centered_quarter_points P.hl P.hr).2.1
 
 theorem middle : middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C :=
-  (centered_capWidth_quarter_points P.hl P.hr).2.2
+  (centered_quarter_points P.hl P.hr).2.2
 
 end FirstUnitSetting
 
@@ -176,7 +163,7 @@ theorem fullTiltedSupportQuarterPair_tangent_traces {C h : ℝ}
       q (Real.pi / 2) = -capRoof U (horizontalLeft U) := by
   obtain ⟨hf0, hg0, hfL, hgL, hfD0, hgD0, hfDL, hgDL⟩ :=
     fullTiltedSupportQuarterPair_traces hU hm haffine hρ hρ0 hρK heq hmpos
-  rw [(centered_capWidth_quarter_points hl hr).1] at hg0 hgD0
+  rw [capWidth, (centered_quarter_points hl hr).1] at hg0 hgD0
   simp only [firstTangentPoint, secondTangentPoint, Reference.supportPoint,
     companionSupportPoint_coordinates, supportP, supportQ, hf0, hg0, hfL, hgL, hfD0, hgD0, hfDL,
     hgDL, hlow, hl, hr, hheight, Real.cos_zero, Real.sin_zero, Real.cos_pi_div_two,

@@ -60,7 +60,7 @@ theorem IsJointCapMaximizer.false_of_centered_proper_tail_regime
     hU.curvature_density_on_regular_proper_domain hproper haffine
   obtain ⟨hρ0, hκ⟩ := forall_and.mp hsharp
   have hwidth : capWidth U / 4 = C := by unfold capWidth; rw [hl, hr]; ring
-  have hleftMiddle : horizontalLeft U + capWidth U / 4 = -C := by rw [hl, hwidth]; ring
+  have hleftMiddle : horizontalLeft U + capWidth U / 4 = -C := (centered_quarter_points hl hr).1
   have hC := hU.proper_quarter_width_bounds hproper
   rw [hwidth] at hC
   have hTP := hU.topOverhangLeft_add_twice_right_le_terminalInset_of_tail_regime hregime hproper
@@ -132,7 +132,7 @@ theorem IsJointCapMaximizer.false_of_centered_proper_tail_regime
   rw [hleftMiddle, hwidth] at hinitial
   have htail := hU.terminalTailPoint_fst_eq_middle_add_topOverhangRight_of_tail_regime
     hregime hproper hheight haffine
-  rw [show horizontalRight U - capWidth U / 4 = C by rw [hr, hwidth]; ring] at htail
+  rw [show horizontalRight U - capWidth U / 4 = C from (centered_quarter_points hl hr).2.1] at htail
   have hcut := hU.proper_leftCompanion_density_of_regular hproper haffine heq
   rw [hleftMiddle] at hcut
   exact hU.false_of_leftCompanion_weighted_excess_of_tail_regime hregime hproper hheight haffine hl hr

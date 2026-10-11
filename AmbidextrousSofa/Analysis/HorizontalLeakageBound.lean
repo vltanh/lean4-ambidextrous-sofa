@@ -65,8 +65,8 @@ theorem IsFullCapMaximizer.right_endpoint_niche_le_horizontalLeakageRow
   · exact (hU.isCap.firstWall_nonpos_before_horizontal_box_angle hl hr hC0 hC1.le ht
       hsmall).trans R.B_nonneg
   have he := hU.firstWall_eq_horizontal_density_kernel hheight hmiddle hρ hρ0 hK heq ht
-  rw [show horizontalRight U - capWidth U / 4 = C by rw [hr, hwidth]; ring] at he
-  rw [he, div_le_iff₀ (Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos]))]
+  rw [show horizontalRight U - capWidth U / 4 = C from (centered_quarter_points hl hr).2.1] at he
+  rw [he, div_le_iff₀ (sin_cos_pos_of_mem_quarter ht).1]
   calc _ ≤ _ := horizontal_density_kernel_le_envelope_moments hρ hρ0 hK R.h_nonneg ht hbt.le
         henvelope
     _ ≤ R.B * horizontalLeakageBoxSine R.b := by

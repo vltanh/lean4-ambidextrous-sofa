@@ -64,7 +64,7 @@ theorem limit_le_outer_without_top {target : Set Plane} {U : ℕ → Set Plane}
     simp only [l, r, jL, jR, capWidth]
     exact ⟨by linarith, by linarith, by linarith⟩
   have hproj (n : ℕ) :=
-    horizontalProjection_eq_Icc (hU n).nonempty (hU n).isCompact (hU n).convex
+    (hU n).horizontalProjection_eq_Icc
   have hwindowL (n : ℕ) : Icc (l n) (jL n) ⊆ horizontalProjection (U n) := by
     rw [hproj n]; exact Icc_subset_Icc le_rfl ((horder n).2.1.trans (horder n).2.2)
   have hwindowR (n : ℕ) : Icc (jR n) (r n) ⊆ horizontalProjection (U n) := by
@@ -76,8 +76,7 @@ theorem limit_le_outer_without_top {target : Set Plane} {U : ℕ → Set Plane}
     A + C * (2 * η)).tendsto' 0 A (by simp)).mono_left nhdsWithin_le_nhds) ?_
   filter_upwards [Ioo_mem_nhdsGT hη₀] with η hη
   let E : Set ℝ := Ioo (0 : ℝ) Real.pi \ Icc (Real.pi / 2 - η) (Real.pi / 2 + η)
-  have hsin : 0 < Real.sin η :=
-    Real.sin_pos_of_pos_of_lt_pi hη.1 (by linarith [hη.2, Real.pi_pos])
+  have hsin : 0 < Real.sin η := (sin_cos_pos_of_mem_quarter ⟨hη.1, hη.2.trans_le hη₀'⟩).1
   have hE (t : ℝ) (ht : t ∈ E) : 0 ≤ Real.sin t ∧ Real.sin η ≤ |Real.cos t| :=
     ⟨(Real.sin_pos_of_pos_of_lt_pi ht.1.1 ht.1.2).le,
       abs_cos_ge_sin_of_outside_top_interval ⟨hη.1, hη.2.trans_le hη₀'⟩ ht.1 ht.2⟩

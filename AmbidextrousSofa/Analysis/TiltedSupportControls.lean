@@ -56,7 +56,7 @@ theorem IsFullCapMaximizer.full_tilted_wing_densities_zero_before_affine
     refine ⟨firstQuarter_subset_regularCurvatureDomain_of_nonneg hm ⟨ht.1, htL⟩, ?_⟩
     rw [sourceCornerHeight, sourceQuarterAngle, ite_eq_left htL]
     exact hU.isCap.attachedCorner_neg_before_positive_affine hl hr hC hsmall
-      ((hU.isCap.tilted_centered_middle hl hr hC).2.2 ▸ haffine) hhigh ht
+      ((centered_quarter_points hl hr).2.2 ▸ haffine) hhigh ht
   filter_upwards [ae_density_eq_zero_of_restrict_withDensity_null hρ hρ0 heq measurableSet_Ioo
     (fun t ht => firstQuarter_subset_regularCurvatureDomain_of_nonneg hm
       ⟨ht.1, ht.2.trans (Real.arctan_lt_pi_div_two m)⟩) hzero,

@@ -48,7 +48,7 @@ theorem IsDownwardCap.hasDerivAt_firstWall_of_open_first_density
   hU.hasDerivAt_firstWall_angle_of_density hρ hρ0 hρK heq (a := t / 2) (b := (t + Real.pi / 2) / 2)
     (fun s hs => hsub ⟨by linarith [ht.1, hs.1], by linarith [ht.2, hs.2]⟩)
     ⟨by linarith [ht.1], by linarith [ht.2]⟩
-    (Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])).ne' x
+    (sin_cos_pos_of_mem_quarter ht).1.ne' x
 
 theorem cotangent_le_at_arccos {C t x : ℝ} (hx : 0 ≤ x)
     (hC0 : 0 < C) (hC1 : C < 1)
@@ -101,7 +101,7 @@ theorem IsDownwardCap.middle_niche_le_top_overhang_of_late_unit
       ((Ioo_subset_Ioo ht.1.le le_rfl).trans hsub) htop C]
     exact add_le_of_le_of_nonpos (cotangent_le_at_arccos hT0 hC0 hC1 hAt ht.2)
       (div_nonpos_of_nonpos_of_nonneg (by linarith)
-        (Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])).le)
+        (sin_cos_pos_of_mem_quarter ht).1.le)
   refine sweptNiche_le_of_forall (by positivity)
     (div_nonneg (mul_nonneg hT0 hC0.le) (Real.sqrt_nonneg _)) fun t ht => ?_
   refine (min_le_left (firstWall U t C) (secondWall U t C)).trans ?_

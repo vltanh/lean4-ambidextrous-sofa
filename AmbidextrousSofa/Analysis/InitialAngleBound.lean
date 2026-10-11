@@ -73,7 +73,7 @@ theorem initialAngleRelaxation_diagonal_small_width {C u v : ℝ}
     initialAngleRelaxation (Real.sqrt 2 - 1) C 0 0 u v 0 < (41 / 50 : ℝ) := by
   have hsmall := initialAngle_diagonal_small_width hC1
   obtain ⟨hK0, hK1⟩ := initialAngle_offset_bounds
-  have hK := initialAngle_offset_sq
+  have hK := sqrt_two_sub_one_quadratic
   generalize Real.sqrt 2 - 1 = K at *
   rcases lt_or_ge (2 * C) K with hK2 | hK2
   · linarith [initialAngleRelaxation_le_twice_width hC0 K 0 0 u v 0]
@@ -115,7 +115,7 @@ theorem initialAngleRelaxation_left_domain_lt {C k d s u v b : ℝ}
   have hstation := initialAngle_stationary_lt_rational (C := C) hk0 hk1 hs0 hs2 hkd
   rcases le_total (u + v) (2 * (Real.sqrt 2 - 1)) with hsum | hsum
   · linarith [initialAngleRelaxation_le_two_thirds_of_low_apex (by linarith) (by linarith)
-      (by linarith) initialAngle_offset_sq hv0 hv1 hsum k d b]
+      (by linarith) sqrt_two_sub_one_quadratic hv0 hv1 hsum k d b]
   rcases le_total (u - v) (-2 * C) with hapex | hapex
   · linarith [initialAngleRelaxation_le_two_thirds_of_left_apex (by linarith) hv0 hv1 hapex
       (Real.sqrt 2 - 1) k d b]

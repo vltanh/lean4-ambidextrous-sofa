@@ -29,7 +29,7 @@ theorem IsDownwardCap.capRoof_leftCompanionCap {U : Set Plane}
     (hU : IsDownwardCap U) {a x : ℝ} (ha : a ∈ horizontalProjection U)
     (hx : x ∈ Icc (horizontalLeft U) a) :
     capRoof (AmbidextrousSofa.leftCompanionCap U a) x = capRoof U x := by
-  have hP := horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex
+  have hP := hU.horizontalProjection_eq_Icc
   rw [hP] at ha
   exact capRoof_horizontalCut hU ha.1 (hP ▸ Icc_subset_Icc le_rfl ha.2) hx
 
@@ -41,7 +41,7 @@ theorem IsDownwardCap.sweptNiche_eq_zero_of_le_low_wing_zero
     sweptNiche U (Real.pi / 2) x = 0 := by
   refine le_antisymm (sweptNiche_le_of_forall (by linarith only [Real.pi_pos]) le_rfl
     fun t ht => (min_le_right _ _).trans ?_) (sweptNiche_nonneg _ _ _)
-  obtain ⟨hs, hc⟩ := sin_pos_cos_pos_of_mem_quarter ht
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   exact (hU.secondWall_le_leftCompanionCap ha hb hab haffine hxb hs.le hc).trans
     (max_le ((hU.leftCompanionCap ha).secondWall_nonpos_of_le_companionZero hx ht) le_rfl)
 
@@ -55,13 +55,16 @@ theorem IsDownwardCap.sweptNiche_pos_of_low_wing_zero_lt
       (horizontalLeft (AmbidextrousSofa.leftCompanionCap U (-C))))
     (hx : x ∈ Ioo (max (-C) (companionZero (AmbidextrousSofa.leftCompanionCap U (-C)))) C) :
     0 < sweptNiche U (Real.pi / 2) x := by
-  obtain ⟨ha, hb, -⟩ := hU.tilted_centered_middle hl hr (by linarith only [hC])
+  have ha : -C ∈ horizontalProjection U :=
+    hU.horizontalProjection_eq_Icc ▸ ⟨by linarith, by linarith⟩
+  have hb : C ∈ horizontalProjection U :=
+    hU.horizontalProjection_eq_Icc ▸ ⟨by linarith, by linarith⟩
   have hhighPoint : (C, 1) ∈ U := by simpa only [hhigh] using capRoof_mem hU.isCompact hb
   rcases le_or_gt x (1 - 2 * C) with hsplit | hsplit
   · -- Left of the shifted baseline, the low-wing second wall and the first wall are positive.
     obtain ⟨t, ht, hsecond⟩ := (hU.leftCompanionCap ha).exists_secondWall_pos_of_companionZero_lt
       hVH hVL ((le_max_right _ _).trans_lt hx.1)
-    obtain ⟨hs, hc⟩ := sin_pos_cos_pos_of_mem_quarter ht
+    obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
     refine (lt_min ?_ (hsecond.trans_le (secondWall_mono (leftCompanionCap_subset U (-C))
       (hU.leftCompanionCap ha).nonempty hU.isCompact hc x))).trans_le
       (cornerWall_le_sweptNiche (sweptWallValues_bddAbove hU.isCompact le_rfl x) ht)
@@ -92,7 +95,7 @@ theorem IsDownwardCap.secondWallNumerator_neg_of_lt_low_wing_zero
   · simp only [companionNormal, Real.sin_pi_div_two, Real.cos_pi_div_two, mul_one]
     rw [support_horizontal_left hU.isCompact hU.nonempty]
     linarith only [hxaxis]
-  obtain ⟨hs, hc⟩ := sin_pos_cos_pos_of_mem_quarter ⟨ht.1, htL⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨ht.1, htL⟩
   by_cases htm : t ≤ Real.arctan m
   · have hg := hU.companionSupport_eq_high_of_affine ha hb hab haffine hhigh hs.le hc.le
       (tilted_initial_coefficient_nonneg ht.1.le htm)

@@ -39,7 +39,7 @@ theorem IsFullCapMaximizer.middle_right_eq_one_of_affine_nonneg
   have hw : M ≤ r - l := hU.width_bounds.1
   have hab : l + (r - l) / 4 < r - (r - l) / 4 := by linarith [one_lt_M]
   have hbU : r - (r - l) / 4 ∈ horizontalProjection U := by
-    rw [horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact hU.isCap.convex]
+    rw [hU.isCap.horizontalProjection_eq_Icc]
     constructor <;> linarith [one_lt_M]
   have hA := haffine _ ⟨le_rfl, hab.le⟩
   have hB := haffine _ ⟨hab.le, le_rfl⟩

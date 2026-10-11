@@ -53,7 +53,7 @@ theorem IsDownwardCap.firstWall_lt_history_between_corner_and_left_endpoint
     (hx0 : (attachedCorner U α).1 < x)
     (hx1 : x < terminalFirstLeftAbscissa U α) :
     firstWall U α x < sweptNiche U α x := by
-  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩
   -- The left derivative of the first wall is negative at `x`.
   have hslope := (hasDerivWithinAt_iff_tendsto_slope' (by simp)).mp
     (firstWall_hasDerivWithinAt (x := x) hs.ne' (MovingSofaOptimality.dot_vminus_uvec U α)
@@ -79,7 +79,7 @@ theorem IsDownwardCap.terminalBarrier_derivative_sign_of_overlong_facet
     (hfacet : terminalTailReserve U α < terminalFaceWidth U α) (x : ℝ) :
     terminalBarrierRightDerivative U α x ≤ 0 ∧
       (sweptNiche U α x < firstWall U α x → terminalBarrierRightDerivative U α x < 0) := by
-  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩
   -- Every terminal contact, ties included, lies before the corner: beyond it the history is
   -- strictly higher up to the shifted left endpoint, and the outgoing wall is negative after it.
   have hcontact (hx : sweptNiche U α x ≤ firstWall U α x) :

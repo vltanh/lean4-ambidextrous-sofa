@@ -20,9 +20,6 @@ open Set
 
 namespace AmbidextrousSofa.Analysis
 
-def joinThree (c d : ℝ) (E N W : ℝ → ℝ) (t : ℝ) : ℝ :=
-  if t ≤ c then E t else if t ≤ d then N t else W t
-
 theorem joinThree_eq_middle {c d t : ℝ} {E N W : ℝ → ℝ}
     (hmatch : E c = N c) (ht : t ∈ Icc c d) :
     joinThree c d E N W t = N t := by
@@ -36,21 +33,6 @@ theorem joinThree_eq_late {c d t : ℝ} {E N W : ℝ → ℝ}
   rcases ht.eq_or_lt with rfl | h
   · rw [← hlast]; exact joinThree_eq_middle hfirst ⟨hcd, le_rfl⟩
   · simp [joinThree, not_le.2 h, not_le.2 (hcd.trans_lt h)]
-
-theorem continuous_joinThree {c d : ℝ} {E N W : ℝ → ℝ}
-    (hcd : c ≤ d) (hE : Continuous E) (hN : Continuous N) (hW : Continuous W)
-    (hfirst : E c = N c) (hlast : N d = W d) :
-    Continuous (joinThree c d E N W) :=
-  hE.if_le (hN.if_le hW continuous_id continuous_const fun _ (h : _ = _) => h ▸ hlast)
-    continuous_id continuous_const fun _ (h : _ = _) => by rw [h, ite_eq_left hcd, hfirst]
-
-theorem hasDerivAt_joinThree {c d : ℝ} {E N W ED ND WD : ℝ → ℝ} (hcd : c ≤ d)
-    (hE : ∀ t, HasDerivAt E (ED t) t) (hN : ∀ t, HasDerivAt N (ND t) t)
-    (hW : ∀ t, HasDerivAt W (WD t) t) (hfirst : E c = N c) (hlast : N d = W d)
-    (hfirstD : ED c = ND c) (hlastD : ND d = WD d) (t : ℝ) :
-    HasDerivAt (joinThree c d E N W) (joinThree c d ED ND WD t) t :=
-  Reference.hasDerivAt_if_le c hE (Reference.hasDerivAt_if_le d hN hW hlast hlastD)
-    (by rw [ite_eq_left hcd, hfirst]) (by rw [ite_eq_left hcd, hfirstD]) t
 
 def familyFEarly (b t : ℝ) : ℝ := familyWidth b * Real.cos t + familyEndpoint b * Real.sin t
 

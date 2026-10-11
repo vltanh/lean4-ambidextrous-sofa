@@ -32,8 +32,7 @@ theorem IsDownwardCap.middle_niche_le_two_thirds_of_box
   constructor <;> refine sweptNiche_le_of_forall (by linarith [Real.pi_pos]) (by norm_num)
     fun t ht => ?_
   all_goals
-    have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
-    have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
+    obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   · rw [cornerWall, secondWall, min_le_iff, div_le_iff₀ hc]
     right
     linarith [hU.support_companionNormal_le_centeredBox hbox hs.le hc.le,
@@ -61,7 +60,7 @@ theorem IsDownwardCap.wide_near_intercepts_lower {U : Set Plane}
     (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1) :
     1 - h - nearDiagonalNorm k + k * a / 2 ≤ wideNearRightIntercept U k ∧
       1 - nearDiagonalNorm k + k * a / 2 ≤ wideNearLeftIntercept U k := by
-  have hproj := (hU.horizontalProjection_eq_of hl hr).superset
+  have hproj := (hl ▸ hr ▸ hU.horizontalProjection_eq_Icc).superset
   have hL := coordDot_le_support hU.isCompact (capRoof_mem hU.isCompact (x := -a / 2)
     (hproj ⟨by linarith only [ha], by linarith only [ha]⟩)) (-k, 1)
   have hR := coordDot_le_support hU.isCompact (capRoof_mem hU.isCompact (x := a / 2)

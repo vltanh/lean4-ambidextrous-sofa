@@ -25,26 +25,13 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-theorem terminal_sin_cos_pos {α : ℝ} (hα0 : 0 < α) (hαL : α < Real.pi / 2) :
-    0 < Real.sin α ∧ 0 < Real.cos α :=
-  ⟨Real.sin_pos_of_pos_of_lt_pi hα0 (by linarith [Real.pi_pos]),
-    Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], hαL⟩⟩
-
-theorem intervalIntegral_const_sub_mul (H k a b : ℝ) :
-    (∫ x in a..b, H - k * x) = (b - a) * H - k * (b ^ 2 - a ^ 2) / 2 := by
-  rw [intervalIntegral.integral_sub intervalIntegrable_const
-    ((show Continuous (fun x : ℝ => k * x) by fun_prop).intervalIntegrable _ _),
-    intervalIntegral.integral_const, intervalIntegral.integral_const_mul, integral_id, smul_eq_mul]
-  ring
-
 theorem IsDownwardCap.capRoof_le_first_support_line {U : Set Plane}
     (hU : IsDownwardCap U) {α x : ℝ} (hs : 0 < Real.sin α)
     (hx : x ∈ horizontalProjection U) :
-    capRoof U x ≤ support U (unitNormal α) / Real.sin α -
-      (Real.cos α / Real.sin α) * x := by
+    capRoof U x ≤ -(Real.cos α / Real.sin α) * x + support U (unitNormal α) / Real.sin α := by
   have : x * Real.cos α + capRoof U x * Real.sin α ≤ support U (unitNormal α) :=
     coordDot_le_support hU.isCompact (capRoof_mem hU.isCompact hx) (unitNormal α)
-  rw [div_mul_eq_mul_div, div_sub_div_same, le_div_iff₀ hs]
+  rw [neg_mul, neg_add_eq_sub, div_mul_eq_mul_div, div_sub_div_same, le_div_iff₀ hs]
   linarith
 
 /-- The support height cancels between one charged exterior wing and the
@@ -55,10 +42,10 @@ theorem IsDownwardCap.capScore_le_terminal_quadratic_centered {U : Set Plane}
     (hα0 : 0 < α) (hαL : α < Real.pi / 2) :
     capScore U α ≤ (1 + 1 / Real.sin α) * C -
       2 * (Real.cos α / Real.sin α) * C ^ 2 := by
-  have hs := (terminal_sin_cos_pos hα0 hαL).1
+  have hs := (sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩).1
   have hB := hU.intervalIntegrable_partialBarrier hα0 hαL.le
   have hproj : horizontalProjection U = Icc (-2 * C) (2 * C) := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hleft, hright]
+    rw [hU.horizontalProjection_eq_Icc, hleft, hright]
   have hl := intervalIntegral.integral_mono_on (by linarith : -2 * C ≤ -C)
     (hU.intervalIntegrable_capRoof _ _) intervalIntegrable_const
     fun x _ => capRoof_le_one hU.isCompact hU.inStrip x
@@ -67,11 +54,10 @@ theorem IsDownwardCap.capScore_le_terminal_quadratic_centered {U : Set Plane}
     fun x hx => hU.capRoof_le_first_support_line hs (hproj ▸ ⟨by linarith [hx.1], hx.2⟩)
   have hm := intervalIntegral.integral_mono_on (by linarith : -C ≤ (0 : ℝ))
     (Continuous.intervalIntegrable (by fun_prop) _ _) (hB _ _) fun x _ =>
-    (show support U (unitNormal α) / Real.sin α - 1 / Real.sin α -
-      Real.cos α / Real.sin α * x = firstWall U α x by rw [firstWall]; ring).trans_le
-      (le_max_right _ _)
+    (show -(Real.cos α / Real.sin α) * x + (support U (unitNormal α) / Real.sin α -
+      1 / Real.sin α) = firstWall U α x by rw [firstWall]; ring).trans_le (le_max_right _ _)
   rw [intervalIntegral.integral_const, smul_eq_mul, mul_one] at hl
-  rw [intervalIntegral_const_sub_mul] at hr hm
+  rw [integral_affine] at hr hm
   linarith [capScore_centered_quarters hU hleft hright α,
     intervalIntegral.integral_add_adjacent_intervals (hB (-C) 0) (hB 0 C),
     intervalIntegral.integral_nonneg_of_forall (μ := volume) hC (partialBarrier_nonneg U α)]
@@ -81,7 +67,7 @@ theorem IsDownwardCap.capScore_le_terminal_bound {U : Set Plane}
     (hU : IsDownwardCap U) {α : ℝ} (hα0 : 0 < α) (hαL : α < Real.pi / 2) :
     capScore U α ≤ (1 + 1 / Real.sin α) ^ 2 /
       (8 * (Real.cos α / Real.sin α)) := by
-  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩
   have hk := div_pos hc hs
   have h := hU.centeredCap.capScore_le_terminal_quadratic_centered (C := capWidth U / 4)
     (by linarith [hU.capWidth_nonneg]) (by rw [horizontalLeft_centeredCap hU]; ring)

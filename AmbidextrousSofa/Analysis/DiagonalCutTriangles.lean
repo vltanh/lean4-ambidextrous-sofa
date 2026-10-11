@@ -64,7 +64,7 @@ theorem IsDownwardCap.diagonalRoofDeficit_ge_near_cuts {U : Set Plane}
     (hLin : δL ≤ k * (v - a / 2)) (hLout : δL ≤ (1 - k) * (a - v))
     (hRin : δR ≤ k * (u - a / 2)) (hRout : δR ≤ (1 - k) * (a - u)) :
     (δL ^ 2 + δR ^ 2) / (2 * k * (1 - k)) ≤ diagonalRoofDeficit U a h u v := by
-  have hproj := hU.horizontalProjection_eq_of hl hr
+  have hproj := (hl ▸ hr ▸ hU.horizontalProjection_eq_Icc)
   have hL : δL ^ 2 / (2 * k * (1 - k)) ≤
       ∫ x in (-a)..(-a / 2), min (1 - h) (1 - h + v + x) - capRoof U x := by
     have hint : (∫ x in (-a)..(-a / 2), affineCutTriangle k δL v (-x)) =

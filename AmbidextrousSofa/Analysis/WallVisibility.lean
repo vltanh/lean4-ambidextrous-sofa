@@ -93,7 +93,7 @@ theorem secondWall_le_at_secondTangency
     (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) :
     secondWall U s (secondTangency U t).1 ≤ (secondTangency U t).2 := by
   rw [← secondWall_secondTangency U
-    (Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩).ne']
+    (sin_cos_pos_of_mem_quarter ht).2.ne']
   rcases le_total s t with hst | hts
   · exact endpoint_le_of_hasDerivAt_nonneg hst
       (fun r hr => hd r ⟨hs.1.trans_le hr.1, hr.2.trans_lt ht.2⟩ _) fun r hr => div_nonneg
@@ -111,8 +111,7 @@ theorem sweptNiche_at_secondTangency {U : Set Plane} (hU : IsDownwardCap U)
     {t : ℝ} (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2))
     (hq : 0 ≤ firstCornerVelocity U t) (hy : 0 ≤ (secondTangency U t).2) :
     sweptNiche U (Real.pi / 2) (secondTangency U t).1 = (secondTangency U t).2 := by
-  have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   -- The first wall exceeds the second tangency point by `firstCornerVelocity / sin`.
   have hfirst : (secondTangency U t).2 ≤ firstWall U t (secondTangency U t).1 := by
     have hcorner := firstWall_attachedCorner U hs.ne'
@@ -160,7 +159,7 @@ theorem secondTangency_abscissa_of_maximizing_angle {U : Set Plane}
     Filter.eventually_of_mem (Ioo_mem_nhds hsq.1 hsq.2) fun r hr =>
       (secondWall_le_at_secondTangency U hD hd hr ht).trans hvalue.ge
   have hx := (div_eq_zero_iff.mp (hlocal.hasDerivAt_eq_zero (hd s hsq _))).resolve_right
-    (pow_ne_zero 2 (Real.cos_pos_of_mem_Ioo ⟨by linarith [hsq.1, Real.pi_pos], hsq.2⟩).ne')
+    (pow_ne_zero 2 (sin_cos_pos_of_mem_quarter hsq).2.ne')
   exact ⟨hsq, (sub_eq_zero.mp hx).symm⟩
 
 /-- A corner with `p < 0 < q` is a strict global maximizer of the
@@ -184,8 +183,7 @@ theorem sweptNiche_at_visible_corner {U : Set Plane} (hU : IsDownwardCap U)
         fullWallClip hU.toCompactCap (attachedCorner U t).1 s =
           sweptNiche U (Real.pi / 2) (attachedCorner U t).1 → s = t) := by
   have htq : t ∈ Ioo (0 : ℝ) (Real.pi / 2) := ⟨hb.trans_lt ht.1, ht.2⟩
-  have hs := Real.sin_pos_of_pos_of_lt_pi htq.1 (by linarith [htq.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [htq.1, Real.pi_pos], htq.2⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter htq
   have hcorner : cornerWall U t (attachedCorner U t).1 = (attachedCorner U t).2 := by
     rw [cornerWall, firstWall_attachedCorner U hs.ne', secondWall_attachedCorner U hc.ne',
       min_self]

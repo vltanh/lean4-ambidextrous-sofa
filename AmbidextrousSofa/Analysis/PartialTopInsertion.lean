@@ -60,9 +60,7 @@ theorem IsDownwardCap.partialBarrier_inserted_top_of_top_left {U : Set Plane}
   have hsweep : sweptNiche (insertedCap U (a, 1)) α x = sweptNiche U α x :=
     sweptNiche_eq_of_clippedCorner_eq (hU.isDownwardCap_insertedCap hp).isCompact hU.isCompact
       hα0 hα fun θ hθ => by
-        have hθL := hθ.2.trans_le hα
-        have hs := Real.sin_pos_of_pos_of_lt_pi hθ.1 (by linarith [Real.pi_pos])
-        have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [hθ.1, Real.pi_pos], hθL⟩
+        obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hθ.1, hθ.2.trans_le hα⟩
         rcases hU.firstWall_inserted_top_left hs hc.le hax with h | ⟨h1, h2⟩
         · rw [cornerWall, cornerWall, h, secondWall, secondWall,
             hU.support_insertedCap_eq_of_dominated hp hc.le (le_trans (by
@@ -91,7 +89,7 @@ private theorem IsJointCapMaximizer.top_mem_of_insertion {U : Set Plane} {α b :
   have hp : (b, (1 : ℝ)) ∈ unitStrip := ⟨zero_le_one, le_rfl⟩
   have hw : 0 < capWidth U := by linarith [hU.width_bounds.1, one_lt_M]
   have hbU : b ∈ horizontalProjection U := by
-    rw [horizontalProjection_eq_Icc hC.nonempty hC.isCompact hC.convex]
+    rw [hC.horizontalProjection_eq_Icc]
     unfold capWidth at hw hb
     rcases hb with hb | hb <;> constructor <;> linarith [hb.1, hb.2]
   have hV := hC.isDownwardCap_insertedCap hp

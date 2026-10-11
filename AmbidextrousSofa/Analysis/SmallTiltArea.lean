@@ -53,7 +53,7 @@ theorem IsFullCapMaximizer.smallTilt_initialFloorEnergyConditions_of_actual_geom
   have hhmax : h ≤ 17 / 50 := by linarith only [hh1]
   have hAff : ∃ m c : ℝ, ∀ x ∈ middleHalfInterval
       (horizontalLeft U) (horizontalRight U), capRoof U x = m * x + c :=
-    ⟨m, c, by simpa only [middleHalfInterval_eq_centered hl hr] using haffine⟩
+    ⟨m, c, by simpa only [(centered_quarter_points hl hr).2.2] using haffine⟩
   have hfit := hU.sweptNiche_le_roof_of_canonical_range hl hr hlow hhigh hChalf hC1
     hh0.le hhmax hheight hAff
   -- The ordinary area: the dry left wing pays nothing and the right wing an excess triangle.

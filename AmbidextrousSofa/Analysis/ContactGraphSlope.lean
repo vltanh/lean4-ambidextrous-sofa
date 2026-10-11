@@ -103,7 +103,7 @@ theorem fullTiltedSupportQuarterPair_niche_core_slope {t g : ℝ}
   obtain ⟨h1, h2⟩ := fullTiltedSupportQuarterPair_walls_core hU hm haffine hρ hρ0 hρK heq hs
   have hsecond := secondWall_mono (leftCompanionCap_subset _ _)
     hU.isCap_fullLeftCompanion.nonempty hU.isCap.isCompact
-    (Real.cos_pos_of_mem_Ioo ⟨by linarith [hs.1, Real.pi_pos], hs.2⟩) (Z s).1
+    (sin_cos_pos_of_mem_quarter hs).2 (Z s).1
   have hwall := cornerWall_le_sweptNiche
     (sweptWallValues_bddAbove hU.isCap.isCompact le_rfl (Z s).1) hs
   rwa [cornerWall, h1, min_eq_left (h2 ▸ hsecond)] at hwall

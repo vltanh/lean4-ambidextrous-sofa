@@ -37,7 +37,7 @@ theorem IsDownwardCap.capRoof_le_tiltedAffineCeiling
   obtain ⟨hma, hmc⟩ := tilted_middle_slope ha hm hleft hright
   obtain rfl : m = h / a := (eq_div_iff ha.ne').2 hma
   have hproj : horizontalProjection U = Icc (-a) a := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hl, hr]
+    rw [hU.horizontalProjection_eq_Icc, hl, hr]
   intro x hx
   have := hU.capRoof_le_affine_of_affine_segment (a := -a / 2) (b := a / 2)
     (hproj ▸ ⟨by linarith, by linarith⟩) (hproj ▸ ⟨by linarith, by linarith⟩) (by linarith) hm x hx
@@ -80,17 +80,17 @@ theorem integral_tilted_diagonal_left_roof {a h v : ℝ} (ha : 0 < a) (hha : h <
   have hqd : q * d = v - h / 2 := div_mul_cancel₀ _ hd.ne'
   have hza : h / a * a = h := div_mul_cancel₀ h ha.ne'
   have hfun (x : ℝ) : min (tiltedAffineCeiling a h x) (1 - h + v + x) =
-      (1 - h / 2) - -(h / a) * x - d * max (-q - x) 0 := by
-    rw [min_eq_left_sub_positive, mul_max_of_nonneg _ _ hd.le, mul_zero]
+      h / a * x + (1 - h / 2) - d * max (-q - x) 0 := by
+    rw [min_eq_left_sub_positive, mul_max_of_nonneg _ _ hd.le, mul_zero, add_comm (h / a * x)]
     dsimp only [tiltedAffineCeiling, d] at hqd ⊢
-    congr 2 <;> linarith
+    congr 2; linarith
   have hwidth : -q - -a = (a - v - h / 2) / d := by
     rw [eq_div_iff hd.ne']
     dsimp only [d] at hqd ⊢
     linarith
   simp_rw [hfun]
   rw [intervalIntegral.integral_sub (Continuous.intervalIntegrable (by fun_prop) _ _)
-      (Continuous.intervalIntegrable (by fun_prop) _ _), intervalIntegral_const_sub_mul,
+      (Continuous.intervalIntegrable (by fun_prop) _ _), integral_affine,
     intervalIntegral.integral_const_mul, integral_positive_ramp_sub,
     max_eq_left (by linarith : 0 ≤ -q - -a), max_eq_right (by linarith : -q - (-a / 2) ≤ 0), hwidth]
   field_simp
@@ -114,7 +114,7 @@ theorem IsDownwardCap.diagonalRoofDeficit_ge_tilt_loss
     (huv : u ∈ Icc (a / 2) a) (hvv : v ∈ Icc (a / 2) a) :
     h * (v - a / 2) ^ 2 / (2 * (a - h)) ≤ diagonalRoofDeficit U a h u v := by
   have hproj : horizontalProjection U = Icc (-a) a := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hl, hr]
+    rw [hU.horizontalProjection_eq_Icc, hl, hr]
   have hL : (∫ x in (-a)..(-a / 2), capRoof U x) ≤
       a / 2 - 5 * a * h / 8 - (a - v - h / 2) ^ 2 / (2 * (1 - h / a)) := by
     rw [← integral_tilted_diagonal_left_roof ha hha hvv.1

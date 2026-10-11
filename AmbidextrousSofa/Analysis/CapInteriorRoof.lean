@@ -41,8 +41,7 @@ theorem CapHausdorffTendsto.exists_eventually_lipschitz_capRoof
     (h.horizontalRight_tendsto (fun n => (hU n).isCompact) (fun n => (hU n).nonempty)
       hK.isCompact hK.nonempty).eventually (Ioi_mem_nhds hr)] with n hnleft hnright
   have hball : Metric.ball x (2 * δ) ⊆ horizontalProjection (U n) := by
-    rw [Real.ball_eq_Ioo, horizontalProjection_eq_Icc (hU n).nonempty (hU n).isCompact
-      (hU n).convex]
+    rw [Real.ball_eq_Ioo, (hU n).horizontalProjection_eq_Icc]
     exact Ioo_subset_Icc_self.trans (Icc_subset_Icc hnleft.le hnright.le)
   have hLip := ((hU n).concaveOn_capRoof.subset hball
     (convex_ball x (2 * δ))).lipschitzOnWith_of_abs_le hδ fun z _ => by
@@ -61,7 +60,7 @@ theorem CapHausdorffTendsto.capRoof_tendsto_of_interior
     (ht : Tendsto t atTop (𝓝 x)) :
     Tendsto (fun n => capRoof (U n) (t n)) atTop (𝓝 (capRoof K x)) := by
   have hxK : x ∈ horizontalProjection K := by
-    rw [horizontalProjection_eq_Icc hK.nonempty hK.isCompact hK.convex]
+    rw [hK.horizontalProjection_eq_Icc]
     exact Ioo_subset_Icc_self hx
   obtain ⟨δ, hδ, L, hLip⟩ := h.exists_eventually_lipschitz_capRoof hU hK hx
   obtain ⟨q, hq, hqlim⟩ := h.exists_points_tendsto (fun n => (hU n).isCompact)
@@ -103,7 +102,7 @@ theorem CapHausdorffTendsto.middleLeft_roof_tendsto
   refine h.capRoof_tendsto_of_interior hU hK ⟨by linarith, by linarith⟩ (fun n => ?_)
     (hl.add ((hr.sub hl).div_const 4))
   have hlr := horizontalLeft_le_horizontalRight (hU n).nonempty (hU n).isCompact
-  rw [horizontalProjection_eq_Icc (hU n).nonempty (hU n).isCompact (hU n).convex]
+  rw [(hU n).horizontalProjection_eq_Icc]
   exact ⟨by linarith, by linarith⟩
 
 theorem CapHausdorffTendsto.middleRight_roof_tendsto
@@ -120,7 +119,7 @@ theorem CapHausdorffTendsto.middleRight_roof_tendsto
   refine h.capRoof_tendsto_of_interior hU hK ⟨by linarith, by linarith⟩ (fun n => ?_)
     (hr.sub ((hr.sub hl).div_const 4))
   have hlr := horizontalLeft_le_horizontalRight (hU n).nonempty (hU n).isCompact
-  rw [horizontalProjection_eq_Icc (hU n).nonempty (hU n).isCompact (hU n).convex]
+  rw [(hU n).horizontalProjection_eq_Icc]
   exact ⟨by linarith, by linarith⟩
 
 end AmbidextrousSofa

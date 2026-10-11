@@ -53,9 +53,9 @@ theorem IsJointCapMaximizer.centered_terminal_reflected_data_of_tail_regime
       firstWall U α (-C) = terminalSlope α * (2 * C + topOverhangRight U - terminalTailInset U α) ∧
       topOverhangLeft U + 2 * topOverhangRight U ≤ terminalTailInset U α ∧
       topOverhangRight U < terminalTailInset U α := by
-  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hU.angle_pos hproper
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hU.angle_pos, hproper⟩
   have hw : capWidth U / 4 = C := by rw [capWidth, hl, hr]; ring
-  have hRC : horizontalRight U - capWidth U / 4 = C := by rw [hw, hr]; ring
+  have hRC : horizontalRight U - capWidth U / 4 = C := (centered_quarter_points hl hr).2.1
   have hC := hU.proper_quarter_width_bounds hproper
   rw [hw] at hC
   obtain ⟨-, hH, hH1⟩ := hU.terminalTailPoint_bounds_of_tail_regime hregime hproper hheight haffine
@@ -70,10 +70,8 @@ theorem IsJointCapMaximizer.centered_terminal_reflected_data_of_tail_regime
         hU.middle_right_eq_one_of_affine_nonneg hheight hm haffine]
   have hEP := (hU.partial_endpoint_heights_eq_pressures_of_affine hproper hheight
     ⟨m, c, haffine⟩).2
-  rw [partialLeftEndpointPressure, leftEndpointPressure,
-    show horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4 = -C by rw [hl, hr]; ring,
-    show horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 = C by rw [hl, hr]; ring]
-    at hEP
+  rw [partialLeftEndpointPressure, leftEndpointPressure, (centered_quarter_points hl hr).1,
+    (centered_quarter_points hl hr).2.1] at hEP
   have hn : sweptNiche U α (-C) < 33 / 100 :=
     ((sweptNiche_mono_terminalAngle hU.isCap.isCompact hU.angle_pos hproper.le le_rfl (-C)).trans
       (hU.isCap.middle_niche_le_box_height_of_endpoints hl hr (by linarith only [hC.1])

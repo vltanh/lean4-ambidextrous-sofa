@@ -138,8 +138,8 @@ theorem referenceSofa_subset_canonicalHall {t : ℝ}
   · right; simpa [companionNormal, coordDot, htop] using hy
   rcases ht.2.eq_or_lt with rfl | h1
   · left; simpa [unitNormal, coordDot, htop] using hy
-  refine (cornerWall_le_iff (Real.sin_pos_of_pos_of_lt_pi h0 (by linarith [Real.pi_pos]))
-    (Real.cos_pos_of_mem_Ioo ⟨by linarith [Real.pi_pos], h1⟩)).1 ?_
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨h0, h1⟩
+  refine (cornerWall_le_iff hs hc).1 ?_
   exact (cornerWall_le_sweptNiche (sweptWallValues_bddAbove isCompact_referenceHull le_rfl p.1)
     ⟨h0, h1⟩).trans hp.2.1
 

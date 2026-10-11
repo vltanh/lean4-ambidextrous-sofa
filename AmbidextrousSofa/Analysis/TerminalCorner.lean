@@ -31,7 +31,7 @@ namespace AmbidextrousSofa
 theorem terminal_cos_sq_le_of_initialAngle {α : ℝ}
     (hα0 : Real.arctan (8 / 3) ≤ α) (hαL : α < Real.pi / 2) : 73 * Real.cos α ^ 2 ≤ 9 := by
   have hαpos : 0 < α := (Real.arctan_pos.2 (by norm_num)).trans_le hα0
-  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hαpos hαL
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hαpos, hαL⟩
   have htan : 8 / 3 ≤ Real.tan α := by
     simpa using Real.strictMonoOn_tan.monotoneOn (Real.arctan_mem_Ioo _)
       ⟨by linarith [Real.pi_pos], hαL⟩ hα0
@@ -41,7 +41,8 @@ theorem terminal_cos_sq_le_of_initialAngle {α : ℝ}
 theorem terminal_sin_cos_bounds_after_initialAngle {α : ℝ}
     (hα0 : Real.arctan (8 / 3) ≤ α) (hαL : α < Real.pi / 2) :
     (187 / 200 : ℝ) < Real.sin α ∧ Real.cos α < (9 / 25 : ℝ) := by
-  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos ((Real.arctan_pos.2 (by norm_num)).trans_le hα0) hαL
+  obtain ⟨hs, hc⟩ :=
+    sin_cos_pos_of_mem_quarter ⟨(Real.arctan_pos.2 (by norm_num)).trans_le hα0, hαL⟩
   have := terminal_cos_sq_le_of_initialAngle hα0 hαL
   constructor <;> nlinarith [Real.sin_sq_add_cos_sq α]
 
@@ -57,7 +58,7 @@ theorem IsJointCapMaximizer.terminal_corner_lt_rightAbscissa_of_tail_regime
     (attachedCorner U α).1 < terminalFirstRightAbscissa U α := by
   set P := terminalTailPoint U α
   have htail := hU.terminalTailPoint_bounds_of_tail_regime hregime hαL hheight haffine
-  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hU.angle_pos hαL
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hU.angle_pos, hαL⟩
   have htrig := terminal_sin_cos_bounds_after_initialAngle
     hU.terminal_angle_gt_arctan_eight_thirds.le hαL
   have hwidth := hU.width_gt_forty_nine_twenty_fifths hαL

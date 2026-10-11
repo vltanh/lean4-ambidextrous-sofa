@@ -45,7 +45,7 @@ theorem fullTiltedSupportQuarterPair_first_wall_tangency {t : ℝ}
     (ht : t ∈ Ioo 0 (Real.pi / 2)) :
     firstWall U t (B t).1 = (B t).2 ∧
       -p t ≤ (secondWall U t (B t).1 - (B t).2) * Real.cos t := by
-  obtain ⟨hs, hc⟩ := quarter_sin_cos_pos ht
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   refine ⟨fullTiltedSupportQuarterPair_first_tangency hU hm haffine hρ hρ0 hρK heq
     ⟨ht.1.le, ht.2⟩ ▸ firstWall_firstTangency U hs.ne', ?_⟩
   have hgap : (secondWall V t (B t).1 - (B t).2) * Real.cos t = -p t := by
@@ -83,7 +83,7 @@ theorem fullTiltedSupportQuarterPair_niche_first_tangency
   -- The companion wall lies above the first tangency, so the first wall is the corner wall.
   have hcorner : cornerWall U t (B t).1 = (B t).2 := by
     rw [cornerWall, hfirst, min_eq_left (sub_nonneg.mp ((mul_nonneg_iff_of_pos_right
-      (quarter_sin_cos_pos ht).2).mp ((neg_nonneg.mpr hp).trans hgap)))]
+      (sin_cos_pos_of_mem_quarter ht).2).mp ((neg_nonneg.mpr hp).trans hgap)))]
   refine le_antisymm (sweptNiche_le_of_forall (by positivity) hy fun s hs =>
     (min_le_left _ _).trans (fullTiltedSupportQuarterPair_first_wall_envelope
       hU hm haffine hρ hρ0 hρK heq hunit ht s hs)) ?_

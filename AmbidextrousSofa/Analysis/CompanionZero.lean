@@ -47,8 +47,7 @@ theorem circleHeight_mul_sin_add_mul_cos_le_one {y : ℝ}
 theorem IsDownwardCap.secondWall_le_companionZero_slope {U : Set Plane} (hU : IsDownwardCap U)
     {x t : ℝ} (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) :
     secondWall U t x ≤ (x - companionZero U) * Real.tan t := by
-  have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   obtain ⟨p, hp, hsupport⟩ := exists_coordDot_eq_support hU.isCompact hU.nonempty
     (companionNormal t)
   have hz := hU.companionZero_le_point hp
@@ -118,8 +117,7 @@ theorem IsDownwardCap.exists_secondWall_pos_of_companionZero_lt
     (hx : companionZero U < x) :
     ∃ t ∈ Ioo (0 : ℝ) (Real.pi / 2), 0 < secondWall U t x := by
   obtain ⟨-, -, t, ht, -, -, -, hzero⟩ := hU.exists_companionZero_contact hheight hleft
-  have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   rw [secondWall, div_eq_zero_iff, or_iff_left hc.ne'] at hzero
   exact ⟨t, ht, div_pos (by nlinarith) hc⟩
 

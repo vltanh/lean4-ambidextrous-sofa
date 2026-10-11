@@ -73,13 +73,13 @@ theorem fullTiltedSupportQuarterPair_positive_middle_iff {C h x : ℝ}
     hU.low_wing_cut hl hr (by linarith only [hC]) hmpos hheight hlow haffine
   refine ⟨fun hpos => not_le.mp fun hz => hpos.ne'
     (hU.isCap.sweptNiche_eq_zero_of_le_low_wing_zero ha hb (by linarith only [hC])
-      ((centered_capWidth_quarter_points hl hr).2.2 ▸ haffine) hx.2.le hz),
+      ((centered_quarter_points hl hr).2.2 ▸ haffine) hx.2.le hz),
     fun hz => ?_⟩
   by_cases hsplit : x ≤ 1 - 2 * C
   · obtain ⟨t, ht, hsecond⟩ :=
       hV.exists_secondWall_pos_of_companionZero_lt (by rw [hVh]; linarith only [hh]) hVL hz
     have hsecondU := hsecond.trans_le (secondWall_mono (leftCompanionCap_subset U (-C))
-      hV.nonempty hU.isCap.isCompact (quarter_sin_cos_pos ht).2 x)
+      hV.nonempty hU.isCap.isCompact (sin_cos_pos_of_mem_quarter ht).2 x)
     exact (lt_min (fullTiltedSupportQuarterPair_first_wall_pos_left hU hm haffine hρ hρ0 hρK
       heq hl hr hC hmpos hheight hlow hunit hsplit ht) hsecondU).trans_le
         (cornerWall_le_sweptNiche (sweptWallValues_bddAbove hU.isCap.isCompact le_rfl x) ht)

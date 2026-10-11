@@ -30,7 +30,7 @@ theorem strictMonoOn_firstWallSlope :
   intro s hs t ht hst
   have hdiff := Real.sin_pos_of_pos_of_lt_pi (sub_pos.mpr hst) (by linarith [ht.2, hs.1])
   rw [Real.sin_sub] at hdiff
-  apply (div_lt_div_iff₀ (quarter_sin_cos_pos hs).1 (quarter_sin_cos_pos ht).1).mpr
+  apply (div_lt_div_iff₀ (sin_cos_pos_of_mem_quarter hs).1 (sin_cos_pos_of_mem_quarter ht).1).mpr
   linarith
 
 section ActualPair
@@ -57,8 +57,8 @@ theorem fullTiltedSupportQuarterPair_strict_first_contact_unique
     (hmax : fullWallClip hU.isCap.toCompactCap (B t).1 s =
       sweptNiche U (Real.pi / 2) (B t).1) :
     s = t ∧ firstWall U s (B t).1 < secondWall U s (B t).1 := by
-  obtain ⟨hsins, hcoss⟩ := quarter_sin_cos_pos hs
-  obtain ⟨hsint, hcost⟩ := quarter_sin_cos_pos ht
+  obtain ⟨hsins, hcoss⟩ := sin_cos_pos_of_mem_quarter hs
+  obtain ⟨hsint, hcost⟩ := sin_cos_pos_of_mem_quarter ht
   have hniche := fullTiltedSupportQuarterPair_niche_first_tangency
     hU hm haffine hρ hρ0 hρK heq hunit ht hp.le hy.le
   -- At `t` the first wall is a strict contact: the companion wall lies strictly above.

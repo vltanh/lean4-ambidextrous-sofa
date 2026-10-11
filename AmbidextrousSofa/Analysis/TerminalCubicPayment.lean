@@ -143,7 +143,7 @@ theorem terminalWeightedExcess_lt_allowance_of_late_tail
       (by rw [Real.sin_pi_div_two_sub]; linarith [terminal_cos_rational_cut])
     linarith
   have hc : (3 / 25 : ℝ) < Real.cos α := by
-    obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
+    obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩
     rw [terminalSlope, le_div_iff₀ hs] at hk
     nlinarith only [hk, hs, hc, Real.sin_sq_add_cos_sq α]
   refine (terminalWeightedExcess_le_cubic (t₀ := Real.pi / 2 - 91 / 100) (K := (19 / 25 : ℝ))

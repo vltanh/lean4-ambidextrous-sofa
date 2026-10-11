@@ -8,10 +8,10 @@ public import AmbidextrousSofa.Geometry.Hallway
 /-!
 # Determination of a downward cap by its upward supports
 
-The two quarter families cover the upper half-plane of directions. In a
-downward direction every support maximum lies on the actual baseline, so
-it is already determined by the horizontal supports. The polar coordinates
-of a direction come from its complex argument.
+The two quarter families cover the upper half-plane of directions
+(`exists_upper_polar`). In a downward direction every support maximum lies
+on the actual baseline, so it is already determined by the horizontal
+supports.
 -/
 
 noncomputable section
@@ -19,22 +19,6 @@ noncomputable section
 open Set
 
 namespace AmbidextrousSofa
-
-theorem exists_quarter_polar {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) :
-    ∃ r : ℝ, 0 ≤ r ∧ ∃ t ∈ Icc (0 : ℝ) (Real.pi / 2), (a, b) = r • unitNormal t :=
-  ⟨‖(⟨a, b⟩ : ℂ)‖, norm_nonneg _, Complex.arg ⟨a, b⟩,
-    ⟨Complex.arg_nonneg_iff.2 hb, Complex.arg_le_pi_div_two_iff.2 (Or.inl ha)⟩,
-    by simp [unitNormal, Complex.norm_mul_cos_arg, Complex.norm_mul_sin_arg]⟩
-
-theorem exists_upper_polar {v : Plane} (hv : 0 ≤ v.2) :
-    ∃ r : ℝ, 0 ≤ r ∧ ∃ t ∈ Icc (0 : ℝ) (Real.pi / 2),
-      v = r • unitNormal t ∨ v = r • companionNormal t := by
-  rcases le_total 0 v.1 with hx | hx
-  · obtain ⟨r, hr, t, ht, h⟩ := exists_quarter_polar hx hv
-    exact ⟨r, hr, t, ht, Or.inl h⟩
-  · obtain ⟨r, hr, t, ht, h⟩ := exists_quarter_polar hv (neg_nonneg.mpr hx)
-    simp only [unitNormal, Prod.smul_mk, smul_eq_mul, Prod.mk.injEq] at h
-    refine ⟨r, hr, t, ht, Or.inr (Prod.ext ?_ ?_)⟩ <;> simp [companionNormal] <;> linarith
 
 theorem IsDownwardCap.support_eq_horizontal_of_snd_nonpos {U : Set Plane}
     (hU : IsDownwardCap U) {v : Plane} (hv : v.2 ≤ 0) :

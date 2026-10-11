@@ -172,7 +172,7 @@ theorem sum_le_horizontalOuterMass_away_top {U : Set Plane} {grid : Finset Quart
       horizontalOuterMass U grid (Ioo (0 : ℝ) Real.pi \ Icc (Real.pi / 2 - η) (Real.pi / 2 + η)) +
         (∑ j, |(normal grid j).1| * |defect j|) / Real.sin η + K := by
   refine (sum_le_horizontalOuterMass_add_cutoff hinner hsplit
-    (Real.sin_pos_of_pos_of_lt_pi hη.1 (by linarith [hη.2, Real.pi_pos]))
+    (sin_cos_pos_of_mem_quarter hη).1
     fun t ht => abs_cos_ge_sin_of_outside_top_interval hη ht.1 ht.2).trans
       (add_le_add_right ((Finset.sum_congr ?_ fun _ _ => rfl).trans_le hK) _)
   -- the two filters agree: a source angle lies in `(0, π)`

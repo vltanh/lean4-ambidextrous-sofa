@@ -66,7 +66,7 @@ theorem volumeReal_symmetricTrim_eq_cap_area {K : Set Plane} (hne : K.Nonempty)
   have hP : horizontalProjection K =
       Icc (horizontalLeft (upperCap K)) (horizontalRight (upperCap K)) := by
     rw [← horizontalProjection_upperCap hK0,
-      horizontalProjection_eq_Icc hcap.nonempty hcap.isCompact hcap.convex]
+      hcap.horizontalProjection_eq_Icc]
   have hroofI : IntegrableOn (capRoof (upperCap K)) (horizontalProjection K) :=
     hP ▸ hcap.integrableOn_capRoof_Icc _ _
   have hdI : IntegrableOn (roofDeficit (upperCap K)) (horizontalProjection K) :=

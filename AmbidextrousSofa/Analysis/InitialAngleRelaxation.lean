@@ -147,7 +147,7 @@ theorem initialAngleRelaxation_complement_lt {C k d s u v b : ℝ}
     initialAngleRampLoss_eq_square (show C ≤ u by linarith) hu1,
     initialAngleRampLoss_eq_square (show C ≤ v by linarith) hv1,
     initialAngle_diagonal_integral_full (by linarith) hu.le hu1 hv.le hv1,
-    initialAngle_complement_bound (h := (u + v) / 2) (C := C) initialAngle_offset_sq
+    initialAngle_complement_bound (h := (u + v) / 2) (C := C) sqrt_two_sub_one_quadratic
       (by linarith)]
 
 /-- The scalar relaxation is bounded from the actual cap roof and partial

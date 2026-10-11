@@ -87,7 +87,7 @@ theorem outerSource_ae_eq_faceProjection [Fintype ι] [DecidableEq ι]
       (roofExpr (ι := ι)).sourceSet (wallSlope normal)
         (roofIntercept normal (fun i => support U (normal i))) (some j)) =ᵐ[volume]
       horizontalProjection (MovingSofaOptimality.edge U t) := by
-  have hproj := horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex
+  have hproj := hU.horizontalProjection_eq_Icc
   -- On the projection, the roof lies on the line of leaf `j` iff it lies on the face.
   have hline x (hx : x ∈ Icc (horizontalLeft U) (horizontalRight U)) :
       capRoof U x = -(normal j).1 / (normal j).2 * x + support U (normal j) / (normal j).2 ↔

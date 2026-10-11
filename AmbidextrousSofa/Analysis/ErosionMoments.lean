@@ -101,7 +101,7 @@ theorem displayedSpatialScore_le_actual [Fintype ι] {U : Set Plane}
         (fun i => wallSlope normal i * x + barrierIntercept normal height i)) l r ≤
       finiteSpatialScore U normal corners terminal := by
   have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
-  have hproj := horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex
+  have hproj := hU.horizontalProjection_eq_Icc
   rw [hleft, hright] at hlr hproj
   have hmem {p : Plane} (hp : p ∈ U) i : coordDot p (normal i) ≤ height i := by
     rw [hpoly] at hp; exact ((mem_upperPolygon_iff _ _ _ _ _).mp hp).2.2 i

@@ -34,7 +34,7 @@ theorem IsDownwardCap.diagonalRoofDeficit_ge_inner_cuts {U : Set Plane}
     (nearDiagonalRightDeficit U k u ^ 2 + nearDiagonalLeftDeficit U h k v ^ 2) / (2 * k) ≤
       diagonalRoofDeficit U a h u v := by
   have hx (x : ℝ) (h1 : -a ≤ x) (h2 : x ≤ a) : x ∈ horizontalProjection U :=
-    hU.horizontalProjection_eq_of hl hr ▸ ⟨h1, h2⟩
+    (hl ▸ hr ▸ hU.horizontalProjection_eq_Icc) ▸ ⟨h1, h2⟩
   have hfitL := (div_le_iff₀' hk).mpr hδL.2
   have hR := hU.right_roof_gap_ge_cut ha hk hl hr hu huv hδR
   have hL := integral_gap_ge_right_ramp
@@ -81,7 +81,7 @@ theorem IsDownwardCap.threeAngleScore_le_full_triangles {U : Set Plane} (hU : Is
   have huv : u ∈ Icc (a / 2) a ∧ v ∈ Icc (a / 2) a :=
     hU.tilted_diagonal_parameters_mem (by linarith only [ha]) hh0 (by linarith only [ha, hh1]) hl
       hr hleft hright
-  have hproj := (hU.horizontalProjection_eq_of hl hr).superset
+  have hproj := (hl ▸ hr ▸ hU.horizontalProjection_eq_Icc).superset
   have heR : capRoof U a ≤ 1 - (a - u) := by
     linarith only [hU.capRoof_le_diagonalRight (hproj ⟨by linarith only [ha], le_rfl⟩), hu]
   have heL : capRoof U (-a) ≤ 1 - (a - (v - h)) := by

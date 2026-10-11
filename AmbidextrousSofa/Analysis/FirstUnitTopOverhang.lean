@@ -105,7 +105,7 @@ theorem FirstUnitSetting.top_overhang {C h : ℝ} (P : FirstUnitSetting U m ρ C
           hT0))
     simp only [hVtop, hVh] at hkernel
     -- The companion wall is monotone in the abscissa, so its zero contact sits below `-C`.
-    obtain ⟨hs, hc⟩ := quarter_sin_cos_pos ht
+    obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
     have hwallle : secondWall (leftCompanionCap U (-C)) t z
         ≤ secondWall (leftCompanionCap U (-C)) t (-C) :=
       div_le_div_of_nonneg_right (by linarith only [mul_le_mul_of_nonneg_right hz hs.le]) hc.le

@@ -164,7 +164,7 @@ theorem fullTiltedSupportQuarterPair_reflected_second_at_activeEnd {C : ℝ}
   have hcoef := tilted_initial_coefficient_nonneg hδ0 (le_refl (Real.arctan m))
   have hsin : Real.sin (Real.arctan m) ≤ m := by
     nlinarith [mul_nonneg hm (sub_nonneg.2 (Real.cos_le_one (Real.arctan m)))]
-  have hleft : horizontalLeft U + capWidth U / 4 = -C := by unfold capWidth; rw [hl, hr]; ring
+  have hleft : horizontalLeft U + capWidth U / 4 = -C := (centered_quarter_points hl hr).1
   obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints (zero_lt_two.trans hU.two_lt_width)
   have hg : (F).g (Real.arctan m) = _ :=
     hU.isCap.companionSupport_leftCut_eq_low_of_affine ha hb hab haffine hc hcoef

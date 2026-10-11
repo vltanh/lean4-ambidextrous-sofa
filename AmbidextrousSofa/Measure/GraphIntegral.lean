@@ -63,7 +63,7 @@ theorem IsDownwardCap.eq_verticalIntervalRegion {U : Set Plane} (hU : IsDownward
       (fun _ => 0) (capRoof U) := by
   ext p
   rw [hU.mem_iff_projection_and_roof,
-    horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
+    hU.horizontalProjection_eq_Icc]
   rfl
 
 /-- Cavalieri for the area of an intrinsic downward cap. -/

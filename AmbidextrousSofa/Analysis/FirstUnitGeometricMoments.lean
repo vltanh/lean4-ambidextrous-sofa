@@ -91,7 +91,7 @@ theorem FirstUnitSetting.floor_abscissa_bounds {C h γ : ℝ} (P : FirstUnitSett
       C + (D γ).1 ≤ 1 ∧ (MovingSofaOptimality.vminus U (Real.pi / 2)).1 - C ≤ C := by
   have hwall : secondWall V γ (D γ).1 = (D γ).2 := by
     rw [fullTiltedSupportQuarterPair_cut_wall_eq_scalar hU hm haffine hρ hρ0 hρK heq,
-      div_eq_iff (quarter_sin_cos_pos hγ).2.ne', secondTangentPoint,
+      div_eq_iff (sin_cos_pos_of_mem_quarter hγ).2.ne', secondTangentPoint,
       companionSupportPoint_coordinates]
     dsimp only
     linear_combination (1 - (F).g γ) * Real.sin_sq_add_cos_sq γ

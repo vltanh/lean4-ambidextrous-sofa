@@ -62,7 +62,7 @@ theorem IsDownwardCap.sweptNiche_pos_on_open_middle_of_unit_endpoints
   have hmem {y : ℝ} (hy : capRoof U y = 1) (h1 : horizontalLeft U ≤ y)
       (h2 : y ≤ horizontalRight U) : (y, 1) ∈ U :=
     hy ▸ capRoof_mem hU.isCompact
-      (horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex ▸ ⟨h1, h2⟩)
+      (hU.horizontalProjection_eq_Icc ▸ ⟨h1, h2⟩)
   unfold capWidth at *
   intro x hx
   rcases lt_or_ge x (horizontalRight U - 1) with hxr | hxr

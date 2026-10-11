@@ -72,8 +72,7 @@ theorem IsJointCapMaximizer.horizontalProjection_middle_supportFace
       have := le_capRoof (x := p.1) (y := p.2) hU.isCap.isCompact hpU
       simp only [coordDot, hsupport] at hp
       exact le_antisymm (hceiling p.1 hpProj) (by linarith)
-    obtain ⟨hl, hr⟩ := horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact
-      hU.isCap.convex ▸ hpProj
+    obtain ⟨hl, hr⟩ := hU.isCap.horizontalProjection_eq_Icc ▸ hpProj
     by_contra hout
     rcases lt_or_ge p.1 (horizontalLeft U + capWidth U / 4) with hpa | hap
     · exact key hpProj ha hpa hpRoof hfa (.inl ⟨by linarith, by linarith⟩)

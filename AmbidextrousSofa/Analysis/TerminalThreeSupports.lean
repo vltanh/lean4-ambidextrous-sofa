@@ -33,18 +33,18 @@ def terminalInset (α : ℝ) : ℝ := (1 - Real.sin α) / Real.cos α
 
 theorem terminalSlope_pos {α : ℝ} (hα0 : 0 < α) (hαL : α < Real.pi / 2) :
     0 < terminalSlope α :=
-  div_pos (terminal_sin_cos_pos hα0 hαL).2 (terminal_sin_cos_pos hα0 hαL).1
+  div_pos (sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩).2 (sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩).1
 
 theorem terminalInset_pos {α : ℝ} (hα0 : 0 < α) (hαL : α < Real.pi / 2) :
     0 < terminalInset α := by
-  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩
   exact div_pos (sub_pos.2 (by nlinarith [Real.sin_sq_add_cos_sq α])) hc
 
 theorem terminalSlope_mul_inset {α : ℝ}
     (hα0 : 0 < α) (hαL : α < Real.pi / 2) :
     terminalSlope α * terminalInset α =
       Real.sqrt (1 + terminalSlope α ^ 2) - 1 := by
-  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩
   rw [show 1 + terminalSlope α ^ 2 = (1 / Real.sin α) ^ 2 by
       rw [terminalSlope]; field_simp; linear_combination Real.sin_sq_add_cos_sq α,
     Real.sqrt_sq (by positivity), terminalSlope, terminalInset]
@@ -55,7 +55,7 @@ theorem IsDownwardCap.capRoof_le_terminal_support {U : Set Plane}
     (hα0 : 0 < α) (hαL : α < Real.pi / 2)
     (hx : x ∈ horizontalProjection U) :
     capRoof U x ≤ 1 - terminalSlope α * (x - terminalSupportPosition U α) := by
-  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩
   convert hU.capRoof_le_first_support_line hs hx using 1
   rw [terminalSlope, terminalSupportPosition]
   field_simp
@@ -70,7 +70,7 @@ theorem IsDownwardCap.three_supports_le_partialBarrier {U : Set Plane}
       ((diagonalLeft U - 1) - (Real.sqrt 2 - 1) + x)))
       (terminalSlope α * (terminalSupportPosition U α - terminalInset α - x)) ≤
         partialBarrier U α x := by
-  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos (by linarith [Real.pi_pos]) hαL
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨by linarith [Real.pi_pos], hαL⟩
   refine max_le (max_le (partialBarrier_nonneg U α x) ?_)
     (le_trans (le_of_eq ?_) (le_max_right _ _))
   · simpa only [cornerWall, firstWall_pi_div_four_eq_diagonal hU,
@@ -90,7 +90,7 @@ theorem IsDownwardCap.three_support_compatibility_centered {U : Set Plane}
     diagonalRight U - 1 ≤ 2 * C ∧ diagonalLeft U - 1 ≤ 2 * C ∧
     terminalSupportPosition U α ≤ 2 * C := by
   have hα : 0 < α := by linarith [Real.pi_pos]
-  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα hαL
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hα, hαL⟩
   have hsc : Real.cos α ≤ Real.sin α := by
     rw [← Real.sin_pi_div_two_sub]
     exact Real.sin_le_sin_of_le_of_le_pi_div_two (by linarith) hαL.le (by linarith)
@@ -120,7 +120,7 @@ theorem IsDownwardCap.three_support_lower_of_top {U : Set Plane}
       t ≤ terminalSupportPosition U α := by
   refine ⟨by linarith [hU.diagonalLeft_ge ht], by linarith [hU.diagonalRight_ge ht], ?_⟩
   have := coordDot_le_support hU.isCompact ht (unitNormal α)
-  rw [terminalSupportPosition, le_div_iff₀ (terminal_sin_cos_pos hα0 hαL).2]
+  rw [terminalSupportPosition, le_div_iff₀ (sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩).2]
   simp only [coordDot, unitNormal] at this ⊢
   linarith
 
@@ -156,7 +156,7 @@ theorem IsDownwardCap.capScore_le_three_support_integrals_centered
           (terminalSlope α * (terminalSupportPosition U α - terminalInset α - x)) := by
   have hα : 0 < α := by linarith [Real.pi_pos]
   have hproj : horizontalProjection U = Icc (-2 * C) (2 * C) := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hleft, hright]
+    rw [hU.horizontalProjection_eq_Icc, hleft, hright]
   have hint {a b : ℝ} {g : ℝ → ℝ} (hg : Continuous g) (ha : -2 * C ≤ a) (hab : a ≤ b)
       (hb : b ≤ 2 * C) (h : ∀ x ∈ horizontalProjection U, g x ≤ 1 - capRoof U x) :
       ∫ x in a..b, capRoof U x ≤ (b - a) - ∫ x in a..b, g x := by

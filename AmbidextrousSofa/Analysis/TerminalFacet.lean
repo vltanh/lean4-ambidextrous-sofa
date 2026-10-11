@@ -42,7 +42,7 @@ def terminalTailZero (U : Set Plane) (α : ℝ) : ℝ :=
 theorem top_vminus_snd_eq_capHeight (U : Set Plane) :
     (MovingSofaOptimality.vminus U (Real.pi / 2)).2 = capHeight U := by
   rw [← MovingSofaOptimality.dot_uvec_pi_div_two, MovingSofaOptimality.dot_vminus_uvec,
-    supp_pi_div_two_eq_capHeight]
+    imported_supp_pi_div_two]
 
 theorem IsDownwardCap.terminalTailPoint_mem {U : Set Plane}
     (hU : IsDownwardCap U) (α : ℝ) : terminalTailPoint U α ∈ U :=
@@ -128,7 +128,7 @@ theorem IsDownwardCap.terminalTailInset_bounds {U : Set Plane} (hU : IsDownwardC
       0 < terminalTailReserve U α ∧
       terminalTailReserve U α ≤ Real.sin α * Real.cos α / (1 + Real.sin α) ∧
       terminalTailReserve U α < Real.cos α / 2 := by
-  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩
   have hs1 : Real.sin α < 1 := by nlinarith [Real.sin_sq_add_cos_sq α]
   have hH1 := (hU.inStrip (hU.terminalTailPoint_mem α)).2
   have hdc : terminalTailInset U α < Real.cos α :=
@@ -156,7 +156,7 @@ theorem firstWall_eq_terminalTail (U : Set Plane) {α : ℝ}
 theorem partialBarrier_pos_of_lt_terminalTailZero (U : Set Plane) {α x : ℝ}
     (hα0 : 0 < α) (hαL : α < Real.pi / 2) (hx : x < terminalTailZero U α) :
     0 < partialBarrier U α x := by
-  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩
   refine lt_max_of_lt_right ?_
   rw [firstWall_eq_terminalTail U hs.ne' hc.ne']
   exact mul_pos (div_pos hc hs) (sub_pos.mpr hx)

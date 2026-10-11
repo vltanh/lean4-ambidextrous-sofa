@@ -22,19 +22,6 @@ open Set MeasureTheory
 
 namespace AmbidextrousSofa
 
-theorem sin_pos_cos_pos_of_mem_quarter {t : ℝ} (ht : t ∈ Ioo 0 (Real.pi / 2)) :
-    0 < Real.sin t ∧ 0 < Real.cos t :=
-  ⟨Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos]),
-    Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩⟩
-
-/-- The middle points and the middle half of a cap whose projection is `[-2C, 2C]`. -/
-theorem IsDownwardCap.tilted_centered_middle {U : Set Plane} (hU : IsDownwardCap U) {C : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C) (hC : 0 < C) :
-    -C ∈ horizontalProjection U ∧ C ∈ horizontalProjection U ∧
-      middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
-  rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, middleHalfInterval, hl, hr]
-  exact ⟨⟨by linarith, by linarith⟩, ⟨by linarith, by linarith⟩, by congr 1 <;> ring⟩
-
 theorem tilted_initial_coefficient_nonneg {m t : ℝ}
     (ht0 : 0 ≤ t) (htm : t ≤ Real.arctan m) :
     0 ≤ m * Real.cos t - Real.sin t := by
@@ -121,8 +108,11 @@ theorem IsDownwardCap.attachedCorner_neg_before_positive_affine
     (haffine : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c)
     (hhigh : capRoof U C = 1) (ht : t ∈ Ioo (0 : ℝ) (Real.arctan m)) :
     (attachedCorner U t).2 < 0 := by
-  obtain ⟨hs, hc⟩ := sin_pos_cos_pos_of_mem_quarter ⟨ht.1, ht.2.trans (Real.arctan_lt_pi_div_two m)⟩
-  obtain ⟨ha, hb, -⟩ := hU.tilted_centered_middle hl hr hC
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨ht.1, ht.2.trans (Real.arctan_lt_pi_div_two m)⟩
+  have ha : -C ∈ horizontalProjection U :=
+    hU.horizontalProjection_eq_Icc ▸ ⟨by linarith, by linarith⟩
+  have hb : C ∈ horizontalProjection U :=
+    hU.horizontalProjection_eq_Icc ▸ ⟨by linarith, by linarith⟩
   have hcoef := tilted_initial_coefficient_nonneg ht.1.le ht.2.le
   have hcos : 1 - Real.cos t ≤ m * Real.sin t := by
     nlinarith only [mul_nonneg hcoef hs.le, Real.sin_sq_add_cos_sq t, Real.cos_le_one t, hc]

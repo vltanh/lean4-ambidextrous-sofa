@@ -67,15 +67,15 @@ theorem middle_eq : Ioo (horizontalLeft target + capWidth target / 4)
   unfold capWidth; rw [H.hl, H.hr]; congr 1 <;> ring
 
 theorem middleHalfInterval_eq :
-    middleHalfInterval (horizontalLeft target) (horizontalRight target) = Icc (-C) C := by
-  rw [middleHalfInterval, H.hl, H.hr]; congr 1 <;> ring
+    middleHalfInterval (horizontalLeft target) (horizontalRight target) = Icc (-C) C :=
+  (centered_quarter_points H.hl H.hr).2.2
 
 theorem Ioo_subset_box : Ioo (-C) C ⊆ Icc a b := fun x hx =>
   ⟨by linarith only [H.hleft, H.hl, hx.1, H.hC], by linarith only [H.hright, H.hr, hx.2, H.hC]⟩
 
 theorem mem_horizontalProjection :
     -C ∈ horizontalProjection target ∧ C ∈ horizontalProjection target := by
-  rw [horizontalProjection_eq_Icc H.hU.isCap.nonempty H.hU.isCap.isCompact H.hU.isCap.convex,
+  rw [H.hU.isCap.horizontalProjection_eq_Icc,
     H.hl, H.hr]
   exact ⟨⟨by linarith [H.hC], by linarith [H.hC]⟩, by linarith [H.hC], by linarith [H.hC]⟩
 

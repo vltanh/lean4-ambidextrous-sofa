@@ -26,13 +26,6 @@ theorem middleHalfInterval_centered (a : ℝ) :
   unfold middleHalfInterval
   congr 1 <;> ring
 
-/-- `41/50 < M/2`, the reference comparison level used by the width exclusions. -/
-theorem forty_one_fiftieths_lt_M_div_two : (41 / 50 : ℝ) < M / 2 := by
-  have hY : (19 / 64 : ℝ) < Y := cubic_strictMono.lt_iff_lt.mp (by rw [Y_cubic]; norm_num [cubic])
-  unfold M beta
-  linarith [Y_equation, self_sub_cube_div_three_le_arctan Y_pos.le,
-    mul_pos (sub_pos.mpr hY) (show 0 < Y + 19 / 64 by linarith [Y_pos])]
-
 /-- At a centered maximizer of height one whose affine middle roof rises, the right middle
 endpoint has height one, and the middle roof is affine on `[-a/2, a/2]`. -/
 theorem IsFullCapMaximizer.centered_middle {U : Set Plane} (hU : IsFullCapMaximizer U)
@@ -86,7 +79,7 @@ theorem IsFullCapMaximizer.centered_half_projection_width_gt_of_affine_nonneg
     (sub_nonneg.mpr (capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _)) hl hr
     (sub_sub_cancel 1 _).symm hright hAff
     (sub_le_self _ (Real.arctan_pos.mpr (by linarith [sqrt_two_sub_one_strict_bounds.1])).le)
-    le_rfl).trans forty_one_fiftieths_lt_M_div_two)
+    le_rfl).trans forty_one_fiftieths_lt_half_M)
 
 theorem IsFullCapMaximizer.two_lt_width {U : Set Plane} (hU : IsFullCapMaximizer U) :
     (2 : ℝ) < capWidth U := by

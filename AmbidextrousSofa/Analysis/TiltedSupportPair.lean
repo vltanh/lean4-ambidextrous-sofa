@@ -119,7 +119,7 @@ theorem fullTiltedSupportQuarterPair_traces (hmpos : 0 < m) :
   have hW := zero_lt_two.trans hU.two_lt_width
   obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints hW
   have htop := hU.isCap.top_leftCompanionCap_of_positive_affine ha hb hab hmpos haffine
-  have hP := horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact hU.isCap.convex
+  have hP := hU.isCap.horizontalProjection_eq_Icc
   have hroof : capRoof (leftCompanionCap U (horizontalLeft U + capWidth U / 4))
       (horizontalLeft U) = capRoof U (horizontalLeft U) :=
     capRoof_horizontalCut hU.isCap (by linarith) (hP ▸ Icc_subset_Icc le_rfl (hP ▸ ha).2)

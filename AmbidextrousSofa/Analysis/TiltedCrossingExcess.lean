@@ -59,7 +59,7 @@ theorem fullTiltedSupportQuarterPair_first_zero_excess_stops_early {C h A : ℝ}
       A + Analysis.quadraticExcessLength (q A - 1) < 11 / 15 := by
   obtain ⟨hBlo, hBhi, hBupper, hBlower⟩ := hU.tilted_endpoint_momentum_bounds hl hr
     (by linarith only [hC0]) hC1.le hh0.le hh1 hm hheight
-    ((hU.isCap.tilted_centered_middle hl hr (by linarith only [hC0])).2.2 ▸ haffine) hlow hhigh
+    ((centered_quarter_points hl hr).2.2 ▸ haffine) hlow hhigh
   obtain ⟨τ, hτ, hphase, -, hpc, hqc, hstop⟩ :=
     fullTiltedSupportQuarterPair_exists_initial_stopping_circle
       hU hm haffine hρ hρ0 hρK heq hl hr (by linarith only [hC0]) hmpos hsmall hh0 hheight hhigh

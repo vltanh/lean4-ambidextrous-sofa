@@ -83,8 +83,8 @@ theorem normal_snd_pos (grid : Finset QuarterAngle) (i : SourceIndex grid) :
 theorem normal_fst_ne_zero (grid : Finset QuarterAngle) (i : SourceIndex grid) :
     (normal grid i).1 ≠ 0 := by
   rcases i with t | t <;> obtain ⟨h0, h1⟩ := interiorPoint_mem grid t
-  · exact (Real.cos_pos_of_mem_Ioo ⟨by linarith, h1⟩).ne'
-  · exact neg_ne_zero.mpr (Real.sin_pos_of_pos_of_lt_pi h0 (by linarith)).ne'
+  · exact (sin_cos_pos_of_mem_quarter ⟨h0, h1⟩).2.ne'
+  · exact neg_ne_zero.mpr (sin_cos_pos_of_mem_quarter ⟨h0, h1⟩).1.ne'
 
 theorem normal_unit (grid : Finset QuarterAngle) (i : SourceIndex grid) :
     coordDot (normal grid i) (normal grid i) = 1 := by

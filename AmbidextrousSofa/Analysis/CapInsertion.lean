@@ -89,8 +89,8 @@ theorem IsDownwardCap.horizontalProjection_insertedCap {U : Set Plane}
     (hpx : p.1 ∈ horizontalProjection U) :
     horizontalProjection (insertedCap U p) = horizontalProjection U := by
   have hV := hU.isDownwardCap_insertedCap hp
-  rw [horizontalProjection_eq_Icc hV.nonempty hV.isCompact hV.convex,
-    horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex,
+  rw [hV.horizontalProjection_eq_Icc,
+    hU.horizontalProjection_eq_Icc,
     hU.horizontalLeft_insertedCap hp hpx, hU.horizontalRight_insertedCap hp hpx]
 
 theorem IsDownwardCap.capRoof_inserted_one {U : Set Plane}

@@ -156,8 +156,7 @@ theorem IsFullCapMaximizer.horizontalProjection_middle_supportFace
     simp only [mem_ofPred_eq, coordDot, hsupport] at hpface
     have hpRoof : capRoof U p.1 = m * p.1 + c :=
       le_antisymm (hceiling p.1 hpProj) (by linarith)
-    have hpl := horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact
-      hU.isCap.convex ▸ hpProj
+    have hpl := hU.isCap.horizontalProjection_eq_Icc ▸ hpProj
     by_contra hout
     rcases lt_or_ge p.1 a with hpa | hap
     · exact hwing _ _ hpProj ha hpa hpRoof hfa (.inl ⟨by linarith [hpl.1], by linarith⟩)

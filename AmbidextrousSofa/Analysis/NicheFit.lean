@@ -40,7 +40,7 @@ theorem IsFullCapMaximizer.sweptNiche_le_roof_of_middle_height_bound
   have hends := hU.isCap.middle_niche_le_two_fifths_of_endpoints hl hr (by linarith)
   have hconv := hU.isCap.convexOn_sweptNiche_wings_of_roof_endpoints hl hr hleft hright hC0 hC1 hh1
   have hconc := hU.isCap.concaveOn_capRoof
-  rw [horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact hU.isCap.convex, hl,
+  rw [hU.isCap.horizontalProjection_eq_Icc, hl,
     hr] at hconc ⊢
   rw [hl, hr, show -2 * C + (2 * C - -2 * C) / 4 = -C by ring,
     show 2 * C - (2 * C - -2 * C) / 4 = C by ring, hleft, hright] at hsum

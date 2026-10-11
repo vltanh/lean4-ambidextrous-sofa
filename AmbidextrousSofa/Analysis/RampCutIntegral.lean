@@ -18,15 +18,6 @@ open Set Filter MeasureTheory
 
 namespace AmbidextrousSofa
 
-theorem integral_affine_scalar (s t p k δ : ℝ) :
-    (∫ x in s..t, δ + k * (x - p)) =
-      δ * (t - s) + k * ((t ^ 2 - s ^ 2) / 2 - p * (t - s)) := by
-  simp_rw [show ∀ x, δ + k * (x - p) = k * x + (δ - k * p) from fun x => by ring]
-  rw [intervalIntegral.integral_add ((continuous_const_mul k).intervalIntegrable _ _)
-    intervalIntegrable_const, intervalIntegral.integral_const_mul, integral_id,
-    intervalIntegral.integral_const, smul_eq_mul]
-  ring
-
 theorem integral_gap_ge_left_ramp {f : ℝ → ℝ} {A B p k δ : ℝ}
     (hf : ∀ l r, IntervalIntegrable f volume l r)
     (hk : 0 < k) (hδ : 0 ≤ δ) (hp : p ∈ Icc A B)
@@ -36,7 +27,8 @@ theorem integral_gap_ge_left_ramp {f : ℝ → ℝ} {A B p k δ : ℝ}
     δ ^ 2 / (2 * k) ≤ ∫ x in A..B, f x := by
   have hδk : 0 ≤ δ / k := div_nonneg hδ hk.le
   calc δ ^ 2 / (2 * k) = ∫ x in (p - δ / k)..p, δ + k * (x - p) := by
-        rw [integral_affine_scalar]; field_simp; ring
+        simp_rw [show ∀ x, δ + k * (x - p) = k * x + (δ - k * p) from fun x => by ring]
+        rw [integral_affine]; field_simp; ring
     _ ≤ ∫ x in (p - δ / k)..p, f x := intervalIntegral.integral_mono_on (by linarith)
         (Continuous.intervalIntegrable (by fun_prop) _ _) (hf _ _) hcut
     _ ≤ ∫ x in A..B, f x := intervalIntegral.integral_mono_interval

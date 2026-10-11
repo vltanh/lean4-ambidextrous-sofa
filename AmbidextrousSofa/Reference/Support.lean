@@ -13,12 +13,59 @@ derivative by the cubic-derived identities in `Parameters`, so both coordinates 
 continuously differentiable. Complementary angles exchange the two coordinates up to the
 translation `2k`. The file does not assert that the periodic extension is the support of a
 convex body or that its swept-corridor envelope is feasible.
+
+The gluing lemmas come first, for a join `joinThree` of three functions at two arbitrary
+switches; the adaptive comparison family reuses them.
 -/
 
 noncomputable section
 
 open Set
 open scoped Topology
+
+namespace AmbidextrousSofa
+
+/-- A binary gluing theorem proved from the two one-sided derivative statements. -/
+theorem hasDerivAt_if_le (c : ℝ) {f g fD gD : ℝ → ℝ}
+    (hf : ∀ x, HasDerivAt f (fD x) x) (hg : ∀ x, HasDerivAt g (gD x) x)
+    (hvalue : f c = g c) (hderiv : fD c = gD c) (x : ℝ) :
+    HasDerivAt (fun y => if y ≤ c then f y else g y)
+      (if x ≤ c then fD x else gD x) x := by
+  rcases lt_trichotomy x c with hlt | rfl | hgt
+  · rw [ite_eq_left hlt.le]
+    exact (hf x).congr_of_eventuallyEq ((eventually_lt_nhds hlt).mono fun y hy => ite_eq_left hy.le)
+  · have hright : ∀ y ∈ Ici x, (if y ≤ x then f y else g y) = g y := fun y hy => by
+      split_ifs with h <;> [rw [le_antisymm h hy, hvalue]; rfl]
+    rw [ite_eq_left le_rfl, ← hasDerivWithinAt_univ, ← Iic_union_Ici]
+    exact ((hf x).hasDerivWithinAt.congr (fun y (hy : y ≤ x) => ite_eq_left hy)
+      (ite_eq_left le_rfl)).union
+      (((hg x).congr_deriv hderiv.symm).hasDerivWithinAt.congr hright (hright x le_rfl))
+  · rw [ite_eq_right (not_le.mpr hgt)]
+    exact (hg x).congr_of_eventuallyEq
+      ((eventually_gt_nhds hgt).mono fun y hy => ite_eq_right (not_le.mpr hy))
+
+/-- The join of `E`, `N` and `W` at the switches `c` and `d`. -/
+def joinThree (c d : ℝ) (E N W : ℝ → ℝ) (t : ℝ) : ℝ :=
+  if t ≤ c then E t else if t ≤ d then N t else W t
+
+/-- A join of continuous functions that agree at both switches is continuous. -/
+theorem continuous_joinThree {c d : ℝ} {E N W : ℝ → ℝ}
+    (hcd : c ≤ d) (hE : Continuous E) (hN : Continuous N) (hW : Continuous W)
+    (hfirst : E c = N c) (hlast : N d = W d) :
+    Continuous (joinThree c d E N W) :=
+  hE.if_le (hN.if_le hW continuous_id continuous_const fun _ (h : _ = _) => h ▸ hlast)
+    continuous_id continuous_const fun _ (h : _ = _) => by rw [h, ite_eq_left hcd, hfirst]
+
+/-- A join of functions that match in value and derivative at both switches is differentiable. -/
+theorem hasDerivAt_joinThree {c d : ℝ} {E N W ED ND WD : ℝ → ℝ} (hcd : c ≤ d)
+    (hE : ∀ t, HasDerivAt E (ED t) t) (hN : ∀ t, HasDerivAt N (ND t) t)
+    (hW : ∀ t, HasDerivAt W (WD t) t) (hfirst : E c = N c) (hlast : N d = W d)
+    (hfirstD : ED c = ND c) (hlastD : ND d = WD d) (t : ℝ) :
+    HasDerivAt (joinThree c d E N W) (joinThree c d ED ND WD t) t :=
+  hasDerivAt_if_le c hE (hasDerivAt_if_le d hN hW hlast hlastD)
+    (by rw [ite_eq_left hcd, hfirst]) (by rw [ite_eq_left hcd, hfirstD]) t
+
+end AmbidextrousSofa
 
 namespace AmbidextrousSofa.Reference
 
@@ -67,42 +114,6 @@ def referenceFD (t : ℝ) : ℝ :=
 def referenceGD (t : ℝ) : ℝ :=
   if t ≤ beta then gEarlyD t else if t ≤ lateSwitch then gMiddleD t else gLateD t
 
-/-- A binary gluing theorem proved from the two one-sided derivative statements. -/
-theorem hasDerivAt_if_le (c : ℝ) {f g fD gD : ℝ → ℝ}
-    (hf : ∀ x, HasDerivAt f (fD x) x) (hg : ∀ x, HasDerivAt g (gD x) x)
-    (hvalue : f c = g c) (hderiv : fD c = gD c) (x : ℝ) :
-    HasDerivAt (fun y => if y ≤ c then f y else g y)
-      (if x ≤ c then fD x else gD x) x := by
-  rcases lt_trichotomy x c with hlt | rfl | hgt
-  · rw [ite_eq_left hlt.le]
-    exact (hf x).congr_of_eventuallyEq ((eventually_lt_nhds hlt).mono fun y hy => ite_eq_left hy.le)
-  · have hright : ∀ y ∈ Ici x, (if y ≤ x then f y else g y) = g y := fun y hy => by
-      split_ifs with h <;> [rw [le_antisymm h hy, hvalue]; rfl]
-    rw [ite_eq_left le_rfl, ← hasDerivWithinAt_univ, ← Iic_union_Ici]
-    exact ((hf x).hasDerivWithinAt.congr (fun y (hy : y ≤ x) => ite_eq_left hy)
-      (ite_eq_left le_rfl)).union
-      (((hg x).congr_deriv hderiv.symm).hasDerivWithinAt.congr hright (hright x le_rfl))
-  · rw [ite_eq_right (not_le.mpr hgt)]
-    exact (hg x).congr_of_eventuallyEq
-      ((eventually_gt_nhds hgt).mono fun y hy => ite_eq_right (not_le.mpr hy))
-
-/-- The three-phase join at the two switches, for phases matching in value and derivative. -/
-theorem hasDerivAt_phases {p q r pD qD rD : ℝ → ℝ} (hp : ∀ x, HasDerivAt p (pD x) x)
-    (hq : ∀ x, HasDerivAt q (qD x) x) (hr : ∀ x, HasDerivAt r (rD x) x)
-    (h₁ : p beta = q beta) (h₁' : pD beta = qD beta) (h₂ : q lateSwitch = r lateSwitch)
-    (h₂' : qD lateSwitch = rD lateSwitch) (t : ℝ) :
-    HasDerivAt (fun t => if t ≤ beta then p t else if t ≤ lateSwitch then q t else r t)
-      (if t ≤ beta then pD t else if t ≤ lateSwitch then qD t else rD t) t :=
-  hasDerivAt_if_le beta hp (hasDerivAt_if_le lateSwitch hq hr h₂ h₂')
-    (by rwa [ite_eq_left beta_lt_lateSwitch.le]) (by rwa [ite_eq_left beta_lt_lateSwitch.le]) t
-
-/-- A three-phase join of continuous phases that agree at both switches is continuous. -/
-theorem continuous_phases {p q r : ℝ → ℝ} (hp : Continuous p) (hq : Continuous q)
-    (hr : Continuous r) (h₁ : p beta = q beta) (h₂ : q lateSwitch = r lateSwitch) :
-    Continuous fun t => if t ≤ beta then p t else if t ≤ lateSwitch then q t else r t :=
-  hp.if_le (hq.if_le hr continuous_id continuous_const fun _ (h : _ = _) => h ▸ h₂)
-    continuous_id continuous_const fun _ (h : _ = _) => by
-      rw [h, ite_eq_left beta_lt_lateSwitch.le, h₁]
 
 /-- When the phases agree at both switches, the right-hand phase may own each switch. -/
 theorem phases_eq_right {p q r : ℝ → ℝ} (h₁ : p beta = q beta)
@@ -146,7 +157,7 @@ theorem gD_matching_last : gMiddleD lateSwitch = gLateD lateSwitch := by
 
 /-- The first piecewise support coordinate is differentiable at every switch as well. -/
 theorem hasDerivAt_referenceF (t : ℝ) : HasDerivAt referenceF (referenceFD t) t :=
-  hasDerivAt_phases
+  hasDerivAt_joinThree beta_lt_lateSwitch.le
     (fun x => (Real.hasDerivAt_cos x).add ((Real.hasDerivAt_sin x).const_mul (1 / 2)))
     (fun x => ((((hasDerivAt_middlePhaseAngle x).cos.const_mul R).add
       ((Real.hasDerivAt_cos x).const_mul k)).add
@@ -154,11 +165,12 @@ theorem hasDerivAt_referenceF (t : ℝ) : HasDerivAt referenceF (referenceFD t) 
     (fun x => ((((Real.hasDerivAt_cos x).const_mul (1 - 2 / 3 * A)).add
       ((Real.hasDerivAt_sin x).const_mul (1 / 2))).add_const (1 / 2)).congr_deriv
       (by unfold fLateD; ring))
-    f_matching_first fD_matching_first f_matching_last fD_matching_last t
+    f_matching_first f_matching_last fD_matching_first fD_matching_last t
 
 /-- The companion coordinate has the stated derivative at both joins. -/
 theorem hasDerivAt_referenceG (t : ℝ) : HasDerivAt referenceG (referenceGD t) t :=
-  hasDerivAt_phases (fun x => ((((Real.hasDerivAt_sin x).const_mul (2 * A - 1)).add
+  hasDerivAt_joinThree beta_lt_lateSwitch.le
+    (fun x => ((((Real.hasDerivAt_sin x).const_mul (2 * A - 1)).add
       ((Real.hasDerivAt_cos x).const_mul (1 / 2))).add_const (1 / 2)).congr_deriv
       (by unfold gEarlyD; ring))
     (fun x => ((((hasDerivAt_middlePhaseAngle x).sin.const_mul R).sub
@@ -166,7 +178,7 @@ theorem hasDerivAt_referenceG (t : ℝ) : HasDerivAt referenceG (referenceGD t) 
       ((Real.hasDerivAt_cos x).const_mul (1 / 2))).congr_deriv (by unfold gMiddleD; ring))
     (fun x => (((Real.hasDerivAt_sin x).const_mul (8 / 3 * A - 1)).add
       ((Real.hasDerivAt_cos x).const_mul (1 / 2))).congr_deriv (by unfold gLateD; ring))
-    g_matching_first gD_matching_first g_matching_last gD_matching_last t
+    g_matching_first g_matching_last gD_matching_first gD_matching_last t
 
 /-- The actual piecewise coordinate is continuous, including both joins. -/
 theorem continuous_referenceF : Continuous referenceF :=
@@ -177,12 +189,14 @@ theorem continuous_referenceG : Continuous referenceG :=
   continuous_iff_continuousAt.2 fun t => (hasDerivAt_referenceG t).continuousAt
 
 theorem continuous_referenceFD : Continuous referenceFD :=
-  continuous_phases (by unfold fEarlyD; fun_prop) (by unfold fMiddleD; fun_prop)
-    (by unfold fLateD; fun_prop) fD_matching_first fD_matching_last
+  continuous_joinThree beta_lt_lateSwitch.le (by unfold fEarlyD; fun_prop)
+    (by unfold fMiddleD; fun_prop) (by unfold fLateD; fun_prop) fD_matching_first
+    fD_matching_last
 
 theorem continuous_referenceGD : Continuous referenceGD :=
-  continuous_phases (by unfold gEarlyD; fun_prop) (by unfold gMiddleD; fun_prop)
-    (by unfold gLateD; fun_prop) gD_matching_first gD_matching_last
+  continuous_joinThree beta_lt_lateSwitch.le (by unfold gEarlyD; fun_prop)
+    (by unfold gMiddleD; fun_prop) (by unfold gLateD; fun_prop) gD_matching_first
+    gD_matching_last
 
 theorem referenceF_eq_right_phases (t : ℝ) :
     referenceF t = if t < beta then fEarly t else if t < lateSwitch then fMiddle t else fLate t :=

@@ -21,6 +21,10 @@ theorem imported_supp_zero (U : Set Plane) : supp U 0 = horizontalRight U := by
   change support U (unitNormal 0) = _
   simpa only [unitNormal, Real.cos_zero, Real.sin_zero] using support_horizontal_right U
 
+theorem imported_supp_pi_div_two (U : Set Plane) : supp U (Real.pi / 2) = capHeight U := by
+  change support U (unitNormal (Real.pi / 2)) = support U (0, 1)
+  simp only [unitNormal, Real.cos_pi_div_two, Real.sin_pi_div_two]
+
 theorem IsDownwardCap.imported_supp_pi {U : Set Plane} (hU : IsDownwardCap U) :
     supp U Real.pi = -horizontalLeft U := by
   change support U (unitNormal Real.pi) = _

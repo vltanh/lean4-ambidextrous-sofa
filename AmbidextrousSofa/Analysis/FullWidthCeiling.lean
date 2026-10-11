@@ -37,7 +37,7 @@ theorem IsFullCapMaximizer.centered_half_projection_width_lt_of_affine_nonneg
   exact (not_lt_of_ge hU.reference_le) ((hU.isCap.capScore_lt_of_wide_width_and_endpoint_laws ha0
     (by linarith [hU.width_bounds.2])
     (sub_nonneg.mpr (capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _)) (by linarith)
-    hl hr hleft hright hAff hEP.1 hEP.2).trans forty_one_fiftieths_lt_M_div_two)
+    hl hr hleft hright hAff hEP.1 hEP.2).trans forty_one_fiftieths_lt_half_M)
 
 /-- The coupled intermediate width and tilt estimate now has all its
 width premises supplied by the actual full maximizer. -/
@@ -59,6 +59,6 @@ theorem IsFullCapMaximizer.centered_intermediate_width_tilt
     (sub_nonneg.mpr (capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _))
     (by linarith) hl hr (sub_sub_cancel 1 _).symm hright hAff
     (by linarith [Real.pi_pos]) le_rfl
-    (forty_one_fiftieths_lt_M_div_two.le.trans hU.reference_le)
+    (forty_one_fiftieths_lt_half_M.le.trans hU.reference_le)
 
 end AmbidextrousSofa

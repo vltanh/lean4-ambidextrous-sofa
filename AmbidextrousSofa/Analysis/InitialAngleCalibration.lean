@@ -45,7 +45,7 @@ theorem initialAngleRampLoss_tangent {C q : ℝ} (hCq : C ≤ q) (hq2 : q ≤ 2 
     ((2 * C) ^ 2 - q ^ 2) / 2 - z * (2 * C - q) ≤ initialAngleRampLoss C z := by
   have hramp : Continuous (fun x : ℝ => max (x - z) 0) := by fun_prop
   calc
-    _ = ∫ x in q..(2 * C), 1 * x + -z := by rw [initialAngle_integral_affine]; ring
+    _ = ∫ x in q..(2 * C), 1 * x + -z := by rw [integral_affine]; ring
     _ ≤ ∫ x in q..(2 * C), max (x - z) 0 :=
       intervalIntegral.integral_mono hq2 (Continuous.intervalIntegrable (by fun_prop) _ _)
         (hramp.intervalIntegrable _ _) fun x => by linarith [le_max_left (x - z) 0]
@@ -84,7 +84,7 @@ theorem initialAngle_V_integral_affine_lower {K C : ℝ}
       ∫ x in (K / 2 - C)..C, max (c + x) (k * (e - x)) :=
     intervalIntegral.integral_mono (by linarith) (Continuous.intervalIntegrable (by fun_prop) _ _)
       (hV.intervalIntegrable _ _) fun x => by linarith [le_max_left (c + x) (k * (e - x))]
-  rw [initialAngle_integral_affine] at hleft hright
+  rw [integral_affine] at hleft hright
   rw [← intervalIntegral.integral_add_adjacent_intervals (hV.intervalIntegrable _ (K / 2 - C))
     (hV.intervalIntegrable _ _)]
   linarith
@@ -197,7 +197,7 @@ theorem initialAngle_V_integral_quadratic {C k c e : ℝ}
       ring
   rw [hfun, intervalIntegral.integral_add (Continuous.intervalIntegrable (by fun_prop) _ _)
       (Continuous.intervalIntegrable (by fun_prop) _ _), intervalIntegral.integral_const_mul,
-    initialAngle_integral_affine, integral_positive_ramp_sub,
+    integral_affine, integral_positive_ramp_sub,
     max_eq_left (show 0 ≤ l - -C by linarith), max_eq_right (sub_nonpos.mpr hl1),
     show (1 + k) * C - c + k * e = (1 + k) * (C + l) by linear_combination -hsplit]
   field_simp

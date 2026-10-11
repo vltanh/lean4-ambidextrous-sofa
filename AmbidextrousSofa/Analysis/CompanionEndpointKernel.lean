@@ -57,7 +57,7 @@ theorem IsDownwardCap.secondWall_le_height_sub_one_of_unit_prefix
       support U (companionNormal t) := by
     rw [companionNormal_eq_unitNormal]
     exact MovingSofaOptimality.dot_vplus_uvec U (t + Real.pi / 2)
-  rw [secondWall, div_le_iff₀ (Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩)]
+  rw [secondWall, div_le_iff₀ (sin_cos_pos_of_mem_quarter ht).2]
   simp only [coordDot, companionNormal] at hsupp ⊢
   linear_combination hnonneg - hsupp + hkernel + Real.sin_sq_add_cos_sq t
 

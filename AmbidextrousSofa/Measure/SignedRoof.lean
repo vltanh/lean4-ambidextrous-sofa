@@ -81,8 +81,7 @@ theorem sweptNiche_eq_of_global_contact {U : Set Plane} (hU : IsCompact U) {f g 
     (h2 : coordDot p (companionNormal s) ≤ g s - 1) :
     sweptNiche U (Real.pi / 2) p.1 = p.2 := by
   have hsc : ∀ t ∈ Ioo 0 (Real.pi / 2), 0 < Real.sin t ∧ 0 < Real.cos t := fun t ht =>
-    ⟨Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos]),
-      Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩⟩
+    sin_cos_pos_of_mem_quarter ht
   refine le_antisymm (sweptNiche_le_of_forall (by positivity) hp fun t ht => ?_)
     (le_trans ?_ (cornerWall_le_sweptNiche (sweptWallValues_bddAbove hU le_rfl p.1) hs))
   · rw [cornerWall_le_iff (hsc t ht).1 (hsc t ht).2, hF t (Ioo_subset_Icc_self ht),
@@ -149,7 +148,7 @@ theorem sweptNiche_innerCorner {U : Set Plane} (hU : IsCompact U)
   · have := hB _ ⟨by positivity, le_rfl⟩
     simp [hFtop, coordDot, unitNormal] at this
     rw [innerCorner_snd_eq_firstTangent f g fD]
-    nlinarith [Real.cos_pos_of_mem_Ioo ⟨by linarith [hs.1, Real.pi_pos], hs.2⟩]
+    nlinarith [(sin_cos_pos_of_mem_quarter hs).2]
   · rcases le_total s t with hst | hts
     · refine .inl ?_
       rw [innerCorner_dot_eq_firstTangent f g fD]

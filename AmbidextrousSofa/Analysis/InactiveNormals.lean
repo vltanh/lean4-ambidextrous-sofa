@@ -57,8 +57,7 @@ theorem clippedCorner_eq_of_support_eq_or_inactive {U V : Set Plane}
     (hsecond : support V (companionNormal θ) = support U (companionNormal θ) ∨
       support V (companionNormal θ) - 1 ≤ coordDot (x, 0) (companionNormal θ)) :
     max (cornerWall V θ x) 0 = max (cornerWall U θ x) 0 := by
-  have hs : 0 < Real.sin θ := Real.sin_pos_of_pos_of_lt_pi hθ.1 (by linarith [hθ.1, hθ.2])
-  have hc : 0 < Real.cos θ := Real.cos_pos_of_mem_Ioo ⟨by linarith [hθ.1, hθ.2], hθ.2⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter hθ
   have hzero (h : cornerWall V θ x ≤ 0) :
       max (cornerWall V θ x) 0 = max (cornerWall U θ x) 0 := by
     rw [max_eq_right h, max_eq_right (show cornerWall U θ x ≤ 0 from (min_le_min
@@ -145,7 +144,7 @@ theorem IsDownwardCap.exists_noninactive_normal_on_wing {U : Set Plane} (hU : Is
         (horizontalRight U - capWidth U / 4) θ := by
   by_contra! h
   have hxU : x₀ ∈ horizontalProjection U := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
+    rw [hU.horizontalProjection_eq_Icc]
     unfold capWidth at hwidth hx₀
     rcases hx₀ with hx₀ | hx₀ <;> constructor <;> linarith [hx₀.1, hx₀.2]
   have hp := capRoof_mem hU.isCompact hxU

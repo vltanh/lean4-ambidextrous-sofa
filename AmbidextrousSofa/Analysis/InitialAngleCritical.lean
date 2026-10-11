@@ -35,15 +35,8 @@ theorem initialAngle_inset_bounds {k d s : ℝ} (hk0 : 0 < k) (hk1 : k < 1) (hs0
   have hparam : k * (1 - d ^ 2) = 2 * d :=
     mul_left_cancel₀ hk0.ne' (by linear_combination -hs2 - (k * d + 1 + s) * hkd)
   have hK0 := initialAngle_offset_bounds.1
-  have hK := initialAngle_offset_sq
+  have hK := sqrt_two_sub_one_quadratic
   have hden : 0 < 1 - d ^ 2 := by nlinarith
   exact ⟨hd, by nlinarith [mul_pos (sub_pos.2 hk1) hden]⟩
-
-theorem initialAngle_integral_affine (m c a b : ℝ) :
-    (∫ x in a..b, m * x + c) = m * (b ^ 2 - a ^ 2) / 2 + c * (b - a) := by
-  rw [intervalIntegral.integral_add (Continuous.intervalIntegrable (by fun_prop) _ _)
-    intervalIntegrable_const, intervalIntegral.integral_const_mul, integral_id,
-    intervalIntegral.integral_const, smul_eq_mul]
-  ring
 
 end AmbidextrousSofa

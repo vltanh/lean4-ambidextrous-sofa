@@ -55,14 +55,6 @@ theorem actualHull_reflect (S : Set Plane) :
     actualHull (reflect '' S) = reflect '' actualHull S :=
   (reflectAffineMap.image_convexHull S).symm
 
-/-- The horizontal image of a connected compact physical body is its exact closed interval. -/
-theorem horizontalProjection_eq_Icc_of_isConnected {S : Set Plane}
-    (hcompact : IsCompact S) (hconnected : IsConnected S) :
-    horizontalProjection S = Icc (horizontalLeft S) (horizontalRight S) :=
-  eq_Icc_of_connected_compact
-    (hconnected.image Prod.fst continuous_fst.continuousOn)
-    (isCompact_horizontalProjection hcompact)
-
 /-- Convexifying an actual connected compact body does not invent new abscissas. -/
 theorem horizontalProjection_actualHull {S : Set Plane} (hcompact : IsCompact S)
     (hconnected : IsConnected S) :

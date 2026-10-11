@@ -39,7 +39,7 @@ theorem IsFullCapMaximizer.wing_chords_le_twice_score_of_affine
   have hbox : U ⊆ Icc (horizontalLeft U - 1) (horizontalRight U + 1) ×ˢ Icc (0 : ℝ) 1 :=
     fun p hp => by
       have hx : p.1 ∈ Icc (horizontalLeft U) (horizontalRight U) := by
-        rw [← horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact hU.isCap.convex]
+        rw [← hU.isCap.horizontalProjection_eq_Icc]
         exact ⟨p, hp, rfl⟩
       exact ⟨⟨by linarith [hx.1], by linarith [hx.2]⟩, hU.isCap.inStrip hp⟩
   obtain ⟨level, coefficient, V, hlevel, hc, hrate, hV, -, hHausdorff⟩ :=
@@ -81,7 +81,7 @@ theorem IsFullCapMaximizer.ordinary_area_chord_necessary_of_canonical_range
   have hconv := hU.isCap.convexOn_sweptNiche_wings_of_roof_endpoints
     hl hr hleft hright hC0 hC1 hh1
   have harea := hU.isCap.volumeReal_oneTurnSurvivor_ge_score_of_affine (by linarith) hl hr
-    hleft hright (middleHalfInterval_eq_centered hl hr ▸ haffine) hconv.1 hconv.2 hfit
+    hleft hright ((centered_quarter_points hl hr).2.2 ▸ haffine) hconv.1 hconv.2 hfit
   have hordinary := hU.isCap.volumeReal_oneTurnSurvivor_le hfit
   have hw : (horizontalRight U - horizontalLeft U) / 4 = C := by rw [hl, hr]; ring
   obtain ⟨hminus, hplus, -⟩ := centered_quarter_points hl hr

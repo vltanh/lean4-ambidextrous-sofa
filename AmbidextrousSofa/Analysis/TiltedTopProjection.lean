@@ -86,7 +86,10 @@ theorem IsFullCapMaximizer.tilted_companion_cut
       0 < capRoof (leftCompanionCap U (-C)) (horizontalLeft (leftCompanionCap U (-C))) := by
   have hC : 0 < C := by linarith
   have hm := positive_affine_slope_of_middle_heights hC hh0 haffine hlow hhigh
-  obtain ⟨ha, hb, -⟩ := hU.isCap.tilted_centered_middle hl hr hC
+  have ha : -C ∈ horizontalProjection U :=
+    hU.isCap.horizontalProjection_eq_Icc ▸ ⟨by linarith, by linarith⟩
+  have hb : C ∈ horizontalProjection U :=
+    hU.isCap.horizontalProjection_eq_Icc ▸ ⟨by linarith, by linarith⟩
   have hleft := horizontalLeft_leftCompanionCap hU.isCap ha
   refine ⟨hm, ha, hb, hU.isCap.leftCompanionCap ha, hleft.trans hl, ?_, ?_⟩
   · rw [(hU.isCap.top_leftCompanionCap_of_positive_affine ha hb (by linarith) hm haffine).1, hlow]
@@ -121,9 +124,9 @@ theorem IsFullCapMaximizer.tilted_top_projection_eq
   have hbR : b ≤ 2 * C := hr ▸ (hU.isCap.fst_mem_Icc htopPoint).2
   have hzaxis : z < 1 - 2 * C := by linarith only [hV.companionZero_lt_left_add_one hVH hVL, hlV]
   have hzC : z < C := by linarith only [hzaxis, hC0]
-  have hJL : horizontalLeft U + capWidth U / 4 = -C := by unfold capWidth; rw [hl, hr]; ring
-  have hJR : horizontalRight U - capWidth U / 4 = C := by unfold capWidth; rw [hl, hr]; ring
-  have hJ := (hU.isCap.tilted_centered_middle hl hr hC).2.2
+  have hJL : horizontalLeft U + capWidth U / 4 = -C := (centered_quarter_points hl hr).1
+  have hJR : horizontalRight U - capWidth U / 4 = C := (centered_quarter_points hl hr).2.1
+  have hJ := (centered_quarter_points hl hr).2.2
   -- The middle is positive from the low-wing zero to `C`; the selected moment bounds the length
   -- of the positive part by the outer windows outside the top.
   have hpos : C - max (-C) z ≤

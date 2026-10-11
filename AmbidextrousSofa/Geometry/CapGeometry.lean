@@ -73,13 +73,17 @@ def horizontalLeft (K : Set Plane) : ℝ := sInf (horizontalProjection K)
 
 def horizontalRight (K : Set Plane) : ℝ := sSup (horizontalProjection K)
 
-/-- A nonempty compact convex set has its exact horizontal projection interval. -/
-theorem horizontalProjection_eq_Icc {K : Set Plane} (hne : K.Nonempty)
-    (hcompact : IsCompact K) (hconvex : Convex ℝ K) :
-    horizontalProjection K = Icc (horizontalLeft K) (horizontalRight K) :=
-  eq_Icc_of_connected_compact
-    ((convex_horizontalProjection hconvex).isConnected (hne.image Prod.fst))
+/-- A compact connected set has its exact horizontal projection interval. -/
+theorem horizontalProjection_eq_Icc_of_isConnected {S : Set Plane}
+    (hcompact : IsCompact S) (hconnected : IsConnected S) :
+    horizontalProjection S = Icc (horizontalLeft S) (horizontalRight S) :=
+  eq_Icc_of_connected_compact (hconnected.image Prod.fst continuous_fst.continuousOn)
     (isCompact_horizontalProjection hcompact)
+
+/-- A cap has its exact horizontal projection interval. -/
+theorem IsDownwardCap.horizontalProjection_eq_Icc {U : Set Plane} (hU : IsDownwardCap U) :
+    horizontalProjection U = Icc (horizontalLeft U) (horizontalRight U) :=
+  horizontalProjection_eq_Icc_of_isConnected hU.isCompact (hU.convex.isConnected hU.nonempty)
 
 theorem horizontalLeft_mem {K : Set Plane} (hne : K.Nonempty) (hK : IsCompact K) :
     horizontalLeft K ∈ horizontalProjection K :=

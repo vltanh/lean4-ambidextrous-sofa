@@ -44,7 +44,7 @@ theorem IsDownwardCap.diagonalRoofDeficit_nonneg {U : Set Plane}
     (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
     (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1) :
     0 ≤ diagonalRoofDeficit U a h (diagonalRight U - 1) (diagonalLeft U - 1 + h) := by
-  have hproj := hU.horizontalProjection_eq_of hl hr
+  have hproj := (hl ▸ hr ▸ hU.horizontalProjection_eq_Icc)
   refine add_nonneg (intervalIntegral.integral_nonneg (by linarith) fun x hx => sub_nonneg.mpr
       (le_min (hU.left_roof_le_middle_height ha hh hl hr hleft hright x hx) ?_))
     (intervalIntegral.integral_nonneg (by linarith) fun x hx => sub_nonneg.mpr

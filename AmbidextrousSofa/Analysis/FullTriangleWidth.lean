@@ -65,7 +65,7 @@ theorem IsFullCapMaximizer.centered_half_width_lt_thirty_seven_twenty_fifths_of_
     ha0 (hU.centered_half_projection_width_lt_of_affine_nonneg hl hr hheight hm haffine).le
     (sub_nonneg.mpr (capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _))
     (hU.centered_intermediate_width_tilt hl hr hheight hm haffine).1.le
-    hl hr hleft hright hAff hEP.1 hEP.2).trans forty_one_fiftieths_lt_M_div_two)
+    hl hr hleft hright hAff hEP.1 hEP.2).trans forty_one_fiftieths_lt_half_M)
 
 theorem IsFullCapMaximizer.quarter_width_lt_thirty_seven_fiftieths
     {U : Set Plane} (hU : IsFullCapMaximizer U) : capWidth U / 4 < (37 / 50 : ℝ) := by

@@ -28,7 +28,7 @@ theorem IsDownwardCap.tendsto_integral_terminal_contactRamp
     Tendsto (fun ε : ℝ => ∫ x in Icc (horizontalLeft U) (horizontalRight U),
       max (ε - (outerSupportingRoof U α x - capRoof U x)) 0 / ε) (𝓝[>] 0)
       (𝓝 (terminalFaceWidth U α)) := by
-  have hP := horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex
+  have hP := hU.horizontalProjection_eq_Icc
   have hd : Measurable fun x => outerSupportingRoof U α x - capRoof U x :=
     (continuous_outerSupportingRoof U α).measurable.sub hU.measurable_capRoof
   convert tendsto_integral_contactRamp_quotient _ hd (ae_restrict_of_forall_mem measurableSet_Icc
@@ -99,8 +99,7 @@ theorem IsJointCapMaximizer.integral_strictGapRamp_le_contactRamp
       ∫ x in I, max (ε - (outerSupportingRoof U α x - capRoof U x)) 0 := by
     rw [← integral_sub (hAI.mono_set sdiff_subset) (hAVI.mono_set sdiff_subset),
       ← setIntegral_congr_fun measurableSet_Icc fun x hx => capRoof_sub_normalTrim hU.isCap hc hs
-        hbase ((horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact
-          hU.isCap.convex).symm ▸ hx)]
+        hbase ((hU.isCap.horizontalProjection_eq_Icc).symm ▸ hx)]
     exact setIntegral_mono_set (hAI.sub hAVI) (.of_forall fun x => sub_nonneg.mpr
       (hV.capRoof_mono hU.isCap (normalTrim_subset U α ε) x)) (.of_forall fun x hx => hx.1)
   linarith only [hgain, hloss, hscore]
@@ -115,7 +114,7 @@ theorem IsJointCapMaximizer.terminal_strict_exposure_measure_le_reserve_of_tail_
       capRoof U x = m * x + c) :
     volume.real (middleHalfInterval (horizontalLeft U) (horizontalRight U) ∩
       terminalStrictRegion U α) ≤ terminalTailReserve U α := by
-  have hs := (terminal_sin_cos_pos hU.angle_pos hαL).1
+  have hs := (sin_cos_pos_of_mem_quarter ⟨hU.angle_pos, hαL⟩).1
   have hbase := hU.isCap.support_right_baseline_strict hs
     (hs.trans_le (hU.terminal_vminus_height_ge_sin_of_tail_regime hregime hαL hheight haffine))
   refine (le_of_tendsto_of_tendsto

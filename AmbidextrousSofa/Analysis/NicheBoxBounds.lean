@@ -30,8 +30,7 @@ theorem IsDownwardCap.middle_niche_le_two_fifths_of_box
       sweptNiche U (Real.pi / 2) C ≤ 2 / 5 := by
   refine ⟨sweptNiche_le_of_forall (by positivity) (by norm_num) fun θ h => ?_,
     sweptNiche_le_of_forall (by positivity) (by norm_num) fun θ h => ?_⟩ <;>
-    have hs := Real.sin_pos_of_pos_of_lt_pi h.1 (h.2.trans (half_lt_self Real.pi_pos)) <;>
-    have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [h.1, Real.pi_pos], h.2⟩
+    obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter h
   · refine (min_le_right _ _).trans ?_
     rw [secondWall, div_le_iff₀ hc]
     linarith [hU.support_companionNormal_le_centeredBox hbox hs.le hc.le,

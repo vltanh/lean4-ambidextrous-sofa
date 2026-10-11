@@ -49,8 +49,7 @@ theorem exists_support_upper_bound_quarterTurn {K : Set Plane} (hK : IsCompact K
 /-- At least one denominator is at least one half in the open first quadrant. -/
 theorem half_le_sin_or_half_le_cos {θ : ℝ} (hθ : θ ∈ Ioo (0 : ℝ) (Real.pi / 2)) :
     (1 / 2 : ℝ) ≤ Real.sin θ ∨ (1 / 2 : ℝ) ≤ Real.cos θ := by
-  have hs := Real.sin_pos_of_pos_of_lt_pi hθ.1 (by linarith [hθ.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [hθ.1, Real.pi_pos], hθ.2⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter hθ
   by_contra! h
   nlinarith [Real.sin_sq_add_cos_sq θ]
 

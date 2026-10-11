@@ -35,11 +35,6 @@ theorem secondTangency_eq_vplus_sub_companionNormal (U : Set Plane) (t : ℝ) :
     secondTangency_fst_eq_support, secondTangency_snd_eq_support, Real.sin_add_pi_div_two,
     Real.cos_add_pi_div_two] <;> ring
 
-theorem imported_supp_pi_div_two (U : Set Plane) :
-    MovingSofaOptimality.supp U (Real.pi / 2) = capHeight U := by
-  change support U (unitNormal (Real.pi / 2)) = support U (0, 1)
-  simp only [unitNormal, Real.cos_pi_div_two, Real.sin_pi_div_two]
-
 private theorem mem_edge_pi_div_two {U : Set Plane} (hheight : capHeight U = 1) {p : Plane} :
     p ∈ edge U (Real.pi / 2) ↔ p ∈ U ∧ p.2 = 1 := by
   simp [edge, suppLine, line, dot, imported_supp_pi_div_two, hheight]

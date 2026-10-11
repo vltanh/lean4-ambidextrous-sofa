@@ -49,8 +49,7 @@ theorem IsDownwardCap.partialBarrier_inserted_top_of_top_right {U : Set Plane}
       (coordDot_le_support hU.isCompact ht _))]
   have hcorner θ (hθ : θ ∈ Ioo 0 α) :
       max (cornerWall (insertedCap U (a, 1)) θ x) 0 = max (cornerWall U θ x) 0 := by
-    have hs := Real.sin_pos_of_pos_of_lt_pi hθ.1 (by linarith [hθ.2, Real.pi_pos])
-    have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [hθ.1, Real.pi_pos], hθ.2.trans_le hα⟩
+    obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hθ.1, hθ.2.trans_le hα⟩
     by_cases hdom : coordDot (a, 1) (companionNormal θ) ≤ support U (companionNormal θ)
     · rw [cornerWall, cornerWall, hfirst hs hc.le, secondWall, secondWall,
         hU.support_insertedCap_eq_of_dominated hp hc.le hdom]
@@ -78,7 +77,7 @@ theorem IsFullCapMaximizer.middle_right_eq_one_of_top_right {U : Set Plane}
   have hp : (b, (1 : ℝ)) ∈ unitStrip := ⟨zero_le_one, le_rfl⟩
   have hV := hC.isDownwardCap_insertedCap hp
   have hb : b ∈ horizontalProjection U := by
-    rw [horizontalProjection_eq_Icc hC.nonempty hC.isCompact hC.convex]
+    rw [hC.horizontalProjection_eq_Icc]
     constructor <;> linarith
   have hmono := hC.capRoof_mono hV (hC.subset_insertedCap hp)
   -- On the middle window the whole partial barrier is unchanged.

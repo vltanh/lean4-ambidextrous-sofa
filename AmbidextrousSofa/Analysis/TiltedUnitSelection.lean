@@ -43,7 +43,7 @@ theorem IsFullCapMaximizer.exists_tilted_first_unit_density
         (volume.restrict (regularCurvatureDomain m)).withDensity (fun t => ENNReal.ofReal (ρ t)) ∧
       (∀ᵐ t ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)), ρ t ≤ 1) := by
   have haff : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c := by
-    simpa only [middleHalfInterval_eq_centered hl hr] using haffine
+    simpa only [(centered_quarter_points hl hr).2.2] using haffine
   obtain ⟨ρ, hρ, hbounds, hcoarse, heq, -⟩ := hU.curvature_density_corner_controls hheight haffine
   have hρ0 (t : ℝ) := (hbounds t).1
   refine ⟨ρ, hρ, hbounds, hcoarse, heq,

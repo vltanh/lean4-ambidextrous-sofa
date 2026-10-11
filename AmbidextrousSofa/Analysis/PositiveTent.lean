@@ -23,7 +23,7 @@ namespace AmbidextrousSofa
 
 theorem hasDerivAt_positivePart_square (x : ℝ) :
     HasDerivAt (fun t : ℝ => (max t 0) ^ 2) (2 * max x 0) x := by
-  convert Reference.hasDerivAt_if_le 0 (fun t => hasDerivAt_const t (0 : ℝ))
+  convert hasDerivAt_if_le 0 (fun t => hasDerivAt_const t (0 : ℝ))
     (fun t => hasDerivAt_pow 2 t) (by norm_num) (by norm_num) x using 1
   · funext t
     split_ifs with ht <;> simp [ht, max_def]
@@ -70,5 +70,12 @@ theorem min_symmetric_lines (h d x : ℝ) :
     min (h + d - x) (h - d + x) = h - |x - d| := by
   rw [abs_eq_max_neg, ← min_sub_sub_left]
   ring_nf
+
+theorem integral_affine (m c a b : ℝ) :
+    (∫ x in a..b, m * x + c) = m * (b ^ 2 - a ^ 2) / 2 + c * (b - a) := by
+  rw [intervalIntegral.integral_add (Continuous.intervalIntegrable (by fun_prop) _ _)
+    intervalIntegrable_const, intervalIntegral.integral_const_mul, integral_id,
+    intervalIntegral.integral_const, smul_eq_mul]
+  ring
 
 end AmbidextrousSofa

@@ -46,7 +46,7 @@ theorem IsDownwardCap.lowHeight_right_reward_le {U : Set Plane}
     (hleft : horizontalLeft U = -2 * C) (hright : horizontalRight U = 2 * C)
     (hdiag : diagonalRight U = 2 * C + u) (hu1 : u ≤ 1) (huC : 1 - C ≤ u) :
     (∫ x in C..(2 * C), capRoof U x) ≤ C - (1 - u) ^ 2 / 2 := by
-  have hproj := hU.horizontalProjection_eq_of hleft hright
+  have hproj := (hleft ▸ hright ▸ hU.horizontalProjection_eq_Icc)
   calc (∫ x in C..(2 * C), capRoof U x) ≤ ∫ x in C..(2 * C), 1 - max (1 - 2 * C - u + x) 0 :=
         intervalIntegral.integral_mono_on (by linarith) (hU.intervalIntegrable_capRoof _ _)
           (Continuous.intervalIntegrable (by fun_prop) _ _) fun x hx => by
@@ -66,7 +66,7 @@ theorem IsDownwardCap.lowHeight_left_reward_le {U : Set Plane}
     (hceiling : ∀ x ∈ Icc (-2 * C) C, capRoof U x ≤ lowCeiling C x) :
     (∫ x in (-2 * C)..(-C), capRoof U x) ≤ 3 * C / 8 - (1 / 4 - v) ^ 2 / 2 := by
   have hC0 : 0 < C := by linarith
-  have hproj := hU.horizontalProjection_eq_of hleft hright
+  have hproj := (hleft ▸ hright ▸ hU.horizontalProjection_eq_Icc)
   calc (∫ x in (-2 * C)..(-C), capRoof U x)
       ≤ ∫ x in (-2 * C)..(-C), lowCeiling C x - max (1 / 4 - v - 2 * C - x) 0 :=
         intervalIntegral.integral_mono_on (by linarith) (hU.intervalIntegrable_capRoof _ _)

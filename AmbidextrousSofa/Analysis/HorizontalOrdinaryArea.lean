@@ -39,9 +39,9 @@ theorem IsFullCapMaximizer.false_of_horizontal_leakage_row
   have haffine : ∃ m c : ℝ, ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c := ⟨0, 1, by simpa using hmiddle⟩
   have hleft : capRoof U (-C) = 1 :=
-    hmiddle (-C) (by rw [middleHalfInterval_eq_centered hl hr]; exact ⟨le_rfl, by linarith⟩)
+    hmiddle (-C) (by rw [(centered_quarter_points hl hr).2.2]; exact ⟨le_rfl, by linarith⟩)
   have hright : capRoof U C = 1 :=
-    hmiddle C (by rw [middleHalfInterval_eq_centered hl hr]; exact ⟨by linarith, le_rfl⟩)
+    hmiddle C (by rw [(centered_quarter_points hl hr).2.2]; exact ⟨by linarith, le_rfl⟩)
   have hnecessary := hU.ordinary_area_chord_necessary_of_canonical_range (h := 0) hl hr
     (by simpa using hleft) hright hC0 (by linarith) le_rfl (by norm_num) hheight haffine
   have hsum := hU.endpoint_height_sum_of_affine hheight haffine

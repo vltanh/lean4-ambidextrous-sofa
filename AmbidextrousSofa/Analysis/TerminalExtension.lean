@@ -45,7 +45,7 @@ theorem IsDownwardCap.exists_right_wall_interval_of_overlong_facet
   let b := (terminalTailPoint U α).1
   let H := (terminalTailPoint U α).2
   have hα0 : 0 < α := by linarith only [hα.1, Real.pi_pos]
-  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hα0 hαL
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩
   have hB : terminalFirstRightAbscissa U α = b - Real.cos α := rfl
   have hR : terminalTailReserve U α = Real.cos α - terminalTailInset U α := rfl
   have hL := terminalFirstLeftAbscissa_eq_right_add_width U α
@@ -54,8 +54,9 @@ theorem IsDownwardCap.exists_right_wall_interval_of_overlong_facet
       linarith only [hB, hR, hL, hfacet])
   have hfixed {t : ℝ} (ht : t ∈ Icc α β₀) (x : ℝ) :
       firstWall U t x = H + ((b - x) * Real.cos t - 1) / Real.sin t :=
-    firstWall_eq_fixedPoint_of_support (terminal_sin_cos_pos (hα0.trans_le ht.1)
-      (ht.2.trans_lt hβ₀.2)).1.ne' (by simpa only [coordDot, unitNormal] using hsupport t ht) x
+    firstWall_eq_fixedPoint_of_support
+      (sin_cos_pos_of_mem_quarter ⟨hα0.trans_le ht.1, ht.2.trans_lt hβ₀.2⟩).1.ne'
+      (by simpa only [coordDot, unitNormal] using hsupport t ht) x
   have hjoint (x : ℝ) : ContinuousAt (fun p : ℝ × ℝ => firstWall U p.1 p.2) (α, x) :=
     ((((continuous_angleSupport hU.isCompact).comp continuous_fst).sub continuous_const).sub
       (continuous_snd.mul (Real.continuous_cos.comp continuous_fst))).continuousAt.div
@@ -75,7 +76,7 @@ theorem IsDownwardCap.exists_right_wall_interval_of_overlong_facet
     (inter_mem (Ico_mem_nhdsGE hβ₀.1) (nhdsWithin_le_nhds (hgap.and hzero)))
   refine ⟨β, ⟨hαβ, (hβ ⟨hαβ.le, le_rfl⟩).1.2.trans hβ₀.2⟩, fun t ht x hx => ?_⟩
   obtain ⟨⟨htα, htβ₀⟩, hgapt, hzerot⟩ := hβ ht
-  obtain ⟨hst, hct⟩ := terminal_sin_cos_pos (hα0.trans_le htα) (htβ₀.trans hβ₀.2)
+  obtain ⟨hst, hct⟩ := sin_cos_pos_of_mem_quarter ⟨hα0.trans_le htα, htβ₀.trans hβ₀.2⟩
   rcases le_or_gt x (terminalFirstRightAbscissa U α) with hxB | hxB
   · rw [hfixed ⟨htα, htβ₀.le⟩]
     exact (fixedPoint_firstWall_le_initial hα0 htα (by linarith only [htβ₀, hβ₀.2])

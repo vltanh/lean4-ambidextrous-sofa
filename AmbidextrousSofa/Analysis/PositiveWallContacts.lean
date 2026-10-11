@@ -46,8 +46,7 @@ theorem wall_tie_eq_attachedCorner {U : Set Plane} {t x y : ℝ}
     (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2))
     (hfirst : firstWall U t x = y) (hsecond : secondWall U t x = y) :
     (x, y) = attachedCorner U t := by
-  have hs : 0 < Real.sin t := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
-  have hc : 0 < Real.cos t := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   have hw := hfirst.trans hsecond.symm
   obtain rfl : x = (attachedCorner U t).1 := le_antisymm
     ((secondWall_le_firstWall_iff hs hc).mp hw.ge) ((firstWall_le_secondWall_iff hs hc).mp hw.le)
@@ -73,7 +72,7 @@ theorem IsDownwardCap.first_strict_contact_eq_tangency {t x : ℝ}
     rw [hcontact, ← min_eq_left hs.le]
     exact cornerWall_le_sweptNiche (sweptWallValues_bddAbove hU.isCompact le_rfl x) hsI
   have hs : Real.sin t ≠ 0 :=
-    (Real.sin_pos_of_pos_of_lt_pi ht.1.1 (by linarith [ht.1.2, Real.pi_pos])).ne'
+    (sin_cos_pos_of_mem_quarter ht.1).1.ne'
   obtain rfl : x = (firstTangency U t).1 :=
     sub_eq_zero.mp ((div_eq_zero_iff.mp (hmax.hasDerivAt_eq_zero hd.1)).resolve_right
       (pow_ne_zero 2 hs))
@@ -98,7 +97,7 @@ theorem IsDownwardCap.second_strict_contact_eq_tangency {t x : ℝ}
     (hstrict : secondWall U t x < firstWall U t x) :
     (x, sweptNiche U (Real.pi / 2) x) = secondTangency U t := by
   have hc : Real.cos t ≠ 0 :=
-    (Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1.1, Real.pi_pos], ht.1.2⟩).ne'
+    (sin_cos_pos_of_mem_quarter ht.1).2.ne'
   have hz := (hU.secondWall_isLocalMax_of_strict_contact hρ hρ0 hρK heq ht hcontact
     hstrict).hasDerivAt_eq_zero (hU.hasDerivAt_walls_on_regularCornerDomain hρ hρ0 hρK heq ht x).2
   obtain rfl : x = (secondTangency U t).1 :=
@@ -118,7 +117,7 @@ theorem IsDownwardCap.ae_companion_density_le_one_at_strict_contact :
     with t ht hDx x hcontact hstrict
   have hx : x = (secondTangency U t).1 :=
     congrArg Prod.fst (hU.second_strict_contact_eq_tangency hρ hρ0 hρK heq ht hcontact hstrict)
-  have hc : 0 < Real.cos t := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1.1, Real.pi_pos], ht.1.2⟩
+  have hc : 0 < Real.cos t := (sin_cos_pos_of_mem_quarter ht.1).2
   have hd : HasDerivAt (fun s => (x - (secondTangency U s).1) / Real.cos s ^ 2)
       ((ρ (t + Real.pi / 2) - 1) / Real.cos t) t := by
     refine (((hasDerivAt_const t x).sub hDx.2.2.1).div ((Real.hasDerivAt_cos t).pow 2)

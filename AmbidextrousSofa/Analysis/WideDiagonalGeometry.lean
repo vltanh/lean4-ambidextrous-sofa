@@ -48,7 +48,7 @@ theorem IsDownwardCap.wide_diagonal_parameters {U : Set Plane}
       capRoof U (-a) ≤ 1 - (a - (diagonalLeft U - 1)) := by
   have hp := hU.tilted_diagonal_parameters_mem ha hh hh1 hl hr hleft hright
   have hv := hU.tilted_diagonalLeft_le ha (by linarith only [hh1, ha]) hl hr hleft hright haffine
-  have hproj := (hU.horizontalProjection_eq_of hl hr).superset
+  have hproj := (hl ▸ hr ▸ hU.horizontalProjection_eq_Icc).superset
   refine ⟨hp.1, ⟨by linarith only [hp.2.1], by linarith only [hv]⟩, ?_, ?_⟩
   · linarith only [hU.capRoof_le_diagonalRight (hproj ⟨by linarith only [ha], le_rfl⟩)]
   · linarith only [hU.capRoof_le_diagonalLeft (hproj ⟨le_rfl, by linarith only [ha]⟩)]
@@ -86,7 +86,7 @@ theorem IsDownwardCap.wideRoofDeficit_nonneg {U : Set Plane}
     (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1)
     (haffine : ∃ m c : ℝ, ∀ x ∈ Icc (-a / 2) (a / 2), capRoof U x = m * x + c) :
     0 ≤ wideRoofDeficit U a h (diagonalRight U - 1) (diagonalLeft U - 1) := by
-  have hproj := (hU.horizontalProjection_eq_of hl hr).superset
+  have hproj := (hl ▸ hr ▸ hU.horizontalProjection_eq_Icc).superset
   refine add_nonneg (intervalIntegral.integral_nonneg (by linarith only [ha]) fun x hx => ?_)
     (intervalIntegral.integral_nonneg (by linarith only [ha]) fun x hx => ?_)
   · have hxU := hproj ⟨hx.1, by linarith only [hx.2, ha]⟩

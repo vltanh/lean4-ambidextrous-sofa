@@ -71,9 +71,7 @@ theorem IsJointCapMaximizer.proper_first_wing_initial_curvature_zero
     upperCurvature U (Ioo (0 : ℝ) (Real.arctan m)) = 0 := by
   have hb :=
     hU.centered_proper_half_width_bounds hproper (hl.trans (neg_mul _ _)) hr hheight haffine
-  have hmid : middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C := by
-    rw [middleHalfInterval, hl, hr]; congr 1 <;> ring
-  have haff := hmid ▸ haffine
+  have haff := (centered_quarter_points hl hr).2.2 ▸ haffine
   have hhigh : capRoof U C = 1 := by
     rw [← hU.middle_right_eq_one_of_affine_nonneg hheight hm haffine, capWidth, hl, hr]
     congr 1; ring

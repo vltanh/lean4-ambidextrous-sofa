@@ -138,7 +138,7 @@ theorem curvature_atom_le_of_maximizes {grid : Finset QuarterAngle} {U : Set Pla
     (normal_unit grid j) fun V hV hproj => by
       have hVB : V ⊆ Icc a b ×ˢ Icc (0 : ℝ) 1 := fun p hpV => by
         obtain ⟨q, hqU, hqx⟩ : p.1 ∈ horizontalProjection U := by
-          rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, ← hproj]
+          rw [hU.horizontalProjection_eq_Icc, ← hproj]
           exact ⟨p, hpV, rfl⟩
         exact ⟨hqx ▸ (hbox hqU).1, hV.inStrip hpV⟩
       rw [show upperPolygon _ _ _ _ = U from hpoly.symm]

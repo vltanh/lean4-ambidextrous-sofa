@@ -31,14 +31,13 @@ theorem IsDownwardCap.left_middle_niche_le_tilted_box
     sweptNiche U (Real.pi / 2) (-C) ≤
       max (Analysis.tiltedBoxHeight C - h) 0 := by
   have hproj : horizontalProjection U = Icc (-2 * C) (2 * C) := by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hl, hr]
+    rw [hU.horizontalProjection_eq_Icc, hl, hr]
   have ha : -C ∈ horizontalProjection U := hproj ▸ ⟨by linarith, by linarith⟩
   have hb : C ∈ horizontalProjection U := hproj ▸ ⟨by linarith, by linarith⟩
   have hab : -C < C := by linarith
   have hline := (haffine (-C) ⟨le_rfl, hab.le⟩).symm.trans hlow
   refine sweptNiche_le_of_forall (by positivity) (le_max_right _ _) fun t ht => ?_
-  have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   have hsupport : support (AmbidextrousSofa.leftCompanionCap U (-C)) (companionNormal t) ≤
       2 * C * Real.sin t + (1 - h) * Real.cos t := by
     refine support_le_of_forall (hU.leftCompanionCap ha).nonempty fun p hp => ?_

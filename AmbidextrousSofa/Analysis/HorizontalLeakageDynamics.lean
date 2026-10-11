@@ -49,11 +49,11 @@ theorem absolutelyContinuousOnInterval_quadratic_upper_bound
     f x ≤ f a + c * (x - a) + k * (x - a) ^ 2 / 2 := by
   have hax := hf.mono (uIcc_subset_uIcc_left (uIcc_of_le hab ▸ hx))
   have hi := intervalIntegral.integral_mono_ae_restrict hx.1 hax.intervalIntegrable_deriv
-    ((show Continuous (fun t : ℝ => c + k * (t - a)) by fun_prop).intervalIntegrable _ _) (by
+    ((show Continuous (fun t : ℝ => k * t + (c - k * a)) by fun_prop).intervalIntegrable _ _) (by
       rw [← restrict_Ioo_eq_restrict_Icc]
       filter_upwards [ae_restrict_of_ae_restrict_of_subset (Ioo_subset_Ioo le_rfl hx.2) hd]
-        with t ht using ht.1.deriv.trans_le ht.2)
-  rw [hax.integral_deriv_eq_sub, integral_affine_scalar] at hi
+        with t ht using ht.1.deriv.trans_le (ht.2.trans_eq (by ring)))
+  rw [hax.integral_deriv_eq_sub, integral_affine] at hi
   linarith
 
 /-- Local support calculus and source inequalities on one open quarter. -/

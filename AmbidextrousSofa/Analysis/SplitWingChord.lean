@@ -108,7 +108,7 @@ theorem IsFullCapMaximizer.split_wing_chords_le_twice_score
     exact ⟨by linarith [mul_nonneg (div_nonneg hT0 hC.le) hq0],
       by linarith [mul_le_of_le_one_left hq0 ((div_le_one hC).2 hTC.le)]⟩
   have hxproj (n : ℕ) : x n ∈ horizontalProjection (V n) := by
-    rw [horizontalProjection_eq_Icc (hcap n).nonempty (hcap n).isCompact (hcap n).convex]
+    rw [(hcap n).horizontalProjection_eq_Icc]
     have h := hxmem n
     have := horizontalLeft_le_horizontalRight (hcap n).nonempty (hcap n).isCompact
     dsimp only [q] at h
@@ -127,10 +127,8 @@ theorem IsFullCapMaximizer.split_wing_chords_le_twice_score
   have hAu := hHausdorff.middleLeft_roof_tendsto hcap hU.isCap hlr
   have hAv := hHausdorff.middleRight_roof_tendsto hcap hU.isCap hlr
   rw [htop] at hroofX
-  rw [show horizontalLeft U + (horizontalRight U - horizontalLeft U) / 4 = -C by
-    rw [hl, hr]; ring, hleftRoof] at hAu
-  rw [show horizontalRight U - (horizontalRight U - horizontalLeft U) / 4 = C by
-    rw [hl, hr]; ring, hrightRoof] at hAv
+  rw [(centered_quarter_points hl hr).1, hleftRoof] at hAu
+  rw [(centered_quarter_points hl hr).2.1, hrightRoof] at hAv
   have heL := selected_left_height_tendsto_actual hU.isCap hbox hV hHausdorff
     hlevel' hc' hrate hwidth (by linarith)
   have heR := selected_right_height_tendsto_actual hU.isCap hbox hV hHausdorff

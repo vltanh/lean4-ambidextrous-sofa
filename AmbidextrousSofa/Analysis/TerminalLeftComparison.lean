@@ -46,18 +46,18 @@ theorem IsJointCapMaximizer.false_of_leftCompanion_weighted_excess_of_tail_regim
         (fun t => ENNReal.ofReal (ρ t)))
     (hexcess : terminalWeightedExcess (fun t => ρ (t + Real.pi / 2))
       (Real.arcsin (C - T_L)) ≤ (39 / 4400 : ℝ) * Real.cos α) : False := by
-  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos hU.angle_pos hαL
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hU.angle_pos, hαL⟩
   have hH := (hU.terminalTailPoint_bounds_of_tail_regime hregime hαL hheight haffine).2.1
   have hH1 := (hU.isCap.inStrip (hU.isCap.terminalTailPoint_mem α)).2
   obtain ⟨-, hdc, hw0, -, hwhalf⟩ := hU.isCap.terminalTailInset_bounds hU.angle_pos hαL hH
   have hcsmall := terminal_cosine_lt_forty_four_one_twenty_fifths hc hcut
-  have hP := horizontalProjection_eq_Icc hU.isCap.nonempty hU.isCap.isCompact hU.isCap.convex
+  have hP := hU.isCap.horizontalProjection_eq_Icc
   have ha : -C ∈ horizontalProjection U := by
     rw [hP, hleft, hright]; constructor <;> linarith only [hC0]
   have hb : C ∈ horizontalProjection U := by
     rw [hP, hleft, hright]; constructor <;> linarith only [hC0]
   have haff : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c := by
-    simpa only [middleHalfInterval_eq_centered hleft hright] using haffine
+    simpa only [(centered_quarter_points hleft hright).2.2] using haffine
   have hstrict : ∀ x ∈ Icc (-C) (-C + terminalTailReserve U α),
       sweptNiche U α x < firstWall U α x := by
     rintro x ⟨hx0, hx1⟩
@@ -81,7 +81,7 @@ theorem IsJointCapMaximizer.false_of_leftCompanion_weighted_excess_of_tail_regim
     linarith only [hniche, hexcess, hmargin]
   have hsmall := hU.terminal_strict_exposure_measure_le_reserve_of_tail_regime hregime hαL hheight
     haffine
-  rw [middleHalfInterval_eq_centered hleft hright] at hsmall
+  rw [(centered_quarter_points hleft hright).2.2] at hsmall
   exact hsmall.not_gt (volume_real_strict_region_gt_of_initial_interval
     (hU.isCap.continuous_sweptNiche_terminalAngle hU.angle_mem) (continuous_firstWall U α) hw0.le
     (by linarith only [hwhalf, hcsmall, hC0]) hstrict)

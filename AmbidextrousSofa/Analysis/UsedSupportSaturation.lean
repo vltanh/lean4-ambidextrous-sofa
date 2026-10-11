@@ -80,7 +80,7 @@ theorem IsJointCapMaximizer.eq_usedSupportSaturation_capCut
     FinitePolygon.subset_circumscription hC _
   have hproj : horizontalProjection (AmbidextrousSofa.usedSupportSaturation U α) =
       horizontalProjection U := FinitePolygon.horizontalProjection_circumscription hC _
-  have hI := horizontalProjection_eq_Icc hC.nonempty hC.isCompact hC.convex
+  have hI := hC.horizontalProjection_eq_Icc
   have hw : 0 < capWidth U := by linarith [hU.width_bounds.1, one_lt_M]
   have hw' : capWidth U = horizontalRight U - horizontalLeft U := rfl
   -- A strict increase even at a wing endpoint would give a positive interval integral by roof

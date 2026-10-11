@@ -21,11 +21,6 @@ open Set
 
 namespace AmbidextrousSofa
 
-theorem middleHalfInterval_eq_centered {U : Set Plane} {C : ℝ}
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C) :
-    middleHalfInterval (horizontalLeft U) (horizontalRight U) = Icc (-C) C :=
-  (centered_quarter_points hl hr).2.2
-
 theorem IsFullCapMaximizer.sweptNiche_le_roof_of_canonical_range
     {U : Set Plane} (hU : IsFullCapMaximizer U) {C h : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
@@ -36,7 +31,7 @@ theorem IsFullCapMaximizer.sweptNiche_le_roof_of_canonical_range
       capRoof U x = m * x + c) :
     ∀ x ∈ horizontalProjection U, sweptNiche U (Real.pi / 2) x ≤ capRoof U x :=
   hU.sweptNiche_le_roof_of_middle_height_bound hl hr hleft hright hC0 hC1 hh0 hh1 hheight haffine
-    (middleHalfInterval_eq_centered hl hr ▸
+    ((centered_quarter_points hl hr).2.2 ▸
       hU.sweptNiche_le_half_endpoint_height_sum_of_affine hheight haffine)
 
 end AmbidextrousSofa

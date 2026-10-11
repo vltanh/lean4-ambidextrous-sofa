@@ -74,7 +74,7 @@ theorem IsDownwardCap.subset_centeredBox_of_endpoints {U : Set Plane}
     (hU : IsDownwardCap U) {C : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C) :
     U ⊆ Icc (-2 * C) (2 * C) ×ˢ Icc (0 : ℝ) 1 := fun p hp =>
-  ⟨hl ▸ hr ▸ horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex ▸ ⟨p, hp, rfl⟩,
+  ⟨hl ▸ hr ▸ hU.horizontalProjection_eq_Icc ▸ ⟨p, hp, rfl⟩,
     hU.inStrip hp⟩
 
 theorem IsDownwardCap.attachedCorner_fst_mem_middle_of_roof_endpoints
@@ -85,11 +85,10 @@ theorem IsDownwardCap.attachedCorner_fst_mem_middle_of_roof_endpoints
     (hθ : θ ∈ Ioo (0 : ℝ) (Real.pi / 2)) :
     (attachedCorner U θ).1 ∈ Ioo (-C) C := by
   have hmem (x : ℝ) (hx : x ∈ Icc (-C) C) : (x, capRoof U x) ∈ U := capRoof_mem hU.isCompact (by
-    rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex, hl, hr]
+    rw [hU.horizontalProjection_eq_Icc, hl, hr]
     exact ⟨by linarith [hx.1], by linarith [hx.2]⟩)
   have hbox := hU.subset_centeredBox_of_endpoints hl hr
-  have hs := Real.sin_pos_of_pos_of_lt_pi hθ.1 (by linarith [hθ.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [hθ.1, Real.pi_pos], hθ.2⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter hθ
   -- Lower bounds on both supports from the two attained roof points.
   have hflo : C * Real.cos θ + Real.sin θ ≤ support U (unitNormal θ) := by
     simpa only [coordDot, unitNormal, hright, one_mul] using

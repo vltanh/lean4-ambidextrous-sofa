@@ -43,7 +43,7 @@ theorem IsDownwardCap.score_error_le {U : Set Plane} (hU : IsDownwardCap U) {a b
         ε := by
   have hlr := horizontalLeft_le_horizontalRight hU.nonempty hU.isCompact
   have hproj : Icc (horizontalLeft U) (horizontalRight U) ⊆ Icc a b :=
-    horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex ▸
+    hU.horizontalProjection_eq_Icc ▸
       image_subset_iff.2 fun p hp => (hUB hp).1
   have hab := hproj ⟨le_rfl, hlr⟩
   have hab' := hproj ⟨hlr, le_rfl⟩

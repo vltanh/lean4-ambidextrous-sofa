@@ -33,7 +33,7 @@ namespace AmbidextrousSofa
 theorem IsDownwardCap.fst_mem_Icc {U : Set Plane} (hU : IsDownwardCap U)
     {p : Plane} (hp : p ∈ U) :
     p.1 ∈ Icc (horizontalLeft U) (horizontalRight U) :=
-  horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex ▸ ⟨p, hp, rfl⟩
+  hU.horizontalProjection_eq_Icc ▸ ⟨p, hp, rfl⟩
 
 theorem IsDownwardCap.baseline_mem_of_mem_projection {U : Set Plane}
     (hU : IsDownwardCap U) {x : ℝ} (hx : x ∈ horizontalProjection U) :
@@ -43,7 +43,7 @@ theorem IsDownwardCap.baseline_mem_of_mem_projection {U : Set Plane}
 theorem IsDownwardCap.baseline_mem_of_mem_Icc {U : Set Plane} (hU : IsDownwardCap U) {x : ℝ}
     (hx : x ∈ Icc (horizontalLeft U) (horizontalRight U)) : (x, 0) ∈ U :=
   hU.baseline_mem_of_mem_projection
-    ((horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex).symm ▸ hx)
+    ((hU.horizontalProjection_eq_Icc).symm ▸ hx)
 
 theorem IsDownwardCap.inter {U V : Set Plane} (hU : IsDownwardCap U)
     (hV : IsDownwardCap V) (hne : (U ∩ V).Nonempty) :
@@ -108,13 +108,13 @@ theorem leftTrim_subset (U : Set Plane) (ε : ℝ) : leftTrim U ε ⊆ U :=
 theorem rightTrim_interval_subset {U : Set Plane} (hU : IsDownwardCap U)
     {ε : ℝ} (hε : 0 ≤ ε) :
     Icc (horizontalLeft U) (horizontalRight U - ε) ⊆ horizontalProjection U := by
-  rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
+  rw [hU.horizontalProjection_eq_Icc]
   exact Icc_subset_Icc le_rfl (sub_le_self _ hε)
 
 theorem leftTrim_interval_subset {U : Set Plane} (hU : IsDownwardCap U)
     {ε : ℝ} (hε : 0 ≤ ε) :
     Icc (horizontalLeft U + ε) (horizontalRight U) ⊆ horizontalProjection U := by
-  rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex]
+  rw [hU.horizontalProjection_eq_Icc]
   exact Icc_subset_Icc (le_add_of_nonneg_right hε) le_rfl
 
 theorem IsDownwardCap.rightTrim {U : Set Plane} (hU : IsDownwardCap U)

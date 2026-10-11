@@ -135,7 +135,7 @@ end AngularGrid
 theorem IsDownwardCap.subset_slack_box {U : Set Plane} (hU : IsDownwardCap U) :
     U ⊆ Icc (horizontalLeft U - 1) (horizontalRight U + 1) ×ˢ Icc (0 : ℝ) 1 := fun p hp => by
   have hx : p.1 ∈ Icc (horizontalLeft U) (horizontalRight U) :=
-    horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex ▸ ⟨p, hp, rfl⟩
+    hU.horizontalProjection_eq_Icc ▸ ⟨p, hp, rfl⟩
   exact ⟨⟨by linarith [hx.1], by linarith [hx.2]⟩, hU.inStrip hp⟩
 
 /-- A full maximizer is the Hausdorff limit of selected dyadic polygons in its box with unit

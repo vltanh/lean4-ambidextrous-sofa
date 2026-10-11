@@ -128,8 +128,8 @@ theorem centeredCap_subset_box_of_width_le {U : Set Plane} (hU : IsDownwardCap U
     centeredCap U ⊆ Icc (-B, 0) (B, 1) := by
   intro p hp
   have hx : p.1 ∈ horizontalProjection (centeredCap U) := ⟨p, hp, rfl⟩
-  rw [horizontalProjection_eq_Icc hU.centeredCap.nonempty hU.centeredCap.isCompact
-    hU.centeredCap.convex, horizontalLeft_centeredCap hU, horizontalRight_centeredCap hU] at hx
+  rw [hU.centeredCap.horizontalProjection_eq_Icc, horizontalLeft_centeredCap hU,
+    horizontalRight_centeredCap hU] at hx
   have hy := hU.centeredCap.inStrip hp
   exact ⟨⟨by linarith [hx.1], hy.1⟩, by linarith [hx.2], hy.2⟩
 

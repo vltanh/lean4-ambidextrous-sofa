@@ -29,6 +29,21 @@ theorem companionNormal_eq_unitNormal (θ : ℝ) :
     companionNormal θ = unitNormal (θ + Real.pi / 2) := by
   apply Prod.ext <;> simp [companionNormal, unitNormal, Real.sin_add, Real.cos_add]
 
+/-- The two quarter families of directions cover the upper half-plane. -/
+theorem exists_upper_polar {v : Plane} (hv : 0 ≤ v.2) :
+    ∃ r : ℝ, 0 ≤ r ∧ ∃ t ∈ Set.Icc (0 : ℝ) (Real.pi / 2),
+      v = r • unitNormal t ∨ v = r • companionNormal t := by
+  have hz : v = ‖(⟨v.1, v.2⟩ : ℂ)‖ • unitNormal (Complex.arg ⟨v.1, v.2⟩) := by
+    ext <;> simp [unitNormal, Complex.norm_mul_cos_arg, Complex.norm_mul_sin_arg]
+  have h0 : 0 ≤ Complex.arg ⟨v.1, v.2⟩ := Complex.arg_nonneg_iff.2 hv
+  have hπ := Complex.arg_le_pi ⟨v.1, v.2⟩
+  refine ⟨_, norm_nonneg (⟨v.1, v.2⟩ : ℂ), ?_⟩
+  rcases le_total (Complex.arg ⟨v.1, v.2⟩) (Real.pi / 2) with h | h
+  · exact ⟨_, ⟨h0, h⟩, Or.inl hz⟩
+  · refine ⟨Complex.arg ⟨v.1, v.2⟩ - Real.pi / 2, ⟨by linarith, by linarith⟩,
+      Or.inr ?_⟩
+    rwa [companionNormal_eq_unitNormal, sub_add_cancel]
+
 /-- A two-wall L-hallway in a prescribed frame. -/
 def frameHall (u v : Plane) (a b : ℝ) : Set Plane :=
   {p | coordDot p u ≤ a + 1 ∧ coordDot p v ≤ b + 1 ∧

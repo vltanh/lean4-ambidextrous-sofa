@@ -52,7 +52,7 @@ theorem IsDownwardCap.wideLeftSupportDeficit_mem {U : Set Plane}
       unfold tiltedAffineCeiling at this
       linarith only [this, mul_nonneg (sub_nonneg.mpr hzk) (neg_lt_iff_pos_add.mp hx).le]
   have hx : -a / 2 ∈ horizontalProjection U :=
-    hU.horizontalProjection_eq_of hl hr ▸ ⟨by linarith only [ha], by linarith only [ha]⟩
+    (hl ▸ hr ▸ hU.horizontalProjection_eq_Icc) ▸ ⟨by linarith only [ha], by linarith only [ha]⟩
   have hlow := coordDot_le_support hU.isCompact (capRoof_mem hU.isCompact hx) (-k, 1)
   simp only [coordDot, hleft] at hlow
   have hza : h / a * a = h := div_mul_cancel₀ h ha.ne'
@@ -82,7 +82,7 @@ theorem IsDownwardCap.right_roof_gap_ge_cut {U : Set Plane} (hU : IsDownwardCap 
     (hδR : nearDiagonalRightDeficit U k u ∈ Icc 0 (k * (u - a / 2))) :
     nearDiagonalRightDeficit U k u ^ 2 / (2 * k) ≤
       ∫ x in (a / 2)..a, min 1 (1 + u - x) - capRoof U x := by
-  have hproj := hU.horizontalProjection_eq_of hl hr
+  have hproj := (hl ▸ hr ▸ hU.horizontalProjection_eq_Icc)
   refine integral_gap_ge_left_ramp (fun l r =>
     ((Continuous.intervalIntegrable (by fun_prop) l r).sub (hU.intervalIntegrable_capRoof l r)))
     hk hδR.1 huv hδR.2 (fun x hx => ?_) fun x hx => ?_
@@ -113,7 +113,7 @@ theorem IsDownwardCap.wideRoofDeficit_ge_support_cuts {U : Set Plane}
   set δR := nearDiagonalRightDeficit U k u
   set δL := wideLeftSupportDeficit U a h k v with hδLdef
   have hkp : 0 < k - h / a := sub_pos.mpr hzk
-  have hproj := hU.horizontalProjection_eq_of hl hr
+  have hproj := (hl ▸ hr ▸ hU.horizontalProjection_eq_Icc)
   have hR := hU.right_roof_gap_ge_cut ha hk hl hr hu huv hδR
   have hL : δL ^ 2 / (2 * (k - h / a)) ≤
       ∫ x in (-a)..(-a / 2), min (tiltedAffineCeiling a h x) (1 + v + x) - capRoof U x := by

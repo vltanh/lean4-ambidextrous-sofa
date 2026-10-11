@@ -70,4 +70,10 @@ theorem reflect_mem_lowerOutgoingArm (p : Plane) :
 theorem reflect_mem_lowerHall (p : Plane) : reflect p ∈ lowerHall ↔ p ∈ upperHall := by
   simp [lowerHall, upperHall]
 
+/-- Sine and cosine are positive on `(0, π / 2)`. -/
+theorem sin_cos_pos_of_mem_quarter {t : ℝ} (ht : t ∈ Set.Ioo 0 (Real.pi / 2)) :
+    0 < Real.sin t ∧ 0 < Real.cos t :=
+  ⟨Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos]),
+    Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩⟩
+
 end AmbidextrousSofa

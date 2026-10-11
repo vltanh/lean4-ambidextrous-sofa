@@ -36,7 +36,7 @@ theorem IsDownwardCap.norm_terminalBarrierRightDerivative_le {U : Set Plane}
     simpa using Real.sin_le_sin_of_le_of_le_pi_div_two (x := Real.pi / 6)
       (by linarith [Real.pi_pos]) haL.le (by linarith [Real.pi_pos])
   have hp : (MovingSofaOptimality.vplus U a).1 ∈ Icc (horizontalLeft U) (horizontalRight U) :=
-    horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex ▸
+    hU.horizontalProjection_eq_Icc ▸
       ⟨_, (MovingSofaOptimality.vplus_mem_edge hU.imported_isConvexBody a).1, rfl⟩
   obtain ⟨h1, h1'⟩ := abs_le.mp (abs_le_endpoint_sum_of_mem_Icc hx)
   obtain ⟨h2, h2'⟩ := abs_le.mp (abs_le_endpoint_sum_of_mem_Icc hp)

@@ -94,7 +94,7 @@ theorem fullTiltedSupportQuarterPair_cut_wall_derivative {t : ℝ}
       ((x - (D t).1) / Real.cos t ^ 2) t := by
   have hg := (fullTiltedSupportQuarterPair_support_derivatives hU hm haffine hρ hρ0 hρK heq ht).2
   have hd := ((hg.sub_const 1).add ((Real.hasDerivAt_sin t).const_mul x)).div
-    (Real.hasDerivAt_cos t) (quarter_sin_cos_pos ht).2.ne'
+    (Real.hasDerivAt_cos t) (sin_cos_pos_of_mem_quarter ht).2.ne'
   simp only [secondWall, companionNormal_eq_unitNormal]
   refine hd.congr_deriv ?_
   rw [secondTangentPoint, companionSupportPoint_coordinates]
@@ -105,8 +105,8 @@ theorem fullTiltedSupportQuarterPair_cut_wall_derivative {t : ℝ}
 theorem fullTiltedSupportQuarterPair_walls_core {t : ℝ}
     (ht : t ∈ Ioo 0 (Real.pi / 2)) :
     firstWall U t (Z t).1 = (Z t).2 ∧ secondWall V t (Z t).1 = (Z t).2 := by
-  rw [firstWall, secondWall, companionNormal_eq_unitNormal,
-    div_eq_iff (quarter_sin_cos_pos ht).1.ne', div_eq_iff (quarter_sin_cos_pos ht).2.ne']
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
+  rw [firstWall, secondWall, companionNormal_eq_unitNormal, div_eq_iff hs.ne', div_eq_iff hc.ne']
   constructor
   · show (F).f t - 1 - _ = _
     dsimp only [innerCornerPoint]
@@ -125,8 +125,8 @@ theorem fullTiltedSupportQuarterPair_core_strictAntiOn {α τ : ℝ}
   rw [interior_Icc] at ht
   have htq : t ∈ Ioo (0 : ℝ) (Real.pi / 2) := ⟨hα.trans_lt ht.1, ht.2.trans_le hτ⟩
   rw [(fullTiltedSupportQuarterPair_core_hasDerivAt hU hm haffine hρ hρ0 hρK heq htq).1.deriv]
-  exact sub_neg.mpr ((mul_neg_of_neg_of_pos (hphase t ht).1 (quarter_sin_cos_pos htq).2).trans
-    (mul_pos (hphase t ht).2 (quarter_sin_cos_pos htq).1))
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter htq
+  exact sub_neg.mpr ((mul_neg_of_neg_of_pos (hphase t ht).1 hc).trans (mul_pos (hphase t ht).2 hs))
 
 /-- Positivity removes the harmless zero clip in the original-to-cut
 comparison. Both original walls therefore pass through the literal
@@ -138,7 +138,7 @@ theorem fullTiltedSupportQuarterPair_original_walls_core {t : ℝ}
   obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints
     (show 0 < capWidth U by linarith only [hU.width_bounds.1, one_lt_M])
   have hwalls := fullTiltedSupportQuarterPair_walls_core hU hm haffine hρ hρ0 hρK heq ht
-  obtain ⟨hs, hc⟩ := quarter_sin_cos_pos ht
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   refine ⟨hwalls.1, le_antisymm ?_ (hwalls.2 ▸ secondWall_mono (leftCompanionCap_subset _ _)
     hU.isCap_fullLeftCompanion.nonempty hU.isCap.isCompact hc _)⟩
   simpa only [hwalls.2, max_eq_left hy.le] using hU.isCap.secondWall_le_leftCompanionCap
@@ -152,7 +152,7 @@ theorem fullTiltedSupportQuarterPair_positive_core_after_affine
     {t : ℝ} (ht : t ∈ Ioo 0 (Real.pi / 2)) (hy : 0 < (Z t).2)
     (hx : (Z t).1 ≤ horizontalRight U - capWidth U / 4) : Real.arctan m < t := by
   refine lt_of_not_ge fun hnot => hy.not_ge ?_
-  obtain ⟨hs, hc⟩ := quarter_sin_cos_pos ht
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints
     (show 0 < capWidth U by linarith only [hU.width_bounds.1, one_lt_M])
   rw [← (fullTiltedSupportQuarterPair_original_walls_core hU hm haffine hρ hρ0 hρK heq
@@ -178,7 +178,7 @@ theorem fullTiltedSupportQuarterPair_core_contact_of_earlier_cut_walls {t : ℝ}
       firstWall U s (Z t).1 < (Z t).2 := by
     have hgap : (Z t).1 < (B t).1 := by
       linarith [innerCorner_fst_eq_firstTangent (F).f (F).g (F).fD t,
-        mul_neg_of_neg_of_pos hp (quarter_sin_cos_pos ht).1]
+        mul_neg_of_neg_of_pos hp (sin_cos_pos_of_mem_quarter ht).1]
     rw [← hwalls.1]
     refine endpoint_lt_of_hasDerivAt_neg hts (fun r hr =>
       fullTiltedSupportQuarterPair_first_wall_derivative hU hm haffine hρ hρ0 hρK heq
@@ -187,14 +187,14 @@ theorem fullTiltedSupportQuarterPair_core_contact_of_earlier_cut_walls {t : ℝ}
     exact div_neg_of_neg_of_pos (sub_neg.mpr (hgap.trans_le
       ((fullTiltedSupportQuarterPair_first_tangent_order hU hm haffine hρ hρ0 hρK heq hunit).1
         (Ioo_subset_Icc_self ht) (Ioo_subset_Icc_self hrq) hr.1.le)))
-      (pow_pos (quarter_sin_cos_pos hrq).1 2)
+      (pow_pos (sin_cos_pos_of_mem_quarter hrq).1 2)
   have hstrict (s : ℝ) (hs : s ∈ Ioo (0 : ℝ) (Real.pi / 2)) (hne : s ≠ t) :
       cornerWall U s (Z t).1 < (Z t).2 := by
     rcases lt_or_gt_of_ne hne with hst | hts
     · obtain ⟨ha, hb, hab⟩ := hU.isCap.middleChord_endpoints
         (show 0 < capWidth U by linarith only [hU.width_bounds.1, one_lt_M])
       exact (min_le_right _ _).trans_lt ((hU.isCap.secondWall_le_leftCompanionCap ha hb hab
-        haffine hx (quarter_sin_cos_pos hs).1.le (quarter_sin_cos_pos hs).2).trans_lt
+        haffine hx (sin_cos_pos_of_mem_quarter hs).1.le (sin_cos_pos_of_mem_quarter hs).2).trans_lt
           (max_lt (hEarlier s ⟨hs.1, hst⟩) hy))
     · exact (min_le_left _ _).trans_lt (hafter s hs hts)
   have hN : sweptNiche U (Real.pi / 2) (Z t).1 = (Z t).2 :=
@@ -220,7 +220,7 @@ theorem fullTiltedSupportQuarterPair_core_contact {τ t : ℝ}
   have htq : t ∈ Ioo (0 : ℝ) (Real.pi / 2) := ⟨ht.1, ht.2.trans_le hτ.2⟩
   have hgap : (D t).1 < (Z t).1 := by
     linarith [innerCorner_fst_eq_secondTangent (F).f (F).g (F).gD t,
-      mul_pos hq (quarter_sin_cos_pos htq).2]
+      mul_pos hq (sin_cos_pos_of_mem_quarter htq).2]
   -- On the companion-unit prefix the second tangent moves right.
   obtain ⟨-, -, hDx, -, hderiv⟩ :=
     fullTiltedSupportQuarterPair_tangent_calculus hU hm haffine hρ hρ0 hρK heq
@@ -240,7 +240,7 @@ theorem fullTiltedSupportQuarterPair_core_contact {τ t : ℝ}
       ⟨hs.1.trans_le hr.1, hr.2.trans_lt htq.2⟩ _) fun r hr => ?_
   have hrq : r ∈ Ioo (0 : ℝ) (Real.pi / 2) := ⟨hs.1.trans hr.1, hr.2.trans htq.2⟩
   exact div_pos (sub_pos.mpr ((hDmono ⟨hrq.1.le, hr.2.le.trans ht.2.le⟩
-    (Ioo_subset_Icc_self ht) hr.2.le).trans_lt hgap)) (pow_pos (quarter_sin_cos_pos hrq).2 2)
+    (Ioo_subset_Icc_self ht) hr.2.le).trans_lt hgap)) (pow_pos (sin_cos_pos_of_mem_quarter hrq).2 2)
 
 /-- A strict horizontal tangent displacement before the top requires
 a strict height loss. This keeps open tangent pieces positive even
@@ -267,7 +267,7 @@ theorem fullTiltedSupportQuarterPair_first_tangent_height_pos_of_abscissa_lt
       (by rw [Real.sin_sub]; ring), mul_nonneg (sub_nonneg.mpr hur)
         (Real.sin_nonneg_of_nonneg_of_le_pi (by linarith [hr.2])
           (by linarith [hs.1, hr.1, ht.2, Real.pi_pos]))⟩
-  obtain ⟨hsin, hcos⟩ := quarter_sin_cos_pos ht
+  obtain ⟨hsin, hcos⟩ := sin_cos_pos_of_mem_quarter ht
   by_contra! hnot
   linarith [hmono (left_mem_Icc.mpr hst) (right_mem_Icc.mpr hst) hst,
     mul_pos hcos (sub_pos.mpr hmove), mul_nonpos_of_nonneg_of_nonpos hsin.le hnot,
@@ -299,7 +299,7 @@ theorem fullTiltedSupportQuarterPair_first_tangent_abscissa_of_maximizing_angle
   have hz := hlocal.hasDerivAt_eq_zero
     (fullTiltedSupportQuarterPair_first_wall_derivative hU hm haffine hρ hρ0 hρK heq hsq (B t).1)
   rw [div_eq_zero_iff, sub_eq_zero] at hz
-  exact ⟨hsq, (hz.resolve_right (pow_ne_zero 2 (quarter_sin_cos_pos hsq).1.ne')).symm⟩
+  exact ⟨hsq, (hz.resolve_right (pow_ne_zero 2 (sin_cos_pos_of_mem_quarter hsq).1.ne')).symm⟩
 
 end ActualPair
 

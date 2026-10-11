@@ -103,7 +103,7 @@ theorem fullTiltedSupportQuarterPair_initial_values {C h : ℝ}
       (D 0).2 = -h ∧ (D (Real.pi / 2)).2 = capRoof U (horizontalLeft U) := by
   obtain ⟨hf0, hg0, -, -, hfD0, hgD0, -, hgDL⟩ :=
     fullTiltedSupportQuarterPair_traces hU hm haffine hρ hρ0 hρK heq hmpos
-  have hj : horizontalLeft U + capWidth U / 4 = -C := by unfold capWidth; rw [hl, hr]; ring
+  have hj : horizontalLeft U + capWidth U / 4 = -C := (centered_quarter_points hl hr).1
   rw [hj, hlow] at hg0
   rw [hj] at hgD0
   refine ⟨?_, ?_, ?_, ?_⟩ <;>

@@ -37,7 +37,7 @@ theorem leftCompanionCap_subset (U : Set Plane) (a : ℝ) : leftCompanionCap U a
 private theorem left_cut {U : Set Plane} (hU : IsDownwardCap U) {a : ℝ}
     (ha : a ∈ horizontalProjection U) :
     horizontalLeft U ≤ a ∧ Icc (horizontalLeft U) a ⊆ horizontalProjection U := by
-  rw [horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex] at ha ⊢
+  rw [hU.horizontalProjection_eq_Icc] at ha ⊢
   exact ⟨ha.1, Icc_subset_Icc le_rfl ha.2⟩
 
 theorem IsDownwardCap.leftCompanionCap {U : Set Plane} (hU : IsDownwardCap U)

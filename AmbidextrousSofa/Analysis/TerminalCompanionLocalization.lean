@@ -66,7 +66,7 @@ theorem IsDownwardCap.secondWall_lt_of_late_angle {U : Set Plane}
   obtain ⟨p, hp, hsupport⟩ :=
     exists_coordDot_eq_support hU.isCompact hU.nonempty (companionNormal t)
   have hp1 : p.1 ∈ Icc (horizontalLeft U) (horizontalRight U) :=
-    horizontalProjection_eq_Icc hU.nonempty hU.isCompact hU.convex ▸ ⟨p, hp, rfl⟩
+    hU.horizontalProjection_eq_Icc ▸ ⟨p, hp, rfl⟩
   have hcos (s : ℝ) (hs : s ∈ Icc β t) : 0 < Real.cos s :=
     Real.cos_pos_of_mem_Ioo ⟨by linarith [hs.1, Real.pi_pos], hs.2.trans_lt htL⟩
   -- The wall of the fixed support point `p` decreases on `[β, t]`.

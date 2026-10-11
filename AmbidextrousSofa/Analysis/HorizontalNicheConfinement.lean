@@ -48,8 +48,7 @@ theorem IsFullCapMaximizer.corner_velocity_pos_or_pos_of_unit_density
       with u huL htu using hm ht ⟨ht.1.trans htu, huL⟩ htu.le
   have hw := hU.two_lt_width
   rw [capWidth] at hw
-  have hs := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   by_contra! h
   simp only [firstTangency, secondTangency] at hB hD
   linarith [mul_nonpos_of_nonpos_of_nonneg h.1 hc.le, mul_nonpos_of_nonpos_of_nonneg h.2 hs.le]

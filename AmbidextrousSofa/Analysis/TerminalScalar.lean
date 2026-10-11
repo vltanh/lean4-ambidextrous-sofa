@@ -48,7 +48,7 @@ theorem terminal_bound_le_arctan_five_fourths {α : ℝ}
       (33 + 5 * Real.sqrt 41) / 80 := by
   have hαL : α < Real.pi / 2 := hα1.trans_lt (Real.arctan_lt_pi_div_two (5 / 4))
   have hαmem : α ∈ Ioo (-(Real.pi / 2)) (Real.pi / 2) := ⟨by linarith [Real.pi_pos], hαL⟩
-  obtain ⟨hs, hc⟩ := terminal_sin_cos_pos (by linarith [Real.pi_pos]) hαL
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨by linarith [Real.pi_pos], hαL⟩
   have htan0 : 1 ≤ Real.tan α := by
     simpa only [Real.tan_pi_div_four] using Real.strictMonoOn_tan.monotoneOn
       ⟨by linarith [Real.pi_pos], by linarith [Real.pi_pos]⟩ hαmem hα0
@@ -67,15 +67,6 @@ theorem terminal_exact_bound_lt_rational :
   have hs : Real.sqrt (41 : ℝ) < 641 / 100 :=
     (Real.sqrt_lt (by norm_num) (by norm_num)).2 (by norm_num)
   linarith
-
-/-- The reference margin comes from the defining cubic and a proved
-arctangent lower bound. -/
-theorem forty_one_fiftieths_lt_half_M : (41 / 50 : ℝ) < M / 2 := by
-  have hY : (19 / 64 : ℝ) < Y := cubic_strictMono.lt_iff_lt.mp (by rw [Y_cubic]; norm_num [cubic])
-  have hbeta : Y - Y ^ 3 / 3 ≤ beta := self_sub_cube_div_three_le_arctan Y_pos.le
-  have hYsq := mul_pos (sub_pos.mpr hY) (show 0 < Y + 19 / 64 by linarith [Y_pos])
-  unfold M
-  nlinarith [Y_equation]
 
 /-- The exact terminal-angle cut applies to every actual downward cap, so
 the reference score excludes the low terminal angles. -/

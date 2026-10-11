@@ -26,10 +26,6 @@ namespace AmbidextrousSofa
 def initialAngleStationaryValue (K C k d : ℝ) : ℝ :=
   2 * C - 2 * (C - K / 2) ^ 2 - k * K * (C - d / 2)
 
-theorem initialAngle_offset_sq :
-    (Real.sqrt 2 - 1) ^ 2 + 2 * (Real.sqrt 2 - 1) = (1 : ℝ) := by
-  linear_combination Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)
-
 theorem initialAngle_offset_bounds :
     (41 / 100 : ℝ) < Real.sqrt 2 - 1 ∧ Real.sqrt 2 - 1 < 29 / 70 := by
   have := Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)
@@ -41,7 +37,7 @@ theorem initialAngle_stationary_lt_rational {C k d s : ℝ}
     (hs2 : s ^ 2 = 1 + k ^ 2) (hkd : k * d = s - 1) :
     initialAngleStationaryValue (Real.sqrt 2 - 1) C k d < (5259 / 6400 : ℝ) := by
   obtain ⟨hK0, hK1⟩ := initialAngle_offset_bounds
-  have hK := initialAngle_offset_sq
+  have hK := sqrt_two_sub_one_quadratic
   have hr0 : (8 : ℝ) ≤ √73 := Real.le_sqrt_of_sq_le (by norm_num)
   have hr1 : √(73 : ℝ) < 171 / 20 := (Real.sqrt_lt' (by norm_num)).2 (by norm_num)
   have hr2 := Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 73)
@@ -74,7 +70,7 @@ theorem initialAngle_rational_lt_half_M : (5259 / 6400 : ℝ) < M / 2 := by
 theorem initialAngle_diagonal_small_width {C : ℝ} (hC : C ≤ 49 / 100) :
     2 * C - 2 * (C - (Real.sqrt 2 - 1) / 2) ^ 2 < (41 / 50 : ℝ) := by
   obtain ⟨hK0, hK1⟩ := initialAngle_offset_bounds
-  have hK := initialAngle_offset_sq
+  have hK := sqrt_two_sub_one_quadratic
   generalize Real.sqrt 2 - 1 = K at *
   linarith [mul_pos (show 0 < 49 / 50 - K - 2 / 5 * (1 + K) by linarith)
       (show 0 < 49 / 50 - K + 2 / 5 * (1 + K) by linarith),

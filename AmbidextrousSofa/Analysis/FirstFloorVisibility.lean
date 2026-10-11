@@ -64,7 +64,7 @@ theorem fullTiltedSupportQuarterPair_earlier_cut_walls_eventually {t : ℝ}
   -- The corner lies strictly right of the second tangent point, also nearby.
   obtain ⟨A, hA0, hA1⟩ := exists_between (show (D t).1 < (Z t).1 by
     linarith [innerCorner_fst_eq_secondTangent (F).f (F).g (F).gD t,
-      mul_pos hq (quarter_sin_cos_pos ht).2])
+      mul_pos hq (sin_cos_pos_of_mem_quarter ht).2])
   have hevent : ∀ᶠ s in 𝓝 t, s ∈ Ioo (0 : ℝ) (Real.pi / 2) ∧ (D s).1 < A ∧ A < (Z s).1 := by
     filter_upwards [Ioo_mem_nhds ht.1 ht.2, hDcont.eventually (gt_mem_nhds hA0),
       hX.continuousAt.eventually (lt_mem_nhds hA1)] with s hs hD hZ
@@ -98,7 +98,7 @@ theorem fullTiltedSupportQuarterPair_earlier_cut_walls_eventually {t : ℝ}
       (hlocal ⟨hla.trans (har.trans_le hw.1), hw.2.trans_lt hsu.2⟩).1 (Z s).1) fun w hw => ?_
   have hwlocal := hlocal ⟨hla.trans (har.trans hw.1), hw.2.trans hsu.2⟩
   exact div_pos (sub_pos.mpr (hwlocal.2.1.trans hslocal.2.2))
-    (pow_pos (quarter_sin_cos_pos hwlocal.1).2 2)
+    (pow_pos (sin_cos_pos_of_mem_quarter hwlocal.1).2 2)
 
 /-- This is the concrete neighborhood needed when the first floor zero
 coincides with the bad-entry angle. It follows from the actual strict

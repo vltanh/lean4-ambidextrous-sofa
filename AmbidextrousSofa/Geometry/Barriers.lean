@@ -95,8 +95,7 @@ theorem partialBarrier_le_of_angular_constraints {K : Set Plane} {α : ℝ} {p :
     partialBarrier K α p.1 ≤ p.2 := by
   refine max_le (sweptNiche_le_of_forall hα hp0 fun θ hθ => ?_) ((firstWall_le_iff
     (Real.sin_pos_of_pos_of_lt_pi hα (by linarith [Real.pi_pos]))).2 hterminal)
-  have hs := Real.sin_pos_of_pos_of_lt_pi hθ.1 (by linarith [hθ.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [hθ.1, Real.pi_pos], hθ.2.trans_le hαL⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hθ.1, hθ.2.trans_le hαL⟩
   exact (cornerWall_le_iff hs hc).2 ((mem_canonicalHall K _ _ p).1 (hinside θ hθ)).2.2
 
 /-- Upward support invariance identifies the cap walls with the actual hull walls. -/

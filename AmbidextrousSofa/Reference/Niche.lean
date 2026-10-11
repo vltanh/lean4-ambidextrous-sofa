@@ -141,10 +141,8 @@ theorem referenceNiche_mirror (x : ℝ) : referenceNiche (2 * k - x) = reference
 theorem cornerWall_referenceHull_le_apex {t : ℝ}
     (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) (x : ℝ) :
     cornerWall referenceHull t x ≤ referenceApexHeight t := by
-  have hs : Real.sin t ≠ 0 := (Real.sin_pos_of_pos_of_lt_pi ht.1
-    (by linarith [ht.2, Real.pi_pos])).ne'
-  have hc : Real.cos t ≠ 0 := (Real.cos_pos_of_mem_Ioo
-    ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩).ne'
+  have hs : Real.sin t ≠ 0 := (sin_cos_pos_of_mem_quarter ht).1.ne'
+  have hc : Real.cos t ≠ 0 := (sin_cos_pos_of_mem_quarter ht).2.ne'
   calc cornerWall referenceHull t x = cornerWall referenceHull t x * Real.sin t ^ 2 +
         cornerWall referenceHull t x * Real.cos t ^ 2 := by
         rw [← mul_add, Real.sin_sq_add_cos_sq, mul_one]

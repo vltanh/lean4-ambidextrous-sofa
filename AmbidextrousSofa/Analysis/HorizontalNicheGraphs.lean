@@ -31,7 +31,7 @@ theorem firstWall_le_at_firstTangency
     (ht : t ∈ Ioo (0 : ℝ) (Real.pi / 2)) :
     firstWall U s (firstTangency U t).1 ≤ (firstTangency U t).2 := by
   rw [← firstWall_firstTangency U
-    (Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])).ne']
+    (sin_cos_pos_of_mem_quarter ht).1.ne']
   rcases le_total s t with hst | hts
   · exact endpoint_le_of_hasDerivAt_nonneg hst
       (fun r hr => hd r ⟨hs.1.trans_le hr.1, hr.2.trans_lt ht.2⟩ _) fun r hr =>
@@ -64,8 +64,7 @@ theorem IsFullCapMaximizer.sweptNiche_graphs_of_unit_density
   have hsub := regularCornerDomain_zero.ge
   have hfirst := hunit.mono fun _ h => h.1
   have hcompanion := hunit.mono fun _ h => h.2
-  have hs : 0 < Real.sin t := Real.sin_pos_of_pos_of_lt_pi ht.1 (by linarith [ht.2, Real.pi_pos])
-  have hc : 0 < Real.cos t := Real.cos_pos_of_mem_Ioo ⟨by linarith [ht.1, Real.pi_pos], ht.2⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ht
   have h1 (hr : 0 ≤ secondCornerVelocity U t) :
       sweptNiche U (Real.pi / 2) (firstTangency U t).1 = (firstTangency U t).2 := by
     have hsecond : (firstTangency U t).2 ≤ secondWall U t (firstTangency U t).1 := by

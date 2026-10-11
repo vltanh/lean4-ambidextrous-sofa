@@ -37,8 +37,7 @@ theorem sweptNiche_mono {U V : Set Plane} (hUV : U ⊆ V) (hne : U.Nonempty)
     (hV : IsCompact V) {α : ℝ} (hα0 : 0 < α) (hα : α ≤ Real.pi / 2)
     (x : ℝ) : sweptNiche U α x ≤ sweptNiche V α x := by
   refine sweptNiche_le_of_forall hα0 (sweptNiche_nonneg V α x) fun θ hθ => ?_
-  have hs := Real.sin_pos_of_pos_of_lt_pi hθ.1 (by linarith [hθ.2, Real.pi_pos])
-  have hc := Real.cos_pos_of_mem_Ioo ⟨by linarith [hθ.1, Real.pi_pos], hθ.2.trans_le hα⟩
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hθ.1, hθ.2.trans_le hα⟩
   exact (min_le_min (firstWall_mono hUV hne hV hs x) (secondWall_mono hUV hne hV hc x)).trans
     (cornerWall_le_sweptNiche (sweptWallValues_bddAbove hV hα x) hθ)
 
