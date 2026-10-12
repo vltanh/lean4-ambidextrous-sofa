@@ -57,22 +57,22 @@ at the first switch are
  \qquad R\sin(\beta/2+\pi/8)=\frac23,
  \qquad 4A\sin\beta=1.
 \]
-To verify the trigonometric identity, put $z=(1-2Y^2)/(3Y)$.
-The root bounds give $0<z<1$ and $\pi/12<\beta<\pi/4$,
-so $0<T<\pi/4$. Double- and triple-angle expansion gives
+The cubic is precisely the angle-matching equation. Put
+$\gamma=\beta/2+\pi/8$. Since $0<Y<1/3$, all the following
+angles lie in the first tangent branch. The cubic gives
 \[
- \tan(2T)=\frac{3(4Y^2-5Y-1)}{5-15Y-12Y^2},\qquad
- \tan(2\arctan z)=\frac{3(5Y-1)}{16Y^2-Y-1}.
+ \frac{4Y}{1-4Y^2}=\frac{1+Y}{1-Y},
 \]
-After removing their common factor $3$, the difference of the
-cross-products is $(16Y-6)(4Y^3+3Y-1)=0$. The denominators are
-nonzero because both angles lie in $(0,\pi/2)$. Injectivity of
-tangent there gives $\tan T=z$. Thus
+so the double-angle and addition formulas yield
+$2\arctan(2Y)=\beta+\pi/4$, or $\tan\gamma=2Y$.
+Also $T=\pi/2-(\beta+\gamma)$, and therefore
 \[
- R\cos T=c,\qquad R\sin T=\frac1{3s}-s.
+ \cos T=\sin\beta\cos\gamma+\cos\beta\sin\gamma
+        =\tfrac32\cos\beta\sin\gamma.
 \]
-Since $(\beta/2+\pi/8)+T=\pi/2-\beta$, angle addition gives
-the two matching identities displayed above. Substitution into
+It follows that $R\sin\gamma=2/3$ and
+$R\cos\gamma=1/(3Y)=(4A/3)\cos\beta$.
+Substitution into
 the first two phases proves agreement in value and first derivative
 at $\beta$. The two complement
 identities follow phase by phase from \cref{eq:reference-F,eq:reference-G}
@@ -159,6 +159,12 @@ therefore gives $J_{\KR}\times[0,1]\subset\HR$, so the hull has
 nonempty interior.
 
 \subsection{The niche and the two passages}
+
+The supporting outer walls contain the hull at every angle. Removing
+the points below both inner walls therefore gives a shape that passes
+the corner. Removing the reflected niche gives the second passage. We
+check that these two removals leave a connected band, so they describe
+an admissible body.
 Write $\nR=n_L(\HR)$, using the two-wall formula of
 \cref{eq:niche}. Downward filling preserves upward support values,
 so this is also $n_L(\KR)$. Define

@@ -48,8 +48,8 @@ theorem IsFullCapMaximizer.centered_intermediate_width_tilt
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
     let h := 1 - capRoof U (-a / 2)
-    h < 17 / 50 ∧ (a - Real.sqrt 2) ^ 2 +
-      (4 * a / (4 * a - h)) * (Real.sqrt 2 - 1 + h / 2) ^ 2 ≤ 9 / 25 := by
+    h < 1 / 3 ∧ (a - Real.sqrt 2) ^ 2 +
+      (4 * a / (4 * a - h)) * (Real.sqrt 2 - 1 + h / 2) ^ 2 ≤ 2 * (1 - referenceHalfAreaLower) := by
   obtain ⟨hright, hAff⟩ := hU.centered_middle hl hr hheight hm haffine
   have hleft := (hU.middle_endpoints_gt_half_of_affine hheight ⟨m, c, haffine⟩).1
   rw [hl, hr, show -a + (a - -a) / 4 = -a / 2 by ring] at hleft
@@ -59,6 +59,6 @@ theorem IsFullCapMaximizer.centered_intermediate_width_tilt
     (sub_nonneg.mpr (capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _))
     (by linarith) hl hr (sub_sub_cancel 1 _).symm hright hAff
     (by linarith [Real.pi_pos]) le_rfl
-    (forty_one_fiftieths_lt_half_M.le.trans hU.reference_le)
+    (referenceHalfAreaLower_le_half_M.trans hU.reference_le)
 
 end AmbidextrousSofa

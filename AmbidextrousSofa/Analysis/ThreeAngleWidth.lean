@@ -31,23 +31,27 @@ theorem IsDownwardCap.threeAngle_width_bounds_of_endpoint_laws {U : Set Plane}
     (hqR : 0 ≤ qR) (hqL : 0 ≤ qL)
     (hEPR : capRoof U a = 1 / 2 + h / 4 + (3 * qR - qL) / 4)
     (hEPL : capRoof U (-a) = 1 / 2 - 3 * h / 4 + (3 * qL - qR) / 4)
-    (hscore : 41 / 50 ≤ threeAngleComparisonScore U) :
-    1001 / 1000 < a ∧ a < 37 / 25 ∧ h < 17 / 50 := by
+    (hscore : M / 2 ≤ threeAngleComparisonScore U) :
+    1 < a ∧ a < 37 / 25 ∧ h < 1 / 3 := by
+  have hscoreReference : referenceHalfAreaLower ≤ threeAngleComparisonScore U :=
+    referenceHalfAreaLower_le_half_M.trans hscore
+  have hscore41 : 41 / 50 ≤ threeAngleComparisonScore U :=
+    forty_one_fiftieths_lt_half_M.le.trans hscore
   -- The endpoint laws give lower bounds on the two endpoint heights.
   have hceiling := hU.capRoof_le_tiltedAffineCeiling ha0 hl hr hleft hright haffine (-a)
     ((hl ▸ hr ▸ hU.horizontalProjection_eq_Icc) ▸ ⟨le_rfl, by linarith only [ha0]⟩)
   rw [tiltedAffineCeiling, mul_neg, div_mul_cancel₀ h ha0.ne'] at hceiling
   obtain ⟨hER, hEL, hEP⟩ := partialTriangle_endpoint_lower_bounds hqR hqL hEPR hEPL
     (capRoof_le_one hU.isCompact hU.inStrip a) (by linarith only [hceiling])
-  -- Each width range below excludes the score `41 / 50`.
-  have haShort : 1001 / 1000 < a := lt_of_not_ge fun h' => not_lt_of_ge hscore
+  -- The short and triangle ranges use the generated budget; the preliminary cuts use its coarse lower bound.
+  have haShort : 1 < a := lt_of_not_ge fun h' => not_lt_of_ge hscoreReference
     (hU.threeAngleScore_lt_of_short_width ha0 h' hh0 hl hr hleft hright haffine)
-  have haWide : a < 8 / 5 := lt_of_not_ge fun h' => not_lt_of_ge hscore
+  have haWide : a < 8 / 5 := lt_of_not_ge fun h' => not_lt_of_ge hscore41
     (hU.threeAngleScore_lt_of_wide_width_and_endpoint_bounds h' ha1 hh0 hh1 hl hr hleft hright
       haffine hEP (by linarith only [hER, hh0]) (by linarith only [hEL, hh0]))
   have hhTilt := (hU.threeAngle_intermediate_width_tilt_bound (by linarith only [haShort])
-    haWide.le hh0 hh1 hl hr hleft hright haffine hscore).1
-  exact ⟨haShort, lt_of_not_ge fun h' => not_lt_of_ge hscore
+    haWide.le hh0 hh1 hl hr hleft hright haffine hscoreReference).1
+  exact ⟨haShort, lt_of_not_ge fun h' => not_lt_of_ge hscoreReference
     (hU.threeAngleScore_lt_of_full_triangles_and_endpoint_bounds h' haWide.le hh0 hhTilt.le
       hl hr hleft hright haffine hEP hER hEL), hhTilt⟩
 

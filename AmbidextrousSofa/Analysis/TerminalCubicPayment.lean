@@ -1,6 +1,9 @@
 module
 
 public import AmbidextrousSofa.Analysis.TerminalThreeSupports
+public import AmbidextrousSofa.Analysis.TerminalCircleEndpoints
+public import AmbidextrousSofa.Analysis.ProperExcessBudget
+public import AmbidextrousSofa.Analysis.TiltedLateExcessScalar
 
 @[expose] public section
 
@@ -12,10 +15,9 @@ integral of the positive curvature excess. Its trigonometric kernel is
 nonnegative before the selected prefix endpoint. A linear late-tail
 envelope therefore pays a cubic amount, with all clipping retained.
 
-The numerical allowance is proved by exact rational inequalities. The
-cosine cut at `147/200` follows from the elementary quadratic cosine
-bound and two double-angle identities. The late-tail envelope is a
-hypothesis of the payment.
+The overlap is proportional to terminal slope, so its cubic moment
+pays the terminal cosine margin throughout the slope range. The same
+quadratic half-angle cosine bound supplies the prefix cut.
 -/
 
 noncomputable section
@@ -23,6 +25,8 @@ noncomputable section
 open Set Filter MeasureTheory
 
 namespace AmbidextrousSofa
+
+open Analysis
 
 def terminalWeightedExcess (v : ℝ → ℝ) (θ : ℝ) : ℝ :=
   ∫ t in 0..θ, max (v t - 1) 0 *
@@ -95,50 +99,53 @@ theorem terminalWeightedExcess_eq_zero_of_unit_prefix {v : ℝ → ℝ} {θ : �
   filter_upwards [ae_restrict_of_ae_restrict_of_subset Ioc_subset_Icc_self hv] with t ht
   simp [max_eq_right (sub_nonpos.2 ht)]
 
-/-- The rational angular cut uses two exact cosine double-angle
-identities and the universal quadratic cosine lower bound. -/
-theorem terminal_cos_rational_cut : (37 / 50 : ℝ) < Real.cos (147 / 200) := by
-  have h1 := Real.one_sub_sq_div_two_le_cos (x := (147 / 800 : ℝ))
-  have h2 := Real.cos_two_mul (147 / 800 : ℝ)
-  have h3 := Real.cos_two_mul (147 / 400 : ℝ)
-  norm_num at h1 h2 h3
-  nlinarith [mul_nonneg (sub_nonneg.2 h1) (sub_nonneg.2 h1)]
-
-/-- The exact allowance from the late-tail envelope, for the complementary cotangent range. The
-excess prefix is shorter than `7/40`, and the cosines of the prefix end and of `α` exceed `2/3`
-and `3/25`. -/
-theorem terminalWeightedExcess_lt_allowance_of_late_tail
+/-- One angularly scaled cubic payment covers the entire terminal-slope range. -/
+theorem terminalWeightedExcess_lt_allowance_of_angular_budget
     {v : ℝ → ℝ} {C T α : ℝ}
     (hCT : 0 ≤ C - T) (hCT1 : C - T ≤ 37 / 50)
-    (hα0 : 0 < α) (hαL : α < Real.pi / 2)
-    (hk : (1 / 8 : ℝ) ≤ terminalSlope α)
+    (hα0 : 0 < α) (hαL : α < Real.pi / 2) (hk1 : terminalSlope α ≤ 3 / 8)
     (hint : IntervalIntegrable (fun t : ℝ => max (v t - 1) 0 *
       (Real.tan (Real.arcsin (C - T)) * Real.cos t - Real.sin t))
         volume 0 (Real.arcsin (C - T)))
     (hbound : ∀ᵐ t ∂volume.restrict (Icc 0 (Real.arcsin (C - T))),
-      max (v t - 1) 0 ≤ (19 / 25 : ℝ) *
-        max (t - (Real.pi / 2 - 91 / 100)) 0) :
-    terminalWeightedExcess v (Real.arcsin (C - T)) <
-      (39 / 4400 : ℝ) * Real.cos α := by
+      max (v t - 1) 0 ≤ (4 / 5 : ℝ) *
+        max (t - (Real.pi / 2 - properAngularDeadline (terminalSlope α))) 0) :
+    terminalWeightedExcess v (Real.arcsin (C - T)) < terminalCircleGap * Real.cos α := by
+  have hk0 := terminalSlope_pos hα0 hαL
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩
+  have hcs : terminalSlope α * Real.sin α = Real.cos α := div_mul_cancel₀ _ hs.ne'
+  have hc1 := mul_le_mul_of_nonneg_right hk1 hs.le
+  rw [hcs] at hc1
+  have hsin := terminalCircleSineLower_le_of_slope hc.le hs
+    (Real.cos_sq_add_sin_sq α) hc1
+  have hcSlope : terminalCircleSineLower * terminalSlope α ≤ Real.cos α := by
+    linarith only [hcs, mul_le_mul_of_nonneg_left hsin hk0.le]
   have hq : (2 / 3 : ℝ) < Real.cos (Real.arcsin (C - T)) := by
     rw [Real.cos_arcsin, Real.lt_sqrt (by norm_num)]
     nlinarith only [hCT, hCT1]
-  -- The excess starts at `π/2 - 91/100`, so the prefix has length less than `7/40`.
-  have hℓ : max (Real.arcsin (C - T) - (Real.pi / 2 - 91 / 100)) 0 < 7 / 40 := by
-    refine max_lt ?_ (by norm_num)
-    have := (Real.arcsin_lt_iff_lt_sin' (x := C - T) (y := Real.pi / 2 - 147 / 200)
-      ⟨by linarith [Real.pi_gt_three], by linarith⟩).2
-      (by rw [Real.sin_pi_div_two_sub]; linarith [terminal_cos_rational_cut])
-    linarith
-  have hc : (3 / 25 : ℝ) < Real.cos α := by
-    obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩
-    rw [terminalSlope, le_div_iff₀ hs] at hk
-    nlinarith only [hk, hs, hc, Real.sin_sq_add_cos_sq α]
-  refine (terminalWeightedExcess_le_cubic (t₀ := Real.pi / 2 - 91 / 100) (K := (19 / 25 : ℝ))
-    (Real.arcsin_nonneg.mpr hCT) (Real.arcsin_lt_pi_div_two.mpr (by linarith))
-    (by linarith [Real.pi_gt_three]) (by norm_num) hint hbound).trans_lt ?_
-  have hpow := pow_lt_pow_left₀ hℓ (le_max_right _ _) (by norm_num : 3 ≠ 0)
+  have hcut := eleven_fifteenths_lt_arccos_of_le (by linarith only [hCT]) hCT1
+  rw [Real.arccos_eq_pi_div_two_sub_arcsin] at hcut
+  have hℓ : max (Real.arcsin (C - T) -
+      (Real.pi / 2 - properAngularDeadline (terminalSlope α))) 0 ≤ (2 / 3) * terminalSlope α := by
+    apply max_le
+    · dsimp [properAngularDeadline]; linarith only [hcut]
+    · positivity
+  refine (terminalWeightedExcess_le_cubic (K := (4 / 5 : ℝ))
+    (Real.arcsin_nonneg.mpr hCT) (Real.arcsin_lt_pi_div_two.mpr (by linarith only [hCT1]))
+    (by dsimp [properAngularDeadline]; linarith only [hk1, Real.pi_gt_three])
+    (by norm_num) hint hbound).trans_lt ?_
+  have hpow := pow_le_pow_left₀ (le_max_right _ _) hℓ 3
+  have hcube : terminalSlope α ^ 3 ≤ (9 / 64) * terminalSlope α := by
+    nlinarith only [mul_le_mul_of_nonneg_right (pow_le_pow_left₀ hk0.le hk1 2) hk0.le]
+  have hprod := mul_le_mul hcSlope hq.le (by positivity : (0 : ℝ) ≤ (2 / 3)) hc.le
   rw [div_lt_iff₀ (by positivity)]
-  linarith only [hpow, hc, hq, mul_pos (sub_pos.2 hc) (sub_pos.2 hq)]
+  have hcert : (4 / 5 : ℝ) * (2 / 3) ^ 3 * (3 / 8) ^ 2 <
+      terminalCircleGap * (6 * (2 / 3) * terminalCircleSineLower) := by
+    have h := terminalCircleGap_gt_cubicPrice
+    unfold terminalCubicPrice at h
+    exact (div_lt_iff₀ (by have hp := terminalCircleSineLower_pos; positivity)).mp h
+  have hpriced := mul_lt_mul_of_pos_right hcert hk0
+  have hproduct := mul_le_mul_of_nonneg_left hprod terminalCircleGap_pos.le
+  nlinarith only [hpow, hcube, hproduct, hpriced]
 
 end AmbidextrousSofa

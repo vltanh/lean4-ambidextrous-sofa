@@ -20,11 +20,11 @@ The lower endpoint is greater than $1/2$ by
 The width and height estimates of \cref{lem:preliminary-cuts},
 followed by \cref{cor:full-three-tent-cut}, sharpen this to
 \begin{equation}\label{eq:tilted-parameter-range}
- 1/2<C<37/50,\qquad 0<h<17/50.
+ 1/2<C<37/50,\qquad 0<h<1/3.
 \end{equation}
 The strict width cut applies with $a=2C$: a cap with
-$C\ge37/50$ would have $P<41/50$, whereas a maximum has
-$P\ge\Mc/2>41/50$.
+$C\ge37/50$ would have $P<\underline p$, whereas a maximum has
+$P\ge\Mc/2>\underline p$.
 
 We use the actual support of the high wing and the support of the
 low wing alone:
@@ -117,40 +117,43 @@ $1/2<C<4/5$, $0<h<1/2$ cannot have $u\le1$ almost everywhere.
 \begin{proof}
 The contact geometry and the joint source decomposition are proved
 in \cref{lem:tilted-first-unit-geometry,lem:variation-joint-occupation}.
-If the companion density is also at most one, the two clipped
-strip moments give the contradiction
-$6CT\le4T/3<3T$ in \cref{lem:tilted-two-unit}.
-Otherwise \cref{lem:tilted-fold-energy} proves
-\[
- T>0,\qquad 6CT\le\frac{97}{48}T<3T,
-\]
-contradicting $C>1/2$. The fractional source equations used there
-allow measurable ties, folds, and later floor crossings.
+The two clipped strip moments in \cref{lem:tilted-two-unit} give
+$T>0$ and $6CT<3T$ when the companion density is also at most one.
+If it exceeds one, \cref{lem:tilted-fold-energy} pays for the extra
+fold and gives the same strict inequality. Since $C>1/2$, both
+conclusions contradict the required strip moment $6CT$. The common
+source occupations in that calculation account for measurable ties
+and later floor crossings.
 \end{proof}
+
+The first-wing exclusion reduces rigidity to controlling the initial
+corner. A dry endpoint gives a common width boundary: triangle payments
+exclude larger widths, while an energy test handles smaller ones.
+For small heights, the ordinary-sofa area bound supplies the same control.
 
 \begin{lemma}[Horizontal middle rigidity]\label{lem:full-affine-rigidity}
 Every canonical full maximum has middle slope zero.
 \end{lemma}
 \begin{proof}
 Suppose first that its middle slope is positive. The parameter
-range is \cref{eq:tilted-parameter-range}. For $C\le2/3$, or
-for $h\ge21/100$, \cref{lem:tilted-unit-regions} gives $u\le1$,
-contradicting \cref{lem:tilted-first-unit-exclusion}.
+range is \cref{eq:tilted-parameter-range}. For \(C\le2/3\),
+With the energy-balance height $h_0$ of \eqref{eq:tilted-balance-height},
+\cref{lem:tilted-unit-regions} gives \(u\le1\), contradicting
+\cref{lem:tilted-first-unit-exclusion}.
 
-It remains that $2/3<C<37/50$ and $h<21/100$.
-The endpoint geometry in \cref{lem:tilted-dry-endpoint} gives
-$N_L(U)(-C)=0$. If $h\ge1/20$ and $C\le73/100$, the last
-case of \cref{lem:tilted-unit-regions} again gives $u\le1$.
-If $h\ge1/20$ and $C\ge73/100$, the improved three-angle
-estimate \cref{lem:tilted-medium-width} gives $P<41/50$,
-contradicting maximality.
+For larger widths, \cref{lem:tilted-dry-endpoint} gives
+\(N_L(U)(-C)=0\). The initial radius test fixes a comparison width
+\(C_{\rm rad}\), defined in \eqref{eq:tilted-radius-width}.
+The triangle payment of \cref{lem:tilted-medium-width} excludes
+\(C\ge C_{\rm rad}\) for every allowed height. Below this width,
+With the energy-balance height $h_0$ of \eqref{eq:tilted-balance-height},
+\cref{lem:tilted-unit-regions} gives \(u\le1\) whenever \(h\ge h_0\).
 
-The remaining interval is $0<h<1/20<509/10000$.
-By \cref{lem:tilted-small-height}, failure of either initial-floor
-energy test contradicts the ordinary one-turn area bound.
-When both tests hold, \cref{lem:tilted-initial-energy} gives
-$u\le1$ and the first-wing exclusion applies. These alternatives
-exhaust all positive slopes.
+For \(0<h\le h_0\), \cref{lem:tilted-small-height} shows that
+failure of either initial-floor energy test contradicts the ordinary
+one-turn area bound. When both tests hold,
+\cref{lem:tilted-initial-energy} again gives \(u\le1\).
+The first-wing exclusion therefore rules out every positive slope.
 Horizontal reflection preserves the full-angle cap score and
 changes the sign of the middle slope. Apply the positive-slope
 conclusion to the reflection to exclude negative slopes.

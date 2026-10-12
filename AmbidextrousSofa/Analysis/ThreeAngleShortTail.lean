@@ -29,31 +29,31 @@ theorem IsDownwardCap.threeAngle_integral_ge_diagonal_two_tails {U : Set Plane}
     (hu : diagonalRight U = 1 + u) (hv : diagonalLeft U = 1 - h + v)
     (hcompR : u + k ≤ support U (1, k))
     (hcompL : v + k * (1 - h) ≤ support U (-1, k))
-    (hη : (2 / 25 : ℝ) ≤ 1 - nearDiagonalNorm k + k ^ 2)
+    (hη : shortTailHeight k ≤ 1 - nearDiagonalNorm k + k ^ 2)
     (hd : (u - v + h) / 2 ∈ Icc (-a / 2) (a / 2))
     (hpL : k - v + h ∈ Icc (-a / 2) (a / 2))
     (hpR : k - u ∈ Icc (-a / 2) (a / 2))
     (hendL : k - v + h + shortLeftTailHeight k h (nearDiagonalLeftDeficit U h k v) /
       (1 - k) ≤ (u - v + h) / 2)
-    (hendR : k - u + shortRightTailHeight (nearDiagonalRightDeficit U k u) /
+    (hendR : k - u + shortRightTailHeight k (nearDiagonalRightDeficit U k u) /
       (1 - k) ≤ -(u - v + h) / 2)
     (hL : nearDiagonalNorm k + shortLeftTailHeight k h (nearDiagonalLeftDeficit U h k v) / k ≤
       u + v - h)
-    (hR : nearDiagonalNorm k + shortRightTailHeight (nearDiagonalRightDeficit U k u) / k ≤
+    (hR : nearDiagonalNorm k + shortRightTailHeight k (nearDiagonalRightDeficit U k u) / k ≤
       u + v - k * h)
     (hL0 : 0 ≤ L)
     (hclipL : shortLeftTailHeight k h (nearDiagonalLeftDeficit U h k v) / k -
       (k - v + h + a / 2) ≤ L)
-    (hclipR : shortRightTailHeight (nearDiagonalRightDeficit U k u) / k -
+    (hclipR : shortRightTailHeight k (nearDiagonalRightDeficit U k u) / k -
       (k - u + a / 2) ≤ L) :
     (max ((u + v - h) / 2 - k) 0) ^ 2 -
       (max (u - k - a / 2) 0) ^ 2 / 2 - (max (v - h - k - a / 2) 0) ^ 2 / 2 +
       nearTriangleCoefficient k *
         (shortLeftTailHeight k h (nearDiagonalLeftDeficit U h k v) ^ 2 +
-          shortRightTailHeight (nearDiagonalRightDeficit U k u) ^ 2) - k * L ^ 2 ≤
+          shortRightTailHeight k (nearDiagonalRightDeficit U k u) ^ 2) - k * L ^ 2 ≤
       ∫ x in (-a / 2)..(a / 2), threeAngleBarrier U x := by
   set EL := shortLeftTailHeight k h (nearDiagonalLeftDeficit U h k v)
-  set ER := shortRightTailHeight (nearDiagonalRightDeficit U k u)
+  set ER := shortRightTailHeight k (nearDiagonalRightDeficit U k u)
   -- The two nearby support competitors add two disjoint triangles to the diagonal floor.
   have hpt (x : ℝ) : max (min (u - k - x) (v - h - k + x)) 0 +
       affineCutTriangle k EL (k - v + h) x + affineCutTriangle k ER (k - u) (-x) ≤

@@ -81,7 +81,7 @@ theorem IsDownwardCap.attachedCorner_fst_mem_middle_of_roof_endpoints
     {U : Set Plane} (hU : IsDownwardCap U) {C h θ : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hleft : capRoof U (-C) = 1 - h) (hright : capRoof U C = 1)
-    (hC0 : 1 / 2 ≤ C) (hC1 : C ≤ 37 / 50) (hh : h ≤ 17 / 50)
+    (hC0 : 1 / 2 ≤ C) (hC1 : C ≤ 37 / 50) (hh : h ≤ 1 / 3)
     (hθ : θ ∈ Ioo (0 : ℝ) (Real.pi / 2)) :
     (attachedCorner U θ).1 ∈ Ioo (-C) C := by
   have hmem (x : ℝ) (hx : x ∈ Icc (-C) C) : (x, capRoof U x) ∈ U := capRoof_mem hU.isCompact (by

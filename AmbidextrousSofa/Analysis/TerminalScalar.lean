@@ -63,8 +63,8 @@ theorem terminal_bound_le_arctan_five_fourths {α : ℝ}
   linarith [Real.sin_sq_add_cos_sq α]
 
 theorem terminal_exact_bound_lt_rational :
-    (33 + 5 * Real.sqrt 41) / 80 < (1301 / 1600 : ℝ) := by
-  have hs : Real.sqrt (41 : ℝ) < 641 / 100 :=
+    (33 + 5 * Real.sqrt 41) / 80 < (41 / 50 : ℝ) := by
+  have hs : Real.sqrt (41 : ℝ) < 13 / 2 :=
     (Real.sqrt_lt (by norm_num) (by norm_num)).2 (by norm_num)
   linarith
 

@@ -40,7 +40,7 @@ open scoped ActualPair
 theorem fullTiltedSupportQuarterPair_false_of_common_occupation
     {C h : ℝ} {b δ χ : ℝ → ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC0 : 1 / 2 < C) (hC1 : C ≤ 37 / 50) (hh0 : 0 < h) (hh1 : h < 17 / 50)
+    (hC0 : 1 / 2 < C) (hC1 : C ≤ 37 / 50) (hh0 : 0 < h) (hh1 : h < 1 / 3)
     (hmpos : 0 < m) (hsmall : C + m < 1) (hheight : capHeight U = 1)
     (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1)
     (hκ : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))

@@ -28,6 +28,7 @@ theorem IsJointCapMaximizer.threeAngle_last_lt_terminal {U : Set Plane} {α : �
     (hU : IsJointCapMaximizer U α) :
     Real.pi / 2 - Real.arctan (Real.sqrt 2 - 1) < α := by
   have hk := sqrt_two_sub_one_bounds.1
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
   rw [← Real.arctan_inv_of_pos (by linarith only [hk])]
   refine (Real.arctan_strictMono ?_).trans hU.terminal_angle_gt_arctan_eight_thirds
   rw [inv_eq_one_div, div_lt_iff₀ (by linarith only [hk])]

@@ -3,6 +3,7 @@ module
 public import AmbidextrousSofa.Analysis.TiltedInitialCircle
 public import AmbidextrousSofa.Analysis.TiltedEndpointBounds
 public import AmbidextrousSofa.Analysis.TiltedLateExcessScalar
+public import Mathlib.Analysis.Real.Pi.Bounds
 
 @[expose] public section
 
@@ -13,7 +14,7 @@ The first momentum zero is compared with the stopping point of the
 actual initial circle. If the zero comes first, its exact radius gives
 the short excess estimate. If the floor comes first, the actual energy
 barrier transfers the floor energy to the zero. The endpoint pressure
-bounds then select the two exact small-height estimates.
+bounds then compare its crossing delay with its loss of excess energy.
 -/
 
 noncomputable section
@@ -45,7 +46,7 @@ theorem fullTiltedSupportQuarterPair_first_zero_excess_stops_early {C h A : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hC0 : 2 / 3 < C) (hC1 : C < 37 / 50)
     (hmpos : 0 < m) (hsmall : C + m < 1)
-    (hh0 : 0 < h) (hh1 : h < 17 / 50)
+    (hh0 : 0 < h) (hh1 : h < 1 / 3)
     (hheight : capHeight U = 1) (hhigh : capRoof U C = 1)
     (hlow : capRoof U (-C) = 1 - h)
     (hκ : ∀ s, ρ s ≤ sourceKappa (upperCornerVelocity U s))
@@ -57,7 +58,7 @@ theorem fullTiltedSupportQuarterPair_first_zero_excess_stops_early {C h A : ℝ}
     q A - 1 < 19 / 100 ∧
       Analysis.quadraticExcessLength (q A - 1) < 1 / 3 ∧
       A + Analysis.quadraticExcessLength (q A - 1) < 11 / 15 := by
-  obtain ⟨hBlo, hBhi, hBupper, hBlower⟩ := hU.tilted_endpoint_momentum_bounds hl hr
+  obtain ⟨hBlo, hBhi, hBupper, -⟩ := hU.tilted_endpoint_momentum_bounds hl hr
     (by linarith only [hC0]) hC1.le hh0.le hh1 hm hheight
     ((centered_quarter_points hl hr).2.2 ▸ haffine) hlow hhigh
   obtain ⟨τ, hτ, hphase, -, hpc, hqc, hstop⟩ :=
@@ -76,10 +77,10 @@ theorem fullTiltedSupportQuarterPair_first_zero_excess_stops_early {C h A : ℝ}
   · have hb := Analysis.initial_circle_excess_bounds hd0 hd1 hBlo hBhi hA
       (hpc.symm.trans hpA) (hqc ▸ hqA)
     rw [← hqc] at hb
-    exact ⟨by linarith only [hb.2.1], by linarith only [hb.2.2], by linarith only [hb.1, hb.2.2]⟩
+    exact ⟨by linarith only [hb.2.1], by linarith only [hb.2.2], by linarith only [hb.1, hb.2.2, Real.pi_lt_d2]⟩
   have hpτ : 0 < p τ := hpbefore τ ⟨hτ.1.le, hτA⟩
   have hfloor : τ = Analysis.initialFloorAngle h := hstop.resolve_left hpτ.ne'
-  have hhsmall : h < 1 / 8 := Analysis.initial_floor_positive_forces_small_tilt (B := B) hd0
+  have hhsmall : h < 1 / 5 := Analysis.initial_floor_positive_forces_small_tilt (B := B) hd0
     hh0.le hh1.le (by linarith only [hBupper]) (by
       rwa [hpc, hfloor, Analysis.initialFloorCircleP, Analysis.cos_initialFloorAngle hh0.le
         (by linarith only [hh1]), Analysis.sin_initialFloorAngle] at hpτ)
@@ -96,11 +97,8 @@ theorem fullTiltedSupportQuarterPair_first_zero_excess_stops_early {C h A : ℝ}
   have henergy : (2 + (q A - 1)) ^ 2 ≤ Analysis.initialFloorTest (3 * C) B h := by
     linarith only [hdecrease, hfloorE, hEA]
   have hquad' : 0 ≤ 1 + B - 3 * C * A + A ^ 2 / 2 := by linarith only [hquad]
-  rcases le_or_gt (1 / 25) h with hhcut | hhcut
-  · exact Analysis.medium_tilt_excess_stops_early hd0 hd1.le hhcut hhsmall.le
-      (by linarith only [hBlower hhsmall.le]) (by linarith only [hBupper]) hε hAd henergy hquad'
-  · exact Analysis.small_tilt_excess_stops_early hd0 hd1.le hh0.le hhcut.le hBlo.le
-      (by linarith only [hBupper, hhcut]) hε hAd henergy hquad'
+  exact Analysis.tilted_excess_stops_early hd0 hd1.le hh0.le hhsmall.le
+    hBlo.le (by linarith only [hBupper]) hε hAd henergy hquad'
 
 end ActualPair
 

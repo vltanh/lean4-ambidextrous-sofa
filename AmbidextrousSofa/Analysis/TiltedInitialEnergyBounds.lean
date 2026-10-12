@@ -1,6 +1,7 @@
 module
 
 public import AmbidextrousSofa.Analysis.TiltedInitialEnergy
+public import AmbidextrousSofa.Analysis.TiltedRadiusWidth
 
 @[expose] public section
 
@@ -17,6 +18,20 @@ explicit initial-floor energy inequalities.
 noncomputable section
 
 open Set
+
+attribute [local simp]
+  AmbidextrousSofa.Analysis.tiltedBalanceMomentum
+  AmbidextrousSofa.Analysis.tiltedBalanceFloorOffset
+  AmbidextrousSofa.Analysis.tiltedBalanceGap
+  AmbidextrousSofa.Analysis.tiltedBalanceDerivative
+  AmbidextrousSofa.Analysis.tiltedBalanceLowerStep
+  AmbidextrousSofa.Analysis.tiltedBalanceUpperStep
+  AmbidextrousSofa.Analysis.tiltedBalanceLower₁
+  AmbidextrousSofa.Analysis.tiltedBalanceUpper₁
+  AmbidextrousSofa.Analysis.tiltedBalanceLower₂
+  AmbidextrousSofa.Analysis.tiltedBalanceUpper₂
+  AmbidextrousSofa.Analysis.tiltedBalanceLower
+  AmbidextrousSofa.Analysis.tiltedBalanceUpper
 
 namespace AmbidextrousSofa.Analysis
 
@@ -83,44 +98,72 @@ theorem tiltedBoxHeight_lt_thirty_three_hundredths {C : ℝ}
     (hC0 : 0 ≤ C) (hC : C ≤ 37 / 50) : tiltedBoxHeight C < 33 / 100 :=
   tiltedBoxHeight_lt_of_width_bound hC0 hC (by norm_num)
 
-/-- The high-tilt strip for the endpoint momentum of a box, including its narrow exact radius
-margin. -/
-theorem initialFloorEnergyConditions_high_tilt
-    {C h z w : ℝ} (hC0 : 2 / 3 ≤ C) (hC : C ≤ 37 / 50)
-    (hh0 : 21 / 100 ≤ h) (hh1 : h ≤ 17 / 50)
-    (hz0 : 0 ≤ z) (hz : z ≤ tiltedBoxHeight C)
-    (hw0 : 0 ≤ w) (hw : w ≤ max (tiltedBoxHeight C - h) 0) :
-    InitialFloorEnergyConditions (3 * C) (tiltedEndpointMomentum h z w) h := by
-  have hH := tiltedBoxHeight_lt_thirty_three_hundredths (by linarith) hC
-  have hw' : w ≤ 3 / 25 := hw.trans (max_le (by linarith) (by norm_num))
-  unfold tiltedEndpointMomentum
-  constructor
-  · nlinarith
-  exact (initialFloorTest_mono_B (U := -101 / 400 + 5 / 4 * h) (by linarith) (by linarith)).trans
-    ((initialFloorTest_mono_d (by linarith) (by linarith) (by linarith)
-      (show 3 * C ≤ 111 / 50 by linarith)).trans
-      (initialFloorTest_affine_le_of_endpoint_bounds
-        (l := 21 / 100) (r := 17 / 50) (sl := 61 / 100) (sr := 3 / 4)
-        (by norm_num) (by norm_num) ⟨hh0, hh1⟩
-        (by norm_num) (by norm_num) (by norm_num) (by norm_num)))
-
-/-- The lower-width middle-tilt strip, for a box with a dry left middle endpoint. -/
-theorem initialFloorEnergyConditions_middle_tilt_low_width
-    {C h z : ℝ} (hC0 : 2 / 3 ≤ C) (hC : C ≤ 73 / 100)
-    (hh0 : 1 / 20 ≤ h) (hh1 : h ≤ 21 / 100)
+/-- A dry low endpoint makes one radius-defined width sufficient for
+both initial-floor tests, throughout the whole nonsmall height interval. -/
+theorem initialFloorEnergyConditions_of_radius_width
+    {C h z : ℝ} (hC0 : 2 / 3 ≤ C) (hC : C ≤ tiltedRadiusWidth)
+    (hh0 : tiltedBalanceHeight ≤ h) (hh1 : h ≤ 1 / 3)
     (hz0 : 0 ≤ z) (hz : z ≤ tiltedBoxHeight C) :
     InitialFloorEnergyConditions (3 * C) (tiltedEndpointMomentum h z 0) h := by
-  have hH : tiltedBoxHeight C < 8 / 25 :=
-    tiltedBoxHeight_lt_of_width_bound (by linarith) hC (by norm_num)
-  unfold tiltedEndpointMomentum
+  have hCsq : 9 * C ^ 2 ≤ 5 - tiltedRadiusMomentum ^ 2 := by
+    have hpow := pow_le_pow_left₀ (by linarith : 0 ≤ C) hC 2
+    nlinarith [tiltedRadiusWidth_sq]
+  have hhroot := tiltedBalanceHeight_mem
+  have hH : tiltedBoxHeight C ≤ 1 / 3 := by
+    have hroot : (2 / 3 : ℝ) ≤ Real.sqrt (1 - C ^ 2) :=
+      Real.le_sqrt_of_sq_le (by nlinarith only [hCsq, sq_nonneg tiltedRadiusMomentum])
+    unfold tiltedBoxHeight
+    linarith only [hroot]
+  have hz1 : z ≤ 1 / 3 := hz.trans hH
+  have hBlo : tiltedRadiusMomentum ≤ tiltedEndpointMomentum h z 0 := by
+    unfold tiltedRadiusMomentum tiltedBalanceMomentum tiltedEndpointMomentum
+    linarith only [hh0, hz0]
+  have hBhi : tiltedEndpointMomentum h z 0 ≤ -tiltedRadiusMomentum := by
+    have hroot := tiltedBalanceHeight_bounds.2
+    norm_num at hroot
+    unfold tiltedRadiusMomentum tiltedBalanceMomentum tiltedEndpointMomentum
+    linarith only [hroot, hh1, hz1]
   constructor
-  · nlinarith
-  exact (initialFloorTest_mono_B (U := -13 / 50 + 5 / 4 * h) (by linarith) (by linarith)).trans
-    ((initialFloorTest_mono_d (by linarith) (by linarith) (by linarith)
-      (show 3 * C ≤ 219 / 100 by linarith)).trans
-      (initialFloorTest_affine_le_of_endpoint_bounds
-        (l := 1 / 20) (r := 21 / 100) (sl := 31 / 100) (sr := 61 / 100)
-        (by norm_num) (by norm_num) ⟨hh0, hh1⟩
-        (by norm_num) (by norm_num) (by norm_num) (by norm_num)))
+  · nlinarith [mul_nonneg (sub_nonneg.mpr hBlo) (sub_nonneg.mpr hBhi)]
+  have hD : 3 * C ≤ Real.sqrt tiltedRadiusSquare := by
+    unfold tiltedRadiusWidth at hC
+    linarith only [hC]
+  have hd : (0 : ℝ) ≤ Real.sqrt tiltedRadiusSquare := Real.sqrt_nonneg _
+  have hhi : tiltedEndpointMomentum h z 0 ≤ -1 / 4 + 5 / 4 * h := by
+    unfold tiltedEndpointMomentum
+    linarith only [hz1]
+  have hmono : 0 ≤ tiltedEndpointMomentum h z 0 + (-1 / 4 + 5 / 4 * h) + 1 - h := by
+    unfold tiltedEndpointMomentum
+    linarith only [hz0, hh0, hhroot.1]
+  have hrange : tiltedBalanceHeight < 1 / 3 :=
+    tiltedBalanceHeight_bounds.2.trans_lt (by norm_num)
+  have hleft : tiltedRadiusSquare + (-1 / 4 + 5 / 4 * tiltedBalanceHeight) ^ 2 +
+      (-1 / 4 + 5 / 4 * tiltedBalanceHeight) * (1 - tiltedBalanceHeight) -
+      Real.sqrt tiltedRadiusSquare * initialFloorSine tiltedBalanceHeight ≤ 4 := by
+    have h := tiltedBalanceHeight_energy_eq.le
+    have hb : tiltedBalanceMomentum tiltedBalanceHeight + 1 / 4 =
+        -1 / 4 + 5 / 4 * tiltedBalanceHeight := by dsimp [tiltedBalanceMomentum]; ring
+    rw [hb] at h
+    exact h
+  have hright : initialFloorTest (Real.sqrt tiltedRadiusSquare) (-1 / 4 + 5 / 4 * (1 / 3)) (1 / 3) ≤ 4 := by
+    have hr2 : 2 ≤ Real.sqrt tiltedRadiusSquare := by linarith only [hC0, hD]
+    have hr5 : (Real.sqrt tiltedRadiusSquare) ^ 2 ≤ 5 := by
+      rw [Real.sq_sqrt tiltedRadiusSquare_pos.le]
+      unfold tiltedRadiusSquare
+      linarith only [sq_nonneg tiltedRadiusMomentum]
+    have hs2 : (2 / 3 : ℝ) ≤ initialFloorSine (1 / 3) :=
+      Real.le_sqrt_of_sq_le (by norm_num)
+    have hprod := mul_le_mul_of_nonneg_right hs2 hd
+    unfold initialFloorTest
+    norm_num
+    linarith only [hr2, hr5, hprod]
+  exact (initialFloorTest_mono_B hhi hmono).trans
+    ((initialFloorTest_mono_d (by linarith only [hh0, hhroot.1]) (by linarith only [hh1])
+      (by linarith only [hC0]) hD).trans
+      (initialFloorTest_affine_le_of_endpoint_bounds (l := tiltedBalanceHeight) (r := 1 / 3)
+        (sl := initialFloorSine tiltedBalanceHeight) (sr := initialFloorSine (1 / 3)) hd hrange
+        ⟨hh0, hh1⟩ (initialFloorSine_sq hhroot.1 (by linarith only [hhroot.2])).le
+        (initialFloorSine_sq (by norm_num) (by norm_num)).le
+        (by rw [Real.sq_sqrt tiltedRadiusSquare_pos.le]; exact hleft) hright))
 
 end AmbidextrousSofa.Analysis

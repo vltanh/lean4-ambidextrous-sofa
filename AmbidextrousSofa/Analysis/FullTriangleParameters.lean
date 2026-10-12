@@ -24,8 +24,9 @@ namespace AmbidextrousSofa
 def fullTriangleCos (k : ℝ) : ℝ := 1 / nearDiagonalNorm k
 
 theorem fullTriangleCos_bounds {k : ℝ}
-    (hk0 : 41 / 99 < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1) :
-    923 / 1000 < fullTriangleCos k ∧ fullTriangleCos k < 231 / 250 := by
+    (hk0 : diagonalOffsetLower < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1) :
+    12 / 13 < fullTriangleCos k ∧ fullTriangleCos k < 73 / 79 := by
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
   have hN := nearDiagonalNorm_pos k
   have hN2 := nearDiagonalNorm_sq k
   rw [fullTriangleCos, lt_div_iff₀ hN, div_lt_iff₀ hN]
@@ -33,13 +34,25 @@ theorem fullTriangleCos_bounds {k : ℝ}
 
 /-- The diagonal offset `k = √2 - 1` and the cosine of its nearby angle. -/
 theorem fullTriangle_offset_bounds :
-    41 / 99 < Real.sqrt 2 - 1 ∧ Real.sqrt 2 - 1 < 29 / 70 ∧
+    diagonalOffsetLower < Real.sqrt 2 - 1 ∧ Real.sqrt 2 - 1 < 29 / 70 ∧
       (Real.sqrt 2 - 1) ^ 2 + 2 * (Real.sqrt 2 - 1) = 1 ∧
-      923 / 1000 < fullTriangleCos (Real.sqrt 2 - 1) ∧
-      fullTriangleCos (Real.sqrt 2 - 1) < 231 / 250 := by
+      12 / 13 < fullTriangleCos (Real.sqrt 2 - 1) ∧
+      fullTriangleCos (Real.sqrt 2 - 1) < 73 / 79 := by
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
   obtain ⟨hk0, -, hk1⟩ := sqrt_two_sub_one_bounds
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
   have hksq := sqrt_two_sub_one_quadratic
   exact ⟨hk0, hk1, hksq, fullTriangleCos_bounds hk0 hk1 hksq⟩
+
+/-- The nearby direction's unit-norm identity keeps its cosine coupled to the diagonal offset. -/
+theorem fullTriangleCos_quadratic {k : ℝ} (hksq : k ^ 2 + 2 * k = 1) :
+    fullTriangleCos k ^ 2 * (2 - 2 * k) = 1 := by
+  have hN := nearDiagonalNorm_pos k
+  have hN2 := nearDiagonalNorm_sq k
+  unfold fullTriangleCos
+  field_simp
+  nlinarith only [hN2, hksq]
+
 
 theorem fullTriangle_norm_identities {k : ℝ} (hk : 0 < k)
     (hksq : k ^ 2 + 2 * k = 1) :
@@ -64,15 +77,20 @@ theorem fullTriangle_floor_loss_le_endpoint {a e k u : ℝ} (hk : 0 < k)
       max (a - u - (2 * fullTriangleCos k - (1 + k))) 0 :=
   max_le_max (by linarith only [fullTriangle_outer_zero_le hk hksq he]) le_rfl
 
-/-- The floor losses of two endpoint deficits `wR ≤ bR` and `wL ≤ bL` above the threshold `t`. -/
+/-- Signed endpoint-depth squares dominate the clipped floor losses,
+including when a depth bound is below the floor threshold. -/
 theorem floor_loss_le_of_bounds {k t wR wL bR bL : ℝ} (hk : k ≤ 1) (hR : wR ≤ bR)
-    (hL : wL ≤ bL) (htR : t ≤ bR) (htL : t ≤ bL) :
+    (hL : wL ≤ bL) :
     (1 - k) / 2 * ((max (wR - t) 0) ^ 2 + (max (wL - t) 0) ^ 2) ≤
       (1 - k) / 2 * ((bR - t) ^ 2 + (bL - t) ^ 2) := by
-  have : 0 ≤ (1 - k) / 2 := by linarith only [hk]
-  gcongr
-  · exact max_le (by linarith only [hR]) (by linarith only [htR])
-  · exact max_le (by linarith only [hL]) (by linarith only [htL])
+  have hbound (w b : ℝ) (hw : w ≤ b) : (max (w - t) 0) ^ 2 ≤ (b - t) ^ 2 := by
+    rcases le_total 0 (w - t) with hpos | hneg
+    · rw [max_eq_left hpos]
+      exact pow_le_pow_left₀ hpos (by linarith) 2
+    · rw [max_eq_right hneg]
+      simpa using sq_nonneg (b - t)
+  exact mul_le_mul_of_nonneg_left (add_le_add (hbound wR bR hR) (hbound wL bL hL))
+    (by linarith)
 
 theorem fullTriangle_gain_sum {a eR eL h k u v bR bL δR δL : ℝ}
     (hk : 0 < k) (hksq : k ^ 2 + 2 * k = 1)

@@ -45,27 +45,27 @@ theorem ae_linear_excess_of_proper_scalar_bounds
     (hpa : 0 < p a → p a ≤ e - d * a + a ^ 2 / 2)
     (hqa : 0 < p a → d - 1 - a ≤ q a)
     (hzero : ∀ᵐ t ∂volume.restrict (Ioo b c), u t = 0)
-    (hd0 : 3 / 2 < d) (hd1 : d ≤ 2311 / 1000)
-    (he0 : 0 ≤ e) (he1 : e ≤ 1) (hδ0 : 0 ≤ δ) (hδ1 : δ ≤ 1 / 30)
+    (hd0 : 3 / 2 < d) (hd1 : d ≤ (3 * (37 / 50) + (3 / 8) / 4))
+    (he0 : 0 ≤ e) (he1 : e ≤ 1) (hδ0 : 0 ≤ δ) (hδ1 : δ ≤ (3 / 8) ^ 2 / 4)
     (had : a ≤ d)
     (henergy : clippedCornerEnergy p q a ≤ d ^ 2 - e * (1 - e) + 1 / 4 + δ)
-    (hstop : 199 / 100 ≤ d → properExcessEnd d e δ ≤ B)
-    (hdecay : 199 / 100 ≤ d → properDecayLength d e δ ≤ ellMax)
-    (hgap : a + ellMax ≤ B) :
+    (hstop : (2 - 1 / 2 ^ 6) ≤ d → properExcessEnd d e δ ≤ B)
+    (hdecay : (2 - 1 / 2 ^ 6) ≤ d → properDecayLength d e δ ≤ ellMax)
+    (hellMax0 : 0 ≤ ellMax) (hellMax1 : ellMax < 1) (hgap : a + ellMax ≤ B) :
     ∀ᵐ t ∂volume.restrict (Ioo a c),
-      max (u t - 1) 0 ≤ (19 / 25 : ℝ) * max (B - t) 0 := by
-  have hunit (t : ℝ) (ht : u t ≤ 1) : max (u t - 1) 0 ≤ (19 / 25 : ℝ) * max (B - t) 0 := by
+      max (u t - 1) 0 ≤ (1 / 2 + ellMax / 2) * max (B - t) 0 := by
+  have hunit (t : ℝ) (ht : u t ≤ 1) : max (u t - 1) 0 ≤ (1 / 2 + ellMax / 2) * max (B - t) 0 := by
     rw [max_eq_right (sub_nonpos.2 ht)]
-    exact mul_nonneg (by norm_num) (le_max_right _ _)
+    exact mul_nonneg (by positivity) (le_max_right _ _)
   refine ae_Ioo_splice_real ?_ (hzero.mono fun t ht => hunit t (ht.trans_le zero_le_one))
   by_cases hZ : d ^ 2 - e * (1 - e) + δ ≤ 4
   · exact (D.ae_unit_of_initial_energy (by linarith)).mono hunit
-  have hd : 199 / 100 ≤ d := (pow_le_pow_iff_left₀ (by norm_num) (by linarith) two_ne_zero).1
+  have hd : (2 - 1 / 2 ^ 6) ≤ d := (pow_le_pow_iff_left₀ (by norm_num) (by linarith) two_ne_zero).1
     (by linarith [mul_nonneg he0 (sub_nonneg.2 he1)])
   obtain ⟨⟨-, -, hx2⟩, ⟨-, -, hy2⟩, ⟨-, -, hz2⟩⟩ := properExcess_roots_bounds hd hd1 he0 he1 hδ0 hδ1
   have hY : 2 < properEnergyRoot d e δ := (Real.lt_sqrt (by norm_num)).2 (by linarith)
   have hell0 : 0 ≤ properDecayLength d e δ := sub_nonneg.2 (Real.le_sqrt_of_sq_le (by linarith))
-  have hell := properDecayLength_lt_fifty_two_hundredths hd hd1 he0 he1 hδ1
+  have hell := hdecay hd
   have hτ : properFirstZeroTime d e ≤ d := sub_le_self _ (Real.sqrt_nonneg _)
   have hquad := properFirstZeroTime_quadratic (hx2 ▸ sq_nonneg _)
   -- The first zero `τ` and the quadratic deadline `max a τ + ell` of the excess.
@@ -81,9 +81,9 @@ theorem ae_linear_excess_of_proper_scalar_bounds
   have hdeadline : max a τ + ell ≤ B :=
     (max_add_add_right a τ ell).symm.trans_le (max_le (by linarith [hdecay hd]) (hstop hd))
   filter_upwards [D.ae_linear_excess_of_quadratic_deadline hfirst hpa hqa (le_max_left a τ) hcross
-    hell0 (by linarith) henergy'] with t ht
-  exact ht.trans (mul_le_mul (by linarith) (max_le_max (by linarith) le_rfl) (le_max_right _ _)
-    (by norm_num))
+    hell0 (by linarith only [hell, hellMax1]) henergy'] with t ht
+  exact ht.trans (mul_le_mul (by linarith only [hell]) (max_le_max (by linarith only [hdeadline]) le_rfl) (le_max_right _ _)
+    (by positivity))
 
 end CornerArcDynamics
 
@@ -102,17 +102,20 @@ theorem IsJointCapMaximizer.properReflected_ae_excess_bound_of_tail_regime
     (heq : (upperCurvature U).restrict (regularProperCurvatureDomain α m) =
       (volume.restrict (regularProperCurvatureDomain α m)).withDensity
         (fun t => ENNReal.ofReal (ρ t)))
-    (δ B ellMax : ℝ) (hδ0 : 0 ≤ δ) (hδ1 : δ ≤ 1 / 30) (hgap : Real.pi / 2 - α + ellMax ≤ B)
+    (δ B ellMax : ℝ) (hδ0 : 0 ≤ δ) (hδ1 : δ ≤ (3 / 8) ^ 2 / 4)
+    (hellMax0 : 0 ≤ ellMax) (hellMax1 : ellMax < 1) (hgap : Real.pi / 2 - α + ellMax ≤ B)
     (hpay : terminalImpulseEnergyChange (terminalReflectedSpan U α) (terminalReflectedHeight U α)
       α (MovingSofaOptimality.sigmaAt U α) < δ)
-    (hstop : 199 / 100 ≤ terminalReflectedSpan U α →
+    (hstop : (2 - 1 / 2 ^ 6) ≤ terminalReflectedSpan U α →
       properExcessEnd (terminalReflectedSpan U α) (terminalReflectedHeight U α) δ ≤ B)
-    (hdecay : 199 / 100 ≤ terminalReflectedSpan U α →
+    (hdecay : (2 - 1 / 2 ^ 6) ≤ terminalReflectedSpan U α →
       properDecayLength (terminalReflectedSpan U α) (terminalReflectedHeight U α) δ ≤ ellMax) :
     ∀ᵐ r ∂volume.restrict (Ioo (Real.pi / 2 - α) (Real.pi / 2)),
-      max (properReflectedFirstDensity m ρ r - 1) 0 ≤ (19 / 25 : ℝ) * max (B - r) 0 := by
-  obtain ⟨hd0, he0, hcase⟩ := hU.centered_terminal_reflected_parameters_of_tail_regime hregime
+      max (properReflectedFirstDensity m ρ r - 1) 0 ≤ (1 / 2 + ellMax / 2) * max (B - r) 0 := by
+  obtain ⟨hd0, hdSlope, he0, he1, -⟩ := hU.centered_terminal_reflected_angular_budget_of_tail_regime hregime
     hproper hl hr hheight haffine
+  have hd1 : terminalReflectedSpan U α ≤ 3 * (37 / 50) + (3 / 8) / 4 := by
+    linarith only [hdSlope, hU.proper_terminalSlope_lt_three_eighths hproper]
   have harms := hU.properReflected_arm_bounds_of_tail_regime hregime hproper haffine hρ hρ0 hρK heq
   have hentry := hU.properReflected_entry_quadratic_of_tail_regime hregime hproper hl hr hheight
     haffine hρ hρ0 hρK heq
@@ -124,9 +127,8 @@ theorem IsJointCapMaximizer.properReflected_ae_excess_bound_of_tail_regime
     hρ hρ0 hρK hsharp heq).ae_linear_excess_of_proper_scalar_bounds (fun t ht => (harms t ht).1)
     (fun hp => (hentry hp).1) (fun hp => (hentry hp).2)
     ((hU.properReflected_densities_zero_after_active hproper hl hr hheight haffine hρ hρ0
-      heq).mono fun _ h => h.1) hd0 (hcase.elim (fun h => by linarith only [h.2.1]) (·.2.1.le))
-    he0 (hcase.elim (·.2.2.le) fun h => by linarith only [h.2.2]) hδ0 hδ1
+      heq).mono fun _ h => h.1) hd0 hd1 he0 he1 hδ0 hδ1
     (by linarith only [hU.angle_mem.1, Real.pi_le_four, hd0]) (by linarith only [henergy, hpay])
-    hstop hdecay hgap
+    hstop hdecay hellMax0 hellMax1 hgap
 
 end AmbidextrousSofa

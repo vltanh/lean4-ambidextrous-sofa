@@ -92,7 +92,7 @@ theorem IsDownwardCap.oneTurnSurvivor_lowerPassage {U : Set Plane} (hU : IsDownw
 survivor after its actual nonempty-fiber inequality has been established. -/
 theorem IsDownwardCap.volumeReal_oneTurnSurvivor_le {U : Set Plane} (hU : IsDownwardCap U)
     (hfit : ∀ x ∈ horizontalProjection U, sweptNiche U (Real.pi / 2) x ≤ capRoof U x) :
-    volume.real (oneTurnSurvivor U) ≤ (22199 : ℝ) / 10000 :=
+    volume.real (oneTurnSurvivor U) ≤ (2.2199 : ℝ) :=
   volumeReal_le_ordinaryBound_of_lowerPassage
     (hU.isCompact.inter_right (isClosed_le
       (hU.continuous_sweptNiche_pi_div_two.comp continuous_fst) continuous_snd))

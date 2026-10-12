@@ -13,8 +13,9 @@ public import AmbidextrousSofa.Analysis.TiltedLateExcess
 
 Small widths satisfy the initial-floor test directly. At larger widths,
 the actual dry endpoint and top projection supply the small-height area
-comparison. The remaining height ranges satisfy the established energy
-tests or contradict the actual three-angle triangle estimate. The final
+comparison. The triangle estimate excludes all widths above the radius-defined
+boundary at every height. At each smaller width, one floor-energy
+comparison covers all nonsmall heights. The final
 selector has only the centered canonical cap hypotheses and selects its
 density from the cap itself.
 -/
@@ -31,7 +32,7 @@ has been discharged from the cap itself. -/
 theorem IsFullCapMaximizer.exists_tilted_first_unit_density
     {U : Set Plane} (hU : IsFullCapMaximizer U) {C h m c : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC0 : 1 / 2 < C) (hC1 : C < 37 / 50) (hh0 : 0 < h) (hh1 : h < 17 / 50)
+    (hC0 : 1 / 2 < C) (hC1 : C < 37 / 50) (hh0 : 0 < h) (hh1 : h < 1 / 3)
     (hm : 0 < m) (hsmall : C + m < 1) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c)
@@ -67,7 +68,9 @@ theorem IsFullCapMaximizer.exists_tilted_first_unit_density
   replace hC0 : 2 / 3 < C := lt_of_not_ge hCsmall
   obtain ⟨hT, hdry, hTs⟩ :=
     hU.tilted_dry_left_and_overhang_bounds hl hr hC0.le hC1.le hh0 hh1 hheight haff hlow hhigh
-  by_cases hhsmall : h ≤ 509 / 10000
+  have hCradius := hU.centered_width_lt_radiusWidth_of_dry hl hr hC1.le hh0.le hh1.le
+    hheight haff hlow hhigh hdry
+  by_cases hhsmall : h ≤ Analysis.tiltedBalanceHeight
   · -- Small heights: the dry endpoint and the top projection give the area comparison.
     obtain ⟨hlate, hJ⟩ := fullTiltedSupportQuarterPair_late_unit_and_excess_moment hU hm.le
       haffine hρ hρ0 hcoarse heq hl hr hC0 hC1 hm hsmall hh0 hh1 hheight hhigh hlow
@@ -80,23 +83,23 @@ theorem IsFullCapMaximizer.exists_tilted_first_unit_density
       (by linarith only [hC0]) hC1.le (by linarith only [hT]) htop hlate
     refine hU.smallTilt_initialFloorEnergyConditions_of_actual_geometry hl hr hC0.le hC1.le hh0
       hhsmall hheight haff hlow hhigh hdry hT.le htop hTs (hn.trans ?_) hρ hρ0 hcoarse heq hsub
-      hJ.le
-    have hsq : 9 * C / 10 ≤ Real.sqrt (1 - C ^ 2) :=
-      Real.le_sqrt_of_sq_le (by nlinarith only [hC0, hC1])
-    rw [div_le_iff₀ ((by linarith only [hC0] : (0 : ℝ) < 9 * C / 10).trans_le hsq)]
-    linarith only [mul_le_mul_of_nonneg_left hsq hT.le]
-  by_cases hhhigh : 21 / 100 ≤ h
-  · exact hU.initial_floor_conditions_of_high_tilt hl hr hC0.le hC1.le hhhigh hh1.le hm.le hheight
-      haff hlow hhigh
-  by_cases hCmiddle : C ≤ 73 / 100
-  · exact hU.initial_floor_conditions_of_middle_tilt_low_width hl hr hC0.le hCmiddle
-      (by linarith only [hhsmall]) (le_of_not_ge hhhigh) hheight haff hlow hhigh hdry
-  -- The middle heights at large widths contradict the actual triangle score estimate.
-  have e1 : -(2 * C) / 2 = -C := by ring
-  have e2 : 2 * C / 2 = C := by ring
-  exact (hU.false_of_medium_tilt_large_width_zero_left (a := 2 * C) (by linarith only [hCmiddle])
-    (by linarith only [hC1]) (by linarith only [hhsmall]) (le_of_not_ge hhhigh)
-    (hl.trans (neg_mul 2 C)) hr hheight (by rwa [e1]) (by rwa [e2]) ⟨m, c, by rwa [e1, e2]⟩
-    (by rwa [e1])).elim
+      hJ
+    have hCsq : 9 * C ^ 2 ≤ 5 := by
+      nlinarith only [pow_le_pow_left₀ (by linarith only [hC0] : 0 ≤ C) hCradius.le 2,
+        Analysis.tiltedRadiusWidth_sq, sq_nonneg Analysis.tiltedRadiusMomentum]
+    have hsq : (2 / 3 : ℝ) ≤ Real.sqrt (1 - C ^ 2) :=
+      Real.le_sqrt_of_sq_le (by nlinarith only [hCsq])
+    have hwidth : C ≤ squareRootNewton 5 2 / 3 := by
+      norm_num [squareRootNewton]
+      nlinarith only [hCsq, hC0]
+    rw [div_le_iff₀ ((by norm_num : (0 : ℝ) < 2 / 3).trans_le hsq)]
+    have hproj : 0 ≤ Analysis.smallTiltProjection := by
+      norm_num [Analysis.smallTiltProjection, squareRootNewton]
+    have hgain := mul_le_mul_of_nonneg_left hsq hproj
+    norm_num [Analysis.smallTiltProjection, squareRootNewton] at hgain hwidth ⊢
+    nlinarith only [mul_le_mul_of_nonneg_right hwidth hT.le,
+      mul_le_mul_of_nonneg_right hgain hT.le]
+  exact hU.initial_floor_conditions_of_radius_width hl hr hC0.le hCradius.le
+    (by linarith only [hhsmall]) hh1.le hheight haff hlow hhigh hdry
 
 end AmbidextrousSofa

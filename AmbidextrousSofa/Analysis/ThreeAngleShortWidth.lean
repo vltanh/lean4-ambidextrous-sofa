@@ -24,12 +24,12 @@ namespace AmbidextrousSofa
 three-angle score strictly below the reference comparison level. -/
 theorem IsDownwardCap.threeAngleScore_lt_of_short_width
     {U : Set Plane} (hU : IsDownwardCap U) {a h : ℝ}
-    (ha : 0 < a) (ha1 : a ≤ 1001 / 1000) (hh : 0 ≤ h)
+    (ha : 0 < a) (ha1 : a ≤ 1) (hh : 0 ≤ h)
     (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
     (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1)
     (haffine : ∃ m c : ℝ, ∀ x ∈ Icc (-a / 2) (a / 2), capRoof U x = m * x + c) :
     intervalSpatialScore (capRoof U) (threeAngleBarrier U) (horizontalLeft U)
-      (horizontalRight U) < 41 / 50 := by
+      (horizontalRight U) < referenceHalfAreaLower := by
   rw [hl, hr]
   by_contra! hscore
   obtain ⟨ha9, hh23, hu, hv, hu323, hv323, hm, huout, hvout, hD9⟩ :=
@@ -37,8 +37,11 @@ theorem IsDownwardCap.threeAngleScore_lt_of_short_width
       (fun x => le_max_left _ _) ha ha1 hh hl hr hleft hright hscore
   rw [intervalSpatialScore_centered] at hscore
   generalize hkdef : Real.sqrt 2 - 1 = k
+  rw [hkdef] at ha9 hh23 hu323 hv323 hm huout hvout hD9
   obtain ⟨hk0, hk1, -⟩ := hkdef ▸ sqrt_two_sub_one_bounds
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
   have hksq : k ^ 2 + 2 * k = 1 := hkdef ▸ sqrt_two_sub_one_quadratic
+  have hηpos := (short_geometry_scalar_estimates hk0 hk1 hksq).1
   have hk : 0 < k := by linarith only [hk0]
   have hklt : k < 1 := by linarith only [hk1]
   generalize hudef : diagonalRight U - 1 = u at hu hu323 hm huout hD9
@@ -46,12 +49,12 @@ theorem IsDownwardCap.threeAngleScore_lt_of_short_width
   have huactual : diagonalRight U = 1 + u := by linarith only [hudef]
   have hvactual : diagonalLeft U = 1 - h + v := by linarith only [hvdef]
   have hδL := hU.nearDiagonalLeftDeficit_mem ha hh hk.le hklt.le
-    (by linarith only [mul_nonneg (sub_nonneg.2 hk0.le) ha.le, ha9, hh23]) hl hr hleft hright
+    (by nlinarith only [mul_nonneg (sub_nonneg.2 hk0.le) ha.le, ha9, hh23, hksq, hk0, hk1]) hl hr hleft hright
     haffine hvactual hv.1
   have hδR := hU.nearDiagonalRightDeficit_mem ha hk.le hklt.le hl hr hright huactual
   obtain ⟨-, -, hcut⟩ := hU.short_diagonal_cut_payment ha hh hk0 hklt hksq hl hr
     hleft hright huactual hvactual hδL hδR hvout huout hD9
-  have hd := tilted_diagonal_apex_mem ha.le hh (by linarith only [ha9, hh23]) hu hv
+  have hd := tilted_diagonal_apex_mem ha.le hh (by nlinarith only [ha9, hh23, hksq, hk0, hk1]) hu hv
   obtain ⟨hpL, hendL, hcompEL, hclipL⟩ :=
     short_left_tail_geometry hk0 hk1 hksq hh hh23 hδL.1 hv323 hm hd
   obtain ⟨hpR, hendR, hcompER, hclipR⟩ :=
@@ -59,24 +62,24 @@ theorem IsDownwardCap.threeAngleScore_lt_of_short_width
   obtain ⟨hη, -, -, hLbase⟩ := short_nearDiagonal_constants hk0 hk1 hksq
   have hN := hU.threeAngle_integral_ge_diagonal_two_tails ha hk hklt hksq hkdef.symm
     huactual hvactual (hU.diagonalRight_companion_support_ge hklt.le huactual)
-    (hU.diagonalLeft_companion_support_ge ha hh (by linarith only [ha9, hh23]) hklt.le hl hr
-      hleft hright haffine hvactual) hη.le hd hpL hpR hendL.le hendR.le hcompEL hcompER
+    (hU.diagonalLeft_companion_support_ge ha hh (by nlinarith only [ha9, hh23, hksq, hk0, hk1]) hklt.le hl hr
+      hleft hright haffine hvactual) hη hd hpL hpR hendL.le hendR.le hcompEL hcompER
     (by linarith only [hLbase, hh]) hclipL hclipR
   -- The squared deficits pay for the two tails.
   have hG0 : 0 ≤ nearTriangleCoefficient k :=
     one_div_nonneg.2 (mul_nonneg (mul_nonneg zero_le_two hk.le) (sub_nonneg.2 hklt.le))
   have hpayL := mul_le_mul_of_nonneg_left (positive_deficit_square_payment
-    (short_left_peak_height_nonneg hk0 hh hh23) (nearDiagonalLeftDeficit U h k v)) hG0
+    (short_left_peak_height_nonneg hk0 hk1 hksq hh hh23) (nearDiagonalLeftDeficit U h k v)) hG0
   have hpayR := mul_le_mul_of_nonneg_left (positive_deficit_square_payment
-    (by norm_num : (0 : ℝ) ≤ 2 / 25) (nearDiagonalRightDeficit U k u)) hG0
+    hηpos.le (nearDiagonalRightDeficit U k u)) hG0
   have hD := hU.diagonalRoofDeficit_eq h hu hv
-  have hrelax := diagonalRelaxation_le_critical a h k u v (by linarith only [hk1, hh23, ha9])
-    (by linarith only [hk, hh]) (by linarith only [hk0, hh23])
+  have hrelax := diagonalRelaxation_le_critical a h k u v (by nlinarith only [hk1, hh23, ha9, hksq])
+    (by linarith only [hk, hh]) (by nlinarith only [hk0, hk1, hh23, hksq])
   have hwidth := diagonal_critical_width_mono ha1
-    (by linarith only [hk0] : (1001 / 1000 : ℝ) ≤ 1 + k)
+    (by linarith only [hk0] : (1 : ℝ) ≤ 1 + k)
   have henv := shortWidthPaidEnvelope_lt hk0 hk1 hksq hh
   -- Score, roof deficit and tail payment together stay below the critical relaxation value,
-  -- so the score is at most the paid envelope, which is below `41 / 50`.
+  -- so the score is at most the paid envelope, which is below the generated reference budget.
   rw [← one_div_mul_eq_div] at hcut
   change nearTriangleCoefficient k * _ ≤ _ at hcut
   unfold diagonalRelaxation at hrelax

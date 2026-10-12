@@ -133,7 +133,9 @@ theorem IsJointCapMaximizer.topOverhangLeft_add_twice_right_le_terminalInset_of_
   obtain ⟨hd, hdcos, -⟩ := hU.isCap.terminalTailInset_bounds hU.angle_pos hproper htail.2.1
   have hzero := hU.terminalTailPoint_fst_eq_middle_add_topOverhangRight_of_tail_regime hregime
     hproper hheight haffine
-  have hwide := hU.width_gt_forty_nine_twenty_fifths hproper
+  have hwide := hU.width_gt_initialAngleCornerWidth hproper
+  dsimp only [initialAngleCornerWidth] at hwide
+  have hroot : (8 : ℝ) ≤ Real.sqrt 73 := Real.le_sqrt_of_sq_le (by norm_num)
   have hcos := (terminal_sin_cos_bounds_after_initialAngle
     hU.terminal_angle_gt_arctan_eight_thirds.le hproper).2
   have hTL := topOverhangLeft_nonneg U

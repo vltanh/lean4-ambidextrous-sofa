@@ -2,6 +2,13 @@
 
 \subsection{Cap area and the signed niche integral}
 
+Green's formula expresses both cap area and niche area through their
+supports. The cap calculation follows the outer boundary. The niche
+calculation joins a companion tangent, a reversed corner arc, and a
+first tangent. Keeping these arcs oriented makes the formulas valid
+even when a parametrized graph folds. Their difference will produce
+the support functional of \cref{sec:calibration}.
+
 For vectors $z,z'\in\R^2$, write $\det(z,z')$ for their determinant.
 All oriented integrals below retain their sign when endpoints are
 reversed.
@@ -161,8 +168,12 @@ the score is $|U|-w_U/2-\int_{J_U}N$.
 
 \subsection{The three-tent estimate}
 
-The following estimate uses only three visited angles and the
-endpoint laws. Put
+The diagonal hallway bounds the exterior roof and supplies one middle
+tent. The two adjacent hallways add more niche area unless their
+supports move inward; moving those supports inward cuts area from the
+exterior roof. We combine these two payments by completing weighted
+squares. The estimate uses only three visited angles and the endpoint
+laws. Put
 \[
  \begin{gathered}
  r=\sqrt2,\quad k=r-1,\quad c=\cos(\pi/8),\quad s=\sin(\pi/8),\\
@@ -194,7 +205,7 @@ Then $a/2\le u,v\le a$. Put $m=(u+v)/2$ and define
 \end{align}
 
 \begin{lemma}[Full three-tent score]\label{lem:full-three-tent-score}
-Suppose $37/25\le a\le8/5$, $0\le h\le17/50$, and the actual
+Suppose $37/25\le a\le8/5$, $0\le h\le1/3$, and the actual
 endpoint laws are
 \[
  e_R=\tfrac12+\tfrac h4+(3n_+-n_-)/4,\qquad
@@ -266,7 +277,7 @@ The reflected construction at $3\pi/8$ gives
 The two triangles lie on opposite sides of the diagonal apex:
 their crossover displacements from it are
 $k(m\pm h/2)+2s-1+\delta/(rc)>0$.
-Indeed $m-h/2\ge179/200$, $k>2/5$, and $2s>3/4$.
+Indeed $m-h/2\ge3/4$, $k>2/5$, and $2s>3/4$.
 Their outer endpoints satisfy
 $x_R\le1+a-2c<a/2$, since $a/2\le4/5$ and $c>9/10$;
 the reflected endpoint satisfies the same inequality.
@@ -308,8 +319,58 @@ triangles, and floor correction proves
 once, and the two niche gain regions are disjoint.
 \end{proof}
 
+\begin{lemma}[Stationarity and the width derivative]\label{lem:three-tent-general-plane}
+Fix $h\ge0$ and a comparison width $a_0$. Put
+\[
+ \sigma=s_0(a_0)-Ah/4,\quad
+ s_0(a)=da/2-(4c-2),\quad
+ m_*=(a_0+k)/2+b\sigma/9+h/4.
+\]
+Suppose
+\[
+ \sigma\ge0,\qquad m_*\le k+a_0/2,\qquad
+ r-a_0-2d\sigma/9\le0.
+\]
+Then for $a\ge a_0$ and diagonal data with nonnegative apex,
+\[
+ G_h(a,u,v)\le
+ B(a_0)-kh/2-h^2/8-2\sigma^2/9,
+ \qquad B(a)=a-(a-k)^2/2.
+\]
+\end{lemma}
+\begin{proof}
+Use coordinates $(a,m,\Delta)$, with $\Delta=(u-v)/2$.
+Before the two clipping terms the Hessian of $F_h$ is
+\[
+ \begin{pmatrix}-2&2&0\\2&-4&0\\0&0&-2\end{pmatrix}.
+\]
+Each active clip adds the outer product of $(-1/2,1,1)$ or
+$(-1/2,1,-1)$. With both present the Hessian is
+\[
+ \begin{pmatrix}-3/2&1&0\\1&-2&0\\0&0&0\end{pmatrix},
+\]
+which is negative semidefinite. Any other clipping pattern subtracts
+a positive semidefinite matrix. The gradients match at the interfaces,
+and subtracting $S_+^2/d$ preserves joint concavity.
+
+At $u=v=m$ in the unclipped region put $m'=m-h/4$ and
+$m_0(a)=(a+k)/2$. Completion of squares gives
+\[
+ G_h=B(a)-kh/2-h^2/8-2(m'-m_0(a))^2
+       -[s_0(a)-b(m'-m_0(a))-Ah/4]^2/d.
+\]
+Since $2d+b^2=9$, both support derivatives vanish at
+$(a,u,v)=(a_0,m_*,m_*)$. The clipping hypothesis makes the
+right clip zero; the left clip is smaller by $h$. Also
+$S=2d\sigma/9\ge0$. The value there is the asserted bound,
+and its width derivative is $r-a_0-2d\sigma/9$.
+The tangent plane of a concave function is an upper bound everywhere.
+Its support derivatives vanish and its width derivative is nonpositive,
+so it bounds every larger width by this value.
+\end{proof}
+
 \begin{lemma}[Three-tent supporting plane]\label{lem:full-three-tent-critical}
-Fix $0\le h\le17/50$ and put
+Fix $0\le h\le1/3$ and put
 \[
  \begin{gathered}
  a_0=37/25,\qquad B(a)=a-(a-k)^2/2,\\
@@ -325,84 +386,189 @@ jointly concave and
 \end{equation}
 \end{lemma}
 \begin{proof}
-Use coordinates $(a,m,\Delta)$, with $\Delta=(u-v)/2$.
-Before the two clipping terms the Hessian of $F_h$ is
+Apply \cref{lem:three-tent-general-plane}. At $a_0=37/25$ its
+stationary support coordinate is
 \[
- \begin{pmatrix}-2&2&0\\2&-4&0\\0&0&-2\end{pmatrix}.
+ u_*=v_*=(a_0+k)/2+\frac b9[s_0(a_0)-Ah/4]+h/4.
 \]
-Each active clip adds the outer product of $(-1/2,1,1)$ or
-$(-1/2,1,-1)$. With both present the Hessian becomes
-\[
- \begin{pmatrix}-3/2&1&0\\1&-2&0\\0&0&0\end{pmatrix},
-\]
-which is negative semidefinite. Every other clipping pattern
-subtracts a positive semidefinite matrix. The gradients agree on
-clipping boundaries, and subtracting $S_+^2/d$ preserves concavity.
-
-At $u=v=m$ in the unclipped region put $m'=m-h/4$.
-Completion of squares gives
-\[
- G_h=B(a)-kh/2-h^2/8-2(m'-m_0(a))^2
-       -[s_0(a)-b(m'-m_0(a))-Ah/4]^2/d.
-\]
-Since $2d+b^2=9$, its support critical point at $a=a_0$ is
-\[
- u_*=v_*=m_0(a_0)+\frac b9[s_0(a_0)-Ah/4]+h/4.
-\]
-It is genuinely unclipped. The bounds
-\[
+To check clipping, keep the angle parameters linked by
+$k^2+2k=1$ and $2c^2(1-k)=1$. With
+$\mathcal N_q(x)=(x+q/x)/2$, define
+\begin{equation}\label{eq:triangle-newton-parameters}
  \begin{gathered}
- 140/99<r<99/70,\qquad 923/1000<c<231/250,\\
- 703/1000<s_0(a_0)<71/100.
+ k_+=\mathcal N_2(\mathcal N_2(3/2))-1,
+ \qquad k_-=2/(1+k_+)-1,\\
+ Q_\pm=2-2k_\pm,\qquad
+ c_-=[\mathcal N_{Q_-}(\mathcal N_{Q_-}(1))]^{-1},\qquad
+ c_+=\mathcal N_{Q_+}(\mathcal N_{Q_+}(1))/Q_+.
  \end{gathered}
-\]
-follow by squaring the radical bounds and substituting $a_0$.
-Thus $s_0(a_0)-Ah/4>0$, and its larger clip obeys
+\end{equation}
+Squaring the Newton inequality gives $k_-<k<k_+$ and
+$c_-<c<c_+$. Write
+$s_+=(2+3k_+)a_0/2-(4c_--2)$.
+Substitution in these formulas gives $2/3<s_0(a_0)<s_+<3/4$
+and $s_0(a_0)-Ah/4>0$. Since $bA=3-5k$, the larger clip obeys
 \[
- \begin{aligned}
- u_*-k-a_0/2&<-41/198+(8/5)(71/100)/9+(11/48)(17/50)\\
-            &=-129/44000<0.
- \end{aligned}
+ u_*-k-a_0/2
+ <-k_-/2+(2-k_-)s_+/9+(6+5k_+)(1/3)/36<0.
 \]
-Here $k>41/99$, $b<8/5$, and $bA>3/4$ were used.
+The last inequality follows by inserting the Newton formulas;
+no separately chosen bound on the support coordinate is needed.
 The other clip is smaller by $h$.
 Also $a_0/2<u_*<a_0$, and $S>0$ there.
-Its value is $K_0(h)$, while its partial derivative in $a$ is
+The width derivative is negative because
 \[
- r-a_0-\frac{2d}{9}[s_0(a_0)-Ah/4]<0.
+ r-a_0-\frac{2d}{9}[s_0(a_0)-Ah/4]<r-a_0<0.
 \]
-The supporting plane of the jointly concave function therefore
-bounds all $a\ge a_0$, including the clipped configurations, by
-the value $K_0(h)$.
+These checks verify the hypotheses of
+\cref{lem:three-tent-general-plane}, which gives the bound $K_0(h)$
+for all $a\ge a_0$.
+\end{proof}
+
+The floor corrections in the full, proper, and dry-endpoint comparisons
+have the same form. The following payment separates the geometric loss
+from the final arithmetic check.
+
+\begin{lemma}[Tilt pays for the floor]\label{lem:triangle-tilt-payment}
+Let $\sigma=s_0(a_0)$ and put
+\[
+ \Psi(h)=B(a_0)-kh/2-h^2/8-\tfrac29(\sigma-Ah/4)^2
+       +\gamma[(p+\lambda h)^2+(q+\mu h)^2].
+\]
+If $k\ge2/5$, $k\le1$, $\sigma\le3/4$,
+$\lambda p+\mu q\le1/6$, $\lambda^2+\mu^2\le5/8$, and
+$0\le h_0\le h$ with $h+h_0\le1/2$, then $\Psi(h)\le\Psi(h_0)$.
+\end{lemma}
+\begin{proof}
+Subtract at $h_0$ and factor out $h-h_0$. The remaining factor is
+\[
+ -k/2+A\sigma/9+A(\lambda p+\mu q)
+ +(h+h_0)[-1/8-A^2/72+A(\lambda^2+\mu^2)/2].
+\]
+Since $0\le A\le3/5$, it is at most
+\[
+ -1/5+1/20+1/10+1/32<0.
+\]
+The first term is the direct tilt cost; the next two pay for
+moving the stationary point and the floor cuts. The last pays
+for their quadratic remainder.
+\end{proof}
+
+For the three applications, $t=2c-(1+k)$ and the data are
+\[
+\begin{array}{c|cccc|c}
+ &p&q&\lambda&\mu&h_0\\ \hline
+ \text{full}&3/5-t&3/5-t&-1/4&3/4&0\\
+ \text{proper}&0&2/3-t&0&2/3&0\\
+ \text{dry endpoint}&1/2-t&7/12-t&-1/4&3/4&0
+\end{array}
+\]
+The Newton enclosures give $5/12<t<1/2$.
+Thus $\lambda p+\mu q\le1/6$ in every row, and the largest
+$\lambda^2+\mu^2$ is $5/8$, from the endpoint-law slopes
+$-1/4,3/4$. The allowed heights satisfy $h+h_0<1/2$.
+One tilt payment therefore covers all three exclusions.
+
+\paragraph{The width fixed by the initial radius}
+
+A dry low endpoint makes the initial momentum
+$B=b(h)+3n_+/4$, where $b(h)=-1/2+5h/4$.
+The radius test allows span $R(h)=\sqrt{5-b(h)^2}$.
+The box gives $n_+\le1/3$, so the largest momentum at height $h$
+is $b(h)+1/4$. Choose the height where its floor-energy test meets
+four at that allowed radius:
+\begin{equation}\label{eq:tilted-balance-height}
+ R(h_0)^2+[b(h_0)+1/4]^2+[b(h_0)+1/4](1-h_0)
+ -R(h_0)\sqrt{h_0(2-h_0)}=4.
+\end{equation}
+This determines a unique $h_0\in(0,1/3)$.
+To check existence and obtain bounds, put
+\[
+ \begin{aligned}
+ V(h)&=R(h)^2+[b(h)+1/4]^2+[b(h)+1/4](1-h)-4,\\
+ F(h)&=V(h)^2-R(h)^2h(2-h).
+ \end{aligned}
+\]
+Here $V$ is positive; $F$ decreases on $[0,1/3]$ and changes sign
+between its endpoints. The squared equation therefore gives the
+same height. Starting with $[l,u]=[0,1/3]$, three simultaneous updates
+\[
+ (l,u)\longmapsto\left(l-\frac{F(l)}{F'(l)},\,
+                        u-\frac{F(u)}{F'(l)}\right)
+\]
+give bounds $h_-\le h_0\le h_+$.
+The divided difference of $F$ lies above $F'(l)$ on each bracket,
+so these are enclosing updates, rather than fitted approximations.
+The shared radius width is now
+\begin{equation}\label{eq:tilted-radius-width}
+\begin{gathered}
+b_0=b(h_0),\quad R_0=R(h_0),\quad C_{\rm rad}=R_0/3,\\
+R_+=\mathcal N_{R(h_+)^2}^{\circ2}(2),\qquad
+R_-=R(h_-)^2/R_+,\qquad a_{\rm rad}=2R_-/3.
+\end{gathered}
+\end{equation}
+The span lower bound $d\ge2$ supplies the Newton seed.
+The brackets give $R_-<R_0<R_+$.
+The triangle comparison below excludes every larger width, even when
+$h<h_0$, and can be evaluated at zero tilt like the other two rows.
+Both boundaries are therefore fixed by the two energy tests.
+
+\begin{lemma}[A common endpoint comparison]\label{lem:triangle-newton-corners}
+Use $k_+,c_+$ from \eqref{eq:triangle-newton-parameters} and define
+\[
+\begin{aligned}
+ E&=(a+1-h/2)k+a-(a^2+1)/2-h^2/8\\
+  &\quad-2z^2/9+\tfrac A2(wD_R^2+D_L^2),\\
+ z&=(2+3k)a/2-(4c-2)-Ah/4,\\
+ D_i&=b_i-(2c-1-k).
+\end{aligned}
+\]
+For each of the following geometric endpoint data,
+$E(a,h,k,c;b_R,b_L,w)\le E(a,h,k_+,c_+;b_R,b_L,w)<\underline p$:
+\[
+\begin{array}{c|ccccc}
+ &a&h&b_R&b_L&w\\ \hline
+ \text{full}&37/25&0&3/5&3/5&1\\
+ \text{proper}&37/25&0&2/3&2/3&0\\
+ \text{dry endpoint}&a_{\rm rad}&0&1/2&7/12&1
+\end{array}
+\]
+Here $w=0$ records the proper comparison's single joint floor square.
+\end{lemma}
+\begin{proof}
+The identity $k^2+2k=1$ rewrites $B(a)$ as the linear term in
+$E$. To bound the whole expression, first increase $c$ to $c_+$,
+then increase $k$ to $k_+$. On these segments, the Newton enclosures
+give $3/5\le z\le3/4$ and $0\le D_i\le1/4$.
+The two changes both raise $E$:
+\[
+ \partial_cE=16z/9-2A(wD_R+D_L)>0,
+\]
+\[
+\begin{aligned}
+ \partial_kE&=a+1-h/2-\tfrac49(3a/2+h/4)z\\
+ &\quad-\tfrac12(wD_R^2+D_L^2)+A(wD_R+D_L)\\
+ &\ge a/2+15/16-7h/12>0.
+\end{aligned}
+\]
+Here $0\le w\le1$, and all three rows have $h=0$.
+The first comparison retains the improvement in the stationary square
+alongside the loss in floor payment; the second retains the linear
+area reward. Both can equally be obtained by subtracting the two
+squares. Inserting the same Newton formulas in each row gives
+$E<\underline p$ using \eqref{eq:reference-half-area-lower}.
 \end{proof}
 
 \begin{corollary}[Full width cut]\label{cor:full-three-tent-cut}
 Every cap satisfying the hypotheses of
-\cref{lem:full-three-tent-score} has
-\[
- P_L(U)<25811237/31500000<41/50.
-\]
+\cref{lem:full-three-tent-score} has $P_L(U)<\underline p$.
 \end{corollary}
 \begin{proof}
-Expand $K_0(h)+L(h)$ as a quadratic. Its linear and quadratic
-coefficients are
-\[
- \ell=-k/2+As_0(a_0)/9+\gamma d_0,
- \qquad q=-1/8-A^2/72+5\gamma/8.
-\]
-The same radical bounds give
-$d_0<589/3500$, $\ell<-1/10$, and $q<1/16$.
-Indeed the positive terms in $\ell$ are less than
-$(3/5)(71/100)/9+(3/10)(589/3500)=10271/105000<1/10$.
-Thus $\ell+2qh<-1/10+h/8<0$ throughout $[0,17/50]$.
-The largest bound occurs at $h=0$.
-Using $k<29/70$, $s_0(a_0)>703/1000$, and
-$2\gamma d_0^2<17/1000$ gives
-\[
- P_L(U)<\frac{62}{25}\frac{29}{70}-\frac{72}{625}
-       -\frac29\left(\frac{703}{1000}\right)^2+\frac{17}{1000}
-       =\frac{25811237}{31500000}<\frac{41}{50}.
-\]
+By \cref{lem:full-three-tent-critical},
+$P_L(U)\le K_0(h)+L(h)$.
+The full row of \cref{lem:triangle-tilt-payment} bounds this at $h=0$.
+Its value is the full row of \cref{lem:triangle-newton-corners},
+which is below $\underline p$.
 \end{proof}
 
 \subsection{The first-wing energy test}
@@ -417,8 +583,15 @@ high-wing and low-wing supports. Write
  s_h=\sqrt{h(2-h)},\qquad H(C)=1-\sqrt{1-C^2}.
 \]
 
+The target $u\le1$ follows if $q\le1$ whenever the first source can
+be exposed. At its first $p$-zero this means $q+1\le2$. Before the
+corner reaches the floor, the support trajectory is a free rotation.
+The two tests below bound its energy depending on which event comes
+first; the constants four and five are the corresponding squared
+radii.
+
 \begin{lemma}[Initial-floor test]\label{lem:tilted-initial-energy}
-Suppose $1/2<C<4/5$ and $0<h<17/50$. At a canonical full
+Suppose $1/2<C<4/5$ and $0<h<1/3$. At a canonical full
 maximum, the two inequalities
 \begin{equation}\label{eq:tilted-initial-energy}
  d^2+B^2\le5,\qquad
@@ -490,69 +663,52 @@ The proved bounds $-1\le q\le1$ on all remaining sectors give
 $u\le1$.
 \end{proof}
 
-\begin{lemma}[Short widths and large tilt]\label{lem:tilted-unit-regions}
+\begin{lemma}[Short widths and the radius width]\label{lem:tilted-unit-regions}
 The first density of a canonical full maximum is at most one if
-either $C\le2/3$, or
-$C\le37/50$ and $21/100\le h<17/50$.
-If moreover $N_L(U)(-C)=0$, the same conclusion holds on
-$C\le73/100$, $1/20\le h\le21/100$.
+\(C\le2/3\). If its low middle endpoint is dry, the same conclusion
+holds for \(C\le C_{\rm rad}\) and \(h_0\le h<1/3\), with
+\(C_{\rm rad},h_0\) from \eqref{eq:tilted-radius-width}.
 \end{lemma}
 \begin{proof}
-For $C\le2/3$, write $e=e_R\in[0,1]$.
-Then $d^2\le4$, $|B|=|e-1+h|\le1$ and $s_h\ge h$.
+For \(C\le2/3\), write \(e=e_R\in[0,1]\).
+Then \(d^2\le4\), \(|B|=|e-1+h|\le1\) and \(s_h\ge h\).
 The first test follows at once. The second follows from
 \[
- B^2+B(1-h)=e(e-1+h),\qquad
- e(e-1+h)-ds_h\le h(e-d)\le0.
+B^2+B(1-h)=e(e-1+h),\qquad
+ e(e-1+h)-ds_h\le h(e-d)\le0,
 \]
-Here $d>3/2\ge e$. This proves the short-width case.
+since \(d>3/2\ge e\).
 
-The endpoint pressures and the two rectangular wall bounds give
-\begin{equation}\label{eq:tilted-energy-endpoint-box}
- -\tfrac12+\tfrac54h-\tfrac14(H(C)-h)_+
- \le B\le-\tfrac12+\tfrac54h+\tfrac34H(C).
-\end{equation}
-Indeed $N_L(U)(C)\le H(C)$ and
-$N_L(U)(-C)\le(H(C)-h)_+$, by maximizing respectively
-$1-\sec t+C\tan t$ and $1-h-\sec t+C\tan t$.
-Substitute these bounds in the pressure for $e_R$.
-
-For $C\le37/50$ one has $H(C)<33/100$. On the high-tilt
-strip, \cref{eq:tilted-energy-endpoint-box} gives
-$-107/400\le B\le69/400$. Thus
+Now assume \(2/3<C\le C_{\rm rad}\), \(h\ge h_0\), and \(n_-=0\).
+Since \(9C_{\rm rad}^2=5-b_0^2<5\), the box height obeys
+\(H(C)\le1/3\). The dry endpoint pressure therefore gives
 \[
- d^2+B^2\le(111/50)^2+(107/400)^2
-           =799993/160000<5.
+-1/2+5h/4\le B\le-1/4+5h/4.
 \]
-The expression $Q=d^2+B^2+B(1-h)-ds_h$ increases with $d$
-for $d\ge2$, and with $B$ on this rectangle, since
-$2B+1-h\ge1/8$. Use $d=111/50$ and
-$B=-101/400+5h/4$. The resulting expression is convex in $h$:
-its polynomial quadratic coefficient is $5/16$ and $-ds_h$
-is convex. At $h=21/100$, $s_h>61/100$ gives
-$Q<17911/5000<4$; at $h=17/50$, $s_h>3/4$ gives
-$Q<545121/160000<4$. Convexity proves the second test throughout.
-
-For the final strip assume the left niche value is zero. The
-pressure reads $B=-1/2+5h/4+3z/4$, where
-$z=N_L(U)(C)\le H(C)<32/100$ when $C\le73/100$.
-Enlarge this to the interval
-$-7/16\le B\le1/400$ for $1/20\le h\le21/100$.
-It gives
+On \([h_0,1/3]\) both endpoints have absolute value at most
+\(-b_0\), and hence
 \[
- d^2+B^2\le(219/100)^2+(7/16)^2
-             =798001/160000<5.
+d^2+B^2\le9C_{\rm rad}^2+b_0^2=5.
 \]
-For $Q$, convexity in $B$ permits the two affine endpoints
-$B=-1/2+5h/4$ and $B=-13/50+5h/4$; convexity in $h$
-then permits its two endpoints. At $h=1/20$, use
-$s_h>31/100$, and at $h=21/100$ use $s_h>61/100$.
-The larger upper bounds at these endpoints are, respectively,
-$634973/160000$ and $553949/160000$, both less than four.
-All square-root comparisons follow by squaring positive rationals.
-Apply \cref{lem:tilted-initial-energy} in each case.
+This is exactly why the radius width was chosen.
+
+For the floor test put
+\(Q(d,B,h)=d^2+B^2+B(1-h)-d\sqrt{h(2-h)}\).
+It increases with \(B\) on this interval, since
+\(2B+1-h\ge3h/2\ge0\), and with \(d\ge2\).
+Thus it suffices to use $d=R_0$ and $B=-1/4+5h/4$.
+The resulting function is convex in $h$: its polynomial part
+has quadratic coefficient $5/16$, and the negative semicircle is convex.
+Only the two endpoints $h=h_0,1/3$ remain.
+At $h_0$ the test equals four by its defining equation.
+At $1/3$, use $R_0^2\le5$, $R_0\ge2$ and
+$\sqrt{(1/3)(2-1/3)}\ge2/3$. These give
+\[
+ Q(R_0,1/6,1/3)\le5+(1/6)^2+(1/6)(2/3)-2(2/3)<4.
+\]
+Convexity supplies the whole interval.
+Apply \cref{lem:tilted-initial-energy}.
 \end{proof}
-
 
 \subsection{Ordered contact geometry}
 
@@ -742,6 +898,12 @@ bounds then give $v\le1$ everywhere.
 
 \subsection{The joint occupation of a corner}
 
+A visible corner belongs to both wall families. Resolving its tangent
+vector into those two wall directions fixes the ratio of their source
+lengths. Thus both families must use the same occupied fraction of a
+corner. This shared fraction is what lets the energy argument pay for
+folds without counting a contact twice.
+
 \begin{lemma}[Common source occupation]
 \label{lem:variation-joint-occupation}
 Under the first-unit hypotheses, suppose the companion density
@@ -856,6 +1018,13 @@ already vanishes by same-sign shadowing.
 \end{proof}
 
 \subsection{The two clipped strip moments}
+
+The top overhang $T$ appears as a horizontal moment at the low-wing
+floor crossing and as a vertical moment at the high-wing window
+crossing. Integrating the contact energy compares these moments.
+Endpoint stationarity cancels the end heights, leaving the required
+term $6CT$ and convolution remainders that the two unit-curvature
+bounds can control.
 
 \begin{lemma}[Two unit wings]\label{lem:tilted-two-unit}
 A canonical full maximum with positive middle slope,
@@ -995,6 +1164,12 @@ $z_+/2$. Hence $6CT\le4T/3$, contradicting $C>1/2$, $T>0$.
 
 \subsection{Paying for a folded companion}
 
+When the companion curvature exceeds one, its tangent can fold back
+and the two-unit calculation acquires an error. The common source
+occupations bound that error by the unused first-wing curvature. Its
+sine moment is already $T$, so the fold can be paid from the same
+strip budget.
+
 \begin{lemma}[Folded-wing energy]\label{lem:tilted-fold-energy}
 Under the first-unit hypotheses, a companion density exceeding
 one also contradicts maximality.
@@ -1056,8 +1231,9 @@ Together with $x_*<1-2C$, these facts give
  z_+=\int_\beta^L(1-u)\cos t.
  \end{gathered}
 \end{equation}
-All four integrals use $\dd t$. There is no assumption that
-the first floor crossing minimizes $L_0$.
+All four integrals use $\dd t$. The quantity $S$ records the
+horizontal displacement up to the first floor crossing; its excess
+over $T$ will have a favorable sign in the energy comparison.
 
 On $(\tau,\eta)$, $b=0$ and $p'=q\chi-1-q\le-1$.
 Thus $p\le-1$ and $0<q\le1/4$ there. For $w=q-p$,
@@ -1126,15 +1302,22 @@ The displacement term is nonpositive:
 $S\ge T$, $(S+T)/2\le(1+C)/2<3C$.
 Using $v\le5/4$ in the backward sine convolution gives
 \[
- R_B\le\tfrac54\frac{1-\sin\beta}{\sin\beta}T\le5T/6,
- \qquad z_+\le\cot\beta\,T\le4T/3.
+ R_B\le\tfrac54\frac{1-\sin\beta}{\sin\beta}T,
+ \qquad z_+\le\cot\beta\,T.
 \]
 Since $h+z_+<2$, the first term is at most $z_+/2$.
-Drop the two nonpositive terms in
-\cref{eq:tilted-fold-contradiction}. Its right side is at most
+After dropping $-R_D$ and the displacement term, the three remaining
+costs are the endpoint niche, the flux remainder, and the fold defect.
+Together they bound the right side of
+\cref{eq:tilted-fold-contradiction} by
 \[
- \left(\frac23+\frac56+\frac{25}{48}\right)T
-                   =\frac{97}{48}T<3T.
+ f(\beta)T,\qquad
+ f(\beta)=\frac12\cot\beta
+          +\frac54\frac{1-\sin\beta}{\sin\beta}
+          +\frac5{16\sin\beta}.
 \]
+$f$ decreases on $(0,\pi/2]$. Since $\beta>\arctan(3/4)$,
+the $3$--$4$--$5$ sine and cosine values give
+$f(\beta)<f(\arctan(3/4))<3$.
 But $6CT>3T$ for $C>1/2$ and $T>0$, the required contradiction.
 \end{proof}

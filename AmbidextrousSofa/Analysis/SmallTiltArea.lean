@@ -1,6 +1,7 @@
 module
 
 public import AmbidextrousSofa.Analysis.SmallTiltScalar
+public import AmbidextrousSofa.Analysis.TiltedTriangleArea
 public import AmbidextrousSofa.Analysis.SplitWingChord
 public import AmbidextrousSofa.Analysis.TiltedLeakageMoment
 public import AmbidextrousSofa.Analysis.TiltedEndpointBounds
@@ -34,23 +35,23 @@ theorem IsFullCapMaximizer.smallTilt_initialFloorEnergyConditions_of_actual_geom
     {C h T m c K : ℝ} {ρ : ℝ → ℝ} {S : Set ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hC0 : 2 / 3 ≤ C) (hC1 : C ≤ 37 / 50)
-    (hh0 : 0 < h) (hh1 : h ≤ 509 / 10000) (hheight : capHeight U = 1)
+    (hh0 : 0 < h) (hh1 : h ≤ Analysis.tiltedBalanceHeight) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c)
     (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1)
     (hnzero : sweptNiche U (Real.pi / 2) (-C) = 0) (hT : 0 ≤ T)
     (htop : MovingSofaOptimality.vminus U (Real.pi / 2) = (C + T, 1))
     (hTs : T ≤ Analysis.initialFloorSine h)
-    (hzT : sweptNiche U (Real.pi / 2) C ≤ (10 / 9) * T)
+    (hzT : sweptNiche U (Real.pi / 2) C ≤ Analysis.smallTiltProjection * T)
     (hρ : Measurable ρ) (hρ0 : ∀ t, 0 ≤ ρ t) (hρK : ∀ t, ρ t ≤ K)
     (heq : (upperCurvature U).restrict S =
       (volume.restrict S).withDensity (fun t => ENNReal.ofReal (ρ t)))
     (hsub : Ioo (0 : ℝ) (Real.pi / 2) ⊆ S)
-    (hJ : firstExcessMoment ρ ≤ 1 / 40) :
+    (hJ : firstExcessMoment ρ ≤ tiltedLeakageMomentBound) :
     Analysis.InitialFloorEnergyConditions (3 * C)
       (capRoof U (horizontalRight U) - 1 + h) h := by
   have hC : 0 < C := by linarith only [hC0]
   have hChalf : 1 / 2 ≤ C := by linarith only [hC0]
-  have hhmax : h ≤ 17 / 50 := by linarith only [hh1]
+  have hhmax : h ≤ 1 / 3 := hh1.trans Analysis.tiltedBalanceHeight_mem.2
   have hAff : ∃ m c : ℝ, ∀ x ∈ middleHalfInterval
       (horizontalLeft U) (horizontalRight U), capRoof U x = m * x + c :=
     ⟨m, c, by simpa only [(centered_quarter_points hl hr).2.2] using haffine⟩
@@ -72,18 +73,19 @@ theorem IsFullCapMaximizer.smallTilt_initialFloorEnergyConditions_of_actual_geom
     (capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _) (le_capRoof hU.isCap.isCompact
       (htop ▸ (MovingSofaOptimality.vminus_mem_edge hU.isCap.imported_isConvexBody _).1))
   have hchord := hU.split_wing_chords_le_twice_score hl hr hC hT
-    (by linarith only [hTs, (Analysis.smallTilt_sine_bounds hh0 hh1).2.1, hC0]) hlow hhigh
+    (by
+      have hs := Analysis.smallTilt_sine_bounds hh0 (hh1.trans Analysis.tiltedBalanceHeight_bounds.2)
+      linarith only [Analysis.smallTiltSineUpper_lt_third, hTs, hs.2.1, hC0]) hlow hhigh
     htoproof hheight hAff
   have hEP := hU.tilted_endpoint_laws hl hr hheight haffine hlow hhigh
   rw [show 1 - capRoof U (horizontalRight U) =
       1 / 2 - h / 4 - 3 * sweptNiche U (Real.pi / 2) C / 4 by linarith only [hEP.1, hnzero],
     show 1 - h - capRoof U (horizontalLeft U) =
       1 / 2 - h / 4 + sweptNiche U (Real.pi / 2) C / 4 by linarith only [hEP.2, hnzero]] at hchord
-  have hz1 : sweptNiche U (Real.pi / 2) C ≤ 33 / 100 :=
-    (hU.isCap.middle_niche_le_box_height_of_endpoints hl hr hC.le (by linarith only [hC1])).2.trans
-      (Analysis.tiltedBoxHeight_lt_thirty_three_hundredths hC.le hC1).le
-  convert Analysis.smallTilt_initialFloorEnergyConditions_of_area hC0 hC1 hh0 hh1
-    (sweptNiche_nonneg _ _ _) hz1 hT hTs hzT hJ hchord (by linarith only [harea, hL, hR])
+  have hCradius := hU.centered_width_lt_radiusWidth_of_dry hl hr hC1 hh0.le hhmax
+    hheight haffine hlow hhigh hnzero
+  convert Analysis.smallTilt_initialFloorEnergyConditions_of_area hC0 hCradius.le hh0 hh1
+    (sweptNiche_nonneg _ _ _) hTs hzT hJ hchord (by linarith only [harea, hL, hR])
     (hU.isCap.volumeReal_oneTurnSurvivor_le hfit) using 2
   unfold Analysis.tiltedEndpointMomentum
   linarith only [hEP.1, hnzero]

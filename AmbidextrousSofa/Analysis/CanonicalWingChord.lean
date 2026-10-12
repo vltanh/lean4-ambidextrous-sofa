@@ -68,14 +68,14 @@ theorem IsFullCapMaximizer.ordinary_area_chord_necessary_of_canonical_range
     {U : Set Plane} (hU : IsFullCapMaximizer U) {C h : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hleft : capRoof U (-C) = 1 - h) (hright : capRoof U C = 1)
-    (hC0 : 1 / 2 ≤ C) (hC1 : C ≤ 37 / 50) (hh0 : 0 ≤ h) (hh1 : h ≤ 17 / 50)
+    (hC0 : 1 / 2 ≤ C) (hC1 : C ≤ 37 / 50) (hh0 : 0 ≤ h) (hh1 : h ≤ 1 / 3)
     (hheight : capHeight U = 1)
     (haffine : ∃ m c : ℝ, ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
     Real.sqrt (C ^ 2 + (1 - h / 2 -
       (capRoof U (horizontalRight U) + capRoof U (horizontalLeft U)) / 2) ^ 2) +
       C * (3 - (capRoof U (horizontalRight U) + capRoof U (horizontalLeft U)) - 3 * h / 2) ≤
-      (22199 : ℝ) / 10000 := by
+      (2.2199 : ℝ) := by
   have hfit := hU.sweptNiche_le_roof_of_canonical_range
     hl hr hleft hright hC0 hC1 hh0 hh1 hheight haffine
   have hconv := hU.isCap.convexOn_sweptNiche_wings_of_roof_endpoints

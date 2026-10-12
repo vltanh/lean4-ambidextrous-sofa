@@ -12,8 +12,8 @@ public import AmbidextrousSofa.Analysis.TiltedTopProjection
 The reflected active arc has initial height equal to the actual left
 endpoint roof and initial span equal to three quarter-widths. Its first
 excess crossing is constructed from its continuous momenta. The clipped
-energy gives the precise reflected radius inequality, and the two exact
-endpoint-height ranges stop the excess before `11/15`. Reflection then
+energy gives the reflected radius inequality, and the joint crossing
+and decay comparison stops the excess before `11/15` for all heights. Reflection then
 gives unit companion curvature on the original initial prefix.
 -/
 
@@ -73,7 +73,7 @@ theorem fullTiltedSupportQuarterPair_companion_unit_prefix_of_collapsed_top {C h
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hC0 : 2 / 3 ≤ C) (hC1 : C ≤ 37 / 50)
     (hmpos : 0 < m) (hsmall : C + m < 1)
-    (hh0 : 0 < h) (hh1 : h < 17 / 50)
+    (hh0 : 0 < h) (hh1 : h < 1 / 3)
     (hheight : capHeight U = 1) (hhigh : capRoof U C = 1)
     (hlow : capRoof U (-C) = 1 - h)
     (hκ : ∀ t, ρ t ≤ sourceKappa (upperCornerVelocity U t))

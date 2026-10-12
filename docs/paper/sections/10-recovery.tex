@@ -53,38 +53,15 @@ translated reference niche. By the definition of $\SR$ this proves
 \begin{equation}\label{eq:reference-body-containment}
  T\subseteq\SR+(a,0).
 \end{equation}
-This step uses the constraints of the two original passages together
-with their own aligned caps.
-
-The reference body is regular closed. One can see the property
-directly from its continuous niche and the strict bound
-$\nR<1/2$. For $p=(x,y)\in\SR$, move vertically toward
-$(x,1/2)$:
-\[
- p_t=(x,(1-t)y+t/2),\qquad 0<t\le1.
-\]
-Reflection symmetry and convexity of $\HR$ put $(x,1/2)$ in $\HR$
-whenever $p\in\HR$, so $p_t\in\HR$. Both niche inequalities at $p_t$ are
-strict. The set on which these inequalities are strict is open.
-Since the compact convex hull has nonempty interior,
-$\HR=\clos(\inter\HR)$; every $p_t$ is consequently a limit of
-interior hull points in that open set. Those points are in
-$\inter\SR$. Sending $t$ to zero shows
-\begin{equation}\label{eq:reference-regular-closed}
- \SR=\clos(\inter\SR).
-\end{equation}
-
-
-Now $T$ is compact, hence closed, and both sets in
-\eqref{eq:reference-body-containment} have finite area $\Mc$.
-Apply \cref{lem:regular-closed-recovery} to obtain
+Since $T$ is compact, it is closed. The reference body is regular
+closed by \cref{thm:reference}, and both sets in
+\eqref{eq:reference-body-containment} have area $\Mc$.
+Thus \cref{lem:regular-closed-recovery} gives
 $T=\SR+(a,0)$. If the normalization was
 $T=R_\eta S+v_0$, inversion gives the explicit equality
 \[
  S=R_{-\eta}\SR+R_{-\eta}\bigl((a,0)-v_0\bigr).
 \]
-
-
 Conversely, every rotated and translated copy of $\SR$ is
 ambidextrous: compose its two reference passages with the inverse
 rigid map. Rigid maps preserve area, so every such copy has area

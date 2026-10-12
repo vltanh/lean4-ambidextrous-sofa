@@ -89,7 +89,7 @@ theorem IsDownwardCap.convexOn_sweptNiche_wings_of_roof_endpoints
     {U : Set Plane} (hU : IsDownwardCap U) {C h : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hleft : capRoof U (-C) = 1 - h) (hright : capRoof U C = 1)
-    (hC0 : 1 / 2 ≤ C) (hC1 : C ≤ 37 / 50) (hh : h ≤ 17 / 50) :
+    (hC0 : 1 / 2 ≤ C) (hC1 : C ≤ 37 / 50) (hh : h ≤ 1 / 3) :
     ConvexOn ℝ (Icc (-2 * C) (-C)) (sweptNiche U (Real.pi / 2)) ∧
       ConvexOn ℝ (Icc C (2 * C)) (sweptNiche U (Real.pi / 2)) := by
   have hcorners θ (hθ : θ ∈ Ioo (0 : ℝ) (Real.pi / 2)) :=

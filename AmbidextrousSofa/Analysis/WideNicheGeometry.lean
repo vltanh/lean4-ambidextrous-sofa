@@ -47,11 +47,12 @@ theorem IsDownwardCap.wide_near_intercepts_lower {U : Set Plane}
   constructor <;> linarith only [hL, hR, hleft, hright]
 
 /-- Both peak and crossover conditions for the literal support walls.
-The compact box comes from the earlier actual wide-score estimate. -/
+The weighted peak span comes from the diagonal endpoint budget. -/
 theorem IsDownwardCap.wide_piece_fitting {U : Set Plane}
     (hU : IsDownwardCap U) {a h k u v : ℝ}
-    (ha : 8 / 5 ≤ a) (hh : 0 ≤ h) (hh1 : h < 1 / 4) (hah : a + h < 37 / 20)
-    (hk0 : 41 / 99 < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1)
+    (ha : 8 / 5 ≤ a) (hh : 0 ≤ h) (hh1 : h < 1 / 2)
+    (hspan : (1 - k / 2) * a + h < (1 + k) * nearDiagonalNorm k)
+    (hk0 : diagonalOffsetLower < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1)
     (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
     (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1)
     (haffine : ∃ m c : ℝ, ∀ x ∈ Icc (-a / 2) (a / 2), capRoof U x = m * x + c)
@@ -62,6 +63,7 @@ theorem IsDownwardCap.wide_piece_fitting {U : Set Plane}
       -(u - v) / 2 ≤ wideCrossing k v (wideNearLeftIntercept U k) ∧
       widePeak k (wideNearRightIntercept U k) (wideEndpointIntercept a (capRoof U a) k) ≤ a / 2 ∧
       widePeak k (wideNearLeftIntercept U k) (wideEndpointIntercept a (capRoof U (-a)) k) ≤ a / 2 := by
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
   have ha0 : 0 < a := by linarith only [ha]
   have hk : 0 < k := by linarith only [hk0]
   have hha : h < a := by linarith only [ha, hh1]
@@ -72,7 +74,7 @@ theorem IsDownwardCap.wide_piece_fitting {U : Set Plane}
     hl hr hleft hright haffine hv
   have hτ := wideLeftTiltPenalty_bounds ha0 hh (by linarith only [hk1])
     (wideLeftIntersection_mem ha0 hha hvv.1 hvv.2)
-  have hmid : 1 ≤ (u + v) / 2 := by linarith only [hm, ha, hh1]
+  have hmid : 3 / 4 ≤ (u + v) / 2 := by linarith only [hm, ha, hh1]
   have hcrossR := wide_crossing_after_apex (u := u) (w := v) (h := 0)
     (b := wideNearRightIntercept U k) hk hk1 hNorm.1 le_rfl (by linarith only [hmid])
     (by linarith only [wideNearRightIntercept_eq (U := U) ha0 hha k v, hδL.1, hτ.1])
@@ -81,9 +83,9 @@ theorem IsDownwardCap.wide_piece_fitting {U : Set Plane}
     (by linarith only [wideNearLeftIntercept_eq U k u, hδR.1])
   have hpoints := hU.wide_near_intercepts_lower ha0 hl hr hleft hright (k := k)
   exact ⟨hcrossR.le, by linarith only [hcrossL],
-    wide_peak_fits hk0 hk1 hksq hNorm.1.le hh1.le hah.le
+    wide_peak_fits hk hksq hspan.le
       (capRoof_le_one hU.isCompact hU.inStrip a) hpoints.1,
-    wide_peak_fits hk0 hk1 hksq hNorm.1.le hh1.le hah.le
+    wide_peak_fits hk hksq hspan.le
       (capRoof_le_one hU.isCompact hU.inStrip (-a)) (by linarith only [hpoints.2, hh])⟩
 
 end AmbidextrousSofa

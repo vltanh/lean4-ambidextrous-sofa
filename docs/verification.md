@@ -22,7 +22,7 @@ Palomar cannot yet render a Challenge built with `v4.35.0-rc4`
 `lake build` must succeed, and its only `sorry` warnings are the nine of [`Challenge.lean`](../Challenge.lean),
 whose theorems are the statements of record.
 
-[`scripts/Audit.lean`](../scripts/Audit.lean) collects the axioms of every declaration of the library (5,581,
+[`scripts/Audit.lean`](../scripts/Audit.lean) collects the axioms of every declaration of the library (5,545,
 private and auxiliary ones included), of the copied `MovingSofaOptimality` (4,235), and of the nine theorems
 that Comparator checks. It fails unless each one uses only
 [`propext`](https://leanprover-community.github.io/mathlib4_docs/Init/Core.html#propext),
@@ -41,6 +41,18 @@ of definitions of [`AmbidextrousSofa/ChallengeDefs.lean`](../AmbidextrousSofa/Ch
 (without `--check`, it makes the copy). The Challenge may import only Mathlib, and Comparator compares constants
 by name, so the Solution states its theorems with the constants of `ChallengeDefs`.
 
+[`scripts/check_numeric_estimates.py`](../scripts/check_numeric_estimates.py) independently checks the revised
+scalar estimates using exact fractions: the shared triangle tilt payment, whole-score
+parameter comparison, generated endpoints and clipping checks; generated reference-root and diagonal-offset enclosures,
+geometric short-width comparisons, the exact wide demand, weighted triangle prices and tilt cancellation, the intermediate tilt comparison at height one third, horizontal stopping and dry-endpoint area bounds,
+uniform tilt cancellation, joint stopping comparisons for every reflected height,
+circle discriminants, the intrinsic terminal circle gap and its direct cubic payment,
+the reflected angular deadline and cubic payment, the natural initial-angle and terminal-corner widths, complementary tent gap,
+the energy-balance height, its radius width and two floor-energy endpoint checks, the common small-height pressure budget
+and circle-radius payment, integrated leakage allowance and radius-derived projection prices, and small-tilt and folded-wing endpoint comparisons.
+It also audits all active proof and manuscript
+files for large literal rational coefficients. Run it with `python3 scripts/check_numeric_estimates.py`.
+
 ## Comparator
 
 Lake's Comparator checks, in a sandbox, that [`Solution.lean`](../Solution.lean) proves exactly the statements of
@@ -51,9 +63,9 @@ replays the proofs through Lean's kernel and the NanoDa kernel, and ends with `Y
 
 [`formalization.yaml`](../formalization.yaml) describes the formalization for the
 [Palomar](https://palomar-registry.org) registry: its sources, its scope, how it was made, how it reads the
-problem, and the nine theorems that Comparator checks. The checks of Palomar's verifier
-([PalomarSubmission](https://github.com/PalomarRegistry/PalomarSubmission)), run on a fresh clone, accept the
-metadata and the 512 Lean files. The pins of [`lake-manifest.json`](../lake-manifest.json) agree with Mathlib's
+problem, and the nine theorems that Comparator checks. Earlier checks of Palomar's verifier
+([PalomarSubmission](https://github.com/PalomarRegistry/PalomarSubmission)), run on a fresh clone, accepted the
+metadata and the then-current 512 Lean files. The pins of [`lake-manifest.json`](../lake-manifest.json) agree with Mathlib's
 own, as the verifier requires, and with those of Verso, which renders the Challenge.
 
 [`.github/workflows/palomar_preflight.yml`](../.github/workflows/palomar_preflight.yml) runs Palomar's complete

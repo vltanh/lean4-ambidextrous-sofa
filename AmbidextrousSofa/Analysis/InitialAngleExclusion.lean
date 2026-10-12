@@ -41,17 +41,17 @@ theorem terminalSlope_mem_initialAngle_interval {α : ℝ}
 
 /-- The actual support geometry at either middle top endpoint discharges
 the all-width scalar hypotheses. This is a bound on the literal cap score. -/
-theorem IsDownwardCap.capScore_lt_initialAngle_rational_of_top_endpoint
+theorem IsDownwardCap.capScore_lt_half_M_of_initialAngle_top_endpoint
     {U : Set Plane} (hU : IsDownwardCap U) {C α : ℝ} (hC : 0 ≤ C)
     (hleft : horizontalLeft U = -2 * C) (hright : horizontalRight U = 2 * C)
     (hα0 : Real.pi / 4 ≤ α) (hα1 : α ≤ Real.arctan (8 / 3))
     (htop : (-C, 1) ∈ U ∨ (C, 1) ∈ U) :
-    capScore U α < (5259 / 6400 : ℝ) := by
+    capScore U α < M / 2 := by
   have hαpos : 0 < α := by linarith [Real.pi_pos]
   have hαL : α < Real.pi / 2 := hα1.trans_lt (Real.arctan_lt_pi_div_two (8 / 3))
   rcases le_or_gt α (Real.arctan (5 / 4)) with hlow | hlow
   · linarith [hU.capScore_le_terminal_bound hαpos hαL,
-      terminal_bound_le_arctan_five_fourths hα0 hlow, terminal_exact_bound_lt_rational]
+      terminal_bound_le_arctan_five_fourths hα0 hlow, terminal_exact_bound_lt_rational, forty_one_fiftieths_lt_half_M]
   have hk := terminalSlope_mem_initialAngle_interval hlow.le hα1
   obtain ⟨hbu, hcompat, hu1, hv1, hb1⟩ :=
     hU.three_support_compatibility_centered hleft hright hα0 hαL
@@ -68,8 +68,8 @@ theorem IsJointCapMaximizer.terminal_angle_gt_arctan_eight_thirds
     Real.arctan (8 / 3) < α := by
   obtain ⟨V, hV, hleft, hright, htop⟩ := hU.exists_centered_top_endpoint
   by_contra! hα1
-  linarith [hV.reference_le, initialAngle_rational_lt_half_M,
-    hV.isCap.capScore_lt_initialAngle_rational_of_top_endpoint
+  linarith [hV.reference_le,
+    hV.isCap.capScore_lt_half_M_of_initialAngle_top_endpoint
       (div_nonneg hU.isCap.capWidth_nonneg (by norm_num)) hleft hright hV.angle_mem.1 hα1 htop]
 
 end AmbidextrousSofa

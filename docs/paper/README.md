@@ -6,6 +6,42 @@
 - Mathematical appendices give the ordinary-sofa input, Romik's construction and exact area, and the supporting estimates.
 - [Review and checks](REVIEW.md) records the mathematical review and build checks.
 
+The initial-angle argument integrates fixed wall pieces and completes two squares.
+Weighted Cauchy–Schwarz pays for the tent apex, so no feasible critical point
+or moving-intersection concavity proof is needed. Its width split and residual tent gap
+come from the diagonal offset and angular endpoint. The later corner width
+solves the separation equality at that endpoint.
+
+The arguments explain which geometric obstruction or variation motivates each
+estimate before calculating it. The wide-cap exclusion uses the diagonal endpoint
+budget to price the exact span of both nearby-angle peaks. Its three separate
+width and height cuts and the full-cap endpoint niche box are removed; two
+square inequalities give the final supporting plane. The intermediate tilt bound
+uses one common price for the clipped exterior losses and the diagonal niche.
+Their support coordinates cancel, leaving one quadratic to complete. Comparing
+directly with the reference area gives `h < 1/3` throughout the later estimates. The reference phases are matched by an angle
+identity, and the triangle comparisons use stationarity and concavity. Their
+floor corrections share one tilt payment and one Newton comparison of the whole
+area bound. The horizontal argument compares the end of curvature excess with endpoint contact.
+Its dry endpoints reduce the width test to a chord-area bound and the energy
+threshold `√17/6`. Corner confinement uses circle inequalities and two quadratics.
+The tilted selector splits at the height where its two energy tests meet,
+with the corresponding radius fixing its width. A triangle
+payment excludes every larger width at all heights; below it the dry endpoint
+leaves a defining equality and one elementary floor-energy endpoint check. For small heights, the same width
+reduction turns a radius failure into a joint pressure budget, paid by the
+ordinary-area gain between the two circle radii.
+Tilted excess is compared with zero tilt: the loss of floor energy pays for
+the delay of the first crossing. One joint crossing-and-decay lemma covers
+all reflected heights. The proper terminal argument prices both middle orientations
+with one angular budget and the atom with its inset squared. Its cubic overlap
+pays the terminal margin throughout the slope range. For the terminal circle, a tangent pays for shifting the
+chord center, reducing the whole cosine range to two width endpoints.
+Their actual minimum gap pays for the cubic overlap, with no separate reserve.
+The calibration's width condition follows from boundary
+flux, and the small-tilt losses are compared at one endpoint. Newton formulas generate the auxiliary root bounds. The remaining interval and stopping-time
+checks use exact wide-triangle demand and a tilt-canceling price; they are stated in the appendices and inventoried in the review.
+
 ## Build
 
 From this directory, with `latexmk`, `pdflatex`, `bibtex`, `rg`, and `pdfinfo` installed:

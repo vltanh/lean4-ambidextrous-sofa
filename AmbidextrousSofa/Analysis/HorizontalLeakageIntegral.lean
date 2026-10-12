@@ -9,7 +9,7 @@ public import AmbidextrousSofa.Analysis.HorizontalLeakageScalar
 # Exact integration of the horizontal curvature-excess envelope
 
 The quadratic envelope has literal compact support. Its two moments are
-the exact polynomials in the rational leakage rows. The kernel comparison
+simple polynomials obtained by direct integration. The kernel comparison
 allows the crossing to precede the box angle and allows the support of
 the envelope to extend beyond the angular integration interval.
 -/

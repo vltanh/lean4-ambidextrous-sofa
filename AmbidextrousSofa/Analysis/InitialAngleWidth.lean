@@ -50,27 +50,27 @@ theorem IsDownwardCap.three_support_high_of_top {U : Set Plane} (hU : IsDownward
   htop.imp (fun h => by simpa using (hU.three_support_lower_of_top hα0 hαL h).1)
     fun h => (hU.three_support_lower_of_top hα0 hαL h).2.2
 
-theorem IsDownwardCap.capScore_lt_forty_one_fiftieths_of_small_width_top_endpoint
+theorem IsDownwardCap.capScore_lt_reference_of_corner_width_top_endpoint
     {U : Set Plane} (hU : IsDownwardCap U) {C α : ℝ}
-    (hC0 : 0 ≤ C) (hC1 : C ≤ 49 / 100)
+    (hC0 : 0 ≤ C) (hC1 : C ≤ initialAngleCornerWidth)
     (hleft : horizontalLeft U = -2 * C) (hright : horizontalRight U = 2 * C)
     (hα0 : Real.pi / 4 ≤ α) (hαL : α < Real.pi / 2)
-    (htop : (-C, 1) ∈ U ∨ (C, 1) ∈ U) : capScore U α < (41 / 50 : ℝ) := by
+    (htop : (-C, 1) ∈ U ∨ (C, 1) ∈ U) : capScore U α < referenceHalfAreaLower := by
   obtain ⟨hbu, -, hu1, hv1, -⟩ := hU.three_support_compatibility_centered hleft hright hα0 hαL
   exact (hU.capScore_le_initialAngleRelaxation hC0 hleft hright hα0 hαL).trans_lt
-    (initialAngleRelaxation_small_width hC0 hC1 hu1 hv1
+    (initialAngleRelaxation_corner_width hC0 hC1 hu1 hv1
       ((hU.three_support_high_of_top (by linarith [Real.pi_pos]) hαL htop).imp_right
         fun h => h.trans hbu) _ _ _)
 
 /-- The proper-terminal width cut applies to the original maximizer's
 literal projection width; the canonical replacement preserves that width. -/
-theorem IsJointCapMaximizer.width_gt_forty_nine_twenty_fifths
+theorem IsJointCapMaximizer.width_gt_initialAngleCornerWidth
     {U : Set Plane} {α : ℝ} (hU : IsJointCapMaximizer U α) (hαL : α < Real.pi / 2) :
-    (49 / 25 : ℝ) < capWidth U := by
+    4 * initialAngleCornerWidth < capWidth U := by
   obtain ⟨V, hV, hleft, hright, htop⟩ := hU.exists_centered_top_endpoint
   by_contra! hbad
-  linarith [hV.reference_le, forty_one_fiftieths_lt_half_M,
-    hV.isCap.capScore_lt_forty_one_fiftieths_of_small_width_top_endpoint
+  linarith [hV.reference_le, referenceHalfAreaLower_lt_half_M,
+    hV.isCap.capScore_lt_reference_of_corner_width_top_endpoint
       (div_nonneg hU.isCap.capWidth_nonneg (by norm_num)) (by linarith) hleft hright
       hV.angle_mem.1 hαL htop]
 

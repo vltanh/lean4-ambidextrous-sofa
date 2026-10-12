@@ -32,7 +32,7 @@ namespace Analysis
 small cosines a quadratic lower bound for the sine pays the entire linear
 height term; rational boxes cover the other cosines. -/
 theorem firstUnit_source_box_margin_of_half_lt {C h k s : ℝ}
-    (hC0 : 1 / 2 < C) (hC1 : C ≤ 37 / 50) (hh : h ≤ 17 / 50)
+    (hC0 : 1 / 2 < C) (hC1 : C ≤ 37 / 50) (hh : h ≤ 1 / 3)
     (hk0 : 0 ≤ k) (hkC : k ≤ C) (hs0 : 0 ≤ s) (hcircle : s ^ 2 + k ^ 2 = 1) :
     1 - (2 * C + k) * s + h * k < 0 := by
   have hhk := mul_le_mul_of_nonneg_right hh hk0
@@ -93,7 +93,7 @@ structure FirstUnitSetting (U : Set Plane) (m : ℝ) (ρ : ℝ → ℝ) (C h : �
   hC0 : 1 / 2 < C
   hC1 : C ≤ 37 / 50
   hh0 : 0 < h
-  hh1 : h < 17 / 50
+  hh1 : h < 1 / 3
   hmpos : 0 < m
   hsmall : C + m < 1
   hheight : capHeight U = 1

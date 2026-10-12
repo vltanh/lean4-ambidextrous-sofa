@@ -12,29 +12,14 @@ attained by $\SR$.
 
 \begin{proof}
 The small-area branch of \cref{prop:reduction} is strictly below
-$\Mc$. This comparison uses exact inequalities:
-\[
- \sqrt2<\frac85<\Mc.
-\]
-For example, $Y>2/7$, the cubic equation, and
-$\arctan Y\ge Y-Y^3/3$ give
-\[
- \Mc\ge\frac{11}{12}+4Y^2+\frac54Y
-       >\frac{11}{12}+\frac{16}{49}+\frac5{14}
-       =\frac{941}{588}>\frac85.
-\]
-The arctangent estimate follows by differentiating
-$\arctan y-y+y^3/3$ on $[0,\infty)$; its derivative is
-$y^4/(1+y^2)\ge0$.
-
-In the remaining branch, the reduction gives
+$\Mc$ by \cref{lem:constant-bounds}. In the remaining branch, the
+reduction gives
 \[
  |S|\le P_\alpha(U)+P_\gamma(V).
 \]
-Both caps satisfy the hypotheses of \cref{thm:cap-bound}, so each
-score is at most $\Mc/2$. This proves the upper bound. The explicit
-construction in \cref{thm:reference} supplies an ambidextrous sofa
-$\SR$ of area $\Mc$.
+Both caps satisfy \cref{thm:cap-bound}, so each score is at most
+$\Mc/2$. The reference construction in \cref{thm:reference}
+attains their sum.
 \end{proof}
 
 \begin{proposition}[The two original equality caps]\label{prop:equality-caps}
@@ -69,8 +54,7 @@ In particular, \cref{thm:cap-equality} gives
 These are the caps defined from $\conv T$ in
 \eqref{eq:actual-caps}.
 
-For completeness, vanishing of the partition defect gives the
-following pointwise relations almost everywhere:
+The zero partition defect also gives, almost everywhere,
 \[
  \begin{array}{ll}
  d_V\le N_\alpha(U),\quad d_U\le N_\gamma(V),& x\in J,\\

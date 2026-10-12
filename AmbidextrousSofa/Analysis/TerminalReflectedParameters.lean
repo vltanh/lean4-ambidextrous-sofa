@@ -4,7 +4,7 @@ public import AmbidextrousSofa.Analysis.TerminalImpulseEnergy
 public import AmbidextrousSofa.Analysis.TerminalTopProjection
 public import AmbidextrousSofa.Analysis.PartialWidthBounds
 public import AmbidextrousSofa.Analysis.HorizontalEndpointBounds
-public import AmbidextrousSofa.Analysis.TiltedInitialEnergyBounds
+public import AmbidextrousSofa.Analysis.ProperExcessBudget
 
 @[expose] public section
 
@@ -23,6 +23,8 @@ noncomputable section
 open Set
 
 namespace AmbidextrousSofa
+
+open Analysis
 
 theorem IsJointCapMaximizer.terminalTailInset_eq_universal_of_nonneg
     {U : Set Plane} {α m c : ℝ} (hU : IsJointCapMaximizer U α)
@@ -45,10 +47,10 @@ theorem IsJointCapMaximizer.centered_terminal_reflected_data_of_tail_regime
     (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    1001 / 2000 < C ∧ C < 37 / 50 ∧ terminalReflectedSpan U α = 3 * C + topOverhangRight U ∧
+    1 / 2 < C ∧ C < 37 / 50 ∧ terminalReflectedSpan U α = 3 * C + topOverhangRight U ∧
       0 ≤ terminalReflectedHeight U α ∧
       terminalReflectedHeight U α ≤ 1 / 2 + 5 / 4 * (1 - (terminalTailPoint U α).2) +
-        3 / 4 * max (33 / 100) (firstWall U α (-C)) ∧
+        3 / 4 * max (1 / 3) (firstWall U α (-C)) ∧
       Real.sin α < (terminalTailPoint U α).2 ∧
       firstWall U α (-C) = terminalSlope α * (2 * C + topOverhangRight U - terminalTailInset U α) ∧
       topOverhangLeft U + 2 * topOverhangRight U ≤ terminalTailInset U α ∧
@@ -72,11 +74,12 @@ theorem IsJointCapMaximizer.centered_terminal_reflected_data_of_tail_regime
     ⟨m, c, haffine⟩).2
   rw [partialLeftEndpointPressure, leftEndpointPressure, (centered_quarter_points hl hr).1,
     (centered_quarter_points hl hr).2.1] at hEP
-  have hn : sweptNiche U α (-C) < 33 / 100 :=
-    ((sweptNiche_mono_terminalAngle hU.isCap.isCompact hU.angle_pos hproper.le le_rfl (-C)).trans
-      (hU.isCap.middle_niche_le_box_height_of_endpoints hl hr (by linarith only [hC.1])
-        (by linarith only [hC.2])).1).trans_lt
-      (Analysis.tiltedBoxHeight_lt_thirty_three_hundredths (by linarith only [hC.1]) hC.2.le)
+  have hnbox := (sweptNiche_mono_terminalAngle hU.isCap.isCompact hU.angle_pos hproper.le le_rfl (-C)).trans
+    (hU.isCap.middle_niche_le_box_height_of_endpoints hl hr (by linarith only [hC.1])
+      (by linarith only [hC.2])).1
+  have hroot : (2 / 3 : ℝ) < Real.sqrt (1 - C ^ 2) :=
+    (Real.lt_sqrt (by norm_num)).2 (by nlinarith only [hC.1, hC.2])
+  have hn : sweptNiche U α (-C) < 1 / 3 := by linarith only [hnbox, hroot]
   have hroof := capRoof_nonneg hU.isCap.isCompact (fun p hp => (hU.isCap.inStrip hp).1)
     (horizontalLeft U)
   have hTP := hU.topOverhangLeft_add_twice_right_le_terminalInset_of_tail_regime hregime hproper
@@ -88,88 +91,93 @@ theorem IsJointCapMaximizer.centered_terminal_reflected_data_of_tail_regime
   · rw [terminalReflectedHeight]
     linarith only [hEP, hHC, capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip (-C),
       partialBarrier_nonneg U α C,
-      show partialBarrier U α (-C) ≤ max (33 / 100) (firstWall U α (-C)) from
+      show partialBarrier U α (-C) ≤ max (1 / 3) (firstWall U α (-C)) from
         max_le_max hn.le le_rfl]
   · rw [firstWall_eq_terminalTail U hs.ne' hc.ne', terminalTailZero, hfst]
     change terminalSlope α * _ = _
     ring
 
-theorem terminalSlope_outgoing_nonneg_bound {α C : ℝ}
-    (hα0 : 0 < α) (hαL : α < Real.pi / 2)
-    (hκ : terminalSlope α ≤ 3 / 8) (hs : 14 / 15 ≤ Real.sin α)
-    (hC : C ≤ 37 / 50) :
-    terminalSlope α * (2 * C - terminalInset α / 2) < 419 / 800 := by
-  have hκ0 := terminalSlope_pos hα0 hαL
-  have hk : 7 / 15 * terminalSlope α ≤ terminalInset α := by
-    linarith only [terminalInset_mul_one_add_sin hα0 hαL,
-      show terminalSlope α * Real.sin α = Real.cos α from
-        div_mul_cancel₀ _ (by linarith only [hs]),
-      mul_le_mul_of_nonneg_left (Real.sin_le_one α) (terminalInset_pos hα0 hαL).le,
-      mul_le_mul_of_nonneg_left hs hκ0.le]
-  linarith only [mul_le_mul_of_nonneg_left hC hκ0.le, mul_le_mul_of_nonneg_left hk hκ0.le,
-    mul_nonneg (sub_nonneg.mpr hκ)
-      (show 0 ≤ 37 / 25 - 7 / 30 * (3 / 8 + terminalSlope α) by linarith only [hκ])]
-
-theorem IsJointCapMaximizer.centered_terminal_reflected_near_full_parameters_of_tail_regime
+/-- Top overhang and descending height spend the same angular stopping budget. -/
+theorem IsJointCapMaximizer.centered_terminal_reflected_angular_budget_of_tail_regime
     {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hregime : ProperTailRegime U α m)
-    (hproper : α < Real.pi / 2)
+    (hregime : ProperTailRegime U α m) (hproper : α < Real.pi / 2)
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) (hκ : terminalSlope α ≤ 1 / 8) :
-    3 / 2 < terminalReflectedSpan U α ∧ terminalReflectedSpan U α < 563 / 250 ∧
-      0 ≤ terminalReflectedHeight U α ∧ terminalReflectedHeight U α < 19 / 25 := by
-  obtain ⟨hC0, hC1, hd, hh0, he, hH, hwall, hTP, hTR⟩ :=
+    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U), capRoof U x = m * x + c) :
+    3 / 2 < terminalReflectedSpan U α ∧
+    terminalReflectedSpan U α ≤ properBaselineSpan + terminalSlope α / 4 ∧
+    0 ≤ terminalReflectedHeight U α ∧ terminalReflectedHeight U α ≤ 1 ∧
+    (3 / 2) * max (terminalReflectedSpan U α - properBaselineSpan) 0 +
+      (9 / 10) * max (terminalReflectedHeight U α - 3 / 4 -
+        (3 / 4) * properPressureExcess (terminalSlope α)) 0 ≤ (3 / 8) * terminalSlope α := by
+  obtain ⟨hC0, hC1, hd, he0, he, hH, hwall, hTP, hTR⟩ :=
     hU.centered_terminal_reflected_data_of_tail_regime hregime hproper hl hr hheight haffine
-  obtain ⟨hs, -, -, hk⟩ := terminal_near_full_bounds hU.angle_pos hproper hκ
-  have hq : max (33 / 100) (firstWall U α (-C)) < 1 / 3 := max_lt (by norm_num) (by
-    linarith only [hwall, hC1, mul_lt_mul_of_pos_left hTR (terminalSlope_pos hU.angle_pos hproper),
-      mul_le_mul_of_nonneg_left hκ (show 0 ≤ 2 * C by linarith only [hC0])])
-  have hTR' : topOverhangRight U < 1 / 32 := by
-    rcases lt_or_ge m 0 with hm | hm
-    · rw [hU.topOverhangRight_eq_zero_of_negative hheight hm haffine]
-      norm_num
-    · rw [hU.terminalTailInset_eq_universal_of_nonneg hproper hheight hm haffine] at hTP
-      linarith only [hTP, hk, topOverhangLeft_nonneg U]
-  exact ⟨by linarith only [hd, hC0, topOverhangRight_nonneg U], by linarith only [hd, hC1, hTR'],
-    hh0, by linarith only [he, hq, hH, hs]⟩
-
-theorem IsJointCapMaximizer.centered_terminal_reflected_parameters_of_tail_regime
-    {U : Set Plane} {α C m c : ℝ} (hU : IsJointCapMaximizer U α)
-    (hregime : ProperTailRegime U α m)
-    (hproper : α < Real.pi / 2)
-    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hheight : capHeight U = 1)
-    (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) :
-    3 / 2 < terminalReflectedSpan U α ∧ 0 ≤ terminalReflectedHeight U α ∧
-      ((m < 0 ∧ terminalReflectedSpan U α < 111 / 50 ∧ terminalReflectedHeight U α < 1) ∨
-       (0 ≤ m ∧ terminalReflectedSpan U α < 2311 / 1000 ∧
-         terminalReflectedHeight U α < 179 / 200)) := by
-  obtain ⟨hC0, hC1, hd, hh0, he, hH, hwall, hTP, hTR⟩ :=
-    hU.centered_terminal_reflected_data_of_tail_regime hregime hproper hl hr hheight haffine
-  have hκ := hU.proper_terminalSlope_lt_three_eighths hproper
-  have hκ0 := terminalSlope_pos hU.angle_pos hproper
-  have hs : 14 / 15 < Real.sin α := by
-    linarith only [(terminal_sin_cos_bounds_after_initialAngle
-      hU.terminal_angle_gt_arctan_eight_thirds.le hproper).1]
-  refine ⟨by linarith only [hd, hC0, topOverhangRight_nonneg U], hh0, ?_⟩
+  have hk := hU.proper_terminalSlope_lt_three_eighths hproper
+  have hk0 := terminalSlope_pos hU.angle_pos hproper
+  have hsin := (sin_cos_pos_of_mem_quarter ⟨hU.angle_pos, hproper⟩).1
+  have hg : 0 ≤ properPressureExcess (terminalSlope α) := le_max_right _ _
+  have hwall1 : firstWall U α (-C) ≤ (37 / 25) * terminalSlope α := by
+    linarith only [hwall, mul_le_mul_of_nonneg_left hC1.le hk0.le,
+      mul_nonneg hk0.le (sub_nonneg.2 hTR.le)]
+  have hmax : max (1 / 3) (firstWall U α (-C)) ≤
+      1 / 3 + properPressureExcess (terminalSlope α) :=
+    max_le (by linarith only [hg]) (by
+      linarith only [hwall1, le_max_left ((37 / 25) * terminalSlope α - 1 / 3) 0])
+  have heBudget : terminalReflectedHeight U α ≤ 3 / 4 +
+      (5 / 4) * (1 - (terminalTailPoint U α).2) + (3 / 4) * properPressureExcess (terminalSlope α) := by
+    linarith only [he, hmax]
+  have hbase : 3 / 2 < terminalReflectedSpan U α := by
+    linarith only [hd, hC0, topOverhangRight_nonneg U]
   rcases lt_or_ge m 0 with hm | hm
-  · have hq : max (33 / 100) (firstWall U α (-C)) < 111 / 200 := max_lt (by norm_num) (by
-      linarith only [hwall, hC1, mul_lt_mul_of_pos_left hTR hκ0,
-        mul_lt_mul_of_pos_left hκ (show 0 < 2 * C by linarith only [hC0])])
-    exact Or.inl ⟨hm, by linarith only [hd, hC1,
-      hU.topOverhangRight_eq_zero_of_negative hheight hm haffine],
-      by linarith only [he, hq, hH, hs]⟩
-  · rw [hU.terminalTailInset_eq_universal_of_nonneg hproper hheight hm haffine] at hwall hTP
-    have hH1 := congrArg Prod.snd (hU.terminalTailPoint_eq_of_nonneg hproper hheight hm haffine)
-    have hq : max (33 / 100) (firstWall U α (-C)) < 419 / 800 := max_lt (by norm_num) (by
-      linarith only [hwall, terminalSlope_outgoing_nonneg_bound hU.angle_pos hproper hκ.le hs.le
-        hC1.le, mul_le_mul_of_nonneg_left (show topOverhangRight U ≤ terminalInset α / 2 by
-          linarith only [hTP, topOverhangLeft_nonneg U]) hκ0.le])
-    exact Or.inr ⟨hm, by linarith only [hd, hC1, hTP, topOverhangLeft_nonneg U,
-      terminalInset_lt_two_elevenths_of_slope_le hU.angle_pos hproper hκ.le],
-      by linarith only [he, hq, hH1]⟩
+  · have hzero := hU.topOverhangRight_eq_zero_of_negative hheight hm haffine
+    rw [hzero] at hd hwall
+    have hdLimit : terminalReflectedSpan U α ≤ properBaselineSpan + terminalSlope α / 4 := by
+      unfold properBaselineSpan; linarith only [hd, hC1, hk0]
+    have hloss : 1 - (terminalTailPoint U α).2 ≤ terminalSlope α ^ 2 / 2 :=
+      (by linarith only [hH] : 1 - (terminalTailPoint U α).2 ≤ 1 - Real.sin α).trans
+        (terminal_height_loss_le_half_slope_sq hU.angle_pos hproper)
+    have hwallLoss : firstWall U α (-C) + (1 - (terminalTailPoint U α).2) ≤
+        (37 / 25) * terminalSlope α := by
+      linarith only [hwall, terminalSlope_mul_tailInset U hU.angle_pos hproper,
+        mul_le_mul_of_nonneg_left hC1.le hk0.le,
+        mul_nonneg hk0.le (terminalInset_pos hU.angle_pos hproper).le]
+    have hmaxOne : max (1 / 3) (firstWall U α (-C)) ≤
+        2 / 3 - (5 / 3) * (1 - (terminalTailPoint U α).2) := by
+      apply max_le
+      · nlinarith only [hloss, hk0, hk]
+      · nlinarith only [hloss, hwallLoss, hk0, hk]
+    have heOne : terminalReflectedHeight U α ≤ 1 := by linarith only [he, hmaxOne]
+    have hdmax : max (terminalReflectedSpan U α - properBaselineSpan) 0 = 0 := by
+      rw [max_eq_right]; unfold properBaselineSpan; linarith only [hd, hC1]
+    have hheight : max (terminalReflectedHeight U α - 3 / 4 -
+        (3 / 4) * properPressureExcess (terminalSlope α)) 0 ≤ (5 / 8) * terminalSlope α ^ 2 :=
+      max_le (by linarith only [heBudget, hloss]) (by positivity)
+    refine ⟨hbase, hdLimit, he0, heOne, ?_⟩
+    rw [hdmax, mul_zero, zero_add]
+    nlinarith only [hheight, hk0, hk]
+  · rw [hU.terminalTailInset_eq_universal_of_nonneg hproper hheight hm haffine] at hTP
+    have hHone := congrArg Prod.snd (hU.terminalTailPoint_eq_of_nonneg hproper hheight hm haffine)
+    dsimp only at hHone
+    rw [hHone] at heBudget
+    have hdLimit : terminalReflectedSpan U α ≤ properBaselineSpan + terminalSlope α / 4 := by
+      unfold properBaselineSpan
+      linarith only [hd, hC1, hTP, topOverhangLeft_nonneg U,
+        terminalInset_le_half_slope hU.angle_pos hproper]
+    have hg1 : properPressureExcess (terminalSlope α) ≤ 1 / 3 := by
+      apply max_le <;> linarith only [hk]
+    have heOne : terminalReflectedHeight U α ≤ 1 := by linarith only [heBudget, hg1]
+    have hem : max (terminalReflectedHeight U α - 3 / 4 -
+        (3 / 4) * properPressureExcess (terminalSlope α)) 0 = 0 := by
+      rw [max_eq_right]; linarith only [heBudget]
+    have hright : terminalReflectedSpan U α - properBaselineSpan ≤ terminalSlope α / 4 := by
+      unfold properBaselineSpan
+      linarith only [hd, hC1, hTP, topOverhangLeft_nonneg U,
+        terminalInset_le_half_slope hU.angle_pos hproper]
+    have hmaxRight : max (terminalReflectedSpan U α - properBaselineSpan) 0 ≤ terminalSlope α / 4 :=
+      max_le hright (by linarith only [hk0])
+    have hmul := mul_le_mul_of_nonneg_left hmaxRight (by norm_num : (0 : ℝ) ≤ 3 / 2)
+    refine ⟨hbase, hdLimit, he0, heOne, ?_⟩
+    rw [hem, mul_zero, add_zero]
+    linarith only [hmul]
 
 end AmbidextrousSofa

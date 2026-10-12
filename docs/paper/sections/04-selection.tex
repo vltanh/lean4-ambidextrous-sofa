@@ -8,6 +8,11 @@ This quantifier will also be needed in the equality argument.
 
 \subsection{Compactness and continuity}
 
+A narrow cap has too little exterior area. A very wide cap pays too much
+for the diagonal tent: its reward grows linearly with width, while that
+tent's area grows quadratically. This confines every competitive cap to
+a common rectangle and makes compactness available.
+
 \begin{lemma}[Width bounds]\label{lem:selection-width}
 If $P_\alpha(U)\ge M/2$ and $L/2\le\alpha\le L$, then
 $M\le w_U<6$. After horizontal translation, $U$ lies in
@@ -97,6 +102,12 @@ coordinate to obtain the final assertion.
 \end{proof}
 
 \subsection{Canonicalization and used supports}
+
+The middle roof affects the penalty but earns no area in the score.
+Lowering it to its endpoint chord therefore helps. Restoring height
+one raises the exterior roof and the middle barrier by equal amounts
+over intervals of equal length. These two observations explain the
+canonical form used in the variations.
 
 \begin{lemma}[Chord and height reduction]\label{lem:selection-canonical}
 For any positive-width cap $U$ and fixed $0<\alpha\le L$, there
@@ -196,6 +207,12 @@ stated harmonicity.
 \end{proof}
 
 \subsection{A penalty that retains any chosen maximum}
+
+Polygonal maxima can drift among different limiting caps. To recover
+equality for a particular body, we must keep the limit at its own cap.
+A small penalty for changing that cap's support values does this. Every
+early sample retains a positive weight, while the grid error tends to
+zero faster than the penalty coefficient.
 
 Fix a full maximum $U_*$, or a joint maximum $(U_*,\alpha)$ and
 keep this angle fixed. Choose a horizontal box with unit slack

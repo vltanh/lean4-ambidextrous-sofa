@@ -7,7 +7,10 @@ $h_i$ for its support, $A_i=f_{U_i}$, and $q_i$ for its sampled
 complete barrier. Its projection and middle interval are $I_i,J_i$.
 All supports are bounded by $B$ in absolute value, the mesh tends
 to zero, and the penalty coefficient $\eta_i$ tends to zero.
-We take each polygonal variation first, with $i$ fixed.
+Moving a side outward adds an exterior strip and moves the corresponding
+inner wall into the cap. Maximality says that the first area cannot
+exceed the second. We take this variation for each polygon first, with
+$i$ fixed; only then do we pass to the prescribed limiting cap.
 
 \subsection{Moving a floating side and an endpoint}
 
@@ -78,6 +81,11 @@ the positive-part bounds \eqref{eq:variation-endpoint-upper}.
 \end{proof}
 
 \subsection{The four neighboring lines}
+
+Only part of an inner wall remains visible after the neighboring
+hallway positions are imposed. Solving their four line inequalities
+bounds that visible part by a multiple of the angular spacing. Combined
+with the side variation, this will bound the outer curvature.
 
 \begin{lemma}[Neighbor exposure]\label{lem:variation-neighbors}
 At an interior first source $t$ with source spacing $\delta$, put
@@ -327,6 +335,12 @@ $u,v\le(5+\sqrt2)/8<1$.
 
 \subsection{Endpoint complementarity and source balance}
 
+An endpoint variation also moves the middle window. The factors $1/4$
+and $3/4$ below are its endpoint velocities, obtained by differentiating
+$j_-=l+(r-l)/4$ and $j_+=r-(r-l)/4$. Moving a positive end face in
+either direction balances its height against these window terms. A
+zero end face permits only the corresponding one-sided inequality.
+
 Define $Q_\pm=A(j_\pm)+N_\alpha(U)(j_\pm)$ and
 $C_R=(3Q_+-Q_-)/4$, $C_L=(3Q_--Q_+)/4$.
 For a full maximum take $\alpha=L$.
@@ -462,6 +476,12 @@ therefore vanishes on both quarters, proving $\nu=\omega$.
 \end{proof}
 
 \subsection{The stationary length and projection budgets}
+
+The outer boundary and the exposed inner walls now have the same
+normal-length measure. Integrating the support distance cancels their
+common support term, leaving one unit of length per source. Integrating
+the horizontal projection instead gives the length occupied by the
+positive barrier. These are the two budgets used below.
 
 Let $T_{\rm w}$ be the length of the height-one top face lying
 outside $J_U$, and set $L_{\rm w}=\omega((0,\pi))+T_{\rm w}$.

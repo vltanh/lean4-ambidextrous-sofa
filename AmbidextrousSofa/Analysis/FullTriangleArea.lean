@@ -59,8 +59,8 @@ theorem IsDownwardCap.diagonalRoofDeficit_ge_inner_cuts {U : Set Plane}
 floor losses of the two niche triangles. The losses are bounded by the depths `1 - capRoof U a`
 and `1 - capRoof U (-a)` of the two endpoints. -/
 theorem IsDownwardCap.threeAngleScore_le_full_triangles {U : Set Plane} (hU : IsDownwardCap U)
-    {a h : ℝ} (hah : 179 / 200 ≤ a - 1 / 2 - h / 4) (ha1 : a ≤ 8 / 5) (hh0 : 0 ≤ h)
-    (hh1 : h ≤ 17 / 50) (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
+    {a h : ℝ} (hah : 3 / 4 ≤ a - 1 / 2 - h / 4) (ha1 : a ≤ 8 / 5) (hh0 : 0 ≤ h)
+    (hh1 : h ≤ 1 / 3) (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
     (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1)
     (haffine : ∃ m c : ℝ, ∀ x ∈ Icc (-a / 2) (a / 2), capRoof U x = m * x + c)
     (hEP : 1 - h / 2 ≤ capRoof U a + capRoof U (-a)) :
@@ -74,7 +74,8 @@ theorem IsDownwardCap.threeAngleScore_le_full_triangles {U : Set Plane} (hU : Is
         (1 - k) / 2 * ((max (1 - capRoof U a - t) 0) ^ 2 + (max (1 - capRoof U (-a) - t) 0) ^ 2) := by
   intro k u v t
   obtain ⟨hk0, hk1, hksq, hc0, hc1⟩ := fullTriangle_offset_bounds
-  have ha : 279 / 200 ≤ a := by linarith only [hah, hh0]
+  dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
+  have ha : 5 / 4 ≤ a := by linarith only [hah, hh0]
   have hk : 0 < k := by linarith only [hk0]
   have hu : diagonalRight U = 1 + u := by ring
   have hv : diagonalLeft U = 1 - h + v := by ring
@@ -86,7 +87,7 @@ theorem IsDownwardCap.threeAngleScore_le_full_triangles {U : Set Plane} (hU : Is
     linarith only [hU.capRoof_le_diagonalRight (hproj ⟨by linarith only [ha], le_rfl⟩), hu]
   have heL : capRoof U (-a) ≤ 1 - (a - (v - h)) := by
     linarith only [hU.capRoof_le_diagonalLeft (hproj ⟨le_rfl, by linarith only [ha]⟩), hv]
-  have hm0 : 179 / 200 ≤ (u + v - h) / 2 := by linarith only [hEP, heR, heL, hah]
+  have hm0 : 3 / 4 ≤ (u + v - h) / 2 := by linarith only [hEP, heR, heL, hah]
   have hδR := hU.nearDiagonalRightDeficit_mem (by linarith only [ha]) hk.le (by linarith only [hk1])
     hl hr hright hu
   have hδL := hU.nearDiagonalLeftDeficit_mem (by linarith only [ha]) hh0 hk.le
@@ -97,7 +98,7 @@ theorem IsDownwardCap.threeAngleScore_le_full_triangles {U : Set Plane} (hU : Is
     rw [wideNearRightIntercept, nearDiagonalLeftDeficit]
     ring
   have hbL := wideNearLeftIntercept_eq U k u
-  have hN := (wide_norm_rational_bounds (by linarith only [hk0]) hk1).1
+  have hN := (wide_norm_rational_bounds hk0 hk1).1
   have hcR := wide_crossing_after_apex (u := u) (w := v - h) (b := wideNearRightIntercept U k) hk
     hk1 hN hh0 (by linarith only [hm0]) (by linarith only [hbR, hδL.1])
   have hcL := wide_crossing_after_apex (u := v - h) (w := u) (h := 0)

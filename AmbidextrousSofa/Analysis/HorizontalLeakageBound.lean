@@ -2,102 +2,96 @@ module
 
 public import AmbidextrousSofa.Analysis.HorizontalLeakageOccupation
 public import AmbidextrousSofa.Analysis.HorizontalEndpointBounds
+public import AmbidextrousSofa.Analysis.TiltedEndpointLeakage
+public import AmbidextrousSofa.Analysis.FullTriangleWidth
 public import AmbidextrousSofa.Analysis.CapReflection
 
 @[expose] public section
 
 /-!
-# The actual endpoint niches satisfy every applicable leakage row
+# Horizontal curvature excess ends before endpoint contact
 
-The maximizing cap supplies its bounded curvature density, endpoint
-heights, source laws and first crossings. The exact row bounds the
-resulting compact quadratic envelope. The open-arc kernel and the box
-wall then bound every visited angle, and reflection supplies the other
-endpoint.
+The preliminary width cut gives one uniform stopping estimate. After
+`11/15` the density is at most one. The wall at the middle endpoint is
+then nonpositive from `arccos C` onwards; before that angle it increases.
+The swept niche is therefore zero at that endpoint. Reflection gives the
+other endpoint, and stationarity fixes both axis heights at one half.
 -/
 
 noncomputable section
 
 open Set Filter MeasureTheory
-open scoped Topology
 
 namespace AmbidextrousSofa
 
-theorem sin_horizontal_box_angle {C : ℝ} (hC0 : 0 ≤ C) :
-    Real.sin (2 * Real.arctan ((1 - C) / (1 + C))) = horizontalLeakageBoxSine C := by
-  rw [Real.sin_two_mul, Real.sin_arctan, Real.cos_arctan, horizontalLeakageBoxSine]
-  have h1 : 0 < 1 + C := by linarith
-  field_simp
-  rw [Real.sq_sqrt (by positivity)]
-  field_simp
-  ring
-
-theorem IsFullCapMaximizer.right_endpoint_niche_le_horizontalLeakageRow
-    {U : Set Plane} (hU : IsFullCapMaximizer U) (R : HorizontalLeakageRow) {C : ℝ}
+theorem IsFullCapMaximizer.horizontal_right_endpoint_niche_eq_zero
+    {U : Set Plane} (hU : IsFullCapMaximizer U) {C : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hheight : capHeight U = 1)
     (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = 1)
-    (hC : 2 / 3 < C) (haC : R.a ≤ C) (hCb : C ≤ R.b) :
-    sweptNiche U (Real.pi / 2) C ≤ R.B := by
+      capRoof U x = 1) (hC : 2 / 3 < C) :
+    sweptNiche U (Real.pi / 2) C = 0 := by
   have hC0 : 0 ≤ C := by linarith
-  have hC1 : C < 1 := hCb.trans_lt R.b_lt_one
   have hwidth : capWidth U = 4 * C := by rw [capWidth, hl, hr]; ring
+  have hC1 : C ≤ 37 / 50 := by
+    have h := hU.quarter_width_lt_thirty_seven_fiftieths
+    rw [hwidth] at h
+    linarith
   have he := (hU.horizontal_endpoint_laws hl hr hC0 hheight hmiddle).1
-  have hn := hU.isCap.middle_niche_le_box_height_of_endpoints hl hr hC0 hC1.le
-  have hH := R.box_height_le hC0 hCb
-  have he0 : 1 / 2 - R.H / 4 ≤ capRoof U (horizontalRight U) := by
-    linarith [hn.1, sweptNiche_nonneg U (Real.pi / 2) C]
-  have he1 : capRoof U (horizontalRight U) ≤ 1 / 2 + 3 * R.H / 4 := by
-    linarith [hn.2, sweptNiche_nonneg U (Real.pi / 2) (-C)]
+  have hn := hU.isCap.middle_niche_le_box_height_of_endpoints hl hr hC0 (by linarith)
+  obtain ⟨he0, hcross, henergy⟩ := horizontal_excess_stopping_bounds hC.le hC1
+    (e := capRoof U (horizontalRight U))
+    (by linarith [hn.1, sweptNiche_nonneg U (Real.pi / 2) C])
+    (by linarith [hn.2, sweptNiche_nonneg U (Real.pi / 2) (-C)])
   obtain ⟨ρ, hρ, hb, hK, heq, -⟩ :=
-    hU.curvature_density_corner_controls hheight (m := 0) (c := 1) (by simpa using hmiddle)
-  have hρ0 s := (hb s).1
-  obtain ⟨A, hA, henvelope⟩ := hU.exists_horizontal_quadratic_excess_envelope hheight hmiddle
-    hwidth hC (by linarith [R.H_le_one]) hρ hρ0 hK (fun s => (hb s).2) heq
-    R.h_nonneg R.h_lt_one R.T_nonneg
-    (by nlinarith [R.crossing, mul_nonneg (sub_nonneg.mpr haC) R.T_nonneg])
-    (by nlinarith [R.excess, R.H_nonneg, (sq_le_sq₀ hC0 (R.a_pos.le.trans R.a_le_b)).2 hCb])
-  have htb := R.box_angle_le hC0 hCb
-  refine sweptNiche_le_of_forall (by linarith [Real.pi_pos]) R.B_nonneg
-    fun t ht => (min_le_left _ _).trans ?_
-  rcases le_or_gt t (2 * Real.arctan ((1 - C) / (1 + C))) with hsmall | hbt
-  · exact (hU.isCap.firstWall_nonpos_before_horizontal_box_angle hl hr hC0 hC1.le ht
-      hsmall).trans R.B_nonneg
-  have he := hU.firstWall_eq_horizontal_density_kernel hheight hmiddle hρ hρ0 hK heq ht
-  rw [show horizontalRight U - capWidth U / 4 = C from (centered_quarter_points hl hr).2.1] at he
-  rw [he, div_le_iff₀ (sin_cos_pos_of_mem_quarter ht).1]
-  calc _ ≤ _ := horizontal_density_kernel_le_envelope_moments hρ hρ0 hK R.h_nonneg ht hbt.le
-        henvelope
-    _ ≤ R.B * horizontalLeakageBoxSine R.b := by
-      refine le_trans ?_ R.leakage
-      gcongr
-      · exact horizontalLeakageA0_nonneg R.h_nonneg
-      · linarith [hA.2]
-    _ ≤ R.B * Real.sin t := by
-      refine mul_le_mul_of_nonneg_left ?_ R.B_nonneg
-      refine (horizontalLeakageBoxSine_antitone hC0 hCb).trans ?_
-      rw [← sin_horizontal_box_angle hC0]
-      exact Real.sin_le_sin_of_le_of_le_pi_div_two (by linarith [R.t_nonneg, Real.pi_pos])
-        ht.2.le hbt.le
+    hU.horizontal_curvature_density_corner_controls hheight hmiddle
+  obtain ⟨A, hA, henvelope⟩ := hU.exists_horizontal_quadratic_excess_envelope
+    (h := 1 / 3) (T := 2 / 5) hheight hmiddle hwidth hC he0 hρ
+    (fun s => (hb s).1) hK (fun s => (hb s).2) heq
+    (by norm_num) (by norm_num) (by norm_num) hcross henergy
+  have hunit : ∀ᵐ s ∂volume.restrict (Ioo (11 / 15 : ℝ) (Real.pi / 2)), ρ s ≤ 1 := by
+    have henv := ae_restrict_of_ae_restrict_of_subset
+      (Ioo_subset_Ioo (by norm_num : (0 : ℝ) ≤ 11 / 15) le_rfl) henvelope
+    filter_upwards [henv, ae_restrict_mem measurableSet_Ioo] with s hs hmem
+    have hout : s ∉ Icc A (A + 1 / 3) := by
+      intro hin
+      linarith [hA.2, hmem.1, hin.2]
+    simp only [horizontalLeakageEnvelope, indicator_of_notMem hout] at hs
+    linarith
+  have htop := hU.top_vminus_pi_div_two hheight hmiddle
+  rw [capWidth, (centered_quarter_points hl hr).2.1] at htop
+  have hzero := hU.isCap.middle_niche_le_top_overhang_of_late_unit hρ
+    (fun s => (hb s).1) hK heq (by
+      intro s hs
+      apply mem_regularCurvatureDomain_iff.mpr
+      exact ⟨hs.1, by linarith [hs.2, Real.pi_pos], ne_of_lt hs.2,
+        by simpa using (sin_cos_pos_of_mem_quarter hs).2.ne'⟩)
+    hr (by linarith) hC1 le_rfl htop hunit
+  simp only [sub_self, zero_mul, zero_div] at hzero
+  exact le_antisymm hzero (sweptNiche_nonneg U (Real.pi / 2) C)
 
-/-- Both actual endpoint niches satisfy the same applicable rational row.
-The reflected cap is itself a full maximizer and constructs its own
-literal density; no reflected representative at an atom is assumed. -/
-theorem IsFullCapMaximizer.endpoint_niches_le_horizontalLeakageRow
-    {U : Set Plane} (hU : IsFullCapMaximizer U) (R : HorizontalLeakageRow) {C : ℝ}
+theorem IsFullCapMaximizer.horizontal_endpoint_niches_eq_zero
+    {U : Set Plane} (hU : IsFullCapMaximizer U) {C : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hheight : capHeight U = 1)
     (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = 1)
-    (hC : 2 / 3 < C) (haC : R.a ≤ C) (hCb : C ≤ R.b) :
-    sweptNiche U (Real.pi / 2) (-C) ≤ R.B ∧
-      sweptNiche U (Real.pi / 2) C ≤ R.B := by
+      capRoof U x = 1) (hC : 2 / 3 < C) :
+    sweptNiche U (Real.pi / 2) (-C) = 0 ∧ sweptNiche U (Real.pi / 2) C = 0 := by
   obtain ⟨hl', hr', hheight', hmid⟩ :=
     hU.isCap.horizontalMirror_centered rfl hl hr hheight hmiddle
-  have hleft := hU.horizontalMirror.right_endpoint_niche_le_horizontalLeakageRow R hl' hr'
-    hheight' hmid hC haC hCb
+  have hleft := hU.horizontalMirror.horizontal_right_endpoint_niche_eq_zero
+    hl' hr' hheight' hmid hC
   exact ⟨by simpa only [sweptNiche_horizontalMirror] using hleft,
-    hU.right_endpoint_niche_le_horizontalLeakageRow R hl hr hheight hmiddle hC haC hCb⟩
+    hU.horizontal_right_endpoint_niche_eq_zero hl hr hheight hmiddle hC⟩
+
+theorem IsFullCapMaximizer.horizontal_axis_heights_eq_half
+    {U : Set Plane} (hU : IsFullCapMaximizer U) {C : ℝ}
+    (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
+    (hheight : capHeight U = 1)
+    (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
+      capRoof U x = 1) (hC : 2 / 3 < C) :
+    capRoof U (horizontalRight U) = 1 / 2 ∧ capRoof U (horizontalLeft U) = 1 / 2 := by
+  have hn := hU.horizontal_endpoint_niches_eq_zero hl hr hheight hmiddle hC
+  simpa [hn.1, hn.2] using hU.horizontal_endpoint_laws hl hr (by linarith) hheight hmiddle
 
 end AmbidextrousSofa

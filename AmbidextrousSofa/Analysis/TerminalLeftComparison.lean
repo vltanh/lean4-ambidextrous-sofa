@@ -13,7 +13,7 @@ the circle estimate applies in every sign of the middle slope, including
 the positive slope with its low initial endpoint. With the exact circle
 margin it makes the outgoing wall strictly exposed beyond the reserve,
 which the exposure bound forbids. Hence the early weighted excess of the
-cut density must exceed the exact terminal margin at any maximum with the
+cut density cannot lie below the exact terminal margin at any maximum with the
 displayed terminal and top geometry.
 -/
 
@@ -45,12 +45,12 @@ theorem IsJointCapMaximizer.false_of_leftCompanion_weighted_excess_of_tail_regim
       (volume.restrict (Ioo (Real.pi / 2) Real.pi)).withDensity
         (fun t => ENNReal.ofReal (ρ t)))
     (hexcess : terminalWeightedExcess (fun t => ρ (t + Real.pi / 2))
-      (Real.arcsin (C - T_L)) ≤ (39 / 4400 : ℝ) * Real.cos α) : False := by
+      (Real.arcsin (C - T_L)) < terminalCircleGap * Real.cos α) : False := by
   obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hU.angle_pos, hαL⟩
   have hH := (hU.terminalTailPoint_bounds_of_tail_regime hregime hαL hheight haffine).2.1
   have hH1 := (hU.isCap.inStrip (hU.isCap.terminalTailPoint_mem α)).2
   obtain ⟨-, hdc, hw0, -, hwhalf⟩ := hU.isCap.terminalTailInset_bounds hU.angle_pos hαL hH
-  have hcsmall := terminal_cosine_lt_forty_four_one_twenty_fifths hc hcut
+  have hcsmall := terminal_cosine_lt_three_eighths hc hcut
   have hP := hU.isCap.horizontalProjection_eq_Icc
   have ha : -C ∈ horizontalProjection U := by
     rw [hP, hleft, hright]; constructor <;> linarith only [hC0]

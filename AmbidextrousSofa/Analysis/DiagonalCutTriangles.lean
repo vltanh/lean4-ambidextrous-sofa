@@ -97,33 +97,36 @@ theorem IsDownwardCap.diagonalRoofDeficit_ge_near_cuts {U : Set Plane}
       (le_min (capRoof_le_one hU.isCompact hU.inStrip x) (by linarith)) (by linarith)
   exact (add_div _ _ _).trans_le (add_le_add hL hR)
 
-theorem short_outer_cut_area_gt {k z : ℝ} (hk0 : 41 / 99 < k) (hk1 : k < 1)
-    (hksq : k ^ 2 + 2 * k = 1) (hz : 23 / 200 < z) :
-    (9 / 1000 : ℝ) < ((1 - k) * z) ^ 2 / (2 * k * (1 - k)) := by
+theorem short_outer_cut_area_gt {k z : ℝ} (hk0 : diagonalOffsetLower < k) (hk1 : k < 1)
+    (hksq : k ^ 2 + 2 * k = 1) (hz : k / 3 < z) :
+    (shortOuterCutBudget k : ℝ) < ((1 - k) * z) ^ 2 / (2 * k * (1 - k)) := by
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
   have hk : 0 < k := by linarith
   have hj : 0 < 1 - k := sub_pos.mpr hk1
   rw [show ((1 - k) * z) ^ 2 / (2 * k * (1 - k)) = (1 + k) / 2 * z ^ 2 by
     field_simp
-    linear_combination -hksq]
-  linarith [mul_nonneg (sub_nonneg.mpr hk0.le) (sq_nonneg z),
-    pow_lt_pow_left₀ hz (by norm_num) two_ne_zero]
+    linear_combination -z ^ 2 * hksq]
+  unfold shortOuterCutBudget
+  exact mul_lt_mul_of_pos_left
+    (pow_lt_pow_left₀ hz (by linarith) two_ne_zero) (by linarith)
 
 /-- The small actual exterior deficit rules out outer clipping on either
 wing. The two complete literal triangles then add without overlap. -/
 theorem IsDownwardCap.short_diagonal_cut_payment {U : Set Plane}
     (hU : IsDownwardCap U) {a h k u v : ℝ} (ha : 0 < a) (hh : 0 ≤ h)
-    (hk0 : 41 / 99 < k) (hk1 : k < 1) (hksq : k ^ 2 + 2 * k = 1)
+    (hk0 : diagonalOffsetLower < k) (hk1 : k < 1) (hksq : k ^ 2 + 2 * k = 1)
     (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
     (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1)
     (hu : diagonalRight U = 1 + u) (hv : diagonalLeft U = 1 - h + v)
     (hL : nearDiagonalLeftDeficit U h k v ∈ Icc 0 (k * (v - a / 2)))
     (hR : nearDiagonalRightDeficit U k u ∈ Icc 0 (k * (u - a / 2)))
-    (hvu : 23 / 200 < a - v) (huu : 23 / 200 < a - u)
-    (hD : diagonalRoofDeficit U a h u v < 9 / 1000) :
+    (hvu : k / 3 < a - v) (huu : k / 3 < a - u)
+    (hD : diagonalRoofDeficit U a h u v < shortOuterCutBudget k) :
     nearDiagonalLeftDeficit U h k v ≤ (1 - k) * (a - v) ∧
       nearDiagonalRightDeficit U k u ≤ (1 - k) * (a - u) ∧
       (nearDiagonalLeftDeficit U h k v ^ 2 + nearDiagonalRightDeficit U k u ^ 2) /
         (2 * k * (1 - k)) ≤ diagonalRoofDeficit U a h u v := by
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
   have hk : 0 < k := by linarith
   have hL0 : 0 ≤ (1 - k) * (a - v) := mul_nonneg (by linarith) (by linarith)
   have hR0 : 0 ≤ (1 - k) * (a - u) := mul_nonneg (by linarith) (by linarith)

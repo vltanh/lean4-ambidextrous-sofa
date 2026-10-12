@@ -13,6 +13,12 @@ angle it does not preserve the objective with its first terminal wall.
 All changes of orientation below concern a symmetric finite-angle
 comparison or the support equations, and keep this distinction.
 
+The contradiction will compare two lengths. Moving the terminal facet
+inward shows that its strictly exposed middle interval has length at
+most the facet's horizontal length. Changing the angle bounds that facet
+length by a geometric reserve $w$. The companion moment will force
+strict exposure over an interval longer than $w$.
+
 \subsection{The remaining geometry of a proper maximum}
 
 Fix a joint maximizing pair $(U,\alpha)$, with $\alpha<L$.
@@ -33,8 +39,8 @@ curvature, apart from a possible uncharged middle facet.
 For a canonical joint maximum at a proper angle,
 \[
  \alpha>\arctan(8/3),\qquad
- \frac{1001}{2000}<C<\frac{37}{50},\qquad
- h_L+h_R<\frac{17}{50}.
+ 1/2<C<\frac{37}{50},\qquad
+ h_L+h_R<\frac13.
 \]
 \end{lemma}
 \begin{proof}
@@ -44,8 +50,8 @@ least $\Mc/2$. The initial-angle estimate in
 $\pi/4\le\alpha\le\arctan(8/3)$. All three angles
 $\pi/8,\pi/4,3\pi/8$ have therefore been visited.
 The finite-angle roof and triangle estimates in
-\cref{lem:preliminary-cuts} give $1001/2000<C<4/5$ and
-$h_L+h_R<17/50$.
+\cref{lem:preliminary-cuts} give $1/2<C<4/5$ and
+$h_L+h_R<1/3$.
 They apply to the partial barrier because it dominates the same
 three tents. If the high middle endpoint is on the left, reflect
 the cap and its actual barrier together in this comparison.
@@ -316,21 +322,17 @@ wall maximum.
 No canonical joint maximum has proper angle and residual tail geometry.
 \end{lemma}
 \begin{proof}
-The exact circle comparison in \cref{app:partial-circle} gives
+The circle comparison and reflected-excess estimate in
+\cref{app:partial-circle,app:partial-reflection} give, throughout the
+reserve interval,
 \[
  a_\alpha(-C+z)-
  \left[\sqrt{1-(C-T_L)^2}-\sqrt{1-(C+z)^2}\right]
-       >\frac{39}{4400}c\qquad(0\le z\le w).
+       >\mathcal E_\theta\qquad(0\le z\le w).
 \]
-The reflected support and terminal-impulse estimates in
-\cref{app:partial-reflection} give $\mathcal E_\theta=0$ for
-$0<\cot\alpha\le1/8$, and
-\[
- \mathcal E_\theta<\frac{6517}{6400000}
-       <\frac{117}{110000}<\frac{39}{4400}c
-\]
-for $1/8\le\cot\alpha<3/8$.
-Together with \cref{lem:partial-moment} these inequalities make
+Thus the terminal wall stays above the circle envelope even after
+paying for the companion's curvature excess. Together with
+\cref{lem:partial-moment}, this makes
 the entire interval $[-C,-C+w]$ strictly terminal-exposed.
 Its right endpoint is interior to $J_U$, so continuity extends
 exposure a positive distance farther right. Thus

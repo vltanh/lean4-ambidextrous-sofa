@@ -19,62 +19,77 @@ open Set
 
 namespace AmbidextrousSofa
 
-def shortLeftTailHeight (k h δ : ℝ) : ℝ := max ((2 / 25) - (1 - k) * h - δ) 0
+def shortLeftTailHeight (k h δ : ℝ) : ℝ := max ((shortTailHeight k) - (1 - k) * h - δ) 0
 
-def shortRightTailHeight (δ : ℝ) : ℝ := max ((2 / 25) - δ) 0
+def shortRightTailHeight (k δ : ℝ) : ℝ := max ((shortTailHeight k) - δ) 0
 
-theorem short_left_peak_height_nonneg {k h : ℝ} (hk : 41 / 99 < k)
-    (hh0 : 0 ≤ h) (hh1 : h < 1 / 23) : 0 ≤ (2 / 25 : ℝ) - (1 - k) * h := by
-  nlinarith [mul_nonneg (sub_nonneg.2 hk.le) hh0]
+theorem short_left_peak_height_nonneg {k h : ℝ} (hk0 : diagonalOffsetLower < k)
+    (hk1 : k < (diagonalOffsetUpper)) (hksq : k ^ 2 + 2 * k = 1)
+    (hh0 : 0 ≤ h) (hh1 : h < k ^ 2 / 4) : 0 ≤ shortTailHeight k - (1 - k) * h := by
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
+  have hN := (nearDiagonalNorm_short_bounds hk0 hk1 hksq).2
+  norm_num [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton, shortNormUpper] at hN
+  rw [shortTailHeight_eq hksq]
+  nlinarith [mul_nonneg (sub_nonneg.2 hk0.le) hh0]
 
 theorem short_left_tail_geometry {a h k u v δ : ℝ}
-    (hk0 : 41 / 99 < k) (hk1 : k < 169 / 408) (hksq : k ^ 2 + 2 * k = 1)
-    (hh0 : 0 ≤ h) (hh1 : h < 1 / 23) (hδ : 0 ≤ δ)
-    (hv : v - a / 2 < 323 / 1000 + h / 4)
-    (hm : 16 / 25 < (u + v) / 2 - h / 4)
+    (hk0 : diagonalOffsetLower < k) (hk1 : k < (diagonalOffsetUpper)) (hksq : k ^ 2 + 2 * k = 1)
+    (hh0 : 0 ≤ h) (hh1 : h < k ^ 2 / 4) (hδ : 0 ≤ δ)
+    (hv : v - a / 2 < shortTipThreshold k + h / 4)
+    (hm : shortApexThreshold k < (u + v) / 2 - h / 4)
     (hd : (u - v + h) / 2 ∈ Icc (-a / 2) (a / 2)) :
     k - v + h ∈ Icc (-a / 2) (a / 2) ∧
       k - v + h + shortLeftTailHeight k h δ / (1 - k) < (u - v + h) / 2 ∧
       nearDiagonalNorm k + shortLeftTailHeight k h δ / k ≤ u + v - h ∧
       shortLeftTailHeight k h δ / k - (k - v + h + a / 2) ≤
         shortOuterTipAllowance k + h / 4 := by
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
   have hk : 0 < k := by linarith
   have hj : 0 < 1 - k := by linarith
   obtain ⟨-, hnorm, hpeak, -⟩ := short_nearDiagonal_constants hk0 hk1 hksq
+  have hη := (short_geometry_scalar_estimates hk0 hk1 hksq).1
+  have hηh : h / 4 < shortTailHeight k := by
+    linarith only [hh1, (short_tail_reserves hk0 hk1 hksq).1]
+  unfold shortTipThreshold at hv
   have hE0 : 0 ≤ shortLeftTailHeight k h δ := le_max_right _ _
-  have hE : shortLeftTailHeight k h δ ≤ 2 / 25 - (1 - k) * h :=
-    max_le (by linarith) (short_left_peak_height_nonneg hk0 hh0 hh1)
-  have hEj : shortLeftTailHeight k h δ / (1 - k) ≤ 2 / 25 / (1 - k) - h := by
+  have hE : shortLeftTailHeight k h δ ≤ shortTailHeight k - (1 - k) * h :=
+    max_le (by linarith) (short_left_peak_height_nonneg hk0 hk1 hksq hh0 hh1)
+  have hEj : shortLeftTailHeight k h δ / (1 - k) ≤ shortTailHeight k / (1 - k) - h := by
     rw [div_le_iff₀ hj]
-    linarith [div_mul_cancel₀ (2 / 25 : ℝ) hj.ne']
-  have hEk : shortLeftTailHeight k h δ / k ≤ 2 / 25 / k - (k + 1) * h := by
+    linarith [div_mul_cancel₀ (shortTailHeight k) hj.ne']
+  have hEk : shortLeftTailHeight k h δ / k ≤ shortTailHeight k / k - (k + 1) * h := by
     rw [div_le_iff₀ hk]
-    linarith [div_mul_cancel₀ (2 / 25 : ℝ) hk.ne', congrArg (· * h) hksq]
+    linarith [div_mul_cancel₀ (shortTailHeight k) hk.ne', congrArg (· * h) hksq]
   refine ⟨⟨by linarith, by linarith [div_nonneg hE0 hj.le, hd.2]⟩, by linarith,
     by nlinarith [mul_nonneg (show 0 ≤ k + 1 / 2 by linarith) hh0], ?_⟩
-  unfold shortOuterTipAllowance
+  unfold shortOuterTipAllowance shortTipThreshold
   linarith [div_le_div_of_nonneg_right (hE.trans (sub_le_self _ (mul_nonneg hj.le hh0))) hk.le]
 
 theorem short_right_tail_geometry {a h k u v δ : ℝ}
-    (hk0 : 41 / 99 < k) (hk1 : k < 169 / 408) (hksq : k ^ 2 + 2 * k = 1)
-    (hh0 : 0 ≤ h) (hh1 : h < 1 / 23) (hδ : 0 ≤ δ)
-    (hu : u - a / 2 < 323 / 1000 + h / 4)
-    (hm : 16 / 25 < (u + v) / 2 - h / 4)
+    (hk0 : diagonalOffsetLower < k) (hk1 : k < (diagonalOffsetUpper)) (hksq : k ^ 2 + 2 * k = 1)
+    (hh0 : 0 ≤ h) (hh1 : h < k ^ 2 / 4) (hδ : 0 ≤ δ)
+    (hu : u - a / 2 < shortTipThreshold k + h / 4)
+    (hm : shortApexThreshold k < (u + v) / 2 - h / 4)
     (hd : (u - v + h) / 2 ∈ Icc (-a / 2) (a / 2)) :
     k - u ∈ Icc (-a / 2) (a / 2) ∧
-      k - u + shortRightTailHeight δ / (1 - k) < -(u - v + h) / 2 ∧
-      nearDiagonalNorm k + shortRightTailHeight δ / k ≤ u + v - k * h ∧
-      shortRightTailHeight δ / k - (k - u + a / 2) ≤ shortOuterTipAllowance k + h / 4 := by
+      k - u + shortRightTailHeight k δ / (1 - k) < -(u - v + h) / 2 ∧
+      nearDiagonalNorm k + shortRightTailHeight k δ / k ≤ u + v - k * h ∧
+      shortRightTailHeight k δ / k - (k - u + a / 2) ≤ shortOuterTipAllowance k + h / 4 := by
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
   have hk : 0 < k := by linarith
   have hj : 0 < 1 - k := by linarith
   obtain ⟨-, hnorm, hpeak, -⟩ := short_nearDiagonal_constants hk0 hk1 hksq
-  have hE0 : 0 ≤ shortRightTailHeight δ := le_max_right _ _
-  have hE : shortRightTailHeight δ ≤ 2 / 25 := max_le (by linarith) (by norm_num)
+  have hη := (short_geometry_scalar_estimates hk0 hk1 hksq).1
+  have hηh : h / 4 < shortTailHeight k := by
+    linarith only [hh1, (short_tail_reserves hk0 hk1 hksq).1]
+  unfold shortTipThreshold at hu
+  have hE0 : 0 ≤ shortRightTailHeight k δ := le_max_right _ _
+  have hE : shortRightTailHeight k δ ≤ shortTailHeight k := max_le (by linarith) hη.le
   have hEj := div_le_div_of_nonneg_right hE hj.le
   have hEk := div_le_div_of_nonneg_right hE hk.le
   refine ⟨⟨by linarith, by linarith [div_nonneg hE0 hj.le, hd.1]⟩, by linarith,
     by nlinarith [mul_nonneg (show 0 ≤ 1 / 2 - k by linarith) hh0], ?_⟩
-  unfold shortOuterTipAllowance
+  unfold shortOuterTipAllowance shortTipThreshold
   linarith
 
 /-- At every point before a tail's inner tip, its actual companion

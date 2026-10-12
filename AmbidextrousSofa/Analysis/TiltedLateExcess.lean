@@ -103,17 +103,17 @@ theorem fullTiltedSupportQuarterPair_ae_first_le_one_of_initial_floor_conditions
 include hU hm haffine hρ hρ0 hρK heq in
 /-- The compact quadratic envelope uses the actual first momentum zero and actual excess height,
 unless the whole first source is already unit bounded. It gives unit curvature after `11/15` and
-the strict `1/40` excess moment bound. No crossing or energy premise remains in this theorem. -/
+the integrated envelope moment bound. No crossing or energy premise remains in this theorem. -/
 theorem fullTiltedSupportQuarterPair_late_unit_and_excess_moment {C h : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
     (hC0 : 2 / 3 < C) (hC1 : C < 37 / 50)
     (hmpos : 0 < m) (hsmall : C + m < 1)
-    (hh0 : 0 < h) (hh1 : h < 17 / 50)
+    (hh0 : 0 < h) (hh1 : h < 1 / 3)
     (hheight : capHeight U = 1) (hhigh : capRoof U C = 1)
     (hlow : capRoof U (-C) = 1 - h)
     (hκ : ∀ s, ρ s ≤ sourceKappa (upperCornerVelocity U s)) :
     (∀ᵐ t ∂volume.restrict (Ioo (11 / 15 : ℝ) (Real.pi / 2)), ρ t ≤ 1) ∧
-      firstExcessMoment ρ < 1 / 40 := by
+      firstExcessMoment ρ ≤ tiltedLeakageMomentBound := by
   have D := fullTiltedSupportQuarterPair_cornerArcDynamics
     hU hm haffine hρ hρ0 hρK heq hl hr (by linarith only [hC0]) hsmall hheight hhigh hκ
   obtain ⟨A, ell, hell0, hell1, hend, henv⟩ : ∃ A ell : ℝ, 0 ≤ ell ∧ ell < 1 / 3 ∧
@@ -144,7 +144,7 @@ theorem fullTiltedSupportQuarterPair_late_unit_and_excess_moment {C h : ℝ}
     exact ⟨A, _, Analysis.quadraticExcessLength_nonneg (by linarith only [hqA]), hell, hend,
       (D.quadratic_excess_envelope_at_first_crossing hA.1.le hA.2 hB.2 hpA.le hqA.le
         (fun t ht => hqbefore t ⟨(hA.1.trans ht.1).le, ht.2⟩) hout (by linarith only [hell])).2⟩
-  refine ⟨?_, firstExcessMoment_lt_one_fortieth_of_short_envelope hρ hρ0 hρK hell0 hell1.le
+  refine ⟨?_, firstExcessMoment_le_short_envelope_moment hρ hρ0 hρK hell0 hell1.le
     hend.le henv⟩
   -- after `11/15` the envelope vanishes
   filter_upwards [ae_restrict_mem measurableSet_Ioo, ae_restrict_of_ae_restrict_of_subset

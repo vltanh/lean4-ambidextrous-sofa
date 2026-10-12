@@ -18,7 +18,10 @@ noncomputable section
 
 namespace AmbidextrousSofa
 
-def lowHeightBound : ℝ := 31233 / 39200
+/-- A common coarse score bound for a middle endpoint below half-height.
+The geometric split occurs at `C = √2 - 1/4`, where the left diagonal
+tent tail first reaches the middle endpoint. -/
+def lowHeightBound : ℝ := 4 / 5
 
 def lowHeightSurrogate (C u v : ℝ) : ℝ :=
   11 * C / 8 - (1 - u) ^ 2 / 2 - (1 / 4 - v) ^ 2 / 2 -
@@ -38,6 +41,7 @@ theorem positivePart_square_pair_bound {H w : ℝ} (hH : 0 ≤ H) :
 theorem lowHeight_unclipped_bound {C u v : ℝ} (hC : 1 / 2 ≤ C)
     (hz : C + u - Real.sqrt 2 ≤ 0) : lowHeightSurrogate C u v < lowHeightBound := by
   have hsqrt := sqrt_two_sub_one_bounds.2.2
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
   have hp := positivePart_square_pair_bound (w := ((1 - u) + (1 / 4 - v)) / 2)
     (show 0 ≤ 2 * C + 5 / 8 - Real.sqrt 2 by linarith)
   rw [show 2 * C + 5 / 8 - Real.sqrt 2 - ((1 - u) + (1 / 4 - v)) / 2 =
@@ -52,6 +56,7 @@ theorem lowHeight_surrogate_bound {C u v : ℝ} (hC : 1 / 2 ≤ C) (hv : 0 ≤ v
   rcases le_or_gt (C + u - Real.sqrt 2) 0 with hz | hz
   · exact lowHeight_unclipped_bound hC hz
   obtain ⟨hs1, -, hs2⟩ := sqrt_two_sub_one_bounds
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
   have hh : 0 < 2 * C + (u + v) / 2 - Real.sqrt 2 := by linarith
   -- On the clipped branch the surrogate is concave in `u`, with vertex `s = 2 - 2C - v`.
   rcases le_or_gt (2 - 2 * C - v) (Real.sqrt 2 - C) with hs | hs
@@ -71,18 +76,23 @@ theorem lowHeight_surrogate_bound {C u v : ℝ} (hC : 1 / 2 ≤ C) (hv : 0 ≤ v
         (show Real.sqrt 2 - 5 / 4 ≤ 1 / 4 - v by linarith) 2]
 
 /-- At larger quarter-widths the baseline tent alone suffices. -/
-theorem lowHeight_large_width_unclipped_bound {C : ℝ} (hC : 23 / 20 ≤ C) :
+theorem lowHeight_large_width_unclipped_bound {C : ℝ}
+    (hC : Real.sqrt 2 - 1 / 4 ≤ C) :
     11 * C / 8 - (2 * C - Real.sqrt 2) ^ 2 < lowHeightBound := by
   have hsqrt := sqrt_two_sub_one_bounds.2.2
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
   unfold lowHeightBound
-  linarith [mul_nonpos_of_nonneg_of_nonpos (sub_nonneg.2 hC)
-      (show 11 / 8 - 4 * (C + 23 / 20 - Real.sqrt 2) ≤ 0 by linarith),
-    (sq_lt_sq₀ (by norm_num : (0 : ℝ) ≤ 31 / 35) (by linarith)).2
-      (show (31 / 35 : ℝ) < 23 / 10 - Real.sqrt 2 by linarith)]
+  have hsquare := Real.sq_sqrt (show (0 : ℝ) ≤ 2 by norm_num)
+  have hslo : (1 : ℝ) < Real.sqrt 2 := Real.lt_sqrt_of_sq_lt (by norm_num)
+  have hcorner : 11 * (Real.sqrt 2 - 1 / 4) / 8 -
+      (Real.sqrt 2 - 1 / 2) ^ 2 < (4 / 5 : ℝ) := by nlinarith
+  linarith [hcorner, mul_nonpos_of_nonneg_of_nonpos (sub_nonneg.2 hC)
+      (show 11 / 8 - 4 * (C - 1 / 4) ≤ 0 by linarith)]
 
 theorem lowHeight_large_width_clipped_bound {C : ℝ} (hC : Real.sqrt 2 ≤ C) :
     (11 / 8 + 2 * Real.sqrt 2) * C - 3 * C ^ 2 < lowHeightBound := by
   have hsqrt := sqrt_two_sub_one_bounds
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
   unfold lowHeightBound
   linarith [mul_nonpos_of_nonneg_of_nonpos (sub_nonneg.2 hC)
       (show 11 / 8 + 2 * Real.sqrt 2 - 3 * (C + Real.sqrt 2) ≤ 0 by linarith),

@@ -45,10 +45,12 @@ theorem IsDownwardCap.diagonalComparisonScore_lt_lowHeightBound_of_affine_middle
   have hscore := diagonalComparisonScore_centered_quarters hleft hright
   have hreward := hU.lowHeight_reward_le hC hceiling
   have hs := sqrt_two_sub_one_bounds
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
   rcases le_or_gt C (1 / 2) with hsmall | hCmin
   · linarith [lowHeight_small_width_bound hsmall, intervalIntegral.integral_nonneg_of_forall
       (μ := volume) (by linarith : -C ≤ C) (diagonalBarrier_nonneg U)]
-  rcases le_or_gt C (23 / 20) with hmiddle | hlarge
+  -- This is precisely where the largest possible left tent tail reaches the window edge.
+  rcases le_or_gt C (Real.sqrt 2 - 1 / 4) with hmiddle | hlarge
   · -- The actual diagonal tent, with the two diagonal support excesses `u` and `v`.
     obtain ⟨hu0, -, hu1, hv0, hv1⟩ :=
       hU.lowHeight_diagonal_excess_bounds hCmin.le hleft hright hhigh hceiling

@@ -130,17 +130,26 @@ theorem initialAngle_diagonal_integral_full {K C u v : ℝ}
 /-- Outside both calibration regions, the actual finite-support
 relaxation has the strict complementary margin. -/
 theorem initialAngleRelaxation_complement_lt {C k d s u v b : ℝ}
-    (hC : 0 ≤ C) (hk0 : 3 / 8 ≤ k) (hk1 : k ≤ 4 / 5)
+    (hKC : Real.sqrt 2 - 1 ≤ C) (hk0 : 3 / 8 ≤ k) (hk1 : k ≤ 4 / 5)
     (hs0 : 0 ≤ s) (hs2 : s ^ 2 = 1 + k ^ 2) (hkd : k * d = s - 1)
     (hu1 : u ≤ 2 * C) (hv1 : v ≤ 2 * C)
     (hcompat : u ≤ 2 * (1 - k) * C + k * b)
     (hu : C + (Real.sqrt 2 - 1) < u)
     (hY : (1 + k) * C + (Real.sqrt 2 - 1) - v + k * (b - d) < 0) :
-    initialAngleRelaxation (Real.sqrt 2 - 1) C k d u v b < (319 / 400 : ℝ) := by
+    initialAngleRelaxation (Real.sqrt 2 - 1) C k d u v b < 1 - initialAngleComplementGap ^ 2 := by
   have hK0 := sqrt_two_sub_one_bounds.1
-  have hs : s < 13 / 10 := by nlinarith
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
+  have hKnonneg : 0 ≤ Real.sqrt 2 - 1 := by linarith
+  have hC : 0 ≤ C := hKnonneg.trans hKC
+  have hsK : s - 1 < Real.sqrt 2 - 1 := by
+    nlinarith [sqrt_two_sub_one_quadratic,
+      mul_nonneg (show 0 ≤ k by linarith) (show 0 ≤ 4 / 5 - k by linarith)]
   have hCk := mul_nonneg (by linarith : 0 ≤ 3 * k - 1) hC
   have hv : C + (Real.sqrt 2 - 1) < v := by linarith
+  have hgap : initialAngleComplementGap < (u + v) / 2 - C := by
+    unfold initialAngleComplementGap
+    linarith [mul_nonneg (show 0 ≤ 3 * k - 1 by linarith) (sub_nonneg.mpr hKC),
+      mul_nonneg (show 0 ≤ k - 3 / 8 by linarith) hKnonneg]
   unfold initialAngleRelaxation
   linarith [initialAngleRampLoss_le_rightLoss hC k u b,
     initialAngle_diagonal_integral_le_nicheLoss hC (Real.sqrt 2 - 1) k d u v b,
@@ -148,7 +157,7 @@ theorem initialAngleRelaxation_complement_lt {C k d s u v b : ℝ}
     initialAngleRampLoss_eq_square (show C ≤ v by linarith) hv1,
     initialAngle_diagonal_integral_full (by linarith) hu.le hu1 hv.le hv1,
     initialAngle_complement_bound (h := (u + v) / 2) (C := C) sqrt_two_sub_one_quadratic
-      (by linarith)]
+      hgap]
 
 /-- The scalar relaxation is bounded from the actual cap roof and partial
 barrier, with its own centered middle-half window. -/

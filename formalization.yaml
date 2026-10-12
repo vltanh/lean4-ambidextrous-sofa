@@ -52,7 +52,7 @@ sources:
       ChatGPT Pro 6 (OpenAI) found the proof and wrote an uncompiled Lean draft of it, and Claude
       Opus 5.5 (Anthropic) made the draft compile (automation). The research notes behind it end with
       a manuscript, which the repository archives in docs/archive/. Codex (OpenAI, GPT-6) wrote
-      the accompanying 107-page proof manuscript in docs/paper/, starting from Claude's LaTeX
+      the accompanying 109-page proof manuscript in docs/paper/, starting from Claude's LaTeX
       scaffold, bibliography and figures. Three Codex writers reviewed one another's sections;
       this manuscript review is separate from the Challenge review. The proof has not been
       reviewed by a person. The fuller production account is pinned at
@@ -218,17 +218,48 @@ automation:
         token totals and sub-agent working times were not recorded. The fuller account is
         pinned at
         https://github.com/vltanh/lean4-ambidextrous-sofa/blob/646bdd577807299d786ac2d48176bd6c8d5a6030/docs/CREDITS.md#the-paper-11-october-2026.
+        On 11–12 October 2026, completed sixteen proof and manuscript revision rounds at
+        the owner's request, using formalize-math-paper 2.5.1 and humanizer 3.1.0 without
+        sub-agents. Revised all eleven main sections and eight appendices together with
+        the corresponding Lean arguments; all nine main Challenge statements are unchanged.
+        Generated Newton bounds replace large fitted fractions. Shared square completions,
+        triangle payments, dry-endpoint energy tests and joint stopping comparisons replace
+        separate numerical cases. The latest round made eight further strategy passes:
+        exact wide demand and weighted prices; the actual minimum circle gap; a height
+        defined by equality of the two energy tests; the existing 3–4–5 circle point for
+        the post-floor range; the integrated leakage moment; radius-derived projection
+        prices; the terminal-angle endpoint for the circle chord; and its generated sine
+        bound for the cubic payment. These replace independently chosen margins and
+        allowances, including 1/100, 1/20, 1/40, 10/9, q squared = 1/8 and 14/15.
+        The full Lean build, axiom audit, both Comparator kernels, exact arithmetic and
+        manuscript checks pass. scripts/check_numeric_estimates.py checks the revised
+        estimates and confirms removal of the 364 large literal fraction occurrences.
+        docs/paper/REVIEW.md records the mathematical changes and remaining fitted width,
+        angle and stopping cutoffs; docs/CREDITS.md gives the consolidated production record.
+        On 12 October 2026, prepared the combined revisions for commit, push and Palomar
+        preflight at the owner's request, using the git-commit skill.
+
+        The revised manuscript and its source archive have 109 pages.
       cost:
         wall_time: >-
           Manuscript: the first round's recorded clock readings run from 2026-10-11 08:52 to
           about 09:07 CDT; the rewrite finished at 09:51 CDT, with its exact starting time
           unrecorded. Three sub-agents, at most three at once; their working times were not
-          recorded.
+          recorded. Revision clock ranges on 11 October CDT: 10:26–10:40, 14:27–14:58,
+          15:18–15:37, 15:39–16:04, 16:17–16:48, 16:57–17:23, 17:25–17:51,
+          18:26–19:12, 20:52–21:15, 21:20–21:41, 21:42–22:06, 22:14–22:31,
+          and 22:48–23:07. The latest eight-pass round ran from 11 October 23:16
+          to 12 October 00:35 CDT, about 79 minutes including validation.
+          Revision rounds used no sub-agents; initial inspection preceded some clock
+          readings, and intermediate timings, token totals and costs were not recorded.
+          Publication and preflight preparation began on 12 October at 08:02 CDT;
+          remote verification duration is recorded by GitHub Actions.
+
         spend_usd: "not tracked"
   spend_usd: "not tracked"
   notes: >-
     The proof and the first Lean code were written by ChatGPT Pro 6; Claude Opus 5.5 made the code
-    compile and then simplified it. Codex (OpenAI, GPT-6) wrote the accompanying 107-page
+    compile and then simplified it. Codex (OpenAI, GPT-6) wrote the accompanying 109-page
     proof manuscript from Claude's scaffold and integrated its agents' cross-reviews, separately
     from the review of the Challenge. The-Anh Vu-Le, the author and maintainer of this repository,
     chose the problem and the scope and decided the publication. Every result is compiled.

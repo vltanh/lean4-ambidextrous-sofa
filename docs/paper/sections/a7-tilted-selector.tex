@@ -1,4 +1,4 @@
-\section{Excluding a tilted full-turn selector}\label{app:tilted-selector}
+\section{Excluding a tilted full-turn maximum}\label{app:tilted-selector}
 
 Throughout this appendix $U$ is a canonical full-turn maximum.
 Reflect horizontally when necessary, and write
@@ -7,7 +7,7 @@ Reflect horizontally when necessary, and write
  f_U(-C)=1-h,\quad f_U(C)=1,\quad h>0.
 \]
 The preliminary cuts and \cref{cor:full-three-tent-cut} give
-$1/2<C<37/50$ and $0<h<17/50$.
+$1/2<C<37/50$ and $0<h<1/3$.
 Write $n=n_L(U)$, $n_\pm=n(\pm C)$ and $e_R=f_U(2C)$,
 $e_L=f_U(-2C)$. The actual endpoint and wing identities are
 \begin{equation}\label{eq:tilted-endpoints}
@@ -25,6 +25,11 @@ densities in \eqref{eq:variation-velocities}.
 
 \subsection{A connected ordinary survivor}
 
+The ordinary-sofa bound can be used once the niche stays below the
+roof. We prove this by keeping every positive corner inside the
+middle window. Each exterior wing then sees only one affine wall
+family, so its niche is convex and cannot cross the concave roof.
+
 \begin{lemma}\label{lem:tilted-box-confinement}
 Every attached quadrant with positive apex height has its apex
 abscissa in $(-C,C)$. The full niche is convex on each exterior
@@ -40,12 +45,8 @@ For a horizontal-middle cap the box and top endpoints imply
  \widehat F\le2Cc+s,\quad\widehat G\ge Cs+c,
  \quad\widehat z_x\le C(2-3s^2)-c+s.
 \]
-Here $C(1-3s^2)\le c-s$ for $1/2\le C\le13/15$.
-For $s^2\le1/3$ use $c\ge1-3s^2/5$; the margin is at least
-$2s^2-s+2/15=2(s-1/4)^2+1/120$.
-For $1/3\le s^2\le1/2$ the two sides have opposite signs.
-For $s^2\ge1/2$ use
-$2(s-c)=2(2s^2-1)/(s+c)\le4s^2-2\le3s^2-1$.
+By \cref{lem:circle-corner-margin} with $h=0$,
+$C(1-3s^2)<c-s$ throughout the preliminary width range.
 Reflection gives $-C\le\widehat z_x\le C$.
 
 Put $\delta=\arctan(h/(2C))$. For $t\ge\delta$ the actual
@@ -56,31 +57,9 @@ To prove its upper bound it suffices to show
 \begin{equation}\label{eq:tilted-corner-margin}
  c-s-C(1-3s^2)-hsc>0.
 \end{equation}
-For $s^2\le1/3$, its margin is at least
-$[c(50-17s)-(37+50s-111s^2)]/50$.
-Enlarge to $0\le s\le3/5$. The two compared terms are positive;
-their squared difference is
-\[
- Q(s)=1131-5400s+3503s^2+12800s^3-12610s^4.
-\]
-With $z=s-3/8\in[-3/8,9/40]$ this is
-\[
- Q=49647/2048-(2091/64)z
-       +z^2(116213/16-6115z-12610z^2).
-\]
-The bracket is concave and its endpoint values are $249061/32$
-and $839849/160$, both above $5000$.
-Hence $Q>24-33|z|+5000z^2\ge24-1089/20000>0$.
-For $s^2\ge1/3$ put $C=1/2$, enlarge $h$ to $2/5$ and factor
-its lower bound as
-\[
- c\left[1-2s/5-\frac{c(3s+1)}{2(1+s)}\right].
-\]
-Squaring the nonnegative compared terms reduces positivity to
-$R(s)=75-105s-139s^2+241s^3>0$.
-For $z=2s-1\in[0,1]$,
-$8R=143-253z+445z^2+241z^3\ge143-253^2/(4\cdot445)>0$.
-This proves \eqref{eq:tilted-corner-margin}.
+This is precisely \cref{lem:circle-corner-margin}: the unit circle's
+quadratic chord bound handles $s^2\le1/3$, and its 3--4--5 tangent
+handles $s^2\ge1/3$.
 For $0<t<\delta$ the actual second support is $(C,1)$, and the
 apex height is at most
 $1-c-s+Csc=sc[C-2/(1+c+s)]<0$.
@@ -98,7 +77,7 @@ so the same inequality holds throughout $I$.
 Apply \cref{lem:ordinary-survivor}.
 \end{proof}
 
-In particular, with $G_0=22199/10000$, convexity of the wing niche
+In particular, with $G_0=2.2199$, convexity of the wing niche
 and the stationary chord bounds give
 \begin{equation}\label{eq:tilted-ordinary-bound}
  P_L(U)+C(3-E-3h/2)\le |S|\le G_0,\qquad
@@ -112,13 +91,20 @@ their average vector.
 
 \subsection{The forward excess ends before endpoint tangency}
 
+A positive niche maximum at the high middle endpoint must be tangent
+at an angle $t\ge\arccos C$. We show that the first curvature
+excess ends before this angle. The backward support formula then
+charges the endpoint niche to the top overhang alone.
+
+Put $J_*=(11/15)[(1/3)^2/4+(1/3)^3/6]$, the integrated envelope budget.
+
 \begin{lemma}\label{lem:tilted-late-unit}
 If $2/3<C<37/50$, then $u(t)\le1$ for almost every $t\ge11/15$.
 Moreover, if the top face is $[C,C+T]\times\{1\}$, then
 \begin{equation}\label{eq:tilted-endpoint-leakage}
  \begin{gathered}
  n_+\le\frac{CT}{\sqrt{1-C^2}},\qquad
- J_F:=\int_0^L(u-1)_+\sin t\,\dd t<1/40,\\
+ J_F:=\int_0^L(u-1)_+\sin t\,\dd t\le J_*,\\
  \int_C^{2C}n\le(T+J_F)n_+/2.
  \end{gathered}
 \end{equation}
@@ -129,7 +115,7 @@ The endpoint box $H(C)=1-\sqrt{1-C^2}<1/3$ and the sharper
 low-wing box $n_-\le(H(C)-h)_+$ imply
 \[
  -1/2+5h/4-(1/3-h)_+/4\le B\le-1/4+5h/4,
- \qquad -7/12<B<7/40.
+ \qquad -7/12<B<9/50.
 \]
 Only the initial positive-$q$ component can have $u>1$.
 As in the reflected calculation in \cref{app:partial-reflection},
@@ -148,59 +134,79 @@ All bounds below give $\ell<1$, as required.
 If $\beta\le\gamma_0$, the initial-floor solution in
 \eqref{eq:initial-floor-solution} gives
 $(q(\beta)+1)^2=D^2+B^2-1>4$.
-Thus $B<0$, since $(111/50)^2+(7/40)^2<5$.
+Thus $B<0$, since $(111/50)^2+(9/50)^2<5$.
 Also $D\sin\beta=1+B\cos\beta\le1$, so
-$\beta<\pi/6<8/15$.
-Finally $(q(\beta)+1)^2<(111/50)^2+(7/12)^2-1<(207/100)^2$,
-so $\eta<7/100$, $\ell<2/15$, and the episode ends before $2/3$.
+$\beta<\pi/6$.
+Finally $(q(\beta)+1)^2<(111/50)^2+(7/12)^2-1<(2+1/12)^2$,
+so $\eta<1/12$, $\ell<1/6$, and the episode ends before
+$(\pi+1)/6<11/15$.
 
 If $\gamma_0<\beta$, then
 $1+B(1-h)-D\sqrt{h(2-h)}>0$.
-This forces $h<1/8$. Indeed its upper bound
+This forces $h<1/5$. The cutoff is $1-4/5$, from the same
+3--4--5 circle direction used in the area comparison.
+For $1/5\le h\le1/3$, the circle identity gives
 \[
- V(h)=1+[-1/4+5h/4](1-h)-2\sqrt{h(2-h)}
+ h(2-h)-[(1+h)/2]^2=(1-h)(5h-1)/4\ge0.
 \]
-is convex on $[1/8,17/50]$ and negative at both endpoints:
-$V(1/8)=235/256-\sqrt{15}/4<0$ and
-$V(17/50)=1+231/2000-\sqrt{1411}/25<0$.
-For $h<1/8$ the sharper interval is
-$-7/12+3h/2\le B\le-1/4+5h/4<-3/32$.
+Thus $\sqrt{h(2-h)}\ge(1+h)/2$. Substituting this and
+$B\le-1/4+5h/4$, $D\ge2$ makes the floor momentum nonpositive.
+For $h<1/5$ the sharper pressure interval is
+$-7/12+3h/2\le B\le-1/4+5h/4\le0$.
 The energy used in \cref{lem:tilted-initial-energy} gives
 \[
  (q(\beta)+1)^2\le
  Q(D,B,h)=D^2+B^2+B(1-h)-D\sqrt{h(2-h)}.
 \]
-For $1/25\le h<1/8$, $Q$ increases with $D$, is convex in
-$B$, and is convex in $h$ at either affine $B$ endpoint.
-It suffices to evaluate $D=111/50$ and $h=1/25,1/8$.
-At $h=1/25$ the larger endpoint is $B=-1/5$, giving
-$Q=10387/2500<(51/25)^2$.
-At $h=1/8$, $B^2+B(1-h)<0$ and
-$\sqrt{h(2-h)}>15/32$ give a smaller value.
-Hence $\eta<1/25$, $\ell<2/25$.
-While $p,q>0$, $p(t)\le29/32-Dt+t^2/2$, negative at $t=3/5$;
-therefore the episode ends before $17/25$.
-For $0<h<1/25$, one has $-7/12<B<-1/5$, and
+The upper endpoint pressure at zero tilt is $3/4$. We compare with that trajectory.
+For $0\le h\le1/5$, squaring gives $\sqrt{h(2-h)}\ge3h$.
+The test $Q$ increases with $B$ on the displayed interval, and its
+polynomial part at the upper endpoint is
 \[
- \beta\le D-\sqrt{D^2-8/5},\qquad
- \eta\le(\sqrt{D^2-4/25}-2)_+.
+ (-1/4+5h/4)^2+(-1/4+5h/4)(1-h)
+ =-3/16+7h/8+5h^2/16\le-3/16+h.
 \]
-The second inequality uses $B(1-h)-D\sqrt{h(2-h)}\le B$
-and $B^2+B\le-4/25$.
-On the range $D\ge\sqrt{104}/5$, the sum
+Since $D\ge2$, the floor therefore removes at least $5h$ of energy:
+\begin{equation}\label{eq:tilted-floor-loss}
+ (2+\eta)^2+5h\le D^2-3/16.
+\end{equation}
+For this zero-tilt comparison, put
 \[
- W(D)=D-\sqrt{D^2-8/5}+\sqrt{4\sqrt{D^2-4/25}-7}-1
+ A_0=D-\sqrt{D^2-3/2},\qquad
+ Y_0=\sqrt{D^2-3/16},\qquad Z_0=\sqrt{4Y_0-7}.
 \]
-increases: the first two terms have derivative above $-1/3$,
-and the last term has derivative above $10/7$.
-At $D=111/50$ the first part is below $2/5$ and the duration
-below $1/3$, since $\sqrt{D^2-4/25}<219/100$.
-Thus every episode ends before $11/15$.
+The endpoint pressure bound gives
+$0\le3/4+5h/4-D\beta+\beta^2/2$.
+As $\sqrt{D^2-3/2}\ge3/2$, squaring shows
+\[
+ \beta\le D-\sqrt{D^2-3/2-5h/2}\le A_0+h.
+\]
+Thus tilt delays the first zero by at most $h$.
+Its energy loss shortens the excess by at least the same amount.
+Indeed $2+\eta\le Y_0<D<9/4$, so the sum of these two roots is below five.
+By \eqref{eq:tilted-floor-loss},
+\[
+ Y_0-(2+\eta)
+ =\frac{Y_0^2-(2+\eta)^2}{Y_0+(2+\eta)}\ge h.
+\]
+Similarly $1+\ell(\eta)\le Z_0<3/2$. Their sum is below four, giving
+\[
+ Z_0-[1+\ell(\eta)]
+ =\frac{4[Y_0-(2+\eta)]}{Z_0+1+\ell(\eta)}\ge h.
+\]
+The delay and shortening cancel:
+\[
+ \beta+\ell(\eta)\le A_0+Z_0-1=W(D,3/4,0)<11/15
+\]
+by \cref{lem:joint-stopping-corner}. The same energy bound gives
+$\eta<19/100$ and $\ell<1/3$ throughout the range.
 
-The alternating Taylor bound gives
+The quadratic bound at the half-angle and the double-angle identity give
 \[
- \cos(11/15)\ge6093080189/8201250000>37/50.
+ \cos(11/15)\ge2\left[1-\frac12\left(\frac{11}{30}\right)^2\right]^2-1
+ >\frac{37}{50}.
 \]
+
 At a positive endpoint-active angle at $x=C$, confinement gives
 strict companion slack, so stationarity has $B_x(t)=C$.
 The outer first-support abscissa is at most $2C$, hence
@@ -217,10 +223,16 @@ area at most $(T+J_F)n_+/2$.
 In every excess case above $\eta<19/100$ and $\ell<1/3$.
 The quadratic envelope has integral less than $11/324$,
 and occurs below $11/15$. Consequently
-$J_F<(11/15)(11/324)=121/4860<1/40$.
+$J_F\le J_*=(11/15)(11/324)$.
 \end{proof}
 
 \subsection{The low endpoint is dry and the top overhang is positive}
+
+The increasing companion-wall envelope has one zero. Its position
+determines both the dry part of the middle interval and the available
+source projection. Matching that projection to the exterior wings
+identifies the top overhang. Comparing the same zero with walls from
+the low middle point and the outer endpoint bounds the overhang.
 
 \begin{lemma}\label{lem:tilted-dry-endpoint}
 For $2/3<C<37/50$, the top overhang satisfies $T>0$ and
@@ -277,12 +289,11 @@ At the first $P$-zero, the energy calculation without an impulse
 gives $(Q+1)^2\le D^2-e(1-e)$ and a crossing time at most
 $D-\sqrt{D^2-2e}$.
 The same quadratic excess envelope then applies.
-For $e\le2/3$, $e(1-e)\ge51/400$, so the excess height is
-below $1/5$, its duration below $7/20$, and the crossing time
-below $2-\sqrt{8/3}<3/8$.
-For $2/3\le e<3/4$, $e(1-e)\ge3/16$, so these bounds are
-$9/50$, $5/16$ and $2-\sqrt{5/2}<21/50$.
-The sums are $29/40$ and $293/400$, both below $11/15$.
+The crossing and decay are bounded together by $W(D,e,0)$.
+By \cref{lem:joint-stopping-corner}, the whole interval $0\le e\le3/4$
+compares with $D=111/50$, $e=3/4$, where the sum is below $11/15$.
+Also $e(1-e)\ge1/8$ on $[3/20,3/4]$, so the excess height
+is below $1/5$ and its duration below $1/3$.
 Later positive-$Q$ components have amplitude at most $1/8$.
 Thus $v(t)\le1$ whenever $L-t\ge11/15$.
 
@@ -309,96 +320,79 @@ bounds (if the test point is at least $x_1$, use $x_0<x_1$).
 Finally $x_0<x_1$ implies $T<1-C$.
 \end{proof}
 
-\subsection{A sharper triangle payment for moderate tilt}
+\subsection{The triangle payment above the radius width}
+
+A dry low endpoint sharpens both endpoint heights. The resulting floor
+payment decreases with tilt, so its zero-tilt value bounds every height.
+This excludes widths above the boundary used by the initial energy test.
 
 \begin{lemma}\label{lem:tilted-medium-width}
-No canonical full-turn maximum has
-$73/100\le C<37/50$ and $1/20\le h\le21/100$.
+No canonical full-turn maximum with a dry low middle endpoint has
+\(C_{\rm rad}\le C<37/50\) and \(0<h<1/3\), where
+\(C_{\rm rad}\) is defined in \eqref{eq:tilted-radius-width}.
 \end{lemma}
 \begin{proof}
-By \cref{lem:tilted-dry-endpoint}, put $z=n_+$ and $n_-=0$.
-Then $e_R=1/2+h/4+3z/4$ and $e_L=1/2-3h/4-z/4$,
-with $z<1/3$.
-Use the lifted three-angle parameters in
-\eqref{eq:three-tent-objective}. Put $r=\sqrt2$, $k=r-1$,
-$c_8=\cos(\pi/8)$, $A=1-k$, $b=2-k$,
-$d_0=3r-1$, $\gamma=1-r/2$, $t=2c_8-r$.
+Put \(z=n_+\) and \(n_-=0\). Then
+\(e_R=1/2+h/4+3z/4\) and \(e_L=1/2-3h/4-z/4\), with \(z<1/3\).
+Use the lifted three-angle parameters of
+\eqref{eq:three-tent-objective}. Put \(a=2C\), \(r=\sqrt2\),
+\(k=r-1\), \(c_8=\cos(\pi/8)\), \(A=1-k\),
+\(\gamma=1-r/2\), and \(t=2c_8-r\).
 The outer deficits satisfy
-$w_R\le1/2-h/4$ and $w_L<7/12+3h/4$.
-The signed triangle and positive-floor calculation gives
+\(w_R\le1/2-h/4\) and \(w_L<7/12+3h/4\).
+The triangle and floor calculation gives
 \[
- \begin{gathered}
- P_L(U)\le G_h(a,u,v)+L_{\rm a}(h),\quad a=2C,
- \\
- L_{\rm a}=\gamma[(D-h/4)_+^2+(D+1/12+3h/4)_+^2],
- \quad D=1/2-t.
- \end{gathered}
+\begin{gathered}
+P_L(U)\le G_h(a,u,v)+L_{\rm a}(h),\\
+L_{\rm a}(h)=\gamma[(D-h/4)^2+(D+1/12+3h/4)^2],\qquad D=1/2-t.
+\end{gathered}
 \]
-The geometric checks from \cref{lem:full-three-tent-score} remain
-valid down to $C=73/100$: the diagonal apex is positive since
-$C-h/2-k>0$; the endpoint sum gives
-$m-h/2\ge a-1/2-h/4\ge363/400>179/200$; and the extra
-gain triangles' outer zeros remain inside $J$ since $C<4/5$.
-Thus the same clipped $G_h$ applies.
+A signed square bounds its positive-part square even if the endpoint
+depth lies below the floor threshold. Thus this payment needs no
+height subdivision.
 
-Set $a_*=73/50$, $B_0(a)=a-(a-k)^2/2$ and
-$s_0(a)=d_0a/2-(4c_8-2)$.
-The common support critical point at $a_*$ is
+The triangles fit throughout the stated range. Indeed the pressure sum
+gives
 \[
- u_*=v_*=(a_*+k)/2+(b/9)[s_0(a_*)-Ah/4]+h/4.
+m-h/2\ge a-1/2-h/4
+> a_{\rm rad}-1/2-(1/3)/4>3/4.
 \]
-It is interior, unclipped and has positive $S$.
-Indeed $140/99<r<99/70$, $923/1000<c_8<231/250$ imply
-$2/3<s_0(a_*)<7/10$ and $s_0-Ah/4>0$.
-Its right clipping quantity is
-$-k/2+(b/9)s_0+(1/4-bA/36)h<0$ by the same bounds;
-the left one is smaller by $h$.
-The value and width derivative are
-\[
- K(a_*,h)=B_0(a_*)-kh/2-h^2/8-\tfrac29[s_0(a_*)-Ah/4]^2,
-\]
-\[
- \partial_aG_h(a_*,u_*,v_*)
- =r-a_*-(2d_0/9)[s_0(a_*)-Ah/4]<0.
-\]
-Joint concavity and its supporting plane give $G_h(a,u,v)\le K$
-for every $a\ge a_*$, including every clipping pattern.
+Together with \(k>2/5\) and \(2\sin(\pi/8)>3/4\), this places both
+inner crossings past the diagonal apex. Their outer zeros remain
+inside \(J\), since \(C<4/5\). These are the same geometric
+checks as in \cref{lem:full-three-tent-score}.
 
-Both positive parts in $L_{\rm a}$ are positive on this interval:
-$1/2-2(231/250)+140/99<D<239/3500$, and the lower bound
-exceeds $21/400$.
-The linear coefficient of $K+L_{\rm a}$ is
-$-k/2+As_0/9+\gamma(D+1/8)<-9/100$.
-Its quadratic coefficient is $-1/8-A^2/72+5\gamma/8<1/16$.
-Thus the derivative is below $-9/100+h/8<0$ and the largest
-bound occurs at $h=1/20$.
-There $s_0-A/80>43789/66000>53/80$ and
+Use the shared supporting plane at the Newton comparison width
+\(a_{\rm rad}\). Its clipping and width-derivative inequalities follow
+from the Newton formulas in \eqref{eq:triangle-newton-parameters}
+and \eqref{eq:tilted-radius-width}, throughout \(h\le1/3\).
+Consequently
 \[
- L_{\rm a}(1/20)<\tfrac3{10}[(7/125)^2+(19/100)^2]<3/250.
+G_h(a,u,v)\le B(a_{\rm rad})-kh/2-h^2/8
+ -\tfrac29[s_0(a_{\rm rad})-Ah/4]^2.
 \]
-As $B_0(a_*)=(123/50)k-529/5000$, we get
-\[
- \begin{aligned}
- P_L(U)&<\frac{123}{50}\frac{29}{70}-\frac{529}{5000}
- -\frac{41}{3960}-\frac1{3200}\\
- &\hspace{5mm}-\frac29(53/80)^2+\frac3{250}
- =\frac{7550393}{9240000}<\frac{41}{50}<\frac\Mc2.
- \end{aligned}
-\]
-This contradicts the reference competitor.
+The dry-endpoint row of \cref{lem:triangle-tilt-payment} bounds the
+right side plus \(L_{\rm a}\) at \(h=0\).
+Its value is the dry-endpoint row of \cref{lem:triangle-newton-corners},
+which is below \(\underline p\). This contradicts maximality.
 \end{proof}
 
 \subsection{The last small-height alternative}
 
+If either initial-floor energy test fails, the width must increase.
+For a small tilt, the resulting gain in ordinary survivor area exceeds
+the losses from the tilt and the short leaked niche. We compare those
+quantities using chord lengths in a fixed unit direction.
+
 \begin{lemma}\label{lem:tilted-small-height}
 No canonical full-turn maximum has $2/3<C<37/50$ and
-$0<h\le509/10000$.
+$0<h\le h_0$, with $h_0$ defined by \eqref{eq:tilted-balance-height}.
 \end{lemma}
 \begin{proof}
 Put $P=P_L(U)$ and $\mathcal S=S$, the ordinary survivor of
 \cref{lem:tilted-box-confinement}. By \cref{thm:ordinary-sofa-bound},
 \begin{equation}\label{eq:tilted-sh-2}
- |\mathcal S|\le G_0:=22199/10000.
+ |\mathcal S|\le G_0:=2.2199.
 \end{equation}
 \paragraph{Exact endpoint and leakage information}
 
@@ -413,10 +407,8 @@ J_F=\int_0^{\pi/2}(u(t)-1)_+\sin t\,\dd t.
 \]
 
 \Cref{lem:tilted-dry-endpoint} and the actual pressure equations give
-
-\[
-T>0,\quad n(-C)=0,
-\]
+\(T>0\) and \(n(-C)=0\). The triangle comparison in
+\cref{lem:tilted-medium-width} also gives \(C<C_{\rm rad}\).
 
 \begin{equation}\label{eq:tilted-sh-3}
 e_R=\frac12+\frac h4+\frac{3z}{4},\qquad
@@ -426,23 +418,18 @@ e_L=\frac12-\frac{3h}{4}-\frac z4.
 The pinned low middle point and the endpoint estimate \eqref{eq:tilted-endpoint-leakage} imply
 
 \begin{equation}\label{eq:tilted-sh-4}
-T\le s,\qquad 0\le z\le KT,\qquad K<\frac{10}{9}.
+T\le s,\qquad 0\le z\le KT,\qquad K\le K_+:=\mathcal N_5(2)/2.
 \end{equation}
 
-For completeness, the first inequality follows from the signed second
+To see $T\le s$, use the signed second
 wall envelope at its zero \(x_{\rm zero}=-C+T\). The low middle point
 \((-C,1-h)\) gives the lower wall
 \(1-h-\sec t+T\tan t\). Its value at \(\sin t=T\) is
 \(1-h-\sqrt{1-T^2}\), and cannot be positive at an envelope zero.
 Thus \(T^2\le h(2-h)\). We have \(T\le C<1\), so this angle is
-proper. The bound on K follows by squaring and using
-\(81\cdot1369<100\cdot1131\).
-
-The ordinary box estimate also gives
-
-\begin{equation}\label{eq:tilted-sh-5}
-z\le1-\sqrt{1-C^2}<\frac{33}{100}.
-\end{equation}
+proper. For the projection bound, the radius-width cut gives $9C^2<5$,
+so $C<\mathcal N_5(2)/3$ and $\sqrt{1-C^2}>2/3$.
+Dividing gives exactly $K<K_+$; the same radius supplies both bounds.
 
 The early-end proof bounds all possible first-source excess by one
 initial envelope
@@ -450,25 +437,25 @@ initial envelope
 \[
 (u(\alpha+\tau)-1)_+
 \le\left(\varepsilon-\frac\tau2-\frac{\tau^2}{4}\right)_+,
-\qquad \varepsilon<\frac{19}{100}<\frac7{36}.
+\qquad \varepsilon<\frac{19}{100}.
 \]
 
-Its duration is less than \(1/3\), and all excess occurs at angles
-less than \(11/15\). Since the parabola with initial value \(7/36\)
-vanishes at \(1/3\),
+Take $d_0=1/3$. The parabola with initial height
+$d_0/2+d_0^2/4>19/100$ vanishes at $d_0$, so it bounds both
+the duration and the area of the excess:
 
 \[
 \int(u-1)_+\,dt
-<\int_0^{1/3}\left(\frac7{36}-\frac\tau2-\frac{\tau^2}{4}\right)d\tau
-=\frac{11}{324}.
+<\int_0^{d_0}\left(\frac{d_0}{2}+\frac{d_0^2}{4}
+                    -\frac\tau2-\frac{\tau^2}{4}\right)d\tau
+=\frac{d_0^2}{4}+\frac{d_0^3}{6}.
 \]
 
-Consequently
+All excess occurs before angle $11/15$, by the early-end estimate.
+Using $\sin t\le t$ therefore gives
 
 \begin{equation}\label{eq:tilted-sh-6}
-J_F<\frac{11}{15}\frac{11}{324}
-=\frac{121}{4860}<\frac1{40};
-\qquad \frac1{40}-\frac{121}{4860}=\frac1{9720}.
+J_F\le J_*:=\frac{11}{15}\left(\frac{d_0^2}{4}+\frac{d_0^3}{6}\right).
 \end{equation}
 
 \Cref{lem:tilted-late-unit} and convexity of the actual niche on the right wing give
@@ -485,92 +472,80 @@ Thus
 |\mathcal S|\ge P+C(2-h)-\frac{(T+J_F)z}{2}.
 \end{equation}
 
-\paragraph{A common tangent lower bound for the wing lengths}
+\paragraph{A 3--4--5 lower bound for the wing lengths}
 
-Define the fixed constants
-
+The initial-energy test singles out the width
 \[
-C_0=\frac{\sqrt{17}}6,\quad
-R_0=\frac{\sqrt{26}}6,\quad
-S_0=2C_0+R_0,
+ C_0=\frac{\sqrt{17}}6.
 \]
-
+The chord slope near this width is comparable to $1/(2C_0)$.
+The unit direction of a $3$--$4$--$5$ triangle has a nearby slope
+$3/4$ and gives an affine lower bound for both chord lengths. Its coefficients are exact:
 \begin{equation}\label{eq:tilted-sh-9}
-\lambda=\sqrt{\frac{17}{26}},\qquad
-m=\frac{3}{4\sqrt{26}},\qquad
-a=\frac{1-\lambda}{2}.
+ \lambda=\frac45,\qquad m=\frac3{20},\qquad a=\frac1{10}.
 \end{equation}
+Put $S_0=(14/5)C_0+3/10$.
 
 The two charged-wing vertical drops are
-
 \[
-r_R=1-e_R=\frac12-\frac h4-\frac{3z}{4},\qquad
-r_L=1-h-e_L=\frac12-\frac h4+\frac z4.
+ r_R=1-e_R=\frac12-\frac h4-\frac{3z}{4},\qquad
+ r_L=1-h-e_L=\frac12-\frac h4+\frac z4.
 \]
-
-They are nonnegative by the actual cap geometry. The top overhang has
-length T, while the nonhorizontal right wing has horizontal displacement
-\(C-T\). The stationary length identity and the two chord bounds yield
-
+The top overhang has length $T$, while the nonhorizontal right wing
+has horizontal displacement $C-T$. The stationary length identity
+and the two chord bounds yield
 \begin{equation}\label{eq:tilted-sh-10}
-P\ge\frac12\left[T+
-\sqrt{(C-T)^2+r_R^2}+\sqrt{C^2+r_L^2}\right].
+ P\ge\frac12\left[T+
+ \sqrt{(C-T)^2+r_R^2}+\sqrt{C^2+r_L^2}\right].
 \end{equation}
 
-The tangent inequality for the Euclidean norm at \((C_0,1/2)\) is
-
+Cauchy--Schwarz in the chosen unit direction gives
 \[
-\sqrt{x^2+y^2}\ge\lambda x+\frac{3}{\sqrt{26}}y.
+ \sqrt{x^2+y^2}\ge\frac45x+\frac35y.
 \]
-
-Apply it to the two chords in \eqref{eq:tilted-sh-10}, and use
-\(\lambda C_0+3/(2\sqrt{26})=R_0\). Combining with \eqref{eq:tilted-sh-8} gives
-
+Applying it to both chords gives
+$P\ge4C/5+3/10-3(h+z)/20+T/10$.
+Together with \eqref{eq:tilted-sh-8}, this becomes
 \begin{equation}\label{eq:tilted-sh-11}
-|\mathcal S|\ge S_0+(2+\lambda)(C-C_0)
--Ch-m(h+z)+aT-\frac{(T+J_F)z}{2}.
+ |\mathcal S|\ge S_0+\frac{14}{5}(C-C_0)
+ -Ch-\frac3{20}(h+z)+\frac T{10}-\frac{(T+J_F)z}{2}.
 \end{equation}
 
-The following rational enclosures follow by squaring positive numbers:
-
+Use $C\le C_+:=\mathcal N_5(2)/3$, $T\ge z/K_+$, and $J_F\le J_*$.
+Collecting the height and niche losses gives
 \begin{equation}\label{eq:tilted-sh-12}
-\frac{8086}{10000}<\lambda<\frac{8087}{10000},\qquad
-m<\frac{1471}{10000},\qquad a>\frac{956}{10000}.
+ D:=C_++\frac3{20},\qquad
+ E:=\frac3{20}+\frac{J_*}{2}-\frac{1/10}{K_+}.
 \end{equation}
-
-Since \eqref{eq:tilted-sh-4} implies \(T\ge9z/10\), \eqref{eq:tilted-sh-6} and \eqref{eq:tilted-sh-12} imply
-
-\[
--mz+aT-\frac{J_Fz}{2}\ge-\frac{1839}{25000}z.
-\]
-
-Here
-
-\[
-\frac{1471}{10000}+\frac1{80}
--\frac{956}{10000}\frac9{10}
-=\frac{1839}{25000}.
-\]
-
-In particular the useful common lower bound is
-
+Thus the common lower bound is
 \begin{equation}\label{eq:tilted-sh-13}
-|\mathcal S|\ge S_0+(2+\lambda)(C-C_0)
--\frac{8871}{10000}h-\frac{1839}{25000}z-\frac{Tz}{2}.
+ |\mathcal S|\ge S_0+\frac{14}{5}(C-C_0)
+ -Dh-Ez-\frac{Tz}{2}.
 \end{equation}
-
-Finally
-
+One Newton step from $4$ gives an upper bound
+$\mathcal N_{17}(4)$ for $\sqrt{17}$, and its reciprocal gives
+the lower bound $17/\mathcal N_{17}(4)$. Hence
 \begin{equation}\label{eq:tilted-sh-14}
-S_0>\frac{2\cdot4123+5099}{6000}
-=\frac{2669}{1200}>G_0,
-\quad \frac{2669}{1200}-G_0=\frac{16}{3750}.
+ S_0>\frac{14}{5}\frac{17}{6\mathcal N_{17}(4)}+\frac3{10}
+     >G_0.
 \end{equation}
 
-The radical comparisons here are
-\((4123/1000)^2<17\) and \((5099/1000)^2<26\).
+Both tests use these same area prices. The balance-height bracket
+$h_0\le h_+$ in \eqref{eq:tilted-balance-height} gives
+\[
+ \kappa=\frac1{2-h_+},\qquad
+ r=\mathcal N_{h_+(2-h_+)}(1/3).
+\]
+The identity $s^2=h(2-h)$ gives $h\le\kappa s^2$ and $0<s<r$.
+These bounds are generated from the energy balance, using its canonical interval
+endpoint as the Newton seed. In particular $z\le K_+s$
+and $h+z<2/3$.
 
-\paragraph{Failure of the second initial-energy inequality is impossible}
+\paragraph{The floor-energy test}
+
+If the floor-energy test fails, completing its square forces an
+increase in $C$. That width gain pays for the height and niche losses
+in \eqref{eq:tilted-sh-13}.
 
 Put
 
@@ -598,7 +573,7 @@ so
 +\frac9{16}(h+z)^2>\frac{17}{4}.
 \end{equation}
 
-Write \(w=h+z\). the stated height range and \eqref{eq:tilted-sh-5} give \(w<2/3\), and
+Write \(w=h+z\). The common bounds above give \(w<2/3\), and
 \(3C-s/2>0\). Rationalizing the difference of the two positive
 square roots gives
 
@@ -617,143 +592,78 @@ implies
 C-C_0>\frac s6-\frac3{64}(h+z)^2.
 \end{equation}
 
-Insert \eqref{eq:tilted-sh-16} into \eqref{eq:tilted-sh-13}. Use the lower enclosure for \(\lambda\) on
-the positive s term, its upper enclosure on the negative squared term,
-and \eqref{eq:tilted-sh-4} on all occurrences of z and T. The result is
-
+Insert \eqref{eq:tilted-sh-16} into \eqref{eq:tilted-sh-13}
+and use $z\le K_+s$ and $T\le s$. This gives
 \begin{equation}\label{eq:tilted-sh-17}
-|\mathcal S|-S_0\ge
-\frac{57955}{150000}s
--\frac{8871}{10000}h-\frac59s^2
--\frac{84261}{640000}
-\left(h+\frac{10}{9}s\right)^2.
+ |\mathcal S|-S_0\ge
+ As-Dh-\frac{K_+}{2}s^2-Q_0\left(h+K_+s\right)^2,
 \end{equation}
-
-The linear coefficient is exactly
-
+where the coefficients come directly from the preceding bounds:
 \[
-\frac{2+8086/10000}{6}
--\left(\frac{1471}{10000}+\frac1{80}
--\frac{956}{10000}\frac9{10}\right)\frac{10}{9}
-=\frac{11591}{30000}=\frac{57955}{150000}.
+ A=\frac{14/5}{6}-K_+E,\qquad
+ Q_0=\frac{14}{5}\frac3{64}.
 \]
 
-Here is a complete rational positivity certificate for \eqref{eq:tilted-sh-17}. Set
-
+The common height and sine bounds give
 \[
-A=\frac{11591}{30000},\quad
-D=\frac{8871}{10000},\quad
-Q_0=\frac{84261}{640000},\quad
-k=\frac{10000}{19491},\quad s_* =\frac{63}{200}.
+h+K_+s\le\left(K_++\kappa r\right)s.
 \]
-
-Since \(h\le509/10000\),
-
+All losses in \eqref{eq:tilted-sh-17} are therefore bounded by
+one multiple of $s^2$. Put
 \[
-h\le ks^2,\qquad 0<s<s_*.
+ L_r=D\kappa+\frac{K_+}{2}+
+       Q_0\left(K_++\kappa r\right)^2.
 \]
-
-Indeed \(s^2=h(2-h)\ge(19491/10000)h\), and
-
-\[
-s_*^2-\frac{509}{10000}\frac{19491}{10000}
-=\frac{1581}{100000000}>0.
-\]
-
-The right side of \eqref{eq:tilted-sh-17} is consequently at least
-
-\[
-s\left[A-\left(Dk+\frac59\right)s
--Q_0s\left(\frac{10}{9}+ks\right)^2\right].
-\]
-
-The bracket decreases for \(s\ge0\). Its value at \(s_*\) is
-exactly
-
+The area gain is at least $s(A-L_rs)$, whose bracket is smallest
+at $s=r$. Substituting the defining formulas gives
 \begin{equation}\label{eq:tilted-sh-18}
-A-\left(Dk+\frac59\right)s_*
--Q_0s_*\left(\frac{10}{9}+ks_*\right)^2
-=\frac{11102231813}{13507522880000}>0.
+ A-L_rr>0.
 \end{equation}
+Thus $|\mathcal S|>S_0>G_0$, contradicting
+\eqref{eq:tilted-sh-2}.
 
-Thus \(|\mathcal S|>S_0>G_0\), contradicting \eqref{eq:tilted-sh-2}. The second energy condition cannot fail in the stated range.
+\paragraph{The radius failure gives a joint pressure budget}
 
-\paragraph{Failure of the first initial-energy inequality is impossible}
-
-Suppose instead that
-
+Suppose the other energy test fails:
 \begin{equation}\label{eq:tilted-sh-19}
 9C^2+B^2>5.
 \end{equation}
-
-Write \(\xi=(5h+3z)/4\), so \(B=-1/2+\xi\).
-the stated height range and \eqref{eq:tilted-sh-5} imply \(0<\xi<1/2\), hence \(-1/2<B<0\).
-It follows from \eqref{eq:tilted-sh-19} that
-
-\begin{equation}\label{eq:tilted-sh-20}
-C>\frac{\sqrt{19}}6>\frac{29}{40}.
-\end{equation}
-
-Also
-
+The pressure has the useful form
 \[
-B^2>5-9\left(\frac{37}{50}\right)^2
-=\frac{179}{2500}>\frac{16}{225}.
+B=-\frac12+\frac54\left(h+\frac35z\right).
 \]
-
-The last gap is \(11/22500\). Since B is negative,
-
+The common bounds \(h\le h_0\), \(z\le K_+r\) put
+\(-1/2<B<0\). Recall that
+\(b_0=-1/2+5h_0/4\) and \(9C_{\rm rad}^2=5-b_0^2\).
+Since \(C<C_{\rm rad}\), a failed radius test forces
+\(B^2>b_0^2\), hence \(B<b_0\). The pressure equation therefore gives
 \begin{equation}\label{eq:tilted-sh-21}
-B<-\frac4{15},\qquad \xi<\frac7{30}.
+\boxed{h+\frac35z\le h_0.}
 \end{equation}
-
-These inequalities give a useful improved endpoint bound
-
+This is the available loss budget, with both terms retained together.
+From the defining area prices,
+\(E+r/2<(3/5)D\). Since \(T\le r\), the whole loss obeys
 \begin{equation}\label{eq:tilted-sh-22}
-z<\frac{27}{100}.
+Dh+Ez+Tz/2\le D\left(h+\frac35z\right)\le Dh_0.
 \end{equation}
 
-To verify it, if \(h\le1/40\), then
-\(s<9/40\) and \eqref{eq:tilted-sh-4} gives \(z<1/4\).
-If \(h\ge1/40\), then
-\(\xi\ge1/32+3z/4\); \eqref{eq:tilted-sh-21} therefore gives
-\(z<97/360<27/100\).
-
-Use \eqref{eq:tilted-sh-20} together with \(C_0<11/16\),
-\(2+\lambda>14/5\), and \eqref{eq:tilted-sh-14}. Since the width difference is positive,
-
+Also \(|B|<1/2\), so \eqref{eq:tilted-sh-19} implies
+\begin{equation}\label{eq:tilted-sh-20}
+C>C_1:=\frac{\sqrt{5-1/4}}3=\frac{\sqrt{19}}6.
+\end{equation}
+This width gain pays for the pressure budget. Rationalizing the two
+circle radii gives
 \[
-S_0+(2+\lambda)(C-C_0)
->\frac{2669}{1200}+\frac{14}{5}
-\left(\frac{29}{40}-\frac{11}{16}\right)
-=\frac{559}{240}.
+C_1-C_0=\frac{1}{3(\sqrt{19}+\sqrt{17})}>\frac1{27},
 \]
-
-Finally \(T\le s<63/200\). Substituting this, the stated height range and \eqref{eq:tilted-sh-22} into
-\eqref{eq:tilted-sh-13} gives
-
+because each root is less than \(9/2\). Finally
+\((14/5)/27>Dh_0\), by the definitions of \(D,h_0\).
+The shared area bound \eqref{eq:tilted-sh-13} now gives
 \begin{equation}\label{eq:tilted-sh-23}
-\begin{aligned}
-|\mathcal S|
-&>\frac{559}{240}
--\frac{8871}{10000}\frac{509}{10000}
--\left(\frac{1839}{25000}+\frac{63}{400}\right)
-\frac{27}{100}\\
-&=\frac{666488123}{300000000}.
-\end{aligned}
+|\mathcal S|>S_0+\frac{14}{5}(C_1-C_0)-Dh_0>S_0>G_0.
 \end{equation}
-
-Its exact margin over the ordinary bound is
-
-\begin{equation}\label{eq:tilted-sh-24}
-\frac{666488123}{300000000}-G_0
-=\frac{518123}{300000000}>0.
-\end{equation}
-
-This contradicts \eqref{eq:tilted-sh-2} and excludes failure of the
-first energy condition throughout the stated height range.
-
-
+This contradicts \eqref{eq:tilted-sh-2}. No separate bound on \(z\)
+or subdivision of the small-height interval is needed.
 Both energy conditions in \cref{lem:tilted-initial-energy} therefore
 hold. That lemma gives $u\le1$ on the whole first quarter, and
 \cref{lem:tilted-first-unit-exclusion} excludes this tilted maximum.

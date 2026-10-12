@@ -36,7 +36,7 @@ theorem near_tail_add_floor_le {k E p A B x n : ℝ}
     ((le_min hc (by linarith only [hpeak hE])).trans hwall)
 
 theorem shortLeftTailHeight_peak {h k v δ : ℝ}
-    (hη : (2 / 25 : ℝ) ≤ 1 - nearDiagonalNorm k + k ^ 2)
+    (hη : shortTailHeight k ≤ 1 - nearDiagonalNorm k + k ^ 2)
     (hE : 0 < shortLeftTailHeight k h δ) :
     shortLeftTailHeight k h δ - k * (k - v + h) ≤
       1 - h + k * v - δ - nearDiagonalNorm k := by
@@ -44,9 +44,9 @@ theorem shortLeftTailHeight_peak {h k v δ : ℝ}
   linarith only [hη]
 
 theorem shortRightTailHeight_peak {k u δ : ℝ}
-    (hη : (2 / 25 : ℝ) ≤ 1 - nearDiagonalNorm k + k ^ 2)
-    (hE : 0 < shortRightTailHeight δ) :
-    shortRightTailHeight δ - k * (k - u) ≤
+    (hη : shortTailHeight k ≤ 1 - nearDiagonalNorm k + k ^ 2)
+    (hE : 0 < shortRightTailHeight k δ) :
+    shortRightTailHeight k δ - k * (k - u) ≤
       1 + k * u - δ - nearDiagonalNorm k := by
   rw [shortRightTailHeight, max_eq_left ((lt_max_iff.mp hE).resolve_right (lt_irrefl 0)).le]
   linarith only [hη]

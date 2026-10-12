@@ -9,7 +9,7 @@ public import AmbidextrousSofa.Measure.RigidInvariance
 # The retained ordinary one-turn bound
 
 The auxiliary tilted and terminal exclusions use the rational ordinary
-moving-sofa bound `22199 / 10000`. Its complete mathematical source
+moving-sofa bound `2.2199`. Its complete mathematical source
 dependency is adapted under `Imported`, including the existence of the
 Gerver parameters and their rational area enclosure. No ordinary-optimality
 axiom or conditional area certificate is introduced here.
@@ -29,7 +29,7 @@ namespace AmbidextrousSofa
 proved source existence theorem. The resulting bound quantifies over the
 entire imported ordinary moving-sofa domain. -/
 theorem imported_movingSofa_area_le {S : Set Plane} (hS : MovingSofaOptimality.IsMovingSofa S) :
-    volume.real S ≤ (22199 : ℝ) / 10000 := by
+    volume.real S ≤ (2.2199 : ℝ) := by
   obtain ⟨P, hP, hbox⟩ := MovingSofaOptimality.definition8_1_2_exists
   have h := (MovingSofaOptimality.gerverSofa_area_mem hP hbox).2
   change MovingSofaOptimality.area S ≤ _
@@ -52,7 +52,7 @@ without imposing an initial-angle normalization on its original body. -/
 theorem volumeReal_le_ordinaryBound_of_lowerPassage {S : Set Plane}
     {path : RigidMotionPath} (hcompact : IsCompact S) (hconnected : IsConnected S)
     (hpassage : Passage S lowerHall incomingArm lowerOutgoingArm path) :
-    volume.real S ≤ (22199 : ℝ) / 10000 := by
+    volume.real S ≤ (2.2199 : ℝ) := by
   rw [← volumeReal_image_rigidMap (path.angle 0) 0 S]
   exact imported_movingSofa_area_le ⟨_, (hcompact.image (continuous_rigidMap _ _)).isClosed,
     hconnected.image _ (continuous_rigidMap _ _).continuousOn, _, _,

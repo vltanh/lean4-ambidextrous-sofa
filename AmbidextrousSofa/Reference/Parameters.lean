@@ -75,43 +75,56 @@ theorem lateSwitch_lt_pi_div_two : lateSwitch < Real.pi / 2 := by
 
 theorem lateSwitch_pos : 0 < lateSwitch := beta_pos.trans beta_lt_lateSwitch
 
-/-- Positivity selects the correct factor, without a tangent branch assumption: the
-cubic cancels the doubled-angle cross-product, where `2 * T = 3 * π / 4 - 3 * beta`. -/
-theorem three_Y_mul_sin_T : 3 * Y * Real.sin T = (1 - 2 * Y ^ 2) * Real.cos T := by
-  have h2T : 2 * T = Real.pi / 2 + Real.pi / 4 - (beta + (beta + beta)) := by unfold T; ring
-  have hsin := congrArg Real.sin h2T
-  have hcos := congrArg Real.cos h2T
-  have hY : Real.sin beta = Y * Real.cos beta := sinBeta_eq_Y_mul_cosBeta
-  simp only [Real.sin_two_mul, Real.cos_two_mul, Real.sin_sub, Real.cos_sub, Real.sin_add,
-    Real.cos_add, Real.sin_pi_div_two, Real.cos_pi_div_two, Real.sin_pi_div_four,
-    Real.cos_pi_div_four, hY] at hsin hcos
-  have hpos : 0 < 3 * Y * Real.cos T + (1 - 2 * Y ^ 2) * Real.sin T :=
-    add_pos (mul_pos (mul_pos three_pos Y_pos) cos_T_pos)
-      (mul_pos (by nlinarith [Y_pos, Y_lt_three_tenths]) (Real.sin_pos_of_pos_of_lt_pi
-        (by unfold T; linarith [beta_lt_pi_div_four])
-        (by unfold T; linarith [beta_pos, Real.pi_pos])))
-  refine mul_right_cancel₀ hpos.ne' ?_
-  linear_combination ((9 * Y ^ 2 - (1 - 2 * Y ^ 2) ^ 2) / 2) * hsin -
-    (3 * Y * (1 - 2 * Y ^ 2)) * hcos + (3 * Y * (1 - 2 * Y ^ 2)) * Real.sin_sq_add_cos_sq T +
-    (Real.sqrt 2 / 4 * Real.cos beta ^ 3 * (1 + Y ^ 2) ^ 2) * Y_equation
+/-- The cubic is the angle-matching equation in tangent coordinates. -/
+theorem firstPhaseAngle_eq_arctan_two_Y :
+    beta / 2 + Real.pi / 8 = Real.arctan (2 * Y) := by
+  have hY1 : Y < 1 := by linarith [Y_lt_three_tenths]
+  have htwo : 2 * Y < 1 := by linarith [Y_lt_three_tenths]
+  have hden : 1 - (2 * Y) ^ 2 ≠ 0 := by nlinarith [Y_pos, Y_lt_three_tenths]
+  have hden1 : 1 - Y * 1 ≠ 0 := by linarith
+  have hquot : 2 * (2 * Y) / (1 - (2 * Y) ^ 2) = (Y + 1) / (1 - Y * 1) := by
+    apply (div_eq_div_iff hden hden1).mpr
+    nlinarith [Y_equation]
+  have hdouble := Real.two_mul_arctan (x := 2 * Y) (by linarith [Y_pos]) htwo
+  rw [hquot, ← Real.arctan_add (show Y * 1 < 1 by linarith), Real.arctan_one] at hdouble
+  unfold beta
+  linarith
 
-/-- The matching identities at the first switch, where `beta / 2 + π / 8 = π / 2 - (T + beta)`;
-the nontrivial half is proved from the root equation. -/
+theorem firstPhase_sin_eq_two_Y_mul_cos :
+    Real.sin (beta / 2 + Real.pi / 8) = 2 * Y * Real.cos (beta / 2 + Real.pi / 8) := by
+  rw [firstPhaseAngle_eq_arctan_two_Y]
+  have ht := Real.tan_arctan (2 * Y)
+  rw [Real.tan_eq_sin_div_cos] at ht
+  exact (div_eq_iff (Real.cos_arctan_pos _).ne').mp ht
+
+/-- Angle addition turns the matching equation into this division-free identity. -/
+theorem three_Y_mul_sin_T : 3 * Y * Real.sin T = (1 - 2 * Y ^ 2) * Real.cos T := by
+  have hangle : T = Real.pi / 2 - (beta + (beta / 2 + Real.pi / 8)) := by unfold T; ring
+  have hY : Real.sin beta = Y * Real.cos beta := sinBeta_eq_Y_mul_cosBeta
+  rw [hangle, Real.sin_pi_div_two_sub, Real.cos_pi_div_two_sub,
+    Real.sin_add, Real.cos_add, hY, firstPhase_sin_eq_two_Y_mul_cos]
+  ring
+
+/-- The reference phases match because `tan (beta/2+π/8) = 2Y`. -/
 theorem firstSwitch_eqs :
     R * Real.cos (beta / 2 + Real.pi / 8) = 4 / 3 * A * Real.cos beta ∧
       R * Real.sin (beta / 2 + Real.pi / 8) = 2 / 3 ∧ 4 * A * Real.sin beta = 1 := by
   have hR : R * Real.cos T = Real.cos beta := div_mul_cancel₀ _ cos_T_pos.ne'
   have hY : Real.sin beta = Y * Real.cos beta := sinBeta_eq_Y_mul_cosBeta
-  have h3 := three_Y_mul_sin_T
-  have hp := Real.sin_sq_add_cos_sq beta
-  have hc : Real.cos beta ≠ 0 := cosBeta_pos.ne'
-  refine ⟨?_, ?_, four_mul_A_mul_sinBeta⟩ <;>
-    simp only [show beta / 2 + Real.pi / 8 = Real.pi / 2 - (T + beta) by unfold T; ring,
-      Real.cos_pi_div_two_sub, Real.sin_pi_div_two_sub, Real.sin_add, Real.cos_add, A, sinBeta,
-      hY] at hp ⊢ <;>
-    field_simp [Y_ne_zero]
-  · linear_combination Real.cos beta * R * h3 + (1 + Y ^ 2) * Real.cos beta * hR + hp
-  · linear_combination -(Real.cos beta * R) * h3 + (2 + 2 * Y ^ 2) * Real.cos beta * hR + 2 * hp
+  have hphase := firstPhase_sin_eq_two_Y_mul_cos
+  have hangle : T = Real.pi / 2 - (beta + (beta / 2 + Real.pi / 8)) := by unfold T; ring
+  have hcos : Real.cos T = 3 / 2 * Real.cos beta * Real.sin (beta / 2 + Real.pi / 8) := by
+    rw [hangle, Real.cos_pi_div_two_sub, Real.sin_add, hY, hphase]
+    ring
+  rw [hcos] at hR
+  have hs : R * Real.sin (beta / 2 + Real.pi / 8) = 2 / 3 := by
+    apply mul_left_cancel₀ (show Real.cos beta ≠ 0 from cosBeta_pos.ne')
+    linear_combination (2 / 3) * hR
+  have hA : 4 * A * Real.sin beta = 1 := four_mul_A_mul_sinBeta
+  refine ⟨?_, hs, hA⟩
+  rw [hY] at hA
+  apply mul_left_cancel₀ Y_ne_zero
+  linear_combination -(R / 2) * hphase + hs / 2 - hA / 3
 
 /-- The middle phase evaluated at the first switch has this cosine component. -/
 theorem R_mul_cos_firstPhase :

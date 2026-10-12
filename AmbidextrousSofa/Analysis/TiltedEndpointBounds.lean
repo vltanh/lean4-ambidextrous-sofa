@@ -76,7 +76,7 @@ small-height hypothesis makes its unclipped bound nonnegative. -/
 theorem IsFullCapMaximizer.tilted_endpoint_momentum_bounds
     {U : Set Plane} (hU : IsFullCapMaximizer U) {C h m c : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC0 : 0 < C) (hC1 : C ≤ 37 / 50) (hh0 : 0 ≤ h) (hh1 : h < 17 / 50)
+    (hC0 : 0 < C) (hC1 : C ≤ 37 / 50) (hh0 : 0 ≤ h) (hh1 : h < 1 / 3)
     (hm : 0 ≤ m) (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c)
     (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1) :

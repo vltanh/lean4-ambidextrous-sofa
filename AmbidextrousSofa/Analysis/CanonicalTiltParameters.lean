@@ -42,7 +42,7 @@ theorem IsFullCapMaximizer.centered_positive_tilt_parameters
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
     let h := 1 - capRoof U (-C)
-    1 / 2 < C ∧ C < 37 / 50 ∧ 0 < h ∧ h < 17 / 50 ∧ C + m < 1 ∧
+    1 / 2 < C ∧ C < 37 / 50 ∧ 0 < h ∧ h < 1 / 3 ∧ C + m < 1 ∧
       capRoof U (-C) = 1 - h ∧ capRoof U C = 1 := by
   dsimp only
   have hw : capWidth U = 4 * C := by rw [capWidth, hl, hr]; ring
@@ -55,7 +55,7 @@ theorem IsFullCapMaximizer.centered_positive_tilt_parameters
   have hrel : 1 - capRoof U (-C) = 2 * C * m := by
     linarith only [haff (-C) ⟨le_rfl, by linarith only [hC0]⟩,
       haff C ⟨by linarith only [hC0], le_rfl⟩, hhigh]
-  have hh1 : 1 - capRoof U (-C) < 17 / 50 := by
+  have hh1 : 1 - capRoof U (-C) < 1 / 3 := by
     simpa only [show -(2 * C) / 2 = -C by ring] using (hU.centered_intermediate_width_tilt
       (a := 2 * C) (by rw [hl]; ring) hr hheight hm.le haffine).1
   refine ⟨hC0, hC1, hrel ▸ mul_pos (by linarith only [hC0]) hm, hh1,

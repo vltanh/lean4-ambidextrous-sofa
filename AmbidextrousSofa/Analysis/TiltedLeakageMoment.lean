@@ -110,14 +110,14 @@ theorem IsDownwardCap.right_niche_integral_le_excess_triangle
       (min_le_left _ _).trans (hU.firstWall_nonpos_after_excess_moment hρ hρ0 hρK heq hsub
         htop ht hx)) (sweptNiche_nonneg _ _ _)).trans_eq (by ring)
 
-/-- The uniform excess moment margin is exact: `121/4860 < 1/40`. -/
-theorem firstExcessMoment_lt_one_fortieth_of_short_envelope
+/-- Integrate the excess envelope directly, retaining its exact moment. -/
+theorem firstExcessMoment_le_short_envelope_moment
     {ρ : ℝ → ℝ} {K A h : ℝ}
     (hρ : Measurable ρ) (hρ0 : ∀ s, 0 ≤ ρ s) (hρK : ∀ s, ρ s ≤ K)
     (hh : 0 ≤ h) (hh1 : h ≤ 1 / 3) (hend : A + h ≤ 11 / 15)
     (hbound : ∀ᵐ s ∂volume.restrict (Ioo (0 : ℝ) (Real.pi / 2)),
       ρ s - 1 ≤ horizontalLeakageEnvelope A h s) :
-    firstExcessMoment ρ < 1 / 40 := by
+    firstExcessMoment ρ ≤ tiltedLeakageMomentBound := by
   have hM : Integrable fun s => 11 / 15 * horizontalLeakageEnvelope A h s :=
     ((integrable_indicator_iff measurableSet_Icc).2 (Continuous.integrableOn_Icc
       (by unfold horizontalLeakageQuadratic; fun_prop))).const_mul _
@@ -145,6 +145,6 @@ theorem firstExcessMoment_lt_one_fortieth_of_short_envelope
           intervalIntegral.integral_comp_sub_right (horizontalLeakageQuadratic h), sub_self,
           add_sub_cancel_left, integral_horizontalLeakageQuadratic]
     _ ≤ 11 / 15 * horizontalLeakageA0 (1 / 3) := by gcongr; exact horizontalLeakageA0_mono hh hh1
-    _ < 1 / 40 := by norm_num [horizontalLeakageA0]
+    _ = tiltedLeakageMomentBound := rfl
 
 end AmbidextrousSofa

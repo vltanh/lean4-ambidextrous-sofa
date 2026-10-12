@@ -11,9 +11,9 @@ The deficit is the sum of two ordinary integrals between the actual
 charged roof and its diagonal upper bounds. Its exact subtraction from
 the diagonal relaxation retains the area available to pay for further
 support cuts. The comparison holds for the spatial score of every barrier
-above the diagonal barrier. A hypothetical short cap with such a score at
-least 41/50 has small tilt and a strictly positive reserve on each outer
-diagonal segment.
+above the diagonal barrier. A hypothetical short cap reaching the
+generated reference budget has small tilt and a strictly positive
+reserve on each outer diagonal segment.
 -/
 
 noncomputable section
@@ -111,17 +111,20 @@ theorem IsDownwardCap.capScore_add_diagonalRoofDeficit_le {U : Set Plane}
 score, without a hypothesis about a relaxed optimizer. -/
 theorem IsDownwardCap.short_diagonal_geometry {U : Set Plane} (hU : IsDownwardCap U)
     {n : ℝ → ℝ} (hn : ∀ l r, IntervalIntegrable n volume l r)
-    (hdiag : ∀ x, diagonalBarrier U x ≤ n x) {a h : ℝ} (ha : 0 < a) (ha1 : a ≤ 1001 / 1000)
+    (hdiag : ∀ x, diagonalBarrier U x ≤ n x) {a h : ℝ} (ha : 0 < a) (ha1 : a ≤ 1)
     (hh : 0 ≤ h) (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
     (hleft : capRoof U (-a / 2) = 1 - h) (hright : capRoof U (a / 2) = 1)
-    (hscore : 41 / 50 ≤ intervalSpatialScore (capRoof U) n (-a) a) :
+    (hscore : referenceHalfAreaLower ≤ intervalSpatialScore (capRoof U) n (-a) a) :
+    let k := Real.sqrt 2 - 1
     let u := diagonalRight U - 1
     let v := diagonalLeft U - 1 + h
-    9 / 10 < a ∧ h < 1 / 23 ∧ u ∈ Icc (a / 2) a ∧ v ∈ Icc (a / 2) a ∧
-      u - a / 2 < 323 / 1000 + h / 4 ∧ v - a / 2 < 323 / 1000 + h / 4 ∧
-      16 / 25 < (u + v) / 2 - h / 4 ∧ 23 / 200 < a - u ∧ 23 / 200 < a - v ∧
-      diagonalRoofDeficit U a h u v < 9 / 1000 := by
+    (1 - k ^ 2 / 4) < a ∧ h < (k ^ 2 / 4) ∧ u ∈ Icc (a / 2) a ∧ v ∈ Icc (a / 2) a ∧
+      u - a / 2 < shortTipThreshold k + h / 4 ∧ v - a / 2 < shortTipThreshold k + h / 4 ∧
+      shortApexThreshold k < (u + v) / 2 - h / 4 ∧ k / 3 < a - u ∧ k / 3 < a - v ∧
+      diagonalRoofDeficit U a h u v < shortOuterCutBudget k := by
+  let k := Real.sqrt 2 - 1
   have hk := sqrt_two_sub_one_bounds
+  try dsimp only [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at *
   -- The score is at most that of the charged rectangle.
   have hrect : intervalSpatialScore (capRoof U) n (-a) a ≤ a * (1 - h / 2) := by
     have hL := intervalIntegral.integral_mono_on (by linarith only [ha] : -a ≤ -a / 2)
@@ -135,8 +138,9 @@ theorem IsDownwardCap.short_diagonal_geometry {U : Set Plane} (hU : IsDownwardCa
     simp only [intervalIntegral.integral_const, smul_eq_mul] at hL hR
     rw [intervalSpatialScore_centered]
     linarith only [hL, hR, hN]
-  have ha0 : 41 / 50 ≤ a := by nlinarith only [hrect, hscore, mul_nonneg ha.le hh]
-  have hh37 : h ≤ 37 / 100 := by nlinarith only [hrect, hscore, ha, ha1]
+  have href := forty_one_fiftieths_lt_referenceHalfAreaLower
+  have ha0 : 41 / 50 ≤ a := by nlinarith only [hrect, hscore, href, mul_nonneg ha.le hh]
+  have hh37 : h ≤ 37 / 100 := by nlinarith only [hrect, hscore, href, ha, ha1]
   have hhhalf : h ≤ a / 2 := by linarith only [ha0, hh37]
   have huv := hU.tilted_diagonal_parameters_mem ha hh hhhalf hl hr hleft hright
   have hbound := hU.score_add_diagonalRoofDeficit_le hn hdiag ha hh hhhalf hl hr hleft hright
@@ -144,12 +148,23 @@ theorem IsDownwardCap.short_diagonal_geometry {U : Set Plane} (hU : IsDownwardCa
   obtain ⟨ha9, hh23, hu323, hv323, hm⟩ :=
     short_diagonal_stability ha0 ha1 hh hh37 hk.1 hk.2.1 sqrt_two_sub_one_quadratic
       huv.1 huv.2 (by linarith only [hbound, hD0, hscore])
+  obtain ⟨-, -, -, -, -, -, -, -, -, hOuter, hBudget⟩ :=
+    short_geometry_scalar_estimates hk.1 hk.2.1 sqrt_two_sub_one_quadratic
+  have hRefLower := referenceHalfAreaLower_le_half_M
+  change 1 - k ^ 2 / 4 < a at ha9
+  change h < k ^ 2 / 4 at hh23
+  have hksq : k ^ 2 + 2 * k = 1 := sqrt_two_sub_one_quadratic
   have hcrit := hbound.trans (diagonalRelaxation_le_critical _ _ _ _ _
     (by linarith only [hk.2.1, ha0, hh37]) (by linarith only [hk.1, hh])
-    (by linarith only [hk.1, hh23]))
+    (by nlinarith only [hk.1, hk.2.1, hksq, hh23]))
   have hwidth := diagonal_critical_width_mono ha1
-    (by linarith only [hk.1] : (1001 / 1000 : ℝ) ≤ 1 + (Real.sqrt 2 - 1))
-  exact ⟨ha9, hh23, huv.1, huv.2, hu323, hv323, hm, by linarith only [hu323, ha9, hh23],
-    by linarith only [hv323, ha9, hh23], by nlinarith only [hcrit, hwidth, hscore, hk.1, hk.2.1, hh]⟩
+    (by linarith only [hk.1] : (1 : ℝ) ≤ 1 + (Real.sqrt 2 - 1))
+  have hKH : 0 ≤ k * h := mul_nonneg (by linarith only [hk.1]) hh
+  have hDeficit : diagonalRoofDeficit U a h (diagonalRight U - 1)
+      (diagonalLeft U - 1 + h) < shortOuterCutBudget k := by
+    nlinarith only [hcrit, hwidth, hscore, hBudget, hRefLower, hksq, hKH, sq_nonneg h]
+  exact ⟨ha9, hh23, huv.1, huv.2, hu323, hv323, hm,
+    by linarith only [hu323, ha9, hh23, hOuter],
+    by linarith only [hv323, ha9, hh23, hOuter], hDeficit⟩
 
 end AmbidextrousSofa

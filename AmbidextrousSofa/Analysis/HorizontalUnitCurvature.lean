@@ -1,21 +1,20 @@
 module
 
 public import AmbidextrousSofa.Analysis.CompanionEndpointEnergy
-public import AmbidextrousSofa.Analysis.HorizontalEndpointBounds
+public import AmbidextrousSofa.Analysis.HorizontalLeakageBound
 public import AmbidextrousSofa.Analysis.HorizontalLeakageScalar
 public import AmbidextrousSofa.Analysis.CapReflection
 
 @[expose] public section
 
 /-!
-# Actual unit curvature after an explicit horizontal orientation
+# Unit curvature from the dry-endpoint energy test
 
-The box-wall endpoint estimate and endpoint stationarity supply one
-good endpoint. If necessary the cap is reflected before its density
-is constructed. The full objective, maximality, width and horizontal
-middle roof are preserved by this explicit geometric operation.
-The terminal energy and one-good-quarter propagation then prove unit
-curvature for both quarters of that same oriented cap.
+For widths at most `2/3`, the endpoint energy criterion holds for any
+height in the unit strip. For larger widths, the middle endpoints are
+dry and stationarity gives axis height one half. The intrinsic width
+`√17/6` is exactly the energy threshold for this height. Both quarters
+are controlled on the original cap.
 -/
 
 noncomputable section
@@ -54,13 +53,12 @@ theorem IsFullCapMaximizer.exists_unit_density_of_left_endpoint_criterion
   · exact (ht ⟨h0, hlt⟩).1
   · simpa using (hs ⟨by linarith, by linarith⟩).2
 
-/-- This is a geometric existence statement for an actual orientation
-of the cap, not a reflection-transport claim for an unproved density.
-Every law for the chosen density is supplied by that chosen maximizer. -/
+/-- The original cap supplies both unit-curvature quarters; the existence
+statement retains the orientation choice used by its callers. -/
 theorem IsFullCapMaximizer.exists_horizontal_oriented_unit_density_of_width_le
     {U : Set Plane} (hU : IsFullCapMaximizer U) {C : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC0 : 0 ≤ C) (hC1 : C ≤ 8571 / 12500) (hheight : capHeight U = 1)
+    (hC0 : 0 ≤ C) (hC1 : C ≤ horizontalEnergyWidth) (hheight : capHeight U = 1)
     (hmiddle : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = 1) :
     ∃ V : Set Plane, (V = U ∨ V = AmbidextrousSofa.horizontalMirror U) ∧ IsFullCapMaximizer V ∧
@@ -73,18 +71,17 @@ theorem IsFullCapMaximizer.exists_horizontal_oriented_unit_density_of_width_le
         (upperCurvature V).restrict (regularCurvatureDomain 0) =
           (volume.restrict (regularCurvatureDomain 0)).withDensity (fun t => ENNReal.ofReal (ρ t)) := by
   have hw : capWidth U = 4 * C := by rw [capWidth, hl, hr]; ring
-  have hscalar := horizontal_energy_threshold_of_width_le hC0 hC1
-  rcases hU.horizontal_endpoint_product_one_ge hl hr hC0 (by linarith) hheight hmiddle with hR | hL
-  · obtain ⟨hl', hr', hheight', hmid⟩ :=
-      hU.isCap.horizontalMirror_centered rfl hl hr hheight hmiddle
-    refine ⟨_, Or.inr rfl, hU.horizontalMirror, hl', hr', hheight',
-      capWidth_horizontalMirror hU.isCap, capScore_horizontalMirror hU.isCap, hmid,
-      hU.horizontalMirror.exists_unit_density_of_left_endpoint_criterion hheight' hmid ?_⟩
-    rw [capWidth_horizontalMirror hU.isCap, horizontalLeft_horizontalMirror hU.isCap,
-      capRoof_horizontalMirror, neg_neg, hw]
-    nlinarith only [hscalar, hR]
-  · exact ⟨U, Or.inl rfl, hU, hl, hr, hheight, rfl, rfl, hmiddle,
-      hU.exists_unit_density_of_left_endpoint_criterion hheight hmiddle
-        (by rw [hw]; nlinarith only [hscalar, hL])⟩
+  have henergy : (3 * capWidth U / 4) ^ 2 ≤
+      4 + capRoof U (horizontalLeft U) * (1 - capRoof U (horizontalLeft U)) := by
+    rw [hw]
+    rcases le_or_gt C (2 / 3) with hsmall | hlarge
+    · have he0 := capRoof_nonneg hU.isCap.isCompact (fun p hp =>
+        (hU.isCap.inStrip hp).1) (horizontalLeft U)
+      have he1 := capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip (horizontalLeft U)
+      nlinarith [mul_nonneg he0 (sub_nonneg.mpr he1)]
+    · rw [(hU.horizontal_axis_heights_eq_half hl hr hheight hmiddle hlarge).2]
+      nlinarith only [horizontal_energy_of_intrinsic_width hC0 hC1]
+  exact ⟨U, Or.inl rfl, hU, hl, hr, hheight, rfl, rfl, hmiddle,
+    hU.exists_unit_density_of_left_endpoint_criterion hheight hmiddle henergy⟩
 
 end AmbidextrousSofa

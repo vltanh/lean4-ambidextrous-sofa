@@ -70,20 +70,20 @@ theorem IsFullCapMaximizer.centered_half_projection_width_gt_of_affine_nonneg
     (hl : horizontalLeft U = -a) (hr : horizontalRight U = a)
     (hheight : capHeight U = 1) (hm : 0 ≤ m)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
-      capRoof U x = m * x + c) : (1001 / 1000 : ℝ) < a := by
+      capRoof U x = m * x + c) : (1 : ℝ) < a := by
   by_contra! ha1
   obtain ⟨hright, hAff⟩ := hU.centered_middle hl hr hheight hm haffine
   have hw : capWidth U = 2 * a := by rw [capWidth, hl, hr]; ring
-  exact (not_lt_of_ge hU.reference_le) ((hU.isCap.capScore_lt_forty_one_fiftieths_of_short_width
+  exact (not_lt_of_ge hU.reference_le) ((hU.isCap.capScore_lt_half_M_of_short_width
     (by linarith [hU.width_bounds.1, one_lt_M]) ha1
     (sub_nonneg.mpr (capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip _)) hl hr
     (sub_sub_cancel 1 _).symm hright hAff
-    (sub_le_self _ (Real.arctan_pos.mpr (by linarith [sqrt_two_sub_one_bounds.1])).le)
-    le_rfl).trans forty_one_fiftieths_lt_half_M)
+    (sub_le_self _ (Real.arctan_pos.mpr (sub_pos.mpr Real.one_lt_sqrt_two)).le)
+    le_rfl))
 
 theorem IsFullCapMaximizer.two_lt_width {U : Set Plane} (hU : IsFullCapMaximizer U) :
     (2 : ℝ) < capWidth U := by
-  have : (1001 / 1000 : ℝ) < capWidth U / 2 := hU.half_width_of_nonneg_slope
+  have : (1 : ℝ) < capWidth U / 2 := hU.half_width_of_nonneg_slope
     fun _ _ _ _ hV hl hr hh hm haff =>
       hV.centered_half_projection_width_gt_of_affine_nonneg hl hr hh hm haff
   linarith

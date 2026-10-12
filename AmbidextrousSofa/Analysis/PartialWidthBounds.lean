@@ -44,14 +44,14 @@ theorem IsJointCapMaximizer.centered_proper_half_width_bounds
     (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ middleHalfInterval (horizontalLeft U) (horizontalRight U),
       capRoof U x = m * x + c) :
-    1001 / 1000 < a ∧ a < 37 / 25 ∧ (0 ≤ m → 1 - capRoof U (-a / 2) < 17 / 50) := by
+    1 < a ∧ a < 37 / 25 ∧ (0 ≤ m → 1 - capRoof U (-a / 2) < 1 / 3) := by
   have hw : capWidth U = 2 * a := by unfold capWidth; rw [hl, hr]; ring
   have ha : 0 < a ∧ a < 3 := ⟨by linarith only [hw, hU.width_bounds.1, one_lt_M],
     by linarith only [hw, hU.width_bounds.2]⟩
-  have hscore : 41 / 50 ≤ threeAngleComparisonScore U :=
-    forty_one_fiftieths_lt_half_M.le.trans (hU.reference_le.trans
+  have hscore : M / 2 ≤ threeAngleComparisonScore U :=
+    hU.reference_le.trans
       (hU.isCap.capScore_le_threeAngleComparisonScore hU.threeAngle_last_lt_terminal.le
-        hU.angle_mem.2))
+        hU.angle_mem.2)
   have h1 := capRoof_le_one hU.isCap.isCompact hU.isCap.inStrip
   have hq := partialBarrier_nonneg U α
   -- The endpoint identities, at the quarter points `±a / 2` of the centered cap.
@@ -90,7 +90,7 @@ theorem IsJointCapMaximizer.centered_proper_half_width_bounds
 theorem IsJointCapMaximizer.proper_quarter_width_bounds
     {U : Set Plane} {α : ℝ} (hU : IsJointCapMaximizer U α)
     (hproper : α < Real.pi / 2) :
-    1001 / 2000 < capWidth U / 4 ∧ capWidth U / 4 < 37 / 50 := by
+    1 / 2 < capWidth U / 4 ∧ capWidth U / 4 < 37 / 50 := by
   obtain ⟨V, hV, hl, hr, hheight, m, c, haffine⟩ := hU.exists_centered_heightOne_affine
   have h := hV.centered_proper_half_width_bounds hproper (hl.trans (neg_mul _ _)) hr hheight haffine
   constructor <;> linarith only [h.1, h.2.1]

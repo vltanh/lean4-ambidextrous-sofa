@@ -40,37 +40,40 @@ theorem terminalSlope_mul_one_sub_inset_sq {α : ℝ}
   field_simp
   linear_combination Real.sin_sq_add_cos_sq α
 
-theorem terminalInset_lt_two_elevenths_of_slope_le {α : ℝ}
-    (hα0 : 0 < α) (hαL : α < Real.pi / 2) (hκ : terminalSlope α ≤ 3 / 8) :
-    terminalInset α < 2 / 11 := by
-  have hk0 := terminalInset_pos hα0 hαL
-  have hk1 : terminalInset α < 1 := by
-    nlinarith [terminalInset_mul_one_add_sin hα0 hαL, Real.cos_le_one α,
-      (sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩).1]
-  have hmul := mul_le_mul_of_nonneg_right hκ (by nlinarith : (0 : ℝ) ≤ 1 - terminalInset α ^ 2)
-  rw [terminalSlope_mul_one_sub_inset_sq hα0 hαL] at hmul
-  nlinarith
+theorem terminalInset_le_half_slope {α : ℝ}
+    (hα0 : 0 < α) (hαL : α < Real.pi / 2) : terminalInset α ≤ terminalSlope α / 2 := by
+  linarith only [terminalSlope_mul_one_sub_inset_sq hα0 hαL,
+    mul_nonneg (terminalSlope_pos hα0 hαL).le (sq_nonneg (terminalInset α))]
+
+theorem terminal_height_loss_le_half_slope_sq {α : ℝ}
+    (hα0 : 0 < α) (hαL : α < Real.pi / 2) : 1 - Real.sin α ≤ terminalSlope α ^ 2 / 2 := by
+  obtain ⟨hs, -⟩ := sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩
+  have hcs : terminalSlope α * Real.sin α = Real.cos α := div_mul_cancel₀ _ hs.ne'
+  have hcs2 : terminalSlope α ^ 2 * Real.sin α ^ 2 = Real.cos α ^ 2 := by rw [← mul_pow, hcs]
+  have hid : Real.sin α ^ 2 * (terminalSlope α ^ 2 - 2 * (1 - Real.sin α)) =
+      (1 - Real.sin α) ^ 2 * (1 + 2 * Real.sin α) := by
+    linear_combination hcs2 + Real.sin_sq_add_cos_sq α
+  have hfactor : 0 ≤ Real.sin α ^ 2 * (terminalSlope α ^ 2 - 2 * (1 - Real.sin α)) := by
+    rw [hid]
+    exact mul_nonneg (sq_nonneg _) (by linarith only [hs])
+  have hnonneg : 0 ≤ terminalSlope α ^ 2 - 2 * (1 - Real.sin α) :=
+    le_of_mul_le_mul_left (by simpa using hfactor) (sq_pos_of_pos hs)
+  linarith only [hnonneg]
+
+theorem terminalSlope_mul_tailInset (U : Set Plane) {α : ℝ}
+    (hα0 : 0 < α) (hαL : α < Real.pi / 2) :
+    terminalSlope α * terminalTailInset U α = terminalSlope α * terminalInset α +
+      (1 - (terminalTailPoint U α).2) := by
+  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩
+  unfold terminalSlope terminalTailInset terminalInset
+  field_simp
+  ring
 
 theorem terminal_gap_eq_arctan_slope {α : ℝ}
     (hα0 : 0 < α) (hαL : α < Real.pi / 2) :
     Real.pi / 2 - α = Real.arctan (terminalSlope α) := by
   rw [terminalSlope, ← Real.cos_pi_div_two_sub α, ← Real.sin_pi_div_two_sub α,
     ← Real.tan_eq_sin_div_cos, Real.arctan_tan (by linarith) (by linarith [Real.pi_pos])]
-
-theorem terminal_near_full_bounds {α : ℝ}
-    (hα0 : 0 < α) (hαL : α < Real.pi / 2) (hκ : terminalSlope α ≤ 1 / 8) :
-    124 / 125 < Real.sin α ∧ Real.cos α < 1 / 8 ∧
-      Real.pi / 2 - α < 1 / 8 ∧ terminalInset α < 1 / 16 := by
-  obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩
-  have hs1 : Real.sin α < 1 := by nlinarith [Real.sin_sq_add_cos_sq α]
-  have hcs : Real.cos α ≤ Real.sin α / 8 := by
-    rw [terminalSlope, div_le_iff₀ hs] at hκ
-    linarith
-  refine ⟨by nlinarith [Real.sin_sq_add_cos_sq α], by linarith, ?_, ?_⟩
-  · rw [terminal_gap_eq_arctan_slope hα0 hαL]
-    exact (Real.arctan_lt_self (terminalSlope_pos hα0 hαL)).trans_le hκ
-  · linarith [terminalSlope_mul_one_sub_inset_sq hα0 hαL,
-      mul_pos (terminalSlope_pos hα0 hαL) (pow_pos (terminalInset_pos hα0 hαL) 2)]
 
 theorem IsJointCapMaximizer.proper_terminalSlope_lt_three_eighths
     {U : Set Plane} {α : ℝ} (hU : IsJointCapMaximizer U α)
@@ -124,32 +127,17 @@ theorem terminalImpulseEnergyChange_le_inset {d e α j : ℝ}
     ((1 - e) * terminalInset α + d) * terminalInset_mul_one_add_sin hα0 hαL +
     (d * terminalInset α - (1 - e)) * terminalInset_mul_cos hα0 hαL
 
-theorem terminalImpulseEnergyChange_lt_one_four_hundred_eightieth {d e α j : ℝ}
-    (hα0 : 0 < α) (hαL : α < Real.pi / 2) (hκ : terminalSlope α ≤ 1 / 8)
-    (hd : 0 ≤ d) (he : e ≤ 19 / 25)
+/-- The whole atom costs less than the square of the geometric inset. -/
+theorem terminalImpulseEnergyChange_lt_inset_sq {d e α j : ℝ}
+    (hα0 : 0 < α) (hαL : α < Real.pi / 2) (hd : 0 < d) (he : e ≤ 1)
     (hj0 : 0 ≤ j) (hjk : j ≤ terminalInset α)
     (hQ : 0 ≤ d * Real.sin α - (1 - e) * Real.cos α) :
-    terminalImpulseEnergyChange d e α j < 1 / 480 := by
-  obtain ⟨hs, -, -, hk⟩ := terminal_near_full_bounds hα0 hαL hκ
-  have hc := (sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩).2
-  have hbracket : e - (1 - e) * Real.sin α - d * Real.cos α ≤ 53 / 100 := by
-    nlinarith [mul_nonneg (sub_nonneg.mpr he) (show 0 ≤ 1 + Real.sin α by linarith),
-      mul_nonneg hd hc.le]
-  nlinarith [terminalImpulseEnergyChange_le_inset hα0 hαL hj0 hjk hQ,
-    mul_le_mul_of_nonneg_left hbracket (sq_nonneg (terminalInset α)), terminalInset_pos hα0 hαL]
-
-theorem terminalImpulseEnergyChange_lt_one_thirtieth {d e α j : ℝ}
-    (hα0 : 0 < α) (hαL : α < Real.pi / 2) (hκ : terminalSlope α ≤ 3 / 8)
-    (hd : 0 ≤ d) (he : e ≤ 1)
-    (hj0 : 0 ≤ j) (hjk : j ≤ terminalInset α)
-    (hQ : 0 ≤ d * Real.sin α - (1 - e) * Real.cos α) :
-    terminalImpulseEnergyChange d e α j < 1 / 30 := by
+    terminalImpulseEnergyChange d e α j < terminalInset α ^ 2 := by
   obtain ⟨hs, hc⟩ := sin_cos_pos_of_mem_quarter ⟨hα0, hαL⟩
-  have hbracket : e - (1 - e) * Real.sin α - d * Real.cos α ≤ 1 := by
-    nlinarith [mul_nonneg (sub_nonneg.mpr he) hs.le, mul_nonneg hd hc.le]
-  nlinarith [terminalImpulseEnergyChange_le_inset hα0 hαL hj0 hjk hQ,
-    mul_le_mul_of_nonneg_left hbracket (sq_nonneg (terminalInset α)), terminalInset_pos hα0 hαL,
-    terminalInset_lt_two_elevenths_of_slope_le hα0 hαL hκ]
+  have hbracket : e - (1 - e) * Real.sin α - d * Real.cos α < 1 := by
+    linarith only [mul_nonneg (sub_nonneg.2 he) (by linarith only [hs] : 0 ≤ 1 + Real.sin α), mul_pos hd hc]
+  exact (terminalImpulseEnergyChange_le_inset hα0 hαL hj0 hjk hQ).trans_lt
+    (by nlinarith only [mul_pos (sq_pos_of_pos (terminalInset_pos hα0 hαL)) (sub_pos.2 hbracket)])
 
 end Analysis
 

@@ -28,7 +28,7 @@ namespace AmbidextrousSofa
 theorem IsFullCapMaximizer.tilted_left_endpoint_height_bounds
     {U : Set Plane} (hU : IsFullCapMaximizer U) {C h m c : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC0 : 0 < C) (hC1 : C ≤ 37 / 50) (hh0 : 0 ≤ h) (hh1 : h < 17 / 50)
+    (hC0 : 0 < C) (hC1 : C ≤ 37 / 50) (hh0 : 0 ≤ h) (hh1 : h < 1 / 3)
     (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c)
     (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1) :
@@ -77,7 +77,7 @@ theorem IsDownwardCap.top_points_after_positive_affine
 theorem IsFullCapMaximizer.tilted_companion_cut
     {U : Set Plane} (hU : IsFullCapMaximizer U) {C h m c : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC0 : 2 / 3 ≤ C) (hC1 : C ≤ 37 / 50) (hh0 : 0 < h) (hh1 : h < 17 / 50)
+    (hC0 : 2 / 3 ≤ C) (hC1 : C ≤ 37 / 50) (hh0 : 0 < h) (hh1 : h < 1 / 3)
     (hheight : capHeight U = 1) (haffine : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c)
     (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1) :
     0 < m ∧ -C ∈ horizontalProjection U ∧ C ∈ horizontalProjection U ∧
@@ -103,7 +103,7 @@ There is no source-occupation or projection premise in this statement. -/
 theorem IsFullCapMaximizer.tilted_top_projection_eq
     {U : Set Plane} (hU : IsFullCapMaximizer U) {C h m c : ℝ}
     (hl : horizontalLeft U = -2 * C) (hr : horizontalRight U = 2 * C)
-    (hC0 : 2 / 3 ≤ C) (hC1 : C ≤ 37 / 50) (hh0 : 0 < h) (hh1 : h < 17 / 50)
+    (hC0 : 2 / 3 ≤ C) (hC1 : C ≤ 37 / 50) (hh0 : 0 < h) (hh1 : h < 1 / 3)
     (hheight : capHeight U = 1)
     (haffine : ∀ x ∈ Icc (-C) C, capRoof U x = m * x + c)
     (hlow : capRoof U (-C) = 1 - h) (hhigh : capRoof U C = 1) :

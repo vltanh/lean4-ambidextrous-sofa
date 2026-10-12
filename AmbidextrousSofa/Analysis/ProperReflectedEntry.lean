@@ -86,15 +86,15 @@ theorem IsJointCapMaximizer.properReflected_entry_quadratic_of_tail_regime
       terminalReflectedSpan U α * (Real.pi / 2 - α) + (Real.pi / 2 - α) ^ 2 / 2 ∧
       terminalReflectedSpan U α - 1 - (Real.pi / 2 - α) ≤
         properReflectedQ U ρ (Real.pi / 2 - α) := by
-  have hparams := hU.centered_terminal_reflected_parameters_of_tail_regime hregime hproper hl hr
+  obtain ⟨hd0, -, he0, he1, -⟩ := hU.centered_terminal_reflected_angular_budget_of_tail_regime hregime hproper hl hr
     hheight haffine
   have htrace := hU.properReflected_terminal_impulse_of_tail_regime hregime hproper haffine
     hρ hρ0 hρK heq
-  have hQ := Analysis.one_lt_terminal_free_second hparams.1 hparams.2.1
+  have hQ := Analysis.one_lt_terminal_free_second hd0 he0
     hU.terminal_angle_gt_arctan_eight_thirds.le hproper
   rw [htrace.1] at hpos
-  have h := Analysis.initialFloorCircle_entry_quadratic (by linarith [hparams.1])
-    (by rcases hparams.2.2 with h | h <;> linarith [h.2.2]) (by linarith) (by linarith [hU.angle_pos])
+  have h := Analysis.initialFloorCircle_entry_quadratic (by linarith only [hd0])
+    he1 (by linarith) (by linarith [hU.angle_pos])
     (by simp only [Analysis.initialFloorCircleQ, Real.cos_pi_div_two_sub, Real.sin_pi_div_two_sub]
         linarith) hpos
   rw [htrace.1, htrace.2]

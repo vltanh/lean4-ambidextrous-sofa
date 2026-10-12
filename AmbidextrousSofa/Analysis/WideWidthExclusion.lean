@@ -1,18 +1,17 @@
 module
 
 public import AmbidextrousSofa.Analysis.ThreeAngleWideWidth
-public import AmbidextrousSofa.Analysis.NicheBoxBounds
+public import AmbidextrousSofa.Analysis.PartialTriangleScalar
 
 @[expose] public section
 
 /-!
 # Actual wide-width exclusion with both endpoint laws
 
-The full barrier lies above the three-angle barrier. A high full score
-therefore forces the compact wide box, where the middle niche is at most
-two thirds. The two endpoint laws then give the endpoint height bounds of
-the three-angle wide-width exclusion. The endpoint laws themselves are
-supplied by actual full maximality.
+The two endpoint laws and the affine ceiling give the required endpoint
+height bounds directly. The three-angle barrier lies below the full
+barrier, so its wide-width exclusion applies to the actual full cap.
+The endpoint laws themselves are supplied by full maximality.
 -/
 
 noncomputable section
@@ -37,18 +36,16 @@ theorem IsDownwardCap.capScore_lt_of_wide_width_and_endpoint_laws
   by_contra! hscore
   have hnR0 := sweptNiche_nonneg U (Real.pi / 2) (a / 2)
   have hnL0 := sweptNiche_nonneg U (Real.pi / 2) (-a / 2)
-  have hEP : 1 - h / 2 ≤ capRoof U a + capRoof U (-a) := by linarith only [hEPR, hEPL, hnR0, hnL0]
+  have hceiling := hU.capRoof_le_tiltedAffineCeiling (by linarith only [ha0])
+    hl hr hleft hright haffine (-a)
+    ((hl ▸ hr ▸ hU.horizontalProjection_eq_Icc) ▸ ⟨le_rfl, by linarith only [ha0]⟩)
+  rw [tiltedAffineCeiling, mul_neg, div_mul_cancel₀ h (by linarith only [ha0] : a ≠ 0)] at hceiling
+  obtain ⟨hER, hEL, hEP⟩ := partialTriangle_endpoint_lower_bounds hnR0 hnL0 hEPR hEPL
+    (capRoof_le_one hU.isCompact hU.inStrip a) (by linarith only [hceiling])
   have h3 := hscore.trans (hU.capScore_le_threeAngleScore
-    (sub_le_self _ (Real.arctan_pos.mpr (by linarith [sqrt_two_sub_one_bounds.1])).le) le_rfl)
-  obtain ⟨ha9, -, -⟩ :=
-    hU.threeAngle_wide_high_score_box ha0 ha1 hh0 hh1 hl hr hleft hright haffine hEP h3
-  have hNbox := hU.middle_niche_le_of_endpoints (C := a / 2) (A := 9 / 10) (N := 2 / 3)
-    (by rw [hl]; ring) (by rw [hr]; ring) (by linarith only [ha9]) (by norm_num) fun s c _ => by
-      nlinarith [sq_nonneg (c / 3 - (9 / 10) * s), sq_nonneg ((9 / 10) * c + s / 3 - 1)]
-  rw [← neg_div] at hNbox
+    (sub_le_self _ (Real.arctan_pos.mpr (sub_pos.mpr Real.one_lt_sqrt_two)).le) le_rfl)
   exact (hU.threeAngleScore_lt_of_wide_width_and_endpoint_bounds ha0 ha1 hh0 hh1 hl hr hleft hright
-    haffine hEP (by linarith only [hNbox.1, hEPR, hnR0])
-    (by linarith only [hNbox.2, hEPL, hnL0])).not_ge h3
+    haffine hEP (by linarith only [hER, hh0]) (by linarith only [hEL, hh0])).not_ge h3
 
 theorem IsFullCapMaximizer.centered_endpoint_laws {U : Set Plane}
     (hU : IsFullCapMaximizer U) {a h : ℝ} (hheight : capHeight U = 1)

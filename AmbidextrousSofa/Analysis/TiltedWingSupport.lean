@@ -93,7 +93,7 @@ theorem IsDownwardCap.companionSupport_and_tangent_leftCut_after_affine
 /-- The canonical rectangle and tilt bounds imply the strict margin
 which puts the initial original corner below the floor. -/
 theorem canonical_width_add_slope_lt_one {C h : ℝ}
-    (hC0 : 1 / 2 ≤ C) (hC1 : C ≤ 37 / 50) (hh : h < 17 / 50) :
+    (hC0 : 1 / 2 ≤ C) (hC1 : C ≤ 37 / 50) (hh : h < 1 / 3) :
     C + h / (2 * C) < 1 := by
   have := (div_lt_iff₀ (by linarith only [hC0])).mpr
     (show h < (1 - C) * (2 * C) by nlinarith only [hC0, hC1, hh])

@@ -17,6 +17,7 @@ How this formalization was made, from the run log and the session transcripts. T
   first followed the [formalize-math-paper](https://github.com/vltanh/formalize-math-paper) skill (its version of 7
   October 2026) for an existing uncompiled draft; the second, on 10 and 11 October, simplified the proof.
 - No person has reviewed the proofs or the statements; Lean's kernel checks every proof.
+- Codex (OpenAI, GPT-6) wrote the paper and revised the Lean proofs and manuscript on 11–12 October 2026.
 
 ## Making the draft compile (10 October 2026)
 
@@ -130,11 +131,36 @@ How this formalization was made, from the run log and the session transcripts. T
 - The owner asked for a paper like lean4-moving-sofa's, then for a simple first draft as Claude's credit ran low.
 - Claude Opus 5.5 prepared the LaTeX scaffold, bibliography, six figures, and notation and caption notes. Its session reached the weekly usage limit before writing the sections.
 - Codex, based on GPT-6, recovered those notes and first completed a 27-page outline. The owner then asked for the complete pen-and-paper proof and for the reference paper's structure, especially its introduction and appendices.
-- The resulting [107-page paper](paper/main.pdf) has eleven main sections, separate optimality and uniqueness strategies, an organization subsection, and eight mathematical appendices. The [source and build instructions](paper/README.md) and [review record](paper/REVIEW.md) accompany it.
+- The resulting [paper](paper/main.pdf) has eleven main sections, separate optimality and uniqueness strategies, an organization subsection, and eight mathematical appendices. The [source and build instructions](paper/README.md) and [review record](paper/REVIEW.md) accompany it.
 - Three sub-agents worked on the cap argument, selection and variations, and terminal-angle estimates. Each reviewed sections written by another; the coordinating agent wrote the introduction, setting, reduction, reference construction, preliminary estimates, and body recovery, and integrated the reviews. At most three sub-agents ran at once.
 - The first round's recorded clock readings run from 08:52 CDT to about 09:07 CDT. The rewrite finished at 09:51 CDT; its exact starting time was not recorded. Exact model variant, token totals, sub-agent working times, and costs were not available and are not estimated.
 - The initial round checked the existing proof library and figures. The revised PDF passes reference, bibliography, and overflow checks; its 31-entry source archive compiles separately with `pdflatex` alone. Representative pages were inspected visually.
 - The reviews found no unresolved substantive mathematical error. The proof library and archived research manuscript are unchanged; human mathematical review remains outstanding.
+
+## Proof and manuscript revisions (11–12 October 2026)
+
+Codex (OpenAI, GPT-6) completed sixteen revision rounds at the owner's request, simplifying
+constants and proof strategies across all nineteen manuscript sections. The latest round made
+eight further passes: exact triangle prices, an intrinsic circle gap, an energy-balance height,
+a circle chord for the post-floor range, an integrated leakage allowance, radius-derived
+projection prices, the terminal-angle endpoint for the comparison chord, and its sine bound
+for the cubic payment. Earlier rounds simplified the selector, terminal, horizontal, calibration,
+and small-tilt arguments. Manuscript, Lean proofs, and verification records were revised together;
+the nine main statements are unchanged.
+
+These rounds used formalize-math-paper 2.5.1 and, for the argument rewrite, humanizer 3.1.0, without
+sub-agents. The Lean build, axiom audit, both Comparator kernels, exact arithmetic, and manuscript checks
+pass. The paper and source archive have 109 pages; [the review](paper/REVIEW.md) records the changes and
+remaining numerical comparisons.
+
+Recorded implementation and validation times: 10:26–10:40, 14:27–14:58, 15:18–15:37,
+15:39–16:04, 16:17–16:48, 16:57–17:23, 17:25–17:51, 18:26–19:12, 20:52–21:15,
+21:20–21:41, 21:42–22:06, 22:14–22:31, and 22:48–23:07 CDT on 11 October. The latest
+round ran from 23:16 on 11 October to 00:35 on 12 October. The intermediate rounds' exact
+timings, token totals, and costs were not recorded.
+
+On 12 October, Codex prepared the combined revisions for commit, push, and Palomar preflight
+at the owner's request, using git-commit; preparation began at 08:02 CDT.
 
 ## Figures
 

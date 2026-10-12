@@ -18,11 +18,20 @@ The admissible traces at half-width $a$ are
 \begin{equation}\label{eq:calibration-traces}
  F(0)=G(L)=a,\qquad F(L)=G(0)=1.
 \end{equation}
-We first prove strict concavity at these traces, then construct a
-stationary pair at every competitive width, and finally maximize its
-computed value over the width.
+The support-area identity and the three niche contact arcs give this
+functional: their common corner terms cancel, leaving the two squared
+contact momenta as penalties. We can maximize it on a larger class of
+profiles than the convex supports. At fixed traces a stationary pair
+will be the unique maximum; varying the common side trace will then
+select the reference width.
 
 \subsection{The fixed-trace remainder}
+
+The positive-part squares already have nonnegative convex remainders.
+The remaining quadratic form has a mixed derivative term. Rotating the
+pair $(\phi,\psi)$ through angle $-t/2$ absorbs that term into a
+derivative square. A Dirichlet estimate then makes the remainder
+strictly positive for every nonzero variation with fixed traces.
 
 For a variation $V=(\phi,\psi)$ write
 \[
@@ -46,9 +55,7 @@ second derivatives.
 If $f\in C^1[0,L]$ and $f(0)=f(L)=0$, then
 \[
  \int_0^L f^2\le\frac{L^2}{6}\int_0^L f'^2
-                 <\frac5{12}\int_0^L f'^2
 \]
-unless $f=0$, in which case both integrals vanish.
 \end{lemma}
 \begin{proof}
 Cauchy--Schwarz applied on $[0,t]$ and $[t,L]$ gives
@@ -58,9 +65,8 @@ Cauchy--Schwarz applied on $[0,t]$ and $[t,L]$ gives
 \]
 Multiply the first inequality by $L-t$, the second by $t$, and add.
 The result is
-$Lf(t)^2\le t(L-t)\int_0^L f'^2$. Integration gives the first
+$Lf(t)^2\le t(L-t)\int_0^L f'^2$. Integration gives the
 inequality, since $\int_0^L t(L-t)\,\dd t=L^3/6$.
-The strict numerical comparison follows from $\pi^2<10$.
 \end{proof}
 
 \begin{lemma}[Coercive remainder]\label{lem:calibration-coercivity}
@@ -69,7 +75,8 @@ $y(t)=e^{-it/2}(\phi(t)+i\psi(t))$. Then
 \begin{equation}\label{eq:calibration-coercivity}
  B_0(V)=\frac12\int_0^L
            (|y'|^2-\tfrac94|y|^2)\,\dd t
-       \ge\frac1{32}\int_0^L|y'|^2\,\dd t.
+       \ge\frac12\left(1-\frac{3L^2}{8}\right)
+             \int_0^L|y'|^2\,\dd t.
 \end{equation}
 Equality $B_0(V)=0$ implies $V=0$ on $[0,L]$.
 \end{lemma}
@@ -78,8 +85,8 @@ For $z=\phi+i\psi$,
 $|y'|^2=|z'|^2+|z|^2/4-\operatorname{Im}(\overline z z')$.
 This gives the identity in \cref{eq:calibration-coercivity}.
 Apply \cref{lem:calibration-dirichlet} to the two real components of
-$y$. The resulting coefficient is
-$\tfrac12(1-\tfrac94\cdot\tfrac5{12})=1/32$.
+$y$. The coefficient is positive because
+$3L^2/8=3\pi^2/32<1$.
 If $B_0=0$, the derivative integral is zero, so $y$ is constant.
 Its zero traces imply $y=0$ and hence $V=0$.
 \end{proof}
@@ -130,6 +137,21 @@ $J_G(t)=-J_F(L-t)$ and $K_G(t)=K_F(L-t)$.
 It therefore suffices to verify the first flux equation.
 
 \subsection{The stationary family}
+
+The stationary profiles come from the Euler equations on the three
+contact-sign regions. Substitution into $J_F'=K_F$, $J_G'=K_G$ gives
+\[
+ \begin{array}{c|cc}
+ \text{sign region}&\text{first equation}&\text{second equation}\\ \hline
+ p,q\ge0&F''+F=0&G''+G=1/2\\
+ p\le0\le q&2F''-G'+F=0&2G''+F'+G=0\\
+ p,q\le0&F''+F=1/2&G''+G=0.
+ \end{array}
+\]
+Choose the first switch at $b$ and impose reflection symmetry about
+$L/2$. The last switch is then $L-b$. Solving these linear equations
+and matching values and derivatives gives the coefficients below; the
+half-angle term belongs to the coupled middle equations.
 
 For $b\in[0,\pi/4]$ put
 \begin{equation}\label{eq:stationary-family-parameters}
@@ -186,22 +208,13 @@ Since $\gamma\le\varphi\le\pi/2-\gamma$, both sine and cosine
 are at least $\sin\gamma$. This proves the middle signs.
 Reflection, namely $p(t)=-q(L-t)$, proves the last-phase signs.
 
-On the three phases the first flux and force are respectively
-\[
-\begin{array}{c|c|c}
- &J_F&K_F\\ \hline
- [0,b]&\frac34a\sin t-(E+\frac14)\cos t+\frac14&
-       \frac34a\cos t+(E+\frac14)\sin t\\[2pt]
- [b,L-b]&\frac32R\sin\varphi-\frac32S\cos t-\frac12&
-       \frac34R\cos\varphi+\frac32S\sin t\\[2pt]
- [L-b,L]&\frac32a\sin t+(\frac E2-1)\cos t-\frac12&
-       \frac32a\cos t-(\frac E2-1)\sin t.
-\end{array}
-\]
-Differentiating the middle column gives the last column.
-Matching makes both columns continuous at the switches.
-Reflection gives the second flux equation, and
-\cref{eq:calibration-boundary-flux} gives stationarity.
+The outer phases satisfy the uncoupled Euler equations by their
+sine and cosine form. In the middle, $G_b=R\sin\varphi+S\cos t$;
+the half-angle terms cancel in $2F_b''-G_b'+F_b$, and the
+full-angle terms cancel separately. Reflection gives the other
+equation. The proved signs select these Euler equations, and
+$C^1$ matching makes the fluxes continuous at the switches.
+Thus \cref{eq:calibration-boundary-flux} gives stationarity.
 \end{proof}
 
 \begin{lemma}[Value of the family]\label{lem:stationary-family-value}
@@ -212,8 +225,10 @@ At the width $a(b)$,
 \end{equation}
 \end{lemma}
 \begin{proof}
-Write $A_X(t)$ for the density in \cref{eq:support-functional} and
-$D_X(t)$ for its first-variation density evaluated at $V=X$.
+Subtracting the first variation in the direction $X$ from twice
+the functional cancels its quadratic terms. Write $A_X(t)$ for
+the density in \cref{eq:support-functional} and $D_X(t)$ for
+that first-variation density.
 By \cref{eq:calibration-boundary-flux},
 \[
  \int_0^L D_X=2\bigl(J_F(L)F(L)-J_F(0)F(0)\bigr).
@@ -250,12 +265,20 @@ Differentiating $k$ gives $k'=-(1+k^2)/2$. Hence
 \]
 The second sign uses $k\sin b\le\cos b$, which follows from
 $\gamma\ge b$ and the sine difference formula.
-Differentiating \cref{eq:stationary-family-score} and cancelling
-with $\sin^2b+\cos^2b=1$ gives
+The derivative of the score follows from the boundary flux.
+Differentiate the three phase integrals defining $\mathcal A(X_b)$.
+Their moving-endpoint terms cancel because the profiles and their
+first derivatives match. The Euler equations remove the interior
+terms, leaving \cref{eq:calibration-boundary-flux}.
+Only $F_b(0)=G_b(L)=a(b)$ vary, and
+$J_F(0)=-E$, $J_G(L)=E$. Consequently
 \[
+ \frac{\dd}{\dd b}\mathcal A(X_b)=2E(b)a'(b),\qquad
  H'(b)=(2E(b)-1)a'(b).
 \]
-The equation $E=1/2$ is $2\cot\gamma\sin b=\cos b$.
+The optimal member therefore has endpoint height $E=1/2$:
+its area derivative balances the width charge. This gives
+$2\cot\gamma\sin b=\cos b$.
 To identify its root, set $y=\tan b$. It gives
 $\tan\gamma=2y$. Since $2\gamma=b+\pi/4$,
 the tangent double-angle formula gives

@@ -10,9 +10,10 @@ input to the full-turn argument.
 \begin{lemma}[Horizontal unit curvature]\label{lem:full-horizontal-unit}
 Every canonical full maximum with horizontal middle satisfies
 \[
- \frac12<C<C_H,\qquad
- C_H=\frac1{35}\sqrt{523+2\sqrt{701}}.
+ \frac12<C<C_H,
 \]
+where $C_H=\sqrt{17}/6$ is the endpoint-energy threshold when the
+axis heights are one half.
 Its top face is exactly $J\times\{1\}$, and its two regular
 curvature densities satisfy $0\le u,v\le1$ almost everywhere.
 There are unique $0<\beta<\gamma<L$ such that
@@ -24,180 +25,23 @@ There are unique $0<\beta<\gamma<L$ such that
 \]
 \end{lemma}
 
-The proof uses the endpoint and source laws of
-\cref{sec:variations}; the scalar exclusions below use ordinary
-areas of actual cap and niche pieces. Put $k=\sqrt2-1$.
-
-\subsection{A three-angle exclusion of short widths}
-
-For this subsection use $a=2C$ and write the actual diagonal
-support data as
+The preliminary estimates already give the range needed here.
+The zero-tilt case of \cref{lem:preliminary-short} excludes $C\le1/2$,
+and \cref{cor:full-three-tent-cut} excludes $C\ge37/50$.
+Thus throughout the proof
 \[
- \begin{gathered}
- \xi=\sqrt2h_U(\pi/4)-1,\qquad
- \zeta=\sqrt2h_U(3\pi/4)-1,\\
- m=(\xi+\zeta)/2,\quad d=(\xi-\zeta)/2.
- \end{gathered}
+ \frac12<C<\frac{37}{50}.
 \]
-The plateau and containing box imply $a/2\le\xi,\zeta\le a$.
-The roof is bounded by
-$A_0(x)=\min(1,1+\xi-x,1+\zeta+x)$, whereas the angle
-$\pi/4$ puts the tent
-$n_{45}=[\min(\xi-k-x,\zeta-k+x)]_+$ below $n$.
-Its apex $d$ lies in $J$. For $a>k$, integration gives
-\begin{equation}\label{eq:horizontal-diagonal}
- \begin{split}
- P_L(U)&\le\Phi(a,\xi,\zeta)-D,\\
- \Phi&=a-\frac{(a-\xi)^2+(a-\zeta)^2}{2}-(m-k)_+^2\\
- &\hspace{9mm}
- +\frac{(\xi-k-a/2)_+^2+(\zeta-k-a/2)_+^2}{2},\\
- D&=\int_{I\setminus J}(A_0-A)\ge0.
- \end{split}
-\end{equation}
-For fixed $a$, $\Phi$ is symmetric and concave in $(\xi,\zeta)$.
-Where $m>k$ its Hessian is
-\[
- \begin{pmatrix}
- -3/2+\mathbf1_{\xi>k+a/2}&-1/2\\
- -1/2&-3/2+\mathbf1_{\zeta>k+a/2}
- \end{pmatrix};
-\]
-each of the four matrices is negative semidefinite. Where $m\le k$
-the clipping terms vanish and the Hessian is $-\mathrm{Id}$.
-The first derivatives agree across the boundaries. In particular
-$\Phi(a,\xi,\zeta)\le\Phi(a,m,m)$.
-
-\begin{lemma}[Short horizontal caps]\label{lem:horizontal-short}
-If $0<a\le1$ and $A=1$ on $[-a/2,a/2]$, then
-$P_L(U)\le41/50<\Mc/2$.
-\end{lemma}
-\begin{proof}
-For $a\le k$ the bound $P_L(U)\le a$ suffices. Otherwise the
-symmetric critical point $\xi=\zeta=(a+k)/2$ of \eqref{eq:horizontal-diagonal}
-is a concave maximum, giving
-\[
- \Phi\le B(a):=a-(a-k)^2/2\le B(1)=2k.
-\]
-Suppose $P_L(U)>41/50$. The following restrictions follow from
-this same concave function:
-\begin{equation}\label{eq:horizontal-short-data}
- a>9/10,\quad m>16/25,\quad
- \xi-a/2,\ \zeta-a/2<8/25,\quad D<3/350.
-\end{equation}
-Here are the exact optimizations. $B$ increases up to $a=1$,
-and $B(9/10)<9/10-(2/5)^2/2=41/50$ because $k<1/2$.
-For $m\le16/25$ the symmetric clipping terms vanish.
-If $m\le1/2$ then
-$a-(a-m)^2=m+1/4-(a-m-1/2)^2\le3/4$.
-For $1/2<m\le16/25$ the expression increases in $a\le1$ and
-then in $m\le16/25$, with upper value
-$(2050k-337)/625<41/50$.
-On the constrained half-square $\zeta-a/2\ge t_0=8/25$,
-the concave maximum is at
-\[
- \zeta=a/2+t_0,\qquad \xi=a/2+(2k-t_0)/3.
-\]
-Its clipping terms vanish, its $\xi$ derivative is zero and its
-$\zeta$ derivative is $(2k-4t_0)/3<0$. Its value is at most
-\[
- B(a)-\frac23(t_0-k/2)^2
- \le\frac{9550k-881}{3750}<\frac{41}{50}.
-\]
-The last comparison follows from $\sqrt2<577/408$, since
-$577^2-2\cdot408^2=1$. Exchange $\xi,\zeta$ for the other
-restriction. Finally $D\le\Phi-P<2k-41/50<3/350$, using
-$\sqrt2<99/70$. This proves \eqref{eq:horizontal-short-data}.
-In particular the positive diagonal tent is entirely inside $J$.
-
-Put $\theta=\pi/8$, $c=\cos\theta$, $s=\sin\theta$,
-$K=1/k$ and $K_0=Kc^2=(4+3\sqrt2)/4$.
-The actual near-top support deficits are
-\[
- \delta_L=c+s\zeta-h_U(5\pi/8),\qquad
- \delta_R=c+s\xi-h_U(3\pi/8).
-\]
-They are nonnegative and
-$\delta_L\le s(\zeta-a/2)$, by the point $(-a/2,1)$.
-Lowering the corresponding support line of $A_0$ removes the
-triangle at $(-\zeta,1)$ with horizontal sides
-$\delta_L/s$ and $\delta_L/(c-s)$, of area $K\delta_L^2$.
-It lies in the left exterior wing. Indeed, if its second side
-exceeded $a-\zeta$, the smaller triangle with deficit
-$\delta_0=(c-s)(a-\zeta)$ would already give
-\[
- D\ge K\delta_0^2=(a-\zeta)^2/\sqrt2
- >(13/100)^2/\sqrt2>3/350,
-\]
-contrary to \eqref{eq:horizontal-short-data}.
-Reflection gives a disjoint right triangle. Consequently
-\begin{equation}\label{eq:horizontal-short-exterior}
- D\ge K(\delta_L^2+\delta_R^2).
-\end{equation}
-
-Set $\eta=2/25$ and $E_L=(\eta-\delta_L/c)_+$,
-$E_R=(\eta-\delta_R/c)_+$.
-At the left zero $x_0=k-\zeta$ of the diagonal tent, the second
-wall at $\theta$ has value
-$1-1/c+k^2-\delta_L/c>E_L$ whenever $E_L>0$.
-Thus it majorizes $E_L+k(x-x_0)$. A point attaining the diagonal
-support has $x+y=1+\xi$, $y\le1$ and hence $x\ge\xi$;
-it follows that $h_U(\pi/8)\ge s+c\xi$.
-This first-wall lower bound majorizes the same line up to
-$x_R=x_0+E_L/(1-k)$, because the comparison at $x_R$ is
-\[
- 2m\ge1/c+(1+\sqrt2)E_L.
-\]
-It holds by $m>16/25$, $E_L\le\eta$ and
-$1/c+(1+\sqrt2)\eta<32/25$.
-Also
-\[
- x_R-d=k-m+E_L/(1-k)<0,
-\]
-since $k+\eta/(1-k)=(26k+3)/25<16/25$.
-The added niche region is a triangle on the left of $d$, with
-slopes $k$ and $1-k$, of area $K_0E_L^2$.
-Its peak $x_0$ lies inside $J$, as
-$x_0+a/2>k-8/25>0$.
-Only its outer tip can be clipped, by length at most
-\[
- L_0=8/25-k+\eta/k=(12-23k)/25>0.
-\]
-The lost area is at most $kL_0^2/2$.
-The reflected construction at $3\pi/8$ lies right of $d$,
-so the two payments are disjoint and
-\begin{equation}\label{eq:horizontal-short-niche}
- \int_Jn\ge\int_Jn_{45}+K_0(E_L^2+E_R^2)-kL_0^2.
-\end{equation}
-When an $E$ vanishes its asserted area bound follows simply from
-nonnegativity. The exact trigonometric comparisons above use
-$c^2=(2+\sqrt2)/4$: squaring positive sides reduces
-$1-1/c+k^2>2/25$ to $\sqrt2<1777/1249$, and
-$1/c+(1+\sqrt2)2/25<32/25$ to $\sqrt2>231/167$.
-These follow respectively from $\sqrt2<99/70$ and
-$\sqrt2>24/17$.
-
-Since $Kc^2=K_0$, for every $\delta\ge0$,
-\[
- K\delta^2+K_0(\eta-\delta/c)_+^2\ge K_0\eta^2/2.
-\]
-Combining the two exterior and two niche payments gives
-\[
- P_L(U)\le2k-K_0\eta^2+kL_0^2
- =\frac{5140k-1617}{625}
- <\frac{3587}{4375}<\frac{41}{50}.
-\]
-Here $k^2=1-2k$, $k<29/70$, and the last gap is $1/8750$.
-This contradicts the supposition. Finally $4y^3+3y-1$ is
-negative at $y=297/1000$, so $Y>297/1000$. The lower bound
-$\arctan Y\ge Y-Y^3/3$ gives
-\[
- \Mc/2>
- \bigl(1+4(297/1000)^2+297/1000-(297/1000)^3/3\bigr)/2
- >41/50.
-\]
-\end{proof}
+We will first bound how long curvature can exceed one. The key point
+is that this excess ends before a corner can cut a middle endpoint.
+The endpoint pressures then become exact, and the ordinary-sofa
+bound supplies the width estimate.
 
 \subsection{The top face and transfer between quarters}
+
+The top face already contains the middle interval. Any extra top length
+would consume part of the projection budget available to the positive
+niche. The following argument shows that this budget is fully used.
 
 For a full maximum the endpoint law gives, with $n_\pm=n(\pm C)$,
 \begin{equation}\label{eq:horizontal-pressure}
@@ -279,6 +123,12 @@ For a horizontal canonical full maximum with $C>1/2$, either
 $u\le1$ or $v\le1$ almost everywhere implies both inequalities.
 \end{lemma}
 \begin{proof}
+The two quarters share the same niche. If one curvature density stays
+below one, its wall moves monotonically and makes part of that niche
+visible. The source law on this visible part then constrains the other
+density. We show that an excursion above one would force a growing
+energy to finish below its starting value.
+
 Reflect so that $v\le1$, and suppose $u>1$ on a set of positive
 measure. Such a point has $q>1$ and belongs to the initial
 positive-$q$ component after its $p=0$ crossing.
@@ -354,365 +204,188 @@ at $\tau$, $y=1$ and $x\le2$, so it is at most five.
 This contradiction proves the transfer.
 \end{proof}
 
-\begin{lemma}[Box bound and the narrow-width criterion]
-\label{lem:horizontal-box}
-For $C<1$, $n(\pm C)\le H(C)=1-\sqrt{1-C^2}$.
-Every horizontal canonical full maximum with $C\le C_H$
-has $u,v\le1$ almost everywhere.
+\subsection{Curvature excess ends before endpoint contact}
+
+The box bounds the endpoint niches by
+\[
+ 0\le n_\pm\le H(C):=1-\sqrt{1-C^2}.
+\]
+Indeed, $a_t(C)\le1+(C\cos t-1)/\sin t$, whose maximum
+is $H(C)$; reflection gives the other endpoint.
+By \eqref{eq:horizontal-pressure}, either axis height $e$ satisfies
+\begin{equation}\label{eq:horizontal-box-pressure}
+ \frac12-\frac{H(C)}4\le e\le\frac12+\frac{3H(C)}4.
+\end{equation}
+If $C\le2/3$, then $9C^2\le4\le4+e(1-e)$ because
+$0\le e\le1$. The endpoint-energy lemma already gives both unit
+bounds in this range. We therefore consider $C>2/3$.
+
+\begin{lemma}[Dry middle endpoints]\label{lem:horizontal-dry}
+If $2/3<C<37/50$, then $n(-C)=n(C)=0$ and $e_R=e_L=1/2$.
 \end{lemma}
 \begin{proof}
-The box gives $a_t(C)\le1+(C\cos t-1)/\sin t$.
-Its maximum is $H(C)$, at $\cos t=C$. Reflection treats $-C$.
-Put $x=n(C)$, $y=n(-C)$. By \eqref{eq:horizontal-pressure},
-$e_R-1/2=(3x-y)/4$ and $e_L-1/2=(3y-x)/4$.
-At least one of these absolute values is at most $H(C)/2$.
-Indeed, if $x\ge y$ and $3y\ge x$, then
-$0\le(3y-x)/4\le H/2$; if $3y<x$ its absolute value
-is at most $H/4$. Exchange $x,y$ otherwise.
-Thus at least one $e(1-e)\ge(1-H^2)/4$.
-The energy criterion applies when
+Fix the right endpoint $e=e_R$. As in the endpoint-energy proof,
+any $u>1$ must occur on the initial positive-$q$ component, after
+its unique $p=0$ crossing $t_A$. Before that crossing,
+$q'\ge-1$ and $p'=-1-q$, so
 \[
- 9C^2\le4+(1-H(C)^2)/4,
- \quad\hbox{equivalently}\quad
- 35C^2\le15+2\sqrt{1-C^2}.
+ p(t)\le e-3Ct+t^2/2.
 \]
-The difference is strictly increasing in $C^2$, and its unique
-zero is $(523+2\sqrt{701})/1225$.
-Use \cref{lem:horizontal-energy,lem:horizontal-transfer}.
-The impossible range $C\le1/2$ is already excluded by
-\cref{lem:horizontal-short}.
-\end{proof}
+The circle identity gives a useful uniform bound on the pressure.
+For $C\le4/5$, $\sqrt{1-C^2}\ge3/5$, hence
+\[
+ H(C)=\frac{C^2}{1+\sqrt{1-C^2}}\le\frac58C^2,
+ \qquad e\le\frac12+\frac{15}{32}C^2.
+\]
+The concave quadratic
+\[
+ \frac65C-\frac2{25}-\frac12-\frac{15}{32}C^2
+\]
+is positive at both endpoints of $[2/3,4/5]$, so it is positive
+throughout. Thus $p$ must cross zero by $t=2/5$, unless the
+positive-$q$ component has already ended; that case has no excess.
 
-\subsection{Two strict wide-width exclusions}
-
-Return to $a=2C$ and the diagonal data $\xi,\zeta,m$.
-The endpoint points give $\xi\ge a+e_R-1$,
-$\zeta\ge a+e_L-1$; since $e_R+e_L\ge1$,
-\begin{equation}\label{eq:horizontal-diagonal-constraint}
- m\ge a-1/2.
-\end{equation}
-For $C\ge13/15$, this is to the right of the symmetric
-unclipped maximum $C+k/2$ of $\Phi(a,m,m)$.
-In the clipped region its $m$ derivative is $2(C-m)<0$.
-Evaluating at $m=2C-1/2$ gives
+We next bound the duration after the crossing. Since $C<37/50$,
+$H(C)<1/3$ and \eqref{eq:horizontal-box-pressure} gives
+$1/4\le e\le3/4$. The initial energy therefore satisfies
 \[
- P_L(U)\le
- \begin{cases}
- 2C-1/4-(2C-1/2-k)^2,&C\le1/2+k,\\
- (1+2\sqrt2)C-3C^2-1/4,&C\ge1/2+k.
- \end{cases}
+ 9C^2-e(1-e)
+ \le9(37/50)^2-3/16
+ <\left(2+\frac{(1/3)^2+2/3}{4}\right)^2.
 \]
-Both branches decrease on the relevant ranges, agree at the
-switch, and the first at $13/15$ is
+At the crossing, this implies $q(t_A)-1\le7/36$.
+While $q>1$, $p'\le-1$ and
 \[
- \frac{67\sqrt2}{15}-\frac{2477}{450}
- <\frac{256}{315}<\frac{41}{50}.
+ p(t_A+\tau)\le-\tau,\qquad
+ q'\le-(1+\tau)/2\quad(0\le\tau\le1).
 \]
-Thus any horizontal full maximum has $C<13/15$.
-
-\begin{lemma}[Three-angle wide exclusion]\label{lem:horizontal-wide}
-Every horizontal canonical full maximum has $C<4/5$.
-\end{lemma}
-\begin{proof}
-It remains to consider $8/5\le a=2C\le26/15$.
-The box bound gives $H(C)<2/3$, so the pressures imply
-$e_R,e_L\ge1/3$ and $E\ge1$.
-Put $w_R=a-\xi$, $w_L=a-\zeta$. Then
-$0\le w_R,w_L\le2/3$ and $m\ge a-1/2\ge11/10$.
-As before let $c=\cos(\pi/8)$, $s=\sin(\pi/8)$ and
-\[
- \delta_L=c+s\zeta-h_U(5\pi/8),\quad
- \delta_R=c+s\xi-h_U(3\pi/8).
-\]
-Here $\delta_L\le s(\zeta-a/2)$.
-On the flat part $x=-\zeta+z$, $0\le z\le\delta_L/s$,
-the new support line cuts height $\delta_L/c-kz$ from $A_0$.
-This triangle is entirely in the left wing and has area
-$\delta_L^2/(2sc)=\sqrt2\delta_L^2$.
-Reflection supplies a disjoint right triangle, giving
-\begin{equation}\label{eq:horizontal-wide-exterior}
- D\ge\sqrt2(\delta_L^2+\delta_R^2).
-\end{equation}
-
-The actual second wall at $\pi/8$ is $b+kx$, where
-$b=1-1/c+k\zeta-\delta_L/c$.
-The endpoint $(a,e_R)$ bounds its first companion below by
-$B-x/k$, $B=e_R+a/k-1/s$.
-Define
-\[
- x_L=(\xi-k-b)/\sqrt2,\quad
- x_*=(B-b)/(2\sqrt2),\quad
- Z_R=(B+b)/2-\xi+k.
-\]
-If $Z_R>0$, on $[x_L,x_*]$ the lower tent $b+kx$
-exceeds the diagonal roof $\xi-k-x$ by $\sqrt2(x-x_L)$.
-The entire added half-triangle is inside $J$ and right of $d$.
-For completeness the needed bounds are
-\[
- x_L-d=km+2s-1+\delta_L/(\sqrt2c)>0,
-\]
-using $m\ge11/10$, $k>2/5$, $s>3/8$; and
-\[
- x_*=\frac{2a+e_R+kw_L-(1+4s)+\delta_L/c}{2\sqrt2}<a/2.
-\]
-For the latter use $\delta_L/c\le k(a/2-w_L)$ and
-$((3-\sqrt2)/2)a\le4s$, since the left side is
-less than $104/75$ and the right side exceeds $3/2$.
-Finally $x_*<\xi-k$: using $e_R\le1-w_R$, $w_R\le2/3$,
-it suffices that
-\[
- (2\sqrt2-1)2/3\le(12/5)k+4s-2\sqrt2k.
-\]
-The left side is below $26/21$ and the right side above
-$3/2-48/245=639/490$, using $7/5<\sqrt2<10/7$,
-$k<3/7$, $s>3/8$.
-Thus the diagonal roof is positive on the half-triangle,
-whose added area is $Z_R^2/(2\sqrt2)$.
-For $Z_R\le0$ the zero lower bound needs no interval claim.
-
-Reflection at $3\pi/8$ gives a left half-triangle of area
-$(Z_L)_+^2/(2\sqrt2)$, disjoint from the first.
-Writing $Z_R=Z_R^0-\delta_L/(2c)$ and
-$Z_L=Z_L^0-\delta_R/(2c)$, their uncut sum is
-\[
- S_0=Z_R^0+Z_L^0
- =E/2+a/k+(k-2)m+1-1/s-1/c+2k.
-\]
-Put $D_0=\sqrt2(\delta_L^2+\delta_R^2)$ and
-$G_0'=((Z_R)_+^2+(Z_L)_+^2)/(2\sqrt2)$.
-Cauchy--Schwarz gives
-\[
- (S_0)_+\le\sqrt{4\sqrt2G_0'}+
-              \sqrt{\sqrt2D_0/(4c^2)},
- \qquad (S_0)_+^2\le8(D_0+G_0').
-\]
-The coefficient $4\sqrt2+\sqrt2/(4c^2)$ is below eight.
-Hence the exterior and niche payments give
-\[
- P_L(U)\le\Phi(a,m,m)-(S_0)_+^2/8.
-\]
-Using $E\ge1$, $1/k>12/5$, $k-2>-8/5$ and
-$3/2+2k-4c>-11/8$, we may replace $S_0$ by
-$S=(12/5)a-(8/5)m-11/8$.
-The last constant inequality follows by squaring
-$4c<7/8+2\sqrt2$; the squared difference is
-$49/64-\sqrt2/2>0$.
-
-The resulting function $\mathcal G=\Phi(a,m,m)-(S_+)^2/8$
-is jointly concave. Before and after clipping, the Hessians of
-$\Phi(a,m,m)$ are respectively
-$\left(\begin{smallmatrix}-2&2\\2&-4\end{smallmatrix}\right)$
-and $\left(\begin{smallmatrix}-3/2&1\\1&-2\end{smallmatrix}\right)$;
-their first derivatives match at the boundary.
-At $(a_0,m_0)=(8/5,11/10)$ the clipping vanishes, $S=141/200$,
-and
-\[
- \mathcal G_a=-423/1000,\qquad
- \mathcal G_m=2k-459/500<0.
-\]
-Every allowed displacement is
-$(a-a_0)(1,1)+(m-a+1/2)(0,1)$ with nonnegative coefficients.
-Both directional derivatives are negative. The supporting-plane
-bound therefore gives
-\[
- P_L(U)\le\mathcal G(a_0,m_0)
- =\frac{21}5k-\frac{295081}{320000}
- <\frac{261719}{320000}<\frac{41}{50}<\Mc/2,
-\]
-a contradiction.
-\end{proof}
-
-\subsection{The leakage estimate and its exact rational intervals}
-
-The remaining exclusion uses the ordinary-sofa bound with
-$G_0=22199/10000$. We first check its geometric applicability.
-For $1/2\le C\le13/15$, every inner corner has $-C\le c_x\le C$.
-Indeed, with $s=\sin t$, $c=\cos t$, the box and left top point give
-$F\le2Cc+s$, $G\ge Cs+c$, so
-$c_x\le C(2-3s^2)-c+s$.
-The required inequality $C(1-3s^2)\le c-s$ follows in three ranges.
-For $s^2\le1/3$, use $c\ge1-3s^2/5$ and $C\le13/15$;
-the remaining margin is
-$2s^2-s+2/15=2(s-1/4)^2+1/120>0$.
-For $1/3\le s^2\le1/2$ the two sides have opposite signs.
-For $s^2\ge1/2$, use $C\ge1/2$ and
-\[
- 2(s-c)=2(2s^2-1)/(s+c)\le4s^2-2\le3s^2-1.
-\]
-Reflection supplies the other bound.
-
-Consequently $n$ is convex on each wing: there each quadrant
-uses the same descending, or reflected ascending, wall.
-The box gives $n(\pm2C)=0$ and zero niche outside $I$.
-On $J$, \cref{cor:variation-green} gives $n\le E/2\le1=A$;
-on each wing $A-n$ is concave and nonnegative at both endpoints.
-Thus $n\le A$ everywhere, and \cref{lem:ordinary-survivor}
-applies to the actual survivor.
-Wing convexity yields
-$N_{\rm out}\le C(n_++n_-)/2=C(E-1)$.
-The wing-length identity and its chord bounds yield
-\[
- \begin{aligned}
- P_L(U)=L_{\rm wing}/2
- &\ge\tfrac12\bigl(\sqrt{C^2+(1-e_R)^2}
-                  +\sqrt{C^2+(1-e_L)^2}\bigr)\\
- &\ge\sqrt{C^2+(1-E/2)^2}.
- \end{aligned}
-\]
-Since the survivor area is $P_L(U)+2C-N_{\rm out}$,
-the ordinary bound gives
-\begin{equation}\label{eq:horizontal-ordinary-necessary}
- C(3-E)+\sqrt{C^2+(1-E/2)^2}\le G_0.
-\end{equation}
-If $n_\pm\le B\le1$, its left side decreases with $E\le1+B$,
-so necessarily
-\begin{equation}\label{eq:horizontal-ordinary-scalar}
- C(2-B)+\sqrt{C^2+(1-B)^2/4}\le G_0.
-\end{equation}
-
-Fix the right endpoint $e=e_R$.
-Any $u>1$ lies after the initial $p=0$ crossing $t_A$ and before
-the first subsequent $q=1$ crossing. The energy gives
-\[
- \begin{gathered}
- q(t_A)+1\le\sqrt{9C^2-e(1-e)},\\
- \epsilon=(\sqrt{9C^2-e(1-e)}-2)_+,\qquad
- h=\sqrt{1+4\epsilon}-1.
- \end{gathered}
-\]
-While $q>1$, $p'\le-1$, hence $p(t_A+\tau)\le-\tau$.
-For $0\le\tau\le1$, $q'\le-(1+\tau)/2$:
-if $p\ge-1$, use $v\le(1-p)/2$; if $p<-1$,
-use $v\le-p$, giving the stronger $q'\le-1$.
-Therefore
+For $p\ge-1$ the second bound follows from $v\le(1-p)/2$;
+for $p<-1$ the stronger bound $q'\le-1$ suffices.
+Consequently
 \begin{equation}\label{eq:horizontal-leakage-envelope}
  (u(t_A+\tau)-1)_+
- \le(\epsilon-\tau/2-\tau^2/4)_+.
+ \le\left(\frac7{36}-\frac\tau2-\frac{\tau^2}4\right)_+.
 \end{equation}
-The endpoint box bound and pressure law give
-$|e-1/2|\le3H(C)/4$ and
+The right side vanishes at $\tau=1/3$. Later positive-$q$
+components have $q\le1/8$, as proved above. Thus every possible
+curvature excess has ended by
 \[
- \epsilon\le
- (\sqrt{9C^2-1/4+9H(C)^2/16}-2)_+<2/5
- \quad(C\le4/5).
+ \frac25+\frac13=\frac{11}{15}.
 \]
-Thus $h<1$ covers every possible excess interval.
-Before the crossing, $q'\ge-1$ and $p'=-1-q\le-3C+t$,
-so $p(t)\le e-3Ct+t^2/2$. Its first root gives
-\begin{equation}\label{eq:horizontal-crossing-time}
- t_A\le T(C,e)=3C-\sqrt{9C^2-2e}.
-\end{equation}
-If the component ends before a crossing, its leakage is zero.
+These are coarse crossing and duration bounds for the whole width
+range. We need only that their sum precedes endpoint contact.
+The quadratic bound at $t/2$ gives
+$\cos t=2\cos^2(t/2)-1\ge2(1-t^2/8)^2-1$ at $t=11/15$.
+This exceeds $37/50$, hence $11/15<\arccos C$.
 
-The top endpoint data $F(L)=1$, $F'(L)=-C$ give the exact
-backward solution
+The exact top endpoint data $F(L)=1$, $F'(L)=-C$ give
 \[
  a_t(C)=\frac1{\sin t}\int_t^L\sin(s-t)(u(s)-1)\,\dd s.
 \]
-The box makes this wall nonpositive unless
+For $t\ge\arccos C$ the integrand is nonpositive, so $a_t(C)\le0$.
+For earlier angles, the wall increases: if its supporting point
+has abscissa $x_t\le2C$, then
 \[
- t>t_{\rm box}(C)=2\arctan\frac{1-C}{1+C},\qquad
- \sin t_{\rm box}=\frac{1-C^2}{1+C^2}.
+ \partial_t a_t(C)
+ =\frac{C-x_t+\cos t}{\sin^2t}\ge0
+ \qquad(t\le\arccos C).
 \]
-Discarding negative curvature differences and using
-$\sin(s-t)\le s-t$ in the remaining positive integral yields
-\begin{equation}\label{eq:horizontal-leakage-kernel}
- n(C)\le
- \frac{A_0(t_A-t_{\rm box})_++A_1}{\sin t_{\rm box}},
- \qquad A_0=h^2/4+h^3/6,\quad A_1=h^3/12+h^4/16.
-\end{equation}
-These are the integrals of the envelope and of $\tau$ times
-the envelope in \eqref{eq:horizontal-leakage-envelope}; use
-$\epsilon=(h^2+2h)/4$.
-Even when $t_A<t_{\rm box}$, the bound is valid because
-$s-t\le(t_A-t_{\rm box})_++\tau$.
-Reflection gives the same estimate at $-C$.
-
-\begin{lemma}[Exact leakage exclusion]\label{lem:horizontal-leakage}
-No horizontal canonical full maximum has
-$8571/12500\le C\le4/5$.
-\end{lemma}
-\begin{proof}
-Every terminating decimal in the following table is an exact
-rational. A row gives an interval $[a,b]$ and witnesses
-$H_*,h_*,T_*,t_*,B_*$.
-\begin{center}\small
-\begin{tabular}{rrrrrrr}
-\toprule
-$a$&$b$&$H_*$&$h_*$&$T_*$&$t_*$&$B_*$\\
-\midrule
-0.68568&0.686&0.2724&0.0135&0.377&0.368&$1/400000$\\
-0.686&0.69&0.2762&0.038&0.3784&0.3627&$1/30000$\\
-0.69&0.7&0.2859&0.0971&0.3801&0.3492&$1/2000$\\
-0.7&0.725&0.3113&0.2323&0.3845&0.3161&$3/400$\\
-0.725&0.75&0.3386&0.3542&0.3799&0.2837&$31/1000$\\
-0.75&0.775&0.3681&0.4662&0.3765&0.2521&$83/1000$\\
-0.775&0.8&0.4&0.5703&0.3742&0.2213&$9/50$\\
-\bottomrule
-\end{tabular}
-\end{center}
-Put $z=(1-b)/(1+b)$, $\epsilon_*=(h_*^2+2h_*)/4$;
-evaluate $A_0,A_1$ at $h_*$.
-The following five rational residuals are nonnegative:
-\begin{align*}
- \Delta_1&=1-b^2-(1-H_*)^2,\\
- \Delta_2&=(2+\epsilon_*)^2-9b^2+1/4-9H_*^2/16,\\
- \Delta_3&=6aT_*-T_*^2-1-3H_*/2,\\
- \Delta_4&=2(z-z^3/3)-t_*,\\
- \Delta_5&=B_*\frac{1-b^2}{1+b^2}
-                   -A_0(T_*-t_*)_+-A_1.
-\end{align*}
-Also $T_*<3a$. Thus $H(C)\le H_*$, $h\le h_*$,
-$t_A\le T_*$ by squaring \eqref{eq:horizontal-crossing-time},
-and $t_{\rm box}(C)\ge t_*$ by
-$\arctan z\ge z-z^3/3$. The last residual and
-\eqref{eq:horizontal-leakage-kernel} give $n_\pm\le B_*$.
-For an explicit record of the rational sign checks, the entries
-below are the numerators after reducing each residual to lowest
-terms; every omitted denominator is positive. The last column
-uses $\Delta_6=a^2+(1-B_*)^2/4-R_*^2$,
-$R_*=G_0-a(2-B_*)$.
-\begin{center}\scriptsize
-\begin{tabular}{rrrrrr}
-\toprule
-$\Delta_1$&$\Delta_2$&$\Delta_3$&$\Delta_4$&$\Delta_5$&$\Delta_6$\\
-\midrule
-7&32240555441&6979&38805734&1050817008759&3319291602200459\\
-339&7725821&49&7131271&291483040799&120460934617\\
-6119&38697993591281&28799&951&167988627540997&793536099\\
-6731&37513157356241&439&389153&46533834362383573&2769577\\
-1251&3244477366481&34099&727&7903542862229&1696091\\
-7739&5192642710721&1391&226369&11606973036545727&64385451\\
-0&21664728155681&109&169&1866283140377871&709979\\
-\bottomrule
-\end{tabular}
-\end{center}
-The respective $R_*$ are
-\[
- \frac{4242708571}{5000000000},\quad
- \frac{12718843}{15000000},\quad\frac{168049}{200000},\quad
- \frac{16503}{20000},\quad\frac{6339}{8000},\quad
- \frac{15643}{20000},\quad\frac{4047}{5000};
-\]
-all are positive. Therefore $\Delta_6>0$ proves
-$a(2-B_*)+\sqrt{a^2+(1-B_*)^2/4}>G_0$.
-The left side increases with $C$ at fixed $B_*$, contradicting
-\eqref{eq:horizontal-ordinary-scalar} throughout each row.
-The intervals cover the claimed range.
+It is therefore bounded above by the nonpositive wall at
+$\arccos C$. Every visited angle has $a_t(C)\le0$, proving
+$n(C)=0$. Reflection gives $n(-C)=0$, and the endpoint-pressure
+identities give $e_R=e_L=1/2$.
 \end{proof}
 
-\begin{proof}[Proof of \cref{lem:full-horizontal-unit}]
-The short and wide exclusions give $1/2<C<4/5$, and the
-leakage exclusion gives $C<8571/12500$.
-This upper bound is below $C_H$. Indeed, with
-$z_0=(8571/12500)^2$, $35z_0-15>0$ and
+\subsection{Circle confinement and the ordinary survivor}
+
+The next circle inequality keeps the corners inside the middle
+window. We state it with a tilt parameter because the same argument
+will be used in \cref{app:tilted-selector}.
+
+\begin{lemma}[Circle margin]\label{lem:circle-corner-margin}
+If $s,c>0$, $s^2+c^2=1$, $1/2\le C\le37/50$, and $h\le1/3$, then
 \[
- 4(1-z_0)-(35z_0-15)^2
- =\frac{878611101631}{976562500000000}>0.
+ c-s-C(1-3s^2)-hsc>0.
 \]
-Hence $35z_0-15-2\sqrt{1-z_0}<0$.
-\Cref{lem:horizontal-top,lem:horizontal-box} now give the
-exact top face and both unit curvature bounds.
+\end{lemma}
+\begin{proof}
+Put $D=37/50$, $H=1/3$. When $s^2\le1/3$, $c\ge4/5$,
+so the circle identity gives
+\[
+ c=1-\frac{s^2}{1+c}\ge1-\frac59s^2.
+\]
+Also the tangent to $s^3$ at $s=1/3$ lies below that cubic:
+\[
+ s^3-\frac s3+\frac2{27}
+ =(s-1/3)^2(s+2/3)\ge0.
+\]
+Substituting these two bounds into the margin gives the quadratic
+$a s^2+b s+d$, where
+\[
+ a=3D-5/9,\quad b=-(1+H)+5H/27,\quad d=1-D-10H/243.
+\]
+Here $a>0$ and $4ad-b^2>0$. Thus completing the square proves
+positivity for every $s$.
+
+When $s^2\ge1/3$, decrease $C$ to $1/2$ and increase $h$ to $2/5$.
+The resulting margin factors as
+\[
+ c\left[1-\frac25s-\frac{c(3s+1)}{2(1+s)}\right].
+\]
+The 3--4--5 tangent inequality $3s+4c\le5$ bounds the bracket below by
+\[
+ \frac{15-36s+29s^2}{40(1+s)}.
+\]
+Its numerator is positive because $36^2<4\cdot29\cdot15$.
+\end{proof}
+
+Continue to assume $C>2/3$. For the horizontal cap, put $s=\sin t$, $c=\cos t$.
+The box and left top endpoint imply
+$F\le2Cc+s$ and $G\ge Cs+c$, whence
+\[
+ c_x\le C(2-3s^2)-c+s<C
+\]
+by \cref{lem:circle-corner-margin} with $h=0$.
+Reflection gives $-C<c_x$. Each exterior wing therefore sees only
+one affine wall from every positive quadrant. Its niche is convex.
+The box gives $n(\pm2C)=0$, and \cref{lem:horizontal-dry} gives
+$n(\pm C)=0$. Convexity and nonnegativity make both wings dry.
+On $J$, \cref{cor:variation-green} gives $n\le E/2=1/2<A$.
+Thus $n\le A$ on $I$, and \cref{lem:ordinary-survivor} makes the
+actual survivor an ordinary sofa.
+
+The wing-length identity and the chord bound, now with both axis
+heights equal to one half, give
+\[
+ P_L(U)=L_{\rm wing}/2\ge\sqrt{C^2+1/4}.
+\]
+The survivor has area $P_L(U)+2C$, since the wings are dry.
+The ordinary-sofa bound therefore gives
+\begin{equation}\label{eq:horizontal-ordinary-necessary}
+ 2C+\sqrt{C^2+1/4}\le G_0:=2.2199.
+\end{equation}
+The 3--4--5 supporting direction bounds the square root below by
+$4C/5+3/10$. At $C=C_H=\sqrt{17}/6$ this yields
+\[
+ 2C_H+\sqrt{C_H^2+1/4}
+ \ge\frac{14}{5}\frac{\sqrt{17}}6+\frac3{10}>G_0.
+\]
+The last comparison follows by squaring
+$\sqrt{17}>(G_0-3/10)\,15/7$; all terms are positive.
+The left side of \eqref{eq:horizontal-ordinary-necessary} increases
+with $C$, so $C<C_H$.
+
+\begin{proof}[Proof of \cref{lem:full-horizontal-unit}]
+The preliminary range gives $1/2<C<37/50$ and
+\cref{lem:horizontal-top} gives the exact top face.
+If $C\le2/3$, both endpoint-energy criteria hold directly.
+If $C>2/3$, the preceding argument gives dry endpoints,
+$e_R=e_L=1/2$, and $C<C_H=\sqrt{17}/6$. Hence
+\[
+ 9C^2<17/4=4+e_R(1-e_R)=4+e_L(1-e_L),
+\]
+so \cref{lem:horizontal-energy,lem:horizontal-transfer} give $u,v\le1$.
+In either case $C<C_H$; use $2/3<C_H$ in the first case.
 
 For the final sign statement, $B_x,D_x$ are nondecreasing and
 \[

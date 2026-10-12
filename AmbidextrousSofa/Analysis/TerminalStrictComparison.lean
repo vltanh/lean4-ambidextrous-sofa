@@ -27,8 +27,8 @@ theorem terminal_circle_reserve_localization {C c s z : ℝ}
     (hC : C ≤ 37 / 50) (hc : 0 < c) (hcut : 73 * c ^ 2 ≤ 9)
     (hs : 0 < s) (hcs : c ^ 2 + s ^ 2 = 1) (hz : z ≤ c / 2) :
     C + z < s := by
-  have hslow : (187 / 200 : ℝ) < s := by nlinarith only [hs, hcs, hcut]
-  linarith only [hC, hz, hslow, terminal_cosine_lt_forty_four_one_twenty_fifths hc hcut]
+  have hslow : (14 / 15 : ℝ) < s := by nlinarith only [hs, hcs, hcut]
+  linarith only [hC, hz, hslow, terminal_cosine_lt_three_eighths hc hcut]
 
 /-- A continuous strict gap on a complete closed initial interval
 persists beyond its right endpoint. Consequently its measure is

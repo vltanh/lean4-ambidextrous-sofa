@@ -54,33 +54,34 @@ theorem partialTriangle_floor_loss_le {h k c wR wL : ℝ}
   refine mul_le_mul_of_nonneg_left ?_ (by linarith)
   linarith [mul_nonneg hx hy, pow_le_pow_left₀ (add_nonneg hx hy) htotal 2]
 
-/-- The complete proper floor correction retains a negative tilt variation.
-The proof uses the exact quadratic expansion, without a differentiability
-assumption or a numerical approximation. -/
+/-- The shared tilt payment reduces the proper correction to its zero-tilt corner. -/
 theorem fullTriangleRelaxation_add_partial_loss_lt {a h k c u v : ℝ}
-    (ha : 37 / 25 ≤ a) (hh0 : 0 ≤ h) (hh1 : h ≤ 17 / 50)
-    (hk0 : 41 / 99 < k) (hk1 : k < 29 / 70) (hksq : k ^ 2 + 2 * k = 1)
-    (hc0 : 923 / 1000 < c) (hc1 : c < 231 / 250)
+    (ha : 37 / 25 ≤ a) (hh0 : 0 ≤ h) (hh1 : h ≤ 1 / 3)
+    (hk : 0 < k) (hksq : k ^ 2 + 2 * k = 1)
+    (hc : 0 < c) (hcsq : c ^ 2 * (2 - 2 * k) = 1)
     (hq : 0 ≤ (u + v - h) / 2 - k) :
-    fullTriangleRelaxation a h k c u v + partialTriangleLoss h k c < (41 / 50 : ℝ) := by
-  obtain ⟨hs0, hs1⟩ := fullTriangle_stationary_offset_bounds hk0 hk1 hc0 hc1
-  have hbound := fullTriangleRelaxation_le_bound ha (by norm_num) hh0 hh1 hk0 hk1 hksq
-    (by linarith only [hs0]) hs1 hq
-  rw [fullTriangleBound] at hbound
-  rw [partialTriangleLoss]
-  generalize fullTriangleStationaryOffset (37 / 25) k c = s at hs0 hs1 hbound
-  generalize hd : 2 / 3 - (2 * c - (1 + k)) = d
-  have hd0 : 0 < d := by linarith only [hd, hc1, hk0]
-  have hd1 : d < 47 / 200 := by linarith only [hd, hc0, hk1]
-  have hell : -k / 2 + (1 - k) * s / 9 + 2 * (1 - k) * d / 3 < -1 / 20 := by
-    linarith only [mul_pos (sub_pos.2 hk0) (sub_pos.2 hs0), mul_pos (sub_pos.2 hk0) hd0, hs1,
-      hd1, hk0]
-  have hq' : -1 / 8 - (1 - k) ^ 2 / 72 + 2 * (1 - k) / 9 < 1 / 120 := by
-    linarith only [hksq, hk0]
-  linarith only [hbound, hksq, hk1, hh0, mul_le_mul_of_nonneg_right hell.le hh0,
-    mul_le_mul_of_nonneg_right hq'.le (sq_nonneg h), mul_nonneg hh0 (sub_nonneg.2 hh1),
-    mul_pos (sub_pos.2 hs0) (by linarith only [hs0] : 0 < s + 703 / 1000),
-    mul_le_mul_of_nonneg_right (by linarith only [hk0] : 1 - k ≤ 3 / 5) (sq_nonneg d),
-    mul_pos (sub_pos.2 hd1) (by linarith only [hd0] : 0 < 47 / 200 + d)]
+    fullTriangleRelaxation a h k c u v + partialTriangleLoss h k c < referenceHalfAreaLower := by
+  obtain ⟨hk0, hk1, hc0, hc1, -, -⟩ := triangle_parameter_bounds hk hksq hc hcsq
+  obtain ⟨hs0, hs1⟩ := triangle_stationary_offset_bounds (by norm_num : (73 / 50 : ℝ) ≤ 37 / 25)
+    le_rfl hk0 hk1 hc0 hc1
+  have hbound := fullTriangleRelaxation_le_bound ha (by norm_num) hh0 hh1 hk0 hk1 hksq hs0 hs1 hq
+  have ht : 2 / 5 ≤ k := by
+    norm_num [diagonalOffsetLower, diagonalOffsetUpper, squareRootNewton] at hk0; linarith
+  have hheight : fullTriangleBound (37 / 25) h k c + partialTriangleLoss h k c ≤
+      triangleCornerScore (37 / 25) 0 k c (2 / 3) (2 / 3) 0 := by
+    have hpay := triangle_tilt_payment (s := fullTriangleStationaryOffset (37 / 25) k c)
+      (p := 0) (q := 2 / 3 - (2 * c - (1 + k)))
+      (r := 0) (t := 2 / 3) (h0 := 0) (h := h) ht (by linarith)
+      (by linarith) (by linarith) (by norm_num) hh0 (by norm_num) (by linarith)
+    unfold fullTriangleBound partialTriangleLoss triangleCornerScore
+    linarith only [hpay, hksq]
+  have hcorner := triangleCornerScore_le_Newton (a := 37 / 25) (h := 0)
+    (bR := 2 / 3) (bL := 2 / 3) (w := 0) hk hksq hc hcsq
+    (by norm_num) le_rfl (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+    (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  have hcheck : triangleCornerScore (37 / 25) 0 diagonalOffsetUpper triangleCosUpper (2 / 3) (2 / 3) 0 < referenceHalfAreaLower := by
+    norm_num [triangleCornerScore, fullTriangleStationaryOffset, triangleCosUpper, diagonalOffsetUpper, squareRootNewton,
+      referenceHalfAreaLower, referenceRootLower, cubicBracketLower, cubicBracketUpper, cubic]
+  linarith only [hbound, hheight, hcorner, hcheck]
 
 end AmbidextrousSofa
