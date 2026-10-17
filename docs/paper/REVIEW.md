@@ -2,7 +2,10 @@
 
 Date: 12 October 2026, US Central Time.
 
-The manuscript presents a mathematical proof of optimality, uniqueness, and the quarter-turn conclusion. Its eleven main sections follow the proof stages explained in the introduction. Eight mathematical appendices supply the ordinary-sofa input, the reference construction, and the auxiliary estimates.
+- The manuscript presents a mathematical proof of optimality, uniqueness, and the quarter-turn conclusion.
+- Its eleven main sections follow the proof stages explained in the introduction.
+- Eight mathematical appendices supply the ordinary-sofa input, the reference construction, and the auxiliary
+  estimates.
 
 ## Mathematical review
 
@@ -18,7 +21,11 @@ Three writers reviewed sections written by the others. The review checked the fo
 - The reference support curve, face atoms, phase matching, niche constraints, two passages, and exact area are proved explicitly. Differentiation checks all three area primitives and the endpoint fluxes.
 - Equal cap scores align the original caps through their common projection. Containment and regular closedness recover equality of compact sets and the conclusion for every witnessing pair of motions.
 
-The review found no unresolved substantive mathematical error. It clarified the competitive range for a concavity argument and the reference hull's nonempty interior. This is an agent review; human mathematical review remains outstanding.
+### Findings
+
+- The review found no unresolved substantive mathematical error.
+- It clarified the competitive range for a concavity argument and the reference hull's nonempty interior.
+- This is an agent review; human mathematical review remains outstanding.
 
 ## Build and layout checks
 
@@ -31,7 +38,9 @@ The review found no unresolved substantive mathematical error. It clarified the 
 
 ## Numerical choices and their origin (11–12 October 2026)
 
-The earlier pass removed 364 occurrences of large literal fractions. That digit-count criterion did not address arbitrary choices with smaller numerators and denominators. This revision changes the mathematical comparisons themselves.
+- The earlier pass removed 364 occurrences of large literal fractions.
+- That digit-count criterion did not address arbitrary choices with smaller numerators and denominators. This
+  revision changes the mathematical comparisons themselves:
 
 | Estimate | Current argument |
 | --- | --- |
@@ -43,11 +52,17 @@ The earlier pass removed 364 occurrences of large literal fractions. That digit-
 | Horizontal short caps | Apply the same three-tent lemma with zero tilt. The duplicate proof and its independent height, tip, and deficit choices are removed. |
 | Short-width stability and cuts | The width and tilt reserves are `1 − k²/4` and `k²/4`; the complete outer-cut budget is its geometric triangle area. These replace `9/10`, `1/23`, `23/200`, and `1/110` in this argument. All scalar boundary checks use the generated reference budget. |
 
-The manuscript states the Newton recurrences, the wall-height interpretation, the constrained quadratic comparisons, and the exact companion identity. No expanded fractions are needed to reproduce these calculations. [check_numeric_estimates.py](../../scripts/check_numeric_estimates.py) independently checks their arithmetic together with the circle and stopping estimates.
+- The manuscript states the Newton recurrences, the wall-height interpretation, the constrained quadratic
+  comparisons, and the exact companion identity. No expanded fractions are needed to reproduce these calculations.
+- [check_numeric_estimates.py](../../scripts/check_numeric_estimates.py) independently checks their arithmetic
+  together with the circle and stopping estimates.
 
 ## Revision of the arguments (11–12 October 2026)
 
-This pass reviewed all eleven main sections and eight appendices for the reasoning behind their calculations. Each stage now explains the obstruction it addresses, the quantity that measures that obstruction, and how the estimate advances the proof. Several arguments also changed mathematically:
+- This pass reviewed all eleven main sections and eight appendices for the reasoning behind their calculations.
+- Each stage now explains the obstruction it addresses, the quantity that measures that obstruction, and how the
+  estimate advances the proof.
+- Several arguments also changed mathematically:
 
 | Argument | Revision |
 | --- | --- |
@@ -71,23 +86,133 @@ This pass reviewed all eleven main sections and eight appendices for the reasoni
 | Wide and tilted preliminary estimates | A midpoint square completion and the endpoint law price the exact span needed by both nearby-angle peaks. This replaces the three cuts `a < 9/5`, `h < 1/4`, and `a + h < 37/20`; the full-cap endpoint heights follow directly from their pressure laws. Retain the exact triangle demand and reciprocal prices `4 + 5k`. A common price cancels tilt, leaving one midpoint square. |
 | Small positive tilt | Use the shared radius-width reduction. A failed radius test gives the joint pressure budget `h + 3z/5 ≤ h₀`; the same area prices as the floor test pay that budget. Rationalizing the two circle radii supplies the width gain. The separate width cut `29/40`, momentum cut `4/15`, niche cut `27/100`, and split at height `1/40` are removed. Newton steps and one quadratic-loss comparison handle the floor test. |
 
-The small-height argument uses `centered_width_lt_radiusWidth_of_dry` in both the selector and the ordinary-area comparison. Its scalar estimate takes the proved radius width in place of the coarser containing width, and no longer assumes the separate niche enclosure `z ≤ 33/100`; the actual cap theorem keeps its original hypotheses. `smallTilt_radius_budget_payment` and `smallTilt_radius_gain_positive` correspond to the common prices and rationalized circle-radius gain in Lemma `lem:tilted-small-height`. The coefficients are retained as their chord, width, projection and leakage contributions, matching `smallTiltHeightLoss`, `smallTiltNicheLoss`, `smallTiltFloorLinear` and `smallTiltFloorQuadratic`. The two physical energy tests remain, but neither requires a further small-height subdivision.
+### The revisions in Lean
 
-The intermediate tilt estimate follows `tiltedDiagonalRelaxation_eq_perspective`, `tiltedDiagonalRelaxation_le_price`, and `tiltedDiagonalBound_high_score`. The perspective identity and common price replace the two-support stationary-point construction and its clipping feasibility proof. `clipped_perspective_ge_tangent` is shared with the wide argument through `DiagonalScalar.lean`. The scalar area bound needs only the elementary offset enclosure `[1/3, 1/2]`; the endpoint comparison uses the existing generated reference and offset bounds. It compares at height one third directly with `referenceHalfAreaLower`, removing this argument's `41/50` intermediary and expanded `160/303` coefficient. Both actual callers use the same scalar consequence, and every later height domain, containing box and endpoint check uses `1/3` in place of `17/50`. The full and proper canonical consequences and all nine main Challenge statements retain their original geometric hypotheses.
+- The small-height argument uses `centered_width_lt_radiusWidth_of_dry` in both the selector and the
+  ordinary-area comparison.
+  - Its scalar estimate takes the proved radius width in place of the coarser containing width, and no longer
+    assumes the separate niche enclosure `z ≤ 33/100`; the actual cap theorem keeps its original hypotheses.
+  - `smallTilt_radius_budget_payment` and `smallTilt_radius_gain_positive` correspond to the common prices and
+    rationalized circle-radius gain in Lemma `lem:tilted-small-height`.
+  - The coefficients are retained as their chord, width, projection and leakage contributions, matching
+    `smallTiltHeightLoss`, `smallTiltNicheLoss`, `smallTiltFloorLinear` and `smallTiltFloorQuadratic`.
+  - The two physical energy tests remain, but neither requires a further small-height subdivision.
 
-The wide-cap strategy now follows `wide_diagonal_high_score_fitting` and `threeAngle_wide_high_score_fitting`. At the first wide width, the midpoint square completion and endpoint law give a width price, height price, and area reserve. One affine budget pays the weighted span `(1 - k/2)a + h`, which is the sufficient peak-fitting condition itself. The natural clipping boundary `a = 1 + 2k` remains; the independent cuts `9/5`, `1/4`, and `37/20` are removed from this argument and its actual callers. `wide_peak_fits` takes the weighted span directly, and `wide_piece_fitting` uses only the original height range. The full-angle wrapper obtains both endpoint height bounds from `partialTriangle_endpoint_lower_bounds`, removing its niche-box detour. The paper explicitly uses the inner support-cut halves, matching the formal payment, and derives the final supporting plane from the midpoint square and the positive-part square inequality. The exact demand is `wideGainDemand`, its payment is `wide_gain_sum_ge_demand`, and `widePaidBound_le_price` cancels tilt with the common price before completing the midpoint square. Its root enclosures and the first wide width remain. The manuscript and Lean have been revised together under the owner's request; the nine main statements are unchanged.
+- The intermediate tilt estimate follows `tiltedDiagonalRelaxation_eq_perspective`,
+  `tiltedDiagonalRelaxation_le_price`, and `tiltedDiagonalBound_high_score`.
+  - The perspective identity and common price replace the two-support stationary-point construction and its
+    clipping feasibility proof.
+  - `clipped_perspective_ge_tangent` is shared with the wide argument through `DiagonalScalar.lean`.
+  - The scalar area bound needs only the elementary offset enclosure `[1/3, 1/2]`; the endpoint comparison uses
+    the existing generated reference and offset bounds.
+  - It compares at height one third directly with `referenceHalfAreaLower`, removing this argument's `41/50`
+    intermediary and expanded `160/303` coefficient.
+  - Both actual callers use the same scalar consequence, and every later height domain, containing box and
+    endpoint check uses `1/3` in place of `17/50`.
+  - The full and proper canonical consequences and all nine main Challenge statements retain their original
+    geometric hypotheses.
 
-The tilted selector uses `initialFloorEnergyConditions_of_radius_width` and `false_of_radius_width_zero_left`, with the common geometry defined in `TiltedRadiusWidth.lean`. These correspond to Lemma `lem:tilted-unit-regions` and the strengthened all-height triangle exclusion `lem:tilted-medium-width`. The triangle floor comparison accepts signed depth bounds; the common clipping test now needs only midpoint height `3/4`, replacing `179/200`. All three floor corrections are compared at zero tilt. The height boundary is now the unique energy-balance root, enclosed by three updates from the canonical interval. The lower floor endpoint is equality by definition; the upper endpoint uses only squared radius at most five, radius at least two, and sine at least two thirds. Common triangle helpers retain coarse clipping brackets.
+- The wide-cap strategy now follows `wide_diagonal_high_score_fitting` and `threeAngle_wide_high_score_fitting`.
+  - At the first wide width, the midpoint square completion and endpoint law give a width price, height price,
+    and area reserve. One affine budget pays the weighted span `(1 - k/2)a + h`, which is the sufficient
+    peak-fitting condition itself.
+  - The natural clipping boundary `a = 1 + 2k` remains; the independent cuts `9/5`, `1/4`, and `37/20` are
+    removed from this argument and its actual callers.
+  - `wide_peak_fits` takes the weighted span directly, and `wide_piece_fitting` uses only the original height
+    range.
+  - The full-angle wrapper obtains both endpoint height bounds from `partialTriangle_endpoint_lower_bounds`,
+    removing its niche-box detour.
+  - The paper explicitly uses the inner support-cut halves, matching the formal payment, and derives the final
+    supporting plane from the midpoint square and the positive-part square inequality.
+  - The exact demand is `wideGainDemand`, its payment is `wide_gain_sum_ge_demand`, and `widePaidBound_le_price`
+    cancels tilt with the common price before completing the midpoint square. Its root enclosures and the first
+    wide width remain.
+  - The manuscript and Lean have been revised together under the owner's request; the nine main statements are
+    unchanged.
 
-The initial-angle proof now follows `initialAngleRelaxation_first_region_le` and `initialAngleRelaxation_second_region_le` directly, corresponding to the fixed-wall and square comparisons in Appendix E. The reference parameters only center algebraic identities; no feasible critical point is required. `initialAngleRelaxation_all_width_lt` uses the natural width `K`, and `initialAngleRelaxation_complement_lt` uses `initialAngleComplementGap`, derived from the same offset and the minimum cotangent. The later terminal-corner cut is derived from `3C sin α > 1 + cos α` at the angular endpoint, replacing `49/100`. `width_gt_initialAngleCornerWidth` and `terminal_corner_width_scale` carry this geometric threshold into both actual callers. These are coordinated revisions of the manuscript and its Lean proof under the owner's request.
+- The tilted selector uses `initialFloorEnergyConditions_of_radius_width` and `false_of_radius_width_zero_left`,
+  with the common geometry defined in `TiltedRadiusWidth.lean`.
+  - These correspond to Lemma `lem:tilted-unit-regions` and the strengthened all-height triangle exclusion
+    `lem:tilted-medium-width`.
+  - The triangle floor comparison accepts signed depth bounds; the common clipping test now needs only midpoint
+    height `3/4`, replacing `179/200`. All three floor corrections are compared at zero tilt.
+  - The height boundary is now the unique energy-balance root, enclosed by three updates from the canonical
+    interval.
+  - The lower floor endpoint is equality by definition; the upper endpoint uses only squared radius at most five,
+    radius at least two, and sine at least two thirds.
+  - Common triangle helpers retain coarse clipping brackets.
 
-The new horizontal energy threshold uses the proved axis height one half, replacing the former box-only criterion. Lean proves the dry-endpoint result from the actual curvature density and wall kernel, without adding a hypothesis. The original cap supplies both unit-curvature quarters, so choosing a reflected orientation is no longer necessary. The triangle payment is `triangle_tilt_payment`, and the whole-score parameter comparison is `triangleCornerScore_le_Newton`; they correspond to Lemmas `lem:triangle-tilt-payment` and `lem:triangle-newton-corners`. Its three scalar callers use the cosine identity proved by `fullTriangleCos_quadratic`, so the stronger coupling assumption is supplied by the actual geometry. These triangle exclusions compare directly with `referenceHalfAreaLower`; their former `41/50` score intermediary is removed from the manuscript and Lean callers. The changes to the reference identities, general triangle comparison, low-height bound, horizontal threshold, tilt cancellation, joint stopping comparison, and small-tilt losses are reflected in the Lean proofs and their callers. Lemma `lem:joint-stopping-corner` corresponds to `properExcessEnd_mono_width`, `properExcessEnd_mono_height`, and `properExcessEnd_lt_of_corner`; its zero-tilt consequence is `zero_tilt_excess_stops_early`. The additional energy condition is checked at each far width, so no main theorem acquires a hypothesis. The proper reflected proof uses `properExcessEnd_le_baseline_payment` and `properExcessEnd_le_angular_deadline`, corresponding to Lemma `lem:angular-stopping-budget`. Its actual parameters come from `centered_terminal_reflected_angular_budget_of_tail_regime`. The envelope retains its decay-dependent coefficient `(1 + ellMax)/2`, checked at `ellMax = 3/5`. Proposition `app:partial-reflection` now states the uniform bound on the weighted error required by the terminal comparison; the former near-full zero-error assertion is no longer needed as a separate result. The actual impulse energy and density are retained. The terminal circle proof uses `terminal_circle_joint_average_comparison` and `terminal_circle_average_gap`, with the intrinsic endpoint-gap margin and its original geometric hypotheses; its actual-height and reserve-interval callers use the new comparison. The manuscript now derives the calibration derivative from boundary flux; Lean retains its direct differentiation proof of the same identity. Its exact Dirichlet estimate also gives the manuscript's coefficient, while the formal maximum theorem retains the coarser numerical consequence. The main statements of the Challenge are unchanged. These revisions used one agent with the formalize-math-paper and humanizer skills; they are revisions and verification, not an independent mathematical review.
+- The initial-angle proof now follows `initialAngleRelaxation_first_region_le` and
+  `initialAngleRelaxation_second_region_le` directly, corresponding to the fixed-wall and square comparisons in
+  Appendix E.
+  - The reference parameters only center algebraic identities; no feasible critical point is required.
+  - `initialAngleRelaxation_all_width_lt` uses the natural width `K`, and `initialAngleRelaxation_complement_lt`
+    uses `initialAngleComplementGap`, derived from the same offset and the minimum cotangent.
+  - The later terminal-corner cut is derived from `3C sin α > 1 + cos α` at the angular endpoint, replacing
+    `49/100`. `width_gt_initialAngleCornerWidth` and `terminal_corner_width_scale` carry this geometric threshold
+    into both actual callers.
+  - These are coordinated revisions of the manuscript and its Lean proof under the owner's request.
 
-The latest round made eight further changes: exact wide demand and weighted triangle prices; a terminal margin defined by its two circle gaps; a height determined by equality of the two energy tests; the existing 3–4–5 circle point for the post-floor height range; the integrated envelope moment instead of `1/40`; radius-derived projection and containing-width prices instead of `10/9` and the small-height width allowance; the established angular endpoint for the circle chord, removing `q² = 1/8`; and the same generated sine endpoint in the cubic price instead of `14/15`. `TiltedBalanceHeight.lean`, `terminalCircleGap_gt_cubicPrice`, `firstExcessMoment_le_short_envelope_moment`, and the revised small-tilt constants carry these comparisons through the actual geometric callers. This removes the fitted height `1/20` from the selector and the auxiliary triangle parameter range. It changes auxiliary estimates and the manuscript together, while retaining all nine main Challenge statements.
+- The horizontal argument:
+  - The new horizontal energy threshold uses the proved axis height one half, replacing the former box-only
+    criterion.
+  - Lean proves the dry-endpoint result from the actual curvature density and wall kernel, without adding a
+    hypothesis.
+  - The original cap supplies both unit-curvature quarters, so choosing a reflected orientation is no longer
+    necessary.
+- The triangle comparisons:
+  - The triangle payment is `triangle_tilt_payment`, and the whole-score parameter comparison is
+    `triangleCornerScore_le_Newton`; they correspond to Lemmas `lem:triangle-tilt-payment` and
+    `lem:triangle-newton-corners`.
+  - Its three scalar callers use the cosine identity proved by `fullTriangleCos_quadratic`, so the stronger
+    coupling assumption is supplied by the actual geometry.
+  - These triangle exclusions compare directly with `referenceHalfAreaLower`; their former `41/50` score
+    intermediary is removed from the manuscript and Lean callers.
+- The changes to the reference identities, general triangle comparison, low-height bound, horizontal threshold,
+  tilt cancellation, joint stopping comparison, and small-tilt losses are reflected in the Lean proofs and their
+  callers.
+- The stopping arguments:
+  - Lemma `lem:joint-stopping-corner` corresponds to `properExcessEnd_mono_width`, `properExcessEnd_mono_height`,
+    and `properExcessEnd_lt_of_corner`; its zero-tilt consequence is `zero_tilt_excess_stops_early`.
+  - The additional energy condition is checked at each far width, so no main theorem acquires a hypothesis.
+  - The proper reflected proof uses `properExcessEnd_le_baseline_payment` and
+    `properExcessEnd_le_angular_deadline`, corresponding to Lemma `lem:angular-stopping-budget`. Its actual
+    parameters come from `centered_terminal_reflected_angular_budget_of_tail_regime`.
+  - The envelope retains its decay-dependent coefficient `(1 + ellMax)/2`, checked at `ellMax = 3/5`.
+  - Proposition `app:partial-reflection` now states the uniform bound on the weighted error required by the
+    terminal comparison; the former near-full zero-error assertion is no longer needed as a separate result. The
+    actual impulse energy and density are retained.
+- The terminal circle proof uses `terminal_circle_joint_average_comparison` and `terminal_circle_average_gap`, with
+  the intrinsic endpoint-gap margin and its original geometric hypotheses; its actual-height and reserve-interval
+  callers use the new comparison.
+- The calibration:
+  - The manuscript now derives the calibration derivative from boundary flux; Lean retains its direct
+    differentiation proof of the same identity.
+  - Its exact Dirichlet estimate also gives the manuscript's coefficient, while the formal maximum theorem retains
+    the coarser numerical consequence.
+- The main statements of the Challenge are unchanged. These revisions used one agent with the
+  formalize-math-paper and humanizer skills; they are revisions and verification, not an independent mathematical
+  review.
+
+- The latest round made eight further changes, retaining all nine main Challenge statements:
+  - exact wide demand and weighted triangle prices;
+  - a terminal margin defined by its two circle gaps;
+  - a height determined by equality of the two energy tests;
+  - the existing 3–4–5 circle point for the post-floor height range;
+  - the integrated envelope moment instead of `1/40`;
+  - radius-derived projection and containing-width prices instead of `10/9` and the small-height width allowance;
+  - the established angular endpoint for the circle chord, removing `q² = 1/8`;
+  - the same generated sine endpoint in the cubic price instead of `14/15`.
+- `TiltedBalanceHeight.lean`, `terminalCircleGap_gt_cubicPrice`, `firstExcessMoment_le_short_envelope_moment`, and
+  the revised small-tilt constants carry these comparisons through the actual geometric callers.
+  - This removes the fitted height `1/20` from the selector and the auxiliary triangle parameter range.
+  - It changes auxiliary estimates and the manuscript together.
 
 ### Remaining numerical choices
 
-Several other exclusions still use explicit finite certificates. Their constants have been simplified in the preceding pass, but they have not all been replaced by intrinsic geometric quantities:
+- Several other exclusions still use explicit finite certificates.
+- Their constants have been simplified in the preceding pass, but they have not all been replaced by intrinsic
+  geometric quantities:
 
 | Remaining family | Role of the numbers |
 | --- | --- |
@@ -99,10 +224,29 @@ Several other exclusions still use explicit finite certificates. Their constants
 | Terminal circle and reflected excess | The circle has two generated width checks. Its retained margin is the actual minimum endpoint gap, with the same generated sine bound in the cubic price; the reflected error uses one baseline and an angular budget; its additional angle split and three stopping boxes are gone. The preliminary terminal-angle cut and coarse root enclosures remain. |
 | Imported ordinary-sofa benchmark | `2.2199` is the exact decimal enclosure in the imported Gerver-area theorem. |
 
-The remaining subdivisions and endpoint comparisons are finite arithmetic parts of the proof. Their purpose and defining comparisons are stated explicitly. The width cuts `37/50` and `8/5`, the cotangent cut `3/8`, and stopping enclosures such as `11/15` remain fitted. Replacing them by roots of scalar comparison formulas also requires proving the adjoining clipping and stopping estimates on those new domains. That step is unresolved. Fractions forced by geometry and integration remain as well; this revision does not claim to eliminate every numerical choice.
+- The remaining subdivisions and endpoint comparisons are finite arithmetic parts of the proof. Their purpose and
+  defining comparisons are stated explicitly.
+- The width cuts `37/50` and `8/5`, the cotangent cut `3/8`, and stopping enclosures such as `11/15` remain
+  fitted. Replacing them by roots of scalar comparison formulas also requires proving the adjoining clipping and
+  stopping estimates on those new domains. That step is unresolved.
+- Fractions forced by geometry and integration remain as well; this revision does not claim to eliminate every
+  numerical choice.
 
-The nine main theorem statements are unchanged. The full Lean build passes (9,476 jobs). The audit checks all 5,545 project declarations and all 4,235 copied ordinary-sofa declarations; only standard axioms occur. Comparator accepts all nine statements under NanoDa and Lean. Definition synchronization, exact arithmetic, metadata, Markdown tables, and whitespace checks pass. The 109-page manuscript and its 31-entry standalone source archive compile cleanly. The revised proof pages have been inspected visually, including the energy-balance height, radius-derived small-height prices, natural endpoint circle chord, and exact wide-triangle demand. The arithmetic checker covers the current generated enclosures, geometric area payments, stopping comparisons, and energy endpoints.
+## Checks after the revisions
+
+- The nine main theorem statements are unchanged.
+- The full Lean build passes (9,476 jobs). The audit checks all 5,545 project declarations and all 4,235 copied
+  ordinary-sofa declarations; only standard axioms occur.
+- Comparator accepts all nine statements under NanoDa and Lean.
+- Definition synchronization, exact arithmetic, metadata, Markdown tables, and whitespace checks pass.
+- The 109-page manuscript and its 31-entry standalone source archive compile cleanly.
+- The revised proof pages have been inspected visually, including the energy-balance height, radius-derived
+  small-height prices, natural endpoint circle chord, and exact wide-triangle demand.
+- The arithmetic checker covers the current generated enclosures, geometric area payments, stopping comparisons,
+  and energy endpoints.
 
 ## References
 
-The bibliography uses mathematical sources. The preceding citation check consulted the primary sources for [Romik's construction](https://arxiv.org/abs/1606.08111), [Baek's theorem](https://arxiv.org/abs/2411.19826), [Kallus and Romik's bounds](https://arxiv.org/abs/1706.06630), [Georgiev, Gómez-Serrano, Tao and Wagner](https://arxiv.org/abs/2511.02864), and [O'Keefe's work](https://github.com/devinokeefe/ambidextrous-sofa-bounds). This was a targeted citation check rather than an exhaustive literature survey.
+- The bibliography uses mathematical sources.
+- The preceding citation check consulted the primary sources for [Romik's construction](https://arxiv.org/abs/1606.08111), [Baek's theorem](https://arxiv.org/abs/2411.19826), [Kallus and Romik's bounds](https://arxiv.org/abs/1706.06630), [Georgiev, Gómez-Serrano, Tao and Wagner](https://arxiv.org/abs/2511.02864), and [O'Keefe's work](https://github.com/devinokeefe/ambidextrous-sofa-bounds).
+- This was a targeted citation check rather than an exhaustive literature survey.

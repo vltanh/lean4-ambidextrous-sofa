@@ -1,6 +1,7 @@
 # Optimality and uniqueness of Romik's ambidextrous sofa, in Lean 4
 
 [![Lean Action CI](https://github.com/vltanh/lean4-ambidextrous-sofa/actions/workflows/lean_action_ci.yml/badge.svg?branch=main)](https://github.com/vltanh/lean4-ambidextrous-sofa/actions/workflows/lean_action_ci.yml?query=branch%3Amain)
+[![Palomar](https://img.shields.io/badge/Palomar-registered-blue)](https://palomar-registry.org/entry?id=PALOMAR-2026-10-13-000003)
 
 The ambidextrous moving sofa problem asks for the largest area of a shape that can be moved around the
 right-angled corner of a hallway of unit width that turns right, and also, from the same starting position,
@@ -134,6 +135,11 @@ audit checks that every declaration uses only the axioms `propext`, `Classical.c
 Comparator checks, with Lean's kernel and with NanoDa, that the Solution proves exactly the Challenge.
 [docs/verification.md](docs/verification.md) explains each check.
 
+The Palomar registry lists the formalization as
+[PALOMAR-2026-10-13-000003](https://palomar-registry.org/entry?id=PALOMAR-2026-10-13-000003). Version 1 was
+registered on 13 October 2026 from commit `0f24fe4`, after Palomar's own run of Comparator with two independent
+kernels; [`formalization.yaml`](formalization.yaml) is its metadata.
+
 ## Layout
 
 ```text
@@ -147,6 +153,7 @@ AmbidextrousSofa/               the proof
   Analysis/                     the bound on the score of a cap and its equality cases
 MovingSofaOptimality/           Baek's theorem, copied from lean4-moving-sofa
 docs/                           definitions, layout, verification, prior work, credits, figures, archive
+  paper/                        the proof manuscript and its LaTeX source
 scripts/                        the axiom audit, the copy of the definitions, the figures
 ```
 
@@ -155,7 +162,8 @@ scripts/                        the axiom audit, the copy of the definitions, th
 The-Anh Vu-Le directed the work. ChatGPT Pro 6 (OpenAI) found the proof, in research notes that ended with a
 manuscript ([archive](docs/archive/README.md)), and wrote a first Lean draft. Claude Opus 5.5 (Anthropic), in
 Claude Code, made the draft compile, simplified it, and wrote the Challenge, the Solution and the
-documentation. [docs/CREDITS.md](docs/CREDITS.md) records how.
+documentation. Codex (OpenAI, GPT-6) wrote the [paper](docs/paper/main.pdf) and revised it together with the Lean
+proofs. [docs/CREDITS.md](docs/CREDITS.md) records how.
 
 ## License
 

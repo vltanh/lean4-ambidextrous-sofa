@@ -17,7 +17,8 @@ How this formalization was made, from the run log and the session transcripts. T
   first followed the [formalize-math-paper](https://github.com/vltanh/formalize-math-paper) skill (its version of 7
   October 2026) for an existing uncompiled draft; the second, on 10 and 11 October, simplified the proof.
 - No person has reviewed the proofs or the statements; Lean's kernel checks every proof.
-- Codex (OpenAI, GPT-6) wrote the paper and revised the Lean proofs and manuscript on 11–12 October 2026.
+- Codex (OpenAI, GPT-6) wrote the paper on 11 October 2026 and, on 11 and 12 October, revised it together with the
+  Lean proofs.
 
 ## Making the draft compile (10 October 2026)
 
@@ -137,30 +138,37 @@ How this formalization was made, from the run log and the session transcripts. T
 - The initial round checked the existing proof library and figures. The revised PDF passes reference, bibliography, and overflow checks; its 31-entry source archive compiles separately with `pdflatex` alone. Representative pages were inspected visually.
 - The reviews found no unresolved substantive mathematical error. The proof library and archived research manuscript are unchanged; human mathematical review remains outstanding.
 
-## Proof and manuscript revisions (11–12 October 2026)
+## Proof and manuscript revisions (11 and 12 October 2026)
 
-Codex (OpenAI, GPT-6) completed sixteen revision rounds at the owner's request, simplifying
-constants and proof strategies across all nineteen manuscript sections. The latest round made
-eight further passes: exact triangle prices, an intrinsic circle gap, an energy-balance height,
-a circle chord for the post-floor range, an integrated leakage allowance, radius-derived
-projection prices, the terminal-angle endpoint for the comparison chord, and its sine bound
-for the cubic payment. Earlier rounds simplified the selector, terminal, horizontal, calibration,
-and small-tilt arguments. Manuscript, Lean proofs, and verification records were revised together;
-the nine main statements are unchanged.
+- At the owner's request, Codex (OpenAI, GPT-6) revised the manuscript and the Lean proofs together in sixteen
+  rounds, replacing fitted constants by quantities derived from the geometry and by shared bounds.
+  - Earlier rounds simplified the selector, terminal, horizontal, calibration and small-tilt arguments.
+  - The last round made eight further passes: exact triangle prices, an intrinsic circle gap, an energy-balance
+    height, a circle chord for the post-floor range, an integrated leakage allowance, radius-derived projection
+    prices, the terminal-angle endpoint for the comparison chord, and its sine bound for the cubic payment.
+  - [The review](paper/REVIEW.md) records the changes and the numerical comparisons that remain.
+- The nine statements of the Challenge did not change. The library now has 462 modules, 56,742 lines and 5,545
+  declarations.
+- The rounds followed the formalize-math-paper skill (2.5.1) and, for the rewrite of the arguments, the humanizer
+  skill (3.1.0), without sub-agents.
+- The build, the audit, Comparator with both kernels, the exact arithmetic of
+  [`check_numeric_estimates.py`](../scripts/check_numeric_estimates.py) and the manuscript checks pass. The paper
+  and its source archive have 109 pages.
+- Recorded times on 11 October: 10:26–10:40, 14:27–14:58, 15:18–15:37, 15:39–16:04, 16:17–16:48, 16:57–17:23,
+  17:25–17:51, 18:26–19:12, 20:52–21:15, 21:20–21:41, 21:42–22:06, 22:14–22:31 and 22:48–23:07. The last round
+  ran from 23:16 on 11 October to 00:35 on 12 October. The other rounds' times, the token totals and the costs
+  were not recorded.
+- On 12 October, from 08:02, Codex prepared the revisions for commit, push and Palomar's preflight, following the
+  git-commit skill (`0f24fe4`).
 
-These rounds used formalize-math-paper 2.5.1 and, for the argument rewrite, humanizer 3.1.0, without
-sub-agents. The Lean build, axiom audit, both Comparator kernels, exact arithmetic, and manuscript checks
-pass. The paper and source archive have 109 pages; [the review](paper/REVIEW.md) records the changes and
-remaining numerical comparisons.
+## Registration in Palomar (12 and 13 October 2026)
 
-Recorded implementation and validation times: 10:26–10:40, 14:27–14:58, 15:18–15:37,
-15:39–16:04, 16:17–16:48, 16:57–17:23, 17:25–17:51, 18:26–19:12, 20:52–21:15,
-21:20–21:41, 21:42–22:06, 22:14–22:31, and 22:48–23:07 CDT on 11 October. The latest
-round ran from 23:16 on 11 October to 00:35 on 12 October. The intermediate rounds' exact
-timings, token totals, and costs were not recorded.
-
-On 12 October, Codex prepared the combined revisions for commit, push, and Palomar preflight
-at the owner's request, using git-commit; preparation began at 08:02 CDT.
+- Commit `0f24fe4` was submitted to Palomar. Its mechanical verification passed on 12 October at 08:52, and
+  Palomar's review of the metadata, at 09:12, raised no warning.
+- The entry [PALOMAR-2026-10-13-000003](https://palomar-registry.org/entry?id=PALOMAR-2026-10-13-000003) was
+  registered at 20:45 (13 October, 01:45 UTC), and Palomar archived the repository at that commit.
+- The README, the [verification page](verification.md) and [`formalization.yaml`](../formalization.yaml) then
+  named the entry, and the metadata was shortened to point to these pages.
 
 ## Figures
 

@@ -1,8 +1,9 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
 version: "v0.4"
 
-# The Challenge is Challenge.lean, the Solution Solution.lean, and the Comparator configuration
-# comparator.json.
+# PALOMAR-2026-10-13-000003, the Palomar entry of this repository: the Challenge Challenge.lean, the
+# Solution Solution.lean, the Comparator configuration comparator.json. Version 1 was registered on
+# 13 October 2026 from commit 0f24fe48b4cadf02a442420e677b45a036136dbf.
 
 project:
   name: "Optimality and uniqueness of Romik's ambidextrous sofa, formalized in Lean 4"
@@ -50,13 +51,10 @@ sources:
     relationship: other
     note: >-
       ChatGPT Pro 6 (OpenAI) found the proof and wrote an uncompiled Lean draft of it, and Claude
-      Opus 5.5 (Anthropic) made the draft compile (automation). The research notes behind it end with
-      a manuscript, which the repository archives in docs/archive/. Codex (OpenAI, GPT-6) wrote
-      the accompanying 109-page proof manuscript in docs/paper/, starting from Claude's LaTeX
-      scaffold, bibliography and figures. Three Codex writers reviewed one another's sections;
-      this manuscript review is separate from the Challenge review. The proof has not been
-      reviewed by a person. The fuller production account is pinned at
-      https://github.com/vltanh/lean4-ambidextrous-sofa/blob/646bdd577807299d786ac2d48176bd6c8d5a6030/docs/CREDITS.md#the-paper-11-october-2026.
+      Opus 5.5 (Anthropic) made the draft compile and simplified it. The research notes behind it end
+      with a manuscript, archived in docs/archive/. Codex (OpenAI, GPT-6) wrote the 109-page proof
+      manuscript in docs/paper/ and revised it together with the Lean proofs. No person has reviewed
+      the proof. docs/CREDITS.md tells how the work was done.
   - title: "Differential Equations and Exact Solutions in the Moving Sofa Problem"
     authors:
       - "Dan Romik"
@@ -155,117 +153,70 @@ status:
 automation:
   methods:
     - method: agent
-      models: ["Claude Opus 5.5 (claude-opus-5-5)"]
-      framework: "Claude Code (Anthropic)"
-      tool_setup: >-
-        Claude Code 2.1.296, following the formalize-math-paper skill
-        (https://github.com/vltanh/formalize-math-paper, its version of 7 October 2026) for an
-        existing uncompiled draft, with 44 sub-agents of the same model, at most 20 at once. It
-        replaced the draft's copy of lean4-moving-sofa's library by a dependency on it, converted the
-        draft to Lean's module system, brought every statement to elaborate, and had 42 sub-agents
-        restore the 849 proofs that failed, by changes of tactics and names; 77 theorems in sections
-        with variable hypotheses got back the hypotheses that Lean had left out of their statements.
-        One sub-agent reviewed the statements of record, and another described the modules. The
-        main session wrote the Challenge, the Solution, the axiom audit, the documentation and the
-        figures, and then copied lean4-moving-sofa's library MovingSofaOptimality into the repository,
-        so that the project can follow Mathlib on its own. A move to Mathlib v4.35.0-rc4 was undone,
-        because Palomar cannot yet render a Challenge on that version. In a second session the same
-        model simplified the proof with 68 sub-agents: it removed the declarations that no main theorem
-        uses, rewrote every module for shorter proofs while keeping the statements that other modules
-        use, then had families of modules rewritten together in separate git worktrees to merge the
-        arguments proved twice, and merged the facts proved in several families. The library went from
-        94,375 to 55,015 lines and from 7,474 to 5,581 declarations, with no warnings. The same session
-        added the statement quarter_turns and expanded the review of prior work. The simplification was
-        done on Mathlib v4.35.0-rc4 and ported to v4.35.0-rc3 when it was merged.
-      cost:
-        wall_time: >-
-          Making the draft compile, with the Challenge and the Solution: 1 hour 41 minutes
-          (2026-10-10 15:27 to 17:08, US Central Time), with about 10.0 hours of sub-agent working
-          time. The documentation and this metadata: about 35 minutes (2026-10-10 17:08 to 17:43).
-          The move to Mathlib v4.35.0-rc4 and the rewrite of the documentation: about 19 minutes
-          (2026-10-10 17:43 to 18:02). The diagnosis of Palomar's render failure on that version, the
-          return to v4.35.0-rc3 and Palomar's preflight: 1 hour 23 minutes (2026-10-10 18:50 to 20:13).
-          The simplification, with the new statement and the review of prior work: 11 hours (2026-10-10
-          18:26 to 2026-10-11 05:30), including a pause of 1 hour 49 minutes, with about 63.8 hours of
-          sub-agent working time. docs/CREDITS.md gives the figures.
-        spend_usd: "not tracked"
-        hardware: "a local machine with 20 cores for the Lean builds"
-    - method: agent
       models: ["ChatGPT Pro 6 (OpenAI)"]
       framework: "ChatGPT (OpenAI), committing to the repository through GitHub"
       tool_setup: >-
         Found the proof, in research notes in pull request #3 of lean4-moving-sofa (8 to 10 October
         2026) whose last document, a manuscript, is archived in docs/archive/, and wrote the
-        uncompiled Lean draft of it in 13 commits of this repository's pull
-        request #1 (2026-10-10, 00:25 to 15:18): 514 modules, 51 of them copies of lean4-moving-sofa's
-        library, about 132,000 lines.
+        uncompiled Lean draft of it in 13 commits of this repository's pull request #1 (2026-10-10,
+        00:25 to 15:18): 514 modules, 51 of them copies of lean4-moving-sofa's library, about 132,000
+        lines.
       cost:
         spend_usd: "not tracked"
+    - method: agent
+      models: ["Claude Opus 5.5 (claude-opus-5-5)"]
+      framework: "Claude Code (Anthropic)"
+      tool_setup: >-
+        Claude Code 2.1.296, following the formalize-math-paper skill
+        (https://github.com/vltanh/formalize-math-paper, its version of 7 October 2026) for an
+        existing uncompiled draft. In a first session, with 44 sub-agents of the same model, at most
+        20 at once, it converted the draft to Lean's module system, brought every statement to
+        elaborate, and had 42 sub-agents restore the 849 proofs that failed by changes of tactics and
+        names; 77 theorems in sections with variable hypotheses got back the hypotheses that Lean had
+        left out of their statements. One sub-agent reviewed the statements of record. The main
+        session wrote the Challenge, the Solution, the axiom audit, the documentation and the figures,
+        and copied lean4-moving-sofa's library MovingSofaOptimality into the repository. In a second
+        session, with 68 sub-agents, it simplified the proof: it removed the declarations that no main
+        theorem uses, rewrote every module for shorter proofs, merged the arguments proved twice, and
+        added the statement quarter_turns. By the end of that session the library had gone from 94,375 to
+        55,015 lines and from 7,474 to 5,581 declarations. On 11 October it prepared the LaTeX scaffold, bibliography and figures
+        of the manuscript.
+      cost:
+        wall_time: >-
+          On 10 and 11 October 2026: 1 hour 41 minutes to make the draft compile, with
+          about 10.0 hours of sub-agent working time; about 2 hours 17 minutes for the documentation,
+          this metadata and the return to Mathlib v4.35.0-rc3; and 11 hours, with a pause of 1 hour 49
+          minutes, for the simplification, with about 63.8 hours of sub-agent working time.
+          docs/CREDITS.md gives the figures.
+        spend_usd: "not tracked"
+        hardware: "a local machine with 20 cores for the Lean builds"
     - method: agent
       models: ["GPT-6 (OpenAI)"]
       framework: "Codex (OpenAI)"
       tool_setup: >-
-        On 11 October 2026, wrote the accompanying mathematical account in docs/paper/ from
-        Claude Opus 5.5's LaTeX scaffold, bibliography, six figures, and notation and caption
-        notes. First completed a 27-page outline, then expanded it into the 107-page
-        pen-and-paper proof at the owner's request. Three sub-agents wrote the cap argument,
-        selection and variations, and terminal-angle estimates, and each reviewed sections
-        written by another; at most three ran at once. The coordinating agent wrote the
-        introduction, setting, reduction, reference construction, preliminary estimates and
-        body recovery, and integrated the reviews. This was manuscript writing and mathematical
-        communication of the existing proof, distinct from ChatGPT's proof discovery and
-        Claude's Lean compilation and simplification. The exact manuscript model variant,
-        token totals and sub-agent working times were not recorded. The fuller account is
-        pinned at
-        https://github.com/vltanh/lean4-ambidextrous-sofa/blob/646bdd577807299d786ac2d48176bd6c8d5a6030/docs/CREDITS.md#the-paper-11-october-2026.
-        On 11–12 October 2026, completed sixteen proof and manuscript revision rounds at
-        the owner's request, using formalize-math-paper 2.5.1 and humanizer 3.1.0 without
-        sub-agents. Revised all eleven main sections and eight appendices together with
-        the corresponding Lean arguments; all nine main Challenge statements are unchanged.
-        Generated Newton bounds replace large fitted fractions. Shared square completions,
-        triangle payments, dry-endpoint energy tests and joint stopping comparisons replace
-        separate numerical cases. The latest round made eight further strategy passes:
-        exact wide demand and weighted prices; the actual minimum circle gap; a height
-        defined by equality of the two energy tests; the existing 3–4–5 circle point for
-        the post-floor range; the integrated leakage moment; radius-derived projection
-        prices; the terminal-angle endpoint for the circle chord; and its generated sine
-        bound for the cubic payment. These replace independently chosen margins and
-        allowances, including 1/100, 1/20, 1/40, 10/9, q squared = 1/8 and 14/15.
-        The full Lean build, axiom audit, both Comparator kernels, exact arithmetic and
-        manuscript checks pass. scripts/check_numeric_estimates.py checks the revised
-        estimates and confirms removal of the 364 large literal fraction occurrences.
-        docs/paper/REVIEW.md records the mathematical changes and remaining fitted width,
-        angle and stopping cutoffs; docs/CREDITS.md gives the consolidated production record.
-        On 12 October 2026, prepared the combined revisions for commit, push and Palomar
-        preflight at the owner's request, using the git-commit skill.
-
-        The revised manuscript and its source archive have 109 pages.
+        On 11 October 2026 it wrote the proof manuscript in docs/paper/ from Claude Opus 5.5's
+        scaffold, with three sub-agents that each wrote sections and reviewed sections written by
+        another. On 11 and 12 October, in sixteen rounds without sub-agents and following the
+        formalize-math-paper (2.5.1) and humanizer (3.1.0) skills, it revised the manuscript and the
+        Lean proofs together, replacing fitted constants by quantities derived from the geometry and
+        by shared bounds; the nine statements of the Challenge did not change.
+        scripts/check_numeric_estimates.py checks the revised estimates with exact fractions,
+        docs/paper/REVIEW.md records the changes, and docs/CREDITS.md the rounds. The exact model
+        variant and token totals were not recorded.
       cost:
         wall_time: >-
-          Manuscript: the first round's recorded clock readings run from 2026-10-11 08:52 to
-          about 09:07 CDT; the rewrite finished at 09:51 CDT, with its exact starting time
-          unrecorded. Three sub-agents, at most three at once; their working times were not
-          recorded. Revision clock ranges on 11 October CDT: 10:26–10:40, 14:27–14:58,
-          15:18–15:37, 15:39–16:04, 16:17–16:48, 16:57–17:23, 17:25–17:51,
-          18:26–19:12, 20:52–21:15, 21:20–21:41, 21:42–22:06, 22:14–22:31,
-          and 22:48–23:07. The latest eight-pass round ran from 11 October 23:16
-          to 12 October 00:35 CDT, about 79 minutes including validation.
-          Revision rounds used no sub-agents; initial inspection preceded some clock
-          readings, and intermediate timings, token totals and costs were not recorded.
-          Publication and preflight preparation began on 12 October at 08:02 CDT;
-          remote verification duration is recorded by GitHub Actions.
-
+          The manuscript between 08:52 and 09:51 on 11 October 2026 (US Central Time); the revision
+          rounds between 10:26 on 11 October and 00:35 on 12 October, about 6 hours 40 minutes of
+          recorded time, listed in docs/CREDITS.md. Sub-agent working times were not recorded.
         spend_usd: "not tracked"
   spend_usd: "not tracked"
   notes: >-
     The proof and the first Lean code were written by ChatGPT Pro 6; Claude Opus 5.5 made the code
-    compile and then simplified it. Codex (OpenAI, GPT-6) wrote the accompanying 109-page
-    proof manuscript from Claude's scaffold and integrated its agents' cross-reviews, separately
-    from the review of the Challenge. The-Anh Vu-Le, the author and maintainer of this repository,
-    chose the problem and the scope and decided the publication. Every result is compiled.
-    scripts/Audit.lean checks that each declaration of the library uses only propext,
-    Classical.choice and Quot.sound, and lake comparator checks this Challenge/Solution pair with
-    comparator.json.
+    compile and then simplified it; Codex (GPT-6) wrote the proof manuscript and revised it together
+    with the Lean proofs. The-Anh Vu-Le, the author and maintainer of this repository, chose the
+    problem and the scope and decided the publication. Every result is compiled. scripts/Audit.lean
+    checks that each declaration of the library uses only propext, Classical.choice and Quot.sound,
+    and lake comparator checks this Challenge/Solution pair with comparator.json.
 
 fidelity:
   divergences: >-
@@ -296,22 +247,14 @@ review:
     - "Challenge: a Claude Opus 5.5 sub-agent, separate from the writing agents, compared every definition and theorem of the Challenge with the informal statement of the problem and with Romik's paper"
     - "Accompanying proof manuscript: three Codex (OpenAI, GPT-6) writers reviewed sections written by one another; this was a cross-review among manuscript contributors, separate from the Challenge review"
   notes: >-
-    No person has reviewed the proofs, the statements or the definitions. The Challenge review found no
-    error; it checked that the definitions of Romik's sofa reproduce his Table 2, and that the
+    No person has reviewed the proofs, the statements or the definitions. The Challenge review found
+    no error; it checked that the definitions of Romik's sofa reproduce his Table 2, and that the
     hypotheses can be met (the unit square with constant motions is an ambidextrous sofa). Its
-    corrections of the documentation, and two more theorems (the convex hull of Romik's sofa, and
-    its rotated and translated copies), were made. The separate manuscript review checked the
-    motion reduction, selection and variations, full-turn geometry, calibration, proper-angle
-    exclusions, exact estimates, reference construction and equality recovery. It clarified
-    the competitive range of a concavity argument and the reference hull's nonempty interior,
-    and found no unresolved substantive mathematical error. Its fuller record is pinned at
-    https://github.com/vltanh/lean4-ambidextrous-sofa/blob/646bdd577807299d786ac2d48176bd6c8d5a6030/docs/paper/REVIEW.md#mathematical-review;
-    the production account is pinned at
-    https://github.com/vltanh/lean4-ambidextrous-sofa/blob/646bdd577807299d786ac2d48176bd6c8d5a6030/docs/CREDITS.md#the-paper-11-october-2026.
-    These are agent reviews; human mathematical review remains outstanding. Lean's kernel checks
-    the formal proofs, and Comparator
-    checks that the Solution proves the Challenge's statements with the standard axioms only, under
-    Lean's kernel and an independent one.
+    corrections of the documentation, and two more theorems (the convex hull of Romik's sofa, and its
+    rotated and translated copies), were made. The manuscript review found no unresolved
+    mathematical error and clarified two points; docs/paper/REVIEW.md records it. Lean's kernel
+    checks the formal proofs, and Comparator checks that the Solution proves the Challenge's
+    statements with the standard axioms only, under Lean's kernel and an independent one.
 
 alignment:
   namespace: "Ambidextrous"

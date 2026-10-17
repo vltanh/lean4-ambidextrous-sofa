@@ -41,17 +41,19 @@ of definitions of [`AmbidextrousSofa/ChallengeDefs.lean`](../AmbidextrousSofa/Ch
 (without `--check`, it makes the copy). The Challenge may import only Mathlib, and Comparator compares constants
 by name, so the Solution states its theorems with the constants of `ChallengeDefs`.
 
-[`scripts/check_numeric_estimates.py`](../scripts/check_numeric_estimates.py) independently checks the revised
-scalar estimates using exact fractions: the shared triangle tilt payment, whole-score
-parameter comparison, generated endpoints and clipping checks; generated reference-root and diagonal-offset enclosures,
-geometric short-width comparisons, the exact wide demand, weighted triangle prices and tilt cancellation, the intermediate tilt comparison at height one third, horizontal stopping and dry-endpoint area bounds,
-uniform tilt cancellation, joint stopping comparisons for every reflected height,
-circle discriminants, the intrinsic terminal circle gap and its direct cubic payment,
-the reflected angular deadline and cubic payment, the natural initial-angle and terminal-corner widths, complementary tent gap,
-the energy-balance height, its radius width and two floor-energy endpoint checks, the common small-height pressure budget
-and circle-radius payment, integrated leakage allowance and radius-derived projection prices, and small-tilt and folded-wing endpoint comparisons.
-It also audits all active proof and manuscript
-files for large literal rational coefficients. Run it with `python3 scripts/check_numeric_estimates.py`.
+[`scripts/check_numeric_estimates.py`](../scripts/check_numeric_estimates.py) checks the scalar estimates of the
+proof with exact fractions, independently of Lean. Run it with `python3 scripts/check_numeric_estimates.py`.
+
+- Enclosures: the generated reference enclosures, two Newton width endpoints, and the energy-balance height with
+  its radius width and its two floor-energy endpoints.
+- Widths and areas: the geometric short-width margins, the initial-angle and terminal-corner widths, the
+  complementary tent gap, the exact wide demand with weighted triangle prices and tilt cancellation, the
+  intermediate height bound one third, the common triangle tilt payment and Newton corners, and the folded-wing
+  endpoint comparisons.
+- Stopping and circles: horizontal stopping and dry-endpoint area bounds, uniform tilt cancellation and joint
+  stopping comparisons, the terminal-circle gap and its cubic price, two circle discriminants, the angular deadline
+  and its cubic payment, and the small-tilt pressure budget and circle-radius payment.
+- It also checks that none of the proof and manuscript files keeps a large literal fraction.
 
 ## Comparator
 
@@ -61,18 +63,24 @@ replays the proofs through Lean's kernel and the NanoDa kernel, and ends with `Y
 
 ## Palomar
 
-[`formalization.yaml`](../formalization.yaml) describes the formalization for the
-[Palomar](https://palomar-registry.org) registry: its sources, its scope, how it was made, how it reads the
-problem, and the nine theorems that Comparator checks. Earlier checks of Palomar's verifier
-([PalomarSubmission](https://github.com/PalomarRegistry/PalomarSubmission)), run on a fresh clone, accepted the
-metadata and the then-current 512 Lean files. The pins of [`lake-manifest.json`](../lake-manifest.json) agree with Mathlib's
-own, as the verifier requires, and with those of Verso, which renders the Challenge.
-
-[`.github/workflows/palomar_preflight.yml`](../.github/workflows/palomar_preflight.yml) runs Palomar's complete
-mechanical verification of a commit, as Palomar does after a submission, and uploads its report as the artifact
-`mechanical-report-preflight001`. It runs only on demand
-(`gh workflow run palomar_preflight.yml --ref main`), since a run can take hours, and it is pinned to
-PalomarSubmission commit `d4e41c1`.
+- [PALOMAR-2026-10-13-000003](https://palomar-registry.org/entry?id=PALOMAR-2026-10-13-000003) is the entry of
+  this repository in the [Palomar](https://palomar-registry.org) registry. Its version 1, from commit `0f24fe4`, was
+  registered on 13 October 2026 (UTC).
+  - Palomar's verifier built that commit and ran Comparator on the nine theorems of the Challenge with the NanoDa
+    and con-ron kernels, allowing only `propext`, `Quot.sound` and `Classical.choice`
+    ([run](https://github.com/PalomarRegistry/PalomarSubmission/actions/runs/38256912846)).
+  - The registry rates its trust as high: the Challenge has 270 lines and imports only Mathlib. Palomar's review
+    of the metadata raised no warning.
+  - Palomar archives the repository and its dependencies at the registered commits.
+- [`formalization.yaml`](../formalization.yaml) is the entry's metadata: its sources, its scope, how it was made,
+  how it reads the problem, and the nine theorems that Comparator checks. The pins of
+  [`lake-manifest.json`](../lake-manifest.json) agree with Mathlib's own, as the verifier requires, and with those of
+  Verso, which renders the Challenge.
+- A change to the Challenge, the Solution or the metadata reaches the registry only as a new version of the entry.
+- [`.github/workflows/palomar_preflight.yml`](../.github/workflows/palomar_preflight.yml) runs Palomar's complete
+  mechanical verification of a commit, pinned to PalomarSubmission commit `d4e41c1`, the one that verified version
+  1, and uploads its report as the artifact `mechanical-report-preflight001`. It runs only on demand
+  (`gh workflow run palomar_preflight.yml --ref main`), since a run can take hours.
 
 ## Continuous integration
 
